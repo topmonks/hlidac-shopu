@@ -1,0 +1,14 @@
+{
+  "name": "hlidac-shopu",
+  "version": "1.0",
+  "description": "Hlídač shopů",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "matches": ["https://www.alza.cz/*"],
+      "js": [
+        "alza.js"
+      ]
+    }
+  ]
+}
