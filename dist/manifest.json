@@ -9,6 +9,18 @@
       "js": [
         "alza.js"
       ]
+    },
+    {
+      "matches": ["https://www.mall.cz/*"],
+      "js": [
+        "mall.js"
+      ]
+    },
+    {
+      "matches": ["https://www.czc.cz/*"],
+      "js": [
+        "czc.js"
+      ]
     }
   ]
 }
