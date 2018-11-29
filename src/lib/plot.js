@@ -1,5 +1,7 @@
+var Plotly = require('plotly.js-dist');
+
 function plot(elem, dates, originalPrices, currentPrices) {
-  trace1 = {
+  var trace1 = {
     x: dates,
     y: originalPrices,
     error_x: {
@@ -20,7 +22,8 @@ function plot(elem, dates, originalPrices, currentPrices) {
     xsrc: 'masa331:0:987919',
     ysrc: 'masa331:0:bdffc8'
   };
-  trace2 = {
+
+  var trace2 = {
     x: dates,
     y: currentPrices,
     marker: {color: 'rgb(255, 0, 4)'},
@@ -30,8 +33,10 @@ function plot(elem, dates, originalPrices, currentPrices) {
     xsrc: 'masa331:0:987919',
     ysrc: 'masa331:0:8f76fa'
   };
-  data = [trace1, trace2];
-  layout = {
+
+  var data = [trace1, trace2];
+
+  var layout = {
     autosize: true,
     legend: {
       x: 0,
@@ -73,4 +78,4 @@ function plot(elem, dates, originalPrices, currentPrices) {
   });
 }
 
-
+export default plot
