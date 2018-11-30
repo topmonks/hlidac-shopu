@@ -3,6 +3,23 @@
   "version": "1.0",
   "description": "Hlídač shopů",
   "manifest_version": 2,
+  "icons": {
+    "256": "icons/icon-hlidac-256.png",
+    "128": "icons/icon-hlidac-128.png",
+    "64": "icons/icon-hlidac-64.png",
+    "32": "icons/icon-hlidac-32.png",
+    "16": "icons/icon-hlidac-16.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "256": "icons/icon-hlidac-256.png",
+      "128": "icons/icon-hlidac-128.png",
+      "64": "icons/icon-hlidac-64.png",
+      "32": "icons/icon-hlidac-32.png",
+      "16": "icons/icon-hlidac-16.png"
+    },
+    "default_title": "Hlídač Shopů"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.alza.cz/*"],
