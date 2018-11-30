@@ -10,6 +10,6 @@ dataStore.getAlzaData(id)
     var styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
     var markup = chartWrapper(styles);
 
-    $("#tabs").before(markup);
+    $("#pricec").after(markup);
     plot("pricesChart", ...data);
   });
