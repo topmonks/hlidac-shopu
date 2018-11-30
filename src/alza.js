@@ -3,13 +3,17 @@ import plot from 'lib/plot'
 import dataStore from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-var id = 'blah';
+export default function alza() {
+  console.log(window.location.href);
 
-dataStore.getAlzaData(id)
-  .then(function (data) {
-    var styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
-    var markup = chartWrapper(styles);
+  dataStore.fetchData(window.location.href)
+    .then(function (data) {
+      var styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
+      var markup = chartWrapper(styles);
 
-    $("#pricec").after(markup);
-    plot("pricesChart", ...data);
-  });
+      const elem = $("#pricec");
+      if (!elem) return;
+      elem.after(markup);
+      plot("pricesChart", ...data);
+    });
+}

@@ -1,4 +1,7 @@
 dist/*
+!dist/alza.js
+!dist/mall.js
+!dist/czc.js
 !dist/manifest.json
 !dist/icons/
 node_modules/

@@ -1,13 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: {
-    alza: './src/alza.js',
-    mall: './src/mall.js',
-    czc: './src/czc.js',
-  },
+  entry: "main.js",
   output: {
-    filename: '[name].js',
+    filename: 'main.bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {

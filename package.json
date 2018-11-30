@@ -4,7 +4,8 @@
   "description": "Hlídač Shopů",
   "private": true,
   "scripts": {
-    "build": "npx webpack --mode=production",
+    "build": "npx webpack --mode=production --progress",
+    "build:dev": "npx webpack --mode=development --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

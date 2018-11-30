@@ -3,12 +3,14 @@ import plot from 'lib/plot'
 import dataStore from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-var id = 'blah';
+export default function mall() {
+  dataStore.fetchData(window.location.href)
+    .then(function (data) {
+      var markup = chartWrapper();
 
-dataStore.getMallData(id)
-  .then(function (data) {
-    var markup = chartWrapper();
-
-    $(".price-wrapper").after(markup);
-    plot("pricesChart", ...data);
-  });
+      const elem = $(".price-wrapper");
+      if (!elem) return;
+      elem.after(markup);
+      plot("pricesChart", ...data);
+    });
+}

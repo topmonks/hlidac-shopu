@@ -20,22 +20,28 @@
     },
     "default_title": "Hlídač Shopů"
   },
+  "permissions": [
+    "https://vf1kcli7jg.execute-api.eu-central-1.amazonaws.com/"
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.alza.cz/*"],
       "js": [
+        "main.bundle.js",
         "alza.js"
       ]
     },
     {
       "matches": ["https://www.mall.cz/*"],
       "js": [
+        "main.bundle.js",
         "mall.js"
       ]
     },
     {
       "matches": ["https://www.czc.cz/*"],
       "js": [
+        "main.bundle.js",
         "czc.js"
       ]
     }

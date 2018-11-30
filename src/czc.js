@@ -3,12 +3,14 @@ import plot from 'lib/plot'
 import dataStore from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-var id = 'blah';
+export default function czc() {
+  dataStore.fetchData(window.location.href)
+    .then(function (data) {
+      var markup = chartWrapper();
 
-dataStore.getCzcData(id)
-  .then(function (data) {
-    var markup = chartWrapper();
-
-    $("#product-price-and-delivery-section").after(markup);
-    plot("pricesChart", ...data);
-  });
+      const elem = $("#product-price-and-delivery-section");
+      if (!elem) return;
+      elem.after(markup);
+      plot("pricesChart", ...data);
+    });
+}
