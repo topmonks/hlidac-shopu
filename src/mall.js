@@ -5,7 +5,7 @@ import chartWrapper from 'lib/utils'
 
 export default function mall() {
   const elem = $(".price-wrapper");
-  if (!elem) return;
+  if (elem.length === 0) return;
   const markup = chartWrapper();
   elem.after(markup);
 

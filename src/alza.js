@@ -7,7 +7,7 @@ export default function alza() {
   console.log(window.location.href);
 
   const elem = $("#pricec");
-  if (!elem) return;
+  if (elem.length === 0) return;
   const styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
   const markup = chartWrapper(styles);
   elem.after(markup);

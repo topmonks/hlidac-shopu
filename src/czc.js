@@ -5,7 +5,7 @@ import chartWrapper from 'lib/utils'
 
 export default function czc() {
   const elem = $("#product-price-and-delivery-section");
-  if (!elem) return;
+  if (elem.length === 0) return;
   const markup = chartWrapper();
   elem.after(markup);
 
