@@ -2,7 +2,7 @@ var dateFormat = require('dateformat');
 
 var dataStore = {
   async fetchData(url) {
-    const dataUrl = "https://vf1kcli7jg.execute-api.eu-central-1.amazonaws.com/default/fetchData?data=" + encodeURIComponent(url);
+    const dataUrl = "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData?data=" + encodeURIComponent(url);
     console.log(dataUrl);
 
     const ary = await fetch(dataUrl).then(response => {

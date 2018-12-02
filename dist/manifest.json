@@ -21,7 +21,7 @@
     "default_title": "Hlídač Shopů"
   },
   "permissions": [
-    "https://vf1kcli7jg.execute-api.eu-central-1.amazonaws.com/"
+    "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData"
   ],
   "content_scripts": [
     {
