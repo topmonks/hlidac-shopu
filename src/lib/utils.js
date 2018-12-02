@@ -1,8 +1,15 @@
 function chartWrapper(styles) {
-  var basicStyles = 'border: 1px solid lightgray; margin: 5px; padding: 5px;'
-  var resultStyles = styles || basicStyles;
+  const basicStyles = 'border: 1px solid lightgray; margin: 5px; padding: 5px;'
+  const resultStyles = styles || basicStyles;
 
-  var wrapperMarkup = '<div id="hlidacShopu" style="' + resultStyles + '"><div id="pricesChart"></div><p>HlídačShopů by <a href="https://www.apify.com/">Apify</a>, <a href="https://www.keboola.com">Keboola</a>, and <a href="https://www.topmonks.com/">TopMonks</a></p></div>';
+  const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
+  <div id="pricesChart"></div>
+    <small style="color:#d2d2d2">HlídačShopů by
+      <a href="https://www.apify.com/" style="color:#a6a6a6">Apify</a>,
+      <a href="https://www.keboola.com" style="color:#a6a6a6">Keboola</a>,
+      and <a href="https://www.topmonks.com/" style="color:#a6a6a6">TopMonks</a>
+    </small>
+  </div>`;
   return wrapperMarkup;
 }
 

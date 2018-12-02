@@ -36,7 +36,8 @@
       "js": [
         "main.bundle.js",
         "mall.js"
-      ]
+      ],
+      "run_at": "document_end"
     },
     {
       "matches": ["https://www.czc.cz/*"],
