@@ -1,8 +1,5 @@
-dist/*
-!dist/alza.js
-!dist/mall.js
-!dist/czc.js
-!dist/manifest.json
-!dist/icons/
+dist/main.bundle.js
 node_modules/
 .DS_Store
+*.crx
+*.pem

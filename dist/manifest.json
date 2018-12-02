@@ -18,7 +18,8 @@
       "32": "icons/icon-hlidac-32.png",
       "16": "icons/icon-hlidac-16.png"
     },
-    "default_title": "Hlídač Shopů"
+    "default_title": "Hlídač Shopů",
+    "default_popup": "about.html"
   },
   "permissions": [
     "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData"
