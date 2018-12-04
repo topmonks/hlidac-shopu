@@ -17,7 +17,7 @@ function plot(elem, dates, originalPrices, currentPrices) {
     line: {width: 1},
     marker: {color: 'rgb(17, 0, 255)'},
     mode: 'markers+lines',
-    name: 'Udaná původní cena',
+    name: 'Uváděná původní cena',
     type: 'scatter',
     xsrc: 'masa331:0:987919',
     ysrc: 'masa331:0:bdffc8'
@@ -45,7 +45,7 @@ function plot(elem, dates, originalPrices, currentPrices) {
       xanchor: 'left',
       yanchor: 'auto'
     },
-    title: 'Vývoj skutečné a udané původní ceny',
+    title: 'Vývoj skutečné a uváděné původní ceny',
     xaxis: {
       automargin: true,
       autorange: true,
