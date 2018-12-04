@@ -3,7 +3,7 @@ import plot from 'lib/plot'
 import dataStore from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-async function waitForImageId() {
+async function waitForInfo() {
   return new Promise((resolve, reject) => {
     const elt = document.createElement("script");
     elt.innerHTML = 'window.postMessage({ type: "ITEM_ID", text: window.CONFIGURATION.variant.imageId }, "*");';
@@ -28,9 +28,10 @@ export default async function mall() {
   const markup = chartWrapper();
   elem.after(markup);
 
-  const imageId = await waitForImageId();
+  const imageId = await waitForInfo();
+  const title = $('h1[itemprop="name"]').text().trim();
 
-  dataStore.fetchData(window.location.href, imageId)
+  dataStore.fetchData(window.location.href, imageId, title)
     .then(function (data) {
       plot("pricesChart", ...data);
     });

@@ -11,8 +11,9 @@ export default function alza() {
   elem.after(markup);
 
   const itemId = ($('#deepLinkUrl').attr('content').match(/\d+$/) || [])[0];
+  const title = $('h1[itemprop="name"]').text().trim();
 
-  dataStore.fetchData(window.location.href, itemId)
+  dataStore.fetchData(window.location.href, itemId, title)
     .then(function (data) {
       plot("pricesChart", ...data);
     });

@@ -10,8 +10,9 @@ export default function czc() {
   elem.after(markup);
 
   const itemId = $('span[itemprop="sku"]').text().replace('a', '');
+  const title = $('h1[title~="Název"]').clone().children().remove().end().text().trim();
 
-  dataStore.fetchData(window.location.href, itemId)
+  dataStore.fetchData(window.location.href, itemId, title)
     .then(function (data) {
       plot("pricesChart", ...data);
     });
