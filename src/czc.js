@@ -1,19 +1,19 @@
-import $ from 'jquery'
 import plot from 'lib/plot'
-import dataStore from 'lib/dataStore'
+import { fetchData } from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-export default function czc() {
+const $ = document.querySelector.bind(document);
+
+export default async function czc() {
   const elem = $("#product-price-and-delivery-section");
-  if (elem.length === 0) return;
+  if (!elem) return;
   const markup = chartWrapper();
-  elem.after(markup);
+  elem.insertAdjacentHTML("afterend", markup);
 
-  const itemId = $('span[itemprop="sku"]').text().replace('a', '');
-  const title = $('h1[title~="Název"]').clone().children().remove().end().text().trim();
+  const itemId = $('span[itemprop="sku"]').innerText.replace('a', '');
+  const title = $('h1[title~="Název"]').getAttribute("aria-label").trim();
+  const chartElem = $('#hlidacShopu-chart');
 
-  dataStore.fetchData(window.location.href, itemId, title)
-    .then(function (data) {
-      plot("pricesChart", ...data);
-    });
+  const data = await fetchData(window.location.href, itemId, title)
+  plot(chartElem, data);
 }

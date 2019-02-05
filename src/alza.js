@@ -1,20 +1,20 @@
-import $ from 'jquery'
 import plot from 'lib/plot'
-import dataStore from 'lib/dataStore'
+import { fetchData } from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-export default function alza() {
+const $ = document.querySelector.bind(document);
+
+export default async function alza() {
   const elem = $("#pricec");
-  if (elem.length === 0) return;
+  if (!elem) return;
   const styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
   const markup = chartWrapper(styles);
-  elem.after(markup);
+  elem.insertAdjacentHTML("afterend", markup);
 
-  const itemId = ($('#deepLinkUrl').attr('content').match(/\d+$/) || [])[0];
-  const title = $('h1[itemprop="name"]').text().trim();
+  const chartElem = $('#hlidacShopu-chart');
+  const itemId = ($('#deepLinkUrl').getAttribute('content').match(/\d+$/) || [])[0];
+  const title = $('h1[itemprop="name"]').innerText.trim();
 
-  dataStore.fetchData(window.location.href, itemId, title)
-    .then(function (data) {
-      plot("pricesChart", ...data);
-    });
+  const data = await fetchData(window.location.href, itemId, title)
+  plot(chartElem, data);
 }

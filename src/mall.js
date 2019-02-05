@@ -1,12 +1,13 @@
-import $ from 'jquery'
 import plot from 'lib/plot'
-import dataStore from 'lib/dataStore'
+import { fetchData } from 'lib/dataStore'
 import chartWrapper from 'lib/utils'
 
-async function waitForInfo() {
+const $ = document.querySelector.bind(document);
+
+function waitForInfo() {
   return new Promise((resolve, reject) => {
     const elt = document.createElement("script");
-    elt.innerHTML = 'window.postMessage({ type: "ITEM_ID", text: window.CONFIGURATION.variant.imageId }, "*");';
+    elt.innerHTML = 'window.postMessage({ type: "ITEM_ID", text: window.CONFIGURATION.variant.id }, "*");';
     document.head.appendChild(elt);
     const timeout = setTimeout(() => reject(new Error("No item id")), 500);
     window.addEventListener("message", function(event) {
@@ -24,15 +25,14 @@ async function waitForInfo() {
 
 export default async function mall() {
   const elem = $(".price-wrapper");
-  if (elem.length === 0) return;
+  if (!elem) return;
   const markup = chartWrapper();
-  elem.after(markup);
+  elem.insertAdjacentHTML("afterend", markup);
 
-  const imageId = await waitForInfo();
-  const title = $('h1[itemprop="name"]').text().trim();
+  const productId = $('span[data-sel="catalog-number"]').innerText.trim();
+  const title = $('h1[itemprop="name"]').innerText.trim();
+  const chartElem = $("#hlidacShopu-chart");
 
-  dataStore.fetchData(window.location.href, imageId, title)
-    .then(function (data) {
-      plot("pricesChart", ...data);
-    });
+  const data = await fetchData(window.location.href, productId, title)
+  plot(chartElem, data);
 }

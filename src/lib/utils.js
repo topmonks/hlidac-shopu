@@ -3,7 +3,7 @@ function chartWrapper(styles) {
   const resultStyles = styles || basicStyles;
 
   const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
-  <div id="pricesChart"></div>
+    <canvas id="hlidacShopu-chart" height="400" width="538"></canvas>
     <small style="color:#d2d2d2">HlídačShopů by
       <a href="https://www.apify.com/" style="color:#a6a6a6">Apify</a>,
       <a href="https://www.keboola.com" style="color:#a6a6a6">Keboola</a>,
