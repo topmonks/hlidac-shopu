@@ -1,6 +1,6 @@
 {
   "name": "Hlídač Shopů",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Rozšíření zobrazuje historická data pro největší české eshopy",
   "manifest_version": 2,
   "icons": {
@@ -28,14 +28,18 @@
     {
       "matches": ["https://www.alza.cz/*"],
       "js": [
-        "main.bundle.js",
+        "lib/utils.js",
+        "lib/Chart.js",
+        "lib/plot.js",
         "alza.js"
       ]
     },
     {
       "matches": ["https://www.mall.cz/*"],
       "js": [
-        "main.bundle.js",
+        "lib/utils.js",
+        "lib/Chart.js",
+        "lib/plot.js",
         "mall.js"
       ],
       "run_at": "document_end"
@@ -43,7 +47,9 @@
     {
       "matches": ["https://www.czc.cz/*"],
       "js": [
-        "main.bundle.js",
+        "lib/utils.js",
+        "lib/Chart.js",
+        "lib/plot.js",
         "czc.js"
       ]
     }

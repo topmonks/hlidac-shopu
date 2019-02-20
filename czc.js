@@ -1,10 +1,6 @@
-import plot from 'lib/plot'
-import { fetchData } from 'lib/dataStore'
-import chartWrapper from 'lib/utils'
+(async function () {
+  const $ = document.querySelector.bind(document);
 
-const $ = document.querySelector.bind(document);
-
-export default async function czc() {
   const elem = $("#product-price-and-delivery-section");
   if (!elem) return;
   const markup = chartWrapper();
@@ -16,4 +12,4 @@ export default async function czc() {
 
   const data = await fetchData(window.location.href, itemId, title)
   plot(chartElem, data);
-}
+})();

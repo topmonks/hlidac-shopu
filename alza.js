@@ -1,10 +1,6 @@
-import plot from 'lib/plot'
-import { fetchData } from 'lib/dataStore'
-import chartWrapper from 'lib/utils'
+(async function() {
+  const $ = document.querySelector.bind(document);
 
-const $ = document.querySelector.bind(document);
-
-export default async function alza() {
   const elem = $("#pricec");
   if (!elem) return;
   const styles = 'border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;';
@@ -17,4 +13,4 @@ export default async function alza() {
 
   const data = await fetchData(window.location.href, itemId, title)
   plot(chartElem, data);
-}
+})();
