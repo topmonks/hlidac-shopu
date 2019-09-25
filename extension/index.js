@@ -1,5 +1,7 @@
+/* global plot */
+
 function chartWrapper(styles) {
-  const basicStyles = 'border: 1px solid lightgray; margin: 5px; padding: 5px;'
+  const basicStyles = "border: 1px solid lightgray; margin: 5px; padding: 5px;";
   const resultStyles = styles || basicStyles;
 
   const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
@@ -24,3 +26,35 @@ function fetchData(url, itemId, title) {
     return response.json();
   });
 }
+
+/**
+ * Get shop name from 2nd level domain
+ *
+ * www.alza.cz => alza
+ */
+function getShopName(href) {
+  const url = new URL(href);
+  const domainParts = url.host.split(".");
+  domainParts.pop();
+  return domainParts.pop();
+}
+
+async function main() {
+  const shopName = getShopName(window.location.href);
+  const shop = window.shops[shopName];
+  if (!shop) {
+    console.error("No shop found");
+    return;
+  }
+  const info = shop.getInfo();
+  if (!info) {
+    // no detail page
+    return;
+  }
+  const data = await fetchData(window.location.href, info.itemId, info.title);
+  shop.insertChartElement(styles => chartWrapper(styles));
+  const plotElem = document.querySelector("#hlidacShopu-chart");
+  plot(plotElem, data);
+}
+
+main().catch(err => console.error(err));

@@ -26,32 +26,18 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://www.alza.cz/*"],
+      "matches": [
+        "https://www.mall.cz/*",
+        "https://www.alza.cz/*",
+        "https://www.czc.cz/*"
+      ],
       "js": [
-        "lib/utils.js",
-        "lib/Chart.js",
+        "lib/Chart.bundle.min.js",
         "lib/plot.js",
-        "alza.js"
-      ]
-    },
-    {
-      "matches": ["https://www.mall.cz/*"],
-      "js": [
-        "lib/utils.js",
-        "lib/Chart.js",
-        "lib/plot.js",
-        "mall.js"
+        "shops/alza.js",
+        "index.js"
       ],
       "run_at": "document_end"
-    },
-    {
-      "matches": ["https://www.czc.cz/*"],
-      "js": [
-        "lib/utils.js",
-        "lib/Chart.js",
-        "lib/plot.js",
-        "czc.js"
-      ]
     }
   ]
 }
