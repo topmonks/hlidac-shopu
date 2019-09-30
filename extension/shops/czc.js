@@ -1,19 +1,20 @@
 // const $ = document.querySelector.bind(document);
 
 window.shops = window.shops || {};
-window.shops["mall"] = {
-  getInfo() {
-    const elem = $(".price-wrapper");
-    if (!elem) return;
+window.shops["czc"] = {
+  name: "czc",
 
-    const itemId = $('span[data-sel="catalog-number"]').innerText.trim();
-    const title = $('h1[itemprop="name"]').innerText.trim();
+  getInfo() {
+    const elem = $(".product-detail");
+    if (!elem) return;
+    const itemId = elem.dataset.productCode;
+    const title = $('h1').getAttribute('title');
 
     return { itemId, title };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".price-wrapper");
+    const elem = $("#product-price-and-delivery-section");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

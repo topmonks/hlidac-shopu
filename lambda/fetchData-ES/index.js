@@ -10,7 +10,7 @@ function parseUrl(params) {
       if (params.itemId) {
         return ['alza', params.itemId];
       }
-      
+
       const match = url.pathname.match(/d(\d+)\./);
       if (match && match[1]) {
         return ["alza", match[1]];
@@ -26,12 +26,15 @@ function parseUrl(params) {
       if (!params.itemId) {
         return ['czc', params.itemId];
       }
-      
+
       const match = url.pathname.match(/\/(\d+)a?\//);
       if (match && match[1]) {
         return ['czc', match[1]];
       }
       throw new Error(`Cannot find itemID from ${params}`);
+    }
+    case 'www.mironet.cz': {
+      return ['mironet', params.itemId];
     }
   }
 }
@@ -43,11 +46,10 @@ exports.handler = async(event) => {
 
   console.log(resp);
   const ary = resp.hits.hits.map(row => row['_source']);
-  
+
   const response = {
     statusCode: 200,
     body: JSON.stringify(ary),
   };
   return response;
 };
-
