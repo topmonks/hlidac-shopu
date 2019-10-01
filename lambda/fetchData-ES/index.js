@@ -36,6 +36,9 @@ function parseUrl(params) {
     case 'www.mironet.cz': {
       return ['mironet', params.itemId];
     }
+    case 'www.datart.cz': {
+      return ['datart', params.itemId];
+    }
   }
 }
 
