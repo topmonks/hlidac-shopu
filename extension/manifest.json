@@ -4,22 +4,24 @@
   "description": "Rozšíření zobrazuje historická data pro největší české eshopy",
   "manifest_version": 2,
   "icons": {
-    "256": "icons/icon-hlidac-256.png",
-    "128": "icons/icon-hlidac-128.png",
-    "64": "icons/icon-hlidac-64.png",
-    "32": "icons/icon-hlidac-32.png",
-    "16": "icons/icon-hlidac-16.png"
+    "256": "icons/favicon-256x256.png",
+    "128": "icons/favicon-128x128.png",
+    "64": "icons/favicon-64x64.png",
+    "48": "icons/favicon-48x48.png",
+    "32": "icons/favicon-32x32.png",
+    "16": "icons/favicon-16x16.png"
   },
   "browser_action": {
     "default_icon": {
-      "256": "icons/icon-hlidac-256.png",
-      "128": "icons/icon-hlidac-128.png",
-      "64": "icons/icon-hlidac-64.png",
-      "32": "icons/icon-hlidac-32.png",
-      "16": "icons/icon-hlidac-16.png"
+      "256": "icons/favicon-256x256.png",
+      "128": "icons/favicon-128x128.png",
+      "64": "icons/favicon-64x64.png",
+      "48": "icons/favicon-48x48.png",
+      "32": "icons/favicon-32x32.png",
+      "16": "icons/favicon-16x16.png"
     },
     "default_title": "Hlídač Shopů",
-    "default_popup": "about.html"
+    "default_popup": "popup/about.html"
   },
   "permissions": [
     "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData"

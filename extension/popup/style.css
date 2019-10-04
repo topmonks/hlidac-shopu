@@ -1,0 +1,71 @@
+body {
+    width: 410px;
+    font-family: 'Source Sans Pro', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url("background.png");
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+h1 {
+    padding: 20px 29px;
+    margin: 0;
+    position: relative;
+}
+
+h1 img {
+    width: 240px;
+    height: 38px;
+}
+
+h1 > small {
+    font-size: 10px;
+    color: #909dae;
+    position: absolute;
+    left: 58%;
+    top: 13px;
+    padding: 2px 7px;
+    background-color: #fff;
+    border-radius: 23%;
+}
+
+.c {
+    margin-top: 26px;
+    padding: 0 20px;
+}
+
+.c p {
+    font-size: 16px;
+    line-height: 20px;
+    margin: 5px;
+}
+
+.c p.podporovane {
+    margin-bottom: 2px;
+}
+.c p.podporovane-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.c p.podporovane-list span {
+    width: 33%;
+}
+
+.c p.powered {
+    color: #939393;
+    margin: 15px 0;
+}
+.c p.powered a {
+    color: #5C62CD;
+    font-weight: bold;
+}
+.c p span {
+    width: 33%;
+}
+
+ul {
+    padding: 0 19px;
+    margin: 0;
+}

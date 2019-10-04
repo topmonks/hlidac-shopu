@@ -6,10 +6,10 @@ function chartWrapper(styles) {
 
   const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
     <canvas id="hlidacShopu-chart" height="400" width="538"></canvas>
-    <small style="color:#d2d2d2">HlídačShopů by
-      <a href="https://www.apify.com/" style="color:#a6a6a6">Apify</a>,
-      <a href="https://www.keboola.com" style="color:#a6a6a6">Keboola</a>,
-      and <a href="https://www.topmonks.com/" style="color:#a6a6a6">TopMonks</a>
+    <small style="color:#939393">HlídačShopů by
+      <a href="https://www.apify.com/" style="font-weight: bold; color:#5C62CD">Apify</a>,
+      <a href="https://www.keboola.com" style="font-weight: bold; color:#5C62CD">Keboola</a>,
+      and <a href="https://www.topmonks.com/" style="font-weight: bold; color:#5C62CD">TopMonks</a>
     </small>
   </div>`;
   return wrapperMarkup;
