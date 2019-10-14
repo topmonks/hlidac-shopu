@@ -15,9 +15,9 @@ function chartWrapper(styles) {
   return wrapperMarkup;
 }
 
-function fetchData(url, itemId, title) {
+function fetchData(url, itemId, title, dataType) {
   const URL_BASE = "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData";
-  const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&title=" + encodeURIComponent(title);
+  const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&dataType=" + dataType + "&title=" + encodeURIComponent(title);
 
   return fetch(dataUrl).then(response => {
     if (!response.ok) {
@@ -51,7 +51,7 @@ async function main() {
     // no detail page
     return;
   }
-  const data = await fetchData(window.location.href, info.itemId, info.title);
+  const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
   shop.insertChartElement(styles => chartWrapper(styles));
   const plotElem = document.querySelector("#hlidacShopu-chart");
   plot(plotElem, data);

@@ -37,7 +37,9 @@
         "https://nakup.itesco.cz/*",
         "https://www.rohlik.cz/*",
         "https://www.notino.cz/*",
-        "https://www.tsbohemia.cz/*"
+        "https://www.tsbohemia.cz/*",
+        "https://www.mountfield.cz/*",
+        "https://www.lekarna.cz/*"
       ],
       "js": [
         "lib/Chart.bundle.min.js",
@@ -51,6 +53,8 @@
         "shops/rohlik.js",
         "shops/notino.js",
         "shops/tsbohemia.js",
+        "shops/mountfield.js",
+        "shops/lekarna.js",
         "index.js"
       ],
       "run_at": "document_end"

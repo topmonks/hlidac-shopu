@@ -1,20 +1,20 @@
 // const $ = document.querySelector.bind(document);
 
 window.shops = window.shops || {};
-window.shops["czc"] = {
-  name: "czc",
+window.shops["mountfield"] = {
+  name: "mountfield",
 
   getInfo() {
-    const elem = $(".product-detail");
+    const elem = $(".productDetail");
     if (!elem) return;
-    const itemId = elem.dataset.productCode;
-    const title = $('h1').getAttribute('title');
+    const itemId = $('.j-barcode-text').textContent.trim();
+    const title = $('h1').textContent.trim();
 
     return { itemId, title, dataType: 'dynamo' };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#product-price-and-delivery-section");
+    const elem = $(".productDetailPriceTable");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

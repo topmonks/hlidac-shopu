@@ -20,7 +20,7 @@ Chart.plugins.register({
 function plot(elem, prices) {
   const min = Math.min(...prices.map(p => p["currentPrice"]));
   const max = Math.max(...prices.map(p => p["currentPrice"]));
-
+console.log(prices);
   const ctx = elem.getContext("2d");
   return new Chart(ctx, {
     type: "line",
