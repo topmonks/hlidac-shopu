@@ -1,16 +1,41 @@
 /* global plot */
 
+function _objToCss(obj) {
+  return Object.entries(obj).map(([key, value]) => `${key}:${value};`).join("");
+}
+
 function chartWrapper(styles) {
-  const basicStyles = "border: 1px solid lightgray; margin: 5px; padding: 5px;";
-  const resultStyles = styles || basicStyles;
+  const basicStyles = {
+    "background-color": "#fff",
+    border: "1px solid #E8E8E8",
+    "border-radius": "18px",
+    margin: "5px",
+    padding: "5px",
+  };
+  const resultStyles = _objToCss(Object.assign({}, basicStyles, styles));
 
   const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
+    <div style="display:flex;margin:23px 32px;align-items:center">
+      <div style="padding-top:4px">
+        ${GRAPH_ICON}
+      </div>
+      <div style="display:flex;flex-direction:column;margin-left:20px">
+        <div style="line-height:20px;font-size:17px">Vývoj skutečné a uváděné původní ceny</div>
+        <div style="display:flex">
+          <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px;margin-top:2px"></div>
+          <span style="color:#939393;font-size:15px">Uváděná původní cena</span>
+          <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin:0 5px 0 8px;margin-top:2px"></div>
+          <span style="color:#939393;font-size:15px">Skutečná cena</span>
+        </div>
+      </div>
+    </div>
     <canvas id="hlidacShopu-chart" height="400" width="538"></canvas>
-    <small style="color:#939393">HlídačShopů by
-      <a href="https://www.apify.com/" style="font-weight: bold; color:#5C62CD">Apify</a>,
-      <a href="https://www.keboola.com" style="font-weight: bold; color:#5C62CD">Keboola</a>,
-      and <a href="https://www.topmonks.com/" style="font-weight: bold; color:#5C62CD">TopMonks</a>
-    </small>
+    <div style="font-size:10px;color:#BEBEBE;margin-bottom:15px;margin-right:33px;text-align:right">
+      HlídačShopů by
+      <a href="https://www.apify.com/" style="font-weight: bold; color:#757575">Apify</a>,
+      <a href="https://www.keboola.com" style="font-weight: bold; color:#757575">Keboola</a>,
+      and <a href="https://www.topmonks.com/" style="font-weight: bold; color:#757575">TopMonks</a>
+    </div>
   </div>`;
   return wrapperMarkup;
 }

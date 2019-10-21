@@ -1,7 +1,7 @@
 module.exports = {
   "extends": "eslint:recommended",
   "parserOptions": {
-    "sourceType": "module",
+    "sourceType": "script",
     "ecmaVersion": 2018,
   },
   "env": {
@@ -12,5 +12,6 @@ module.exports = {
   rules: {
     semi: "error",
     quotes: ["error", "double", { "avoidEscape": true }],
+    no-unused-vars: ["error", { "argsIgnorePattern": "^_" }],
   }
 };

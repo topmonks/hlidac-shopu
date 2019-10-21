@@ -2,10 +2,8 @@ const $ = document.querySelector.bind(document);
 
 window.shops = window.shops || {};
 window.shops["alza"] = {
-  name: "alza",
-
   getInfo() {
-    const elem = $("#pricec");
+    const elem = $(".priceDetail table#prices");
     if (!elem) return;
 
     const itemId = ($("#deepLinkUrl").getAttribute("content").match(/\d+$/) || [])[0];
@@ -15,11 +13,10 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#pricec");
+    const elem = $(".priceDetail table#prices");
     if (!elem) throw new Error("Element to add chart not found");
-    const styles = "border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;";
-    const markup = chartMarkup(styles);
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   },
 };
