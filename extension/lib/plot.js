@@ -83,6 +83,16 @@ function plot(canvas, prices) {
         }
       },
       scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            unit: 'day',
+            stepSize: '15',
+            displayFormats: {
+              day: 'M/D/Y'
+            }
+          },
+        }],
         yAxes: [{
           ticks: {
             suggestedMax: max,
