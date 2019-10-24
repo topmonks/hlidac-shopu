@@ -1,5 +1,9 @@
 /* global Chart */
 
+function formatDate() {
+
+}
+
 Chart.plugins.register({
   afterDraw: function(chart) {
     if (chart.data.datasets.every(set => set.data.length == 0)) {
@@ -23,7 +27,6 @@ Chart.plugins.register({
 function plot(canvas, prices) {
   const min = Math.min(...prices.map(p => p["currentPrice"]));
   const max = Math.max(...prices.map(p => p["currentPrice"]));
-  console.log(prices);
   const ctx = canvas.getContext("2d");
   const blueGradient  = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
   blueGradient.addColorStop(0, "rgba(92, 98, 205, 0.15)");
@@ -36,7 +39,7 @@ function plot(canvas, prices) {
   return new Chart(ctx, {
     type: "line",
     data: {
-      labels: prices.map(p => (new Date(p.date)).toLocaleDateString()),
+      labels: prices.map(p => p.date),
       datasets: [
         {
           label: "Uváděná původní cena",
@@ -74,11 +77,25 @@ function plot(canvas, prices) {
         mode: "index",
         intersect: false,
         callbacks: {
+          title(item, data) {
+            const date = data.labels[item[0].index];
+            return date.toLocaleDateString(undefined, { day: "numeric", month: "numeric", year: "numeric" });
+          },
           label(item, _data) {
             if (item.datasetIndex === 0) {
               return `Původní: ${item.yLabel.toLocaleString()}`;
             }
             return `Skutečná: ${item.yLabel.toLocaleString()}`;
+          },
+          labelColor(item, chart) {
+            const blue = "#FF8787";
+            const red = "#5C62CD";
+            const color = item.datasetIndex === 1 ? blue : red;
+
+            return {
+              borderColor: color,
+              backgroundColor: color,
+            };
           },
         }
       },
@@ -89,7 +106,7 @@ function plot(canvas, prices) {
             unit: 'day',
             stepSize: '15',
             displayFormats: {
-              day: 'M/D/Y'
+              day: 'D. M. YYYY'
             }
           },
         }],

@@ -77,6 +77,9 @@ async function main() {
     return;
   }
   const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
+  data.forEach(item => {
+    item.date = new Date(item.date);
+  });
   shop.insertChartElement(styles => chartWrapper(styles));
   const plotElem = document.querySelector("#hlidacShopu-chart");
   plot(plotElem, data);
