@@ -1,4 +1,4 @@
-/* global plot */
+/* global plot, GRAPH_ICON */
 
 function _objToCss(obj) {
   return Object.entries(obj).map(([key, value]) => `${key}:${value};`).join("");
@@ -82,7 +82,13 @@ async function main() {
   });
   shop.insertChartElement(styles => chartWrapper(styles));
   const plotElem = document.querySelector("#hlidacShopu-chart");
-  plot(plotElem, data);
+  // data.splice(10, 0, {date: new Date("2019-01-08"), currentPrice: null, originalPrice: null });
+  // console.log(data);
+  const dataset = {
+    originalPrice: data.map(item => ({ x: item.date, y: item.originalPrice })),
+    currentPrice: data.map(item => ({ x: item.date, y: item.currentPrice })),
+  };
+  plot(plotElem, dataset);
 }
 
 main().catch(err => console.error(err));

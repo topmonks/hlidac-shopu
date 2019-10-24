@@ -1,9 +1,5 @@
 /* global Chart */
 
-function formatDate() {
-
-}
-
 Chart.plugins.register({
   afterDraw: function(chart) {
     if (chart.data.datasets.every(set => set.data.length == 0)) {
@@ -25,8 +21,9 @@ Chart.plugins.register({
 
 /* exported plot */
 function plot(canvas, prices) {
-  const min = Math.min(...prices.map(p => p["currentPrice"]));
-  const max = Math.max(...prices.map(p => p["currentPrice"]));
+  const min = Math.min(...prices.currentPrice.map(p => p.y));
+  const max = Math.max(...prices.currentPrice.map(p => p.y));
+  console.log(min, max);
   const ctx = canvas.getContext("2d");
   const blueGradient  = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
   blueGradient.addColorStop(0, "rgba(92, 98, 205, 0.15)");
@@ -39,7 +36,7 @@ function plot(canvas, prices) {
   return new Chart(ctx, {
     type: "line",
     data: {
-      labels: prices.map(p => p.date),
+      labels: prices.currentPrice.map(p => p.x),
       datasets: [
         {
           label: "Uváděná původní cena",
@@ -52,7 +49,7 @@ function plot(canvas, prices) {
           backgroundColor: blueGradient,
           pointRadius: 0,
           spanGaps: false,
-          data: prices.map(p => p["originalPrice"]).map(v => v > 0 ? v : null),
+          data: prices.originalPrice, // prices.map(p => p["originalPrice"]).map(v => v > 0 ? v : null),
         },
         {
           label: "Skutečná cena",
@@ -65,7 +62,7 @@ function plot(canvas, prices) {
           backgroundColor: redGradient,
           pointRadius: 0,
           spanGaps: false,
-          data: prices.map(p => p["currentPrice"]).map(v => v > 0 ? v : null),
+          data: prices.currentPrice, // prices.map(p => p["currentPrice"]).map(v => v > 0 ? v : null),
         }
       ]
     },
@@ -87,7 +84,7 @@ function plot(canvas, prices) {
             }
             return `Skutečná: ${item.yLabel.toLocaleString()}`;
           },
-          labelColor(item, chart) {
+          labelColor(item, _chart) {
             const blue = "#FF8787";
             const red = "#5C62CD";
             const color = item.datasetIndex === 1 ? blue : red;
@@ -101,12 +98,12 @@ function plot(canvas, prices) {
       },
       scales: {
         xAxes: [{
-          type: 'time',
+          type: "time",
           time: {
-            unit: 'day',
-            stepSize: '15',
+            unit: "day",
+            stepSize: "15",
             displayFormats: {
-              day: 'D. M. YYYY'
+              day: "D. M. YYYY"
             }
           },
         }],

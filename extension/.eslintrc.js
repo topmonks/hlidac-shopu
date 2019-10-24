@@ -12,6 +12,6 @@ module.exports = {
   rules: {
     semi: "error",
     quotes: ["error", "double", { "avoidEscape": true }],
-    no-unused-vars: ["error", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
   }
 };
