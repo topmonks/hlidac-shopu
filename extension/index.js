@@ -25,7 +25,7 @@ function chartWrapper(styles) {
           <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px;margin-top:2px"></div>
           <span style="color:#939393;font-size:15px">Uváděná původní cena</span>
           <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin:0 5px 0 8px;margin-top:2px"></div>
-          <span style="color:#939393;font-size:15px">Skutečná cena</span>
+          <span style="color:#939393;font-size:15px">Prodejní cena</span>
         </div>
       </div>
     </div>

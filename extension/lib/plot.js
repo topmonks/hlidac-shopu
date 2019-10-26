@@ -52,7 +52,7 @@ function plot(canvas, prices) {
           data: prices.originalPrice, // prices.map(p => p["originalPrice"]).map(v => v > 0 ? v : null),
         },
         {
-          label: "Skutečná cena",
+          label: "Prodejní cena",
           steppedLine: "after",
           borderColor: "#EB6F55",
           borderWidth: 3,
@@ -82,7 +82,7 @@ function plot(canvas, prices) {
             if (item.datasetIndex === 0) {
               return `Původní: ${item.yLabel.toLocaleString()}`;
             }
-            return `Skutečná: ${item.yLabel.toLocaleString()}`;
+            return `Prodejní: ${item.yLabel.toLocaleString()}`;
           },
           labelColor(item, _chart) {
             const blue = "#FF8787";
