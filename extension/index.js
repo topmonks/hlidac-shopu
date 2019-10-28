@@ -29,7 +29,7 @@ function chartWrapper(styles) {
         </div>
       </div>
     </div>
-    <canvas id="hlidacShopu-chart" height="400" width="538"></canvas>
+    <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
     <div style="font-size:10px;color:#BEBEBE;margin-bottom:15px;margin-right:33px;text-align:right">
       HlídačShopů by
       <a href="https://www.apify.com/" style="font-weight: bold; color:#757575">Apify</a>,
@@ -41,7 +41,7 @@ function chartWrapper(styles) {
 }
 
 function fetchData(url, itemId, title, dataType) {
-  const URL_BASE = "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData";
+  const URL_BASE = "https://api.hlidacshopu.cz/shop";
   const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&dataType=" + dataType + "&title=" + encodeURIComponent(title);
 
   return fetch(dataUrl).then(response => {
@@ -50,6 +50,14 @@ function fetchData(url, itemId, title, dataType) {
     }
     return response.json();
   });
+}
+
+function* daysBetween(start, end) {
+  const startDay = new Date(start.getYear(), start.getMonth(), start.getDay());
+  const endDay = new Date(end.getYear(), end.getMonth(), end.getDay());
+  for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
+    yield new Date(d.getTime());
+  }
 }
 
 /**
@@ -64,6 +72,28 @@ function getShopName(href) {
   return domainParts.pop();
 }
 
+function stretchData(data) {
+  const clearTime = d => new Date(d.getYear(), d.getMonth(), d.getDay());
+  const dataMap = new Map(data.map(i => [clearTime(i.date).getTime(), i]));
+  const final = [];
+  let lastDay = data[0];
+  for (const day of daysBetween(data[0].date, data[data.length - 1].date)) {
+    let item = dataMap.get(day.getTime());
+    if (!item) {
+      item = lastDay;
+    } else {
+      lastDay = item;
+    }
+    const { originalPrice, currentPrice } = item;
+    final.push({
+      date: day,
+      originalPrice,
+      currentPrice,
+    });
+  }
+  return final;
+}
+
 async function main() {
   const shopName = getShopName(window.location.href);
   const shop = window.shops[shopName];
@@ -76,18 +106,24 @@ async function main() {
     // no detail page
     return;
   }
-  const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
-  data.forEach(item => {
-    item.date = new Date(item.date);
-  });
+  const res = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
+  const data = res.map(item => ({
+    date: new Date(item.d),
+    originalPrice: item.o === "" ? null : item.o,
+    currentPrice: item.c === "" ? null : item.c,
+  }));
+
+  const final = stretchData(data);
+  console.log("final", final);
+
   shop.insertChartElement(styles => chartWrapper(styles));
-  const plotElem = document.querySelector("#hlidacShopu-chart");
-  // data.splice(10, 0, {date: new Date("2019-01-08"), currentPrice: null, originalPrice: null });
-  // console.log(data);
+  const plotElem = document.querySelector("#hlidacShopu2-chart");
+
   const dataset = {
-    originalPrice: data.map(item => ({ x: item.date, y: item.originalPrice })),
-    currentPrice: data.map(item => ({ x: item.date, y: item.currentPrice })),
+    originalPrice: final.map(item => ({ x: item.date, y: item.originalPrice })),
+    currentPrice: final.map(item => ({ x: item.date, y: item.currentPrice })),
   };
+  console.log(dataset);
   plot(plotElem, dataset);
 }
 
