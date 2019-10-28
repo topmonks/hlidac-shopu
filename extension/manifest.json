@@ -23,9 +23,6 @@
     "default_title": "Hlídač Shopů",
     "default_popup": "popup/about.html"
   },
-  "permissions": [
-    "https://tok179mvhf.execute-api.eu-central-1.amazonaws.com/default/fetchData"
-  ],
   "content_scripts": [
     {
       "matches": [
