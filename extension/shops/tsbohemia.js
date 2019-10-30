@@ -13,7 +13,7 @@ window.shops['tsbohemia'] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $('.sti_info');
+    const elem = $('.statusnote');
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

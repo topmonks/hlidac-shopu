@@ -22,7 +22,7 @@ window.shops['itesco'] = {
 
     const markup = chartMarkup();
     console.log(markup);
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("afterbegin", markup);
     return elem;
   },
 };
