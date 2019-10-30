@@ -7,7 +7,7 @@ window.shops['tsbohemia'] = {
     const elem = $("#stoitem_detail");
     if (!elem) return;
     const itemId = $('.sti_detail_head').dataset.stiid;
-    const title = $('h1');
+    const title = $('h1').textContent.trim();
 
     return { itemId, title};
   },

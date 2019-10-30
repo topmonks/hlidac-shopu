@@ -21,6 +21,7 @@ window.shops['itesco'] = {
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
+    console.log(markup);
     elem.insertAdjacentHTML("afterend", markup);
     return elem;
   },

@@ -11,6 +11,7 @@ function chartWrapper(styles) {
     "border-radius": "18px",
     margin: "5px",
     padding: "5px",
+    clear: "both",
   };
   const resultStyles = _objToCss(Object.assign({}, basicStyles, styles));
 
