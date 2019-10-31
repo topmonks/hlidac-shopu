@@ -100,7 +100,6 @@ function plot(canvas, prices) {
           type: "time",
           time: {
             unit: "day",
-            stepSize: "15",
             displayFormats: {
               day: "D. M. YYYY"
             }
@@ -110,8 +109,6 @@ function plot(canvas, prices) {
           ticks: {
             suggestedMax: max,
             suggestedMin: min,
-            // max,
-            // min
           }
         }]
       }
