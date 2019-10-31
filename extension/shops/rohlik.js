@@ -28,7 +28,7 @@ window.shops["rohlik"] = {
   getInfo() {
     const elem = $("#productDetail");
     if (!elem) return;
-    const itemId = $("button[data-product-id]").dataset.productId;
+    const itemId = $("#productDetail button[data-product-id]").dataset.productId;
     const title = document.title.split("-");
     const t = title[0].trim();
 

@@ -44,9 +44,9 @@ function chartWrapper(styles) {
   return wrapperMarkup;
 }
 
-function fetchData(url, itemId, title, dataType) {
+function fetchData(url, itemId, title) {
   const URL_BASE = "https://api.hlidacshopu.cz/shop";
-  const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&dataType=" + dataType + "&title=" + encodeURIComponent(title);
+  const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&title=" + encodeURIComponent(title);
 
   return fetch(dataUrl).then(response => {
     if (!response.ok) {
@@ -111,7 +111,6 @@ async function main() {
     return;
   }
   shop.onDetailPage(async function() {
-    console.log("updating");
     try {
       const info = shop.getInfo();
       if (!info) {
@@ -121,17 +120,15 @@ async function main() {
 
       const checkElem = document.querySelector("#hlidacShopu2-chart");
       if (checkElem) {
-        console.log("skipped");
         return false;
       }
-      console.log("rendered");
-      const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
+      const data = await fetchData(window.location.href, info.itemId, info.title);
       const dataset = createDataset(data);
 
       shop.insertChartElement(styles => chartWrapper(styles));
       const plotElem = document.querySelector("#hlidacShopu2-chart");
 
-      console.log(dataset);
+      console.log(`Graph loaded for ${info.itemId}`);
       plot(plotElem, dataset);
       return true;
     } catch (e) {

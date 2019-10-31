@@ -23,6 +23,9 @@
     "default_title": "Hlídač Shopů",
     "default_popup": "popup/about.html"
   },
+  "permissions": [
+    "https://api.hlidacshopu.cz/shop"
+  ],
   "content_scripts": [
     {
       "matches": [

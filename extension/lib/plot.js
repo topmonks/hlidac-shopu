@@ -23,7 +23,6 @@ Chart.plugins.register({
 function plot(canvas, prices) {
   const min = Math.min(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
   const max = Math.max(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
-  console.log(min, max);
   const ctx = canvas.getContext("2d");
   const blueGradient  = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
   blueGradient.addColorStop(0, "rgba(92, 98, 205, 0.15)");
