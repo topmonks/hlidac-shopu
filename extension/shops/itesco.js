@@ -47,7 +47,7 @@ window.shops["itesco"] = {
 
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
-    let elem = $(".product-controls--wrapper");
+    let elem = $(".product-details-tile__main");
     // if (!elem) {
     //   // itesco.cz
     //   elem = $(".a-productDetail__buyOnlineButton.ddl");
@@ -55,7 +55,7 @@ window.shops["itesco"] = {
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterbegin", markup);
+    elem.insertAdjacentHTML("beforeend", markup);
     return elem;
   },
 };
