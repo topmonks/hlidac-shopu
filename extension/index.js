@@ -1,5 +1,8 @@
 /* global plot, GRAPH_ICON */
 
+/* exported $ */
+const $ = document.querySelector.bind(document);
+
 function _objToCss(obj) {
   return Object.entries(obj).map(([key, value]) => `${key}:${value};`).join("");
 }
@@ -107,19 +110,34 @@ async function main() {
     console.error("No shop found");
     return;
   }
-  const info = shop.getInfo();
-  if (!info) {
-    // no detail page
-    return;
-  }
-  const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
-  const dataset = createDataset(data);
+  shop.onDetailPage(async function() {
+    console.log("updating");
+    try {
+      const info = shop.getInfo();
+      if (!info) {
+        // no detail page
+        return false;
+      }
 
-  shop.insertChartElement(styles => chartWrapper(styles));
-  const plotElem = document.querySelector("#hlidacShopu2-chart");
+      const checkElem = document.querySelector("#hlidacShopu2-chart");
+      if (checkElem) {
+        console.log("skipped");
+        return false;
+      }
+      console.log("rendered");
+      const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
+      const dataset = createDataset(data);
 
-  console.log(dataset);
-  plot(plotElem, dataset);
+      shop.insertChartElement(styles => chartWrapper(styles));
+      const plotElem = document.querySelector("#hlidacShopu2-chart");
+
+      console.log(dataset);
+      plot(plotElem, dataset);
+      return true;
+    } catch (e) {
+      console.error(e);
+    }
+  });
 }
 
 main().catch(err => console.error(err));

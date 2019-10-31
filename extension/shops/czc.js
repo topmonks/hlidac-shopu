@@ -1,16 +1,16 @@
-// const $ = document.querySelector.bind(document);
+/* global $ */
 
 window.shops = window.shops || {};
 window.shops["czc"] = {
-  name: "czc",
+  onDetailPage(cb) { cb(); },
 
   getInfo() {
     const elem = $(".product-detail");
     if (!elem) return;
     const itemId = elem.dataset.productCode;
-    const title = $('h1').getAttribute('title');
+    const title = $("h1").getAttribute("title");
 
-    return { itemId, title, dataType: 'dynamo' };
+    return { itemId, title, dataType: "dynamo" };
   },
 
   insertChartElement(chartMarkup) {

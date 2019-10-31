@@ -1,14 +1,14 @@
-// const $ = document.querySelector.bind(document);
+/* global $ */
 
 window.shops = window.shops || {};
 window.shops["mironet"] = {
-  name: "mironet",
+  onDetailPage(cb) { cb(); },
 
   getInfo() {
     const elem = $(".product_detail");
     if (!elem) return;
-    const itemId = $('.product_kosik_info input[name=Code]').value;
-    const title = $('h1').textContent.trim();
+    const itemId = $(".product_kosik_info input[name=Code]").value;
+    const title = $("h1").textContent.trim();
 
     return { itemId, title };
   },

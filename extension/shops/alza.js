@@ -1,7 +1,9 @@
-const $ = document.querySelector.bind(document);
+/* global $ */
 
 window.shops = window.shops || {};
 window.shops["alza"] = {
+  onDetailPage(cb) { cb(); },
+
   getInfo() {
     const elem = $(".priceDetail table#prices");
     if (!elem) return;

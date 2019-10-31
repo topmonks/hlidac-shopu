@@ -1,7 +1,9 @@
-// const $ = document.querySelector.bind(document);
+/* global $ */
 
 window.shops = window.shops || {};
 window.shops["mall"] = {
+  onDetailPage(cb) { cb(); },
+
   getInfo() {
     const elem = $(".price-wrapper");
     if (!elem) return;

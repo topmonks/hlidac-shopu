@@ -1,16 +1,16 @@
-// const $ = document.querySelector.bind(document);
+/* global $ */
 
 window.shops = window.shops || {};
 window.shops["mountfield"] = {
-  name: "mountfield",
+  onDetailPage(cb) { cb(); },
 
   getInfo() {
     const elem = $(".productDetail");
     if (!elem) return;
-    const itemId = $('.j-barcode-text').textContent.trim();
-    const title = $('h1').textContent.trim();
+    const itemId = $(".j-barcode-text").textContent.trim();
+    const title = $("h1").textContent.trim();
 
-    return { itemId, title, dataType: 'dynamo' };
+    return { itemId, title, dataType: "dynamo" };
   },
 
   insertChartElement(chartMarkup) {

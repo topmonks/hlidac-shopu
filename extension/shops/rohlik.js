@@ -1,21 +1,21 @@
+/* global $ */
 
 window.shops = window.shops || {};
-window.shops['rohlik'] = {
-  name: 'rohlik',
+window.shops["rohlik"] = {
+  onDetailPage(cb) { cb(); },
 
   getInfo() {
     const elem = $("#productDetail");
     if (!elem) return;
-    const divAmount = $('.AmountCounter');
-    const itemId = divAmount.childNodes[0].dataset.productId;
-    const title = document.title.split('-');
+    const itemId = $("button[data-product-id]").dataset.productId;
+    const title = document.title.split("-");
     const t = title[0].trim();
 
-    return { itemId, t};
+    return { itemId, t };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $('.AmountCounter');
+    const elem = $(".AmountCounter");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
