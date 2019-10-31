@@ -1,8 +1,29 @@
 /* global $ */
 
+/* exported itesco_loaded */
+let rohlik_loaded = false;
+let rohlik_last_href = null;
+
 window.shops = window.shops || {};
 window.shops["rohlik"] = {
-  onDetailPage(cb) { cb(); },
+  onDetailPage(cb) {
+    const observer = new MutationObserver(function() {
+      if (window.location.href !== rohlik_last_href) {
+        rohlik_loaded = false;
+        rohlik_last_href = window.location.href;
+      }
+      if (rohlik_loaded) return;
+
+      const detail = $("#productDetail");
+      if (detail) {
+        rohlik_loaded = true;
+        cb().then(res => {
+          rohlik_loaded = res;
+        });
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true  });
+  },
 
   getInfo() {
     const elem = $("#productDetail");
@@ -15,11 +36,11 @@ window.shops["rohlik"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".AmountCounter");
+    const elem = $("#productDetail .AmountCounter");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforeBegin", markup);
     return elem;
   },
 };

@@ -8,10 +8,8 @@ window.shops = window.shops || {};
 window.shops["itesco"] = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
-      console.log("change detected");
       if (window.location.href !== last_href) {
         itesco_loaded = false;
-        console.log("href changed", last_href, window.location.href);
         last_href = window.location.href;
       }
       if (itesco_loaded) return;
@@ -21,7 +19,6 @@ window.shops["itesco"] = {
         itesco_loaded = true;
         cb().then(res => {
           itesco_loaded = res;
-          console.log("loaded", itesco_loaded);
         });
       }
 
@@ -51,10 +48,10 @@ window.shops["itesco"] = {
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
     let elem = $(".product-controls--wrapper");
-    if (!elem) {
-      // itesco.cz
-      elem = $(".a-productDetail__buyOnlineButton.ddl");
-    }
+    // if (!elem) {
+    //   // itesco.cz
+    //   elem = $(".a-productDetail__buyOnlineButton.ddl");
+    // }
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
