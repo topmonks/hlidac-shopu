@@ -14,11 +14,11 @@ window.shops["tsbohemia"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".statusnote");
+    const elem = $("td.price");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforeend", markup);
     return elem;
   },
 };
