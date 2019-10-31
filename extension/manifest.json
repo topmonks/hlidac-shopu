@@ -1,7 +1,7 @@
 {
   "name": "Hlídač Shopů",
-  "version": "0.2.2",
-  "description": "Rozšíření zobrazuje historická data pro největší české eshopy",
+  "version": "1.0.0",
+  "description": "Ověřte si, jestli v nejoblíbenějších českých eshopech nakupujete opravdu se slevou.",
   "manifest_version": 2,
   "icons": {
     "256": "icons/favicon-256x256.png",
@@ -39,7 +39,7 @@
         "https://www.lekarna.cz/*"
       ],
       "js": [
-        "lib/Chart.bundle.min.js",
+        "lib/Chart.bundle.js",
         "lib/plot.js",
         "lib/graph-icon.js",
         "shops/alza.js",

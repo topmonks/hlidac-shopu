@@ -19,7 +19,7 @@ function chartWrapper(styles) {
     <div style="display:flex;margin:23px 32px;align-items:center">
       <div style="padding-top:4px">
         ${GRAPH_ICON}
-      </div>
+        </div>
       <div style="display:flex;flex-direction:column;margin-left:20px">
         <div style="line-height:20px;font-size:17px">Vývoj skutečné a uváděné původní ceny</div>
         <div style="display:flex">
@@ -27,17 +27,17 @@ function chartWrapper(styles) {
           <span style="color:#939393;font-size:15px">Uváděná původní cena</span>
           <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin:0 5px 0 8px;margin-top:2px"></div>
           <span style="color:#939393;font-size:15px">Prodejní cena</span>
-        </div>
-      </div>
-    </div>
+          </div>
+          </div>
+          </div>
     <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
     <div style="font-size:10px;color:#BEBEBE;margin-bottom:15px;margin-right:33px;text-align:right">
       HlídačShopů by
       <a href="https://www.apify.com/" style="font-weight: bold; color:#757575">Apify</a>,
       <a href="https://www.keboola.com" style="font-weight: bold; color:#757575">Keboola</a>,
       and <a href="https://www.topmonks.com/" style="font-weight: bold; color:#757575">TopMonks</a>
-    </div>
-  </div>`;
+      </div>
+      </div>`;
   return wrapperMarkup;
 }
 
@@ -75,26 +75,29 @@ function getShopName(href) {
   return domainParts.pop();
 }
 
-function stretchData(data) {
-  const clearTime = d => new Date(d.getYear(), d.getMonth(), d.getDay());
-  const dataMap = new Map(data.map(i => [clearTime(i.date).getTime(), i]));
-  const final = [];
+function createDataset(data) {
+  const parseTime = s => {
+    const d = new Date(s);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const dataMap = new Map(data.map(i => [parseTime(i.d).getTime(), i]));
+  const dataset = {
+    originalPrice: [],
+    currentPrice: [],
+  };
   let lastDay = data[0];
-  for (const day of daysBetween(data[0].date, data[data.length - 1].date)) {
+  for (const day of daysBetween(parseTime(data[0].d), parseTime(data[data.length - 1].d))) {
     let item = dataMap.get(day.getTime());
     if (!item) {
       item = lastDay;
     } else {
       lastDay = item;
     }
-    const { originalPrice, currentPrice } = item;
-    final.push({
-      date: day,
-      originalPrice,
-      currentPrice,
-    });
+    dataset.originalPrice.push({ x: day, y: item.o === "" ? null : item.o });
+    dataset.currentPrice.push({ x: day, y: item.c === "" ? null : item.c });
   }
-  return final;
+  return dataset;
 }
 
 async function main() {
@@ -109,23 +112,12 @@ async function main() {
     // no detail page
     return;
   }
-  const res = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
-  const data = res.map(item => ({
-    date: new Date(item.d),
-    originalPrice: item.o === "" ? null : item.o,
-    currentPrice: item.c === "" ? null : item.c,
-  }));
-
-  const final = stretchData(data);
-  console.log("final", final);
+  const data = await fetchData(window.location.href, info.itemId, info.title, info.dataType);
+  const dataset = createDataset(data);
 
   shop.insertChartElement(styles => chartWrapper(styles));
   const plotElem = document.querySelector("#hlidacShopu2-chart");
 
-  const dataset = {
-    originalPrice: final.map(item => ({ x: item.date, y: item.originalPrice })),
-    currentPrice: final.map(item => ({ x: item.date, y: item.currentPrice })),
-  };
   console.log(dataset);
   plot(plotElem, dataset);
 }
