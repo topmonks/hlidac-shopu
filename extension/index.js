@@ -54,8 +54,10 @@ function fetchData(url, itemId, title, dataType) {
 }
 
 function* daysBetween(start, end) {
-  const startDay = new Date(start.getYear(), start.getMonth(), start.getDay());
-  const endDay = new Date(end.getYear(), end.getMonth(), end.getDay());
+  const startDay = new Date(start.getTime());
+  startDay.setHours(0, 0, 0, 0);
+  const endDay = new Date(end.getTime());
+  endDay.setHours(0, 0, 0, 0);
   for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
     yield new Date(d.getTime());
   }
