@@ -23,12 +23,15 @@ window.shops["notino"] = {
         }
       }
     }
-    if (content) {
-      const productData = JSON.parse(content.replace(";", ""));
-      const productGeneralData = Object
-        .entries(productData)
-        .find((entry) => productData.hasOwnProperty(entry[0]) && /^Product:\d+$/.test(entry[0]))[1]; // eslint-disable-line no-prototype-builtins
-      itemId = productGeneralData.id;
+    if (!content) {
+      throw new Error("Notino: Cannot find itemId");
+    }
+    const match = content.match(/Product:(\d+)/);
+    if (match && match[1]) {
+      itemId = match[1];
+    }
+    if (!itemId) {
+      throw new Error("Notino: cannot find itemId in content");
     }
     const title = $("h1").textContent.trim();
 
