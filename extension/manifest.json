@@ -39,7 +39,8 @@
         "https://www.notino.cz/*",
         "https://www.tsbohemia.cz/*",
         "https://www.mountfield.cz/*",
-        "https://www.lekarna.cz/*"
+        "https://www.lekarna.cz/*",
+        "https://www.kasa.cz/*"
       ],
       "js": [
         "lib/Chart.bundle.js",
@@ -55,7 +56,7 @@
         "shops/notino.js",
         "shops/tsbohemia.js",
         "shops/mountfield.js",
-        "shops/lekarna.js",
+        "shops/kasa.js",
         "index.js"
       ],
       "run_at": "document_end"
