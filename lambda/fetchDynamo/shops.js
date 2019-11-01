@@ -95,6 +95,9 @@ class Shop {
         return new Mountfield(...args);
       case "www.lekarna.cz":
         return new Lekarna(...args);
+      case "www.kasa.cz":
+        return new Kasa(...args);
+
     }
   }
 }
@@ -246,6 +249,16 @@ class Mountfield extends Shop {
 class Lekarna extends Shop {
   name() {
     return "lekarna";
+  }
+
+  itemUrl() {
+    return this.url.pathname.replace(/\//g, "");
+  }
+}
+
+class Kasa extends Shop {
+  name() {
+    return "kasa";
   }
 
   itemUrl() {
