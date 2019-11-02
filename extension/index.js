@@ -116,23 +116,20 @@ async function main() {
       const info = shop.getInfo();
       if (!info) {
         // no detail page
-        console.log("no info found");
         return false;
       }
-      console.log("got info", info);
 
       const checkElem = document.querySelector("#hlidacShopu2-chart");
       if (checkElem) {
         return false;
       }
       const res = await fetchData(window.location.href, info.itemId, info.title);
-      console.log("got data", res);
       const dataset = createDataset(res.data);
 
       shop.insertChartElement(styles => chartWrapper(styles));
       const plotElem = document.querySelector("#hlidacShopu2-chart");
 
-      console.log(`Graph loaded for ${info.itemId}`);
+      console.log(`Graph loaded for ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
       return true;
     } catch (e) {

@@ -13,7 +13,6 @@ window.shops["kosik"] = {
       }
       if (kosik_loaded) return;
 
-      console.log("kosik changed");
       const detail = $(".product-detail__main-info");
       if (detail) {
         kosik_loaded = true;
