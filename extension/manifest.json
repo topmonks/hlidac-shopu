@@ -42,7 +42,8 @@
         "https://www.tsbohemia.cz/*",
         "https://www.mountfield.cz/*",
         "https://www.lekarna.cz/*",
-        "https://www.kasa.cz/*"
+        "https://www.kasa.cz/*",
+        "https://www.kosik.cz/*"
       ],
       "js": [
         "lib/Chart.bundle.js",
@@ -59,6 +60,7 @@
         "shops/tsbohemia.js",
         "shops/mountfield.js",
         "shops/kasa.js",
+        "shops/kosik.js",
         "index.js"
       ],
       "run_at": "document_end"

@@ -104,6 +104,7 @@ function createDataset(data) {
 }
 
 async function main() {
+  console.log("start");
   const shopName = getShopName(window.location.href);
   const shop = window.shops[shopName];
   if (!shop) {
@@ -115,15 +116,18 @@ async function main() {
       const info = shop.getInfo();
       if (!info) {
         // no detail page
+        console.log("no info found");
         return false;
       }
+      console.log("got info", info);
 
       const checkElem = document.querySelector("#hlidacShopu2-chart");
       if (checkElem) {
         return false;
       }
-      const data = await fetchData(window.location.href, info.itemId, info.title);
-      const dataset = createDataset(data);
+      const res = await fetchData(window.location.href, info.itemId, info.title);
+      console.log("got data", res);
+      const dataset = createDataset(res.data);
 
       shop.insertChartElement(styles => chartWrapper(styles));
       const plotElem = document.querySelector("#hlidacShopu2-chart");

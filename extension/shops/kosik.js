@@ -1,27 +1,48 @@
+/* global $ */
+
+let kosik_loaded = false;
+let kosik_last_href = null;
+
 window.shops = window.shops || {};
-window.shops['kosik'] = {
-  name: 'kosik',
+window.shops["kosik"] = {
+  onDetailPage(cb) {
+    const observer = new MutationObserver(function() {
+      if (window.location.href !== kosik_last_href) {
+        kosik_loaded = false;
+        kosik_last_href = window.location.href;
+      }
+      if (kosik_loaded) return;
+
+      console.log("kosik changed");
+      const detail = $(".product-detail__main-info");
+      if (detail) {
+        kosik_loaded = true;
+        cb().then(res => {
+          kosik_loaded = res;
+        });
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true  });
+  },
 
   getInfo() {
-    const elem = $(".product-detail");
+    const elem = $("#snippet-addProductToCartForm->.amount[product-data]");
     if (!elem) return;
-    const href = window.location.href;
-    const match = href.match(/(\d+)$/);
-    var itemId = null;
-    if (match && match[1]) {
-      itemId = match[1];
+    try {
+      const json = elem.getAttribute("product-data");
+      const data = JSON.parse(json);
+      return { itemId: data.id, title: data.itemName };
+    } catch(e) {
+      console.error("Could not find product info", e);
     }
-    const title = $('h1').textContent.trim();
-
-    return {itemId, title};
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-controls--wrapper");
+    const elem = $(".product-detail__cart");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforeBegin", markup);
     return elem;
   },
 };
