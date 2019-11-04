@@ -49,6 +49,9 @@ function fetchData(url, itemId, title) {
   const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&title=" + encodeURIComponent(title);
 
   return fetch(dataUrl).then(response => {
+    if (response.status === 404) {
+      return response.json();
+    }
     if (!response.ok) {
       throw new Error("HTTP error, status = " + response.status);
     }
@@ -124,6 +127,14 @@ async function main() {
         return false;
       }
       const res = await fetchData(window.location.href, info.itemId, info.title);
+      if (res.metadata.error) {
+        console.log("Error fetching data: ", res.metadata.error);
+        return false;
+      }
+      if (res.data.length === 0) {
+        console.log("No data found:", res);
+        return false;
+      }
       const dataset = createDataset(res.data);
 
       shop.insertChartElement(styles => chartWrapper(styles));
