@@ -21,9 +21,13 @@ Chart.plugins.register({
 
 /* exported plot */
 function plot(canvas, prices) {
-  const min = Math.min(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
-  const max = Math.max(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
+  const values = prices.currentPrice.filter(p => p.y !== null).map(p => p.y);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
   const ctx = canvas.getContext("2d");
+
+  const count = values.length;
+  const stepSize = Math.floor(count / 12);
   
   return new Chart(ctx, {
     type: "line",
@@ -102,7 +106,7 @@ function plot(canvas, prices) {
           type: "time",
           time: {
             unit: "day",
-            stepSize: 14,
+            stepSize,
             displayFormats: {
               day: "D. M. YYYY"
             }
