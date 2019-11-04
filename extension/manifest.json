@@ -6,20 +6,14 @@
   "homepage_url": "https://www.hlidacshopu.cz/",
   "description": "Ověřte si, jestli v nejoblíbenějších českých eshopech nakupujete opravdu se slevou.",
   "icons": {
-    "256": "icons/favicon-256x256.png",
     "128": "icons/favicon-128x128.png",
-    "64": "icons/favicon-64x64.png",
     "48": "icons/favicon-48x48.png",
-    "32": "icons/favicon-32x32.png",
     "16": "icons/favicon-16x16.png"
   },
   "browser_action": {
     "default_icon": {
-      "256": "icons/favicon-256x256.png",
       "128": "icons/favicon-128x128.png",
-      "64": "icons/favicon-64x64.png",
       "48": "icons/favicon-48x48.png",
-      "32": "icons/favicon-32x32.png",
       "16": "icons/favicon-16x16.png"
     },
     "default_title": "Hlídač Shopů",
