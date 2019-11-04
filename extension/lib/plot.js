@@ -72,6 +72,15 @@ function plot(canvas, prices) {
       tooltips: {
         mode: "index",
         intersect: false,
+        backgroundColor: "#FCF4A7",
+        borderColor: "#FBEA61",
+        borderWidth: 2,
+        bodyFontColor: "#1D3650",
+        bodySpacing: 4,
+        titleFontColor: "#1D3650",
+        xPadding: 12,
+        yPadding: 8,
+        caretSize: 12,
         callbacks: {
           title(item, data) {
             const date = data.labels[item[0].index];
