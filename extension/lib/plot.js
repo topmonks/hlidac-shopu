@@ -24,14 +24,7 @@ function plot(canvas, prices) {
   const min = Math.min(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
   const max = Math.max(...prices.currentPrice.filter(p => p.y !== null).map(p => p.y));
   const ctx = canvas.getContext("2d");
-  const blueGradient  = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
-  blueGradient.addColorStop(0, "rgba(92, 98, 205, 0.15)");
-  blueGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-
-  const redGradient  = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
-  redGradient.addColorStop(0, "rgba(235, 111, 85, 0.2)");
-  redGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-
+  
   return new Chart(ctx, {
     type: "line",
     data: {
@@ -45,9 +38,9 @@ function plot(canvas, prices) {
           borderJoinStyle: "round",
           borderCapStyle: "round",
           fill: "origin",
-          backgroundColor: blueGradient,
+          backgroundColor: "#ffffff00",
           pointRadius: 0,
-          spanGaps: false,
+          spanGaps: true,
           data: prices.originalPrice, // prices.map(p => p["originalPrice"]).map(v => v > 0 ? v : null),
         },
         {
@@ -58,9 +51,9 @@ function plot(canvas, prices) {
           borderJoinStyle: "round",
           borderCapStyle: "round",
           fill: "origin",
-          backgroundColor: redGradient,
+          backgroundColor: "#ffffff00",
           pointRadius: 0,
-          spanGaps: false,
+          spanGaps: true,
           data: prices.currentPrice, // prices.map(p => p["currentPrice"]).map(v => v > 0 ? v : null),
         }
       ]
@@ -84,18 +77,18 @@ function plot(canvas, prices) {
         callbacks: {
           title(item, data) {
             const date = data.labels[item[0].index];
-            return date.toLocaleDateString(undefined, { day: "numeric", month: "numeric", year: "numeric" });
+            return date.toLocaleDateString("cs", { day: "numeric", month: "long", year: "numeric" });
           },
           label(item, _data) {
             if (item.datasetIndex === 0) {
-              return `Původní: ${item.yLabel.toLocaleString()}`;
+              return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
             }
-            return `Prodejní: ${item.yLabel.toLocaleString()}`;
+            return `Prodejní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
           },
           labelColor(item, _chart) {
-            const blue = "#FF8787";
-            const red = "#5C62CD";
-            const color = item.datasetIndex === 1 ? blue : red;
+            const red = "#FF8787";
+            const blue = "#5C62CD";
+            const color = item.datasetIndex === 1 ? red : blue;
 
             return {
               borderColor: color,
@@ -109,6 +102,7 @@ function plot(canvas, prices) {
           type: "time",
           time: {
             unit: "day",
+            stepSize: 14,
             displayFormats: {
               day: "D. M. YYYY"
             }
@@ -116,8 +110,8 @@ function plot(canvas, prices) {
         }],
         yAxes: [{
           ticks: {
-            suggestedMax: max,
-            suggestedMin: min,
+              suggestedMax: max + 0.1 * max,
+              suggestedMin: min - 0.1 * min,
           }
         }]
       }
