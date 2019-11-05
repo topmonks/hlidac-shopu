@@ -7,7 +7,7 @@ window.shops["czc"] = {
   getInfo() {
     const elem = $(".product-detail");
     if (!elem) return;
-    const itemId = elem.dataset.productCode;
+    const itemId = elem.dataset.productCode.replace("a", "");
     const title = $("h1").getAttribute("title");
 
     return { itemId, title, dataType: "dynamo" };
