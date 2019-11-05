@@ -1,5 +1,6 @@
 const URL = require("url").URL;
 const crypto = require("crypto");
+const AWS = require("aws-sdk");
 
 class ShopError extends Error {}
 
@@ -22,26 +23,36 @@ class Shop {
     return false;
   }
 
-  async queryItemId() {
-    const itemUrl = this.itemUrl();
-    if (!itemUrl) {
-      throw new ShopError("itemUrl not found");
+  async getMetadata() {
+    if (this.metadata) {
+      return this.metadata;
     }
 
-    console.log({ type: "querying itemId", name: this.name(), itemUrl });
+    const itemUrl = this.itemUrl();
+    console.log("itemurl", itemUrl);
+    if (!itemUrl) {
+      throw new ShopError("getMetadata: itemUrl not found");
+    }
+
+    const pkey = `${this.name()}:${itemUrl}`;
+    console.log({ type: "querying itemId", pkey, name: this.name(), itemUrl });
+
     const res = await this.dynamodb.getItem({
       Key: {
-        "itemUrl": {
-          S: itemUrl
+        "pkey": {
+          S: pkey
         },
       },
-      TableName: "itemids",
+      TableName: "all_shops_metadata",
     }).promise();
-    console.log({ type: "queryItem", res });
+    console.log(JSON.stringify({ type: "getMetadata", res }));
     if (!res.Item) {
-      throw new ShopError("itemid not found in dynamo");
+      throw new ShopError("metadata not found in dynamo");
     }
-    return res.Item.itemId.S;
+    const metadata = AWS.DynamoDB.Converter.unmarshall(res.Item);
+    console.log({ metadata });
+    this.metadata = metadata;
+    return metadata;
   }
 
   async pkey() {
@@ -54,7 +65,8 @@ class Shop {
       itemId = this.itemId();
     }
     if (!itemId) {
-      itemId = await this.queryItemId();
+      const metadata = await this.getMetadata();
+      itemId = metadata.itemId;
     }
     if (!itemId) {
       console.log({ type: "no itemid found", itemId, name });
@@ -72,6 +84,7 @@ class Shop {
     const args = [params, dynamodb];
     switch (url.hostname) {
       case "www.alza.cz":
+      case "m.alza.cz":
         return new Alza(...args);
       case "www.mall.cz":
         return new Mall(...args);
@@ -97,7 +110,6 @@ class Shop {
         return new Lekarna(...args);
       case "www.kasa.cz":
         return new Kasa(...args);
-
     }
   }
 }
@@ -107,17 +119,24 @@ class Alza extends Shop {
     return "alza";
   }
 
+  itemUrl() {
+     const match = this.url.pathname.substr(1).match(/([^.\/]+)\.htm/);
+     if (match && match[1]) {
+       return match[1];
+     }
+     return this.url.pathname.substr(1);
+  }
+
   itemId() {
-    const url = new URL(decodeURIComponent(this.params.url));
-    const match = url.pathname.match(/d(\d+)\./);
+    const match = this.url.pathname.match(/d(\d+)\./);
     if (match && match[1]) {
       return match[1];
     }
-    const dq = url.searchParams.get("dq");
+    const dq = this.url.searchParams.get("dq");
     if (dq) {
       return dq;
     }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    return false;
   }
 }
 
@@ -127,25 +146,36 @@ class Mall extends Shop {
   }
 
   itemUrl() {
-    const match = this.url.pathname.match(/[^/]+$/);
-    if (match && match[0]) {
-      return match[0];
-    }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    const match = this.url.pathname.substr(1).match(/(?:[^\/]+\/)?([^.]+)/);
+     if (match && match[1]) {
+       return match[1];
+     }
+     return false;
   }
 }
 
 class Czc extends Shop {
+  constructor(...args) {
+    super(...args);
+    if (this.params.itemId) {
+      this.params.itemId = this.params.itemId.replace("a", "");
+    }
+  }
+
   name() {
     return "czc";
+  }
+
+  itemUrl() {
+    return this.itemId();
   }
 
   itemId() {
     const match = this.url.pathname.match(/\/(\d+)a?\//);
     if (match && match[1]) {
-      return match[1];
+      return match[1].replace("a", "");
     }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    return false;
   }
 }
 
@@ -165,7 +195,11 @@ class Datart extends Shop {
   }
 
   itemUrl() {
-    return this.url.pathname.replace("/", "").replace(".html", "");
+     const match = this.url.pathname.substr(1).match(/(?:[^\/]+\/)?([^.]+)/);
+     if (match && match[1]) {
+       return match[1];
+     }
+     return false;
   }
 }
 
@@ -174,12 +208,16 @@ class Itesco extends Shop {
     return "itesco";
   }
 
+  itemUrl() {
+    return this.itemId();
+  }
+
   itemId() {
     const match = this.url.pathname.match(/(\d+)$/);
     if (match && match[1]) {
       return match[1];
     }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    return false;
   }
 }
 
@@ -188,12 +226,18 @@ class Rohlik extends Shop {
     return "rohlik";
   }
 
+  itemUrl() {
+    return this.itemId();
+  }
+
   itemId() {
-    const match = this.url.pathname.match(/^\/(\d+)/);
+    let item = this.url.searchParams.get("productPopup");
+    if (!item) item = this.url.pathname.substr(1);
+    const match = item.match(/^(\d+)/);
     if (match && match[1]) {
       return match[1];
     }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    return false;
   }
 }
 
@@ -203,11 +247,11 @@ class Notino extends Shop {
   }
 
   itemUrl() {
-    const match = this.url.pathname.match(/\/[^/]+\/([^/]+(?:\/[^/]+)?)/);
+    const match = this.url.pathname.substr(1).match(/(?:[^\/]+\/)?([^\/]+)/);
     if (match && match[1]) {
       return match[1];
     }
-    throw new ShopError(`couldnt get itemurl from notino (${this.url})`);
+    return false;
   }
 }
 
@@ -216,12 +260,16 @@ class Tsbohemia extends Shop {
     return "tsbohemia";
   }
 
+  itemUrl() {
+    return this.itemId();
+  }
+
   itemId() {
     const match = this.url.pathname.match(/d(\d+)\.html/);
     if (match && match[1]) {
       return match[1];
     }
-    throw new ShopError(`Cannot find itemId from ${this.params.url}`);
+    return false;
   }
 }
 
@@ -231,8 +279,11 @@ class Kosik extends Shop {
   }
 
   itemUrl() {
-    const url = decodeURIComponent(this.params.url);
-    return url.replace("https://kosik.czhttps://www.kosik.cz/produkt/", "");
+    const match = this.url.pathname.match(/[^/]+$/);
+    if (match && match[0]) {
+      return match[0];
+    }
+    return false;
   }
 }
 
@@ -242,7 +293,15 @@ class Mountfield extends Shop {
   }
 
   itemUrl() {
-    return this.url.pathname.replace(/\//g, "");
+    return this.itemId();
+  }
+
+  itemId() {
+    const match = this.url.pathname.match(/-([^-]+)$/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return false;
   }
 }
 
@@ -252,7 +311,11 @@ class Lekarna extends Shop {
   }
 
   itemUrl() {
-    return this.url.pathname.replace(/\//g, "");
+    const match = this.url.pathname.substr(1).match(/(?:[^\/]+\/)?([^\/]+)/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return false;
   }
 }
 
@@ -262,7 +325,11 @@ class Kasa extends Shop {
   }
 
   itemUrl() {
-    return this.url.pathname.replace(/\//g, "");
+    const match = this.url.pathname.match(/\/([^\/]+)/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return false;
   }
 }
 

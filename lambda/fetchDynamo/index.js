@@ -20,9 +20,10 @@ exports.handler = async(event) => {
           "Access-Control-Allow-Methods": "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT",
           "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
         },
-        body: "[]",
+        body: `{"data":[],"metadata":{ "error": "${message}"}}`
       };
     }
+    throw error;
   }
 
   const res = await dynamodb.getItem({
@@ -36,11 +37,23 @@ exports.handler = async(event) => {
 
   console.log({ name: shop.name(), p_key, dynamoReult: res });
 
-  const found = Boolean(res.Item);
-  const body = found ? res.Item.json.S : "[]";
+  const foundData = Boolean(res.Item);
+  const data = foundData ? res.Item.json.S : "[]";
+
+  try {
+    if (shop.metadata || event.queryStringParameters.metadata === "1") {
+      await shop.getMetadata();
+    }
+  } catch (error) {
+    if (!(error instanceof ShopError)) throw error;
+    const { name, message, stack } = error;
+    console.log({ type: "error", name, message, stack, text: error.toString() });
+  }
+
+  const body = `{"data":${data},"metadata":${JSON.stringify(shop.metadata || {})}}`;
 
   return {
-    statusCode: found ? 200 : 404,
+    statusCode: foundData ? 200 : 404,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT",
