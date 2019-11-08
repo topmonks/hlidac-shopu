@@ -42,16 +42,18 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const markup = chartMarkup();
 
     const detailElem = $(".priceDetail table#prices");
     if (detailElem) {
+      const markup = chartMarkup();
       detailElem.insertAdjacentHTML("beforebegin", markup);
       return detailElem;
     }
 
     const dailySlasherElem = $("#dailySlasher .running");
     if (dailySlasherElem) {
+      const c1w = $("#dailySlasher .c1").offsetWidth;
+      const markup = chartMarkup({ width: `${c1w - 80}px` });
       dailySlasherElem.insertAdjacentHTML("beforebegin", markup);
       return dailySlasherElem;
     }
