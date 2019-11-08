@@ -107,7 +107,6 @@ function createDataset(data) {
 }
 
 async function main() {
-  console.log("start");
   const shopName = getShopName(window.location.href);
   const shop = window.shops[shopName];
   if (!shop) {
@@ -126,7 +125,8 @@ async function main() {
       if (checkElem) {
         return false;
       }
-      const res = await fetchData(window.location.href, info.itemId, info.title);
+      const url = info.url || window.location.href;
+      const res = await fetchData(url, info.itemId, info.title);
       if (res.metadata.error) {
         console.log("Error fetching data: ", res.metadata.error);
         return false;
