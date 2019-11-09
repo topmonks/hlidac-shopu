@@ -1,0 +1,516 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		82EB0E43237691730077B3DE /* hlidac_shopu.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E42237691730077B3DE /* hlidac_shopu.entitlements */; };
+		82EB0E45237691730077B3DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EB0E44237691730077B3DE /* AppDelegate.swift */; };
+		82EB0E48237691730077B3DE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E46237691730077B3DE /* Main.storyboard */; };
+		82EB0E4A237691730077B3DE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EB0E49237691730077B3DE /* ViewController.swift */; };
+		82EB0E4C237691750077B3DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E4B237691750077B3DE /* Assets.xcassets */; };
+		82EB0E53237691750077B3DE /* hlidac-shopu Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82EB0E52237691750077B3DE /* hlidac-shopu Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		82EB0E58237691750077B3DE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82EB0E57237691750077B3DE /* Cocoa.framework */; };
+		82EB0E5B237691750077B3DE /* SafariExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EB0E5A237691750077B3DE /* SafariExtensionHandler.swift */; };
+		82EB0E5D237691750077B3DE /* SafariExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EB0E5C237691750077B3DE /* SafariExtensionViewController.swift */; };
+		82EB0E60237691750077B3DE /* SafariExtensionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E5E237691750077B3DE /* SafariExtensionViewController.xib */; };
+		82EB0E63237691750077B3DE /* script.js in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E62237691750077B3DE /* script.js */; };
+		82EB0E65237691750077B3DE /* ToolbarItemIcon.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E64237691750077B3DE /* ToolbarItemIcon.pdf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		82EB0E54237691750077B3DE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82EB0E37237691730077B3DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 82EB0E51237691750077B3DE;
+			remoteInfo = "hlidac-shopu Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		82EB0E6C237691750077B3DE /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				82EB0E53237691750077B3DE /* hlidac-shopu Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		82EB0E3F237691730077B3DE /* hlidac-shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hlidac-shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		82EB0E42237691730077B3DE /* hlidac_shopu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = hlidac_shopu.entitlements; sourceTree = "<group>"; };
+		82EB0E44237691730077B3DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		82EB0E47237691730077B3DE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		82EB0E49237691730077B3DE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		82EB0E4B237691750077B3DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		82EB0E4D237691750077B3DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82EB0E52237691750077B3DE /* hlidac-shopu Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "hlidac-shopu Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		82EB0E57237691750077B3DE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		82EB0E5A237691750077B3DE /* SafariExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariExtensionHandler.swift; sourceTree = "<group>"; };
+		82EB0E5C237691750077B3DE /* SafariExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariExtensionViewController.swift; sourceTree = "<group>"; };
+		82EB0E5F237691750077B3DE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SafariExtensionViewController.xib; sourceTree = "<group>"; };
+		82EB0E61237691750077B3DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82EB0E62237691750077B3DE /* script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = script.js; sourceTree = "<group>"; };
+		82EB0E64237691750077B3DE /* ToolbarItemIcon.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarItemIcon.pdf; sourceTree = "<group>"; };
+		82EB0E66237691750077B3DE /* hlidac_shopu_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = hlidac_shopu_Extension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		82EB0E3C237691730077B3DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EB0E4F237691750077B3DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EB0E58237691750077B3DE /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		82EB0E36237691730077B3DE = {
+			isa = PBXGroup;
+			children = (
+				82EB0E41237691730077B3DE /* hlidac-shopu-install */,
+				82EB0E59237691750077B3DE /* hlidac-shopu-extension */,
+				82EB0E56237691750077B3DE /* Frameworks */,
+				82EB0E40237691730077B3DE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		82EB0E40237691730077B3DE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				82EB0E3F237691730077B3DE /* hlidac-shopu.app */,
+				82EB0E52237691750077B3DE /* hlidac-shopu Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		82EB0E41237691730077B3DE /* hlidac-shopu-install */ = {
+			isa = PBXGroup;
+			children = (
+				82EB0E42237691730077B3DE /* hlidac_shopu.entitlements */,
+				82EB0E44237691730077B3DE /* AppDelegate.swift */,
+				82EB0E46237691730077B3DE /* Main.storyboard */,
+				82EB0E49237691730077B3DE /* ViewController.swift */,
+				82EB0E4B237691750077B3DE /* Assets.xcassets */,
+				82EB0E4D237691750077B3DE /* Info.plist */,
+			);
+			path = "hlidac-shopu-install";
+			sourceTree = "<group>";
+		};
+		82EB0E56237691750077B3DE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				82EB0E57237691750077B3DE /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		82EB0E59237691750077B3DE /* hlidac-shopu-extension */ = {
+			isa = PBXGroup;
+			children = (
+				82EB0E5A237691750077B3DE /* SafariExtensionHandler.swift */,
+				82EB0E5C237691750077B3DE /* SafariExtensionViewController.swift */,
+				82EB0E5E237691750077B3DE /* SafariExtensionViewController.xib */,
+				82EB0E61237691750077B3DE /* Info.plist */,
+				82EB0E62237691750077B3DE /* script.js */,
+				82EB0E64237691750077B3DE /* ToolbarItemIcon.pdf */,
+				82EB0E66237691750077B3DE /* hlidac_shopu_Extension.entitlements */,
+			);
+			path = "hlidac-shopu-extension";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		82EB0E3E237691730077B3DE /* hlidac-shopu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82EB0E6D237691750077B3DE /* Build configuration list for PBXNativeTarget "hlidac-shopu" */;
+			buildPhases = (
+				82EB0E3B237691730077B3DE /* Sources */,
+				82EB0E3C237691730077B3DE /* Frameworks */,
+				82EB0E3D237691730077B3DE /* Resources */,
+				82EB0E6C237691750077B3DE /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				82EB0E55237691750077B3DE /* PBXTargetDependency */,
+			);
+			name = "hlidac-shopu";
+			productName = "hlidac-shopu";
+			productReference = 82EB0E3F237691730077B3DE /* hlidac-shopu.app */;
+			productType = "com.apple.product-type.application";
+		};
+		82EB0E51237691750077B3DE /* hlidac-shopu Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82EB0E69237691750077B3DE /* Build configuration list for PBXNativeTarget "hlidac-shopu Extension" */;
+			buildPhases = (
+				82EB0E4E237691750077B3DE /* Sources */,
+				82EB0E4F237691750077B3DE /* Frameworks */,
+				82EB0E50237691750077B3DE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "hlidac-shopu Extension";
+			productName = "hlidac-shopu Extension";
+			productReference = 82EB0E52237691750077B3DE /* hlidac-shopu Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		82EB0E37237691730077B3DE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1110;
+				LastUpgradeCheck = 1110;
+				ORGANIZATIONNAME = "Daniel Hromada";
+				TargetAttributes = {
+					82EB0E3E237691730077B3DE = {
+						CreatedOnToolsVersion = 11.1;
+					};
+					82EB0E51237691750077B3DE = {
+						CreatedOnToolsVersion = 11.1;
+					};
+				};
+			};
+			buildConfigurationList = 82EB0E3A237691730077B3DE /* Build configuration list for PBXProject "hlidac-shopu" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 82EB0E36237691730077B3DE;
+			productRefGroup = 82EB0E40237691730077B3DE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				82EB0E3E237691730077B3DE /* hlidac-shopu */,
+				82EB0E51237691750077B3DE /* hlidac-shopu Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		82EB0E3D237691730077B3DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EB0E43237691730077B3DE /* hlidac_shopu.entitlements in Resources */,
+				82EB0E4C237691750077B3DE /* Assets.xcassets in Resources */,
+				82EB0E48237691730077B3DE /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EB0E50237691750077B3DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EB0E65237691750077B3DE /* ToolbarItemIcon.pdf in Resources */,
+				82EB0E60237691750077B3DE /* SafariExtensionViewController.xib in Resources */,
+				82EB0E63237691750077B3DE /* script.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		82EB0E3B237691730077B3DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EB0E4A237691730077B3DE /* ViewController.swift in Sources */,
+				82EB0E45237691730077B3DE /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EB0E4E237691750077B3DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EB0E5D237691750077B3DE /* SafariExtensionViewController.swift in Sources */,
+				82EB0E5B237691750077B3DE /* SafariExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		82EB0E55237691750077B3DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 82EB0E51237691750077B3DE /* hlidac-shopu Extension */;
+			targetProxy = 82EB0E54237691750077B3DE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		82EB0E46237691730077B3DE /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				82EB0E47237691730077B3DE /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		82EB0E5E237691750077B3DE /* SafariExtensionViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				82EB0E5F237691750077B3DE /* Base */,
+			);
+			name = SafariExtensionViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		82EB0E67237691750077B3DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		82EB0E68237691750077B3DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		82EB0E6A237691750077B3DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		82EB0E6B237691750077B3DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		82EB0E6E237691750077B3DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		82EB0E6F237691750077B3DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		82EB0E3A237691730077B3DE /* Build configuration list for PBXProject "hlidac-shopu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82EB0E67237691750077B3DE /* Debug */,
+				82EB0E68237691750077B3DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82EB0E69237691750077B3DE /* Build configuration list for PBXNativeTarget "hlidac-shopu Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82EB0E6A237691750077B3DE /* Debug */,
+				82EB0E6B237691750077B3DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82EB0E6D237691750077B3DE /* Build configuration list for PBXNativeTarget "hlidac-shopu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82EB0E6E237691750077B3DE /* Debug */,
+				82EB0E6F237691750077B3DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 82EB0E37237691730077B3DE /* Project object */;
+}
