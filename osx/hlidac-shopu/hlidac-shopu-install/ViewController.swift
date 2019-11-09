@@ -8,6 +8,7 @@
 
 import Cocoa
 import SafariServices.SFSafariApplication
+import SwiftUI
 
 class ViewController: NSViewController {
 
@@ -25,6 +26,8 @@ class ViewController: NSViewController {
 
             }
         }
+        
+        self.view.window?.close()
     }
 
 }
