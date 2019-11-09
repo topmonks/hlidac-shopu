@@ -401,11 +401,11 @@
 		82EB0E6A237691750077B3DE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu-extension/hlidac_shopu_Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
+				INFOPLIST_FILE = "hlidac-shopu-extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -421,11 +421,11 @@
 		82EB0E6B237691750077B3DE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu-extension/hlidac_shopu_Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
+				INFOPLIST_FILE = "hlidac-shopu-extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -443,12 +443,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu-install/hlidac_shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				INFOPLIST_FILE = "hlidac-shopu-install/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -464,12 +464,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu-install/hlidac_shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				INFOPLIST_FILE = "hlidac-shopu-install/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

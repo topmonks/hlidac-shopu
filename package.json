@@ -1,24 +1,38 @@
 {
-    "name": "hlidac-shopu",
-    "version": "1.0.0",
-    "description": "Rozšíření zobrazuje historická data pro největší české eshopy.",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build-osx": "node ./osx/build-script.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/topmonks/hlidac-shopu.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/topmonks/hlidac-shopu/issues"
-    },
-    "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
-    "devDependencies": {
-        "babel-cli": "^6.26.0"
+  "name": "hlidac-shopu",
+  "version": "1.0.0",
+  "description": "Rozšíření zobrazuje historická data pro největší české eshopy.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-osx": "node ./osx/build-script.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/topmonks/hlidac-shopu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/topmonks/hlidac-shopu/issues"
+  },
+  "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "eslintConfig": {
+    "rules": {
+      "indent": [
+        "error",
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ]
     }
+  },
+  "prettier": {
+    "tabWidth": 2
+  }
 }
