@@ -4,7 +4,9 @@
 const $ = document.querySelector.bind(document);
 
 function _objToCss(obj) {
-  return Object.entries(obj).map(([key, value]) => `${key}:${value};`).join("");
+  return Object.entries(obj)
+    .map(([key, value]) => `${key}:${value};`)
+    .join("");
 }
 
 function chartWrapper(styles) {
@@ -14,7 +16,7 @@ function chartWrapper(styles) {
     "border-radius": "18px",
     margin: "5px",
     padding: "5px",
-    clear: "both",
+    clear: "both"
   };
   const resultStyles = _objToCss(Object.assign({}, basicStyles, styles));
 
@@ -46,7 +48,13 @@ function chartWrapper(styles) {
 
 function fetchData(url, itemId, title) {
   const URL_BASE = "https://api.hlidacshopu.cz/shop";
-  const dataUrl = `${URL_BASE}?url=` + encodeURIComponent(url) + "&itemId=" + itemId + "&title=" + encodeURIComponent(title);
+  const dataUrl =
+    `${URL_BASE}?url=` +
+    encodeURIComponent(url) +
+    "&itemId=" +
+    itemId +
+    "&title=" +
+    encodeURIComponent(title);
 
   return fetch(dataUrl).then(response => {
     if (response.status === 404) {
@@ -90,10 +98,13 @@ function createDataset(data) {
   const dataMap = new Map(data.map(i => [parseTime(i.d).getTime(), i]));
   const dataset = {
     originalPrice: [],
-    currentPrice: [],
+    currentPrice: []
   };
   let lastDay = data[0];
-  for (const day of daysBetween(parseTime(data[0].d), parseTime(data[data.length - 1].d))) {
+  for (const day of daysBetween(
+    parseTime(data[0].d),
+    parseTime(data[data.length - 1].d)
+  )) {
     let item = dataMap.get(day.getTime());
     if (!item) {
       item = lastDay;
@@ -148,5 +159,3 @@ async function main() {
     }
   });
 }
-
-main().catch(err => console.error(err));
