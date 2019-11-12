@@ -1,27 +1,47 @@
 {
   "manifest_version": 2,
   "name": "Hlídač Shopů",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "TopMonks",
   "homepage_url": "https://www.hlidacshopu.cz/",
-  "description": "Ověřte si, jestli v nejoblíbenějších českých eshopech nakupujete opravdu se slevou.",
+  "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "icons": {
     "128": "icons/favicon-128x128.png",
     "48": "icons/favicon-48x48.png",
     "16": "icons/favicon-16x16.png"
   },
   "browser_action": {
+    "browser_style": true,
     "default_icon": {
-      "128": "icons/favicon-128x128.png",
-      "48": "icons/favicon-48x48.png",
-      "16": "icons/favicon-16x16.png"
+      "48": "icons/icon-dark-48.png",
+      "32": "icons/icon-dark-32.png",
+      "16": "icons/icon-dark-16.png"
     },
     "default_title": "Hlídač Shopů",
-    "default_popup": "popup/about.html"
+    "default_popup": "popup/about.html",
+    "theme_icons": [
+      {
+        "light": "icons/icon-light-48.png",
+        "dark": "icons/icon-dark-48.png",
+        "size": 48
+      },
+      {
+        "light": "icons/icon-light-32.png",
+        "dark": "icons/icon-dark-32.png",
+        "size": 32
+      },
+      {
+        "light": "icons/icon-light-16.png",
+        "dark": "icons/icon-dark-16.png",
+        "size": 16
+      }
+    ]
   },
-  "permissions": [
-    "https://api.hlidacshopu.cz/shop"
-  ],
+  "permissions": ["https://api.hlidacshopu.cz/shop"],
   "content_scripts": [
     {
       "matches": [
