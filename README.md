@@ -6,4 +6,4 @@ Extension shows historical prices for biggest czech e-commerce websites.
 
 ## Source code
 
-https://github.com/theodik/hlidac-shopu/
+https://github.com/topmonks/hlidac-shopu/
