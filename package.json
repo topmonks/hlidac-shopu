@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "osx:bundle": "node ./osx/bundle-script.js",
     "osx:open": "xed ./osx/hlidac-shopu/hlidac-shopu.xcodeproj",
+    "lint:firefox": "web-ext lint --source-dir ./extension-dist/ -o text",
     "prebuild:firefox": "cp -R extension/ ./extension-dist/; pushd ./extension-dist; rm -f ./README.md ./Makefile ./background.js; cat ../extension/manifest.json | jq 'del(.background)' > ./manifest.json; popd",
     "build:firefox": "web-ext build --source-dir ./extension-dist/ --artifacts-dir ./dist --overwrite-dest",
     "start:firefox": "web-ext run --source-dir ./extension-dist/ --firefox=firefoxdeveloperedition",
