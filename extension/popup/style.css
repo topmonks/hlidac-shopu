@@ -1,71 +1,64 @@
 body {
-    width: 410px;
-    font-family: 'Source Sans Pro', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-image: url("background.png");
-    background-repeat: no-repeat;
-    background-position: top right;
+  width: 410px;
+  font: 16px "Source Sans Pro", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-image: url("background.png");
+  background-repeat: no-repeat;
+  background-position: top right;
 }
 
 h1 {
-    padding: 20px 29px;
-    margin: 0;
-    position: relative;
+  padding: 24px 28px 40px;
+  margin: 0;
+  position: relative;
 }
 
-h1 img {
-    width: 240px;
-    height: 38px;
+h1 svg {
+  width: 211px;
+  height: 33px;
 }
 
 h1 > small {
-    font-size: 10px;
-    color: #909dae;
-    position: absolute;
-    left: 58%;
-    top: 13px;
-    padding: 2px 7px;
-    background-color: #fff;
-    border-radius: 23%;
+  font-size: 10px;
+  color: #909dae;
+  position: absolute;
+  left: 58%;
+  top: 13px;
+  padding: 2px 7px;
+  background-color: #fff;
+  border-radius: 23%;
 }
 
 .c {
-    margin-top: 26px;
-    padding: 0 20px;
+  margin-top: 16px;
+  padding: 0 16px;
 }
 
-.c p {
-    font-size: 16px;
-    line-height: 20px;
-    margin: 5px;
+p {
+  font-size: 16px;
+  line-height: 20px;
 }
 
-.c p.podporovane {
-    margin-bottom: 2px;
-}
-.c p.podporovane-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-.c p.podporovane-list span {
-    width: 33%;
+.podporovane-list {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  font-size: 12px;
+  padding: 0;
+  margin: 0 16px 2em;
 }
 
-.c p.powered {
-    color: #939393;
-    margin: 15px 0;
-}
-.c p.powered a {
-    color: #5C62CD;
-    font-weight: bold;
-}
-.c p span {
-    width: 33%;
+.podporovane-list li {
+  width: 33%;
 }
 
-ul {
-    padding: 0 19px;
-    margin: 0;
+.powered {
+  font-size: 12px;
+  color: #939393;
+  margin: 0 0 16px;
+}
+
+.powered a {
+  color: #5c62cd;
+  font-weight: bold;
 }

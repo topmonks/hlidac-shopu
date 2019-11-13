@@ -28,7 +28,7 @@ function plot(canvas, prices) {
 
   const count = values.length;
   const stepSize = Math.floor(count / 12);
-  
+
   return new Chart(ctx, {
     type: "line",
     data: {
@@ -38,27 +38,38 @@ function plot(canvas, prices) {
           label: "Uváděná původní cena",
           steppedLine: "after",
           borderColor: "#5C62CD",
-          borderWidth: 3,
-          borderJoinStyle: "round",
+          borderWidth: 2,
           borderCapStyle: "round",
-          fill: "origin",
+          fill: false,
+          backgroundColor: "#ffffff00",
+          pointRadius: 0,
+          spanGaps: false,
+          data: prices.originalPrice,
+        },
+        {
+          label: "Doplněná prodejní cena",
+          steppedLine: "after",
+          borderColor: "#EB6F55",
+          borderWidth: 1,
+          borderDash: [5, 10],
+          borderCapStyle: "round",
+          fill: false,
           backgroundColor: "#ffffff00",
           pointRadius: 0,
           spanGaps: true,
-          data: prices.originalPrice, // prices.map(p => p["originalPrice"]).map(v => v > 0 ? v : null),
+          data: prices.currentPrice,
         },
         {
           label: "Prodejní cena",
           steppedLine: "after",
           borderColor: "#EB6F55",
-          borderWidth: 3,
-          borderJoinStyle: "round",
+          borderWidth: 2,
           borderCapStyle: "round",
-          fill: "origin",
+          fill: false,
           backgroundColor: "#ffffff00",
           pointRadius: 0,
-          spanGaps: true,
-          data: prices.currentPrice, // prices.map(p => p["currentPrice"]).map(v => v > 0 ? v : null),
+          spanGaps: false,
+          data: prices.currentPrice,
         }
       ]
     },
@@ -87,12 +98,14 @@ function plot(canvas, prices) {
             if (item.datasetIndex === 0) {
               return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
             }
-            return `Prodejní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+            else if (item.datasetIndex === 1) {
+              return `Prodejní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+            }
           },
           labelColor(item, _chart) {
             const red = "#FF8787";
             const blue = "#5C62CD";
-            const color = item.datasetIndex === 1 ? red : blue;
+            const color = item.datasetIndex > 0 ? red : blue;
 
             return {
               borderColor: color,
@@ -108,7 +121,7 @@ function plot(canvas, prices) {
             unit: "day",
             stepSize,
             displayFormats: {
-              day: "D. M. YYYY"
+              day: "D.M.YYYY"
             }
           },
         }],

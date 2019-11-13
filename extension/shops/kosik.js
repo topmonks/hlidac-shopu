@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, cleanPrice */
 
 let kosik_loaded = false;
 let kosik_last_href = null;
@@ -21,7 +21,7 @@ window.shops["kosik"] = {
         });
       }
     });
-    observer.observe(document.body, { childList: true, subtree: true  });
+    observer.observe(document.body, { childList: true, subtree: true });
   },
 
   getInfo() {
@@ -30,8 +30,16 @@ window.shops["kosik"] = {
     try {
       const json = elem.getAttribute("product-data");
       const data = JSON.parse(json);
-      return { itemId: data.id, title: data.itemName };
-    } catch(e) {
+      const originalPrice = cleanPrice(
+        ".price__old-price.price__old-price--exists"
+      );
+      return {
+        itemId: data.id,
+        title: data.itemName,
+        currentPrice: data.stepPrice,
+        originalPrice
+      };
+    } catch (e) {
       console.error("Could not find product info", e);
     }
   },
@@ -43,5 +51,5 @@ window.shops["kosik"] = {
     const markup = chartMarkup();
     elem.insertAdjacentHTML("beforeBegin", markup);
     return elem;
-  },
+  }
 };

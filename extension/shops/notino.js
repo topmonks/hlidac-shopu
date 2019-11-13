@@ -1,8 +1,10 @@
-/* global $ */
+/* global $, cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["notino"] = {
-  onDetailPage(cb) { cb(); },
+  onDetailPage(cb) {
+    cb();
+  },
 
   getInfo() {
     const elem = $("#pdHeader");
@@ -16,10 +18,11 @@ window.shops["notino"] = {
         const match = item.innerHTML.match(appoloState);
         if (match) {
           const scriptText = item.innerHTML.replace(/\r?\n|\r/g, "");
-          content = scriptText
-            .substring(
-              scriptText.search(appoloState) + scriptText.match(appoloState)[0].length, scriptText.length,
-            );
+          content = scriptText.substring(
+            scriptText.search(appoloState) +
+              scriptText.match(appoloState)[0].length,
+            scriptText.length
+          );
         }
       }
     }
@@ -34,15 +37,19 @@ window.shops["notino"] = {
       throw new Error("Notino: cannot find itemId in content");
     }
     const title = $("h1").textContent.trim();
+    const currentPrice = cleanPrice(".pp-price span[content]");
+    const originalPrice = cleanPrice(
+      "[aria-describedby=tippy-tooltip-1] span[content]"
+    );
 
-    return {itemId, title};
+    return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
     const elem = $("#pdSelectedVariant");
     if (!elem) throw new Error("Element to add chart not found");
-    const markup = chartMarkup();
+    const markup = chartMarkup({margin: "16px"});
     elem.insertAdjacentHTML("afterend", markup);
     return elem;
-  },
+  }
 };

@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, cleanPrice*/
 
 /* exported itesco_loaded */
 let itesco_loaded = false;
@@ -28,7 +28,7 @@ window.shops["itesco"] = {
       // }
     });
     // Start observing the target node for configured mutations
-    observer.observe(document.body, { childList: true, subtree: true  });
+    observer.observe(document.body, { childList: true, subtree: true });
   },
 
   getInfo() {
@@ -41,8 +41,9 @@ window.shops["itesco"] = {
       itemId = match[1];
     }
     const title = $("h1").textContent.trim();
-
-    return {itemId, title};
+    const currentPrice = cleanPrice(".price-per-sellable-unit .value");
+    // TODO: parse originalPrice with regex from .promo-content-small .offer-text
+    return { itemId, title, currentPrice };
   },
 
   insertChartElement(chartMarkup) {
@@ -54,8 +55,13 @@ window.shops["itesco"] = {
     // }
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup();
+    const styles = {
+      width: "54.16666667%",
+      float: "right",
+      margin: "0 16px 16px"
+    };
+    const markup = chartMarkup(styles);
     elem.insertAdjacentHTML("beforeend", markup);
     return elem;
-  },
+  }
 };

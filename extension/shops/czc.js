@@ -1,16 +1,20 @@
-/* global $ */
+/* global $, cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["czc"] = {
-  onDetailPage(cb) { cb(); },
+  onDetailPage(cb) {
+    cb();
+  },
 
   getInfo() {
     const elem = $(".product-detail");
     if (!elem) return;
     const itemId = elem.dataset.productCode;
     const title = $("h1").getAttribute("title");
+    const currentPrice = cleanPrice(".price .price-vatin");
+    const originalPrice = cleanPrice(".price-before .price-vatin");
 
-    return { itemId, title, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
   },
 
   insertChartElement(chartMarkup) {
@@ -20,5 +24,5 @@ window.shops["czc"] = {
     const markup = chartMarkup();
     elem.insertAdjacentHTML("afterend", markup);
     return elem;
-  },
+  }
 };

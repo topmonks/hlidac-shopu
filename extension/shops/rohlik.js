@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, cleanPrice */
 
 /* exported itesco_loaded */
 let rohlik_loaded = false;
@@ -22,17 +22,20 @@ window.shops["rohlik"] = {
         });
       }
     });
-    observer.observe(document.body, { childList: true, subtree: true  });
+    observer.observe(document.body, { childList: true, subtree: true });
   },
 
   getInfo() {
     const elem = $("#productDetail");
     if (!elem) return;
-    const itemId = $("#productDetail button[data-product-id]").dataset.productId;
+    const itemId = $("#productDetail button[data-product-id]").dataset
+      .productId;
     const title = document.title.split("-");
     const t = title[0].trim();
+    const currentPrice = cleanPrice("#productDetail .actionPrice") || cleanPrice("#productDetail .currentPrice");
+    const originalPrice = cleanPrice("#productDetail del");
 
-    return { itemId, t };
+    return { itemId, title: t, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
@@ -42,5 +45,5 @@ window.shops["rohlik"] = {
     const markup = chartMarkup();
     elem.insertAdjacentHTML("beforeBegin", markup);
     return elem;
-  },
+  }
 };

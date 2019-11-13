@@ -1,16 +1,22 @@
-/* global $ */
+/* global $, cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["datart"] = {
-  onDetailPage(cb) { cb(); },
+  onDetailPage(cb) {
+    cb();
+  },
 
   getInfo() {
     const elem = $(".product-detail-box");
     if (!elem) return;
     const itemId = $("#product-detail-header-top-wrapper").dataset.id;
     const title = $("h1").textContent.trim();
+    const currentPrice = cleanPrice(".product-detail-price");
+    const originalPrice = cleanPrice(
+      ".product-detail-strike-price-box .original"
+    );
 
-    return { itemId, title };
+    return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
@@ -20,5 +26,5 @@ window.shops["datart"] = {
     const markup = chartMarkup();
     elem.insertAdjacentHTML("afterend", markup);
     return elem;
-  },
+  }
 };

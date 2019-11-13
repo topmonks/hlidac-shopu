@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, cleanPrice */
 
 function matchGroup(str, regex, groupN) {
   const match = str.match(regex);
@@ -10,39 +10,43 @@ function matchGroup(str, regex, groupN) {
 
 window.shops = window.shops || {};
 window.shops["alza"] = {
-  onDetailPage(cb) { cb(); },
+  onDetailPage(cb) {
+    cb();
+  },
 
   getDetailInfo() {
     const elem = $(".priceDetail table#prices");
     if (!elem) return;
 
-    const itemId = ($("#deepLinkUrl").getAttribute("content").match(/\d+$/) || [])[0];
+    const itemId = ($("#deepLinkUrl")
+      .getAttribute("content")
+      .match(/\d+$/) || [])[0];
     const title = $('h1[itemprop="name"]').innerText.trim();
+    const currentPrice = cleanPrice(".pricenormal .c2");
+    const originalPrice = cleanPrice(".priceCompare .c2");
 
-    return { itemId, title };
+    return { itemId, title, currentPrice, originalPrice };
   },
 
   getDailySlasherInfo() {
     const elem = $("#dailySlasher");
     if (!elem) return;
 
-    const itemId = matchGroup($("#dailySlasher a.btn-buy").href, /boxOrder\((\d+)\)/, 1);
+    const itemId = matchGroup(
+      $("#dailySlasher a.btn-buy").href,
+      /boxOrder\((\d+)\)/,
+      1
+    );
     const url = $("#dailySlasher a.name").href;
 
     return { itemId, title: null, url };
   },
 
   getInfo() {
-    let info = this.getDetailInfo();
-    if (!info) {
-      info = this.getDailySlasherInfo();
-    }
-
-    return info;
+    return this.getDetailInfo() || this.getDailySlasherInfo();
   },
 
   insertChartElement(chartMarkup) {
-
     const detailElem = $(".priceDetail table#prices");
     if (detailElem) {
       const markup = chartMarkup();
@@ -59,5 +63,5 @@ window.shops["alza"] = {
     }
 
     throw new Error("Element to add chart not found");
-  },
+  }
 };

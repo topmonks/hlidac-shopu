@@ -2,6 +2,16 @@
 
 /* exported $ */
 const $ = document.querySelector.bind(document);
+const cleanPrice = s => {
+  const el = document.querySelector(s);
+  if (!el) return null;
+  return el.textContent
+    .replace("cca", "")
+    .replace("včetně DPH", "")
+    .replace("Kč", "")
+    .replace(",", ".")
+    .replace(/\s+/g, "");
+};
 
 function _objToCss(obj) {
   return Object.entries(obj)
@@ -13,58 +23,115 @@ function chartWrapper(styles) {
   const basicStyles = {
     "background-color": "#fff",
     border: "1px solid #E8E8E8",
-    "border-radius": "18px",
-    margin: "5px",
-    padding: "5px",
+    "border-radius": "14px",
+    margin: "16px 0",
+    padding: "16px",
     clear: "both"
   };
   const resultStyles = _objToCss(Object.assign({}, basicStyles, styles));
 
-  const wrapperMarkup = `<div id="hlidacShopu" style="${resultStyles}">
-    <div style="display:flex;margin:23px 32px;align-items:center">
-      <div style="padding-top:4px">
-        ${GRAPH_ICON}
+  const wrapperMarkup = `
+    <div id="hlidacShopu" style="${resultStyles}">
+      <style>
+        #hlidacShopu .hs-header {
+          background: #fff;
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          position: static;
+          width: initial;
+        }
+        #hlidacShopu .hs-header .hs-h4 {
+          margin: 0;
+          color: #000;
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: 400;
+        }
+        #hlidacShopu .hs-footer {
+          display: flex;
+          justify-content: space-between;
+          padding-bottom: initial;
+          margin-bottom: initial;
+          background: initial;
+          width: initial;
+        }
+        #hlidacShopu .hs-footer div {
+          font-size: 10px;
+          color: #979797;
+        }
+        #hlidacShopu .hs-footer a {
+          color: #545FEF;
+        }
+        #hlidacShopu .hs-legend {
+          display: flex;
+          line-height: 28px;
+          align-items: center;
+          color: #939393;
+          font-size: 13px;
+          margin: initial;
+        }
+        #hlidacShopu .hs-real-discount {
+          background-color: #FFE607;
+          color: #1D3650;
+          border-radius: 4px;
+          text-align: center;
+          font-weight: bold;
+          font-size: 12px;
+          line-height: 16px;
+          padding: 6px 10px 2px;
+        }
+      </style>
+      <div class="hs-header">
+        <div>${GRAPH_ICON}</div>
+        <div>
+          <div class="hs-h4">Vývoj skutečné a uváděné původní ceny</div>
+          <div class="hs-legend">
+            <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px"></div>
+            <span>Uváděná původní cena</span>
+            <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin: 0 5px 0 10px"></div>
+            <span>Prodejní cena</span>
+          </div>
         </div>
-      <div style="display:flex;flex-direction:column;margin-left:20px">
-        <div style="line-height:20px;font-size:17px">Vývoj skutečné a uváděné původní ceny</div>
-        <div style="display:flex">
-          <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px;margin-top:2px"></div>
-          <span style="color:#939393;font-size:15px">Uváděná původní cena</span>
-          <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin:0 5px 0 8px;margin-top:2px"></div>
-          <span style="color:#939393;font-size:15px">Prodejní cena</span>
-          </div>
-          </div>
-          </div>
-    <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
-    <div style="font-size:10px;color:#BEBEBE;margin-bottom:15px;margin-right:33px;text-align:right">
-      HlídačShopů by
-      <a href="https://www.apify.com/" style="font-weight: bold; color:#757575">Apify</a>,
-      <a href="https://www.keboola.com" style="font-weight: bold; color:#757575">Keboola</a>,
-      and <a href="https://www.topmonks.com/" style="font-weight: bold; color:#757575">TopMonks</a>
+        <div class="hs-real-discount">
+          <abbr title="Reálná sleva se počítá jako aktuální cena po slevě ku maxímální ceně, za kterou se zboží prodávalo za posledních 90 dní.">Reálná sleva*</abbr>
+          <br><span id="hlidacShopu2-discount"></span>
+        </div>
       </div>
-      </div>`;
+      <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+      <div class="hs-footer">
+        <div>Více informací na <a href="https://www.hlidacshopu.cz/">HlídačShopů.cz</a></div>
+        <div>Vytvořili
+          <a href="https://www.apify.com/">Apify</a>,
+          <a href="https://www.keboola.com/">Keboola</a>
+          &amp; <a href="https://www.topmonks.com/">TopMonks</a>
+        </div>
+      </div>
+    </div>
+  `;
   return wrapperMarkup;
 }
 
-function fetchData(url, itemId, title) {
-  const URL_BASE = "https://api.hlidacshopu.cz/shop";
-  const dataUrl =
-    `${URL_BASE}?url=` +
-    encodeURIComponent(url) +
-    "&itemId=" +
-    itemId +
-    "&title=" +
-    encodeURIComponent(title);
-
-  return fetch(dataUrl).then(response => {
-    if (response.status === 404) {
+function fetchData(url, itemId, title, originalPrice, currentPrice) {
+  const searchString = new URLSearchParams({
+    metadata: 1,
+    url,
+    itemId,
+    title,
+    originalPrice,
+    currentPrice
+  });
+  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+    response => {
+      if (response.status === 404) {
+        return response.json();
+      }
+      if (!response.ok) {
+        throw new Error("HTTP error, status = " + response.status);
+      }
       return response.json();
     }
-    if (!response.ok) {
-      throw new Error("HTTP error, status = " + response.status);
-    }
-    return response.json();
-  });
+  );
 }
 
 function* daysBetween(start, end) {
@@ -117,6 +184,8 @@ function createDataset(data) {
   return dataset;
 }
 
+const formatPercents = x => `${Math.round(-1 * x).toLocaleString("cs")} %`;
+
 async function main() {
   const shopName = getShopName(window.location.href);
   const shop = window.shops[shopName];
@@ -132,12 +201,18 @@ async function main() {
         return false;
       }
 
-      const checkElem = document.querySelector("#hlidacShopu2-chart");
+      const checkElem = document.getElementById("hlidacShopu2-chart");
       if (checkElem) {
         return false;
       }
       const url = info.url || window.location.href;
-      const res = await fetchData(url, info.itemId, info.title);
+      const res = await fetchData(
+        url,
+        info.itemId,
+        info.title,
+        info.originalPrice,
+        info.currentPrice
+      );
       if (res.metadata.error) {
         console.log("Error fetching data: ", res.metadata.error);
         return false;
@@ -146,10 +221,18 @@ async function main() {
         console.log("No data found:", res);
         return false;
       }
-      const dataset = createDataset(res.data);
-
+      // Inject our HTML code
       shop.insertChartElement(styles => chartWrapper(styles));
-      const plotElem = document.querySelector("#hlidacShopu2-chart");
+
+      const discountEl = document.getElementById("hlidacShopu2-discount");
+      const discount = res.metadata["real_sale"];
+      if (discount !== "null") {
+        discountEl.innerText = formatPercents(parseFloat(discount));
+      } else {
+        discountEl.parentElement.classList.add("discount--no-data");
+      }
+      const dataset = createDataset(res.data);
+      const plotElem = document.getElementById("hlidacShopu2-chart");
 
       console.log(`Graph loaded for ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
