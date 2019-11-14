@@ -16,5 +16,5 @@ const scripts = [
   `${__source_path}/index.js`,
 ].join(' ');
 
-execSync(`rm ${__dest_path} || true`);
+execSync(`rm ${__dest_path}/script.js || true`);
 execSync(`cat ${scripts} > ${__dest_path}/script.js`);
