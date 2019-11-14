@@ -9,14 +9,12 @@ const __dest_path = path.resolve(
   './hlidac-shopu/hlidac-shopu-extension',
 );
 
-const ext_scripts = [
+const scripts = [
+  path.resolve(__dirname, './run-script.js'),
+  `${__source_path}/lib/*`,
   `${__source_path}/shops/*`,
   `${__source_path}/index.js`,
 ].join(' ');
 
-const lib_scripts = [`${__source_path}/lib/*`].join(' ');
-
-execSync(`rm ${__dest_path}/library.js || true`);
-execSync(`rm ${__dest_path}/extension.js || true`);
-execSync(`cat ${lib_scripts} > ${__dest_path}/library.js`);
-execSync(`cat ${ext_scripts} > ${__dest_path}/extension.js`);
+execSync(`rm ${__dest_path} || true`);
+execSync(`cat ${scripts} > ${__dest_path}/script.js`);

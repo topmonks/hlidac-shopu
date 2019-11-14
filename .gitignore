@@ -2,8 +2,7 @@
 *.pem
 .DS_Store
 .idea/
-osx/hlidac-shopu/hlidac-shopu-extension/extension.js # the bundle
-osx/hlidac-shopu/hlidac-shopu-extension/library.js # the bundle
+osx/hlidac-shopu/hlidac-shopu-extension/script.js # the bundle
 node_modules/
 dist/
 extension-dist/
