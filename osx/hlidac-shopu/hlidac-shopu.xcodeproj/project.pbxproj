@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		82AE44C9237D43EE00E9E0E1 /* library.js in Resources */ = {isa = PBXBuildFile; fileRef = 82AE44C8237D43EE00E9E0E1 /* library.js */; };
+		82AE44CB237D47BA00E9E0E1 /* extension.js in Resources */ = {isa = PBXBuildFile; fileRef = 82AE44CA237D47BA00E9E0E1 /* extension.js */; };
 		82EB0E43237691730077B3DE /* hlidac_shopu.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E42237691730077B3DE /* hlidac_shopu.entitlements */; };
 		82EB0E45237691730077B3DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EB0E44237691730077B3DE /* AppDelegate.swift */; };
 		82EB0E48237691730077B3DE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82EB0E46237691730077B3DE /* Main.storyboard */; };
@@ -46,6 +48,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		82AE44C8237D43EE00E9E0E1 /* library.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = library.js; sourceTree = "<group>"; };
+		82AE44CA237D47BA00E9E0E1 /* extension.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = extension.js; sourceTree = "<group>"; };
 		82EB0E3F237691730077B3DE /* hlidac-shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hlidac-shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		82EB0E42237691730077B3DE /* hlidac_shopu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = hlidac_shopu.entitlements; sourceTree = "<group>"; };
 		82EB0E44237691730077B3DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -126,6 +130,8 @@
 		82EB0E59237691750077B3DE /* hlidac-shopu-extension */ = {
 			isa = PBXGroup;
 			children = (
+				82AE44CA237D47BA00E9E0E1 /* extension.js */,
+				82AE44C8237D43EE00E9E0E1 /* library.js */,
 				82EB0E5A237691750077B3DE /* SafariExtensionHandler.swift */,
 				82EB0E5C237691750077B3DE /* SafariExtensionViewController.swift */,
 				82EB0E5E237691750077B3DE /* SafariExtensionViewController.xib */,
@@ -220,7 +226,9 @@
 			files = (
 				82EB0E43237691730077B3DE /* hlidac_shopu.entitlements in Resources */,
 				82EB0E4C237691750077B3DE /* Assets.xcassets in Resources */,
+				82AE44C9237D43EE00E9E0E1 /* library.js in Resources */,
 				82EB0E48237691730077B3DE /* Main.storyboard in Resources */,
+				82AE44CB237D47BA00E9E0E1 /* extension.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
