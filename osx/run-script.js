@@ -1,17 +1,13 @@
-// Run script
+// RUN SCRIPT
 const callback = () => {
   if (!window.main) {
-    console.error("Bundle not injected");
+    console.error('Bundle not injected');
     return;
   }
-  safari.extension.dispatchMessage("Hlídač Shopů");
+  safari.extension.dispatchMessage('Hlídač Shopů');
   main().catch(err => console.error(err));
-  console.log("👋 Safari");
+  console.log('👋 Safari');
 };
 
-document.addEventListener("DOMContentLoaded", callback);
-if (document.readyState !== "loading") callback();
-
-// ...
-// ... GENERATED BUNDLE
-// ...
+document.addEventListener('DOMContentLoaded', callback);
+if (document.readyState !== 'loading') callback();
