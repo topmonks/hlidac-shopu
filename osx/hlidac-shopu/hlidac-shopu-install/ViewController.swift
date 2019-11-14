@@ -10,13 +10,13 @@ import Cocoa
 import SafariServices.SFSafariApplication
 import SwiftUI
 
+
 class ViewController: NSViewController {
 
     @IBOutlet var appNameLabel: NSTextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.appNameLabel.stringValue = "hlidac-shopu";
     }
     
     @IBAction func openSafariExtensionPreferences(_ sender: AnyObject?) {
@@ -29,5 +29,6 @@ class ViewController: NSViewController {
         
         self.view.window?.close()
     }
+    
 
 }
