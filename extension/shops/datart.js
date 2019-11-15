@@ -20,11 +20,11 @@ window.shops["datart"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-detail-price-box");
+    const elem = $(".product-detail-compare-box");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup({"margin-bottom": "0"});
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };

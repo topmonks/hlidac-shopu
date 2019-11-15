@@ -47,10 +47,10 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const detailElem = $(".priceDetail table#prices");
+    const detailElem = $(".priceDetail");
     if (detailElem) {
-      const markup = chartMarkup();
-      detailElem.insertAdjacentHTML("beforebegin", markup);
+      const markup = chartMarkup({"margin-bottom": "0"});
+      detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
     }
 
@@ -58,7 +58,7 @@ window.shops["alza"] = {
     if (dailySlasherElem) {
       const c1w = $("#dailySlasher .c1").offsetWidth;
       const markup = chartMarkup({ width: `${c1w - 80}px` });
-      dailySlasherElem.insertAdjacentHTML("beforebegin", markup);
+      dailySlasherElem.insertAdjacentHTML("afterend", markup);
       return dailySlasherElem;
     }
 

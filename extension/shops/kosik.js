@@ -49,7 +49,7 @@ window.shops["kosik"] = {
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("beforeBegin", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };

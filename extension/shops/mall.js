@@ -18,7 +18,7 @@ window.shops["mall"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".price-wrapper");
+    const elem = $(".product-footer");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

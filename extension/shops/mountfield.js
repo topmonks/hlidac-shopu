@@ -20,11 +20,11 @@ window.shops["mountfield"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".onStockStore");
+    const elem = $(".productCompare");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup({ clear: "right", float: "right", width: "338px" });
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };

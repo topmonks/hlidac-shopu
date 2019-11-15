@@ -18,7 +18,7 @@ window.shops["mironet"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product_cena");
+    const elem = $(".product_kosik_info");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

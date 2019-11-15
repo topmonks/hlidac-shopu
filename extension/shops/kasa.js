@@ -19,11 +19,11 @@ window.shops["kasa"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".price-info");
+    const elem = $(".product-summary-tools");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };

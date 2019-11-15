@@ -46,10 +46,10 @@ window.shops["notino"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#pdSelectedVariant");
+    const elem = $("#pdEngraving");
     if (!elem) throw new Error("Element to add chart not found");
-    const markup = chartMarkup({margin: "16px"});
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup({ margin: "16px" });
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };
