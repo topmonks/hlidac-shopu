@@ -9,6 +9,7 @@ const cleanPrice = s => {
     .replace("cca", "")
     .replace("včetně DPH", "")
     .replace("Kč", "")
+    .replace(",-", "")
     .replace(",", ".")
     .replace(/\s+/g, "");
 };
