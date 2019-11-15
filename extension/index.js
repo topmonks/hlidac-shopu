@@ -185,7 +185,12 @@ function createDataset(data) {
   return dataset;
 }
 
-const formatPercents = x => `${Math.round(-1 * x).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x && (-1 * x)).toLocaleString("cs")} %`;
+const createDataPoint = ({ originalPrice, currentPrice }) => ({
+  c: currentPrice,
+  o: originalPrice,
+  d: new Date().toISOString()
+});
 
 async function main() {
   const shopName = getShopName(window.location.href);
@@ -232,6 +237,7 @@ async function main() {
       } else {
         discountEl.parentElement.classList.add("discount--no-data");
       }
+      res.data.push(createDataPoint(info));
       const dataset = createDataset(res.data);
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
