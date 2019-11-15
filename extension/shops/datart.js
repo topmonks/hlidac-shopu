@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["datart"] = {
@@ -7,23 +7,24 @@ window.shops["datart"] = {
   },
 
   getInfo() {
-    const elem = $(".product-detail-box");
+    const elem = document.querySelector(".product-detail-box");
     if (!elem) return;
-    const itemId = $("#product-detail-header-top-wrapper").dataset.id;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector("#product-detail-header-top-wrapper")
+      .dataset.id;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".product-detail-price");
     const originalPrice = cleanPrice(
-      ".product-detail-strike-price-box .original"
+      ".product-detail-strike-price-box .original del"
     );
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-detail-compare-box");
+    const elem = document.querySelector(".product-detail-compare-box");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup({"margin-bottom": "0"});
+    const markup = chartMarkup({ "margin-bottom": "0" });
     elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }

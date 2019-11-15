@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["czc"] = {
@@ -7,10 +7,10 @@ window.shops["czc"] = {
   },
 
   getInfo() {
-    const elem = $(".product-detail");
+    const elem = document.querySelector(".product-detail");
     if (!elem) return;
     const itemId = elem.dataset.productCode;
-    const title = $("h1").getAttribute("title");
+    const title = document.querySelector("h1").getAttribute("title");
     const currentPrice = cleanPrice(".price .price-vatin");
     const originalPrice = cleanPrice(".price-before .price-vatin");
 
@@ -18,11 +18,11 @@ window.shops["czc"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#product-price-and-delivery-section");
+    const elem = document.querySelector(".pd-price-delivery");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforeend", markup);
     return elem;
   }
 };

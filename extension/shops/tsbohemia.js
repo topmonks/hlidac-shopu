@@ -7,10 +7,10 @@ window.shops["tsbohemia"] = {
   },
 
   getInfo() {
-    const elem = $("#stoitem_detail");
+    const elem = document.querySelector("#stoitem_detail");
     if (!elem) return;
-    const itemId = $(".sti_detail_head").dataset.stiid;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector(".sti_detail_head").dataset.stiid;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = document
       .querySelector(".prc.wvat .price")
       .textContent.split("Kč")[0]
@@ -22,7 +22,7 @@ window.shops["tsbohemia"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-tools");
+    const elem = document.querySelector(".product-tools");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup({

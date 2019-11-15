@@ -15,22 +15,20 @@ First param is `chartWrapper` function that returns wrapper html, you can add st
 
 Example:
 ```javascript
-const $ = document.querySelector.bind(document);
-
 window.shops = window.shops || {};
 window.shops["alza"] = {
   getInfo() {
-    const elem = $("#pricec");
+    const elem = document.querySelector("#pricec");
     if (!elem) return;
 
-    const itemId = ($("#deepLinkUrl").getAttribute("content").match(/\d+$/) || [])[0];
-    const title = $('h1[itemprop="name"]').innerText.trim();
+    const itemId = (document.querySelector("#deepLinkUrl").getAttribute("content").match(/\d+$/) || [])[0];
+    const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
 
     return { itemId, title };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#pricec");
+    const elem = document.querySelector;("#pricec");
     if (!elem) throw new Error("Element to add chart not found");
     const styles = "border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;";
     const markup = chartMarkup(styles);

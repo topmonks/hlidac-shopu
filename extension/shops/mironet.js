@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["mironet"] = {
@@ -7,10 +7,12 @@ window.shops["mironet"] = {
   },
 
   getInfo() {
-    const elem = $(".product_detail");
+    const elem = document.querySelector(".product_detail");
     if (!elem) return;
-    const itemId = $(".product_kosik_info input[name=Code]").value;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector(
+      ".product_kosik_info input[name=Code]"
+    ).value;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".product_cena_box .product_dph");
     const originalPrice = cleanPrice(".fakcbox23 .product_dph");
 
@@ -18,7 +20,7 @@ window.shops["mironet"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product_kosik_info");
+    const elem = document.querySelector(".product_kosik_info");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

@@ -1,7 +1,6 @@
 /* global plot, GRAPH_ICON */
 
-/* exported $ */
-const $ = document.querySelector.bind(document);
+/* exported cleanPrice */
 const cleanPrice = s => {
   const el = document.querySelector(s);
   if (!el) return null;
@@ -105,7 +104,9 @@ function chartWrapper(styles) {
       </style>
       <div class="hs-header">
         <div>
-          <a class="hs-logo" href="https://www.hlidacshopu.cz/?url=${encodeURIComponent(location.toString())}"
+          <a class="hs-logo" href="https://www.hlidacshopu.cz/?url=${encodeURIComponent(
+            location.toString()
+          )}"
              title="trvalý odkaz na vývoj ceny">
             ${GRAPH_ICON}
           </a>
@@ -212,12 +213,25 @@ function createDataset(data) {
   return dataset;
 }
 
-const formatPercents = x => `${Math.round(x && (-1 * x)).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
   o: originalPrice,
   d: new Date().toISOString()
 });
+
+const realDiscount = ({ max_price, real_sale }, currentPrice) => {
+  if (max_price === "null" && real_sale === "null") {
+    return null;
+  }
+  if (max_price !== "null" && currentPrice !== null) {
+    const origPrice = parseFloat(max_price);
+    return (100 * (origPrice - currentPrice)) / origPrice;
+  }
+  if (real_sale !== "null") {
+    return parseFloat(real_sale);
+  }
+};
 
 async function main() {
   const shopName = getShopName(window.location.href);
@@ -226,7 +240,7 @@ async function main() {
     console.error("No shop found");
     return;
   }
-  shop.onDetailPage(async function() {
+  shop.onDetailPage(async function(repaint) {
     try {
       const info = shop.getInfo();
       if (!info) {
@@ -235,7 +249,7 @@ async function main() {
       }
 
       const checkElem = document.getElementById("hlidacShopu2-chart");
-      if (checkElem) {
+      if (checkElem && !repaint) {
         return false;
       }
       const url = info.url || window.location.href;
@@ -255,16 +269,20 @@ async function main() {
         return false;
       }
       // Inject our HTML code
-      shop.insertChartElement(styles => chartWrapper(styles));
+      if (!repaint) {
+        shop.insertChartElement(styles => chartWrapper(styles));
+      }
 
       const discountEl = document.getElementById("hlidacShopu2-discount");
-      const discount = res.metadata["real_sale"];
-      if (discount !== "null") {
-        discountEl.innerText = formatPercents(parseFloat(discount));
+      const discount = realDiscount(res.metadata, info.currentPrice);
+      if (discount != null) {
+        discountEl.innerText = formatPercents(discount);
       } else {
         discountEl.parentElement.classList.add("discount--no-data");
       }
-      res.data.push(createDataPoint(info));
+      if (info.currentPrice && info.originalPrice) {
+        res.data.push(createDataPoint(info));
+      }
       const dataset = createDataset(res.data);
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
@@ -277,4 +295,4 @@ async function main() {
   });
 }
 
-main().catch(err => console.error(err));
+addEventListener("DOMContentLoaded", () => main().catch(err => console.error(err)));

@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 let kosik_loaded = false;
 let kosik_last_href = null;
@@ -13,7 +13,7 @@ window.shops["kosik"] = {
       }
       if (kosik_loaded) return;
 
-      const detail = $(".product-detail__main-info");
+      const detail = document.querySelector(".product-detail__main-info");
       if (detail) {
         kosik_loaded = true;
         cb().then(res => {
@@ -25,7 +25,9 @@ window.shops["kosik"] = {
   },
 
   getInfo() {
-    const elem = $("#snippet-addProductToCartForm->.amount[product-data]");
+    const elem = document.querySelector(
+      "#snippet-addProductToCartForm->.amount[product-data]"
+    );
     if (!elem) return;
     try {
       const json = elem.getAttribute("product-data");
@@ -45,7 +47,7 @@ window.shops["kosik"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-detail__cart");
+    const elem = document.querySelector(".product-detail__cart");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

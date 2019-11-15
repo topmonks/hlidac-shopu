@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["mountfield"] = {
@@ -7,12 +7,13 @@ window.shops["mountfield"] = {
   },
 
   getInfo() {
-    const elem = $(".productDetail");
+    const elem = document.querySelector(".productDetail");
     if (!elem) return;
-    const itemId = $(".j-barcode-text")
+    const itemId = document
+      .querySelector(".j-barcode-text")
       .textContent.trim()
       .toLowerCase();
-    const title = $("h1").textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".actionPrice.val");
     const originalPrice = cleanPrice(".retailPrice.val");
 
@@ -20,10 +21,14 @@ window.shops["mountfield"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".productCompare");
+    const elem = document.querySelector(".productCompare");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup({ clear: "right", float: "right", width: "338px" });
+    const markup = chartMarkup({
+      clear: "right",
+      float: "right",
+      width: "338px"
+    });
     elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }

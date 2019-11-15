@@ -1,13 +1,28 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
+
+let notinoLastHref = null;
 
 window.shops = window.shops || {};
 window.shops["notino"] = {
   onDetailPage(cb) {
-    cb();
+    const observer = new MutationObserver(function() {
+      if (location.href !== notinoLastHref) {
+        notinoLastHref = location.href;
+        cb(true);
+      }
+    });
+    // Observe changes in variant selection by change of price
+    observer.observe(document.getElementById("pd-price"), {
+      characterData: true,
+      subtree: true
+    });
+    // This page is rendered with React and data are side-loaded from API
+    // defer execution to `load` event when all data are loaded and rendered
+    addEventListener("load", () => cb());
   },
 
   getInfo() {
-    const elem = $("#pdHeader");
+    const elem = document.getElementById("pdHeader");
     if (!elem) return;
     const scripts = document.getElementsByTagName("script");
     const appoloState = /window.__APOLLO_STATE__\s?=/g;
@@ -36,20 +51,18 @@ window.shops["notino"] = {
     if (!itemId) {
       throw new Error("Notino: cannot find itemId in content");
     }
-    const title = $("h1").textContent.trim();
-    const currentPrice = cleanPrice(".pp-price span[content]");
-    const originalPrice = cleanPrice(
-      "[aria-describedby=tippy-tooltip-1] span[content]"
-    );
+    const title = document.querySelector("h1").textContent.trim();
+    const currentPrice = cleanPrice("#pd-price");
+    const originalPrice = cleanPrice("[aria-describedby=tippy-tooltip-1]");
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#pdEngraving");
+    const elem = document.getElementById("pdAddToCart");
     if (!elem) throw new Error("Element to add chart not found");
     const markup = chartMarkup({ margin: "16px" });
-    elem.insertAdjacentHTML("beforebegin", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };

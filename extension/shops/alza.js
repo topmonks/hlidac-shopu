@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 function matchGroup(str, regex, groupN) {
   const match = str.match(regex);
@@ -15,29 +15,38 @@ window.shops["alza"] = {
   },
 
   getDetailInfo() {
-    const elem = $(".priceDetail table#prices");
+    const elem = document.querySelector("#prices");
     if (!elem) return;
 
-    const itemId = ($("#deepLinkUrl")
+    const itemId = (document
+      .querySelector("#deepLinkUrl")
       .getAttribute("content")
       .match(/\d+$/) || [])[0];
-    const title = $('h1[itemprop="name"]').innerText.trim();
-    const currentPrice = cleanPrice(".pricenormal .c2");
-    const originalPrice = cleanPrice(".priceCompare .c2");
+    const title = document
+      .querySelector('h1[itemprop="name"]')
+      .innerText.trim();
+    const currentPrice =
+      cleanPrice(".pricenormal .c2") ||
+      cleanPrice("#prices .bigPrice") ||
+      cleanPrice("#prices .price_withVat");
+    const originalPrice =
+      cleanPrice(".priceCompare .c2") ||
+      cleanPrice(".comparePrice .crossPrice") ||
+      cleanPrice("#prices .price_compare");
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   getDailySlasherInfo() {
-    const elem = $("#dailySlasher");
+    const elem = document.querySelector("#dailySlasher");
     if (!elem) return;
 
     const itemId = matchGroup(
-      $("#dailySlasher a.btn-buy").href,
+      document.querySelector("#dailySlasher a.btn-buy").href,
       /boxOrder\((\d+)\)/,
       1
     );
-    const url = $("#dailySlasher a.name").href;
+    const url = document.querySelector("#dailySlasher a.name").href;
     const currentPrice = cleanPrice(".blPrice .price");
     const originalPrice = cleanPrice(".blPrice .cprice");
 
@@ -49,16 +58,16 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const detailElem = $(".priceDetail");
+    const detailElem = document.querySelector(".priceDetail");
     if (detailElem) {
       const markup = chartMarkup({ "margin-bottom": "0" });
       detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
     }
 
-    const dailySlasherElem = $("#dailySlasher .running");
+    const dailySlasherElem = document.querySelector("#dailySlasher .running");
     if (dailySlasherElem) {
-      const c1w = $("#dailySlasher .c1").offsetWidth;
+      const c1w = document.querySelector("#dailySlasher .c1").offsetWidth;
       const markup = chartMarkup({ width: `${c1w - 80}px` });
       dailySlasherElem.insertAdjacentHTML("afterend", markup);
       return dailySlasherElem;

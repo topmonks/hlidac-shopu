@@ -1,4 +1,4 @@
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["lekarna"] = {
@@ -7,10 +7,12 @@ window.shops["lekarna"] = {
   },
 
   getInfo() {
-    const elem = $(".detail-top");
+    const elem = document.querySelector(".detail-top");
     if (!elem) return;
-    const itemId = $(".product__code span").textContent.trim();
-    const title = $("h1").textContent.trim();
+    const itemId = document
+      .querySelector(".product__code span")
+      .textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = document
       .querySelector("[itemprop=price]")
       .getAttribute("content");
@@ -20,7 +22,7 @@ window.shops["lekarna"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product__price-and-form");
+    const elem = document.querySelector(".product__price-and-form");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();

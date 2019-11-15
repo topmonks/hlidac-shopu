@@ -1,4 +1,4 @@
-/* global $, cleanPrice*/
+/* global cleanPrice*/
 
 /* exported itesco_loaded */
 let itesco_loaded = false;
@@ -14,7 +14,9 @@ window.shops["itesco"] = {
       }
       if (itesco_loaded) return;
 
-      const nakupItesco = $("h1.product-details-tile__title");
+      const nakupItesco = document.querySelector(
+        "h1.product-details-tile__title"
+      );
       if (nakupItesco) {
         itesco_loaded = true;
         cb().then(res => {
@@ -29,10 +31,11 @@ window.shops["itesco"] = {
     });
     // Start observing the target node for configured mutations
     observer.observe(document.body, { childList: true, subtree: true });
+    addEventListener("load", () => cb());
   },
 
   getInfo() {
-    const elem = $(".product-details-page");
+    const elem = document.querySelector(".product-details-page");
     if (!elem) return;
     const href = window.location.href;
     const match = href.match(/(\d+)$/);
@@ -40,7 +43,7 @@ window.shops["itesco"] = {
     if (match && match[1]) {
       itemId = match[1];
     }
-    const title = $("h1").textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".price-per-sellable-unit .value");
     // TODO: parse originalPrice with regex from .promo-content-small .offer-text
     return { itemId, title, currentPrice };
@@ -48,7 +51,7 @@ window.shops["itesco"] = {
 
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
-    let elem = $(".product-controls--wrapper");
+    let elem = document.querySelector(".product-controls--wrapper");
     // if (!elem) {
     //   // itesco.cz
     //   elem = $(".a-productDetail__buyOnlineButton.ddl");
