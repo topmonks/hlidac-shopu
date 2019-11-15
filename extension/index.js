@@ -42,6 +42,13 @@ function chartWrapper(styles) {
           position: static;
           width: initial;
         }
+        #hlidacShopu .hs-header > :first-child {
+          flex-grow: 2;
+        }
+        #hlidacShopu .hs-header .hs-logo {
+          margin-right: 16px;
+          float: left;
+        }
         #hlidacShopu .hs-header .hs-h4 {
           margin: 0;
           color: #000;
@@ -66,13 +73,25 @@ function chartWrapper(styles) {
         }
         #hlidacShopu .hs-legend {
           display: flex;
-          line-height: 28px;
+          flex-flow: wrap;
+          line-height: 20px;
           align-items: center;
           color: #939393;
           font-size: 13px;
           margin: initial;
         }
+        #hlidacShopu .hs-legend__item {
+          margin-right: 10px;
+        }
+        #hlidacShopu .hs-legend__item-color {
+          display:inline-block;
+          width:12px;
+          height:12px;
+          border-radius:2px;
+          margin-right:5px;
+        }
         #hlidacShopu .hs-real-discount {
+          align-self: flex-start;
           background-color: #FFE607;
           color: #1D3650;
           border-radius: 4px;
@@ -80,18 +99,26 @@ function chartWrapper(styles) {
           font-weight: bold;
           font-size: 12px;
           line-height: 16px;
-          padding: 6px 10px 2px;
+          padding: 6px 10px 6px;
+          margin-left: 16px;
         }
       </style>
       <div class="hs-header">
-        <div>${GRAPH_ICON}</div>
         <div>
+          <a class="hs-logo" href="https://www.hlidacshopu.cz/?url=${encodeURIComponent(location.toString())}"
+             title="trvalý odkaz na vývoj ceny">
+            ${GRAPH_ICON}
+          </a>
           <div class="hs-h4">Vývoj skutečné a uváděné původní ceny</div>
           <div class="hs-legend">
-            <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px"></div>
-            <span>Uváděná původní cena</span>
-            <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin: 0 5px 0 10px"></div>
-            <span>Prodejní cena</span>
+            <div class="hs-legend__item">
+              <span class="hs-legend__item-color" style="background-color:#5C62CD"></span>
+              <span>Uváděná původní cena</span>
+            </div>
+            <div class="hs-legend__item">
+              <span class="hs-legend__item-color" style="background-color:#FF8787"></span>
+              <span>Prodejní cena</span>
+            </div>
           </div>
         </div>
         <div class="hs-real-discount">
