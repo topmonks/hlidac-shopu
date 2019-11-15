@@ -38,8 +38,10 @@ window.shops["alza"] = {
       1
     );
     const url = $("#dailySlasher a.name").href;
+    const currentPrice = cleanPrice(".blPrice .price");
+    const originalPrice = cleanPrice(".blPrice .cprice");
 
-    return { itemId, title: null, url };
+    return { itemId, title: null, url, currentPrice, originalPrice };
   },
 
   getInfo() {
@@ -49,7 +51,7 @@ window.shops["alza"] = {
   insertChartElement(chartMarkup) {
     const detailElem = $(".priceDetail");
     if (detailElem) {
-      const markup = chartMarkup({"margin-bottom": "0"});
+      const markup = chartMarkup({ "margin-bottom": "0" });
       detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
     }
