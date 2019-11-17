@@ -19,6 +19,7 @@ class ViewController: NSViewController {
         super.viewDidLoad()
     }
     
+    
     @IBAction func openSafariExtensionPreferences(_ sender: AnyObject?) {
         SFSafariApplication.showPreferencesForExtension(withIdentifier: "com.topmonks.hlidac-shopu-Extension") { error in
             if let _ = error {

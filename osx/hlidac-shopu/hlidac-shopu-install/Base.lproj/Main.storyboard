@@ -12,9 +12,9 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="hlidac-shopu" id="1Xt-HY-uBw">
+                            <menuItem title="Hlídač Shopů" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="hlidac-shopu" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="Hlídač Shopů" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
                                         <menuItem title="About hlidac-shopu" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -44,18 +44,6 @@
                                         <menuItem title="Quit hlidac-shopu" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
-                                            </connections>
-                                        </menuItem>
-                                    </items>
-                                </menu>
-                            </menuItem>
-                            <menuItem title="Help" id="wpr-3q-Mcd">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
-                                    <items>
-                                        <menuItem title="hlidac-shopu Help" keyEquivalent="?" id="FKE-Sm-Kum">
-                                            <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -100,28 +88,34 @@
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="hlidac_shopu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="887" height="419"/>
+                        <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Xg-fw-xDk">
-                                <rect key="frame" x="0.0" y="0.0" width="887" height="419"/>
+                            <stackView distribution="fill" orientation="horizontal" alignment="bottom" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Xg-fw-xDk">
+                                <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4pk-hD-HxN">
-                                        <rect key="frame" x="0.0" y="40" width="576" height="95"/>
+                                        <rect key="frame" x="0.0" y="40" width="420" height="361"/>
                                         <subviews>
+                                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="mxg-sO-u3n">
+                                                <rect key="frame" x="40" y="116" width="163" height="245"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </customView>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dxx-s1-3kU">
-                                                <rect key="frame" x="38" y="76" width="100" height="19"/>
+                                                <rect key="frame" x="38" y="86" width="100" height="22"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Poslední věc:" id="kZj-tO-NTU">
-                                                    <font key="font" metaFont="system" size="16"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <font key="font" size="16" name="AvenirNext-Regular"/>
+                                                    <color key="textColor" red="0.59215686274509804" green="0.59215686274509804" blue="0.59215686274509804" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4wP-TN-UJ8">
-                                                <rect key="frame" x="38" y="53" width="258" height="15"/>
+                                                <rect key="frame" x="38" y="53" width="384" height="25"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Zaškrtněte v Safari rozšíření Hlídače Shopů." id="O4e-jl-mZh">
-                                                    <font key="font" size="13" name="HelveticaNeue"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <font key="font" size="18" name="AvenirNext-Bold"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
@@ -140,15 +134,16 @@ DQ
                                             </button>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YUp-ip-Xd6">
                                                 <rect key="frame" x="38" y="0.0" width="129" height="16"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Potřebujete pomoci?" id="ALb-uw-2lf">
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Potřebujete pomoci?" id="ALb-uw-2lf">
                                                     <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="textColor" red="0.32941176470588235" green="0.37254901960784315" blue="0.93725490196078431" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                         </subviews>
-                                        <edgeInsets key="edgeInsets" left="40" right="0.0" top="0.0" bottom="0.0"/>
+                                        <edgeInsets key="edgeInsets" left="40" right="40" top="0.0" bottom="0.0"/>
                                         <visibilityPriorities>
+                                            <integer value="1000"/>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
@@ -159,19 +154,32 @@ DQ
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
+                                            <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wlf-re-0g9">
-                                        <rect key="frame" x="576" y="0.0" width="311" height="419"/>
+                                        <rect key="frame" x="460" y="0.0" width="312" height="337"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="312" id="2ki-rz-KzK"/>
+                                            <constraint firstAttribute="width" constant="312" id="3me-MV-zKe"/>
+                                            <constraint firstAttribute="height" constant="337" id="FpZ-R6-hIh"/>
+                                        </constraints>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottomRight" imageScaling="proportionallyDown" image="Background" id="bYu-ta-OZA"/>
                                     </imageView>
                                 </subviews>
+                                <backgroundFilters>
+                                    <ciFilter name="CIGaussianBlur">
+                                        <configuration>
+                                            <null key="inputImage"/>
+                                            <real key="inputRadius" value="10"/>
+                                        </configuration>
+                                    </ciFilter>
+                                </backgroundFilters>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="6Xg-fw-xDk" secondAttribute="height" multiplier="271:128" id="OMR-bE-aU9"/>
-                                    <constraint firstAttribute="trailing" secondItem="Wlf-re-0g9" secondAttribute="trailing" id="Qgx-Vr-qqg"/>
-                                    <constraint firstAttribute="bottom" secondItem="4pk-hD-HxN" secondAttribute="bottom" constant="40" id="XsE-wC-gSO"/>
-                                    <constraint firstItem="4pk-hD-HxN" firstAttribute="leading" secondItem="6Xg-fw-xDk" secondAttribute="leading" id="bPf-lg-b4a"/>
-                                    <constraint firstAttribute="bottom" secondItem="Wlf-re-0g9" secondAttribute="bottom" id="uel-yo-bcy"/>
+                                    <constraint firstItem="4pk-hD-HxN" firstAttribute="top" secondItem="6Xg-fw-xDk" secondAttribute="top" constant="40" id="4n8-bp-5s6"/>
+                                    <constraint firstItem="Wlf-re-0g9" firstAttribute="leading" secondItem="4pk-hD-HxN" secondAttribute="trailing" constant="40" id="ZLW-d4-wzv"/>
+                                    <constraint firstAttribute="bottom" secondItem="4pk-hD-HxN" secondAttribute="bottom" constant="40" id="mYu-28-7RW"/>
+                                    <constraint firstItem="4pk-hD-HxN" firstAttribute="leading" secondItem="6Xg-fw-xDk" secondAttribute="leading" constant="40" id="wVy-dU-fqs"/>
                                 </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
@@ -184,16 +192,16 @@ DQ
                             </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="6Xg-fw-xDk" secondAttribute="trailing" id="ETE-en-pjk"/>
-                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="Z5U-eL-EYU"/>
-                            <constraint firstAttribute="bottom" secondItem="6Xg-fw-xDk" secondAttribute="bottom" id="mer-jZ-mrZ"/>
-                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="tJe-z4-se9"/>
+                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="Oer-Cw-O0d"/>
+                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="THq-um-7Et"/>
+                            <constraint firstAttribute="trailing" secondItem="6Xg-fw-xDk" secondAttribute="trailing" id="WC3-KC-inc"/>
+                            <constraint firstAttribute="bottom" secondItem="6Xg-fw-xDk" secondAttribute="bottom" id="icW-lR-OlZ"/>
                         </constraints>
                     </view>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="655"/>
+            <point key="canvasLocation" x="75" y="654"/>
         </scene>
     </scenes>
     <resources>
