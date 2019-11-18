@@ -31,7 +31,7 @@ class ViewController: NSViewController {
     
     @IBAction func openHelpLink(_ sender: AnyObject?) {
         if let url = URL(string: "https://www.hlidacshopu.cz/") {
-            SFSafariApplication.openWindow(with: url)
+            NSWorkspace.shared.open(url);
         }
     }
     
