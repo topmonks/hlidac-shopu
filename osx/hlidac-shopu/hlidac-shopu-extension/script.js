@@ -19449,7 +19449,7 @@ function plot(canvas, prices) {
     },
   });
 }
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 function matchGroup(str, regex, groupN) {
   const match = str.match(regex);
@@ -19466,31 +19466,42 @@ window.shops["alza"] = {
   },
 
   getDetailInfo() {
-    const elem = $(".priceDetail table#prices");
+    const elem = document.querySelector("#prices");
     if (!elem) return;
 
-    const itemId = ($("#deepLinkUrl")
+    const itemId = (document
+      .querySelector("#deepLinkUrl")
       .getAttribute("content")
       .match(/\d+$/) || [])[0];
-    const title = $('h1[itemprop="name"]').innerText.trim();
-    const currentPrice = cleanPrice(".pricenormal .c2");
-    const originalPrice = cleanPrice(".priceCompare .c2");
+    const title = document
+      .querySelector('h1[itemprop="name"]')
+      .innerText.trim();
+    const currentPrice =
+      cleanPrice(".pricenormal .c2") ||
+      cleanPrice("#prices .bigPrice") ||
+      cleanPrice("#prices .price_withVat");
+    const originalPrice =
+      cleanPrice(".priceCompare .c2") ||
+      cleanPrice(".comparePrice .crossPrice") ||
+      cleanPrice("#prices .price_compare");
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   getDailySlasherInfo() {
-    const elem = $("#dailySlasher");
+    const elem = document.querySelector("#dailySlasher");
     if (!elem) return;
 
     const itemId = matchGroup(
-      $("#dailySlasher a.btn-buy").href,
+      document.querySelector("#dailySlasher a.btn-buy").href,
       /boxOrder\((\d+)\)/,
       1
     );
-    const url = $("#dailySlasher a.name").href;
+    const url = document.querySelector("#dailySlasher a.name").href;
+    const currentPrice = cleanPrice(".blPrice .price");
+    const originalPrice = cleanPrice(".blPrice .cprice");
 
-    return { itemId, title: null, url };
+    return { itemId, title: null, url, currentPrice, originalPrice };
   },
 
   getInfo() {
@@ -19498,25 +19509,25 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const detailElem = $(".priceDetail table#prices");
+    const detailElem = document.querySelector(".priceDetail");
     if (detailElem) {
-      const markup = chartMarkup();
-      detailElem.insertAdjacentHTML("beforebegin", markup);
+      const markup = chartMarkup({ "margin-bottom": "0" });
+      detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
     }
 
-    const dailySlasherElem = $("#dailySlasher .running");
+    const dailySlasherElem = document.querySelector("#dailySlasher .running");
     if (dailySlasherElem) {
-      const c1w = $("#dailySlasher .c1").offsetWidth;
+      const c1w = document.querySelector("#dailySlasher .c1").offsetWidth;
       const markup = chartMarkup({ width: `${c1w - 80}px` });
-      dailySlasherElem.insertAdjacentHTML("beforebegin", markup);
+      dailySlasherElem.insertAdjacentHTML("afterend", markup);
       return dailySlasherElem;
     }
 
     throw new Error("Element to add chart not found");
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["czc"] = {
@@ -19525,10 +19536,10 @@ window.shops["czc"] = {
   },
 
   getInfo() {
-    const elem = $(".product-detail");
+    const elem = document.querySelector(".product-detail");
     if (!elem) return;
     const itemId = elem.dataset.productCode;
-    const title = $("h1").getAttribute("title");
+    const title = document.querySelector("h1").getAttribute("title");
     const currentPrice = cleanPrice(".price .price-vatin");
     const originalPrice = cleanPrice(".price-before .price-vatin");
 
@@ -19536,15 +19547,15 @@ window.shops["czc"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#product-price-and-delivery-section");
+    const elem = document.querySelector(".pd-price-delivery");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforeend", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["datart"] = {
@@ -19553,28 +19564,29 @@ window.shops["datart"] = {
   },
 
   getInfo() {
-    const elem = $(".product-detail-box");
+    const elem = document.querySelector(".product-detail-box");
     if (!elem) return;
-    const itemId = $("#product-detail-header-top-wrapper").dataset.id;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector("#product-detail-header-top-wrapper")
+      .dataset.id;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".product-detail-price");
     const originalPrice = cleanPrice(
-      ".product-detail-strike-price-box .original"
+      ".product-detail-strike-price-box .original del"
     );
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-detail-price-box");
+    const elem = document.querySelector(".product-detail-compare-box");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup({ "margin-bottom": "0" });
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };
-/* global $, cleanPrice*/
+/* global cleanPrice*/
 
 /* exported itesco_loaded */
 let itesco_loaded = false;
@@ -19590,7 +19602,9 @@ window.shops["itesco"] = {
       }
       if (itesco_loaded) return;
 
-      const nakupItesco = $("h1.product-details-tile__title");
+      const nakupItesco = document.querySelector(
+        "h1.product-details-tile__title"
+      );
       if (nakupItesco) {
         itesco_loaded = true;
         cb().then(res => {
@@ -19605,10 +19619,11 @@ window.shops["itesco"] = {
     });
     // Start observing the target node for configured mutations
     observer.observe(document.body, { childList: true, subtree: true });
+    addEventListener("load", () => cb());
   },
 
   getInfo() {
-    const elem = $(".product-details-page");
+    const elem = document.querySelector(".product-details-page");
     if (!elem) return;
     const href = window.location.href;
     const match = href.match(/(\d+)$/);
@@ -19616,7 +19631,7 @@ window.shops["itesco"] = {
     if (match && match[1]) {
       itemId = match[1];
     }
-    const title = $("h1").textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".price-per-sellable-unit .value");
     // TODO: parse originalPrice with regex from .promo-content-small .offer-text
     return { itemId, title, currentPrice };
@@ -19624,7 +19639,7 @@ window.shops["itesco"] = {
 
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
-    let elem = $(".product-details-tile__main");
+    let elem = document.querySelector(".product-controls--wrapper");
     // if (!elem) {
     //   // itesco.cz
     //   elem = $(".a-productDetail__buyOnlineButton.ddl");
@@ -19632,16 +19647,16 @@ window.shops["itesco"] = {
     if (!elem) throw new Error("Element to add chart not found");
 
     const styles = {
-      width: "54.16666667%",
+      width: "60%",
       float: "right",
       margin: "0 16px 16px"
     };
     const markup = chartMarkup(styles);
-    elem.insertAdjacentHTML("beforeend", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["kasa"] = {
@@ -19650,11 +19665,11 @@ window.shops["kasa"] = {
   },
 
   getInfo() {
-    const elem = $(".product-detail");
+    const elem = document.querySelector(".product-detail");
     if (!elem) return;
-    const inputZbozi = $('input[name="zbozi"]');
+    const inputZbozi = document.querySelector('input[name="zbozi"]');
     const itemId = inputZbozi.getAttribute("value");
-    const title = $("h1").textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#real_price");
     const originalPrice = cleanPrice(".before-price .text-strike");
 
@@ -19662,15 +19677,15 @@ window.shops["kasa"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".price-info");
+    const elem = document.querySelector(".product-summary-tools");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 let kosik_loaded = false;
 let kosik_last_href = null;
@@ -19685,7 +19700,7 @@ window.shops["kosik"] = {
       }
       if (kosik_loaded) return;
 
-      const detail = $(".product-detail__main-info");
+      const detail = document.querySelector(".product-detail__main-info");
       if (detail) {
         kosik_loaded = true;
         cb().then(res => {
@@ -19697,7 +19712,9 @@ window.shops["kosik"] = {
   },
 
   getInfo() {
-    const elem = $("#snippet-addProductToCartForm->.amount[product-data]");
+    const elem = document.querySelector(
+      "#snippet-addProductToCartForm->.amount[product-data]"
+    );
     if (!elem) return;
     try {
       const json = elem.getAttribute("product-data");
@@ -19717,15 +19734,15 @@ window.shops["kosik"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-detail__cart");
+    const elem = document.querySelector(".product-detail__cart");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("beforeBegin", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["lekarna"] = {
@@ -19734,10 +19751,12 @@ window.shops["lekarna"] = {
   },
 
   getInfo() {
-    const elem = $(".detail-top");
+    const elem = document.querySelector(".detail-top");
     if (!elem) return;
-    const itemId = $(".product__code span").textContent.trim();
-    const title = $("h1").textContent.trim();
+    const itemId = document
+      .querySelector(".product__code span")
+      .textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = document
       .querySelector("[itemprop=price]")
       .getAttribute("content");
@@ -19747,7 +19766,7 @@ window.shops["lekarna"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product__price-and-form");
+    const elem = document.querySelector(".product__price-and-form");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -19755,7 +19774,7 @@ window.shops["lekarna"] = {
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["mall"] = {
@@ -19764,18 +19783,22 @@ window.shops["mall"] = {
   },
 
   getInfo() {
-    const elem = $(".price-wrapper");
+    const elem = document.querySelector(".price-wrapper");
     if (!elem) return;
 
-    const itemId = $('span[data-sel="catalog-number"]').innerText.trim();
-    const title = $('h1[itemprop="name"]').innerText.trim();
+    const itemId = document
+      .querySelector('span[data-sel="catalog-number"]')
+      .innerText.trim();
+    const title = document
+      .querySelector('h1[itemprop="name"]')
+      .innerText.trim();
     const currentPrice = cleanPrice("[itemprop=price]");
     const originalPrice = cleanPrice(".old-new-price .rrp-price");
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".price-wrapper");
+    const elem = document.querySelector(".product-footer");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -19783,7 +19806,7 @@ window.shops["mall"] = {
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["mironet"] = {
@@ -19792,10 +19815,12 @@ window.shops["mironet"] = {
   },
 
   getInfo() {
-    const elem = $(".product_detail");
+    const elem = document.querySelector(".product_detail");
     if (!elem) return;
-    const itemId = $(".product_kosik_info input[name=Code]").value;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector(
+      ".product_kosik_info input[name=Code]"
+    ).value;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".product_cena_box .product_dph");
     const originalPrice = cleanPrice(".fakcbox23 .product_dph");
 
@@ -19803,7 +19828,7 @@ window.shops["mironet"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product_cena");
+    const elem = document.querySelector(".product_kosik_info");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -19811,7 +19836,7 @@ window.shops["mironet"] = {
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 window.shops = window.shops || {};
 window.shops["mountfield"] = {
@@ -19820,12 +19845,13 @@ window.shops["mountfield"] = {
   },
 
   getInfo() {
-    const elem = $(".productDetail");
+    const elem = document.querySelector(".productDetail");
     if (!elem) return;
-    const itemId = $(".j-barcode-text")
+    const itemId = document
+      .querySelector(".j-barcode-text")
       .textContent.trim()
       .toLowerCase();
-    const title = $("h1").textContent.trim();
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".actionPrice.val");
     const originalPrice = cleanPrice(".retailPrice.val");
 
@@ -19833,24 +19859,43 @@ window.shops["mountfield"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".onStockStore");
+    const elem = document.querySelector(".productCompare");
     if (!elem) throw new Error("Element to add chart not found");
 
-    const markup = chartMarkup();
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = chartMarkup({
+      clear: "right",
+      float: "right",
+      width: "338px"
+    });
+    elem.insertAdjacentHTML("beforebegin", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
+
+let notinoLastHref = null;
 
 window.shops = window.shops || {};
 window.shops["notino"] = {
   onDetailPage(cb) {
-    cb();
+    const observer = new MutationObserver(function() {
+      if (location.href !== notinoLastHref) {
+        notinoLastHref = location.href;
+        cb(true);
+      }
+    });
+    // Observe changes in variant selection by change of price
+    observer.observe(document.getElementById("pd-price"), {
+      characterData: true,
+      subtree: true
+    });
+    // This page is rendered with React and data are side-loaded from API
+    // defer execution to `load` event when all data are loaded and rendered
+    addEventListener("load", () => cb());
   },
 
   getInfo() {
-    const elem = $("#pdHeader");
+    const elem = document.getElementById("pdHeader");
     if (!elem) return;
     const scripts = document.getElementsByTagName("script");
     const appoloState = /window.__APOLLO_STATE__\s?=/g;
@@ -19879,24 +19924,22 @@ window.shops["notino"] = {
     if (!itemId) {
       throw new Error("Notino: cannot find itemId in content");
     }
-    const title = $("h1").textContent.trim();
-    const currentPrice = cleanPrice(".pp-price span[content]");
-    const originalPrice = cleanPrice(
-      "[aria-describedby=tippy-tooltip-1] span[content]"
-    );
+    const title = document.querySelector("h1").textContent.trim();
+    const currentPrice = cleanPrice("#pd-price");
+    const originalPrice = cleanPrice("[aria-describedby=tippy-tooltip-1]");
 
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#pdSelectedVariant");
+    const elem = document.getElementById("pdAddToCart");
     if (!elem) throw new Error("Element to add chart not found");
-    const markup = chartMarkup({margin: "16px"});
+    const markup = chartMarkup({ margin: "16px" });
     elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
-/* global $, cleanPrice */
+/* global cleanPrice */
 
 /* exported itesco_loaded */
 let rohlik_loaded = false;
@@ -19912,7 +19955,7 @@ window.shops["rohlik"] = {
       }
       if (rohlik_loaded) return;
 
-      const detail = $("#productDetail");
+      const detail = document.querySelector("#productDetail");
       if (detail) {
         rohlik_loaded = true;
         cb().then(res => {
@@ -19924,24 +19967,27 @@ window.shops["rohlik"] = {
   },
 
   getInfo() {
-    const elem = $("#productDetail");
+    const elem = document.querySelector("#productDetail");
     if (!elem) return;
-    const itemId = $("#productDetail button[data-product-id]").dataset
-      .productId;
+    const itemId = document.querySelector(
+      "#productDetail button[data-product-id]"
+    ).dataset.productId;
     const title = document.title.split("-");
     const t = title[0].trim();
-    const currentPrice = cleanPrice("#productDetail .actionPrice") || cleanPrice("#productDetail .currentPrice");
+    const currentPrice =
+      cleanPrice("#productDetail .actionPrice") ||
+      cleanPrice("#productDetail .currentPrice");
     const originalPrice = cleanPrice("#productDetail del");
 
     return { itemId, title: t, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $("#productDetail .AmountCounter");
+    const elem = document.querySelector("#productDetail .AmountCounter");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("beforeBegin", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
@@ -19954,10 +20000,10 @@ window.shops["tsbohemia"] = {
   },
 
   getInfo() {
-    const elem = $("#stoitem_detail");
+    const elem = document.querySelector("#stoitem_detail");
     if (!elem) return;
-    const itemId = $(".sti_detail_head").dataset.stiid;
-    const title = $("h1").textContent.trim();
+    const itemId = document.querySelector(".sti_detail_head").dataset.stiid;
+    const title = document.querySelector("h1").textContent.trim();
     const currentPrice = document
       .querySelector(".prc.wvat .price")
       .textContent.split("Kč")[0]
@@ -19969,7 +20015,7 @@ window.shops["tsbohemia"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = $(".product-tools");
+    const elem = document.querySelector(".product-tools");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup({
@@ -19982,8 +20028,7 @@ window.shops["tsbohemia"] = {
 };
 /* global plot, GRAPH_ICON */
 
-/* exported $ */
-const $ = document.querySelector.bind(document);
+/* exported cleanPrice */
 const cleanPrice = s => {
   const el = document.querySelector(s);
   if (!el) return null;
@@ -19991,6 +20036,7 @@ const cleanPrice = s => {
     .replace("cca", "")
     .replace("včetně DPH", "")
     .replace("Kč", "")
+    .replace(",-", "")
     .replace(",", ".")
     .replace(/\s+/g, "");
 };
@@ -20023,6 +20069,13 @@ function chartWrapper(styles) {
           position: static;
           width: initial;
         }
+        #hlidacShopu .hs-header > :first-child {
+          flex-grow: 2;
+        }
+        #hlidacShopu .hs-header .hs-logo {
+          margin-right: 16px;
+          float: left;
+        }
         #hlidacShopu .hs-header .hs-h4 {
           margin: 0;
           color: #000;
@@ -20047,13 +20100,25 @@ function chartWrapper(styles) {
         }
         #hlidacShopu .hs-legend {
           display: flex;
-          line-height: 28px;
+          flex-flow: wrap;
+          line-height: 20px;
           align-items: center;
           color: #939393;
           font-size: 13px;
           margin: initial;
         }
+        #hlidacShopu .hs-legend__item {
+          margin-right: 10px;
+        }
+        #hlidacShopu .hs-legend__item-color {
+          display:inline-block;
+          width:12px;
+          height:12px;
+          border-radius:2px;
+          margin-right:5px;
+        }
         #hlidacShopu .hs-real-discount {
+          align-self: flex-start;
           background-color: #FFE607;
           color: #1D3650;
           border-radius: 4px;
@@ -20061,18 +20126,28 @@ function chartWrapper(styles) {
           font-weight: bold;
           font-size: 12px;
           line-height: 16px;
-          padding: 6px 10px 2px;
+          padding: 6px 10px 6px;
+          margin-left: 16px;
         }
       </style>
       <div class="hs-header">
-        <div>${GRAPH_ICON}</div>
         <div>
+          <a class="hs-logo" href="https://www.hlidacshopu.cz/?url=${encodeURIComponent(
+            location.toString()
+          )}"
+             title="trvalý odkaz na vývoj ceny">
+            ${GRAPH_ICON}
+          </a>
           <div class="hs-h4">Vývoj skutečné a uváděné původní ceny</div>
           <div class="hs-legend">
-            <div style="width:12px;height:12px;background-color:#5C62CD;border-radius:2px;margin-right:5px"></div>
-            <span>Uváděná původní cena</span>
-            <div style="width:12px;height:12px;background-color:#FF8787;border-radius:2px;margin: 0 5px 0 10px"></div>
-            <span>Prodejní cena</span>
+            <div class="hs-legend__item">
+              <span class="hs-legend__item-color" style="background-color:#5C62CD"></span>
+              <span>Uváděná původní cena</span>
+            </div>
+            <div class="hs-legend__item">
+              <span class="hs-legend__item-color" style="background-color:#FF8787"></span>
+              <span>Prodejní cena</span>
+            </div>
           </div>
         </div>
         <div class="hs-real-discount">
@@ -20166,7 +20241,25 @@ function createDataset(data) {
   return dataset;
 }
 
-const formatPercents = x => `${Math.round(-1 * x).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
+const createDataPoint = ({ originalPrice, currentPrice }) => ({
+  c: currentPrice,
+  o: originalPrice,
+  d: new Date().toISOString()
+});
+
+const realDiscount = ({ max_price, real_sale }, currentPrice) => {
+  if (max_price === "null" && real_sale === "null") {
+    return null;
+  }
+  if (max_price !== "null" && currentPrice !== null) {
+    const origPrice = parseFloat(max_price);
+    return (100 * (origPrice - currentPrice)) / origPrice;
+  }
+  if (real_sale !== "null") {
+    return parseFloat(real_sale);
+  }
+};
 
 async function main() {
   const shopName = getShopName(window.location.href);
@@ -20175,7 +20268,7 @@ async function main() {
     console.error("No shop found");
     return;
   }
-  shop.onDetailPage(async function() {
+  shop.onDetailPage(async function(repaint) {
     try {
       const info = shop.getInfo();
       if (!info) {
@@ -20184,7 +20277,7 @@ async function main() {
       }
 
       const checkElem = document.getElementById("hlidacShopu2-chart");
-      if (checkElem) {
+      if (checkElem && !repaint) {
         return false;
       }
       const url = info.url || window.location.href;
@@ -20204,14 +20297,19 @@ async function main() {
         return false;
       }
       // Inject our HTML code
-      shop.insertChartElement(styles => chartWrapper(styles));
+      if (!repaint) {
+        shop.insertChartElement(styles => chartWrapper(styles));
+      }
 
       const discountEl = document.getElementById("hlidacShopu2-discount");
-      const discount = res.metadata["real_sale"];
-      if (discount !== "null") {
-        discountEl.innerText = formatPercents(parseFloat(discount));
+      const discount = realDiscount(res.metadata, info.currentPrice);
+      if (discount != null) {
+        discountEl.innerText = formatPercents(discount);
       } else {
         discountEl.parentElement.classList.add("discount--no-data");
+      }
+      if (info.currentPrice && info.originalPrice) {
+        res.data.push(createDataPoint(info));
       }
       const dataset = createDataset(res.data);
       const plotElem = document.getElementById("hlidacShopu2-chart");
@@ -20225,4 +20323,4 @@ async function main() {
   });
 }
 
-main().catch(err => console.error(err));
+addEventListener("DOMContentLoaded", () => main().catch(err => console.error(err)));
