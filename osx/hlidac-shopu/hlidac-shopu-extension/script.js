@@ -20323,4 +20323,4 @@ async function main() {
   });
 }
 
-addEventListener("DOMContentLoaded", () => main().catch(err => console.error(err)));
+main().catch(err => console.error(err));
