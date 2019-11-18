@@ -28,7 +28,7 @@ class ViewController: NSViewController {
             }
         }
         
-        self.view.window?.close()
+        // self.view.window?.close()
     }
     
     @IBAction func openHelpLink(_ sender: AnyObject?) {
