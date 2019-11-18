@@ -91,7 +91,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fill" orientation="horizontal" alignment="bottom" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Xg-fw-xDk">
+                            <stackView wantsLayer="YES" distribution="fill" orientation="horizontal" alignment="bottom" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Xg-fw-xDk">
                                 <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4pk-hD-HxN">
@@ -167,14 +167,6 @@ DQ
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottomRight" imageScaling="proportionallyDown" image="Background" id="bYu-ta-OZA"/>
                                     </imageView>
                                 </subviews>
-                                <backgroundFilters>
-                                    <ciFilter name="CIGaussianBlur">
-                                        <configuration>
-                                            <null key="inputImage"/>
-                                            <real key="inputRadius" value="10"/>
-                                        </configuration>
-                                    </ciFilter>
-                                </backgroundFilters>
                                 <constraints>
                                     <constraint firstItem="4pk-hD-HxN" firstAttribute="top" secondItem="6Xg-fw-xDk" secondAttribute="top" constant="40" id="4n8-bp-5s6"/>
                                     <constraint firstItem="Wlf-re-0g9" firstAttribute="leading" secondItem="4pk-hD-HxN" secondAttribute="trailing" constant="40" id="ZLW-d4-wzv"/>
@@ -197,6 +189,11 @@ DQ
                             <constraint firstAttribute="trailing" secondItem="6Xg-fw-xDk" secondAttribute="trailing" id="WC3-KC-inc"/>
                             <constraint firstAttribute="bottom" secondItem="6Xg-fw-xDk" secondAttribute="bottom" id="icW-lR-OlZ"/>
                         </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
+                                <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </view>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
