@@ -26,13 +26,14 @@ window.shops["alza"] = {
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
     const currentPrice =
-      cleanPrice(".pricenormal .c2") ||
+      cleanPrice("#prices .price_withVat") ||
       cleanPrice("#prices .bigPrice") ||
-      cleanPrice("#prices .price_withVat");
+      cleanPrice(".pricenormal .c2");
     const originalPrice =
+      cleanPrice("#prices .origPrice") ||
+      cleanPrice("#prices .price_compare") ||
       cleanPrice(".priceCompare .c2") ||
-      cleanPrice(".comparePrice .crossPrice") ||
-      cleanPrice("#prices .price_compare");
+      cleanPrice(".comparePrice .crossPrice");
 
     return { itemId, title, currentPrice, originalPrice };
   },
