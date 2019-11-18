@@ -95,31 +95,30 @@
                                 <rect key="frame" x="0.0" y="0.0" width="652" height="380"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3JX-vI-0mo">
-                                        <rect key="frame" x="0.0" y="0.0" width="340" height="345"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="340" height="347"/>
                                         <subviews>
                                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="8vM-qa-IYs">
-                                                <rect key="frame" x="0.0" y="0.0" width="340" height="345"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="340" height="347"/>
                                                 <subviews>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rsd-Ii-Gf0">
-                                                        <rect key="frame" x="28" y="164" width="251" height="50"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rsd-Ii-Gf0">
+                                                        <rect key="frame" x="28" y="166" width="251" height="50"/>
                                                         <textFieldCell key="cell" alignment="left" title="Zaškrtněte v Safari rozšíření  Hlídače Shopů." id="2Kx-Ij-AKy">
                                                             <font key="font" size="18" name="AvenirNext-Bold"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YmV-vW-L7i">
-                                                        <rect key="frame" x="30" y="223" width="106" height="23"/>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YmV-vW-L7i">
+                                                        <rect key="frame" x="30" y="225" width="106" height="23"/>
                                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Poslední věc:" id="Ahx-RI-Mx3">
                                                             <font key="font" size="17" name="AvenirNext-Regular"/>
                                                             <color key="textColor" red="0.59215686270000001" green="0.59215686270000001" blue="0.59215686270000001" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5ql-Ya-8lp">
-                                                        <rect key="frame" x="24" y="95" width="155" height="32"/>
-                                                        <buttonCell key="cell" type="push" title="Dokončit nastavení" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtc-yP-njy">
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5ql-Ya-8lp">
+                                                        <rect key="frame" x="26" y="63" width="300" height="66"/>
+                                                        <buttonCell key="cell" type="push" title="DOKONČIT NASTAVENÍ" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtc-yP-njy">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                             <string key="keyEquivalent" base64-UTF8="YES">
@@ -130,9 +129,11 @@ DQ
                                                             <action selector="openSafariExtensionPreferences:" target="XfG-lQ-9wD" id="Anq-BE-FQ4"/>
                                                         </connections>
                                                     </button>
-                                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XA8-6L-Y2F" userLabel="Potřebujete pomoci?">
-                                                        <rect key="frame" x="192" y="20" width="128" height="16"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XA8-6L-Y2F" userLabel="Potřebujete pomoci?">
+                                                        <rect key="frame" x="199" y="22" width="121" height="16"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="16" id="zgR-jz-QRt"/>
+                                                        </constraints>
                                                         <buttonCell key="cell" type="inline" title="Potřebujete pomoci?" bezelStyle="inline" alignment="right" imageScaling="proportionallyDown" inset="2" id="egA-JJ-XzH" userLabel="Potřebujete pomoci?">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system" size="11"/>
@@ -144,8 +145,21 @@ DQ
                                                     </button>
                                                 </subviews>
                                                 <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="YmV-vW-L7i" secondAttribute="bottom" constant="225" id="0kJ-RM-494"/>
                                                     <constraint firstAttribute="width" constant="340" id="37D-Vf-zYo"/>
-                                                    <constraint firstAttribute="bottom" secondItem="5ql-Ya-8lp" secondAttribute="bottom" constant="102" id="t2A-gE-zp0"/>
+                                                    <constraint firstAttribute="trailing" secondItem="5ql-Ya-8lp" secondAttribute="trailing" constant="20" id="4C7-97-mYO"/>
+                                                    <constraint firstAttribute="bottom" secondItem="XA8-6L-Y2F" secondAttribute="bottom" constant="22" id="5wN-XE-baD"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Rsd-Ii-Gf0" secondAttribute="trailing" constant="20" symbolic="YES" id="8uo-8f-tR7"/>
+                                                    <constraint firstItem="YmV-vW-L7i" firstAttribute="leading" secondItem="5ql-Ya-8lp" secondAttribute="leading" id="Aqr-xs-YlZ"/>
+                                                    <constraint firstItem="YmV-vW-L7i" firstAttribute="leading" secondItem="8vM-qa-IYs" secondAttribute="leading" constant="32" id="G2b-rV-rFS"/>
+                                                    <constraint firstItem="XA8-6L-Y2F" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8vM-qa-IYs" secondAttribute="leading" constant="20" symbolic="YES" id="IdT-1E-aIW"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5ql-Ya-8lp" secondAttribute="trailing" constant="20" symbolic="YES" id="PD1-u4-4st"/>
+                                                    <constraint firstItem="Rsd-Ii-Gf0" firstAttribute="top" secondItem="YmV-vW-L7i" secondAttribute="bottom" constant="9" id="Y8m-CK-SC1"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="YmV-vW-L7i" secondAttribute="trailing" constant="20" symbolic="YES" id="aD1-MA-vE2"/>
+                                                    <constraint firstItem="5ql-Ya-8lp" firstAttribute="leading" secondItem="8vM-qa-IYs" secondAttribute="leading" constant="32" id="cJe-Fi-L0p"/>
+                                                    <constraint firstItem="Rsd-Ii-Gf0" firstAttribute="leading" secondItem="8vM-qa-IYs" secondAttribute="leading" constant="30" id="psS-ro-Con"/>
+                                                    <constraint firstAttribute="trailing" secondItem="XA8-6L-Y2F" secondAttribute="trailing" constant="20" symbolic="YES" id="rTc-rd-9jI"/>
+                                                    <constraint firstAttribute="bottom" secondItem="5ql-Ya-8lp" secondAttribute="bottom" constant="70" id="t2A-gE-zp0"/>
                                                     <constraint firstItem="5ql-Ya-8lp" firstAttribute="top" secondItem="8vM-qa-IYs" secondAttribute="top" constant="222" id="umM-G5-5W0"/>
                                                     <constraint firstItem="5ql-Ya-8lp" firstAttribute="top" secondItem="YmV-vW-L7i" secondAttribute="top" constant="123" id="vto-S3-tI5"/>
                                                 </constraints>
@@ -202,7 +216,7 @@ DQ
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="74.5" y="654"/>
+            <point key="canvasLocation" x="74" y="654"/>
         </scene>
     </scenes>
     <resources>
