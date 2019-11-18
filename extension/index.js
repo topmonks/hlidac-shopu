@@ -224,8 +224,8 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   if (max_price === "null" && real_sale === "null") {
     return null;
   }
-  if (max_price !== "null" && currentPrice !== null) {
-    const origPrice = parseFloat(max_price);
+  const origPrice = parseFloat(max_price);
+  if (max_price !== "null" && currentPrice !== null && !isNaN(origPrice)) {
     return (100 * (origPrice - currentPrice)) / origPrice;
   }
   if (real_sale !== "null") {
