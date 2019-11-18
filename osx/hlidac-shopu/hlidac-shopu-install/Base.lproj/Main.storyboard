@@ -70,7 +70,7 @@
                         <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
                         </connections>
@@ -88,77 +88,87 @@
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="hlidac_shopu" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
+                        <rect key="frame" x="0.0" y="0.0" width="801" height="454"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <stackView wantsLayer="YES" distribution="fill" orientation="horizontal" alignment="bottom" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Xg-fw-xDk">
-                                <rect key="frame" x="0.0" y="0.0" width="772" height="441"/>
+                                <rect key="frame" x="0.0" y="0.0" width="801" height="454"/>
                                 <subviews>
-                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4pk-hD-HxN">
-                                        <rect key="frame" x="0.0" y="40" width="420" height="361"/>
+                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3JX-vI-0mo">
+                                        <rect key="frame" x="0.0" y="0.0" width="489" height="345"/>
                                         <subviews>
-                                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="mxg-sO-u3n">
-                                                <rect key="frame" x="40" y="116" width="163" height="245"/>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
-                                                </userDefinedRuntimeAttributes>
-                                            </customView>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dxx-s1-3kU">
-                                                <rect key="frame" x="38" y="86" width="100" height="22"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Poslední věc:" id="kZj-tO-NTU">
-                                                    <font key="font" size="16" name="AvenirNext-Regular"/>
-                                                    <color key="textColor" red="0.59215686274509804" green="0.59215686274509804" blue="0.59215686274509804" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4wP-TN-UJ8">
-                                                <rect key="frame" x="38" y="53" width="384" height="25"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Zaškrtněte v Safari rozšíření Hlídače Shopů." id="O4e-jl-mZh">
-                                                    <font key="font" size="18" name="AvenirNext-Bold"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ooh-eV-eLQ">
-                                                <rect key="frame" x="34" y="17" width="155" height="32"/>
-                                                <buttonCell key="cell" type="push" title="Dokončit nastavení" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Srx-0j-A4D">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                    <string key="keyEquivalent" base64-UTF8="YES">
+                                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="8vM-qa-IYs">
+                                                <rect key="frame" x="0.0" y="0.0" width="489" height="345"/>
+                                                <subviews>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rsd-Ii-Gf0">
+                                                        <rect key="frame" x="54" y="193" width="347" height="68"/>
+                                                        <textFieldCell key="cell" alignment="left" title="Zaškrtněte v Safari rozšíření  Hlídače Shopů." id="2Kx-Ij-AKy">
+                                                            <font key="font" size="25" name="AvenirNext-Bold"/>
+                                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5ql-Ya-8lp">
+                                                        <rect key="frame" x="50" y="106" width="155" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Dokončit nastavení" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rtc-yP-njy">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
-                                                    <connections>
-                                                        <action selector="openSafariExtensionPreferences:" target="XfG-lQ-9wD" id="vKk-Xb-MPh"/>
-                                                    </connections>
-                                                </buttonCell>
-                                            </button>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YUp-ip-Xd6">
-                                                <rect key="frame" x="38" y="0.0" width="129" height="16"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Potřebujete pomoci?" id="ALb-uw-2lf">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" red="0.32941176470588235" green="0.37254901960784315" blue="0.93725490196078431" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
+                                                            <connections>
+                                                                <action selector="openSafariExtensionPreferences:" target="XfG-lQ-9wD" id="2ZK-VW-wbQ"/>
+                                                            </connections>
+                                                        </buttonCell>
+                                                    </button>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8vA-hJ-sbw">
+                                                        <rect key="frame" x="18" y="35" width="455" height="16"/>
+                                                        <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Potřebujete pomoci?" id="Kjk-Tc-tQ3">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" red="0.3294117647" green="0.37254901959999998" blue="0.93725490199999995" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YmV-vW-L7i">
+                                                        <rect key="frame" x="54" y="269" width="112" height="24"/>
+                                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Poslední věc:" id="Ahx-RI-Mx3">
+                                                            <font key="font" size="18" name="AvenirNext-Regular"/>
+                                                            <color key="textColor" red="0.59215686270000001" green="0.59215686270000001" blue="0.59215686270000001" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="top" secondItem="8vM-qa-IYs" secondAttribute="top" constant="294" id="7TX-iH-hv9"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerX" secondItem="Rsd-Ii-Gf0" secondAttribute="centerX" constant="18" id="9qF-uQ-Xg2"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerY" secondItem="Rsd-Ii-Gf0" secondAttribute="centerY" constant="184" id="9qM-CS-DDj"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerX" secondItem="YmV-vW-L7i" secondAttribute="centerX" constant="135.5" id="KEM-rt-S0I"/>
+                                                    <constraint firstAttribute="bottom" secondItem="8vA-hJ-sbw" secondAttribute="bottom" constant="35" id="OQE-e6-QIw"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerX" secondItem="5ql-Ya-8lp" secondAttribute="centerX" constant="118" id="RjZ-hE-4Hd"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerX" secondItem="8vM-qa-IYs" secondAttribute="centerX" constant="1" id="kIP-Ek-Eu7"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="centerY" secondItem="YmV-vW-L7i" secondAttribute="centerY" constant="238" id="mnF-ir-vOH"/>
+                                                    <constraint firstAttribute="bottom" secondItem="5ql-Ya-8lp" secondAttribute="bottom" constant="113" id="t2A-gE-zp0"/>
+                                                    <constraint firstItem="5ql-Ya-8lp" firstAttribute="top" secondItem="8vM-qa-IYs" secondAttribute="top" constant="211" id="umM-G5-5W0"/>
+                                                    <constraint firstItem="5ql-Ya-8lp" firstAttribute="top" secondItem="YmV-vW-L7i" secondAttribute="top" constant="159" id="vto-S3-tI5"/>
+                                                    <constraint firstItem="8vA-hJ-sbw" firstAttribute="leading" secondItem="8vM-qa-IYs" secondAttribute="leading" constant="20" id="x5d-9a-Hbg"/>
+                                                </constraints>
+                                            </customView>
                                         </subviews>
                                         <edgeInsets key="edgeInsets" left="40" right="40" top="0.0" bottom="0.0"/>
+                                        <constraints>
+                                            <constraint firstItem="8vM-qa-IYs" firstAttribute="leading" secondItem="3JX-vI-0mo" secondAttribute="leading" id="27D-UX-6L0"/>
+                                            <constraint firstAttribute="bottom" secondItem="8vM-qa-IYs" secondAttribute="bottom" id="Nff-xc-mKM"/>
+                                            <constraint firstAttribute="trailing" secondItem="8vM-qa-IYs" secondAttribute="trailing" id="gep-lW-RQT"/>
+                                        </constraints>
                                         <visibilityPriorities>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
                                             <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
                                             <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wlf-re-0g9">
-                                        <rect key="frame" x="460" y="0.0" width="312" height="337"/>
+                                        <rect key="frame" x="489" y="0.0" width="312" height="337"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="312" id="2ki-rz-KzK"/>
                                             <constraint firstAttribute="width" constant="312" id="3me-MV-zKe"/>
@@ -167,12 +177,6 @@ DQ
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottomRight" imageScaling="proportionallyDown" image="Background" id="bYu-ta-OZA"/>
                                     </imageView>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="4pk-hD-HxN" firstAttribute="top" secondItem="6Xg-fw-xDk" secondAttribute="top" constant="40" id="4n8-bp-5s6"/>
-                                    <constraint firstItem="Wlf-re-0g9" firstAttribute="leading" secondItem="4pk-hD-HxN" secondAttribute="trailing" constant="40" id="ZLW-d4-wzv"/>
-                                    <constraint firstAttribute="bottom" secondItem="4pk-hD-HxN" secondAttribute="bottom" constant="40" id="mYu-28-7RW"/>
-                                    <constraint firstItem="4pk-hD-HxN" firstAttribute="leading" secondItem="6Xg-fw-xDk" secondAttribute="leading" constant="40" id="wVy-dU-fqs"/>
-                                </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
@@ -184,10 +188,10 @@ DQ
                             </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="Oer-Cw-O0d"/>
-                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="THq-um-7Et"/>
-                            <constraint firstAttribute="trailing" secondItem="6Xg-fw-xDk" secondAttribute="trailing" id="WC3-KC-inc"/>
-                            <constraint firstAttribute="bottom" secondItem="6Xg-fw-xDk" secondAttribute="bottom" id="icW-lR-OlZ"/>
+                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="EJo-pT-S3g"/>
+                            <constraint firstAttribute="trailing" secondItem="6Xg-fw-xDk" secondAttribute="trailing" id="SDT-EE-J6g"/>
+                            <constraint firstItem="6Xg-fw-xDk" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="keK-jv-YCa"/>
+                            <constraint firstAttribute="bottom" secondItem="6Xg-fw-xDk" secondAttribute="bottom" id="zWe-IM-aEw"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
@@ -198,7 +202,7 @@ DQ
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="654"/>
+            <point key="canvasLocation" x="74.5" y="654"/>
         </scene>
     </scenes>
     <resources>
