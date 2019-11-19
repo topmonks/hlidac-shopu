@@ -1,18 +1,3 @@
-// RUN SCRIPT
-(global => {
-  const callback = () => {
-    if (!global.main) {
-      console.error('Bundle not injected');
-      return;
-    }
-    safari.extension.dispatchMessage('Hlídač Shopů');
-    main().catch(err => console.error(err));
-    console.log('👋 Safari');
-  };
-
-  document.addEventListener('DOMContentLoaded', callback);
-  if (document.readyState !== 'loading') callback();
-})(window);
 /*!
  * Chart.js v2.8.0
  * https://www.chartjs.org
@@ -19477,13 +19462,14 @@ window.shops["alza"] = {
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
     const currentPrice =
-      cleanPrice(".pricenormal .c2") ||
+      cleanPrice("#prices .price_withVat") ||
       cleanPrice("#prices .bigPrice") ||
-      cleanPrice("#prices .price_withVat");
+      cleanPrice(".pricenormal .c2");
     const originalPrice =
+      cleanPrice("#prices .origPrice") ||
+      cleanPrice("#prices .price_compare") ||
       cleanPrice(".priceCompare .c2") ||
-      cleanPrice(".comparePrice .crossPrice") ||
-      cleanPrice("#prices .price_compare");
+      cleanPrice(".comparePrice .crossPrice");
 
     return { itemId, title, currentPrice, originalPrice };
   },
@@ -20209,7 +20195,7 @@ function* daysBetween(start, end) {
 function getShopName(href) {
   const url = new URL(href);
   const domainParts = url.host.split(".");
-  domainParts.pop();
+  domainParts.pop(); // get rid of TLD
   return domainParts.pop();
 }
 
@@ -20252,8 +20238,8 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   if (max_price === "null" && real_sale === "null") {
     return null;
   }
-  if (max_price !== "null" && currentPrice !== null) {
-    const origPrice = parseFloat(max_price);
+  const origPrice = parseFloat(max_price);
+  if (max_price !== "null" && currentPrice !== null && !isNaN(origPrice)) {
     return (100 * (origPrice - currentPrice)) / origPrice;
   }
   if (real_sale !== "null") {
@@ -20262,13 +20248,14 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
 };
 
 async function main() {
-  const shopName = getShopName(window.location.href);
+  console.group("Hlídačshopů.cz");
+  const shopName = getShopName(location.href);
   const shop = window.shops[shopName];
   if (!shop) {
     console.error("No shop found");
     return;
   }
-  shop.onDetailPage(async function(repaint) {
+  shop.onDetailPage(async repaint => {
     try {
       const info = shop.getInfo();
       if (!info) {
@@ -20280,7 +20267,7 @@ async function main() {
       if (checkElem && !repaint) {
         return false;
       }
-      const url = info.url || window.location.href;
+      const url = info.url || location.href;
       const res = await fetchData(
         url,
         info.itemId,
@@ -20289,11 +20276,11 @@ async function main() {
         info.currentPrice
       );
       if (res.metadata.error) {
-        console.log("Error fetching data: ", res.metadata.error);
+        console.error("Error fetching data: ", res.metadata.error);
         return false;
       }
       if (res.data.length === 0) {
-        console.log("No data found:", res);
+        console.error("No data found:", res);
         return false;
       }
       // Inject our HTML code
@@ -20314,11 +20301,13 @@ async function main() {
       const dataset = createDataset(res.data);
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
-      console.log(`Graph loaded for ${info.itemId}`, { info, res });
+      console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
       return true;
     } catch (e) {
       console.error(e);
+    } finally {
+      console.groupEnd();
     }
   });
 }
