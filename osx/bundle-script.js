@@ -10,6 +10,7 @@ const __dest_path = path.resolve(
 );
 
 const scripts = [
+  path.resolve(__dirname, './run-script.js'),
   `${__source_path}/lib/*`,
   `${__source_path}/shops/*`,
   `${__source_path}/index.js`,
