@@ -6,7 +6,7 @@
     "build": "run-p build:*",
     "start": "run-p start:*",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "osx:bundle": "node ./osx/bundle-script.js",
+    "osx:bundle": "node ./osx/bundle.js",
     "osx:open": "xed ./osx/hlidac-shopu/hlidac-shopu.xcodeproj",
     "lint:firefox": "web-ext lint --source-dir ./extension-dist/ -o text",
     "prebuild:firefox": "cp -R extension/ ./extension-dist/; pushd ./extension-dist; rm -f ./README.md ./Makefile ./background.js; cat ../extension/manifest.json | jq 'del(.background)' > ./manifest.json; popd",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "devDependencies": {
     "npm-run-all": "^4.1.5",
+    "plist": "^3.0.1",
     "prettier": "^1.19.1",
     "web-ext": "^3.2.1"
   },
