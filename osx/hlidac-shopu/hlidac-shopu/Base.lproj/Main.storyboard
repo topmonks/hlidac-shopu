@@ -99,19 +99,19 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="hlidac_shopu" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="329"/>
+                    <stackView key="view" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="Pri-6b-2yu">
+                        <rect key="frame" x="0.0" y="0.0" width="515" height="337"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="42" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZLV-xE-AGT">
-                                <rect key="frame" x="0.0" y="34" width="480" height="250"/>
+                            <stackView distribution="fillEqually" orientation="vertical" alignment="centerX" spacing="42" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZLV-xE-AGT">
+                                <rect key="frame" x="32" y="32" width="164" height="273"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-e2-WQh" userLabel="IconView">
-                                        <rect key="frame" x="176" y="121" width="128" height="129"/>
+                                        <rect key="frame" x="18" y="121" width="128" height="152"/>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="AppIcon" id="Hhb-TZ-Dhg"/>
                                     </imageView>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EB0-ac-UZR">
-                                        <rect key="frame" x="198" y="63" width="85" height="16"/>
+                                        <rect key="frame" x="40" y="63" width="85" height="16"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Hlídač Shopů" id="S7v-7o-3vW">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -119,7 +119,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ooh-eV-eLQ">
-                                        <rect key="frame" x="152" y="-7" width="176" height="32"/>
+                                        <rect key="frame" x="-6" y="-7" width="176" height="32"/>
                                         <buttonCell key="cell" type="push" title="Otevřít Safari rozšíření" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Srx-0j-A4D">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -143,14 +143,35 @@ DQ
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Mwz-gc-ppc">
+                                <rect key="frame" x="204" y="0.0" width="311" height="337"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Background" id="uk1-si-zIG"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
+                                        <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="ZLV-xE-AGT" secondAttribute="trailing" id="7aD-Ze-9ed"/>
-                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="45" id="AJ3-sx-ZQx"/>
-                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="34" id="KVY-ss-lTJ"/>
-                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="mT6-ee-vkp"/>
+                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="top" secondItem="Pri-6b-2yu" secondAttribute="top" constant="32" id="1yc-5n-eoU"/>
+                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="32" id="2CG-uB-jRM"/>
+                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="leading" secondItem="Pri-6b-2yu" secondAttribute="leading" constant="32" id="4m0-O4-9FB"/>
                         </constraints>
-                    </view>
+                        <visibilityPriorities>
+                            <integer value="1000"/>
+                            <integer value="1000"/>
+                        </visibilityPriorities>
+                        <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
+                            <real value="3.4028234663852886e+38"/>
+                        </customSpacing>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
+                                <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </stackView>
                     <connections>
                         <outlet property="appNameLabel" destination="EB0-ac-UZR" id="SDO-j1-PQa"/>
                     </connections>
@@ -162,5 +183,6 @@ DQ
     </scenes>
     <resources>
         <image name="AppIcon" width="128" height="128"/>
+        <image name="Background" width="311" height="337"/>
     </resources>
 </document>
