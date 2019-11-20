@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSExtension</key>
@@ -35,24 +35,22 @@
 				<string>script.js</string>
 			</dict>
 		</array>
+		<key>SFSafariToolbarItem</key>
+		<dict>
+			<key>Action</key>
+			<string>Command</string>
+			<key>Identifier</key>
+			<string>Button</string>
+			<key>Image</key>
+			<string>ToolbarItemIcon.pdf</string>
+			<key>Label</key>
+			<string>Your Button</string>
+		</dict>
 		<key>SFSafariWebsiteAccess</key>
 		<dict>
 			<key>Allowed Domains</key>
 			<array>
-				<string>www.alza.org</string>
-				<string>www.mall.cz</string>
-				<string>www.alza.cz</string>
-				<string>www.czc.cz</string>
-				<string>www.mironet.cz</string>
-				<string>www.datart.cz</string>
-				<string>nakup.itesco.cz</string>
-				<string>www.rohlik.cz</string>
-				<string>www.notino.cz</string>
-				<string>www.tsbohemia.cz</string>
-				<string>www.mountfield.cz</string>
-				<string>www.lekarna.cz</string>
-				<string>www.kasa.cz</string>
-				<string>www.kosik.cz</string>
+				<string>*.webkit.org</string>
 			</array>
 			<key>Level</key>
 			<string>Some</string>
@@ -61,6 +59,6 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2019 TopMonks</string>
 	<key>NSHumanReadableDescription</key>
-	<string>Oficiální rozšíření Hlídač Shopů do prohlížeče Safari.</string>
+	<string>Oficiální rozšíření Hlídač Shopů pro Safari</string>
 </dict>
 </plist>

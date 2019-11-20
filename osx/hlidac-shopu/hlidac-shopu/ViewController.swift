@@ -2,21 +2,18 @@
 //  ViewController.swift
 //  hlidac-shopu
 //
-//  Created by Daniel Hromada on 09/11/2019.
+//  Created by Daniel Hromada on 20/11/2019.
 //  Copyright © 2019 Daniel Hromada. All rights reserved.
 //
 
 import Cocoa
 import SafariServices.SFSafariApplication
-import SwiftUI
-
 
 class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
     
     @IBAction func openSafariExtensionPreferences(_ sender: AnyObject?) {
         SFSafariApplication.showPreferencesForExtension(withIdentifier: "com.topmonks.hlidac-shopu.extension") { error in
@@ -25,15 +22,6 @@ class ViewController: NSViewController {
 
             }
         }
-        
-        // self.view.window?.close()
     }
-    
-    @IBAction func openHelpLink(_ sender: AnyObject?) {
-        if let url = URL(string: "https://www.hlidacshopu.cz/") {
-            NSWorkspace.shared.open(url);
-        }
-    }
-    
 
 }

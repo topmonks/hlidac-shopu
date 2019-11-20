@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  hlidac-shopu
 //
-//  Created by Daniel Hromada on 09/11/2019.
+//  Created by Daniel Hromada on 20/11/2019.
 //  Copyright © 2019 Daniel Hromada. All rights reserved.
 //
 
