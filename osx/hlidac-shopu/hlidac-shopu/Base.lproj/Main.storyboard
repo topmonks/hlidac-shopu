@@ -95,7 +95,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <stackView distribution="fillEqually" orientation="vertical" alignment="leading" spacing="51" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZLV-xE-AGT">
-                                <rect key="frame" x="78" y="32" width="255" height="182"/>
+                                <rect key="frame" x="32" y="40" width="255" height="182"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ru2-PI-Gf3">
                                         <rect key="frame" x="0.0" y="107" width="255" height="75"/>
@@ -129,7 +129,7 @@ Hlídače Shopů.</string>
                                         </customSpacing>
                                     </stackView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mcS-8P-0DR">
-                                        <rect key="frame" x="-28" y="-32" width="264" height="88"/>
+                                        <rect key="frame" x="-21" y="-32" width="264" height="88"/>
                                         <buttonCell key="cell" type="roundTextured" alternateTitle="Install" bezelStyle="texturedRounded" image="Button" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="fnA-eb-itW">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -140,7 +140,7 @@ Hlídače Shopů.</string>
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="mcS-8P-0DR" firstAttribute="leading" secondItem="ZLV-xE-AGT" secondAttribute="leading" constant="-28" id="13c-UR-vNp"/>
+                                    <constraint firstItem="mcS-8P-0DR" firstAttribute="leading" secondItem="ZLV-xE-AGT" secondAttribute="leading" constant="-21" id="13c-UR-vNp"/>
                                     <constraint firstAttribute="bottom" secondItem="mcS-8P-0DR" secondAttribute="bottom" constant="-32" id="cO5-0z-WJ3"/>
                                 </constraints>
                                 <visibilityPriorities>
@@ -166,9 +166,9 @@ Hlídače Shopů.</string>
                         <constraints>
                             <constraint firstItem="Mwz-gc-ppc" firstAttribute="leading" secondItem="ZLV-xE-AGT" secondAttribute="trailing" constant="32" id="LFd-mB-zaF"/>
                             <constraint firstAttribute="trailing" secondItem="Mwz-gc-ppc" secondAttribute="trailing" id="Pur-aF-4Jb"/>
-                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="32" id="TLS-xW-J9E"/>
                             <constraint firstItem="ZLV-xE-AGT" firstAttribute="leading" secondItem="Pri-6b-2yu" secondAttribute="leading" constant="32" id="X8r-d1-zHr"/>
                             <constraint firstAttribute="bottom" secondItem="Mwz-gc-ppc" secondAttribute="bottom" id="fe5-CB-yjx"/>
+                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="40" id="ifQ-FU-xLM"/>
                         </constraints>
                         <visibilityPriorities>
                             <integer value="1000"/>
