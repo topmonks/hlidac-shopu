@@ -11,7 +11,7 @@
     "build:firefox": "web-ext build --source-dir ./extension-dist/ --artifacts-dir ./dist --overwrite-dest",
     "start:firefox": "web-ext run --source-dir ./extension-dist/ --firefox=firefoxdeveloperedition",
     "build:chrome": "mkdir -p dist; pushd extension; zip ../dist/chrome-extension-$(cat manifest.json | jq -r '.version').zip manifest.json popup/* icons/* `cat manifest.json | jq -r '.content_scripts[0].js[]'` `cat manifest.json | jq -r '.background.scripts[]'`; popd",
-    "build:osx": "node ./osx/bundle.js",
+    "bundle:osx": "node ./osx/bundle.js",
     "open:osx": "xed ./osx/hlidac-shopu/hlidac-shopu.xcodeproj"
   },
   "repository": {

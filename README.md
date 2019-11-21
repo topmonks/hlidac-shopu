@@ -15,14 +15,14 @@ We are using npm scripts for project automation.
 
 You will need:
 
-* Node.js 10
-* Firefox Developer Edition
-* Chrome
-* XCode Command Line Tools
+- Node.js 10
+- Firefox Developer Edition
+- Chrome
+- XCode Command Line Tools
 
 ## Building extensions
 
-All extensions will be build to `./dist` folder by calling the `npm build` script.
+All extensions (except Safari version) will be build to `./dist` folder by calling the `npm build` script.
 
 Firefox supports Dark and Light themes for action icons and we are optimising action icons for these.
 Chrome doesn't support action icons theming via `manifest.json` so we use `background.js` script to
@@ -40,8 +40,11 @@ To build Chrome extension run `npm run build:chrome`. It will create package in 
 
 ### Safari extension
 
-TODO
+1. Get latest bundle script and domain (eshops) permissions for Safari by running `npm run bundle:osx`
+2. Distribute app by Xcodes: `npm run open:osx` > Archive > Distribute App\*
 
------
+\* Use autosigning feature and macOS distribution certificate created under the TopMonks s.r.o Apple developer team.
+
+---
 
 © 2018-2019 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
