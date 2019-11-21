@@ -77,7 +77,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="App Name" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" id="IQv-IB-iLA">
+                    <window key="window" title="Hlídač Shopů" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -99,53 +99,71 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="hlidac_shopu" customModuleProvider="target" sceneMemberID="viewController">
-                    <stackView key="view" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="Pri-6b-2yu">
-                        <rect key="frame" x="0.0" y="0.0" width="515" height="337"/>
+                    <stackView key="view" distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="Pri-6b-2yu">
+                        <rect key="frame" x="0.0" y="0.0" width="676" height="353"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fillEqually" orientation="vertical" alignment="centerX" spacing="42" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZLV-xE-AGT">
-                                <rect key="frame" x="32" y="32" width="164" height="273"/>
+                            <stackView distribution="fillEqually" orientation="vertical" alignment="leading" spacing="110" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZLV-xE-AGT">
+                                <rect key="frame" x="32" y="32" width="255" height="241"/>
                                 <subviews>
-                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-e2-WQh" userLabel="IconView">
-                                        <rect key="frame" x="18" y="121" width="128" height="152"/>
-                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="AppIcon" id="Hhb-TZ-Dhg"/>
-                                    </imageView>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EB0-ac-UZR">
-                                        <rect key="frame" x="40" y="63" width="85" height="16"/>
-                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Hlídač Shopů" id="S7v-7o-3vW">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ooh-eV-eLQ">
-                                        <rect key="frame" x="-6" y="-7" width="176" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Otevřít Safari rozšíření" alternateTitle="Install" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingMiddle" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Srx-0j-A4D">
+                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ru2-PI-Gf3">
+                                        <rect key="frame" x="0.0" y="166" width="255" height="75"/>
+                                        <subviews>
+                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EB0-ac-UZR">
+                                                <rect key="frame" x="-2" y="54" width="108" height="21"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Poslední věc:" id="S7v-7o-3vW">
+                                                    <font key="font" size="18" name="HelveticaNeue-Light"/>
+                                                    <color key="textColor" red="0.59215686274509804" green="0.59215686274509804" blue="0.59215686274509804" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bhc-e9-FU9">
+                                                <rect key="frame" x="-2" y="0.0" width="259" height="46"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" id="zfi-On-78W">
+                                                    <font key="font" size="19" name="HelveticaNeue-Bold"/>
+                                                    <string key="title">Zaškrtněte v Safari rozšíření
+Hlídače Shopů.</string>
+                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                        </subviews>
+                                        <visibilityPriorities>
+                                            <integer value="1000"/>
+                                            <integer value="1000"/>
+                                        </visibilityPriorities>
+                                        <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
+                                            <real value="3.4028234663852886e+38"/>
+                                        </customSpacing>
+                                    </stackView>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mcS-8P-0DR">
+                                        <rect key="frame" x="-28" y="-32" width="264" height="88"/>
+                                        <buttonCell key="cell" type="roundTextured" alternateTitle="Install" bezelStyle="texturedRounded" image="Button" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="fnA-eb-itW">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
-                                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                                            <connections>
-                                                <action selector="openSafariExtensionPreferences:" target="XfG-lQ-9wD" id="vKk-Xb-MPh"/>
-                                            </connections>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="openSafariExtensionPreferences:" target="XfG-lQ-9wD" id="DOy-vh-d4G"/>
+                                        </connections>
                                     </button>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="mcS-8P-0DR" firstAttribute="leading" secondItem="ZLV-xE-AGT" secondAttribute="leading" constant="-28" id="13c-UR-vNp"/>
+                                    <constraint firstAttribute="bottom" secondItem="mcS-8P-0DR" secondAttribute="bottom" constant="-32" id="cO5-0z-WJ3"/>
+                                </constraints>
                                 <visibilityPriorities>
-                                    <integer value="1000"/>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
                                 </visibilityPriorities>
                                 <customSpacing>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Mwz-gc-ppc">
-                                <rect key="frame" x="204" y="0.0" width="311" height="337"/>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Background" id="uk1-si-zIG"/>
+                                <rect key="frame" x="365" y="0.0" width="311" height="337"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottomRight" imageScaling="proportionallyDown" image="Background" id="uk1-si-zIG"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
                                         <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -153,10 +171,13 @@ DQ
                                 </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
+                        <edgeInsets key="edgeInsets" left="48" right="0.0" top="48" bottom="0.0"/>
                         <constraints>
-                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="top" secondItem="Pri-6b-2yu" secondAttribute="top" constant="32" id="1yc-5n-eoU"/>
-                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="32" id="2CG-uB-jRM"/>
-                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="leading" secondItem="Pri-6b-2yu" secondAttribute="leading" constant="32" id="4m0-O4-9FB"/>
+                            <constraint firstItem="Mwz-gc-ppc" firstAttribute="leading" secondItem="ZLV-xE-AGT" secondAttribute="trailing" constant="32" id="LFd-mB-zaF"/>
+                            <constraint firstAttribute="trailing" secondItem="Mwz-gc-ppc" secondAttribute="trailing" id="Pur-aF-4Jb"/>
+                            <constraint firstAttribute="bottom" secondItem="ZLV-xE-AGT" secondAttribute="bottom" constant="32" id="TLS-xW-J9E"/>
+                            <constraint firstItem="ZLV-xE-AGT" firstAttribute="leading" secondItem="Pri-6b-2yu" secondAttribute="leading" constant="32" id="X8r-d1-zHr"/>
+                            <constraint firstAttribute="bottom" secondItem="Mwz-gc-ppc" secondAttribute="bottom" id="fe5-CB-yjx"/>
                         </constraints>
                         <visibilityPriorities>
                             <integer value="1000"/>
@@ -172,17 +193,14 @@ DQ
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </stackView>
-                    <connections>
-                        <outlet property="appNameLabel" destination="EB0-ac-UZR" id="SDO-j1-PQa"/>
-                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="655"/>
+            <point key="canvasLocation" x="129" y="619.5"/>
         </scene>
     </scenes>
     <resources>
-        <image name="AppIcon" width="128" height="128"/>
         <image name="Background" width="311" height="337"/>
+        <image name="Button" width="264" height="88"/>
     </resources>
 </document>
