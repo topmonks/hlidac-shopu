@@ -23,6 +23,7 @@ try {
 
   execSync(`rm "${__dest_path}/script.js" || true`);
   execSync(`cat ${scripts} > "${__dest_path}/script.js"`);
+  console.log("Safari script.js bundled.");
 } catch (error) {
   console.error("Bundle script failed.", error);
 }
@@ -51,6 +52,7 @@ try {
     encoding: "utf8",
     flag: "w"
   });
+  console.log("Safari permissions generated.");
 } catch (error) {
   console.error("Generate website permissions failed", error);
 }
