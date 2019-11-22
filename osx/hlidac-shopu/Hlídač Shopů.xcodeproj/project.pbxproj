@@ -403,7 +403,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
@@ -412,7 +412,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -425,7 +425,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu Extension/hlidac_shopu_Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac-shopu Extension/Info.plist";
@@ -434,7 +434,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -450,7 +450,7 @@
 				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
@@ -458,7 +458,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -473,7 +473,7 @@
 				CODE_SIGN_ENTITLEMENTS = "hlidac-shopu/hlidac_shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
@@ -481,7 +481,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
