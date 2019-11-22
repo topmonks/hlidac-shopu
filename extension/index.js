@@ -216,7 +216,7 @@ function createDataset(data) {
 const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
-  o: originalPrice,
+  o: originalPrice || "",
   d: new Date().toISOString()
 });
 
@@ -281,7 +281,7 @@ async function main() {
       } else {
         discountEl.parentElement.classList.add("discount--no-data");
       }
-      if (info.currentPrice && info.originalPrice) {
+      if (info.currentPrice) {
         res.data.push(createDataPoint(info));
       }
       const dataset = createDataset(res.data);
