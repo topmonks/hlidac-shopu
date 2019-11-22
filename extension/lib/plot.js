@@ -26,8 +26,8 @@ function plot(canvas, prices) {
   const max = Math.max(...values);
   const ctx = canvas.getContext("2d");
 
-  const count = values.length;
-  const stepSize = Math.floor(count / 12);
+  const count = prices.currentPrice.length;
+  const stepSize = Math.floor(count / 12) || 1;
 
   return new Chart(ctx, {
     type: "line",
