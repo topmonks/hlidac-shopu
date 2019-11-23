@@ -54,8 +54,24 @@ window.shops["alza"] = {
     return { itemId, title: null, url, currentPrice, originalPrice };
   },
 
+  getMobileDetailInfo() {
+    const elem = document.querySelector("#detailPage");
+    if (!elem) return;
+
+    const itemId = location.href.match(/d(\d+)\.htm$/).pop();
+    const title = elem.querySelector("h1").innerText.trim();
+    const currentPrice = cleanPrice(".price .normal");
+    const originalPrice = cleanPrice(".price .compare");
+
+    return { itemId, title, currentPrice, originalPrice };
+  },
+
   getInfo() {
-    return this.getDetailInfo() || this.getDailySlasherInfo();
+    return (
+      this.getDetailInfo() ||
+      this.getMobileDetailInfo() ||
+      this.getDailySlasherInfo()
+    );
   },
 
   insertChartElement(chartMarkup) {
@@ -64,6 +80,13 @@ window.shops["alza"] = {
       const markup = chartMarkup({ "margin-bottom": "0" });
       detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
+    }
+
+    const mobileElem = document.querySelector(".main-btn-block");
+    if (mobileElem) {
+      const markup = chartMarkup();
+      mobileElem.insertAdjacentHTML("afterend", markup);
+      return mobileElem;
     }
 
     const dailySlasherElem = document.querySelector("#dailySlasher .running");
