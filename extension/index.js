@@ -101,6 +101,13 @@ function chartWrapper(styles) {
           padding: 6px 10px 6px;
           margin-left: 16px;
         }
+        #hlidacShopu .hs-real-discount.hs-real-discount--negative {
+            background-color: #ca0505;
+            color: #fff;
+        }
+        #hlidacShopu .hs-real-discount.hs-real-discount--no-data {
+            display: none;
+        }
       </style>
       <div class="hs-header">
         <div>
@@ -225,7 +232,12 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
     return null;
   }
   const origPrice = parseFloat(max_price);
-  if (max_price !== "null" && currentPrice !== null && !isNaN(origPrice)) {
+  if (
+    max_price !== "null" &&
+    currentPrice !== null &&
+    !isNaN(origPrice) &&
+    origPrice !== 0.0
+  ) {
     return (100 * (origPrice - currentPrice)) / origPrice;
   }
   if (real_sale !== "null") {
@@ -276,10 +288,15 @@ async function main() {
 
       const discountEl = document.getElementById("hlidacShopu2-discount");
       const discount = realDiscount(res.metadata, info.currentPrice);
-      if (discount != null) {
+      if (discount != null && discount < 0) {
+        const parentElement = discountEl.parentElement;
+        parentElement.classList.add("hs-real-discount--negative");
+        parentElement.querySelector("abbr").textContent = "Reálně zdraženo";
+        discountEl.innerText = "";
+      } else if (discount != null) {
         discountEl.innerText = formatPercents(discount);
       } else {
-        discountEl.parentElement.classList.add("discount--no-data");
+        discountEl.parentElement.classList.add("hs-real-discount--no-data");
       }
       if (info.currentPrice) {
         res.data.push(createDataPoint(info));
