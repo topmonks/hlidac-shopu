@@ -65,6 +65,19 @@ window.shops["itesco"] = {
     };
     const markup = chartMarkup(styles);
     elem.insertAdjacentHTML("afterend", markup);
+    const style = document.createElement("style");
+    style.textContent = `
+      @media screen and (max-width: 767px) {
+        .product-details-tile .product-controls--wrapper .basket-feedback__wrapper {
+          min-height: 0;
+        }
+        #hlidacShopu {
+          margin-top: 0 !important;
+          width: calc(100% - 32px) !important;
+        }
+      }
+    `;
+    elem.insertAdjacentElement("beforebegin", style);
     return elem;
   }
 };
