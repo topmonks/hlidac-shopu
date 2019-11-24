@@ -40,10 +40,9 @@ To build Chrome extension run `npm run build:chrome`. It will create package in 
 
 ### Safari extension
 
-1. Get latest bundle script and domain (eshops) permissions for Safari by running `npm run bundle:osx`
-2. Increase Version & Build numbers of _hlidac-shopu_ **and** _hlidac-shopu Extension_ targets in General panel Identity section (these numbers has to match)
-3. Distribute app by Xcodes: `npm run open:osx` > Product > Archive > Distribute App\*
-4. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer
+1. Run `npm run bundle:osx` to get latest bundle script, domains (eshops) permissions and current version for Safari
+2. Distribute app by Xcodes: `npm run open:osx` > Product > Archive > Distribute App\*
+3. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer
 
 \* Use autosigning feature and use the TopMonks s.r.o Apple developer team account. If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer" from Topmonks 1Password.
 

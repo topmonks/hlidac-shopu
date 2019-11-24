@@ -19340,8 +19340,8 @@ function plot(canvas, prices) {
   const max = Math.max(...values);
   const ctx = canvas.getContext("2d");
 
-  const count = values.length;
-  const stepSize = Math.floor(count / 12);
+  const count = prices.currentPrice.length;
+  const stepSize = Math.floor(count / 12) || 1;
 
   return new Chart(ctx, {
     type: "line",
@@ -19505,8 +19505,24 @@ window.shops["alza"] = {
     return { itemId, title: null, url, currentPrice, originalPrice };
   },
 
+  getMobileDetailInfo() {
+    const elem = document.querySelector("#detailPage");
+    if (!elem) return;
+
+    const itemId = location.href.match(/d(\d+)\.htm$/).pop();
+    const title = elem.querySelector("h1").innerText.trim();
+    const currentPrice = cleanPrice(".price .normal");
+    const originalPrice = cleanPrice(".price .compare");
+
+    return { itemId, title, currentPrice, originalPrice };
+  },
+
   getInfo() {
-    return this.getDetailInfo() || this.getDailySlasherInfo();
+    return (
+      this.getDetailInfo() ||
+      this.getMobileDetailInfo() ||
+      this.getDailySlasherInfo()
+    );
   },
 
   insertChartElement(chartMarkup) {
@@ -19515,6 +19531,13 @@ window.shops["alza"] = {
       const markup = chartMarkup({ "margin-bottom": "0" });
       detailElem.insertAdjacentHTML("afterend", markup);
       return detailElem;
+    }
+
+    const mobileElem = document.querySelector(".main-btn-block");
+    if (mobileElem) {
+      const markup = chartMarkup();
+      mobileElem.insertAdjacentHTML("afterend", markup);
+      return mobileElem;
     }
 
     const dailySlasherElem = document.querySelector("#dailySlasher .running");
@@ -19584,6 +19607,18 @@ window.shops["datart"] = {
 
     const markup = chartMarkup({ "margin-bottom": "0" });
     elem.insertAdjacentHTML("beforebegin", markup);
+    const style = document.createElement("style");
+    style.textContent = `
+      @media screen and (max-width: 767px) {
+        #product-detail-header-top-wrapper {
+          height: 972px;
+        }
+        #hlidacShopu {
+          margin-top: 566px !important;
+        }
+      }
+    `;
+    elem.insertAdjacentElement("beforebegin", style);
     return elem;
   }
 };
@@ -19654,6 +19689,19 @@ window.shops["itesco"] = {
     };
     const markup = chartMarkup(styles);
     elem.insertAdjacentHTML("afterend", markup);
+    const style = document.createElement("style");
+    style.textContent = `
+      @media screen and (max-width: 767px) {
+        .product-details-tile .product-controls--wrapper .basket-feedback__wrapper {
+          min-height: 0;
+        }
+        #hlidacShopu {
+          margin-top: 0 !important;
+          width: calc(100% - 32px) !important;
+        }
+      }
+    `;
+    elem.insertAdjacentElement("beforebegin", style);
     return elem;
   }
 };
@@ -20130,6 +20178,13 @@ function chartWrapper(styles) {
           padding: 6px 10px 6px;
           margin-left: 16px;
         }
+        #hlidacShopu .hs-real-discount.hs-real-discount--negative {
+            background-color: #ca0505;
+            color: #fff;
+        }
+        #hlidacShopu .hs-real-discount.hs-real-discount--no-data {
+            display: none;
+        }
       </style>
       <div class="hs-header">
         <div>
@@ -20245,7 +20300,7 @@ function createDataset(data) {
 const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
-  o: originalPrice,
+  o: originalPrice || "",
   d: new Date().toISOString()
 });
 
@@ -20254,7 +20309,12 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
     return null;
   }
   const origPrice = parseFloat(max_price);
-  if (max_price !== "null" && currentPrice !== null && !isNaN(origPrice)) {
+  if (
+    max_price !== "null" &&
+    currentPrice !== null &&
+    !isNaN(origPrice) &&
+    origPrice !== 0.0
+  ) {
     return (100 * (origPrice - currentPrice)) / origPrice;
   }
   if (real_sale !== "null") {
@@ -20305,12 +20365,17 @@ async function main() {
 
       const discountEl = document.getElementById("hlidacShopu2-discount");
       const discount = realDiscount(res.metadata, info.currentPrice);
-      if (discount != null) {
+      if (discount != null && discount < 0) {
+        const parentElement = discountEl.parentElement;
+        parentElement.classList.add("hs-real-discount--negative");
+        parentElement.querySelector("abbr").textContent = "Reálně zdraženo";
+        discountEl.innerText = "";
+      } else if (discount != null) {
         discountEl.innerText = formatPercents(discount);
       } else {
-        discountEl.parentElement.classList.add("discount--no-data");
+        discountEl.parentElement.classList.add("hs-real-discount--no-data");
       }
-      if (info.currentPrice && info.originalPrice) {
+      if (info.currentPrice) {
         res.data.push(createDataPoint(info));
       }
       const dataset = createDataset(res.data);

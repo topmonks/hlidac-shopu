@@ -81,7 +81,7 @@ try {
 try {
   if (!error) {
     execSync(
-      `git add ${__osx_root_path} && git commit -m "Budled Safari ${manifest.version} version"`
+      `git add ${__osx_root_path} && git commit -m "Bundled Safari ${manifest.version} version"`
     );
   }
 } catch (error) {
