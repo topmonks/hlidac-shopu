@@ -26,6 +26,18 @@ window.shops["datart"] = {
 
     const markup = chartMarkup({ "margin-bottom": "0" });
     elem.insertAdjacentHTML("beforebegin", markup);
+    const style = document.createElement("style");
+    style.textContent = `
+      @media screen and (max-width: 767px) {
+        #product-detail-header-top-wrapper {
+          height: 972px;
+        }
+        #hlidacShopu {
+          margin-top: 566px !important;
+        }
+      }
+    `;
+    elem.insertAdjacentElement("beforebegin", style);
     return elem;
   }
 };
