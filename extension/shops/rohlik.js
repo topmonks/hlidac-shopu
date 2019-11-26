@@ -33,9 +33,10 @@ window.shops["rohlik"] = {
     ).dataset.productId;
     const title = document.title.split("-");
     const t = title[0].trim();
-    const currentPrice =
-      cleanPrice("#productDetail .actionPrice") ||
-      cleanPrice("#productDetail .currentPrice");
+    const currentPrice = cleanPrice(
+      `#productDetail .actionPrice,
+       #productDetail .currentPrice`
+    );
     const originalPrice = cleanPrice("#productDetail del");
 
     return { itemId, title: t, currentPrice, originalPrice };
