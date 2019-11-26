@@ -19,7 +19,7 @@ window.shops["itesco"] = {
       );
       if (nakupItesco) {
         itesco_loaded = true;
-        cb().then(res => {
+        cb(true).then(res => {
           itesco_loaded = res;
         });
       }
