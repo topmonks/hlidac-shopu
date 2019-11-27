@@ -19476,15 +19476,19 @@ window.shops["alza"] = {
     const title = document
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
-    const currentPrice =
-      cleanPrice("#prices .price_withVat") ||
-      cleanPrice("#prices .bigPrice") ||
-      cleanPrice(".pricenormal .c2");
-    const originalPrice =
-      cleanPrice("#prices .origPrice") ||
-      cleanPrice("#prices .price_compare") ||
-      cleanPrice(".priceCompare .c2") ||
-      cleanPrice(".comparePrice .crossPrice");
+    const currentPrice = cleanPrice(
+      `#prices .price_withVat,
+       #prices .bigPrice,
+       .pricenormal .c2,
+       .priceactionnormal .c2`
+    );
+    const originalPrice = cleanPrice(
+      `#prices .origPrice,
+       #prices .price_compare,
+       .comparePrice .crossPrice,
+       .priceCompare .c2,
+       .pricecatalog1 .c2`
+    );
 
     return { itemId, title, currentPrice, originalPrice };
   },
@@ -19526,7 +19530,9 @@ window.shops["alza"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const detailElem = document.querySelector(".priceDetail");
+    const detailElem = document.querySelector(
+      ".priceDetail, .mediaPriceDetail"
+    );
     if (detailElem) {
       const markup = chartMarkup({ "margin-bottom": "0" });
       detailElem.insertAdjacentHTML("afterend", markup);
@@ -19643,7 +19649,7 @@ window.shops["itesco"] = {
       );
       if (nakupItesco) {
         itesco_loaded = true;
-        cb().then(res => {
+        cb(true).then(res => {
           itesco_loaded = res;
         });
       }
@@ -20023,9 +20029,10 @@ window.shops["rohlik"] = {
     ).dataset.productId;
     const title = document.title.split("-");
     const t = title[0].trim();
-    const currentPrice =
-      cleanPrice("#productDetail .actionPrice") ||
-      cleanPrice("#productDetail .currentPrice");
+    const currentPrice = cleanPrice(
+      `#productDetail .actionPrice,
+       #productDetail .currentPrice`
+    );
     const originalPrice = cleanPrice("#productDetail del");
 
     return { itemId, title: t, currentPrice, originalPrice };
