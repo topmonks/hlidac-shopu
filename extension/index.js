@@ -250,7 +250,7 @@ async function main() {
   const shopName = getShopName(location.href);
   const shop = window.shops[shopName];
   if (!shop) {
-    console.error("No shop found");
+    console.log("No shop found");
     return;
   }
   shop.onDetailPage(async repaint => {
