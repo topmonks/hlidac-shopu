@@ -3,8 +3,8 @@
 const { execSync } = require("child_process");
 const path = require("path");
 
-const __source_path = path.resolve(__dirname, "../extension");
-const __osx_root_path = path.resolve(__dirname, "./hlidac-shopu");
+const __source_path = path.resolve(__dirname, "../../extension");
+const __osx_root_path = path.resolve(__dirname);
 const __dest_path = path.resolve(__osx_root_path, "hlidac-shopu Extension");
 const manifest = require(`${__source_path}/manifest.json`);
 
