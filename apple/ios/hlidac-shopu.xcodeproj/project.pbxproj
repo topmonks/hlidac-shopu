@@ -13,7 +13,7 @@
 		8214B5812397B3A70068C025 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8214B57F2397B3A70068C025 /* Main.storyboard */; };
 		8214B5832397B3A80068C025 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8214B5822397B3A80068C025 /* Assets.xcassets */; };
 		8214B5862397B3A80068C025 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8214B5842397B3A80068C025 /* LaunchScreen.storyboard */; };
-		82AE438F239BA2E500FC2649 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82AE438E239BA2E500FC2649 /* Media.xcassets */; };
+		82750555239C34D0009E9076 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8214B5822397B3A80068C025 /* Assets.xcassets */; };
 		82AE4391239BA2E500FC2649 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AE4390239BA2E500FC2649 /* ActionViewController.swift */; };
 		82AE4394239BA2E500FC2649 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82AE4392239BA2E500FC2649 /* MainInterface.storyboard */; };
 		82AE4398239BA2E500FC2649 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82AE438C239BA2E500FC2649 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -54,7 +54,6 @@
 		8214B5852397B3A80068C025 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8214B5872397B3A80068C025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82AE438C239BA2E500FC2649 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		82AE438E239BA2E500FC2649 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		82AE4390239BA2E500FC2649 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		82AE4393239BA2E500FC2649 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		82AE4395239BA2E500FC2649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -114,7 +113,6 @@
 		82AE438D239BA2E500FC2649 /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
-				82AE438E239BA2E500FC2649 /* Media.xcassets */,
 				82AE4390239BA2E500FC2649 /* ActionViewController.swift */,
 				82AE4392239BA2E500FC2649 /* MainInterface.storyboard */,
 				82AE4395239BA2E500FC2649 /* Info.plist */,
@@ -214,8 +212,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82AE438F239BA2E500FC2649 /* Media.xcassets in Resources */,
 				82AE4394239BA2E500FC2649 /* MainInterface.storyboard in Resources */,
+				82750555239C34D0009E9076 /* Assets.xcassets in Resources */,
 				82AE439E239BB3F800FC2649 /* GetURL.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,6 +399,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -420,6 +419,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				INFOPLIST_FILE = "hlidac-shopu/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -434,9 +434,11 @@
 		82AE439A239BA2E500FC2649 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -453,9 +455,11 @@
 		82AE439B239BA2E500FC2649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

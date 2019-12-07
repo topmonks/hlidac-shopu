@@ -35,17 +35,11 @@
 			<true/>
 			<key>NSExtensionServiceAllowsTouchBarItem</key>
 			<true/>
-			<key>NSExtensionServiceFinderPreviewIconName</key>
-			<string>NSActionTemplate</string>
-			<key>NSExtensionServiceTouchBarBezelColorName</key>
-			<string>TouchBarBezel</string>
-			<key>NSExtensionServiceTouchBarIconName</key>
-			<string>NSActionTemplate</string>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>
 		<key>NSExtensionPointIdentifier</key>
-		<string>com.apple.ui-services</string>
+		<string>com.apple.share-services</string>
 	</dict>
 </dict>
 </plist>

@@ -27,23 +27,30 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashIcon" translatesAutoresizingMaskIntoConstraints="NO" id="3Xh-zN-D9y">
+                                <rect key="frame" x="40" y="200" width="240" height="128"/>
+                            </imageView>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cZS-E2-NhA">
                                 <rect key="frame" x="0.0" y="88" width="320" height="440"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <wkWebViewConfiguration key="configuration" allowsAirPlayForMediaPlayback="NO">
-                                    <dataDetectorTypes key="dataDetectorTypes"/>
+                                    <dataDetectorTypes key="dataDetectorTypes" none="YES"/>
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="VVe-Uw-JpX" firstAttribute="bottom" secondItem="cZS-E2-NhA" secondAttribute="bottom" id="2wU-L7-V6w"/>
                             <constraint firstItem="VVe-Uw-JpX" firstAttribute="trailing" secondItem="NOA-Dm-cuz" secondAttribute="trailing" id="A05-Pj-hrr"/>
                             <constraint firstItem="NOA-Dm-cuz" firstAttribute="leading" secondItem="VVe-Uw-JpX" secondAttribute="leading" id="HxO-8t-aoh"/>
+                            <constraint firstItem="3Xh-zN-D9y" firstAttribute="centerY" secondItem="zMn-AG-sqS" secondAttribute="centerY" id="I5l-lB-dc0"/>
                             <constraint firstItem="cZS-E2-NhA" firstAttribute="leading" secondItem="VVe-Uw-JpX" secondAttribute="leading" id="NGm-rI-Gl0"/>
+                            <constraint firstItem="VVe-Uw-JpX" firstAttribute="bottom" secondItem="3Xh-zN-D9y" secondAttribute="bottom" constant="200" id="gUZ-vp-tZz"/>
+                            <constraint firstItem="3Xh-zN-D9y" firstAttribute="leading" secondItem="VVe-Uw-JpX" secondAttribute="leading" constant="40" id="iqK-14-wnW"/>
                             <constraint firstItem="cZS-E2-NhA" firstAttribute="top" secondItem="NOA-Dm-cuz" secondAttribute="bottom" id="m4Y-Jx-87w"/>
+                            <constraint firstItem="3Xh-zN-D9y" firstAttribute="centerX" secondItem="NOA-Dm-cuz" secondAttribute="centerX" id="wVr-8S-gxI"/>
                             <constraint firstItem="NOA-Dm-cuz" firstAttribute="top" secondItem="VVe-Uw-JpX" secondAttribute="top" id="we0-1t-bgp"/>
                             <constraint firstItem="VVe-Uw-JpX" firstAttribute="trailing" secondItem="cZS-E2-NhA" secondAttribute="trailing" id="zMr-Fj-qcr"/>
                         </constraints>
@@ -61,4 +68,7 @@
             <point key="canvasLocation" x="137.68115942028987" y="105.80357142857143"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="SplashIcon" width="180" height="98"/>
+    </resources>
 </document>

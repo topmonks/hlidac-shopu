@@ -11,16 +11,14 @@ import WebKit
 import MobileCoreServices
 
 class ActionViewController: UIViewController {
-    private var url: NSURL?
-    
     @IBOutlet weak var webView: WKWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getAndUseURL()
+        getAndOpenURL()
     }
     
-    private func getAndUseURL() {
+    private func getAndOpenURL() {
         let extensionItem = extensionContext?.inputItems.first as! NSExtensionItem
         let itemProvider = extensionItem.attachments?.first!
         let propertyList = String(kUTTypePropertyList)
@@ -31,7 +29,6 @@ class ActionViewController: UIViewController {
                     if let results = dictionary[NSExtensionJavaScriptPreprocessingResultsKey] as? NSDictionary,
                         let urlString = results["URL"] as? String,
                         let url = NSURL(string: urlString) {
-                        self.url = url
                         
                         // Use gained URL
                         let myURL = URL(string:"https://www.hlidacshopu.cz/app/?url=\(url)")

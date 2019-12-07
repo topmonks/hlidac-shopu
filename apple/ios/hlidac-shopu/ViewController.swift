@@ -12,22 +12,15 @@ import WebKit
 
 class ViewController: UIViewController, WKUIDelegate {
 
-    var webView: WKWebView!
+    @IBOutlet weak var webView: WKWebView!
     
-    override func loadView() {
-        let webConfiguration = WKWebViewConfiguration()
-        
-        webView = WKWebView(frame: .zero, configuration: webConfiguration)
-        webView.uiDelegate = self
-        view = webView
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let myURL = URL(string:"https://www.hlidacshopu.cz/app/")
-        let myRequest = URLRequest(url: myURL!)
-        webView.load(myRequest)
+        let link = URL(string:"https://www.hlidacshopu.cz/app/")
+        let request = URLRequest(url: link!)
+        
+        self.webView.load(request)
     }
 
 }
