@@ -13,7 +13,36 @@
 		8214B5812397B3A70068C025 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8214B57F2397B3A70068C025 /* Main.storyboard */; };
 		8214B5832397B3A80068C025 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8214B5822397B3A80068C025 /* Assets.xcassets */; };
 		8214B5862397B3A80068C025 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8214B5842397B3A80068C025 /* LaunchScreen.storyboard */; };
+		82AE438F239BA2E500FC2649 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82AE438E239BA2E500FC2649 /* Media.xcassets */; };
+		82AE4391239BA2E500FC2649 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AE4390239BA2E500FC2649 /* ActionViewController.swift */; };
+		82AE4394239BA2E500FC2649 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82AE4392239BA2E500FC2649 /* MainInterface.storyboard */; };
+		82AE4398239BA2E500FC2649 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82AE438C239BA2E500FC2649 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		82AE439E239BB3F800FC2649 /* GetURL.js in Resources */ = {isa = PBXBuildFile; fileRef = 82AE439D239BB3F800FC2649 /* GetURL.js */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		82AE4396239BA2E500FC2649 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8214B56E2397B3A70068C025 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 82AE438B239BA2E500FC2649;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		82AE4399239BA2E500FC2649 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				82AE4398239BA2E500FC2649 /* ShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8214B5762397B3A70068C025 /* hlidac-shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hlidac-shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -24,10 +53,23 @@
 		8214B5822397B3A80068C025 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8214B5852397B3A80068C025 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8214B5872397B3A80068C025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82AE438C239BA2E500FC2649 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		82AE438E239BA2E500FC2649 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		82AE4390239BA2E500FC2649 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
+		82AE4393239BA2E500FC2649 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		82AE4395239BA2E500FC2649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82AE439D239BB3F800FC2649 /* GetURL.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = GetURL.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		8214B5732397B3A70068C025 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82AE4389239BA2E500FC2649 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -41,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				8214B5782397B3A70068C025 /* hlidac-shopu */,
+				82AE438D239BA2E500FC2649 /* ShareExtension */,
 				8214B5772397B3A70068C025 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				8214B5762397B3A70068C025 /* hlidac-shopu.app */,
+				82AE438C239BA2E500FC2649 /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +111,18 @@
 			path = "hlidac-shopu";
 			sourceTree = "<group>";
 		};
+		82AE438D239BA2E500FC2649 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				82AE438E239BA2E500FC2649 /* Media.xcassets */,
+				82AE4390239BA2E500FC2649 /* ActionViewController.swift */,
+				82AE4392239BA2E500FC2649 /* MainInterface.storyboard */,
+				82AE4395239BA2E500FC2649 /* Info.plist */,
+				82AE439D239BB3F800FC2649 /* GetURL.js */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -77,15 +133,34 @@
 				8214B5722397B3A70068C025 /* Sources */,
 				8214B5732397B3A70068C025 /* Frameworks */,
 				8214B5742397B3A70068C025 /* Resources */,
+				82AE4399239BA2E500FC2649 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				82AE4397239BA2E500FC2649 /* PBXTargetDependency */,
 			);
 			name = "hlidac-shopu";
 			productName = "hlidac-shopu";
 			productReference = 8214B5762397B3A70068C025 /* hlidac-shopu.app */;
 			productType = "com.apple.product-type.application";
+		};
+		82AE438B239BA2E500FC2649 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82AE439C239BA2E500FC2649 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				82AE4388239BA2E500FC2649 /* Sources */,
+				82AE4389239BA2E500FC2649 /* Frameworks */,
+				82AE438A239BA2E500FC2649 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = 82AE438C239BA2E500FC2649 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -98,6 +173,9 @@
 				ORGANIZATIONNAME = TopMonks;
 				TargetAttributes = {
 					8214B5752397B3A70068C025 = {
+						CreatedOnToolsVersion = 11.2.1;
+					};
+					82AE438B239BA2E500FC2649 = {
 						CreatedOnToolsVersion = 11.2.1;
 					};
 				};
@@ -116,6 +194,7 @@
 			projectRoot = "";
 			targets = (
 				8214B5752397B3A70068C025 /* hlidac-shopu */,
+				82AE438B239BA2E500FC2649 /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -128,6 +207,16 @@
 				8214B5862397B3A80068C025 /* LaunchScreen.storyboard in Resources */,
 				8214B5832397B3A80068C025 /* Assets.xcassets in Resources */,
 				8214B5812397B3A70068C025 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82AE438A239BA2E500FC2649 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82AE438F239BA2E500FC2649 /* Media.xcassets in Resources */,
+				82AE4394239BA2E500FC2649 /* MainInterface.storyboard in Resources */,
+				82AE439E239BB3F800FC2649 /* GetURL.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,7 +233,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		82AE4388239BA2E500FC2649 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82AE4391239BA2E500FC2649 /* ActionViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		82AE4397239BA2E500FC2649 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 82AE438B239BA2E500FC2649 /* ShareExtension */;
+			targetProxy = 82AE4396239BA2E500FC2649 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		8214B57F2397B3A70068C025 /* Main.storyboard */ = {
@@ -161,6 +266,14 @@
 				8214B5852397B3A80068C025 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		82AE4392239BA2E500FC2649 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				82AE4393239BA2E500FC2649 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -283,6 +396,7 @@
 		8214B58B2397B3A80068C025 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
@@ -301,6 +415,7 @@
 		8214B58C2397B3A80068C025 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
@@ -311,6 +426,44 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		82AE439A239BA2E500FC2649 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82AE439B239BA2E500FC2649 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -333,6 +486,15 @@
 			buildConfigurations = (
 				8214B58B2397B3A80068C025 /* Debug */,
 				8214B58C2397B3A80068C025 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82AE439C239BA2E500FC2649 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82AE439A239BA2E500FC2649 /* Debug */,
+				82AE439B239BA2E500FC2649 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
