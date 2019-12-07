@@ -17,7 +17,7 @@ class ViewController: UIViewController, WKUIDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let link = URL(string:"https://www.hlidacshopu.cz/app/")
+        let link = URL(string:"https://www.hlidacshopu.cz/")
         let request = URLRequest(url: link!)
         
         self.webView.load(request)
