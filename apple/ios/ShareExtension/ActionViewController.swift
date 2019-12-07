@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import WebKit
 import MobileCoreServices
 
 class ActionViewController: UIViewController {
     private var url: NSURL?
-
-    @IBOutlet weak var imageView: UIImageView!
+    
+    @IBOutlet weak var webView: WKWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +32,11 @@ class ActionViewController: UIViewController {
                         let urlString = results["URL"] as? String,
                         let url = NSURL(string: urlString) {
                         self.url = url
-                        print(self.url)
+                        
+                        // Use gained URL
+                        let myURL = URL(string:"https://www.hlidacshopu.cz/app/?url=\(url)")
+                        let myRequest = URLRequest(url: myURL!)
+                        self.webView.load(myRequest)
                     }
                 }
             })
