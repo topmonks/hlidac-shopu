@@ -31,7 +31,7 @@ class ActionViewController: UIViewController {
                         let url = NSURL(string: urlString) {
                         
                         // Use gained URL
-                        let myURL = URL(string:"https://www.hlidacshopu.cz/app/?url=\(url)")
+                        let myURL = URL(string:"https://www.hlidacshopu.cz/app/?utm_source=ios-app-extension&url=\(url)")
                         let myRequest = URLRequest(url: myURL!)
                         self.webView.load(myRequest)
                     }
