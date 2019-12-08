@@ -18,6 +18,8 @@
 		82AE4394239BA2E500FC2649 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82AE4392239BA2E500FC2649 /* MainInterface.storyboard */; };
 		82AE4398239BA2E500FC2649 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82AE438C239BA2E500FC2649 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		82AE439E239BB3F800FC2649 /* GetURL.js in Resources */ = {isa = PBXBuildFile; fileRef = 82AE439D239BB3F800FC2649 /* GetURL.js */; };
+		82F63523239D1C8C004F80DE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F63522239D1C8C004F80DE /* WebKit.framework */; };
+		82F63524239D1C99004F80DE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F63522239D1C8C004F80DE /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,7 @@
 		82AE4393239BA2E500FC2649 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		82AE4395239BA2E500FC2649 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82AE439D239BB3F800FC2649 /* GetURL.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = GetURL.js; sourceTree = "<group>"; };
+		82F63522239D1C8C004F80DE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F63523239D1C8C004F80DE /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F63524239D1C99004F80DE /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +89,7 @@
 				8214B5782397B3A70068C025 /* hlidac-shopu */,
 				82AE438D239BA2E500FC2649 /* ShareExtension */,
 				8214B5772397B3A70068C025 /* Products */,
+				82F63521239D1C8C004F80DE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +125,14 @@
 				82AE439D239BB3F800FC2649 /* GetURL.js */,
 			);
 			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		82F63521239D1C8C004F80DE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				82F63522239D1C8C004F80DE /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
