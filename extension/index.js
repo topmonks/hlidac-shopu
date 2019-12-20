@@ -228,11 +228,15 @@ const createDataPoint = ({ originalPrice, currentPrice }) => ({
 });
 
 const realDiscount = ({ max_price, real_sale }, currentPrice) => {
-  if (max_price === "null" && real_sale === "null") {
+  if (
+    (!max_price && !real_sale) ||
+    (max_price === "null" && real_sale === "null")
+  ) {
     return null;
   }
   const origPrice = parseFloat(max_price);
   if (
+    max_price &&
     max_price !== "null" &&
     currentPrice !== null &&
     !isNaN(origPrice) &&
@@ -240,7 +244,7 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   ) {
     return (100 * (origPrice - currentPrice)) / origPrice;
   }
-  if (real_sale !== "null") {
+  if (real_sale && real_sale !== "null") {
     return parseFloat(real_sale);
   }
 };
