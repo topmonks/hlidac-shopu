@@ -249,6 +249,7 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   }
 };
 
+/* eslint-disable no-console */
 async function main() {
   console.group("Hlídačshopů.cz");
   const shopName = getShopName(location.href);
@@ -259,7 +260,7 @@ async function main() {
   }
   shop.onDetailPage(async repaint => {
     try {
-      const info = shop.getInfo();
+      const info = await Promise.resolve(shop.getInfo());
       if (!info) {
         // no detail page
         return false;
@@ -313,6 +314,7 @@ async function main() {
       return true;
     } catch (e) {
       console.error(e);
+      return false;
     } finally {
       console.groupEnd();
     }
