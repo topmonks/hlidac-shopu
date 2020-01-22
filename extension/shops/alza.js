@@ -18,10 +18,9 @@ window.shops["alza"] = {
     const elem = document.querySelector("#prices");
     if (!elem) return;
 
-    const itemId = (document
-      .querySelector("#deepLinkUrl")
-      .getAttribute("content")
-      .match(/\d+$/) || [])[0];
+    const itemId = document
+      .querySelector(".shoppingListsAdd")
+      .getAttribute("data-id");
     const title = document
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
