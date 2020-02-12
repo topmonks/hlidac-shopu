@@ -157,7 +157,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -220,7 +220,7 @@ function createDataset(data) {
   return dataset;
 }
 
-const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
   o: originalPrice || "",
@@ -234,6 +234,9 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   ) {
     return null;
   }
+  if (real_sale && real_sale !== "null") {
+    return parseFloat(real_sale);
+  }
   const origPrice = parseFloat(max_price);
   if (
     max_price &&
@@ -242,10 +245,7 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
     !isNaN(origPrice) &&
     origPrice !== 0.0
   ) {
-    return (100 * (origPrice - currentPrice)) / origPrice;
-  }
-  if (real_sale && real_sale !== "null") {
-    return parseFloat(real_sale);
+    return Math.abs((100 * (origPrice - currentPrice)) / origPrice);
   }
 };
 
