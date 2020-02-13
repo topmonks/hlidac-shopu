@@ -9,7 +9,7 @@ function matchGroup(str, regex, groupN) {
 }
 
 window.shops = window.shops || {};
-window.shops["alza"] = {
+window.shops["alza"] = window.shops["alza_sk"] = {
   onDetailPage(cb) {
     cb();
   },

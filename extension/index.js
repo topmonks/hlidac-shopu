@@ -157,7 +157,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -184,12 +184,19 @@ function* daysBetween(start, end) {
  * Get shop name from 2nd level domain
  *
  * www.alza.cz => alza
+ *
+ * Slovak domains adds _sk
+ * www.alza.sk => alza_sk
  */
 function getShopName(href) {
   const url = new URL(href);
   const domainParts = url.host.split(".");
-  domainParts.pop(); // get rid of TLD
-  return domainParts.pop();
+  const domain = domainParts.pop();
+  let shopName = domainParts.pop();
+  if (domain === "sk") {
+    shopName += "_sk";
+  }
+  return shopName;
 }
 
 function createDataset(data) {
