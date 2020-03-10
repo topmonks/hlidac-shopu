@@ -19460,7 +19460,7 @@ function matchGroup(str, regex, groupN) {
 }
 
 window.shops = window.shops || {};
-window.shops["alza"] = {
+window.shops["alza"] = window.shops["alza_sk"] = {
   onDetailPage(cb) {
     cb();
   },
@@ -19469,10 +19469,9 @@ window.shops["alza"] = {
     const elem = document.querySelector("#prices");
     if (!elem) return;
 
-    const itemId = (document
-      .querySelector("#deepLinkUrl")
-      .getAttribute("content")
-      .match(/\d+$/) || [])[0];
+    const itemId = document
+      .querySelector(".shoppingListsAdd")
+      .getAttribute("data-id");
     const title = document
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
@@ -19838,7 +19837,7 @@ window.shops["mall"] = {
   },
 
   getInfo() {
-    const elem = document.querySelector(".price-wrapper");
+    const elem = document.querySelector(".price-wrapper, .prices-wrapper");
     if (!elem) return;
 
     const itemId = document
@@ -19848,12 +19847,12 @@ window.shops["mall"] = {
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
     const currentPrice = cleanPrice("[itemprop=price]");
-    const originalPrice = cleanPrice(".old-new-price .rrp-price");
+    const originalPrice = cleanPrice(".old-new-price .rrp-price, .old-price > del:nth-child(1)");
     return { itemId, title, currentPrice, originalPrice };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-footer");
+    const elem = document.querySelector(".product-footer, .other-options-box, .detail-prices-wrapper");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -19930,9 +19929,13 @@ window.shops["mountfield"] = {
 
 let notinoLastHref = null;
 
-window.shops = window.shops || {};
-window.shops["notino"] = {
+const notino = {
+  masterId: null,
+
   onDetailPage(cb) {
+    const elem = document.getElementById("pd-price");
+    if (!elem) return false;
+
     const observer = new MutationObserver(function() {
       if (location.href !== notinoLastHref) {
         notinoLastHref = location.href;
@@ -19940,7 +19943,7 @@ window.shops["notino"] = {
       }
     });
     // Observe changes in variant selection by change of price
-    observer.observe(document.getElementById("pd-price"), {
+    observer.observe(document.body, {
       characterData: true,
       subtree: true
     });
@@ -19949,39 +19952,48 @@ window.shops["notino"] = {
     addEventListener("load", () => cb());
   },
 
-  getInfo() {
+  waitStateObject() {
+    return new Promise((resolve, reject) => {
+      const elt = document.createElement("script");
+      elt.innerHTML = 'window.postMessage({ type: "HLIDAC_SHOPU_STATE_OBJECT", state: window.__APOLLO_STATE__ }, "*");';
+      document.head.appendChild(elt);
+      const timeout = setTimeout(() => reject(new Error("No item id")), 500);
+      window.addEventListener("message", function(event) {
+        // We only accept messages from ourselves
+        if (event.source != window)
+          return;
+
+        if (event.data.type && (event.data.type == "HLIDAC_SHOPU_STATE_OBJECT")) {
+          clearTimeout(timeout);
+          return resolve(event.data.state);
+        }
+      }, false);
+    });
+  },
+
+  async getMasterId() {
+    const apolloState = await this.waitStateObject();
+    const [, [masterRes]] = Object.entries(apolloState.ROOT_QUERY).find(([k,]) => k.startsWith("productDetailByMasterId"));
+    const masterId = masterRes.id.replace("Product:", "");
+    console.log(`Found master id ${masterId}`); // eslint-disable-line no-console
+    return masterId;
+  },
+
+  async getInfo() {
     const elem = document.getElementById("pdHeader");
     if (!elem) return;
-    const scripts = document.getElementsByTagName("script");
-    const appoloState = /window.__APOLLO_STATE__\s?=/g;
-    let itemId = null;
-    var content = null;
-    for (const item of scripts) {
-      if (item.attributes.length === 0) {
-        const match = item.innerHTML.match(appoloState);
-        if (match) {
-          const scriptText = item.innerHTML.replace(/\r?\n|\r/g, "");
-          content = scriptText.substring(
-            scriptText.search(appoloState) +
-              scriptText.match(appoloState)[0].length,
-            scriptText.length
-          );
-        }
-      }
-    }
-    if (!content) {
-      throw new Error("Notino: Cannot find itemId");
-    }
-    const match = content.match(/Product:(\d+)/);
-    if (match && match[1]) {
-      itemId = match[1];
-    }
-    if (!itemId) {
-      throw new Error("Notino: cannot find itemId in content");
-    }
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#pd-price");
     const originalPrice = cleanPrice("[aria-describedby=tippy-tooltip-1]");
+    let itemId = (() => {
+      const match = window.location.pathname.match(/\/p-(\d+)\//);
+      return match ? match[1] : null;
+    })();
+
+    if (!itemId) {
+      itemId = this.masterId || await this.getMasterId();
+      this.masterId = itemId;
+    }
 
     return { itemId, title, currentPrice, originalPrice };
   },
@@ -19994,6 +20006,9 @@ window.shops["notino"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["notino"] = notino;
 /* global cleanPrice */
 
 /* exported itesco_loaded */
@@ -20241,7 +20256,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -20268,12 +20283,19 @@ function* daysBetween(start, end) {
  * Get shop name from 2nd level domain
  *
  * www.alza.cz => alza
+ *
+ * Slovak domains adds _sk
+ * www.alza.sk => alza_sk
  */
 function getShopName(href) {
   const url = new URL(href);
   const domainParts = url.host.split(".");
-  domainParts.pop(); // get rid of TLD
-  return domainParts.pop();
+  const domain = domainParts.pop();
+  let shopName = domainParts.pop();
+  if (domain === "sk") {
+    shopName += "_sk";
+  }
+  return shopName;
 }
 
 function createDataset(data) {
@@ -20304,7 +20326,7 @@ function createDataset(data) {
   return dataset;
 }
 
-const formatPercents = x => `${Math.round(x && -1 * x).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
   o: originalPrice || "",
@@ -20318,6 +20340,9 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
   ) {
     return null;
   }
+  if (real_sale && real_sale !== "null") {
+    return parseFloat(real_sale);
+  }
   const origPrice = parseFloat(max_price);
   if (
     max_price &&
@@ -20326,13 +20351,11 @@ const realDiscount = ({ max_price, real_sale }, currentPrice) => {
     !isNaN(origPrice) &&
     origPrice !== 0.0
   ) {
-    return (100 * (origPrice - currentPrice)) / origPrice;
-  }
-  if (real_sale && real_sale !== "null") {
-    return parseFloat(real_sale);
+    return Math.abs((100 * (origPrice - currentPrice)) / origPrice);
   }
 };
 
+/* eslint-disable no-console */
 async function main() {
   console.group("Hlídačshopů.cz");
   const shopName = getShopName(location.href);
@@ -20343,7 +20366,7 @@ async function main() {
   }
   shop.onDetailPage(async repaint => {
     try {
-      const info = shop.getInfo();
+      const info = await Promise.resolve(shop.getInfo());
       if (!info) {
         // no detail page
         return false;
@@ -20397,6 +20420,7 @@ async function main() {
       return true;
     } catch (e) {
       console.error(e);
+      return false;
     } finally {
       console.groupEnd();
     }
