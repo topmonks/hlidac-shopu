@@ -1,7 +1,7 @@
 /* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["mall"] = {
+window.shops["mall"] = window.shops["mall_sk"] = {
   onDetailPage(cb) {
     cb();
   },

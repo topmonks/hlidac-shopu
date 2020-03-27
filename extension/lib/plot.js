@@ -96,10 +96,10 @@ function plot(canvas, prices) {
           },
           label(item, _data) {
             if (item.datasetIndex === 0) {
-              return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+              return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")} ${prices.currency}`;
             }
             else if (item.datasetIndex === 1) {
-              return `Prodejní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+              return `Prodejní cena: ${item.yLabel.toLocaleString("cs")} ${prices.currency}`;
             }
           },
           labelColor(item, _chart) {

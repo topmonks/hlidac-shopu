@@ -197,6 +197,13 @@ function getShopName(href) {
   return shopName;
 }
 
+function getCurrency(shopName) {
+  if (shopName.endsWith("sk")) {
+    return "€";
+  }
+  return "Kč";
+}
+
 function createDataset(data) {
   const parseTime = s => {
     const d = new Date(s);
@@ -312,6 +319,7 @@ async function main() {
         res.data.push(createDataPoint(info));
       }
       const dataset = createDataset(res.data);
+      dataset.currency = getCurrency(shopName);
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
       console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
