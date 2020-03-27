@@ -31,8 +31,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
        .priceactionnormal .c2`
     );
     const originalPrice = cleanPrice(
-      `#prices .origPrice,
-       #prices .price_compare,
+      `#prices .price_compare,
        .comparePrice .crossPrice,
        .priceCompare .c2,
        .pricecatalog1 .c2`

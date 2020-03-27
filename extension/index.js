@@ -4,13 +4,11 @@
 const cleanPrice = s => {
   const el = document.querySelector(s);
   if (!el) return null;
-  return el.textContent
-    .replace("cca", "")
-    .replace("včetně DPH", "")
-    .replace("Kč", "")
-    .replace(",-", "")
-    .replace(",", ".")
-    .replace(/\s+/g, "");
+  const priceText = el.textContent.replace(/\s+/g, "");
+  const match = priceText.match(/\d+(:?[,.]\d+)?/);
+  if (!match) return null;
+  const price = match[0].replace(",", ".");
+  return price;
 };
 
 function _objToCss(obj) {
@@ -157,7 +155,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -230,8 +228,8 @@ function createDataset(data) {
 const formatPercents = x => `${Math.round(x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
+  d: new Date().toISOString().substring(0, 10),
   o: originalPrice || "",
-  d: new Date().toISOString()
 });
 
 const realDiscount = ({ max_price, real_sale }, currentPrice) => {
