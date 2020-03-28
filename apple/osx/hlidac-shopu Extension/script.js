@@ -19410,10 +19410,10 @@ function plot(canvas, prices) {
           },
           label(item, _data) {
             if (item.datasetIndex === 0) {
-              return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+              return `Uváděná původní cena: ${item.yLabel.toLocaleString("cs")} ${prices.currency}`;
             }
             else if (item.datasetIndex === 1) {
-              return `Prodejní cena: ${item.yLabel.toLocaleString("cs")},- Kč`;
+              return `Prodejní cena: ${item.yLabel.toLocaleString("cs")} ${prices.currency}`;
             }
           },
           labelColor(item, _chart) {
@@ -19482,8 +19482,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
        .priceactionnormal .c2`
     );
     const originalPrice = cleanPrice(
-      `#prices .origPrice,
-       #prices .price_compare,
+      `#prices .price_compare,
        .comparePrice .crossPrice,
        .priceCompare .c2,
        .pricecatalog1 .c2`
@@ -19831,7 +19830,7 @@ window.shops["lekarna"] = {
 /* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["mall"] = {
+window.shops["mall"] = window.shops["mall_sk"] = {
   onDetailPage(cb) {
     cb();
   },
@@ -20103,13 +20102,11 @@ window.shops["tsbohemia"] = {
 const cleanPrice = s => {
   const el = document.querySelector(s);
   if (!el) return null;
-  return el.textContent
-    .replace("cca", "")
-    .replace("včetně DPH", "")
-    .replace("Kč", "")
-    .replace(",-", "")
-    .replace(",", ".")
-    .replace(/\s+/g, "");
+  const priceText = el.textContent.replace(/\s+/g, "");
+  const match = priceText.match(/\d+(:?[,.]\d+)?/);
+  if (!match) return null;
+  const price = match[0].replace(",", ".");
+  return price;
 };
 
 function _objToCss(obj) {
@@ -20256,7 +20253,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -20298,6 +20295,13 @@ function getShopName(href) {
   return shopName;
 }
 
+function getCurrency(shopName) {
+  if (shopName.endsWith("sk")) {
+    return "€";
+  }
+  return "Kč";
+}
+
 function createDataset(data) {
   const parseTime = s => {
     const d = new Date(s);
@@ -20329,8 +20333,8 @@ function createDataset(data) {
 const formatPercents = x => `${Math.round(x).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
+  d: new Date().toISOString().substring(0, 10),
   o: originalPrice || "",
-  d: new Date().toISOString()
 });
 
 const realDiscount = ({ max_price, real_sale }, currentPrice) => {
@@ -20413,6 +20417,7 @@ async function main() {
         res.data.push(createDataPoint(info));
       }
       const dataset = createDataset(res.data);
+      dataset.currency = getCurrency(shopName);
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
       console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
