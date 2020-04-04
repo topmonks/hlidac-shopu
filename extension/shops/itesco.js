@@ -51,7 +51,7 @@ window.shops["itesco"] = {
 
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
-    let elem = document.querySelector(".product-controls--wrapper");
+    let elem = document.querySelector(".product-controls__wrapper");
     // if (!elem) {
     //   // itesco.cz
     //   elem = $(".a-productDetail__buyOnlineButton.ddl");
