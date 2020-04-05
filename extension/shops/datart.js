@@ -21,13 +21,7 @@ window.shops["datart"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-detail-compare-box");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = chartMarkup({ "margin-bottom": "0" });
-    elem.insertAdjacentHTML("beforebegin", markup);
-    const style = document.createElement("style");
-    style.textContent = `
+    const css = `
       @media screen and (max-width: 767px) {
         #product-detail-header-top-wrapper {
           height: 972px;
@@ -37,7 +31,27 @@ window.shops["datart"] = {
         }
       }
     `;
-    elem.insertAdjacentElement("beforebegin", style);
-    return elem;
+
+    const elem = document.querySelector(".product-detail-compare-box");
+    if (elem) {
+      const markup = chartMarkup({ "margin-bottom": "0" });
+      elem.insertAdjacentHTML("beforebegin", markup);
+      const style = document.createElement("style");
+      style.textContent = css;
+      elem.insertAdjacentElement("beforebegin", style);
+      return elem;
+    }
+
+    const archiveElem = document.querySelector(".product-detail-price-box");
+    if (archiveElem) {
+      const markup = chartMarkup({ "margin-bottom": "0" });
+      archiveElem.insertAdjacentHTML("afterend", markup);
+      const style = document.createElement("style");
+      style.textContent = css;
+      archiveElem.insertAdjacentElement("beforebegin", style);
+      return archiveElem;
+    }
+
+    throw new Error("Element to add chart not found");
   }
 };

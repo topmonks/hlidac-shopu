@@ -68,11 +68,24 @@ window.shops["alza"] = window.shops["alza_sk"] = {
     return { itemId, title, currentPrice, originalPrice };
   },
 
+  getArchiveInfo() {
+    const elem = document.querySelector("#detailItem.archive");
+    if (!elem) return;
+
+    const itemId = document.querySelector(".archiveBtn.instructions").href.match(/^javascript:showCommodityManualsDialog\((\d+)\)$/).pop();
+    const title = document.querySelector(".breadcrumbs a.last").innerText.trim();
+    const currentPrice = null;
+    const originalPrice = null;
+
+    return { itemId, title, currentPrice, originalPrice };
+  },
+
   getInfo() {
     return (
       this.getDetailInfo() ||
       this.getMobileDetailInfo() ||
-      this.getDailySlasherInfo()
+      this.getDailySlasherInfo() ||
+      this.getArchiveInfo()
     );
   },
 
@@ -101,6 +114,12 @@ window.shops["alza"] = window.shops["alza_sk"] = {
       return dailySlasherElem;
     }
 
+    const archiveElem = document.getElementById("blockArchiveMoreInfoButtons");
+    if (archiveElem) {
+      const markup = chartMarkup();
+      archiveElem.insertAdjacentHTML("afterend", markup);
+      return archiveElem;
+    }
     throw new Error("Element to add chart not found");
   }
 };
