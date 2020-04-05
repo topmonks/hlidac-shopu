@@ -72,7 +72,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
     const elem = document.querySelector("#detailItem.archive");
     if (!elem) return;
 
-    const itemId = document.querySelector(".archiveBtn.instructions").href.match(/^javascript:showCommodityManualsDialog\((\d+)\)$/).pop();
+    const itemId = document.querySelector(".surveyInfoForm").getAttribute("data-id");
     const title = document.querySelector(".breadcrumbs a.last").innerText.trim();
     const currentPrice = null;
     const originalPrice = null;
