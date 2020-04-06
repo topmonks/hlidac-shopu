@@ -324,6 +324,7 @@ async function main() {
 
       console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
+      console.log(`https://api.hlidacshopu.cz/check?url=${encodeURIComponent(location.href)}&itemId=${info.itemId}`);
       return true;
     } catch (e) {
       console.error(e);
