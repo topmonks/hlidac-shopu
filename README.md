@@ -46,6 +46,20 @@ To build Chrome extension run `npm run build:chrome`. It will create package in 
 
 \* Use autosigning feature and use the TopMonks s.r.o Apple developer team account. If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer" from Topmonks 1Password.
 
+## Updating version
+
+To check current version in package.json, manifest.json and about.html run
+
+```
+npm run version
+```
+
+Update to new version run
+
+```
+npm run version -- x.y.z
+```
+
 ---
 
 © 2018-2019 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)

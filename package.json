@@ -1,6 +1,6 @@
 {
   "name": "hlidac-shopu",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Rozšíření zobrazuje historická data pro největší české eshopy.",
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
@@ -13,7 +13,8 @@
     "start:firefox": "web-ext run --source-dir ./extension-dist/ --firefox=firefoxdeveloperedition",
     "build:chrome": "mkdir -p dist; pushd extension; zip ../dist/chrome-extension-$(cat manifest.json | jq -r '.version').zip manifest.json popup/* icons/* `cat manifest.json | jq -r '.content_scripts[0].js[]'` `cat manifest.json | jq -r '.background.scripts[]'`; popd",
     "build:safari": "node ./apple/osx/bundle.js",
-    "start:safari": "open './apple/osx/Hlídač Shopů.xcodeproj'"
+    "start:safari": "open './apple/osx/Hlídač Shopů.xcodeproj'",
+    "version": "./version.sh"
   },
   "repository": {
     "type": "git",
