@@ -19519,11 +19519,24 @@ window.shops["alza"] = window.shops["alza_sk"] = {
     return { itemId, title, currentPrice, originalPrice };
   },
 
+  getArchiveInfo() {
+    const elem = document.querySelector("#detailItem.archive");
+    if (!elem) return;
+
+    const itemId = document.querySelector(".surveyInfoForm").getAttribute("data-id");
+    const title = document.querySelector(".breadcrumbs a.last").innerText.trim();
+    const currentPrice = null;
+    const originalPrice = null;
+
+    return { itemId, title, currentPrice, originalPrice };
+  },
+
   getInfo() {
     return (
       this.getDetailInfo() ||
       this.getMobileDetailInfo() ||
-      this.getDailySlasherInfo()
+      this.getDailySlasherInfo() ||
+      this.getArchiveInfo()
     );
   },
 
@@ -19552,6 +19565,12 @@ window.shops["alza"] = window.shops["alza_sk"] = {
       return dailySlasherElem;
     }
 
+    const archiveElem = document.getElementById("blockArchiveMoreInfoButtons");
+    if (archiveElem) {
+      const markup = chartMarkup();
+      archiveElem.insertAdjacentHTML("afterend", markup);
+      return archiveElem;
+    }
     throw new Error("Element to add chart not found");
   }
 };
@@ -19606,13 +19625,7 @@ window.shops["datart"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-detail-compare-box");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = chartMarkup({ "margin-bottom": "0" });
-    elem.insertAdjacentHTML("beforebegin", markup);
-    const style = document.createElement("style");
-    style.textContent = `
+    const css = `
       @media screen and (max-width: 767px) {
         #product-detail-header-top-wrapper {
           height: 972px;
@@ -19622,8 +19635,28 @@ window.shops["datart"] = {
         }
       }
     `;
-    elem.insertAdjacentElement("beforebegin", style);
-    return elem;
+
+    const elem = document.querySelector(".product-detail-compare-box");
+    if (elem) {
+      const markup = chartMarkup({ "margin-bottom": "0" });
+      elem.insertAdjacentHTML("beforebegin", markup);
+      const style = document.createElement("style");
+      style.textContent = css;
+      elem.insertAdjacentElement("beforebegin", style);
+      return elem;
+    }
+
+    const archiveElem = document.querySelector(".product-detail-price-box");
+    if (archiveElem) {
+      const markup = chartMarkup({ "margin-bottom": "0" });
+      archiveElem.insertAdjacentHTML("afterend", markup);
+      const style = document.createElement("style");
+      style.textContent = css;
+      archiveElem.insertAdjacentElement("beforebegin", style);
+      return archiveElem;
+    }
+
+    throw new Error("Element to add chart not found");
   }
 };
 /* global cleanPrice*/
@@ -19679,7 +19712,7 @@ window.shops["itesco"] = {
 
   insertChartElement(chartMarkup) {
     // nakup.itesco.cz
-    let elem = document.querySelector(".product-controls--wrapper");
+    let elem = document.querySelector(".product-controls__wrapper");
     // if (!elem) {
     //   // itesco.cz
     //   elem = $(".a-productDetail__buyOnlineButton.ddl");
@@ -20422,6 +20455,7 @@ async function main() {
 
       console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
+      console.log(`https://api.hlidacshopu.cz/check?url=${encodeURIComponent(location.href)}&itemId=${info.itemId}`);
       return true;
     } catch (e) {
       console.error(e);
