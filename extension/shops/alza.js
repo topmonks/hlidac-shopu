@@ -90,12 +90,10 @@ window.shops["alza"] = window.shops["alza_sk"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const detailElem = document.querySelector(
-      ".priceDetail, .mediaPriceDetail"
-    );
+    const detailElem = document.querySelector("#detailText .fceBtns");
     if (detailElem) {
       const markup = chartMarkup({ "margin-bottom": "0" });
-      detailElem.insertAdjacentHTML("afterend", markup);
+      detailElem.insertAdjacentHTML("beforebegin", markup);
       return detailElem;
     }
 
