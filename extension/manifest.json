@@ -65,7 +65,9 @@
         "https://www.mountfield.cz/*",
         "https://www.lekarna.cz/*",
         "https://www.kasa.cz/*",
-        "https://www.kosik.cz/*"
+        "https://www.kosik.cz/*",
+        "https://www.benu.cz/*",
+        "https://www.pilulka.cz/*"
       ],
       "js": [
         "lib/Chart.bundle.js",
@@ -84,6 +86,8 @@
         "shops/kasa.js",
         "shops/kosik.js",
         "shops/notino.js",
+        "shops/benu.js",
+        "shops/pilulka.js",
         "index.js"
       ],
       "run_at": "document_end"

@@ -2,7 +2,7 @@
 
 /* exported cleanPrice */
 const cleanPrice = s => {
-  const el = document.querySelector(s);
+  const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
   const priceText = el.textContent.replace(/\s+/g, "");
   const match = priceText.match(/\d+(:?[,.]\d+)?/);
