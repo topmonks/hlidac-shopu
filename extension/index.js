@@ -132,7 +132,9 @@ function chartWrapper(styles) {
           <br><span id="hlidacShopu2-discount"></span>
         </div>
       </div>
-      <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+      <div id="hlidacShopu2-chart-container">
+        <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+      </div>
       <div class="hs-footer">
         <div>Více informací na <a href="https://www.hlidacshopu.cz/">HlídačShopů.cz</a></div>
         <div>Vytvořili
@@ -299,7 +301,14 @@ async function main() {
         return false;
       }
       // Inject our HTML code
-      if (!repaint) {
+      if (repaint) {
+        // remove canvas to delete and clear previous chart
+        document.getElementById("hlidacShopu2-chart").remove();
+        const container = document.getElementById("hlidacShopu2-chart-container");
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "hlidacShopu2-chart";
+        container.appendChild(newCanvas);
+      } else {
         shop.insertChartElement(styles => chartWrapper(styles));
       }
 
