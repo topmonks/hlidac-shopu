@@ -157,7 +157,7 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/shop-test?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
