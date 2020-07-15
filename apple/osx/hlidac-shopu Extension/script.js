@@ -19451,6 +19451,35 @@ function plot(canvas, prices) {
 }
 /* global cleanPrice */
 
+window.shops = window.shops || {};
+window.shops["aaaauto"] = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  getInfo() {
+    const url = new URL(location.href);
+    const itemId = url.searchParams.get("id");
+
+    const title = document.querySelector("#carCardHead h1").innerText;
+    const price = document.querySelector(".sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate");
+    const originalPrice = cleanPrice(price.firstChild);
+    const currentPrice = cleanPrice(price.lastChild);
+
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector(".sidebar .infoBox .btnSubText");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("afterend", markup);
+    return elem;
+  }
+};
+/* global cleanPrice */
+
 function matchGroup(str, regex, groupN) {
   const match = str.match(regex);
   if (!match) {
@@ -19570,6 +19599,32 @@ window.shops["alza"] = window.shops["alza_sk"] = {
       return archiveElem;
     }
     throw new Error("Element to add chart not found");
+  }
+};
+/* global cleanPrice */
+
+window.shops = window.shops || {};
+window.shops["benu"] = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  getInfo() {
+    const title = document.querySelector(".product-title-rating .title").innerText;
+    const itemId = document.querySelector("table.info-table tr:nth-child(2) td").innerText;
+    const currentPrice = cleanPrice(".buy strong.buy-box__big-price");
+    const originalPrice = cleanPrice(".buy .buy-box__price-head del");
+
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector(".product-desc");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("beforeend", markup);
+    return elem;
   }
 };
 /* global cleanPrice */
@@ -19905,7 +19960,7 @@ window.shops["mironet"] = {
       ".product_kosik_info input[name=Code]"
     ).value;
     const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".product_cena_box .product_dph");
+    const currentPrice = cleanPrice(".product_cena_box .product_dph span");
     const originalPrice = cleanPrice(".fakcbox23 .product_dph");
 
     return { itemId, title, currentPrice, originalPrice };
@@ -20041,6 +20096,80 @@ window.shops = window.shops || {};
 window.shops["notino"] = notino;
 /* global cleanPrice */
 
+window.shops = window.shops || {};
+window.shops["pilulka"] = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  getInfo() {
+    const title = document.querySelector(".product-detail__header").innerText;
+    const priceContainer = document.querySelector("div.js-product-prev");
+    const itemId = priceContainer.attributes["data-product-id"].textContent;
+    const currentPrice = cleanPrice(`.js-product-price-${itemId}`);
+    const originalPrice = cleanPrice(document.querySelector(`.js-product-price-${itemId}`).nextElementSibling);
+
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector(".product-detail__reduced h1+div+div");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("beforeend", markup);
+    return elem;
+  }
+};
+
+/* global cleanPrice */
+
+window.shops = window.shops || {};
+window.shops["prozdravi"] = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  waitForElement(selector, timeout = 5) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      const getElement = () => {
+        count++;
+        const elem = document.querySelector(selector);
+        if (elem) {
+          return resolve(elem);
+        }
+        if (count >= timeout) {
+          return reject();
+        }
+        setTimeout(getElement, 100);
+      };
+      getElement();
+    });
+  },
+
+  async getInfo() {
+    const title = document.querySelector("h1.product-header__header").innerText;
+    const priceContainer = await this.waitForElement(".product-prices-block__inner");
+    const itemId = priceContainer.querySelector("input[name='product-code']").value;
+    const originalPrice = cleanPrice(priceContainer.querySelector("span.product-prices-block__backup-price"));
+    const currentPrice = cleanPrice(priceContainer.querySelector(".product-prices-block__final-price"));
+
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector(".product-prices-block.product-prices-block--single-product");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("beforeend", markup);
+    return elem;
+  }
+};
+
+/* global cleanPrice */
+
 /* exported itesco_loaded */
 let rohlik_loaded = false;
 let rohlik_last_href = null;
@@ -20092,6 +20221,53 @@ window.shops["rohlik"] = {
     return elem;
   }
 };
+/* global cleanPrice */
+
+window.shops = window.shops || {};
+window.shops["sleky"] = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  waitForElement(selector, timeout = 5) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      const getElement = () => {
+        count++;
+        const elem = document.querySelector(selector);
+        if (elem) {
+          return resolve(elem);
+        }
+        if (count >= timeout) {
+          return reject();
+        }
+        setTimeout(getElement, 100);
+      };
+      getElement();
+    });
+  },
+
+  async getInfo() {
+    const title = document.querySelector("h1[itemprop='name']").innerText;
+    const form = document.querySelector(".orderbox form");
+    const itemId = form.dataset.productId;
+    const currentPrice = cleanPrice(form.querySelector("strong.fullprice"));
+    const originalPrice = cleanPrice(form.querySelector("dl>dt+dd"));
+
+    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector(".orderbox");
+    // const elem = document.querySelector(".desc>hr");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("afterend", markup);
+    return elem;
+  }
+};
+
 /* global $ */
 
 window.shops = window.shops || {};
@@ -20131,7 +20307,7 @@ window.shops["tsbohemia"] = {
 
 /* exported cleanPrice */
 const cleanPrice = s => {
-  const el = document.querySelector(s);
+  const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
   const priceText = el.textContent.replace(/\s+/g, "");
   const match = priceText.match(/\d+(:?[,.]\d+)?/);
@@ -20261,7 +20437,9 @@ function chartWrapper(styles) {
           <br><span id="hlidacShopu2-discount"></span>
         </div>
       </div>
-      <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+      <div id="hlidacShopu2-chart-container">
+        <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+      </div>
       <div class="hs-footer">
         <div>Více informací na <a href="https://www.hlidacshopu.cz/">HlídačShopů.cz</a></div>
         <div>Vytvořili
@@ -20428,7 +20606,14 @@ async function main() {
         return false;
       }
       // Inject our HTML code
-      if (!repaint) {
+      if (repaint) {
+        // remove canvas to delete and clear previous chart
+        document.getElementById("hlidacShopu2-chart").remove();
+        const container = document.getElementById("hlidacShopu2-chart-container");
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "hlidacShopu2-chart";
+        container.appendChild(newCanvas);
+      } else {
         shop.insertChartElement(styles => chartWrapper(styles));
       }
 
