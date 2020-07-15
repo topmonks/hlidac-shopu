@@ -69,7 +69,8 @@
         "https://www.benu.cz/*",
         "https://www.pilulka.cz/*",
         "https://www.aaaauto.cz/*",
-        "https://www.prozdravi.cz/*"
+        "https://www.prozdravi.cz/*",
+        "https://www.sleky.cz/*"
       ],
       "js": [
         "lib/Chart.bundle.js",
@@ -92,6 +93,7 @@
         "shops/pilulka.js",
         "shops/aaaauto.js",
         "shops/prozdravi.js",
+        "shops/sleky.js",
         "index.js"
       ],
       "run_at": "document_end"
