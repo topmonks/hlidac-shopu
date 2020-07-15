@@ -1,0 +1,15 @@
+{
+    "name": "hlidac-reviews",
+    "version": "0.0.1",
+    "description": "This is a boilerplate of an Apify actor.",
+    "dependencies": {
+        "request-promise": "^4.2.4"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+    },
+    "author": "It's not you it's me",
+    "license": "ISC"
+}
