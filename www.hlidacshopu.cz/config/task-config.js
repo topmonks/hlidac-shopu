@@ -1,10 +1,6 @@
-const markdownToJSON = require("gulp-markdown-to-json");
-const marked = require("marked");
-const merge = require("gulp-merge-json");
 const alias = require("@rollup/plugin-alias");
-const nodeResolve = require("@rollup/plugin-node-resolve");
+const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const pathConfig = require("./path-config.json");
-const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath");
 
 const config = {
   images: true,
