@@ -1,0 +1,15 @@
+{% macro sprite(id, altText, viewBox, classes) %}
+{% set viewBox = viewBox or "0 0 1 1"%}
+<span class='sprite sprite--{{id}} {{classes}}'>
+  <svg viewBox="{{viewBox}}">
+    <title>{{altText}}</title>
+    <use xlink:href='#{{id}}'></use>
+  </svg>
+</span>
+{% endmacro %}
+
+{% macro spriteTarget() %}
+<div style="width: 0; height: 0; visibility: hidden">
+  <!-- inject:svg --><!-- endinject -->
+</div>
+{% endmacro %}

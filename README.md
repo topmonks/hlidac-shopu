@@ -15,7 +15,7 @@ We are using npm scripts for project automation.
 
 You will need:
 
-- Node.js 10
+- Node.js 14
 - Firefox Developer Edition
 - Chrome
 - XCode Command Line Tools
@@ -31,35 +31,35 @@ it's entry in manifest in build step with other unnecessary files.
 
 ### Firefox extension
 
-To build Firefox extension run `npm run build:firefox`. It will create `extension-dist` folder
-for development time and packaged extension in `/dist` folder.
+To build Firefox extension run `yarn build:firefox`. It will create `extension-dist` folder
+for development time and packaged extension in `./dist` folder.
 
 ### Chrome extension
 
-To build Chrome extension run `npm run build:chrome`. It will create package in `./dist` folder.
+To build Chrome extension run `yarn build:chrome`. It will create package in `./dist` folder.
 
 ### Safari extension
 
-1. Run `npm run build:safari` to get latest bundle script, domains (eshops) permissions and current version for Safari
-2. Distribute app by Xcodes: `npm run start:safari` > Product > Archive > Distribute App\*
+1. Run `yarn build:safari` to get latest bundle script, domains (eshops) permissions and current version for Safari
+2. Distribute app by Xcodes: `yarn start:safari` > Product > Archive > Distribute App\*
 3. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer
 
 \* Use autosigning feature and use the TopMonks s.r.o Apple developer team account. If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer" from Topmonks 1Password.
 
 ## Updating version
 
-To check current version in package.json, manifest.json and about.html run
+To check current version in `package.json`, `manifest.json` and `about.html` run
 
 ```
-npm run version
+yarn version
 ```
 
 Update to new version run
 
 ```
-npm run version -- x.y.z
+yarn version x.y.z
 ```
 
 ---
 
-© 2018-2019 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
+© 2018-2020 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)

@@ -1,0 +1,177 @@
+@import "theme";
+
+html {
+  height: 100%;
+  padding: 0;
+}
+
+label {
+  font-weight: bold;
+}
+
+.home-screen {
+  background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977345/www.hlidacshopu.cz/app/light-mode_bgnd.jpg")
+    center bottom no-repeat;
+  background-size: 100% 45%;
+  @media (min-width: 375px) {
+    background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977345/www.hlidacshopu.cz/app/light-mode_bgnd.jpg")
+      center bottom no-repeat;
+    background-size: 100% 60%;
+  }
+}
+
+.home-screen main {
+  background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977546/www.hlidacshopu.cz/app/curves_bgnd.svg")
+    center bottom no-repeat;
+  background-size: 100%;
+}
+
+.layout-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mdc-top-app-bar__title {
+  padding: 0;
+  margin: 0 auto;
+}
+
+.mdc-top-app-bar--fixed-adjust {
+  padding-top: 6em;
+}
+
+.hs-form {
+  --border-radius: 8px;
+  text-align: center;
+
+  .button,
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--mdc-theme-primary);
+    width: 200px;
+    height: 54px;
+    border: none;
+    border-radius: var(--border-radius);
+    background: var(--mdc-theme-secondary);
+    -webkit-appearance: none;
+
+    @media screen and (max-width: 479px) {
+      box-shadow: 0 20px 20px rgba(92, 98, 205, 0.1);
+    }
+
+    &:hover,
+    &:focus {
+      background-color: var(--mdc-theme-secondary-dark);
+    }
+  }
+
+  .hs-textfield {
+    border: 1px solid var(--hs-theme-border);
+    border-radius: var(--border-radius);
+    background: var(--mdc-theme-primary);
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    background-color: (--hs-theme-background);
+    justify-content: space-between;
+    margin: 16px 0;
+
+    &__icon {
+      color: var(--mdc-theme-secondary);
+      padding: 0 0 0 16px;
+    }
+
+    input {
+      -webkit-appearance: none;
+      border: none;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 54px;
+      color: var(--mdc-theme-text-on-light);
+      padding: 0 1em;
+      margin: 0;
+      background: none;
+      flex-grow: 2;
+    }
+  }
+}
+
+.hs-result {
+  text-align: center;
+
+  &.layout-wrapper {
+    max-width: 780px;
+  }
+
+  a {
+    color: var(--mdc-theme-secondary);
+  }
+
+  time {
+    font-weight: bold;
+    line-height: 2;
+  }
+
+  del {
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: "";
+      position: absolute;
+      border-bottom: 2px solid var(--mdc-theme-text-primary-on-light);
+      transform: rotate(167.24deg);
+      bottom: 0;
+      left: 0;
+      height: calc(50% - 1px);
+      width: 100%;
+    }
+  }
+
+  .box {
+    text-align: center;
+
+    &.box--purple {
+      background: var(--mdc-theme-secondary-light);
+      border-radius: 6px;
+      padding: 16px;
+    }
+  }
+
+  .sprite {
+    display: block;
+    padding-bottom: 0.5em;
+
+    svg {
+      height: 32px;
+    }
+  }
+
+  .actual-price {
+    color: var(--mdc-theme-third);
+    font-weight: bold;
+    font-size: 2em;
+    line-height: 1.6;
+  }
+
+  .claimed-price {
+    color: var(--mdc-theme-text-secondary-on-light);
+  }
+
+  .discount {
+    background: #ffe607;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+  }
+}

@@ -1,0 +1,49 @@
+{% extends 'layouts/master.njk' %}
+{% block title %}Hlídač shopů v médiích{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="/assets/css/media.css">
+{% endblock %}
+
+{% macro mediaImage(path) %}
+  {% set publicId = images["media/" + path]["public_id"] %}
+  <img alt="" width="250" height="142" role="presentation"
+       src="{{ publicId | cloudinaryUrl(width=250,height=142,dpr="auto") }}"
+       srcset="{{ publicId | cloudinaryUrl(width=250,height=142,dpr=1) }} 1x,
+               {{ publicId | cloudinaryUrl(width=250,height=142,dpr=1.5) }} 1.5x,
+               {{ publicId | cloudinaryUrl(width=250,height=142,dpr=2) }} 2x">
+{% endmacro %}
+
+{% macro mediaArticle(article) %}
+  <article class="media-article-item">
+    <div class="media__image">
+      <a href="{{ article.url }}">
+        {{ mediaImage(article.image) }}
+      </a>
+    </div>
+    <div class="media__body">
+      <h3>
+        <a href="{{ article.url }}">{{ article.title }}</a>
+      </h3>
+      <time datetime="{{ article.published }}" class="media__date">{{ article.published | longDate }}</time>
+      <div class="media__description">{{ article.body | safe }}</div>
+    </div>
+  </article>
+{% endmacro %}
+
+{% block main %}
+  <section class="media">
+    <div class="mdc-layout-grid">
+      <div class="layout-wrapper">
+        {% for year in range(2019, 2016, -1) %}
+          <h2 class="media-heading">{{ year }}</h2>
+          <div class="media-article-list">
+            {% for article in media[year] | sort(true, false, "published") %}
+              {{ mediaArticle(article) }}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

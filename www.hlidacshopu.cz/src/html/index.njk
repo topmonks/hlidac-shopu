@@ -1,0 +1,592 @@
+{% extends 'layouts/master.njk' %}
+{% from 'macros/helpers.njk' import sprite %}
+{% block title %}Hlídač shopů{% endblock %}
+
+{% block preload %}
+  <link rel="prefetch" as="script" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.bundle.min.js"
+        crossorigin/>
+  <link rel="modulepreload" href="/assets/js/index.js"/>
+  <link rel="preload" as="fetch" href="https://api.hlidacshopu.cz/shop-numbers" crossorigin/>
+  <link rel="preload" as="fetch" href="https://api.hlidacshopu.cz/reviews-stats" crossorigin/>
+{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="/assets/css/index.css"/>
+  <meta name="apple-mobile-web-app-title" content="Hlídač shopů"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+{% endblock %}
+
+{% block main %}
+  <section class="main">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <form id="compare-form" action="/">
+            <div>
+              <h1>Ujistěte se, že nakupujete opravdu se slevou</h1>
+
+              <p>Není sleva jako sleva. Někdy obchody těsně před vlnou slev uměle
+                navyšují původní ceny, aby konečná sleva působila výhodně. Hlídač
+                Shopů vám zobrazí původní cenu produktu a její vývoj v&nbsp;čase,
+                takže díky němu snadno poznáte, jestli nakupujete se slevou
+                nebo&nbsp;ne.</p>
+
+              <p><label for="url">Zadejte adresu stránky s detailem produktu:</label></p>
+
+              <div class="form-combo">
+                <div class="url-input">
+                  <i class="url-input__icon">
+                    <svg
+                      width="29"
+                      height="29"
+                      viewBox="0 0 29 29"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>Hledat</title>
+                      <path
+                        d="M24.7144 22.1558L20.6248 18.067C20.4403 17.8824 20.1901 17.7799 19.9275 17.7799H19.2589C20.391 16.3322 21.0637 14.5113 21.0637 12.5304C21.0637 7.81818 17.2449 4 12.5319 4C7.81883 4 4 7.81818 4 12.5304C4 17.2427 7.81883 21.0608 12.5319 21.0608C14.5131 21.0608 16.3343 20.3882 17.7823 19.2563V19.9248C17.7823 20.1873 17.8848 20.4375 18.0694 20.622L22.1589 24.7109C22.5445 25.0964 23.168 25.0964 23.5495 24.7109L24.7103 23.5502C25.0959 23.1647 25.0959 22.5414 24.7144 22.1558ZM12.5319 17.7799C9.63186 17.7799 7.28149 15.434 7.28149 12.5304C7.28149 9.6309 9.62776 7.28093 12.5319 7.28093C15.4319 7.28093 17.7823 9.62679 17.7823 12.5304C17.7823 15.4299 15.436 17.7799 12.5319 17.7799Z"
+                        fill="#CFD4DE"
+                      />
+                    </svg>
+                  </i>
+                  <input
+                    required
+                    type="url"
+                    name="url"
+                    placeholder="https://www.&hellip;"
+                    id="url"
+                    title="Zadejte adresu stránky s detailem produktu."
+                  />
+                </div>
+                <button type="submit">Ověřit vývoj ceny</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2 class="sub-title">AKTUÁLNĚ MONITORUJEME TYTO ESHOPY</h2>
+          <div
+            id="e-shopy"
+            class="logos mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="promo">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c"
+             title="Přečtě si výsledky Analýzy Black Friday 2019">
+            <picture>
+              {% set mobileBanner = images["mobile-banner.png"]["public_id"] %}
+              {% set desktopBanner = images["desktop-banner.png"]["public_id"] %}
+              <source
+                media="screen and (max-width: 360px)"
+                srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x"/>
+              <source
+                media="screen and (min-width: 361px) and (max-width: 479px)"
+                srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x"/>
+              <source
+                media="screen and (min-width: 480px) and (max-width: 839px)"
+                srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x"/>
+              <source
+                media="screen and (min-width: 840px)"
+                srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
+              <img alt="Analýza Black Friday 2019" class="responsive"
+                   src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
+            </picture>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="attendant">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-12">
+          <h2 class="sub-title">HLÍDAČE SHOPŮ VÁM PŘINÁŠÍ</h2>
+          <div class="logos">
+            <ul>
+              <li>
+                <a href="https://apify.com/">
+                  {{ sprite("apify_logo", "Apify", "0 0 157 42") }}
+                </a>
+              </li>
+              <li>
+                <a href="https://www.keboola.com/">
+                  {{ sprite("keboola_logo", "Keboola", "0 0 161 41") }}
+                </a>
+              </li>
+              <li>
+                <a href="https://www.topmonks.cz/">
+                  {{ sprite("topmonks_logo", "TopMonks", "0 0 632 144") }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <link rel="stylesheet" href="/assets/css/md-tabs.css"/>
+  <section class="illustration2">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2>Jak Hlídač Shopů vypadá a jak číst graf?</h2>
+          <p class="title--subtitle">
+            Hlídač Shopů si můžete
+            <b class="text--purple"
+            ><a
+                title="Link pro Istalaci Hlídače Shopů do Prohlížeče"
+                href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+              >nainstalovat přímo do svého prohlížeče</a
+              ></b
+            >
+            a hlídat tak největší e-shopy a jejich někdy prapodivné taktiky při
+            tvoření&nbsp;slev.
+          </p>
+        </div>
+        <div
+          class="tab-list mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <ol>
+            <li>
+              <a href="#tab-1"
+              >Po instalaci v&nbsp;detailu produktu vašeho e-shopu se pod cenou
+                zobrazí&nbsp;graf</a
+              >
+            </li>
+            <li>
+              <a href="#tab-2"
+              >Srovnání původní přeškrtnuté ceny a aktuální
+                prodejní&nbsp;ceny</a
+              >
+            </li>
+            <li>
+              <a href="#tab-3"
+              >Po najetí na graf, můžete libovolně vidět v&nbsp;čase vývoj
+                uváděné původní a prodejní&nbsp;ceny</a
+              >
+            </li>
+          </ol>
+        </div>
+        <div
+          class="tabs tabs--open-tab-1 mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div class="tab" id="tab-1">
+            {% set chart01 = images["window01.png"]["public_id"] %}
+            <picture>
+              <source
+                media="screen and (max-width: 360px)"
+                srcset="{{ chart01 | cloudinaryUrl(width=328,dpr=1) }} 1x,
+                        {{ chart01 | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+                        {{ chart01 | cloudinaryUrl(width=328,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 361px) and (max-width: 479px)"
+                srcset="{{ chart01 | cloudinaryUrl(width=448,dpr=1) }} 1x,
+                        {{ chart01 | cloudinaryUrl(width=448,dpr=1.5) }} 1.5x,
+                        {{ chart01 | cloudinaryUrl(width=448,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 480px) and (max-width: 839px)"
+                srcset="{{ chart01 | cloudinaryUrl(width=792,dpr=1) }} 1x,
+                        {{ chart01 | cloudinaryUrl(width=792,dpr=1.5) }} 1.5x,
+                        {{ chart01 | cloudinaryUrl(width=792,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 840px)"
+                srcset="{{ chart01 | cloudinaryUrl(width=1008,dpr=1) }} 1x,
+                        {{ chart01 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                        {{ chart01 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+              <img alt="" class="responsive" loading="lazy"
+                   src="{{ chart01 | cloudinaryUrl(width=1008,dpr="auto") }}"
+                   width="800" height="574"
+              />
+            </picture>
+          </div>
+          <div class="tab" id="tab-2">
+            {% set chart02 = images["window02.png"]["public_id"] %}
+            <picture>
+              <source
+                media="screen and (max-width: 360px)"
+                srcset="{{ chart02 | cloudinaryUrl(width=328,dpr=1) }} 1x,
+                        {{ chart02 | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+                        {{ chart02 | cloudinaryUrl(width=328,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 361px) and (max-width: 479px)"
+                srcset="{{ chart02 | cloudinaryUrl(width=448,dpr=1) }} 1x,
+                        {{ chart02 | cloudinaryUrl(width=448,dpr=1.5) }} 1.5x,
+                        {{ chart02 | cloudinaryUrl(width=448,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 480px) and (max-width: 839px)"
+                srcset="{{ chart02 | cloudinaryUrl(width=792,dpr=1) }} 1x,
+                        {{ chart02 | cloudinaryUrl(width=792,dpr=1.5) }} 1.5x,
+                        {{ chart02 | cloudinaryUrl(width=792,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 840px)"
+                srcset="{{ chart02 | cloudinaryUrl(width=1008,dpr=1) }} 1x,
+                        {{ chart02 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                        {{ chart02 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+              <img alt="" class="responsive" loading="lazy"
+                   src="{{ chart02 | cloudinaryUrl(width=1008,dpr="auto") }}"
+                   width="800" height="574"/>
+            </picture>
+          </div>
+          <div class="tab" id="tab-3">
+            {% set chart03 = images["window03.png"]["public_id"] %}
+            <picture>
+              <source
+                media="screen and (max-width: 360px)"
+                srcset="{{ chart03 | cloudinaryUrl(width=328,dpr=1) }} 1x,
+                        {{ chart03 | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+                        {{ chart03 | cloudinaryUrl(width=328,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 361px) and (max-width: 480px)"
+                srcset="{{ chart03 | cloudinaryUrl(width=448,dpr=1) }} 1x,
+                        {{ chart03 | cloudinaryUrl(width=448,dpr=1.5) }} 1.5x,
+                        {{ chart03 | cloudinaryUrl(width=448,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 481px) and (max-width: 840px)"
+                srcset="{{ chart03 | cloudinaryUrl(width=792,dpr=1) }} 1x,
+                        {{ chart03 | cloudinaryUrl(width=792,dpr=1.5) }} 1.5x,
+                        {{ chart03 | cloudinaryUrl(width=792,dpr=2) }} 2x">
+              <source
+                media="screen and (min-width: 841px)"
+                srcset="{{ chart03 | cloudinaryUrl(width=1008,dpr=1) }} 1x,
+                        {{ chart03 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                        {{ chart03 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+              <img alt="" class="responsive" loading="lazy"
+                   src="{{ chart03 | cloudinaryUrl(width=792,dpr="auto") }}"
+                   width="800" height="574"/>
+            </picture>
+          </div>
+        </div>
+        <script>
+          const tabList = document.querySelector(".tab-list");
+          const tabs = document.querySelector(".tabs");
+          let activeTab = "tab-1";
+          tabList.addEventListener("click", e => {
+            if (e.target.tagName === "A") {
+              e.preventDefault();
+              const targetTab = e.target.hash.substring(1);
+              tabs.classList.remove(`tabs--open-${activeTab}`);
+              tabs.classList.add(`tabs--open-${targetTab}`);
+              activeTab = targetTab;
+            }
+          });
+        </script>
+      </div>
+    </div>
+  </section>
+
+  <section class="guidance purple-gradient">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2>Jak a proč nainstalovat rozšíření Hlídač Shopů?</h2>
+        </div>
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 browser-list"
+        >
+          <div class="browser-support">
+            <a
+              data-browser="chrome"
+              href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+            >
+              <div class="browser-support__icon">
+                <img
+                  loading="lazy"
+                  src="/assets/img/chrome.svg"
+                  width="42" height="42"
+                  alt="Ikona prohlížeče Google Chrome"
+                />
+              </div>
+            </a>
+            <p class="sub-info--grey">
+              Podporujeme <br/>prohlížeč Google&nbsp;Chrome
+            </p>
+          </div>
+          <div class="browser-support">
+            <a
+              data-browser="firefox"
+              href="https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+            >
+              <div class="browser-support__icon">
+                <img
+                  loading="lazy"
+                  src="/assets/img/firefox.svg"
+                  width="42" height="42"
+                  alt="Ikona prohlížeče Firefox"
+                />
+              </div>
+            </a>
+            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Firefox</p>
+          </div>
+          <div class="browser-support">
+            <a
+              data-browser="safari"
+              href="https://apps.apple.com/us/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
+            >
+              <div class="browser-support__icon">
+                <img
+                  loading="lazy"
+                  src="/assets/img/safari.svg"
+                  width="42" height="42"
+                  alt="Ikona prohlížeče Safari"
+                />
+              </div>
+            </a>
+            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Safari</p>
+          </div>
+          <div class="browser-support">
+            <a
+              data-browser="brave"
+              href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+            >
+              <div class="browser-support__icon">
+                <img
+                  loading="lazy"
+                  src="/assets/img/brave.svg"
+                  width="40" height="47"
+                  alt="Ikona prohlížeče Brave"
+                />
+              </div>
+            </a>
+            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Brave</p>
+          </div>
+          <div class="browser-support">
+            <a
+              data-browser="edge-beta"
+              href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+            >
+              <div class="browser-support__icon">
+                <img
+                  loading="lazy"
+                  src="/assets/img/edge-beta.svg"
+                  width="42" height="42"
+                  alt="Ikona prohlížeče Microsoft Edge Beta"
+                />
+              </div>
+            </a>
+            <p class="sub-info--grey">
+              Podporujeme <br/>prohlížeč Microsoft&nbsp;Edge Beta
+            </p>
+          </div>
+          <div class="browser-support">
+            <div class="browser-support__icon browser-support__icon--disabled">
+              <img
+                loading="lazy"
+                src="/assets/img/opera.svg"
+                  width="42" height="42"
+                alt="Ikona prohlížeče Opera"
+              />
+            </div>
+            <p class="sub-info--grey">Brzy podpora pro <br/>prohlížeč Opera</p>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+          <h3>Instalace Hlídače Shopů do prohlížeče</h3>
+          <p>
+            Aktuálně si můžete Hlídače Shopů nainstalovat do desktopového Chromu,
+            Firefoxu, Safari, Brave a Edge Beta. Pokud ani jeden z nich
+            nepoužíváte, vydržte. Usilovně makáme na Hlídači Shopů pro mobilní
+            telefony.
+          </p>
+        </div>
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+          <h3>
+            Proč byste si měli rozšíření Hlídače Shopů instalovat a jak to vlastně
+            vypadá?
+          </h3>
+          <p>
+            Rozšíření v&nbsp;prohlížeči vám umožňuje kontrolovat ceny rovnou na
+            stránkách e-shopů. Nemusíte se pracně vracet na tento web
+            s&nbsp;odkazem každého produktu, který chcete překontrolovat.
+          </p>
+        </div>
+
+        <div class="steps mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <div id="extension-install-guide" class="mdc-layout-grid__inner"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="numbers">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2>Naše čísla</h2>
+        </div>
+        <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+          <dt class="text--grey">Nainstalovaných rozšíření</dt>
+          <dd id="installs-count" class="number">16 500+</dd>
+        </dl>
+        <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+          <dt class="text--grey">Počet e-shopů</dt>
+          <dd id="e-shops-count" class="number">13</dd>
+        </dl>
+        <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+          <dt class="text--grey">Počet produktů</dt>
+          <dd id="products-count" class="number">1 250 000+</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  {% macro avatar(name) %}
+    {% set publicId = images["avatar/" + name + ".jpg"]["public_id"] %}
+    <img class="avatar" alt="" width="70" height="70"
+         src="{{ publicId | cloudinaryUrl(width=70,height=70,dpr="auto") }}"
+         srcset="{{ publicId | cloudinaryUrl(width=70,height=70,dpr=1) }} 1x,
+                 {{ publicId | cloudinaryUrl(width=70,height=70,dpr=1.5) }} 1.5x,
+                 {{ publicId | cloudinaryUrl(width=70,height=70,dpr=2) }} 2x"
+         loading="lazy" role="presentation"
+    />
+  {% endmacro %}
+
+  <link rel="stylesheet" href="/assets/css/reviews.css"/>
+  <section class="references">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2>Co o&nbsp;nás říkají uživatelé</h2>
+        </div>
+        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+          <div class="review__header">
+            {{ avatar("marek-sukup") }}
+            <span class="review__author">Marek Sukup</span><br/>
+            <time class="review__date text--light-grey" datetime="2018-12-10"
+            >10. 12. 2018
+            </time
+            >
+            <br/>
+            <i class="review__rating" data-rating="5" title="Hodnocení: 5">
+              <b class="review__rating-value" style="width: 126px"></b>
+            </i>
+          </div>
+          <div class="review__content">
+            <p>
+              Skvělý doplněk a výborný nápad něco takového vytvořit. Človek si tak
+              udelá představu o&nbsp;tom, jak funguji slevy a z&nbsp;jake ceny se
+              slevuje…
+            </p>
+          </div>
+        </div>
+
+        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+          <div class="review__header">
+            {{ avatar("tana-lalova") }}
+            <span class="review__author">Táňa Lálová</span><br/>
+            <span class="review__date text--light-grey">Mluvčí Mall.cz</span
+            ><br/>
+            <i class="review__rating review__rating--no-rating"></i>
+          </div>
+          <div class="review__content">
+            <p>
+              Aktivity, jako je například Apify vítáme, protože pomáhají
+              zákazníkům s&nbsp;orientací na trhu. Naším cílem je být
+              transparentní a umožnit lidem rychle a snadno ověřit
+              uvedenou&nbsp;cenu.
+            </p>
+          </div>
+        </div>
+
+        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+          <div class="review__header">
+            {{ avatar("jan-verner") }}
+            <span class="review__author">Jan Verner</span><br/>
+            <time class="review__date text--light-grey" datetime="2018-12-14"
+            >14. 12. 2018
+            </time
+            >
+            <br/>
+            <i class="review__rating" data-rating="5" title="Hodnocení: 5">
+              <b class="review__rating-value" style="width: 126px"></b>
+            </i>
+          </div>
+          <div class="review__content">
+            <p>
+              Poprvé, kdy píšu recenzi na nějaký plugin chromu. A to proto, jak je
+              úžasný. Miluje ho každý, komu ho v okolí ukazuji. Super práce,
+              samozřejmě by bylo super, kdyby to hlídalo více e-shopů, klidně
+              napsat API tak, aby mohli lidé pomáhat.
+            </p>
+          </div>
+        </div>
+        <div
+          class="references_link mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <a href="/recenze/">Další hodnocení</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="news mdc-layout-grid">
+    <div class="mdc-layout-grid__inner layout-wrapper">
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <h2>Nejzajímavější slevy</h2>
+        <p>
+          Podívejte se na <b class="text--purple"
+          ><a href="/topslevy">Top slevy</a></b>.
+          Sledujte naše profily na
+          <b class="text--purple"
+          ><a href="https://www.facebook.com/hlidacshopu/">Facebooku</a></b
+          >
+          a na
+          <b class="text--purple"
+          ><a href="https://twitter.com/hlidacshopucz">Twitteru</a></b
+          >, kde zveřejňujeme jak zajímavé slevy, tak chytáky, na které byste si
+          měli dávat pozor.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div id="hlidac-shopu-modal" class="modal modal--hidden">
+    <div class="modal__inner mdc-layout-grid">
+      <div class="modal__close" title="Zavřít - Esc">
+        <a href="/">&times;</a>
+      </div>
+      <div id="hlidac-shopu-modal__placeholder"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="/assets/js/index.js"></script>
+  <script type="module">
+    import { Workbox } from "https://storage.googleapis.com/workbox-cdn/releases/5.0.0-rc.2/workbox-window.prod.mjs";
+
+    const isProduction = () => ["localhost", "127"].indexOf(location.hostname) === -1;
+    window.isUpdateAvailable = new Promise(async (resolve, reject) => {
+      if ("serviceWorker" in navigator && isProduction()) {
+        try {
+          const wb = new Workbox("/sw.js");
+          wb.addEventListener("installed", e => {
+            console.log("ServiceWorker registration successful with scope: ", e.sw.scope);
+            resolve(e.isUpdate);
+          });
+          wb.addEventListener("activated", e => resolve(e.isUpdate));
+          wb.addEventListener("controlling", e => resolve(e.isUpdate));
+          wb.addEventListener("waiting", e => resolve(e.isUpdate));
+          await wb.register();
+        } catch (ex) {
+          reject(ex);
+        }
+      }
+    });
+  </script>
+{% endblock %}

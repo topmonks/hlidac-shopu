@@ -1,0 +1,56 @@
+.review {
+  .avatar {
+    float: left;
+    border-radius: 50%;
+    margin-right: 1.25em;
+  }
+  &__header:not(.review__header--no-avatar) {
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      top: 32px;
+      left: 24px;
+      background: url("/assets/img/quote.svg") no-repeat;
+      background-size: cover;
+    }
+  }
+  &__author {
+    font-weight: bold;
+    line-height: 1.6;
+  }
+  &__date {
+    font-size: 14px;
+    line-height: 2.2;
+  }
+  &__content {
+    clear: both;
+  }
+  &__rating {
+    display: inline-block;
+    position: relative;
+    width: 126px;
+    height: 19px;
+    padding-right: 3em;
+    &::before,
+    &-value {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: url("/assets/img/stars.svg") top left no-repeat;
+      height: 19px;
+      z-index: 4;
+    }
+    &::before {
+      content: "";
+      filter: saturate(0);
+      right: 0;
+      z-index: 2;
+    }
+  }
+  &__rating--no-rating::before {
+    content: none;
+  }
+}

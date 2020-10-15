@@ -1,0 +1,233 @@
+{% extends 'layouts/master.njk' %}
+{% block title %}Proč děláme Hlídač shopů{% endblock %}
+
+{% block styles %}
+  <style>
+    h2 {
+      font-size: 18px;
+      text-align: left;
+      margin-top: 2em;
+    }
+
+    img {
+      margin-top: 2em;
+    }
+
+    .positive {
+      font-weight: 500;
+      color: #5DBD2F;
+    }
+
+    .negative {
+      font-weight: 500;
+      color: #FF8787;
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+  <section class="our-aim">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner layout-wrapper">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <h2>Proč to děláme?</h2>
+          <hr>
+          <p>Hlídač shopů je neziskový projekt, jehož cílem je chránit české spotřebitele před vynalézavostí
+            marketingových oddělení velkých českých eshopů. Více než dva roky monitorujeme vývoj cen produktů na
+            největších českých eshopech, včetně uváděné slevy a „původní ceny“, ze které byla sleva vypočítána.
+            Příklady,
+            na které jsme narazili, vnímáme jako jasné klamání zákazníka. Jeden příklad mluvící za všechny:</p>
+          <p>Pokud jste si na CZC.cz koupili v&nbsp;rámci <b>Black Friday</b> monitor <i>Philips
+              Brilliance 241P6QPJKES</i>, mohli jste se těšit z&nbsp;větší slevy, ale současně
+            i&nbsp;z&nbsp;větší ceny, než kdybyste si ho na stejném eshopu koupili o&nbsp;14&nbsp;dní
+            dříve (viz graf vývoje prodejní a původní ceny níže). Eshop totiž
+            v&nbsp;rámci zařazení tohoto produktu do Black Friday akce současně navýšil
+            „původní cenu“ (ta přeškrtnutá, ze které se vypočítává sleva).
+            Tato praktika není ojedinělá, viz text&nbsp;níže.</p>
+
+          <picture>
+            {% set chart01 = images["graf-01.png"]["public_id"] %}
+            <source media="screen and (max-width: 479px)"
+                    srcset="{{ chart01 | cloudinaryUrl(width=440) }} 1x,
+                            {{ chart01 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
+                            {{ chart01 | cloudinaryUrl(width=440,dpr=2) }} 2x">
+            <source media="screen and (min-width: 480px) and (max-width: 839px)"
+                    srcset="{{ chart01 | cloudinaryUrl(width=800) }} 1x,
+                            {{ chart01 | cloudinaryUrl(width=800,dpr=1.5) }} 1.5x,
+                            {{ chart01 | cloudinaryUrl(width=800,dpr=2) }} 2x">
+            <source media="screen and (min-width: 840px)"
+                    srcset="{{ chart01 | cloudinaryUrl(width=1008) }} 1x,
+                            {{ chart01 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                            {{ chart01 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+            <img alt="Znázorňující Graf 1" class="responsive" width="1008" height="450"
+                 src="{{ chart01 | cloudinaryUrl(width=1008,dpr="auto") }}">
+          </picture>
+
+          <h2>Proč si myslíme, že se jedná o&nbsp;klamání spotřebitele?</h2>
+          <hr>
+          <p>V&nbsp;zákoně o&nbsp;ochraně spotřebitele (č. 634/1992 Sb.) se píše
+            následující:</p>
+          <p>§&nbsp;4&nbsp;Nekalá obchodní praktika <br>
+            … <br>
+            (3) Nekalou obchodní praktikou se rozumí zejména klamavé konání podle §&nbsp;5&nbsp;nebo klamavé opomenutí
+            podle §
+            5a a agresivní obchodní praktika podle §&nbsp;5b. Obchodní praktiky, které se považují za nekalé za všech
+            okolností, jsou uvedeny v&nbsp;příloze č. 1&nbsp;a 2&nbsp;tohoto zákona.<br>
+            (4) <b>Užívání nekalé obchodní praktiky</b> před
+            rozhodnutím ohledně koupě, v&nbsp;průběhu rozhodování a po učinění
+            rozhodnutí <b>se zakazuje</b>.</p>
+          <p>§&nbsp;5&nbsp;Klamavá konání<br>
+            …<br>
+            (2) Za klamavou se považuje také obchodní praktika obsahující pravdivou informaci, jestliže vede nebo může
+            vést
+            spotřebitele k&nbsp;rozhodnutí ohledně koupě, které by jinak neučinil, pokud
+            <b>jakýmkoli způsobem uvádí nebo je schopna uvést spotřebitele v&nbsp;omyl
+              ohledně</b>…<br>
+            …<br>
+            d) <b>ceny nebo způsobu výpočtu ceny anebo existence konkrétní cenové výhody,</b><br>
+            …
+          </p>
+          <p>Na příkladu výše je vidět obchodní praktika, kterou se obchodník
+            snaží uvést spotřebitele v&nbsp;omyl existencí konkrétní cenové výhody,
+            která neexistuje.</p>
+
+          <h2>Co je naším cílem?</h2>
+          <hr>
+          <p>Naším primárním cílem je chránit spotřebitele před nekalými
+            obchodními praktikami našich eshopů pomocí reálných dat, ke kterým se
+            jinak nelze jednoduše dostat. Prakticky se snažíme pomoci s&nbsp;rozhodováním
+            při nákupu na internetu tím, že spotřebitelům zobrazujeme vývoj prodejní
+            ceny daného produktu včetně vývoje „původní ceny“. Díky tomu
+            nakupující na první pohled vidí výhodnost koupě, případně klamání ze
+            strany obchodníka uměle vytvořenou slevou.</p>
+
+          <p>K&nbsp;tomuto účelu slouží rozšíření do prohlížeče, které vám
+            přímo na webu eshopu u&nbsp;ceny produktu zobrazí graf s&nbsp;vývojem cen a reálnou
+            slevou. Pokud z&nbsp;nějakého důvodu nechcete využívat rozšíření do
+            prohlížeče, můžete si daný produkt ověřit přímo na hlavní stránce
+            tohoto&nbsp;webu.</p>
+
+          <p>Současně každý rok vydáváme analýzu Black Friday, kde vyhodnocujeme
+            jakým způsobem české eshopy (zne)využívají tento fenomén.</p>
+
+          <h2>Naše služba je obdobná tomu, co nabízí Heureka.cz, ale liší se
+            v&nbsp;následujícím:</h2>
+          <hr>
+          <p class="positive">+ Monitorujeme i „původní cenu“ a tím výši slevy<br>
+            + Sledujeme vývoj ceny produktu na daném eshopu, nejen průměrnou / minimální cenu přes všechny
+            eshopy<br>
+            + Pokrýváme i&nbsp;eshopy, které Heurece data neposkytují (např. Alza.cz)</p>
+          <p class="negative">- (Zatím) neporovnáváme ceny produktů mezi jednotlivými eshopy<br>
+            - Monitorujeme řádově méně&nbsp;eshopů</p>
+
+          <h2>Jak to vše začalo?</h2>
+          <p>Vše začalo na podzim roku 2017, kdy jsme se v&nbsp;Apify chtěli podívat na
+            to, jak největší české eshopy pracují se slevami v&nbsp;rámci Black Friday.
+            Nevěřili jsme uváděným „až 80% slevám“ a tak jsme vybrali zástupce
+            největších českých e-shopů (Alza.cz, Mall.cz a CZC.cz) a celý měsíc
+            před Black Friday denně monitorovali ceny všech jejich produktů. Během
+            Black Friday (který probíhal v&nbsp;tu dobu celý týden před pátkem 24.11.)
+            jsme pro jistotu navíc monitorovali sekce s&nbsp;produkty v&nbsp;Black Friday
+            4×&nbsp;denně.</p>
+          <p>To, co jsme zjistili, nám vyrazilo dech. Nejen, že jsme si potvrdili
+            nesmyslnost 80% slev&nbsp;&ndash; průměrná sleva byla kolem 30&nbsp;%, reálna pak kolem
+            15&nbsp;% (vypočítaná z&nbsp;ceny měsíc před Black Friday). Ale hlavně jsme
+            našli z&nbsp;našeho pohledu jasné klamání zákazníka pomocí manipulace
+            s&nbsp;původní cenou (ta přeškrtnutá, ze které obchodníci vypočítávají
+            slevu).</p>
+          <h2>Pojďme se podívat na pár příkladů:</h2>
+          <p>Třeba Black+Decker aku vrtačka na Mall.cz. Krásná sleva 45&nbsp;% v&nbsp;rámci
+            Black Friday. Aktuální cena 2,650&nbsp;Kč, původní cena 4,899&nbsp;Kč. Ještě že
+            jste si ji nekoupili před měsícem, to byla sleva pouze 2&nbsp;%. Jenže před
+            měsícem stála pouze o&nbsp;stovku víc, přesněji 2,749&nbsp;Kč a zlevněná byla
+            z&nbsp;2,799&nbsp;Kč. Kouzlo je v&nbsp;tom, že Mall.cz 19.11. (začátek Black Friday
+            akce) najednou navýšil původní cenu z&nbsp;2,799&nbsp;Kč na 4,899&nbsp;Kč.</p>
+
+          <picture>
+            {% set chart02 = images["graf-02.png"]["public_id"] %}
+            <source media="screen and (max-width: 479px)"
+                    srcset="{{ chart02 | cloudinaryUrl(width=440) }} 1x,
+                            {{ chart02 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
+                            {{ chart02 | cloudinaryUrl(width=440,dpr=2) }} 2x">
+            <source media="screen and (min-width: 480px) and (max-width: 839px)"
+                    srcset="{{ chart02 | cloudinaryUrl(width=800) }} 1x,
+                            {{ chart02 | cloudinaryUrl(width=800,dpr=1.5) }} 1.5x,
+                            {{ chart02 | cloudinaryUrl(width=800,dpr=2) }} 2x">
+            <source media="screen and (min-width: 840px)"
+                    srcset="{{ chart02 | cloudinaryUrl(width=1008) }} 1x,
+                            {{ chart02 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                            {{ chart02 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+            <img alt="Znázorňující Graf 2" class="responsive" width="1008" height="450"
+                 src="{{ chart02 | cloudinaryUrl(width=440,dpr="auto") }}">
+          </picture>
+          <p>U&nbsp;Alza.cz jsme našli obdobný případ. Koloběžka Urbanstar Uscooter byla
+            sice zlevněna na 6,290&nbsp;Kč, nicméně původní cena navýšená 17.11.&nbsp;ze
+            7,500&nbsp;Kč na 9,999&nbsp;Kč. Tedy místo reálných 16&nbsp;% byla zázrakem vykouzlena
+            sleva 37&nbsp;%.</p>
+
+          <picture>
+            {% set chart03 = images["graf-03.png"]["public_id"] %}
+            <source media="screen and (max-width: 479px)"
+                    srcset="{{ chart03 | cloudinaryUrl(width=440) }} 1x,
+                            {{ chart03 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
+                            {{ chart03 | cloudinaryUrl(width=440,dpr=2) }} 2x">
+            <source media="screen and (min-width: 480px) and (max-width: 839px)"
+                    srcset="{{ chart03 | cloudinaryUrl(width=800) }} 1x,
+                            {{ chart03 | cloudinaryUrl(width=800,dpr=1.5) }} 1.5x,
+                            {{ chart03 | cloudinaryUrl(width=800,dpr=2) }} 2x">
+            <source media="screen and (min-width: 840px)"
+                    srcset="{{ chart03 | cloudinaryUrl(width=1008) }} 1x,
+                            {{ chart03 | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                            {{ chart03 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+            <img alt="Znázorňující Graf 3" class="responsive" width="1008" height="450"
+                 src="{{ chart03 | cloudinaryUrl(width=440,dpr="auto") }}">
+          </picture>
+          <p>Na CZC.cz jsme dokonce našli produkty inzerované v&nbsp;Black Friday sekci,
+            u&nbsp;kterých se navýšila nejenom původní cena, ale dokonce i&nbsp;cena samotná,
+            ta po slevě. (viz příklad na začátku této stránky).<br>
+            Celá analýza vyšla na <a
+              href="https://www.lupa.cz/clanky/slevy-az-80-jak-e-shopy-kouzli-s-cenami-aneb-black-friday-po-cesku/">Lupa.cz</a>,
+            včetně reakcí všech dotčených eshopů. Druhý den dokonce vyšla <a
+              href="https://www.lupa.cz/clanky/nemoralni-mozna-nezakonne-nikoli-co-rika-coi-na-manipulace-e-shopu-s-cenami/">reakce
+              ČOI</a>.
+          </p>
+          <p>Eshopy jsme monitorovali dále a v&nbsp;roce 2018&nbsp;jsme vzali data na <a
+              href="https://www.datafestak.cz/">Data
+              fesťák</a>, v&nbsp;rámci kterého se vytvořil tým z&nbsp;
+            <a href="https://www.apify.com/">Apify</a>, <a href="https://www.topmonks.cz/">TopMonks</a>,
+            <a href="https://www.keboola.com/">Kebooly</a> a <a href="https://www.biztreat.com">Bizztreatu</a>.
+            V&nbsp;tomto týmu jsme vytvořili <a
+              href="https://www.lupa.cz/clanky/black-friday-po-cesku-kouzla-se-slevami-po-roce/">analýzu Black Friday po
+              roce</a>
+            a zejména zmiňované <a
+              href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk?hl=en">rozšíření
+              do prohlížeče</a>, které již pár dní po spuštění používalo několik tisíc
+            uživatelů.</p>
+          <p>Rok se s&nbsp;rokem sešel a jsme tu znovu, tentokrát s&nbsp;tímto webem, kterým
+            se chceme dostat k&nbsp;více uživatelům. A&nbsp;současně zastřešit tento náš
+            společný projekt, na kterém aktuálně spolupracuje
+            <a href="https://www.apify.com/">Apify</a>, <a href="https://www.topmonks.cz/">TopMonks</a> a
+            <a href="https://www.keboola.com/">Keboola</a>.</p>
+          <picture>
+            {% set priceComparationMobile = images["porovnani-cen-mobile.png"]["public_id"] %}
+            {% set priceComparationDesktop = images["porovnani-cen.png"]["public_id"] %}
+            <source media="screen and (max-width: 479px)"
+                    srcset="{{ priceComparationMobile | cloudinaryUrl(width=440) }} 1x,
+                            {{ priceComparationMobile | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
+                            {{ priceComparationMobile | cloudinaryUrl(width=440,dpr=2) }} 2x">
+            <source media="screen and (min-width: 480px) and (max-width: 839px)"
+                    srcset="{{ priceComparationDesktop | cloudinaryUrl(width=800) }} 1x,
+                            {{ priceComparationDesktop | cloudinaryUrl(width=800,dpr=1.5) }} 1.5x,
+                            {{ priceComparationDesktop | cloudinaryUrl(width=800,dpr=2) }} 2x">
+            <source media="screen and (min-width: 840px)"
+                    srcset="{{ priceComparationDesktop | cloudinaryUrl(width=1008) }} 1x,
+                            {{ priceComparationDesktop | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                            {{ priceComparationDesktop | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+            <img alt="Hlídač Shopů - Ukázka" class="responsive" width="1008" height="770"
+                 src="{{ priceComparationMobile | cloudinaryUrl(width=440,dpr="auto") }}">
+          </picture>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

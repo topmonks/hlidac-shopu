@@ -1,0 +1,110 @@
+{% extends 'topslevy/master.njk' %}
+{% from 'macros/helpers.njk' import sprite %}
+{% block title %}Top slevy{% endblock %}
+
+{% block preload %}
+  <link rel="modulepreload" href="https://unpkg.com/lit-html@1.1.1/lit-html.js?module" crossorigin/>
+{% endblock %}
+
+{% block styles %}
+  <style>
+    .shops-stats {
+      border-spacing: 0 12px;
+    }
+
+    .shops-stats .sprite svg {
+      width: 80px;
+    }
+
+    .shops-stats thead th {
+      text-align: left;
+      font-weight: normal;
+      font-size: 14px;
+      padding: 12px;
+      border-bottom: 1px solid #dadada;
+    }
+
+    .shops-stats thead th:first-of-type {
+      font-weight: bold;
+    }
+
+    .dashboard-row td,
+    .dashboard-row th {
+      border: 1px solid #ebeef2;
+      border-left: none;
+      border-right: none;
+      border-collapse: collapse;
+      padding: 12px;
+    }
+
+    .dashboard-row th {
+      border-left: 1px solid #ebeef2;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+
+    .dashboard-row td {
+      text-align: right;
+    }
+
+    .dashboard-row td:last-of-type {
+      border-right: 1px solid #ebeef2;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+  <section class="dashboard">
+    <div class="mdc-layout-grid">
+      <div class="layout-wrapper">
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <h2>Top slevy (Kč)</h2>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <table class="shops-stats">
+              <colgroup>
+                <col width="150"/>
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Pořadí</th>
+                  <th scope="col">Reálná sleva v Kč</th>
+                  <th scope="col">Cena po slevě v Kč</th>
+                  <th scope="col">Původní cena v Kč</th>
+                  <th scope="col">Reálná sleva v %</th>
+                  <th scope="col">Zlevněno od data</th>
+                  <th scope="col">Produkt</th>
+                  <th scope="col">Obrázek</th>
+                  <th scope="col">Eshop</th>
+                </tr>
+              </thead>
+              <tbody id="table-root-kc">
+                <tr>
+                  <td colspan="6">
+                    <div class="loading-container">
+                      <div class="loader" aria-label="Načítám data…">
+                      Chvilku strpení, načítají se data&hellip;
+                    </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <p class="explanation">
+              Poznámka: <em>Reálná sleva</em> se počítá jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo za předchozích maximálně 30 dní.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="/assets/js/topslevy.js"></script>
+{% endblock %}

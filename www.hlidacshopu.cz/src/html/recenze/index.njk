@@ -1,0 +1,31 @@
+{% extends 'layouts/master.njk' %}
+
+{% block title %}Recenze na Hlídač shopů{% endblock %}
+
+{% block preload %}
+  <link rel="modulepreload" href="/assets/js/reviews.js"/>
+  <link rel="preload" href="https://api.hlidacshopu.cz/reviews-stats" as="fetch" crossorigin>
+{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="/assets/css/reviews.css">
+{% endblock %}
+
+{% block main %}
+  <section class="mdc-layout-grid layout-wrapper">
+    <div class="mdc-layout-grid__inner">
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <h2>Recenze na rozšíření Hlídač shopů</h2>
+      </div>
+    </div>
+    <div id="reviews" class="mdc-layout-grid__inner">
+      <div class=loading-container>
+        <div class=loader aria-label="Načítám data…">Recenze se načítají&hellip;</div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script type="module" src="/assets/js/reviews.js"></script>
+{% endblock %}

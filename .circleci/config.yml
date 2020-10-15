@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.1.0
+
+jobs:
+  build-website:
+    executor:
+      name: node/default
+      tag: '14.13.1'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Build website
+          command: yarn build:www.hlidacshopu.cz
+
+workflows:
+  ci:
+    jobs:
+      - build-website
