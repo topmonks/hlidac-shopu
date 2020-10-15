@@ -61,6 +61,8 @@ jobs:
     executor:
       name: node/default
       tag: "14.13.1"
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - pulumi/login:
