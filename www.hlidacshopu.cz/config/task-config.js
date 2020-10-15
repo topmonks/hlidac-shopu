@@ -48,6 +48,19 @@ const config = {
     }
   },
 
+  generate: {
+    json: [
+      {
+        collection: "media",
+        mergeOptions: {
+          concatArrays: true,
+          fileName: "media.json",
+          edit: json => ({ [json.published.split("-").shift()]: [json] })
+        }
+      }
+    ]
+  },
+
   html: {
     collections: ["media", "images"],
     nunjucksRender: {
@@ -65,38 +78,6 @@ const config = {
   browserSync: {
     server: {
       baseDir: pathConfig.dest
-    }
-  },
-
-  additionalTasks: {
-    initialize({ task, src, dest, series, watch }, PATH_CONFIG, TASK_CONFIG) {
-      const dataPath = projectPath(PATH_CONFIG.src, PATH_CONFIG.data.src);
-      const mediaSrc = projectPath(dataPath, "media/**/*.md");
-      const generateMediaJson = () =>
-        src(mediaSrc)
-          .pipe(markdownToJSON(marked))
-          .pipe(
-            merge({
-              concatArrays: true,
-              fileName: "media.json",
-              edit: json => ({ [json.published.split("-").shift()]: [json] })
-            })
-          )
-          .pipe(dest(dataPath));
-
-      task("media-data", generateMediaJson);
-      task("media:watch", cb => {
-        watch(mediaSrc, generateMediaJson);
-        watch("media.json", { cwd: dataPath }, series("html"));
-        cb();
-      });
-    },
-    development: {
-      prebuild: ["media-data"],
-      postbuild: ["media:watch"]
-    },
-    production: {
-      prebuild: ["media-data"]
     }
   },
 
