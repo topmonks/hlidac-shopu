@@ -16,9 +16,11 @@ We are using npm scripts for project automation.
 You will need:
 
 - Node.js 14
-- Firefox Developer Edition
+- Firefox
 - Chrome
 - XCode Command Line Tools
+
+See `scripts` folder for install scripts for your system.
 
 ## Building extensions
 
@@ -26,8 +28,8 @@ All extensions (except Safari version) will be build to `./dist` folder by calli
 
 Firefox supports Dark and Light themes for action icons and we are optimising action icons for these.
 Chrome doesn't support action icons theming via `manifest.json` so we use `background.js` script to
-add support for themes programmatically. We are removing `background.js` script and
-it's entry in manifest in build step with other unnecessary files.
+add support for themes programmatically. We are removing `background.js` script, and
+it's entry in manifest, in build step with other unnecessary files.
 
 ### Firefox extension
 
@@ -41,8 +43,8 @@ To build Chrome extension run `yarn build:chrome`. It will create package in `./
 ### Safari extension
 
 1. Run `yarn build:safari` to get latest bundle script, domains (eshops) permissions and current version for Safari
-2. Distribute app by Xcodes: `yarn start:safari` > Product > Archive > Distribute App\*
-3. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer
+2. Distribute app by XCode: `yarn start:safari` > Product > Archive > Distribute App\*
+3. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer (credentials in 1password)
 
 \* Use autosigning feature and use the TopMonks s.r.o Apple developer team account. If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer" from Topmonks 1Password.
 
