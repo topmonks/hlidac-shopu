@@ -6,9 +6,8 @@ const alias = require("@rollup/plugin-alias");
 const resolve = require("rollup-plugin-pnp-resolve");
 const pathConfig = require("./path-config.json");
 const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath");
-const createSharedTaskConfig = require("../../shared/config/createSharedTaskConfig");
 
-const config = createSharedTaskConfig(__dirname, {
+const config = {
   locales: ["cs", "cs-CZ"],
   images: true,
   cloudinary: true,
@@ -106,6 +105,6 @@ const config = createSharedTaskConfig(__dirname, {
   production: {
     rev: true
   }
-});
+};
 
 module.exports = config;
