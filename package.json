@@ -38,6 +38,7 @@
     "build": "run-p build:*",
     "start": "run-p start:*",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "run-p lint:*",
     "lint:extension": "web-ext lint",
     "lint:firefox": "web-ext lint --config web-ext-config.firefox.js",
     "prebuild:firefox": "cp -R extension/ ./extension-dist/; cat ./extension/manifest.json | jq 'del(.background)' > ./extension-dist/manifest.json",
