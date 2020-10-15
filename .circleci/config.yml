@@ -18,4 +18,5 @@ jobs:
 workflows:
   ci:
     jobs:
-      - build-website
+      - build-website:
+          context: org-global
