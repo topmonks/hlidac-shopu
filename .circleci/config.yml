@@ -14,9 +14,23 @@ jobs:
       - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
+  build-web-extension:
+    executor:
+      name: node/default
+      tag: '14.13.1'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Build web extensions
+          command: |
+            yarn build:chrome
+            yarn build:firefox
 
 workflows:
   ci:
     jobs:
+      - build-web-extension
       - build-website:
           context: org-global
