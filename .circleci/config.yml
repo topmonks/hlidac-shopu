@@ -32,7 +32,10 @@ jobs:
           pkg-manager: yarn
       - run:
           name: Lint web extension
-          command: yarn lint:extension
+          command: |
+            mkdir -p results
+            yarn lint:extension
+            yarn lint:extension -o json > results/lint.json
       - run:
           name: Build web extensions
           command: |
@@ -41,6 +44,8 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+      - store_artifacts:
+          path: ./results
       - store_artifacts:
           path: ./dist
 
