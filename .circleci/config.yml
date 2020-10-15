@@ -54,9 +54,38 @@ jobs:
       - store_artifacts:
           path: ./dist
 
+  provision:
+    executor:
+      name: node/default
+      tag: '14.13.1'
+    steps:
+      - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - node/install-packages:
+          pkg-manager: yarn
+      - pulumi/update:
+          stack: hlidac-shopu-prod
+          skip-preview: true
+
+  preview-provision:
+    executor:
+      name: node/default
+      tag: '14.13.1'
+    steps:
+      - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - node/install-packages:
+          pkg-manager: yarn
+      - pulumi/preview:
+          stack: hlidac-shopu-prod
+
 workflows:
   ci:
     jobs:
+      - preview-provision:
+          context: app-hlidac-shopu
       - build-web-extension
       - build-website:
           context: org-global
