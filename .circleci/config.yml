@@ -8,7 +8,7 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: '14.13.1'
+      tag: "14.13.1"
     steps:
       - checkout
       - node/install-packages:
@@ -16,17 +16,15 @@ jobs:
       - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
       - persist_to_workspace:
           root: .
-          paths: [ public ]
+          paths: [public]
+      - slack/notify
 
   build-web-extension:
     executor:
       name: node/default
-      tag: '14.13.1'
+      tag: "14.13.1"
     steps:
       - checkout
       - run:
@@ -47,18 +45,16 @@ jobs:
           command: |
             yarn build:chrome
             yarn build:firefox
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
       - store_artifacts:
           path: ./results
       - store_artifacts:
           path: ./dist
+      - slack/notify
 
   provision:
     executor:
       name: node/default
-      tag: '14.13.1'
+      tag: "14.13.1"
     steps:
       - checkout
       - pulumi/login:
@@ -68,14 +64,12 @@ jobs:
       - pulumi/update:
           stack: hlidac-shopu-prod
           skip-preview: true
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+      - slack/notify
 
   preview-provision:
     executor:
       name: node/default
-      tag: '14.13.1'
+      tag: "14.13.1"
     steps:
       - checkout
       - pulumi/login:
@@ -84,9 +78,7 @@ jobs:
           pkg-manager: yarn
       - pulumi/preview:
           stack: hlidac-shopu-prod
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+      - slack/notify
 
 workflows:
   ci:
@@ -101,7 +93,6 @@ workflows:
           filters:
             branches:
               only: master
-
       - build-web-extension
       - build-website:
           context: org-global
