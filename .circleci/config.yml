@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@4.1.0
+  slack: circleci/slack@4.0.1
 
 jobs:
   build-website:
@@ -14,6 +15,9 @@ jobs:
       - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
       - persist_to_workspace:
           root: .
           paths: [ public ]
@@ -34,6 +38,9 @@ jobs:
           command: |
             yarn build:chrome
             yarn build:firefox
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
       - store_artifacts:
           path: ./dist
 
