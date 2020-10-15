@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@4.1.0
+  pulumi: pulumi/pulumi@2.0.0
   slack: circleci/slack@4.0.1
 
 jobs:
@@ -67,6 +68,9 @@ jobs:
       - pulumi/update:
           stack: hlidac-shopu-prod
           skip-preview: true
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
   preview-provision:
     executor:
@@ -80,6 +84,9 @@ jobs:
           pkg-manager: yarn
       - pulumi/preview:
           stack: hlidac-shopu-prod
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
 workflows:
   ci:
