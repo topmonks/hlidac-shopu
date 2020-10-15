@@ -19,7 +19,9 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: [public]
-      - slack/notify
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
   build-web-extension:
     executor:
@@ -49,7 +51,9 @@ jobs:
           path: ./results
       - store_artifacts:
           path: ./dist
-      - slack/notify
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
   provision:
     executor:
@@ -64,7 +68,9 @@ jobs:
       - pulumi/update:
           stack: hlidac-shopu-prod
           skip-preview: true
-      - slack/notify
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
   preview-provision:
     executor:
@@ -78,7 +84,9 @@ jobs:
           pkg-manager: yarn
       - pulumi/preview:
           stack: hlidac-shopu-prod
-      - slack/notify
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
 
 workflows:
   ci:
