@@ -24,7 +24,7 @@ addEventListener("DOMContentLoaded", async () => {
 
 function getTargetURL(searchParams) {
   const targetURL = searchParams.get("url") || searchParams.get("text");
-  return targetURL?.trim().split(" ").pop();
+  return targetURL && targetURL.trim().split(" ").pop();
 }
 
 function getShop(targetURL) {

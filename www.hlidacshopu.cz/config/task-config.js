@@ -1,14 +1,12 @@
 const markdownToJSON = require("gulp-markdown-to-json");
 const marked = require("marked");
 const merge = require("gulp-merge-json");
-const path = require("path");
 const alias = require("@rollup/plugin-alias");
-const resolve = require("rollup-plugin-pnp-resolve");
+const nodeResolve = require("@rollup/plugin-node-resolve");
 const pathConfig = require("./path-config.json");
 const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath");
 
 const config = {
-  locales: ["cs", "cs-CZ"],
   images: true,
   cloudinary: true,
   fonts: true,
@@ -22,7 +20,7 @@ const config = {
       alias({
         entries: [{ find: "tslib", replacement: "tslib/tslib.es6.js" }]
       }),
-      resolve({ browser: true })
+      nodeResolve({ browser: true })
     ],
     modules: {
       app: "app.js",
