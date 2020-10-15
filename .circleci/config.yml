@@ -28,6 +28,9 @@ jobs:
       tag: '14.13.1'
     steps:
       - checkout
+      - run:
+          name: Install CLI tools
+          command: sudo apt install rename
       - node/install-packages:
           pkg-manager: yarn
       - run:
