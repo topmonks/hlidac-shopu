@@ -41,6 +41,7 @@ jobs:
           command: |
             yarn build:chrome
             yarn build:firefox
+            rename -n 's/hl_da_shop_/firefox-extension/g' dist/*.zip
       - slack/notify:
           event: fail
           template: basic_fail_1
