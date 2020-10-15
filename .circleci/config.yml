@@ -93,6 +93,15 @@ workflows:
     jobs:
       - preview-provision:
           context: app-hlidac-shopu
+          filters:
+            branches:
+              ignore: master
+      - provision:
+          context: app-hlidac-shopu
+          filters:
+            branches:
+              only: master
+
       - build-web-extension
       - build-website:
           context: org-global
