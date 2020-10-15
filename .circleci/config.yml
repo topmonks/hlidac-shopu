@@ -23,6 +23,9 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run:
+          name: Lint web extension
+          command: yarn lint:extension
+      - run:
           name: Build web extensions
           command: |
             yarn build:chrome
