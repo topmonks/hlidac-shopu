@@ -1,8 +1,66 @@
 version: 2.1
 orbs:
+  aws-cli: circleci/aws-cli@1.2.1
+  aws-cloudfront: topmonks/aws-cloudfront@1.0.0
+  aws-s3: circleci/aws-s3@1.0.15
   node: circleci/node@4.1.0
   pulumi: pulumi/pulumi@2.0.0
   slack: circleci/slack@4.0.1
+
+commands:
+  read_deployment_envs:
+    parameters:
+      pulumi_backend_uri:
+        type: string
+        default: s3://pulumi.hlidacshopu.cz
+      stack:
+        type: string
+        default: hlidac-shopu-prod
+      s3_bucket_uri_property:
+        type: string
+        default: websiteS3BucketUri
+      cloudfront_distribution_id_property:
+        type: string
+        default: websiteCloudFrontId
+      working_directory:
+        type: string
+        default: .
+    steps:
+      - pulumi/login:
+          cloud-url: << parameters.pulumi_backend_uri >>
+      - pulumi/stack_output:
+          stack: << parameters.stack >>
+          property_name: << parameters.s3_bucket_uri_property >>
+          env_var: AWS_S3_BUCKET
+          working_directory: << parameters.working_directory >>
+      - pulumi/stack_output:
+          stack: << parameters.stack >>
+          property_name: << parameters.cloudfront_distribution_id_property >>
+          env_var: AWS_CLOUDFRONT_DISTRIBUTION_ID
+          working_directory: << parameters.working_directory >>
+  deploy_website:
+    parameters:
+      site_name:
+        type: string
+      distribution_id:
+        type: string
+        default: "${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
+      paths:
+        type: string
+        default: "/*"
+      after_s3_sync:
+        description: Steps that will be execute after S3 sync, but before Cloudfront distribution invalidation
+        type: steps
+        default: [ ]
+    steps:
+      - read_deployment_envs
+      - aws-s3/sync:
+          from: public/<< parameters.site_name >>
+          to: s3://<< parameters.site_name >>
+      - steps: << parameters.after_s3_sync >>
+      - aws-cloudfront/invalidate:
+          distribution_id: << parameters.distribution_id >>
+          paths: << parameters.paths >>
 
 jobs:
   build-website:
@@ -94,6 +152,21 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  deploy-site:
+    parameters:
+      site_name:
+        type: string
+      after_s3_sync:
+        type: steps
+        default: [ ]
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - attach_workspace
+      - deploy_website:
+          site_name: << parameters.site_name >>
+          after_s3_sync: << parameters.after_s3_sync >>
+
 workflows:
   ci:
     jobs:
@@ -110,3 +183,10 @@ workflows:
       - build-web-extension
       - build-website:
           context: org-global
+      - deploy-site:
+          site_name: www.hlidacshopu.cz
+          context: app-hlidac-shopu
+          requires:
+            - provision
+            - build-website
+
