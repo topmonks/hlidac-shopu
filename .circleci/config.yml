@@ -162,7 +162,8 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
-      - attach_workspace
+      - attach_workspace:
+          at: $CIRCLE_WORKING_DIRECTORY
       - deploy_website:
           site_name: << parameters.site_name >>
           after_s3_sync: << parameters.after_s3_sync >>
