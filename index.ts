@@ -28,10 +28,10 @@ let googleVerification = createTxtRecord(
 );
 let gmailRecords = createGoogleMxRecords("hlidacshopu.cz");
 
-// let website = Website.create("www.hlidacshopu.cz", {
-//   assetsCachingLambdaArn: assetsCachingLambda.arn,
-//   securityHeadersLambdaArn: securityHeadersLambda.arn
-// });
+let website = Website.create("www.hlidacshopu.cz", {
+  assetsCachingLambdaArn: assetsCachingLambda.arn,
+  securityHeadersLambdaArn: securityHeadersLambda.arn
+});
 let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
   target: "https://www.hlidacshopu.cz"
 });
@@ -39,9 +39,9 @@ let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
 export const certificateArn = certificate;
 export const assetsCachingLambdaArn = assetsCachingLambda.arn;
 export const securityHeadersLambdaArn = securityHeadersLambda.arn;
-// export const websiteUrl = website.url;
-// export const websiteS3BucketUri = website.s3BucketUri;
-// export const websiteS3WebsiteUrl = website.s3WebsiteUrl;
-// export const websiteCloudFrontId = website.cloudFrontId;
+export const websiteUrl = website.url;
+export const websiteS3BucketUri = website.s3BucketUri;
+export const websiteS3WebsiteUrl = website.s3WebsiteUrl;
+export const websiteCloudFrontId = website.cloudFrontId;
 export const nakedDomainRedirectUrl = nakedDomainRedirect.url;
 export const nakedDomainRedirectCloudFrontId = nakedDomainRedirect.cloudFrontId;
