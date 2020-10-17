@@ -78,7 +78,6 @@ jobs:
           root: .
           paths: [public]
       - slack/notify:
-          channel: ntf-hlidac-shopu
           event: fail
           template: basic_fail_1
 
@@ -111,7 +110,6 @@ jobs:
       - store_artifacts:
           path: ./dist
       - slack/notify:
-          channel: ntf-hlidac-shopu
           event: fail
           template: basic_fail_1
 
@@ -131,7 +129,6 @@ jobs:
           stack: hlidac-shopu-prod
           skip-preview: true
       - slack/notify:
-          channel: ntf-hlidac-shopu
           event: fail
           template: basic_fail_1
 
@@ -148,7 +145,6 @@ jobs:
       - pulumi/preview:
           stack: hlidac-shopu-prod
       - slack/notify:
-          channel: ntf-hlidac-shopu
           event: fail
           template: basic_fail_1
 
