@@ -46,4 +46,7 @@ async function main(puppeteer) {
   await browser.close();
 }
 
-main(puppeteer);
+main(puppeteer).catch((ex) => {
+  console.error(ex);
+  return process.exit(1);
+});
