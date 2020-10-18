@@ -119,6 +119,20 @@ jobs:
           event: fail
           template: basic_fail_1
 
+  build-safari-extension:
+    macos:
+      xcode: "12.0.1"
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Build Safari extensions
+          command: yarn build:safari
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
   provision:
     executor:
       name: node/default
@@ -190,6 +204,7 @@ workflows:
             branches:
               only: master
       - build-web-extension
+      - build-safari-extension
       - build-website:
           context: org-global
       - deploy-site:
