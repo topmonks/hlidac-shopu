@@ -83,8 +83,8 @@ jobs:
           template: basic_fail_1
 
   build-web-extension:
-    docker:
-      - image: 'cimg/node:14.14-browsers'
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
