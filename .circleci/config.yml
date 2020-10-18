@@ -83,9 +83,8 @@ jobs:
           template: basic_fail_1
 
   build-web-extension:
-    executor:
-      name: node/default
-      tag: "14.13.1"
+    docker:
+      - image: 'cimg/node:14.13-browser'
     steps:
       - checkout
       - run:
