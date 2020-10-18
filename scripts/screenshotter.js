@@ -20,6 +20,17 @@ const urlSet = [
   "https://www.tsbohemia.cz/elektricke-auto-mini-cooper-cabrio_d287643.html"
 ];
 
+function getFilePath(screenshotsDir, url) {
+  const { host } = new URL(url);
+  return path.join(screenshotsDir, `${host}.png`);
+}
+
+function prepareDir(screenshotsDir) {
+  if (fs.existsSync(screenshotsDir))
+    fs.rmdirSync(screenshotsDir, { recursive: true });
+  fs.mkdirSync(screenshotsDir);
+}
+
 async function main(puppeteer) {
   const browser = await puppeteer.launch({
     headless: false,
@@ -34,20 +45,18 @@ async function main(puppeteer) {
   });
   const page = await browser.newPage();
   const screenshotsDir = path.resolve("./screenshots");
-  if (fs.existsSync(screenshotsDir))
-    fs.rmdirSync(screenshotsDir, { recursive: true });
+  prepareDir(screenshotsDir);
   for (const url of urlSet) {
-    console.log(`Taking screenshot of ${url}`)
+    console.log(`Taking screenshot of ${url}`);
     await page.goto(url);
-    const { host } = new URL(url);
-    const filePath = `./screenshots/${host}.png`;
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    await page.screenshot({ path: filePath, fullPage: true }).catch(() => {});
+    await page
+      .screenshot({ path: getFilePath(screenshotsDir, url), fullPage: true })
+      .catch(() => {});
   }
   await browser.close();
 }
 
-main(puppeteer).catch((ex) => {
+main(puppeteer).catch(ex => {
   console.error(ex);
   return process.exit(1);
 });
