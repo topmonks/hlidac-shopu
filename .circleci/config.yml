@@ -67,7 +67,7 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "14.13.1"
+      tag: "14.14"
     steps:
       - checkout
       - node/install-packages:
@@ -84,7 +84,7 @@ jobs:
 
   build-web-extension:
     docker:
-      - image: 'cimg/node:14.13-browser'
+      - image: 'cimg/node:14.14-browsers'
     steps:
       - checkout
       - run:
@@ -122,7 +122,7 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "14.13.1"
+      tag: "14.14"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -141,7 +141,7 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "14.13.1"
+      tag: "14.14"
     steps:
       - checkout
       - pulumi/login:
