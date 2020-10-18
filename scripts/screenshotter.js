@@ -1,12 +1,14 @@
 const fs = require("fs");
-const { dirname } = require("path");
+const path = require("path");
 const puppeteer = require("puppeteer");
+
+const pathToExtension = path.resolve("./extension");
 
 const urlSet = [
   "https://www.alza.cz/screenshield-motorola-moto-g7-power-xt1955-4-na-displej-d5600645.htm",
   "https://www.alza.cz/gaming/super-mario-odyssey-nintendo-switch-d4798849.htm",
   "https://www.datart.cz/Mobilni-telefon-APPLE-iPhone-6s-32GB-Space-Grey.html",
-  "https://nakup.itesco.cz/groceries/en-GB/products/2001120713178",
+  "https://nakup.itesco.cz/groceries/en-GB/products/2001019467158",
   "https://www.kasa.cz/televize-samsung-ue50ru7472-stribrna/?recommender_box_placement=homepage_recommended&recommender_box=quarticon",
   "https://www.mall.cz/reproduktory-tablety/lamax-sentinel2",
   "https://www.kosik.cz/produkt/vitalbite-polomekke-krouzky-pro-dospele-psy-bohate-na-hovezi",
@@ -19,13 +21,27 @@ const urlSet = [
 ];
 
 async function main(puppeteer) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      `--disable-extensions-except=${pathToExtension}`,
+      `--load-extension=${pathToExtension}`
+    ],
+    defaultViewport: {
+      width: 1920,
+      height: 1200
+    }
+  });
   const page = await browser.newPage();
+  const screenshotsDir = path.resolve("./screenshots");
+  if (fs.existsSync(screenshotsDir))
+    fs.rmdirSync(screenshotsDir, { recursive: true });
   for (const url of urlSet) {
     await page.goto(url);
-    const path = url.replace("https://", "./screenshots/") + ".png";
-    fs.mkdirSync(dirname(path), { recursive: true });
-    await page.screenshot({ path }).catch(() => {});
+    const { host } = new URL(url);
+    const filePath = `./screenshots/${host}.png`;
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    await page.screenshot({ path: filePath }).catch(() => {});
   }
   await browser.close();
 }
