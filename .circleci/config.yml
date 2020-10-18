@@ -126,6 +126,7 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: osx
       - run:
           name: Build Safari extensions
           command: yarn build:safari
