@@ -37,11 +37,12 @@ async function main(puppeteer) {
   if (fs.existsSync(screenshotsDir))
     fs.rmdirSync(screenshotsDir, { recursive: true });
   for (const url of urlSet) {
+    console.log(`Taking screenshot of ${url}`)
     await page.goto(url);
     const { host } = new URL(url);
     const filePath = `./screenshots/${host}.png`;
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    await page.screenshot({ path: filePath }).catch(() => {});
+    await page.screenshot({ path: filePath, fullPage: true }).catch(() => {});
   }
   await browser.close();
 }
