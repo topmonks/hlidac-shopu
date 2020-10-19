@@ -48,11 +48,11 @@ function createDataset(data) {
     lastDay = item;
     originalPrice[i] = {
       x: day,
-      y: item.o === "" ? null : parseInt(item.o)
+      y: item.o === "" ? null : parseFloat(item.o)
     };
     currentPrice[i] = {
       x: day,
-      y: item.c === "" ? null : parseInt(item.c)
+      y: item.c === "" ? null : parseFloat(item.c)
     };
   }
   return {
