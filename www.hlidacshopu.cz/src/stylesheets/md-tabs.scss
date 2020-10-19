@@ -13,7 +13,7 @@
 
     li {
       font-size: 13px;
-      color: var(--mdc-theme-text-third-on-light);
+      color: var(--mdc-theme-text-secondary-on-light);
       border-bottom: 3px solid transparent;
       padding-bottom: 1em;
       margin-right: 2em;
@@ -23,7 +23,7 @@
       }
 
       a {
-        color: var(--mdc-theme-text-third-on-light);
+        color: var(--mdc-theme-text-secondary-on-light);
         text-decoration: none;
       }
       &:before {
