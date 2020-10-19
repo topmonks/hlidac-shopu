@@ -75,20 +75,21 @@
   position: relative;
   @media screen and(min-width: 840px) {
     min-height: 600px;
-    width: 900px;
+    width: 100%;
+    max-width: 900px;
     margin: 0 auto;
   }
   @media (max-width: 739px) {
     min-height: 260px;
     img {
-      width: 100%;
+      width: calc(100% - 2 * var(--mdc-layout-grid-margin-tablet));
       margin: 0 auto;
     }
   }
   @media (min-width: 740px) and (max-width: 1040px) {
     min-height: 600px;
     img {
-      width: 100%;
+      width: calc(100% - 2 * var(--mdc-layout-grid-margin-desktop));
       margin: 0 auto;
     }
   }
