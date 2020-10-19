@@ -1,15 +1,19 @@
 *.crx
 *.pem
 .DS_Store
-.idea/
-osx/hlidac-shopu/hlidac-shopu Extension/script.js # the bundle
-node_modules/
-dist/
-extension-dist/
-*.xcuserstate
-project.xcworkspace/
-xcuserdata/
-yarn-error.log
 .env
+.idea/
+
+dist/
+node_modules/
+extension-dist/
 public/
 screenshots/
+
+yarn-error.log
+
+/apple/osx/build/
+/apple/osx/hlidac-shopu/hlidac-shopu Extension/script.js # the bundle
+project.xcworkspace/
+xcuserdata/
+*.xcuserstate
