@@ -1,5 +1,6 @@
 import { html, svg, render } from "lit-html/lit-html.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
+import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "./lib/shops.js";
 import { formatMoney, formatPercents } from "./lib/format.js";
 import { initChart, templateData } from "./lib/remoting.js";
@@ -20,6 +21,30 @@ addEventListener("DOMContentLoaded", async () => {
     renderResultsModal(sharedInfo.targetURL);
   }
   console.groupEnd();
+});
+
+const isProduction = () =>
+  ["localhost", "127"].indexOf(location.hostname) === -1;
+
+window.isUpdateAvailable = new Promise(async (resolve, reject) => {
+  if ("serviceWorker" in navigator && isProduction()) {
+    try {
+      const wb = new Workbox("/sw.js");
+      wb.addEventListener("installed", e => {
+        console.log(
+          "ServiceWorker registration successful with scope: ",
+          e.sw.scope
+        );
+        resolve(e.isUpdate);
+      });
+      wb.addEventListener("activated", e => resolve(e.isUpdate));
+      wb.addEventListener("controlling", e => resolve(e.isUpdate));
+      wb.addEventListener("waiting", e => resolve(e.isUpdate));
+      await wb.register();
+    } catch (ex) {
+      reject(ex);
+    }
+  }
 });
 
 function getTargetURL(searchParams) {

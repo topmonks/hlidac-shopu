@@ -20,7 +20,8 @@
     "@pulumi/awsx": "^0.22.0",
     "@pulumi/pulumi": "^2.0.0",
     "@topmonks/pulumi-aws": "^1.1.0",
-    "lit-html": "^1.3.0"
+    "lit-html": "^1.3.0",
+    "workbox-window": "^5.1.4"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.1",

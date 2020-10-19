@@ -7,8 +7,13 @@ const config = {
   cloudinary: true,
   fonts: true,
   static: true,
-  stylesheets: true,
   workboxBuild: false,
+
+  stylesheets: {
+    sass: {
+      includePaths: ["./node_modules"]
+    }
+  },
 
   javascripts: {
     replacePlugins: true,
