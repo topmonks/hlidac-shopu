@@ -36,7 +36,8 @@ async function main(puppeteer) {
     headless: false,
     args: [
       `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`
+      `--load-extension=${pathToExtension}`,
+      "--lang=cs-CZ,cs"
     ],
     defaultViewport: {
       width: 1920,
@@ -49,6 +50,7 @@ async function main(puppeteer) {
   for (const url of urlSet) {
     console.log(`Taking screenshot of ${url}`);
     await page.goto(url);
+    await page.waitForSelector("#hlidacShopu");
     await page
       .screenshot({ path: getFilePath(screenshotsDir, url), fullPage: true })
       .catch(() => {});
