@@ -175,8 +175,7 @@ export async function fetchDiscountDataPercent() {
     fetch("https://api.hlidacshopu.cz/topslevy-percdiscount")
   ]);
   if (!resp.ok) throw new Error("API error");
-  const shopsData = await resp.json();
-  return shopsData;
+  return resp.json();
 }
 
 export async function fetchDiscountDataCZK() {
@@ -185,8 +184,7 @@ export async function fetchDiscountDataCZK() {
     fetch("https://api.hlidacshopu.cz/topslevy-czkdiscount")
   ]);
   if (!resp.ok) throw new Error("API error");
-  const shopsData = await resp.json();
-  return shopsData;
+  return resp.json();
 }
 
 const review = ({ avatar, date, name, text, rating, type, sourceUrl }) => ({
