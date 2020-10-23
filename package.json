@@ -35,6 +35,10 @@
     "web-ext": "^5.0.0",
     "workbox-window": "^5.1.4"
   },
+  "resolutions": {
+    "lodash": "npm:lodash@4.17.19",
+    "object-path": "npm:object-path@0.11.5"
+  },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
     "build": "run-p build:*",
