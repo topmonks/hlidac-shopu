@@ -6,7 +6,7 @@ import {
   Website
 } from "@topmonks/pulumi-aws";
 
-export function createWebsite() {
+export function createWebsite(domain: string) {
   let assetsCachingLambda = AssetsCachingLambda.create("hlidac-shopu-caching");
   let securityHeadersLambda = SecurityHeadersLambda.create(
     "hlidac-shopu-security"
@@ -20,9 +20,9 @@ export function createWebsite() {
   );
 
   let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
-    target: "https://www.hlidacshopu.cz"
+    target: `https://${domain}`
   });
-  let website = Website.create("www.hlidacshopu.cz", {
+  let website = Website.create(domain, {
     assetsCachingLambdaArn: assetsCachingLambda.arn,
     securityHeadersLambdaArn: securityHeadersLambda.arn
   });

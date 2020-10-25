@@ -1305,9 +1305,9 @@
     workbox-build "5.1.4"
 
 "@topmonks/pulumi-aws@^1.1.0":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@topmonks/pulumi-aws/-/pulumi-aws-1.4.5.tgz#8dc0130d5b84afcd6423421c3e89e0ca946a103e"
-  integrity sha512-f+jFvV0crIwLDL7GOfBZox1g5d1cD5V/Hb9th7siWPDM5lGlrXfS0MwCCKaE3LeXcu/Ko8Be54eXZAD4BD4c9g==
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/@topmonks/pulumi-aws/-/pulumi-aws-1.5.7.tgz#88dec663569566e50aaed4c1479968c0437e6136"
+  integrity sha512-K4tvbce7LMDJLX36piJWuzKhwA+zRq91kndMDV5PkuzRz4bgyd8PfuGMHZ3cNGW9P5VsHUs6HSgV/wY9BAdGZw==
 
 "@types/aws-lambda@^8.10.23":
   version "8.10.64"
@@ -1390,6 +1390,19 @@
   integrity sha512-I0Yd8TUELTbgRHq2K65j8rnDPAzAP+DiaF/syLem7yXwYLsHZhPd+AM2iXsWmf9P2F2NlFCgl5erZPQx9IbM9Q==
   dependencies:
     source-map "^0.6.1"
+
+"@types/webidl-conversions@*":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@types/webidl-conversions/-/webidl-conversions-6.1.0.tgz#9b67b2f8f32c0f5e4a3f5d74f82e7dc9568f5455"
+  integrity sha512-SI9Jyayf2Ia28QFm0Mb3rVcA7ZwU89sos+gQQ6oY4/eKAReHyYYWTZD8Oqsq+CIRfZ+rEskvBaTZzHJ9njGZZQ==
+
+"@types/whatwg-url@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@types/whatwg-url/-/whatwg-url-8.0.0.tgz#b4c7f5522df006a2e1222288ba01812b2dec0a69"
+  integrity sha512-vEjjqMjljhnkrNPD7wQBu20iStszRJggZ1E3qMRf0f4YkDOdRTu/wQkOQTG8gdJJs3SNLtiQTL1E6zknxsoWOg==
+  dependencies:
+    "@types/node" "*"
+    "@types/webidl-conversions" "*"
 
 "@types/yauzl@^2.9.1":
   version "2.9.1"
