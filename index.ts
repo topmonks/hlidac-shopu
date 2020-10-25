@@ -33,4 +33,9 @@ export const websiteS3WebsiteUrl = website.s3WebsiteUrl;
 export const websiteCloudFrontId = website.cloudFrontId;
 export const nakedDomainRedirectUrl = nakedDomainRedirect.url;
 export const nakedDomainRedirectCloudFrontId = nakedDomainRedirect.cloudFrontId;
+export const allShopsTable = db.allShopsTable.name;
+export const allShopsMetadataTable = db.allShopsMetadataTable.name;
+export const allShopsStatsTable = db.allShopsStatsTable.name;
+export const topslevyAbsoluteTable = db.topslevyAbsoluteTable.name;
+export const topslevyRelativeTable = db.topslevyRelativeTable.name;
 

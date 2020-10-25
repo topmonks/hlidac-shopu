@@ -10,17 +10,25 @@ import * as shop from "./src/lambda/shop";
 import * as shopNumbers from "./src/lambda/shopNumbers";
 import * as topslevy from "./src/lambda/topslevy";
 
-export async function createDatabase() {
-  const allShop = aws.dynamodb.getTable({ name: "all_shops" });
-  const allShopMetadata = aws.dynamodb.getTable({ name: "all_shops_metadata" });
-  const allShopStats = aws.dynamodb.getTable({ name: "all_shops_stats" });
+export function createDatabase() {
+  const allShopsTable = aws.dynamodb.getTable({ name: "all_shops" });
+  const allShopsMetadataTable = aws.dynamodb.getTable({
+    name: "all_shops_metadata"
+  });
+  const allShopsStatsTable = aws.dynamodb.getTable({ name: "all_shops_stats" });
   const topslevyRelativeTable = aws.dynamodb.getTable({
     name: "topslevy_perc_discount_daily"
   });
   const topslevyAbsoluteTable = aws.dynamodb.getTable({
     name: "topslevy_czk_discount_daily"
   });
-  return { topslevyRelativeTable, topslevyAbsoluteTable };
+  return pulumi.Output.create({
+    allShopsTable,
+    allShopsMetadataTable,
+    allShopsStatsTable,
+    topslevyAbsoluteTable,
+    topslevyRelativeTable
+  });
 }
 
 export function createApi(domainName: string) {
