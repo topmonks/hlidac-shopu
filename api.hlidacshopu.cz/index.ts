@@ -2,7 +2,12 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { Method, Response, Request } from "@pulumi/awsx/apigateway";
 import { Parameter } from "@pulumi/awsx/apigateway/requestValidator";
-import { Api, ApiRoute, CustomDomainDistribution } from "@topmonks/pulumi-aws";
+import {
+  Api,
+  ApiRoute,
+  CacheSettings,
+  CustomDomainDistribution
+} from "@topmonks/pulumi-aws";
 
 import * as check from "./src/lambda/check";
 import * as reviewStats from "./src/lambda/reviewStats";
@@ -72,20 +77,25 @@ export function createApi(domainName: string) {
 
   const createHandlerRoute = (
     name: string,
-    httpMethod: Method,
-    path: string,
-    callback: aws.lambda.Callback<Request, Response>,
-    role?: aws.iam.Role,
-    requiredParameters?: Parameter[]
+    { httpMethod, path, callback, role, requiredParameters, cache }: RouteArgs
   ): ApiRoute => ({
     type: "handler",
     handler: getRouteHandler(name, callback, role ?? defaultLambdaRole),
     cors: { methods: [httpMethod, "OPTIONS"] }, // autogenerate CORS handler
-    cache: { ttl: 3600 }, // cache responses for an hour (MAX supported time)
     requiredParameters,
     httpMethod,
-    path
+    path,
+    cache
   });
+
+  interface RouteArgs {
+    httpMethod: Method;
+    path: string;
+    callback: aws.lambda.Callback<Request, Response>;
+    role?: aws.iam.Role;
+    requiredParameters?: Parameter[];
+    cache?: CacheSettings;
+  }
 
   const api = new Api("hlidac-shopu-api", {
     stageName: "v1",
@@ -93,45 +103,35 @@ export function createApi(domainName: string) {
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
-      createHandlerRoute(
-        "check",
-        "GET",
-        "/check",
-        check.handler,
-        defaultLambdaRole,
-        [
-          {
-            in: "query",
-            name: "url"
-          }
-        ]
-      ),
-      createHandlerRoute(
-        "shop",
-        "GET",
-        "/shop",
-        shop.handler,
-        defaultLambdaRole,
-        [
-          {
-            in: "query",
-            name: "url"
-          }
-        ]
-      ),
-      createHandlerRoute(
-        "shop-numbers",
-        "GET",
-        "/shop-numbers",
-        shopNumbers.handler
-      ),
-      createHandlerRoute(
-        "review-stats",
-        "GET",
-        "/review-stats",
-        reviewStats.handler
-      ),
-      createHandlerRoute("topslevy", "GET", "/topslevy", topslevy.handler)
+      createHandlerRoute("check", {
+        httpMethod: "GET",
+        path: "/check",
+        callback: check.handler,
+        requiredParameters: [{ in: "query", name: "url" }]
+      }),
+      createHandlerRoute("shop", {
+        httpMethod: "GET",
+        path: "/shop",
+        callback: shop.handler,
+        requiredParameters: [{ in: "query", name: "url" }]
+      }),
+      createHandlerRoute("shop-numbers", {
+        httpMethod: "GET",
+        path: "/shop-numbers",
+        callback: shopNumbers.handler,
+        cache: { ttl: 3600 }
+      }),
+      createHandlerRoute("reviews-stats", {
+        httpMethod: "GET",
+        path: "/reviews-stats",
+        callback: reviewStats.handler,
+        cache: { ttl: 3600 }
+      }),
+      createHandlerRoute("topslevy", {
+        httpMethod: "GET",
+        path: "/topslevy",
+        callback: topslevy.handler
+      })
     ]
   });
 
