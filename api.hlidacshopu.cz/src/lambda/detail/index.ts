@@ -18,10 +18,10 @@ function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
     .filter(([date]) =>
       isWithinInterval(date, { start: startDate, end: lastDiscountDate })
     )
-    .filter(([_, price]) => Boolean(price))
-    .map(([_, price]) => price)
+    .filter(([, price]) => Boolean(price))
+    .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
-  const currentPrice = series[series.length - 1][1];
+  const [, currentPrice] = series[series.length - 1];
   const realDiscount = (minPrice - currentPrice) / minPrice;
   return { minPrice, currentPrice, realDiscount, type: "eu-minimum" };
 }
@@ -33,18 +33,18 @@ function commonPriceDifference(
   // go 90 days back
   const startDate = subDays(lastDiscountDate, 90);
   // find most frequent price in 90 days interval before sale action
-  const byPrice = groupBy(([_, price]) => price);
+  const byPrice = groupBy(([, price]) => price);
   const frequencies = byPrice(
     series
       .filter(([date]) =>
         isWithinInterval(date, { start: startDate, end: lastDiscountDate })
       )
-      .filter(([_, price]) => Boolean(price))
+      .filter(([, price]) => Boolean(price))
   );
-  const commonPrice = Object.entries(frequencies)
+  const [commonPrice] = Object.entries(frequencies)
     .map(([price, xs]) => [parseFloat(price), xs.length])
-    .reduce((a, b) => (a[1] > b[1] ? a : b), [0, 0])[0];
-  const currentPrice = series[series.length - 1][1];
+    .reduce((a, b) => (a[1] > b[1] ? a : b), [0, 0]);
+  const [, currentPrice] = series[series.length - 1];
   const realDiscount = (commonPrice - currentPrice) / commonPrice;
   return { commonPrice, currentPrice, realDiscount, type: "common-price" };
 }
@@ -61,7 +61,7 @@ function getDiscount(data: DataRow[]) {
     .map(({ currentPrice, date }) => [date, <number>currentPrice]);
   // walk thru price series and find changes
   const changes = zipWith(
-    ([_, a], [date, b]) => [a - b, date],
+    ([, a], [date, b]) => [a - b, date],
     drop(1, series),
     series
   ).filter(([δ]) => Boolean(δ));
