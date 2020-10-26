@@ -68,13 +68,12 @@ addEventListener("DOMContentLoaded", async e => {
     render(client.installationGuide(), installationGuide);
   }
   eShopsCount.innerText = shops.size.toLocaleString("cs");
-  const { downloads } = await fetchDownloadStats();
-  installsCount.innerText = downloads.toLocaleString("cs");
-  const allProducts = (await fetchShopsStats()).reduce(
-    (acc, x) => acc + x.allProducts,
-    0
+  fetchDownloadStats().then(
+    x => (installsCount.innerText = x.downloads.toLocaleString("cs"))
   );
-  productsCount.innerText = allProducts.toLocaleString("cs");
+  fetchShopsStats()
+    .then(xs => xs.reduce((acc, x) => acc + x.allProducts, 0))
+    .then(x => (productsCount.innerText = x.toLocaleString("cs")));
 });
 
 addEventListener("popstate", e => {
