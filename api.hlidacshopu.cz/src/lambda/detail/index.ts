@@ -7,17 +7,17 @@ import { notFound, response, withCORS } from "../utils";
 
 /**
  * Returns real sale according to EU legislation - Minimum price in 30 days before sale action.
- * Sale action is simply last change in price.
+ * Sale action is simply last drop of price.
  * @param data Time series of prices
  */
 function findPreviousMinPrice(data: DataRow[]) {
   const series: [Date, number][] = data
     .filter(({ currentPrice }) => currentPrice)
     .map(({ currentPrice, date }) => [date, <number>currentPrice]);
-  // walk thru price series and find last change in price (we don't care if it is up or down, just change)
+  // walk thru price series and find last drop of price
   const lastChangeDate = <Date>last(
     zipWith(([_, a], [date, b]) => [a - b, date], drop(1, series), series)
-      .filter(([delta]) => Boolean(delta))
+      .filter(([delta]) => delta < 0)
       .map(([_, date]) => date)
   );
   // go 30 days back
