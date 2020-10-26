@@ -437,6 +437,5 @@ export function createShop(
 export interface ShopParams {
   api?: string;
   url: string;
-  itemId: string;
-  metadata?: string;
+  itemId?: string;
 }

@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { drop, zipWith, last, head } from "ramda";
-import { compareAsc, subDays, eachDayOfInterval } from "date-fns";
+import { isWithinInterval, subDays, eachDayOfInterval } from "date-fns";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
 
@@ -24,8 +24,9 @@ function findPreviousMinPrice(data: DataRow[]) {
   let startDate = subDays(lastChangeDate, 30);
   // find lowest price in 30 days interval
   const minPrice = series
-    .filter(([date]) => compareAsc(date, startDate) === 1)
-    .filter(([date]) => compareAsc(date, lastChangeDate) === -1)
+    .filter(([date]) =>
+      isWithinInterval(date, { start: startDate, end: lastChangeDate })
+    )
     .filter(([_, price]) => Boolean(price))
     .map(([_, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);

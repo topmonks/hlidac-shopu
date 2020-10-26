@@ -18,7 +18,7 @@ addEventListener("DOMContentLoaded", async () => {
   console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
     document.body.classList.remove("home-screen");
-    renderResultsModal(sharedInfo.targetURL);
+    await renderResultsModal(sharedInfo.targetURL);
   }
   console.groupEnd();
 });
@@ -68,18 +68,15 @@ function getSharedInfo(location) {
 }
 
 async function renderResultsModal(detailUrl) {
-  console.group("Hlídačshopů.cz");
   render(loaderTemplate(), root);
   try {
     const [{ plot }, chartData] = await initChart(detailUrl);
-    console.log({ chartData })
+    console.log(chartData)
     render(resultTemplate(templateData(detailUrl, chartData)), root);
     plot(chart(), chartData);
   } catch (ex) {
     console.error(ex);
     render(notFoundTemplate(), root);
-  } finally {
-    console.groupEnd();
   }
 }
 
