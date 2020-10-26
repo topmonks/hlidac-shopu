@@ -1,14 +1,31 @@
 import { shops } from "./shops.js";
 
-const timeout = ms =>
-  new Promise((resolve, reject) =>
-    setTimeout(() => reject(new Error("timeout")), ms)
-  );
+const apiHost = `https://api2.hlidacshopu.cz`;
+const requestTimeout = 2400;
 
-const apiUrl = detailUri =>
-  `https://api.hlidacshopu.cz/shop?url=${encodeURIComponent(
-    detailUri
-  )}&metadata=1`;
+const signalTimeout = ms => {
+  const c = new AbortController();
+  setTimeout(() => c.abort(), ms);
+  return c.signal;
+};
+
+const timeout = ms =>
+  new Promise((resolve, reject) => setTimeout(() => resolve("timeout"), ms));
+
+const retry = async (n, promiseFactory) => {
+  for (let i = 0; i < n; i++) {
+    try {
+      return await promiseFactory();
+    } catch (o_0) {
+      await timeout(requestTimeout + requestTimeout * i);
+    }
+  }
+};
+
+const apiUrl = detailUri => {
+  const searchParams = new URLSearchParams({ url: detailUri, metadata: "1" });
+  return new URL(`/shop?${searchParams}`, apiHost).toString();
+};
 
 const meta = ({ itemImage, itemName, real_sale, ...rest }) => ({
   name: itemName,
@@ -17,15 +34,15 @@ const meta = ({ itemImage, itemName, real_sale, ...rest }) => ({
   ...rest
 });
 
-const parseTime = s => {
+const parseDate = s => {
   const d = new Date(s);
   d.setHours(0, 0, 0, 0);
   return d;
 };
 
 function* daysBetween(start, end) {
-  const startDay = parseTime(start);
-  const endDay = parseTime(end);
+  const startDay = parseDate(start);
+  const endDay = parseDate(end);
   for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
     yield new Date(d.getTime());
   }
@@ -35,10 +52,10 @@ function createDataset(data) {
   if (typeof data === "string") {
     data = JSON.parse(data);
   }
-  const dataMap = new Map(data.map(x => [parseTime(x.d).getTime(), x]));
+  const dataMap = new Map(data.map(x => [parseDate(x.d).getTime(), x]));
   let lastDay = data[0];
   const days = Array.from(
-    daysBetween(parseTime(data[0].d), parseTime(data[data.length - 1].d))
+    daysBetween(parseDate(data[0].d), parseDate(data[data.length - 1].d))
   );
   const originalPrice = new Array(days.length);
   const currentPrice = new Array(days.length);
@@ -62,7 +79,11 @@ function createDataset(data) {
 }
 
 async function fetchDataSet(detailUri) {
-  const resp = await Promise.race([timeout(4000), fetch(apiUrl(detailUri))]);
+  const resp = await retry(3, () =>
+    fetch(apiUrl(detailUri), {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   const { data, metadata } = await resp.json();
   return {
@@ -71,11 +92,27 @@ async function fetchDataSet(detailUri) {
   };
 }
 
+const shopStats = ({
+  key,
+  count_all,
+  count_bf,
+  declared_sale,
+  real_sale,
+  percent_bf
+}) => ({
+  key,
+  allProducts: parseInt(count_all),
+  bfProducts: count_bf && parseInt(count_bf),
+  avgClaimedDiscount: declared_sale && parseFloat(declared_sale) / 100,
+  avgRealDiscount: real_sale && parseFloat(real_sale) / 100
+});
+
 export async function fetchShopsStats() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/shop-numbers")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/shop-numbers`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   const shopsData = await resp.json();
   return shopsData
@@ -84,10 +121,11 @@ export async function fetchShopsStats() {
 }
 
 export async function fetchDownloadStats() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/reviews-stats")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/reviews-stats`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   const {
     stats: { google, firefox }
@@ -141,26 +179,12 @@ export function templateData(
   };
 }
 
-const shopStats = ({
-  key,
-  count_all,
-  count_bf,
-  declared_sale,
-  real_sale,
-  percent_bf
-}) => ({
-  key,
-  allProducts: parseInt(count_all),
-  bfProducts: count_bf && parseInt(count_bf),
-  avgClaimedDiscount: declared_sale && parseFloat(declared_sale),
-  avgRealDiscount: real_sale && parseFloat(real_sale)
-});
-
 export async function fetchDashboardData() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/shop-numbers")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/shop-numbers`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   const shopsData = await resp.json();
   const shopsStatsData = new Map(shopsData.map(shopStats).map(x => [x.key, x]));
@@ -170,19 +194,21 @@ export async function fetchDashboardData() {
 }
 
 export async function fetchDiscountDataPercent() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/topslevy-percdiscount")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/topslevy?discount=rel`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   return resp.json();
 }
 
 export async function fetchDiscountDataCZK() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/topslevy-czkdiscount")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/topslevy?discount=abs`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   return resp.json();
 }
@@ -197,15 +223,17 @@ const review = ({ avatar, date, name, text, rating, type, sourceUrl }) => ({
   source: type,
   sourceUrl
 });
+
 const withNameAndText = x => x.name !== "" && x.text !== "";
 const newestFirst = (a, b) =>
   a.sortKey < b.sortKey ? 1 : a.sortKey === b.sortKey ? 0 : -1;
 
 export async function fetchReviews() {
-  const resp = await Promise.race([
-    timeout(4000),
-    fetch("https://api.hlidacshopu.cz/reviews-stats")
-  ]);
+  const resp = await retry(3, () =>
+    fetch(`${apiHost}/reviews-stats`, {
+      signal: signalTimeout(requestTimeout)
+    })
+  );
   if (!resp.ok) throw new Error("API error");
   const { reviews } = await resp.json();
   return reviews.map(review).filter(withNameAndText).sort(newestFirst);
