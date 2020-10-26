@@ -1157,10 +1157,10 @@
     "@pulumi/pulumi" "^2.0.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@^2.0.0":
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-2.12.0.tgz#3140f2a59a8cf3c469d065f3b7370561a137d1c7"
-  integrity sha512-fx1ih8Sx/VQTGgkN1P5YZAI7+1/+Y7+YmIgPq/Z6ekyDMB5ZBO1rl8jJmPwM5KAGaf23LGWDtjKuzXwa+pqOGA==
+"@pulumi/pulumi@^2.0.0", "@pulumi/pulumi@^2.12.1":
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-2.12.1.tgz#4801db1c63fd606f9ebbd2b4852c17a63300f380"
+  integrity sha512-A2T07Me3jTg3U7WqxSu9rscbRsX21EecU/b9/UQgbilBvyC7FGtLnsWMy7THTwLRRgeJJnFiy5VFoQq25KzilQ==
   dependencies:
     "@grpc/grpc-js" "^0.6.15"
     "@pulumi/query" "^0.3.0"
