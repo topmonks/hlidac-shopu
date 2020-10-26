@@ -1,38 +1,79 @@
 import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
-import { drop, zipWith, last, head } from "ramda";
-import { isWithinInterval, subDays, eachDayOfInterval } from "date-fns";
+import { drop, zipWith, last, head, groupBy } from "ramda";
+import {
+  isWithinInterval,
+  isAfter,
+  subDays,
+  eachDayOfInterval
+} from "date-fns";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
 
-/**
- * Returns real sale according to EU legislation - Minimum price in 30 days before sale action.
- * Sale action is simply last drop of price.
- * @param data Time series of prices
- */
-function findPreviousMinPrice(data: DataRow[]) {
-  const series: [Date, number][] = data
-    .filter(({ currentPrice }) => currentPrice)
-    .map(({ currentPrice, date }) => [date, <number>currentPrice]);
-  // walk thru price series and find last drop of price
-  const lastChangeDate = <Date>last(
-    zipWith(([_, a], [date, b]) => [a - b, date], drop(1, series), series)
-      .filter(([delta]) => delta < 0)
-      .map(([_, date]) => date)
-  );
+function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
   // go 30 days back
-  let startDate = subDays(lastChangeDate, 30);
-  // find lowest price in 30 days interval
+  const startDate = subDays(lastDiscountDate, 30);
+  // find lowest price in 30 days interval before sale action
   const minPrice = series
     .filter(([date]) =>
-      isWithinInterval(date, { start: startDate, end: lastChangeDate })
+      isWithinInterval(date, { start: startDate, end: lastDiscountDate })
     )
     .filter(([_, price]) => Boolean(price))
     .map(([_, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
   const currentPrice = series[series.length - 1][1];
   const realDiscount = (minPrice - currentPrice) / minPrice;
-  return { minPrice, currentPrice, realDiscount };
+  return { minPrice, currentPrice, realDiscount, type: "eu-minimum" };
+}
+
+function commonPriceDifference(
+  lastDiscountDate: Date,
+  series: [Date, number][]
+) {
+  // go 90 days back
+  const startDate = subDays(lastDiscountDate, 90);
+  // find most frequent price in 90 days interval before sale action
+  const byPrice = groupBy(([_, price]) => price);
+  const frequencies = byPrice(
+    series
+      .filter(([date]) =>
+        isWithinInterval(date, { start: startDate, end: lastDiscountDate })
+      )
+      .filter(([_, price]) => Boolean(price))
+  );
+  const commonPrice = Object.entries(frequencies)
+    .map(([price, xs]) => [parseFloat(price), xs.length])
+    .reduce((a, b) => (a[1] > b[1] ? a : b), [0, 0])[0];
+  const currentPrice = series[series.length - 1][1];
+  const realDiscount = (commonPrice - currentPrice) / commonPrice;
+  return { commonPrice, currentPrice, realDiscount, type: "common-price" };
+}
+
+/**
+ * Returns real sale according to EU legislation - Minimum price in 30 days before sale action.
+ * Sale action is simply last drop of price. After sale action end, we will use
+ * most common price 90 days before sale.
+ * @param data Time series of prices
+ */
+function getDiscount(data: DataRow[]) {
+  const series: [Date, number][] = data
+    .filter(({ currentPrice }) => currentPrice)
+    .map(({ currentPrice, date }) => [date, <number>currentPrice]);
+  // walk thru price series and find changes
+  const changes = zipWith(
+    ([_, a], [date, b]) => [a - b, date],
+    drop(1, series),
+    series
+  ).filter(([δ]) => Boolean(δ));
+  const lastDiscountDate = <Date>(
+    last(changes.filter(([δ]) => δ < 0).map(([_, date]) => date))
+  );
+  const lastIncreaseDate = <Date>(
+    last(changes.filter(([δ]) => δ > 0).map(([_, date]) => date))
+  );
+  if (isAfter(lastDiscountDate, lastIncreaseDate))
+    return euDiscount(lastDiscountDate, series);
+  return commonPriceDifference(lastDiscountDate, series);
 }
 
 function parseDate(s: string) {
@@ -112,14 +153,12 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     const rows = parseData(res);
-    const { minPrice, currentPrice, realDiscount } = findPreviousMinPrice(rows);
+    const discount = getDiscount(rows);
     // @ts-ignore
     const meta = ({ itemImage, itemName, real_sale, max_price, ...rest }) => ({
       name: itemName,
       imageUrl: itemImage === "null" ? null : itemImage,
-      minPrice,
-      currentPrice,
-      realDiscount,
+      ...discount,
       ...rest
     });
     const metadata = meta(await shop.getMetadata());
