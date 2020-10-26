@@ -15,7 +15,7 @@ const chart = () => document.getElementById("hlidac-shopu-chart");
 addEventListener("DOMContentLoaded", async () => {
   console.group("Hlídačshopů.cz");
   const sharedInfo = getSharedInfo(location);
-  console.log("Received data:", sharedInfo);
+  console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
     document.body.classList.remove("home-screen");
     renderResultsModal(sharedInfo.targetURL);
@@ -68,14 +68,18 @@ function getSharedInfo(location) {
 }
 
 async function renderResultsModal(detailUrl) {
+  console.group("Hlídačshopů.cz");
   render(loaderTemplate(), root);
   try {
     const [{ plot }, chartData] = await initChart(detailUrl);
+    console.log({ chartData })
     render(resultTemplate(templateData(detailUrl, chartData)), root);
     plot(chart(), chartData);
   } catch (ex) {
     console.error(ex);
     render(notFoundTemplate(), root);
+  } finally {
+    console.groupEnd();
   }
 }
 
@@ -144,7 +148,7 @@ function resultTemplate({
     html`
       <div>
         <abbr
-          title="Reálná sleva se počítá jako aktuální cena po slevě ku maximální ceně, za kterou se zboží prodávalo za posledních 90 dní."
+          title="Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
           >Reálná sleva*</abbr
         >
         <b class="discount"
@@ -208,11 +212,11 @@ function resultTemplate({
 
 function logoTemplate({ logo, name, url, viewBox }) {
   const image = svg`
-      <svg viewBox="${viewBox}">
-        <title>${name}</title>
-        <use href="/assets/img/icons.svg#${logo}"/>
-      </svg>
-    `;
+    <svg viewBox="${viewBox}">
+      <title>${name}</title>
+      <use href='#${logo}'></use>
+    </svg>
+  `;
   return html`
     <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
   `;

@@ -23,60 +23,9 @@ const retry = async (n, promiseFactory) => {
 };
 
 const apiUrl = detailUri => {
-  const searchParams = new URLSearchParams({ url: detailUri, metadata: "1" });
-  return new URL(`/shop?${searchParams}`, apiHost).toString();
+  const searchParams = new URLSearchParams({ url: detailUri });
+  return new URL(`/detail?${searchParams}`, apiHost).toString();
 };
-
-const meta = ({ itemImage, itemName, real_sale, ...rest }) => ({
-  name: itemName,
-  imageUrl: itemImage === "null" ? null : itemImage,
-  realDiscount: real_sale === "null" ? null : parseFloat(real_sale) / 100,
-  ...rest
-});
-
-const parseDate = s => {
-  const d = new Date(s);
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
-
-function* daysBetween(start, end) {
-  const startDay = parseDate(start);
-  const endDay = parseDate(end);
-  for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
-    yield new Date(d.getTime());
-  }
-}
-
-function createDataset(data) {
-  if (typeof data === "string") {
-    data = JSON.parse(data);
-  }
-  const dataMap = new Map(data.map(x => [parseDate(x.d).getTime(), x]));
-  let lastDay = data[0];
-  const days = Array.from(
-    daysBetween(parseDate(data[0].d), parseDate(data[data.length - 1].d))
-  );
-  const originalPrice = new Array(days.length);
-  const currentPrice = new Array(days.length);
-  for (let i = 0, l = days.length; i < l; i++) {
-    const day = days[i];
-    const item = dataMap.get(day.getTime()) || lastDay;
-    lastDay = item;
-    originalPrice[i] = {
-      x: day,
-      y: item.o === "" ? null : parseFloat(item.o)
-    };
-    currentPrice[i] = {
-      x: day,
-      y: item.c === "" ? null : parseFloat(item.c)
-    };
-  }
-  return {
-    originalPrice,
-    currentPrice
-  };
-}
 
 async function fetchDataSet(detailUri) {
   const resp = await retry(3, () =>
@@ -85,11 +34,7 @@ async function fetchDataSet(detailUri) {
     })
   );
   if (!resp.ok) throw new Error("API error");
-  const { data, metadata } = await resp.json();
-  return {
-    meta: meta(metadata),
-    data: createDataset(data)
-  };
+  return resp.json();
 }
 
 const shopStats = ({
@@ -144,18 +89,10 @@ export const initChart = detailUrl =>
     fetchDataSet(detailUrl)
   ]);
 
-function naiveDiscount(currentPrice, actualPrice) {
-  const origPrice = currentPrice
-    .map(x => x.y)
-    .filter(y => y)
-    .shift();
-  return (origPrice - actualPrice) / origPrice;
-}
-
 export function templateData(
   detailUrl,
   {
-    meta: { shop, name, imageUrl, realDiscount },
+    metadata: { shop, name, imageUrl, realDiscount },
     data: { currentPrice, originalPrice }
   }
 ) {
@@ -164,17 +101,14 @@ export function templateData(
     .filter(y => y)
     .pop();
   const { y: actualPrice, x: date } = currentPrice.filter(({ y }) => y).pop();
-  const discount = !realDiscount
-    ? naiveDiscount(currentPrice, actualPrice)
-    : realDiscount;
   return {
     detailUrl,
     name,
     shop,
     imageUrl,
-    discount,
+    discount: realDiscount,
     actualPrice,
-    date,
+    date: new Date(date),
     lastDeclaredPrice
   };
 }

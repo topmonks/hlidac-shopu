@@ -9,9 +9,9 @@ import {
   CustomDomainDistribution
 } from "@topmonks/pulumi-aws";
 
+import * as detail from "./src/lambda/detail";
 import * as check from "./src/lambda/check";
 import * as reviewStats from "./src/lambda/reviewStats";
-import * as shop from "./src/lambda/shop";
 import * as shopNumbers from "./src/lambda/shopNumbers";
 import * as topslevy from "./src/lambda/topslevy";
 
@@ -103,16 +103,16 @@ export function createApi(domainName: string) {
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
+      createHandlerRoute("detail", {
+        httpMethod: "GET",
+        path: "/detail",
+        callback: detail.handler,
+        requiredParameters: [{ in: "query", name: "url" }]
+      }),
       createHandlerRoute("check", {
         httpMethod: "GET",
         path: "/check",
         callback: check.handler,
-        requiredParameters: [{ in: "query", name: "url" }]
-      }),
-      createHandlerRoute("shop", {
-        httpMethod: "GET",
-        path: "/shop",
-        callback: shop.handler,
         requiredParameters: [{ in: "query", name: "url" }]
       }),
       createHandlerRoute("shop-numbers", {

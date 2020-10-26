@@ -1,3 +1,4 @@
+{% from 'macros/helpers.njk' import spriteTarget %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,6 +201,7 @@
     <div class="mdc-layout-grid__cell"></div>
   </div>
 </main>
+{{ spriteTarget() }}
 <script type="module" src="/assets/js/app.js"></script>
 </body>
 </html>

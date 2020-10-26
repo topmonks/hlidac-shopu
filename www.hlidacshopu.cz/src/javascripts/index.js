@@ -197,7 +197,7 @@ function resultTemplate({
     html`
       <div>
         <abbr
-          title="Reálná sleva se počítá jako aktuální cena po slevě ku maximální ceně, za kterou se zboží prodávalo za posledních 90 dní."
+          title="Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
           >Reálná sleva*</abbr
         >
         <b class="discount"

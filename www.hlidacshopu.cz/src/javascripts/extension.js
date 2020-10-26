@@ -88,7 +88,8 @@ export function plot(canvas, { data: prices }) {
         caretSize: 12,
         callbacks: {
           title(item, data) {
-            const date = data.labels[item[0].index];
+            let date = data.labels[item[0].index];
+            date = typeof date === "string" ? new Date(date) : date;
             return date.toLocaleDateString("cs", {
               day: "numeric",
               month: "long",
