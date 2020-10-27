@@ -15,13 +15,14 @@ function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
   const startDate = subDays(lastDiscountDate, 30);
   // find lowest price in 30 days interval before sale action
   const minPrice = series
-    .filter(([date]) =>
-      isWithinInterval(date, { start: startDate, end: lastDiscountDate })
+    .filter(
+      ([date, price]) =>
+        Boolean(price) &&
+        isWithinInterval(date, { start: startDate, end: lastDiscountDate })
     )
-    .filter(([, price]) => Boolean(price))
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
-  const [, currentPrice] = series[series.length - 1];
+  const [, currentPrice] = <[Date, number]>last(series);
   const realDiscount = (minPrice - currentPrice) / minPrice;
   return { minPrice, currentPrice, realDiscount, type: "eu-minimum" };
 }
@@ -34,17 +35,19 @@ function commonPriceDifference(
   const startDate = subDays(lastDiscountDate, 90);
   // find most frequent price in 90 days interval before sale action
   const byPrice = groupBy(([, price]) => price);
-  const frequencies = byPrice(
-    series
-      .filter(([date]) =>
-        isWithinInterval(date, { start: startDate, end: lastDiscountDate })
+  const frequencies = Object.entries(
+    byPrice(
+      series.filter(
+        ([date, price]) =>
+          Boolean(price) &&
+          isWithinInterval(date, { start: startDate, end: lastDiscountDate })
       )
-      .filter(([, price]) => Boolean(price))
-  );
-  const [commonPrice] = Object.entries(frequencies)
-    .map(([price, xs]) => [parseFloat(price), xs.length])
-    .reduce((a, b) => (a[1] > b[1] ? a : b), [0, 0]);
-  const [, currentPrice] = series[series.length - 1];
+    )
+  ).map(([price, xs]) => [parseFloat(price), xs.length]);
+  // @ts-ignore
+  const moreFrequent = (a, b) => (a[1] > b[1] ? a : b);
+  const [commonPrice] = frequencies.reduce(moreFrequent, [0, 0]);
+  const [, currentPrice] = <[Date, number]>last(series);
   const realDiscount = (commonPrice - currentPrice) / commonPrice;
   return { commonPrice, currentPrice, realDiscount, type: "common-price" };
 }
