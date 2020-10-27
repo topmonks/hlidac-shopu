@@ -12,6 +12,11 @@ const root = document.getElementById("app-root");
 const form = document.getElementById("compare-form");
 const chart = () => document.getElementById("hlidac-shopu-chart");
 
+const styles = document.createElement("link");
+styles.rel = "stylesheet";
+styles.href= "/assets/css/app.css";
+document.head.insertAdjacentElement("beforeend", styles);
+
 addEventListener("DOMContentLoaded", async () => {
   console.group("Hlídačshopů.cz");
   const sharedInfo = getSharedInfo(location);
@@ -19,6 +24,7 @@ addEventListener("DOMContentLoaded", async () => {
   if (sharedInfo) {
     document.body.classList.remove("home-screen");
     await renderResultsModal(sharedInfo.targetURL);
+    performance.mark("UI ready");
   }
   console.groupEnd();
 });
@@ -181,7 +187,8 @@ function resultTemplate({
       <div
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
       >
-        ${crawlDate(date)} ${declaredOriginalPrice(lastDeclaredPrice)}
+        ${crawlDate(date)}
+        ${(lastDeclaredPrice != actualPrice) ? declaredOriginalPrice(lastDeclaredPrice) : null}
         <div class="actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>

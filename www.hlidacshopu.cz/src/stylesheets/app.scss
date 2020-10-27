@@ -1,6 +1,5 @@
 @import "@material/layout-grid/mdc-layout-grid";
 @import "@material/top-app-bar/mdc-top-app-bar";
-@import "theme";
 
 html {
   height: 100%;
@@ -11,30 +10,12 @@ label {
   font-weight: bold;
 }
 
-.home-screen {
-  background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977345/www.hlidacshopu.cz/app/light-mode_bgnd.jpg")
-    center bottom no-repeat;
-  background-size: 100% 45%;
-  @media (min-width: 375px) {
-    background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977345/www.hlidacshopu.cz/app/light-mode_bgnd.jpg")
-      center bottom no-repeat;
-    background-size: 100% 60%;
-  }
-}
-
-.home-screen main {
-  background: url("https://res.cloudinary.com/topmonks/image/upload/v1575977546/www.hlidacshopu.cz/app/curves_bgnd.svg")
-    center bottom no-repeat;
-  background-size: 100%;
-}
-
 .layout-wrapper {
   max-width: 1100px;
   margin: 0 auto;
 }
 
 .mdc-top-app-bar__title {
-  padding: 0;
   margin: 0 auto;
 }
 
@@ -84,6 +65,7 @@ label {
 
     &__icon {
       color: var(--mdc-theme-secondary);
+      --icon-color: var(--mdc-theme-secondary);
       padding: 0 0 0 16px;
     }
 
