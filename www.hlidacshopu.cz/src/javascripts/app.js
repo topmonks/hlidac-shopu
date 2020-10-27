@@ -1,4 +1,5 @@
 import { html, svg, render } from "lit-html/lit-html.js";
+import { classMap } from "lit-html/directives/class-map.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "./lib/shops.js";
@@ -14,7 +15,7 @@ const chart = () => document.getElementById("hlidac-shopu-chart");
 
 const styles = document.createElement("link");
 styles.rel = "stylesheet";
-styles.href= "/assets/css/app.css";
+styles.href = "/assets/css/app.css";
 document.head.insertAdjacentElement("beforeend", styles);
 
 addEventListener("DOMContentLoaded", async () => {
@@ -77,7 +78,7 @@ async function renderResultsModal(detailUrl) {
   render(loaderTemplate(), root);
   try {
     const [{ plot }, chartData] = await initChart(detailUrl);
-    console.log(chartData)
+    console.log(chartData);
     render(resultTemplate(templateData(detailUrl, chartData)), root);
     plot(chart(), chartData);
   } catch (ex) {
@@ -135,28 +136,44 @@ function resultTemplate({
   lastDeclaredPrice,
   actualPrice,
   discount,
-  date
+  discountType,
+  date,
+  ...prices
 }) {
-  const declaredOriginalPrice = x =>
-    x &&
-    html`
-      <div class="claimed-price">
-        Uváděná původní cena
-        <del id="original-price">${formatMoney(x)}</del>
-      </div>
-    `;
-  const realDiscount = x =>
+  const titles = new Map([
+    [
+      "eu-minimum",
+      "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
+    ],
+    [
+      "common-price",
+      "Počítá jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo v období 90 dnů před slevovou akcí."
+    ]
+  ]);
+
+  const discountTitle = x => {
+    if (x > 0) {
+      return "Reálná sleva";
+    } else if (x === 0) {
+      return "Reálně nezměněno";
+    } else {
+      return "Reálně zdraženo";
+    }
+  };
+
+  const discountClass = x => ({
+    "hs-real-discount": true,
+    "hs-real-discount--neutral": x === 0,
+    "hs-real-discount--negative": x < 0
+  });
+
+  const realDiscount = (x, discountType) =>
     x !== null &&
     !isNaN(x) &&
     html`
-      <div>
-        <abbr
-          title="Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
-          >Reálná sleva*</abbr
-        >
-        <b class="discount"
-          ><span id="real-discount">${formatPercents(x)}</span></b
-        >
+      <div class=${classMap(discountClass(x))}>
+        <b><span>${formatPercents(x)}</span></b>
+        <abbr title="${titles.get(discountType)}">${discountTitle(x)}*</abbr>
       </div>
     `;
   const crawlDate = x =>
@@ -188,12 +205,19 @@ function resultTemplate({
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
       >
         ${crawlDate(date)}
-        ${(lastDeclaredPrice != actualPrice) ? declaredOriginalPrice(lastDeclaredPrice) : null}
+        <div class="claimed-price">
+          ${discountType === "eu-minimum"
+            ? "Minimální cena před akcí"
+            : "Běžná cena před akcí"}
+          <b>${discountType === "eu-minimum"
+            ? formatMoney(prices.minPrice)
+            : formatMoney(prices.commonPrice)}</b>
+        </div>
         <div class="actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
-        ${realDiscount(discount) || ""}
+        ${realDiscount(discount, discountType) || null}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <canvas id="hlidac-shopu-chart" width="100%"></canvas>

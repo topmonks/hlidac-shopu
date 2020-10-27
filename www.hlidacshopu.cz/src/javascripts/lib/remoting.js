@@ -92,7 +92,7 @@ export const initChart = detailUrl =>
 export function templateData(
   detailUrl,
   {
-    metadata: { shop, name, imageUrl, realDiscount },
+    metadata: { shop, name, imageUrl, realDiscount, type, ...prices },
     data: { currentPrice, originalPrice }
   }
 ) {
@@ -109,7 +109,9 @@ export function templateData(
     discount: realDiscount,
     actualPrice,
     date: new Date(date),
-    lastDeclaredPrice
+    lastDeclaredPrice,
+    discountType: type,
+    ...prices
   };
 }
 

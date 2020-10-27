@@ -23,8 +23,33 @@ label {
   padding-top: 6em;
 }
 
+.button,
+.hs-form button {
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--mdc-theme-primary);
+  min-width: 200px;
+  height: 54px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--mdc-theme-secondary);
+  -webkit-appearance: none;
+
+  @media screen and (max-width: 479px) {
+    box-shadow: 0 20px 20px rgba(92, 98, 205, 0.1);
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--mdc-theme-secondary-dark);
+  }
+}
+
 .hs-form {
-  --border-radius: 8px;
   text-align: center;
 
   .button,
@@ -139,23 +164,36 @@ label {
   .actual-price {
     color: var(--mdc-theme-third);
     font-weight: bold;
-    font-size: 2em;
+    font-size: 1.2em;
     line-height: 1.6;
   }
 
   .claimed-price {
     color: var(--mdc-theme-text-secondary-on-light);
   }
+}
 
-  .discount {
-    background: #ffe607;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-  }
+.hs-real-discount {
+  align-self: flex-start;
+  background-color: #FFE607;
+  color: #1D3650;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 1.6;
+  padding: 6px 10px 6px;
+  margin: 16px 0 0;
+}
+.hs-real-discount b {
+  font-size: 2em;
+  display: block;
+}
+.hs-real-discount.hs-real-discount--neutral {
+  background-color: transparent;
+}
+.hs-real-discount.hs-real-discount--negative {
+  background-color: #ca0505;
+  color: #fff;
+}
+.hs-real-discount.hs-real-discount--no-data {
+  display: none;
 }
