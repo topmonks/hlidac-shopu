@@ -74,7 +74,7 @@ function getDiscount(data: DataRow[]) {
   const lastIncreaseDate = <Date>(
     last(changes.filter(([δ]) => δ > 0).map(([_, date]) => date))
   );
-  if (isAfter(lastDiscountDate, lastIncreaseDate))
+  if (!lastIncreaseDate || isAfter(lastDiscountDate, lastIncreaseDate))
     return euDiscount(lastDiscountDate, series);
   return commonPriceDifference(lastDiscountDate, series);
 }
