@@ -3,7 +3,6 @@ import { Request, Response } from "@pulumi/awsx/apigateway";
 import { notFound, response, withCORS } from "../utils";
 
 export async function handler(event: Request): Promise<Response> {
-
   const discount = event.queryStringParameters?.discount ?? "rel";
   const discountTypes = new Map([
     ["abs", "topslevy_czk_discount_daily"],
@@ -29,6 +28,8 @@ export async function handler(event: Request): Promise<Response> {
     .promise();
 
   return withCORS(["GET", "OPTIONS"])(
-    res.Item ? response(res.Item.json) : notFound()
+    res.Item
+      ? response(res.Item.json, { "Cache-Control": "max-age=14400" })
+      : notFound()
   );
 }

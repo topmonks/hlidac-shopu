@@ -12,6 +12,8 @@ export async function handler(event: Request): Promise<Response> {
     .promise();
 
   return withCORS(["GET", "OPTION"])(
-    res.Item ? response(res.Item?.json) : notFound()
+    res.Item
+      ? response(res.Item?.json, { "Cache-Control": "max-age=14400" })
+      : notFound()
   );
 }

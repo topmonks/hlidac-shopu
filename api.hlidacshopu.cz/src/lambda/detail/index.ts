@@ -163,7 +163,9 @@ export async function handler(event: Request): Promise<Response> {
     });
     const metadata = meta(await shop.getMetadata());
     const data = createDataset(rows);
-    return withCORS(["GET", "OPTIONS"])(response({ data, metadata }));
+    return withCORS(["GET", "OPTIONS"])(
+      response({ data, metadata }, { "Cache-Control": "max-age=3600" })
+    );
   } catch (error) {
     if (error instanceof ShopError) {
       const { message } = error;
