@@ -73,6 +73,11 @@ const config = {
             day: "numeric"
           }).format(new Date(str))
       }
+    },
+    htmlmin: {
+      minifyCSS: {
+        compatibility: { properties: { urlQuotes: true } }
+      }
     }
   },
 
