@@ -4,6 +4,7 @@ import { drop, zipWith, last, head, groupBy } from "ramda";
 import {
   isWithinInterval,
   isAfter,
+  isBefore,
   subDays,
   eachDayOfInterval
 } from "date-fns";
@@ -27,12 +28,10 @@ function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
   return { minPrice, currentPrice, realDiscount, type: "eu-minimum" };
 }
 
-function commonPriceDifference(
-  lastDiscountDate: Date,
-  series: [Date, number][]
-) {
+function commonPriceDifference(series: [Date, number][]) {
+  const today = new Date();
   // go 90 days back
-  const startDate = subDays(lastDiscountDate, 90);
+  const startDate = subDays(today, 90);
   // find most frequent price in 90 days interval before sale action
   const byPrice = groupBy(([, price]) => price);
   const frequencies = Object.entries(
@@ -40,7 +39,7 @@ function commonPriceDifference(
       series.filter(
         ([date, price]) =>
           Boolean(price) &&
-          isWithinInterval(date, { start: startDate, end: lastDiscountDate })
+          isWithinInterval(date, { start: startDate, end: today })
       )
     )
   ).map(([price, xs]) => [parseFloat(price), xs.length]);
@@ -76,7 +75,7 @@ function getDiscount(data: DataRow[]) {
   );
   if (!lastIncreaseDate || isAfter(lastDiscountDate, lastIncreaseDate))
     return euDiscount(lastDiscountDate, series);
-  return commonPriceDifference(lastDiscountDate, series);
+  return commonPriceDifference(series);
 }
 
 function parseDate(s: string) {

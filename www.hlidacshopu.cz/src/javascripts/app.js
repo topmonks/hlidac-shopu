@@ -147,7 +147,7 @@ function resultTemplate({
     ],
     [
       "common-price",
-      "Počítá jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo v období 90 dnů před slevovou akcí."
+      "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
     ]
   ]);
 
@@ -155,7 +155,7 @@ function resultTemplate({
     if (x > 0) {
       return "Reálná sleva";
     } else if (x === 0) {
-      return "Reálně nezměněno";
+      return "Reálně bez slevy";
     } else {
       return "Reálně zdraženo";
     }
