@@ -84,7 +84,7 @@ export const initChart = detailUrl =>
   Promise.all([
     // when upgrading version do not forget to change `task-config.js\javascripts\external` entry
     import(
-      "https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.bundle.min.js"
+      "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"
     ).then(() => import("../extension.js")),
     fetchDataSet(detailUrl)
   ]);
