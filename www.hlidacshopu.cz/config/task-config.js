@@ -63,7 +63,7 @@ const config = {
   },
 
   html: {
-    collections: ["media", "images"],
+    collections: ["media", "images", "assets"],
     nunjucksRender: {
       filters: {
         longDate: str =>

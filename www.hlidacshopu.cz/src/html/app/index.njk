@@ -14,11 +14,16 @@
   <link rel="manifest" href="/site.webmanifest"/>
   <link rel="modulepreload" href="/assets/js/app.js">
   <link rel="preload" as="style" href="/assets/css/app.css">
+  {% set appAssets = assets.output| first  %}
+  {% for asset in appAssets.imports %}
+    <link rel="preload" as="script" href="/assets/js/{{ asset }}">
+  {% endfor %}
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://api2.hlidacshopu.cz">
   <meta name="theme-color" content="#ffffff"/>
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="application-name" content="Hlídač shopů"/>
   <meta name="apple-mobile-web-app-title" content="Hlídač shopů"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
