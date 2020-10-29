@@ -224,7 +224,7 @@ workflows:
             - provision
             - build-website
       - merge_pr:
-          context: github-cli
+          context: org-github
           requires:
             - build-web-extension
             - build-website
