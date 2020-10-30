@@ -1,5 +1,6 @@
 const alias = require("@rollup/plugin-alias");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
+const replace = require("@rollup/plugin-replace");
 const pathConfig = require("./path-config.json");
 
 const config = {
@@ -7,7 +8,13 @@ const config = {
   cloudinary: true,
   fonts: true,
   static: true,
-  workboxBuild: false,
+
+  workboxBuild: {
+    swSrc: pathConfig.src + "/javascripts/sw.js",
+    swDest: pathConfig.dest + "/sw.js",
+    globDirectory: pathConfig.dest,
+    globPatterns: ["app/index.html", "assets/**/*.{js,css}"]
+  },
 
   stylesheets: {
     sass: {
@@ -21,7 +28,12 @@ const config = {
       alias({
         entries: [{ find: "tslib", replacement: "tslib/tslib.es6.js" }]
       }),
-      nodeResolve({ browser: true })
+      nodeResolve({ browser: true }),
+      replace({
+        "process.env.NODE_ENV": JSON.stringify(
+          process.env.NODE_ENV || "production"
+        )
+      })
     ],
     modules: {
       app: "app.js",
@@ -36,7 +48,7 @@ const config = {
       safari: "safari.js"
     },
     external: [
-      "https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.bundle.min.js"
+      "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"
     ],
     terser: {
       warnings: "verbose"

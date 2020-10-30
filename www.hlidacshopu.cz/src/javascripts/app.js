@@ -32,26 +32,21 @@ addEventListener("DOMContentLoaded", async () => {
 const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;
 
-window.isUpdateAvailable = new Promise(async (resolve, reject) => {
-  if ("serviceWorker" in navigator && isProduction()) {
-    try {
-      const wb = new Workbox("/sw.js");
-      wb.addEventListener("installed", e => {
-        console.log(
-          "ServiceWorker registration successful with scope: ",
-          e.sw.scope
-        );
-        resolve(e.isUpdate);
-      });
-      wb.addEventListener("activated", e => resolve(e.isUpdate));
-      wb.addEventListener("controlling", e => resolve(e.isUpdate));
-      wb.addEventListener("waiting", e => resolve(e.isUpdate));
-      await wb.register();
-    } catch (ex) {
-      reject(ex);
-    }
-  }
-});
+if ("serviceWorker" in navigator) {
+  try {
+    const wb = new Workbox("/sw.js");
+    wb.addEventListener("installed", e => {
+      console.log(
+        "ServiceWorker registration successful with scope: ",
+        e.sw.scope
+      );
+    });
+    // wb.addEventListener("activated", e => resolve(e.isUpdate));
+    // wb.addEventListener("controlling", e => resolve(e.isUpdate));
+    // wb.addEventListener("waiting", e => resolve(e.isUpdate));
+    wb.register();
+  } catch (ex) {}
+}
 
 function getTargetURL(searchParams) {
   const targetURL = searchParams.get("url") || searchParams.get("text");
