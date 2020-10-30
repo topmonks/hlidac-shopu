@@ -1,47 +1,11 @@
 import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { DynamoDB } from "aws-sdk";
-import { drop, head, last, take } from "ramda";
-import { eachDayOfInterval } from "date-fns";
+import { drop, head, take } from "ramda";
 import { createShop } from "../shops";
 import { response, withCORS } from "../utils";
-import {
-  getHistoricalData,
-  getHistoricalDataQuery,
-  metadataPkey
-} from "../product-detail";
-import { DataRow, getRealDiscount, parseData } from "../discount";
-
-function parseDate(s: string) {
-  const d = new Date(s);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function createDataset(data: DataRow[]) {
-  const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
-  const days = eachDayOfInterval({
-    start: <Date>head(data)?.date,
-    end: <Date>last(data)?.date
-  });
-  const originalPrice = new Array(days.length);
-  const currentPrice = new Array(days.length);
-  let prevDay = head(data);
-
-  days.forEach((day, i) => {
-    const item = (prevDay = dataMap.get(day.getTime()) ?? prevDay);
-    originalPrice[i] = {
-      x: day,
-      y: item?.originalPrice
-    };
-    currentPrice[i] = {
-      x: day,
-      y: item?.currentPrice
-    };
-  });
-
-  return { originalPrice, currentPrice };
-}
+import { getHistoricalData, metadataPkey } from "../product-detail";
+import { getClaimedDiscount, getRealDiscount, parseData } from "../discount";
 
 export async function handler(event: Request): Promise<Response> {
   if (event.headers["Authorization"] !== `Token ${process.env.TOKEN}`) {
@@ -89,7 +53,15 @@ export async function handler(event: Request): Promise<Response> {
     }
     const queries = items.map(async ({ shop, itemId }: any) => {
       let resp: any = await getHistoricalData(db, shop, itemId);
-      if (resp) return { shop, itemId, ...getRealDiscount(parseData(resp)) };
+      if (resp) {
+        const data = parseData(resp);
+        return {
+          shop,
+          itemId,
+          ...getRealDiscount(data),
+          claimedDiscount: getClaimedDiscount(data)
+        };
+      }
       return { shop, itemId, error: "no-data" };
     });
     let results: any = await Promise.all(queries);

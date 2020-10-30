@@ -1,5 +1,14 @@
-import { eachDayOfInterval, isAfter, isWithinInterval, subDays } from "date-fns";
+import {
+  eachDayOfInterval,
+  isAfter,
+  isWithinInterval,
+  subDays
+} from "date-fns";
 import { drop, groupBy, head, last, zipWith } from "ramda";
+
+export function discount(previous: number, actual: number) {
+  return (previous - actual) / previous;
+}
 
 function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
   // go 30 days back
@@ -14,7 +23,7 @@ function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
   const [, currentPrice] = <[Date, number]>last(series);
-  const realDiscount = (minPrice - currentPrice) / minPrice;
+  const realDiscount = discount(minPrice, currentPrice);
   return {
     minPrice,
     currentPrice,
@@ -39,7 +48,7 @@ function commonPriceDifference(
   const moreFrequent = (a, b) => (a[1] > b[1] ? a : b);
   const [commonPrice] = frequencies.reduce(moreFrequent, [0, 0]);
   const [, currentPrice] = <[Date, number]>last(series);
-  const realDiscount = (commonPrice - currentPrice) / commonPrice;
+  const realDiscount = discount(commonPrice, currentPrice);
   return { commonPrice, currentPrice, realDiscount, type: "common-price" };
 }
 
@@ -78,16 +87,21 @@ export function getRealDiscount(data: DataRow[]) {
   const lastIncreaseDate = <Date>(
     last(changes.filter(([δ]) => δ > 0).map(([_, date]) => date))
   );
-  function isInLast90Days(date: Date) {
-    const end = new Date();
-    const start = subDays(end, 90);
-    return isWithinInterval(date, { start, end });
-  }
+  const isInLast90Days = (date: Date) =>
+    isWithinInterval(date, { start: subDays(new Date(), 90), end: new Date() });
   if (
     isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast90Days)
   )
     return euDiscount(lastDiscountDate, series);
   return commonPriceDifference(series, isInLast90Days);
+}
+
+export function getClaimedDiscount(data: DataRow[]) {
+  const lastRow = last(data);
+  if (!(lastRow?.originalPrice && lastRow?.currentPrice)) {
+    return null;
+  }
+  return discount(lastRow.originalPrice, lastRow.currentPrice);
 }
 
 function parseDate(s: string) {

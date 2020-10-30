@@ -3,7 +3,12 @@ import { Request, Response } from "@pulumi/awsx/apigateway";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
 import { getHistoricalData, metadata } from "../product-detail";
-import { DataRow, parseData, getRealDiscount } from "../discount";
+import {
+  DataRow,
+  parseData,
+  getRealDiscount,
+  getClaimedDiscount
+} from "../discount";
 
 function createDataset(data: DataRow[]) {
   const originalPrice = new Array(data.length);
@@ -40,17 +45,17 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    const metad = await metadata(db, shop.name, <string>shop.itemUrl, itemId);
+    const meta = await metadata(db, shop.name, <string>shop.itemUrl, itemId);
 
-    itemId = itemId ?? metad?.itemId;
-    let item = await getHistoricalData(db, shop.name, itemId ?? "");
+    itemId = itemId ?? meta?.itemId;
+    const item = await getHistoricalData(db, shop.name, itemId ?? "");
     if (!item) {
       return withCORS(["GET", "OPTIONS"])(notFound());
     }
 
     const rows = parseData(item);
     const discount = getRealDiscount(rows);
-    const meta = ({
+    const transformMetadata = ({
       itemImage,
       itemName,
       real_sale,
@@ -59,12 +64,13 @@ export async function handler(event: Request): Promise<Response> {
     }: any) => ({
       name: itemName,
       imageUrl: itemImage === "null" ? null : itemImage,
+      claimedDiscount: getClaimedDiscount(rows),
       ...discount,
       ...rest
     });
     return withCORS(["GET", "OPTIONS"])(
       response(
-        { data: createDataset(rows), metadata: meta(metad) },
+        { data: createDataset(rows), metadata: transformMetadata(meta) },
         { "Cache-Control": "max-age=3600" }
       )
     );
