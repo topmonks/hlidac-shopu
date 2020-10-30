@@ -136,6 +136,7 @@ function resultTemplate({
   shop,
   lastDeclaredPrice,
   actualPrice,
+  claimedDiscount,
   discount,
   discountType,
   date,
@@ -180,7 +181,11 @@ function resultTemplate({
   const crawlDate = x =>
     x &&
     html`
-      <time id="latest-date" datetime="${x.toISOString()}" title="Datum posledního čtení cen">
+      <time
+        id="latest-date"
+        datetime="${x.toISOString()}"
+        title="Datum posledního čtení cen"
+      >
         ${x.toLocaleString("cs", {
           day: "numeric",
           month: "long",
@@ -197,10 +202,15 @@ function resultTemplate({
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <h2>
           ${shopLogo(shops.get(shop))}
-          <a href="${detailUrl}" id="product-name"
+          <a
+            href="${detailUrl}"
+            id="product-name"
+            class="product-name"
+            target="_blank"
+            rel="noopener noreferrer"
             >${name || "Vámi vybraný produkt"}</a
           >
-          ${imageUrl ? html`<img alt="${name}" src="${imageUrl}">` : null}
+          ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
         </h2>
       </div>
       <div
@@ -224,6 +234,11 @@ function resultTemplate({
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
         ${realDiscount(discount, discountType) || null}
+        ${claimedDiscount
+          ? html`<div class="claimed-discount">
+              Sleva udávaná e-shopem <b>${formatPercents(claimedDiscount)}</b>
+            </div>`
+          : null}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <canvas id="hlidac-shopu-chart" width="100%"></canvas>

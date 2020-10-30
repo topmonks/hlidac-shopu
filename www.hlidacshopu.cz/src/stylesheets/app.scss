@@ -180,6 +180,18 @@ label {
   .claimed-price {
     color: var(--mdc-theme-text-secondary-on-light);
   }
+  .claimed-discount {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  .product-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 80%;
+    display: inline-block;
+  }
 }
 
 .hs-real-discount {
