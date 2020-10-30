@@ -131,6 +131,7 @@ function loaderTemplate() {
 
 function resultTemplate({
   detailUrl,
+  imageUrl,
   name,
   shop,
   lastDeclaredPrice,
@@ -199,6 +200,7 @@ function resultTemplate({
           <a href="${detailUrl}" id="product-name"
             >${name || "Vámi vybraný produkt"}</a
           >
+          ${imageUrl ? html`<img alt="${name}" src="${imageUrl}">` : null}
         </h2>
       </div>
       <div
