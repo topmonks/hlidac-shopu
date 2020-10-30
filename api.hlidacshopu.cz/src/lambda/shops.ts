@@ -1,20 +1,21 @@
 import { DynamoDB } from "aws-sdk";
-import { createHash } from "crypto";
+import { metadata, pkey } from "./product-detail";
 
 export class ShopError extends Error {}
 
-abstract class Shop {
+export abstract class Shop {
   protected url: URL;
   public metadata: any;
 
   protected constructor(
     protected params: ShopParams,
-    protected dynamodb: DynamoDB.DocumentClient
+    protected dynamodb?: DynamoDB.DocumentClient
   ) {
     this.url = new URL(decodeURIComponent(params.url));
   }
 
   abstract get name(): string;
+
   abstract get itemUrl(): string | null | undefined;
 
   get itemId(): string | null | undefined {
@@ -31,29 +32,9 @@ abstract class Shop {
       throw new ShopError("getMetadata: itemUrl not found");
     }
 
-    const pkey = `${this.name}:${itemUrl}`;
-
     const itemId = this.params.itemId || this.itemId;
-    const dbParams: DynamoDB.DocumentClient.QueryInput = {
-      ExpressionAttributeValues: {
-        ":pkey": pkey
-      },
-      KeyConditionExpression: "pkey = :pkey",
-      TableName: "all_shops_metadata"
-    };
-
-    if (itemId) {
-      Object.assign(dbParams.ExpressionAttributeValues, {
-        ":itemId": itemId
-      });
-      dbParams.KeyConditionExpression = "itemId = :itemId AND pkey = :pkey";
-    }
-
-    const res = await this.dynamodb.query(dbParams).promise();
-    if (!res.Items) {
-      throw new ShopError("metadata not found in dynamo");
-    }
-    this.metadata = res.Items[0];
+    if (!this.dynamodb) throw new Error("Uninitialized DynamoDB client");
+    this.metadata = metadata(this.dynamodb, this.name, itemUrl, itemId);
     return this.metadata;
   }
 
@@ -74,7 +55,7 @@ abstract class Shop {
       throw new ShopError("no itemId found");
     }
 
-    return createHash("md5").update(`${name}${itemId}`).digest("hex");
+    return pkey(name, itemId);
   }
 }
 
@@ -426,7 +407,7 @@ const shops = {
 
 export function createShop(
   params: ShopParams,
-  dynamodb: DynamoDB.DocumentClient
+  dynamodb?: DynamoDB.DocumentClient
 ): Shop | undefined {
   const url = new URL(decodeURIComponent(params.url));
   // @ts-ignore
