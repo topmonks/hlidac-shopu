@@ -580,34 +580,6 @@ footer {
   }
 }
 
-.loader,
-.loader::after {
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-}
-
-.loader {
-  margin: 60px auto;
-  font-size: 10px;
-  position: relative;
-  text-indent: -9999em;
-  border: 4px solid rgba(255, 255, 255, 0.8);
-  border-left-color: var(--mdc-theme-third);
-  transform: translateZ(0);
-  animation: load8 1.1s infinite linear;
-}
-
-@keyframes load8 {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .social-media-link {
   margin: 0 8px;
   svg {

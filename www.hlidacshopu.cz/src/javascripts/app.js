@@ -7,10 +7,9 @@ import { formatMoney, formatPercents } from "./lib/format.js";
 import { initChart, templateData } from "./lib/remoting.js";
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
-const topAppBar = new MDCTopAppBar(topAppBarElement);
+MDCTopAppBar.attachTo(topAppBarElement);
 
 const root = document.getElementById("app-root");
-const form = document.getElementById("compare-form");
 const chart = () => document.getElementById("hlidac-shopu-chart");
 
 const styles = document.createElement("link");
@@ -241,8 +240,7 @@ function resultTemplate({
           : null}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <canvas id="hlidac-shopu-chart" width="100%"></canvas>
-        <div style="display:flex;justify-content: flex-end">
+        <div style="display:flex;justify-content: flex-end;font-size: 12px">
           <div
             style="width:12px;height:12px;background-color:#5c62cd;border-radius:2px;margin-right:5px;margin-top:2px;"
           ></div>
@@ -252,6 +250,7 @@ function resultTemplate({
           ></div>
           <span>Prodejní cena</span>
         </div>
+        <canvas id="hlidac-shopu-chart" width="100%"></canvas>
       </div>
     </div>
   `;
