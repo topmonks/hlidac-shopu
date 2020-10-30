@@ -179,7 +179,7 @@ function resultTemplate({
   const crawlDate = x =>
     x &&
     html`
-      <time id="latest-date" datetime="${x.toISOString()}">
+      <time id="latest-date" datetime="${x.toISOString()}" title="Datum posledního čtení cen">
         ${x.toLocaleString("cs", {
           day: "numeric",
           month: "long",
@@ -205,14 +205,18 @@ function resultTemplate({
         class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
       >
         ${crawlDate(date)}
-        <div class="claimed-price">
-          ${discountType === "eu-minimum"
-            ? "Minimální cena před akcí"
-            : "Běžná cena před akcí"}
-          <b>${discountType === "eu-minimum"
-            ? formatMoney(prices.minPrice)
-            : formatMoney(prices.commonPrice)}</b>
-        </div>
+        ${discount !== 0
+          ? html`<div class="claimed-price">
+              ${discountType === "eu-minimum"
+                ? "Minimální cena před akcí"
+                : "Běžná cena před akcí"}
+              <b
+                >${discountType === "eu-minimum"
+                  ? formatMoney(prices.minPrice)
+                  : formatMoney(prices.commonPrice)}</b
+              >
+            </div>`
+          : null}
         <div class="actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
@@ -221,8 +225,6 @@ function resultTemplate({
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <canvas id="hlidac-shopu-chart" width="100%"></canvas>
-      </div>
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <div style="display:flex;justify-content: flex-end">
           <div
             style="width:12px;height:12px;background-color:#5c62cd;border-radius:2px;margin-right:5px;margin-top:2px;"
