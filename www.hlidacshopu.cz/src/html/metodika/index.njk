@@ -2,7 +2,11 @@
 {% block title %}Metodika výpočtu reálné slevy na Hlídači shopů{% endblock %}
 
 {% block styles %}
-
+<style>
+  blockquote {
+    font-style: italic;
+  }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -10,42 +14,68 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <h1>Metodika výpočtu reálné slevy na Hlídači shopů</h1>
+          <h1>Metodika výpočtu reálné slevy</h1>
 
-          <p>Na Hlídači shopů se snažíme pomoci lidem pochopit co se na e-shopech děje s cenami zboží.
-            Dlouhodobě bojujeme proti zneužívání přeškrtnuté ceny, kde vzniká nejvíce prostoru pro kreativní
+          <p>Na Hlídači shopů se snažíme pomoci lidem pochopit co se na e-shopech
+            děje s&nbsp;cenami zboží. Dlouhodobě bojujeme proti zneužívání
+            přeškrtnuté (původní) ceny, kde vzniká nejvíce prostoru pro kreativní
             slevotvorbu.</p>
 
-          <p>Naším cílem je, aby slevy na e-shopech byly férové a neklamaly zákazníky. Proto jsme pro sezónu 2020
-            připravili novou metodiku výpočtu reálné slevy.</p>
+          <p>Naším cílem je, aby slevy na e-shopech byly férové a neklamaly
+            zákazníky. Proto jsme pro sezónu 2020&nbsp;připravili novou metodiku výpočtu
+            reálné&nbsp;slevy.</p>
 
           <h2>Původní metodika</h2>
 
-          <p>Doposud jsme reálnou slevu počítali vůči <i>nejvyšší ceně, za kterou se zboží prodávalo za posledních 90 dní</i>.
-            Je to často velký posun oproti přeškrtnuté ceně udávané prodejcem, ale má i své slabiny.
-            Například se v ní ztratí skokové zdražování zboží před slevovou akcí. Výsledná sleva pak pořád vypadá
-            o dost zajímavěji než je realita.</p>
-
-          <p>O této slabině jsme věděli už před rokem a dost intenzivně jsme řešili co s tím?
-            Nechali jsme tomu čas a EU přišla se směrnicí, jak chránit spotřebitele před klamavými technikami.
-            Ačkoliv ještě tato směrnice nebyla implementována českou legislativou, věříme že vede k větší férovosti,
-            a tak jsme se ji rozhodli nasadit již nyní.</p>
+          <p>Doposud jsme reálnou slevu počítali vůči <i>nejvyšší ceně, za kterou
+              se zboží prodávalo za posledních 90&nbsp;dní</i>. Je to často velký posun
+            oproti přeškrtnuté ceně udávané prodejcem, ale má i&nbsp;své slabiny.
+            Například se v&nbsp;ní ztratí skokové zdražování zboží před slevovou
+            akcí. Výsledná sleva pak pořád vypadá o&nbsp;dost zajímavěji než je
+            realita.</p>
 
           <h2>Nová metodika</h2>
 
-          <p>Jak už to tak u právních předpisů bývá, nejsou vždy neprůstřelné, nebo řeší jen část problému.
-            Při implementaci EU směrnice jsme zjitili, že se vztahuje pouze na slevové akce.
-            Ty mají svá specifika a musejí mít jasně definovaný konec. To je informace, kterou v našich datech nemáme,
-            proto jsme implementovali následující model:</p>
+          <p>O&nbsp;slabině původní metodiky jsme věděli už před rokem a dost
+            intenzivně jsme řešili co s&nbsp;tím. Ale nechali jsme tomu čas a <a
+              href="https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L2161&amp;qid=1604070938840&amp;from=EN">EU
+              v&nbsp;listopadu 2019&nbsp;přišla se směrnicí</a>,
+            jak chránit spotřebitele (The New Deal for Consumers).</p>
 
-          <p>Pokud bylo zboží zlevněno, považujeme to za <b>slevovou akci</b> do doby, dokud nedojde ke zdražení, nebo
-            pokud není sleva starší 90 dní. Pak slevu počítáme podle EU směrnice vůči <i>nejnižší ceně, za kterou
-              se zboží prodávalo během 30 dní před začátkem slevové akce</i>.</p>
+          <p>Pro nás <a
+              href="https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L2161&amp;qid=1604070938840&amp;from=EN#d1e1724-7-1">klíčová
+              sekce v&nbsp;nové směrnici</a> zní následovně:</p>
 
-          <p>Pokud je sleva starší 90 dní nebo se s cenou hýbalo nahoru, považujeme slevu za tržní korekci cen.
-            V takovém případě počítáme reálnou slevu vůči běžné ceně. Za <b>běžnou cenu</b> považujeme <i>cenu takovou,
-            za kterou se zboží prodávalo nejčastěji za posledních 90 dní</i>.</p>
-        </div>
+          <blockquote>
+            <p>Článek 6a 1.&nbsp;Veškerá oznámení o&nbsp;slevě z&nbsp;ceny musí uvádět
+              předchozí cenu, kterou obchodník uplatňoval po určité období před
+              uplatněním slevy z&nbsp;ceny. 2.&nbsp;Předchozí cenou se rozumí nejnižší cena,
+              kterou obchodník uplatňoval během období ne kratšího než 30&nbsp;dnů před
+              uplatněním slevy z&nbsp;ceny.</p>
+          </blockquote>
+
+          <p>Ačkoliv ještě tato směrnice nebyla implementována českou legislativou
+            (členské státy na to mají dva roky), věříme že vede k&nbsp;větší
+            férovosti, a tak jsme se ji rozhodli nasadit již nyní. Současně tím rádi
+            pomůžeme českým e-shopům se na novou směrnici připravit
+            v&nbsp;předstihu.</p>
+
+          <p>Jak už to tak u&nbsp;právních předpisů bývá, nejsou vždy neprůstřelné,
+            nebo řeší jen část problému. Při implementaci EU směrnice jsme zjitili,
+            že se vztahuje pouze na slevové akce. Ty mají svá specifika a musejí mít
+            jasně definovaný konec. To je informace, kterou v&nbsp;našich datech nemáme,
+            proto jsme implementovali následující&nbsp;model:</p>
+
+          <p>Pokud bylo zboží zlevněno, považujeme to za <b>slevovou akci</b> do doby,
+            dokud nedojde ke zdražení, nebo pokud není sleva starší 90&nbsp;dní. Pak slevu
+            počítáme podle EU směrnice vůči <i>nejnižší ceně, za kterou se zboží
+              prodávalo během 30&nbsp;dní před začátkem slevové akce</i>.</p>
+
+          <p>Pokud je sleva starší 90&nbsp;dní nebo se s&nbsp;cenou hýbalo nahoru, považujeme
+            slevu za tržní korekci cen. V&nbsp;takovém případě počítáme reálnou slevu
+            vůči běžné ceně. Za <b>běžnou cenu</b> považujeme <i>cenu takovou, za
+              kterou se zboží prodávalo nejčastěji za posledních 90&nbsp;dní</i>.</p>
+          </div>
       </div>
     </div>
   </section>
