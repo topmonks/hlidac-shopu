@@ -1,6 +1,13 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { Method, Response, Request } from "@pulumi/awsx/apigateway";
+import { lambda } from "@pulumi/aws/types/input";
+import * as awsx from "@pulumi/awsx";
+import {
+  Method,
+  Response,
+  Request,
+  LambdaAuthorizer
+} from "@pulumi/awsx/apigateway";
 import { Parameter } from "@pulumi/awsx/apigateway/requestValidator";
 import {
   Api,
@@ -9,11 +16,14 @@ import {
   CustomDomainDistribution
 } from "@topmonks/pulumi-aws";
 
+import * as batch from "./src/lambda/batch";
 import * as detail from "./src/lambda/detail";
 import * as check from "./src/lambda/check";
 import * as reviewStats from "./src/lambda/reviewStats";
 import * as shopNumbers from "./src/lambda/shopNumbers";
 import * as topslevy from "./src/lambda/topslevy";
+
+const config = new pulumi.Config("hlidacshopu");
 
 export function createDatabase() {
   const allShopsTable = aws.dynamodb.getTable({ name: "all_shops" });
@@ -62,26 +72,47 @@ export function createApi(domainName: string) {
     }
   );
 
+  interface RouteHandlerArgs {
+    timeout?: number;
+    environment?: lambda.FunctionEnvironment;
+  }
+
   const getRouteHandler = (
     name: string,
     callback: aws.lambda.Callback<Request, Response>,
-    role: aws.iam.Role
+    role: aws.iam.Role,
+    { timeout = 15, environment }: RouteHandlerArgs
   ): aws.lambda.Function =>
     new aws.lambda.CallbackFunction(`hlidac-shopu-api-${name}-lambda`, {
       publish: true,
       runtime: aws.lambda.Runtime.NodeJS12dX,
-      timeout: 15, // reasonable timeout for initial request without 500
+      environment,
+      timeout, // reasonable timeout for initial request without 500
       callback,
       role
     });
 
   const createHandlerRoute = (
     name: string,
-    { httpMethod, path, callback, role, requiredParameters, cache }: RouteArgs
+    {
+      httpMethod,
+      path,
+      callback,
+      role,
+      requiredParameters,
+      cache,
+      timeout,
+      authorizers,
+      environment
+    }: RouteArgs
   ): ApiRoute => ({
     type: "handler",
-    handler: getRouteHandler(name, callback, role ?? defaultLambdaRole),
+    handler: getRouteHandler(name, callback, role ?? defaultLambdaRole, {
+      timeout: timeout ?? 15,
+      environment
+    }),
     cors: { methods: [httpMethod, "OPTIONS"] }, // autogenerate CORS handler
+    authorizers,
     requiredParameters,
     httpMethod,
     path,
@@ -95,6 +126,9 @@ export function createApi(domainName: string) {
     role?: aws.iam.Role;
     requiredParameters?: Parameter[];
     cache?: CacheSettings;
+    timeout?: number;
+    authorizers?: LambdaAuthorizer[] | LambdaAuthorizer;
+    environment?: lambda.FunctionEnvironment;
   }
 
   const api = new Api("hlidac-shopu-api", {
@@ -103,6 +137,13 @@ export function createApi(domainName: string) {
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
+      createHandlerRoute("batch", {
+        httpMethod: "POST",
+        path: "/batch",
+        callback: batch.handler,
+        timeout: 300,
+        environment: { variables: { "TOKEN": config.get("token") ?? "" } }
+      }),
       createHandlerRoute("detail", {
         httpMethod: "GET",
         path: "/detail",
