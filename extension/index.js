@@ -1,34 +1,43 @@
 /* global plot, GRAPH_ICON */
 
 /* exported cleanPrice */
-const cleanPrice = s => {
+function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
   const priceText = el.textContent.replace(/\s+/g, "");
   const match = priceText.match(/\d+(:?[,.]\d+)?/);
   if (!match) return null;
-  const price = match[0].replace(",", ".");
-  return price;
-};
+  return match[0].replace(",", ".");
+}
 
-function _objToCss(obj) {
-  return Object.entries(obj)
+/* exported registerShop */
+function registerShop(shop, ...names) {
+  window.shops = window.shops || {};
+  for (let name of names) {
+    window.shops[name] = shop;
+  }
+}
+
+const toCssString = obj =>
+  Object.entries(obj)
     .map(([key, value]) => `${key}:${value};`)
     .join("");
-}
 
 function chartWrapper(styles) {
   const basicStyles = {
     "background-color": "#fff",
-    border: "1px solid #E8E8E8",
+    "border": "1px solid #E8E8E8",
     "border-radius": "14px",
-    margin: "16px 0",
-    padding: "16px",
-    clear: "both"
+    "margin": "16px 0",
+    "padding": "16px",
+    "clear": "both"
   };
-  const resultStyles = _objToCss(Object.assign({}, basicStyles, styles));
-
-  const wrapperMarkup = `
+  const resultStyles = toCssString(Object.assign({}, basicStyles, styles));
+  const url = location.toString();
+  const permalink = `https://www.hlidacshopu.cz/app/?url=${encodeURIComponent(
+    url
+  )}`;
+  return `
     <div id="hlidacShopu" style="${resultStyles}">
       <style>
         #hlidacShopu .hs-header {
@@ -109,9 +118,8 @@ function chartWrapper(styles) {
       </style>
       <div class="hs-header">
         <div>
-          <a class="hs-logo" href="https://www.hlidacshopu.cz/?url=${encodeURIComponent(
-            location.toString()
-          )}"
+          <a class="hs-logo"
+            href="${permalink}"
              title="trvalý odkaz na vývoj ceny">
             ${GRAPH_ICON}
           </a>
@@ -133,7 +141,7 @@ function chartWrapper(styles) {
         </div>
       </div>
       <div id="hlidacShopu2-chart-container">
-        <canvas id="hlidacShopu2-chart" height="400" width="538"></canvas>
+        <canvas id="hlidacShopu2-chart" width="538" height="400"></canvas>
       </div>
       <div class="hs-footer">
         <div>Více informací na <a href="https://www.hlidacshopu.cz/">HlídačShopů.cz</a></div>
@@ -145,19 +153,17 @@ function chartWrapper(styles) {
       </div>
     </div>
   `;
-  return wrapperMarkup;
 }
 
 function fetchData(url, itemId, title, originalPrice, currentPrice) {
   const searchString = new URLSearchParams({
-    metadata: 1,
     url,
     itemId,
     title,
     originalPrice,
     currentPrice
   });
-  return fetch(`https://api.hlidacshopu.cz/shop?${searchString}`).then(
+  return fetch(`https://api2.hlidacshopu.cz/detail?${searchString}`).then(
     response => {
       if (response.status === 404) {
         return response.json();
@@ -193,8 +199,8 @@ function getShopName(href) {
   const domainParts = url.host.split(".");
   const domain = domainParts.pop();
   let shopName = domainParts.pop();
-  if (domain === "sk") {
-    shopName += "_sk";
+  if (domain !== "cz") {
+    return `${shopName}_${domain}`;
   }
   return shopName;
 }
@@ -206,62 +212,14 @@ function getCurrency(shopName) {
   return "Kč";
 }
 
-function createDataset(data) {
-  const parseTime = s => {
-    const d = new Date(s);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-  const dataMap = new Map(data.map(i => [parseTime(i.d).getTime(), i]));
-  const dataset = {
-    originalPrice: [],
-    currentPrice: []
-  };
-  let lastDay = data[0];
-  for (const day of daysBetween(
-    parseTime(data[0].d),
-    parseTime(data[data.length - 1].d)
-  )) {
-    let item = dataMap.get(day.getTime());
-    if (!item) {
-      item = lastDay;
-    } else {
-      lastDay = item;
-    }
-    dataset.originalPrice.push({ x: day, y: item.o === "" ? null : item.o });
-    dataset.currentPrice.push({ x: day, y: item.c === "" ? null : item.c });
-  }
-  return dataset;
-}
-
-const formatPercents = x => `${Math.round(x).toLocaleString("cs")} %`;
+const formatPercents = x => `${Math.round(x * 100).toLocaleString("cs")} %`;
 const createDataPoint = ({ originalPrice, currentPrice }) => ({
   c: currentPrice,
   d: new Date().toISOString().substring(0, 10),
-  o: originalPrice || "",
+  o: originalPrice || ""
 });
 
-const realDiscount = ({ max_price, real_sale }, currentPrice) => {
-  if (
-    (!max_price && !real_sale) ||
-    (max_price === "null" && real_sale === "null")
-  ) {
-    return null;
-  }
-  if (real_sale && real_sale !== "null") {
-    return parseFloat(real_sale);
-  }
-  const origPrice = parseFloat(max_price);
-  if (
-    max_price &&
-    max_price !== "null" &&
-    currentPrice !== null &&
-    !isNaN(origPrice) &&
-    origPrice !== 0.0
-  ) {
-    return Math.abs((100 * (origPrice - currentPrice)) / origPrice);
-  }
-};
+const realDiscount = ({ realDiscount }) => realDiscount;
 
 /* eslint-disable no-console */
 async function main() {
@@ -304,7 +262,9 @@ async function main() {
       if (repaint) {
         // remove canvas to delete and clear previous chart
         document.getElementById("hlidacShopu2-chart").remove();
-        const container = document.getElementById("hlidacShopu2-chart-container");
+        const container = document.getElementById(
+          "hlidacShopu2-chart-container"
+        );
         const newCanvas = document.createElement("canvas");
         newCanvas.id = "hlidacShopu2-chart";
         container.appendChild(newCanvas);
@@ -312,28 +272,47 @@ async function main() {
         shop.insertChartElement(styles => chartWrapper(styles));
       }
 
+      const titles = new Map([
+        [
+          "eu-minimum",
+          "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
+        ],
+        [
+          "common-price",
+          "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
+        ]
+      ]);
       const discountEl = document.getElementById("hlidacShopu2-discount");
+      const parentElement = discountEl.parentElement;
+      const abbr = parentElement.querySelector("abbr");
       const discount = realDiscount(res.metadata, info.currentPrice);
+      abbr.title = titles.get(res.metadata.type);
       if (discount != null && discount < 0) {
-        const parentElement = discountEl.parentElement;
         parentElement.classList.add("hs-real-discount--negative");
-        parentElement.querySelector("abbr").textContent = "Reálně zdraženo";
+        abbr.textContent = "Reálně zdraženo";
         discountEl.innerText = "";
       } else if (discount != null) {
         discountEl.innerText = formatPercents(discount);
       } else {
         discountEl.parentElement.classList.add("hs-real-discount--no-data");
       }
-      if (info.currentPrice) {
-        res.data.push(createDataPoint(info));
-      }
-      const dataset = createDataset(res.data);
-      dataset.currency = getCurrency(shopName);
+
+      // if (info.currentPrice) {
+      //   res.data.push(createDataPoint(info));
+      // }
+
+      const dataset = Object.assign({}, res.data, {
+        currency: getCurrency(shopName)
+      });
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
       console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
       plot(plotElem, dataset);
-      console.log(`https://api.hlidacshopu.cz/check?url=${encodeURIComponent(location.href)}&itemId=${info.itemId}`);
+      console.log(
+        `https://www.hlidacshopu.cz/app/?url=${encodeURIComponent(
+          location.href
+        )}&itemId=${info.itemId}&debug=1`
+      );
       return true;
     } catch (e) {
       console.error(e);

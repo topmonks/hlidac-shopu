@@ -91,7 +91,7 @@ function plot(canvas, prices) {
         caretSize: 12,
         callbacks: {
           title(item, data) {
-            const date = data.labels[item[0].index];
+            const date = new Date(data.labels[item[0].index]);
             return date.toLocaleDateString("cs", { day: "numeric", month: "long", year: "numeric" });
           },
           label(item, _data) {
