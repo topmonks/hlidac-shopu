@@ -323,86 +323,6 @@
   background: rgba(84, 95, 239, 0.07);
 }
 
-#hlidac-shopu-modal {
-  a {
-    color: var(--mdc-theme-secondary);
-  }
-
-  time {
-    font-weight: bold;
-    line-height: 2;
-  }
-
-  del {
-    text-decoration: none;
-    position: relative;
-    display: inline-block;
-
-    &::after {
-      content: "";
-      position: absolute;
-      border-bottom: 2px solid var(--mdc-theme-text-primary-on-light);
-      transform: rotate(167.24deg);
-      bottom: 0;
-      left: 0;
-      height: calc(50% - 1px);
-      width: 100%;
-    }
-  }
-
-  .box {
-    text-align: center;
-
-    &.box--purple {
-      background: var(--mdc-theme-secondary-light);
-      border-radius: 6px;
-      padding: 16px;
-    }
-  }
-
-  .sprite {
-    display: block;
-    padding-bottom: 0.5em;
-
-    svg {
-      height: 32px;
-    }
-  }
-
-  .actual-price {
-    color: var(--mdc-theme-third);
-    font-weight: bold;
-    font-size: 2em;
-    line-height: 1.6;
-  }
-
-  .claimed-price {
-    color: var(--mdc-theme-text-secondary-on-light);
-  }
-
-  .discount {
-    background: #ffe607;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-  }
-
-  .result {
-    transform: scaleY(1);
-    transition: transform 0.3s ease;
-  }
-
-  .result--hidden {
-    transform: scaleY(0);
-    display: none;
-  }
-}
-
 .fb-post.fb_iframe_widget {
   display: flex;
   justify-content: center;
@@ -410,5 +330,19 @@
 
   > span {
     background: var(--mdc-theme-primary);
+  }
+}
+
+#hlidac-shopu-modal {
+  a {
+    color: var(--mdc-theme-secondary);
+  }
+
+  .hs-result__embedd {
+    width: 100%;
+    height: 90vh;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 18px;
   }
 }
