@@ -2,7 +2,7 @@ import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
-import { getHistoricalData, metadata } from "../product-detail";
+import { getHistoricalData, getMetadata } from "../product-detail";
 import {
   DataRow,
   parseData,
@@ -45,7 +45,7 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    const meta = await metadata(db, shop.name, <string>shop.itemUrl, itemId);
+    const meta = await getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
 
     itemId = itemId ?? meta?.itemId;
     const item = await getHistoricalData(db, shop.name, itemId ?? "");

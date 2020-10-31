@@ -1,5 +1,5 @@
 import { DynamoDB } from "aws-sdk";
-import { metadata, pkey } from "./product-detail";
+import { getMetadata, pkey } from "./product-detail";
 
 export class ShopError extends Error {}
 
@@ -34,7 +34,7 @@ export abstract class Shop {
 
     const itemId = this.params.itemId || this.itemId;
     if (!this.dynamodb) throw new Error("Uninitialized DynamoDB client");
-    this.metadata = metadata(this.dynamodb, this.name, itemUrl, itemId);
+    this.metadata = getMetadata(this.dynamodb, this.name, itemUrl, itemId);
     return this.metadata;
   }
 

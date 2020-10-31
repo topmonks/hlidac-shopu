@@ -9,11 +9,10 @@ export function metadataPkey(name: string, itemUrl: string) {
   return `${name}:${itemUrl}`;
 }
 
-export async function metadata(
-  db: DynamoDB.DocumentClient,
+function getMetadataQuery(
   name: string,
   itemUrl: string,
-  itemId?: string | null
+  itemId: string | null | undefined
 ) {
   const dbParams: DynamoDB.DocumentClient.QueryInput = {
     ExpressionAttributeValues: {
@@ -29,8 +28,20 @@ export async function metadata(
     });
     dbParams.KeyConditionExpression = "itemId = :itemId AND pkey = :pkey";
   }
+  return dbParams;
+}
 
-  return db.query(dbParams).promise().then(x => x.Items?.[0]);
+export async function getMetadata(
+  db: DynamoDB.DocumentClient,
+  name: string,
+  itemUrl: string,
+  itemId?: string | null
+) {
+  const query = getMetadataQuery(name, itemUrl, itemId);
+  return db
+    .query(query)
+    .promise()
+    .then(x => x.Items?.[0]);
 }
 
 export function getHistoricalDataQuery(name: string, itemId: string) {
@@ -40,7 +51,14 @@ export function getHistoricalDataQuery(name: string, itemId: string) {
   };
 }
 
-export function getHistoricalData(db: DynamoDB.DocumentClient, name: string, itemId: string) {
+export function getHistoricalData(
+  db: DynamoDB.DocumentClient,
+  name: string,
+  itemId: string
+) {
   const query = getHistoricalDataQuery(name, itemId);
-  return db.get(query).promise().then(x => x.Item);
+  return db
+    .get(query)
+    .promise()
+    .then(x => x.Item);
 }
