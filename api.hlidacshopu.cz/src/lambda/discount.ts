@@ -99,6 +99,8 @@ export function getRealDiscount(data: DataRow[]) {
     last(changes.filter(([δ]) => δ < 0).map(([_, date]) => date))
   );
   const lastIncreaseDate = <Date>(
+    // We probably don't care about 1 Kč corrections. But maybe we should about Euro.
+    // We should check relative size of delta, like if it is 0.001 of price or something.
     last(changes.filter(([δ]) => δ > 1).map(([_, date]) => date))
   );
   const isInLast90Days = (date: Date) =>
