@@ -537,11 +537,13 @@ footer {
 
   &__inner {
     background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 3px 30px rgba(0, 0, 0, 0.07);
     width: 100%;
     max-width: 620px;
     position: relative;
+    @media screen and (min-width: 480px) {
+      box-shadow: 0 3px 30px rgba(0, 0, 0, 0.07);
+      border-radius: 18px;
+    }
   }
 
   &__close {
@@ -558,6 +560,10 @@ footer {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    @media screen and (max-width: 479px) {
+      top: 12px;
+      right: 12px;
+    }
 
     a {
       font-weight: bold;

@@ -340,10 +340,15 @@
 
   .hs-result__embedd {
     width: 100%;
-    height: 90vh;
     box-sizing: border-box;
     border: none;
-    border-radius: 18px;
     scrollbar-width: thin;
+    @media screen and (max-width: 479px) {
+      height: 100vh;
+    }
+    @media screen and (min-width: 480px) {
+      height: 90vh;
+      border-radius: 18px;
+    }
   }
 }

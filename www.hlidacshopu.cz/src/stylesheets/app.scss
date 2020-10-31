@@ -16,7 +16,7 @@ label {
 }
 
 .mdc-top-app-bar__title {
-  margin: 0 auto;
+  margin: 6px auto 0;
 }
 
 .mdc-top-app-bar--fixed-adjust {
@@ -118,6 +118,9 @@ label {
 
   h2 {
     margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   img {
