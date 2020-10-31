@@ -3,7 +3,7 @@ import { classMap } from "lit-html/directives/class-map.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "./lib/shops.js";
-import { formatMoney, formatPercents } from "./lib/format.js";
+import { formatDate, formatMoney, formatPercents } from "./lib/format.js";
 import { initChart, templateData } from "./lib/remoting.js";
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
@@ -173,20 +173,16 @@ function resultTemplate({
       </div>
     `;
   const crawlDate = x =>
-    x &&
-    html`
-      <time
-        id="latest-date"
-        datetime="${x.toISOString()}"
-        title="Datum posledního čtení cen"
-      >
-        ${x.toLocaleString("cs", {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        })}
-      </time>
-    `;
+    x
+      ? html`
+          <time
+            id="latest-date"
+            datetime="${x.toISOString()}"
+            title="Datum posledního čtení cen"
+            >${formatDate(x)}</time
+          >
+        `
+      : null;
   const shopLogo = x => x && logoTemplate(x);
   return html`
     <div

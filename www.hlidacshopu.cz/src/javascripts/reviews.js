@@ -1,5 +1,6 @@
 import { html, render } from "lit-html/lit-html.js";
 import { fetchReviews } from "./lib/remoting.js";
+import { formatDate } from "./lib/format.js";
 
 const reviewsRoot = document.getElementById("reviews");
 
@@ -53,8 +54,7 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
         <time
           class="review__date text--light-grey"
           datetime="${date.toISOString()}"
-        >
-          ${date.toLocaleString("cs", longDateFormat)} </time
+          >${formatDate(date)}</time
         ><br />
         <i
           class="review__rating"

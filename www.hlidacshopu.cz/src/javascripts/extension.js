@@ -1,3 +1,5 @@
+import { formatDate } from "./lib/format.js";
+
 Chart.defaults.global.defaultFontFamily = "'Montserrat', sans-serif";
 Chart.defaults.global.defaultFontSize = 12;
 Chart.plugins.register({
@@ -90,11 +92,7 @@ export function plot(canvas, { data: prices }) {
           title(item, data) {
             let date = data.labels[item[0].index];
             date = typeof date === "string" ? new Date(date) : date;
-            return date.toLocaleDateString("cs", {
-              day: "numeric",
-              month: "long",
-              year: "numeric"
-            });
+            return formatDate(date);
           },
           label(item, _data) {
             if (item.datasetIndex === 0) {
