@@ -14,21 +14,15 @@ function getMetadataQuery(
   itemUrl: string,
   itemId: string | null | undefined
 ) {
-  const dbParams: DynamoDB.DocumentClient.QueryInput = {
+  return {
+    TableName: "all_shops_metadata",
     ExpressionAttributeValues: {
-      ":pkey": metadataPkey(name, itemUrl)
+      ":pkey": metadataPkey(name, itemUrl),
+      ...(itemId ? { ":itemId": itemId } : {})
     },
-    KeyConditionExpression: "pkey = :pkey",
-    TableName: "all_shops_metadata"
+    KeyConditionExpression:
+      "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
   };
-
-  if (itemId) {
-    Object.assign(dbParams.ExpressionAttributeValues, {
-      ":itemId": itemId
-    });
-    dbParams.KeyConditionExpression = "itemId = :itemId AND pkey = :pkey";
-  }
-  return dbParams;
 }
 
 export async function getMetadata(
@@ -46,8 +40,8 @@ export async function getMetadata(
 
 export function getHistoricalDataQuery(name: string, itemId: string) {
   return {
-    Key: { "p_key": pkey(name, itemId) },
-    TableName: "all_shops"
+    TableName: "all_shops",
+    Key: { "p_key": pkey(name, itemId) }
   };
 }
 

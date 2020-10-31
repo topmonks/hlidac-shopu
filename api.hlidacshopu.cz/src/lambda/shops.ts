@@ -410,10 +410,10 @@ export function createShop(
   params: ShopParams,
   dynamodb?: DynamoDB.DocumentClient
 ): Shop | undefined {
-  const url = new URL(decodeURIComponent(params.url));
+  const url = new URL(decodeURIComponent(params?.url));
   // @ts-ignore
   const Klass = shops[url.hostname];
-  return new Klass?.(params, dynamodb);
+  return Klass ? new Klass(params, dynamodb) : null;
 }
 
 export interface ShopParams {
