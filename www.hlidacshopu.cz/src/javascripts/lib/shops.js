@@ -1,11 +1,47 @@
 export const shops = new Map([
   [
+    "aaaauto",
+    {
+      name: "AAAAuto",
+      logo: "aaaauto_logo",
+      url: "https://www.aaaauto.cz/",
+      viewBox: null
+    }
+  ],
+  [
+    "aaaauto_sk",
+    {
+      name: "AAAAuto.sk",
+      logo: "aaaauto_logo",
+      url: "https://www.aaaauto.sk/",
+      viewBox: null
+    }
+  ],
+  [
     "alza",
     {
       name: "Alza",
       logo: "alza_logo",
       url: "https://www.alza.cz/",
       viewBox: "0 0 60 19"
+    }
+  ],
+  [
+    "alza_sk",
+    {
+      name: "Alza.sk",
+      logo: "alza_logo",
+      url: "https://www.alza.sk/",
+      viewBox: "0 0 60 19"
+    }
+  ],
+  [
+    "benu",
+    {
+      name: "Benu",
+      logo: "benu_logo",
+      url: "https://www.benu.cz/",
+      viewBox: null
     }
   ],
   [
@@ -72,6 +108,15 @@ export const shops = new Map([
     }
   ],
   [
+    "mall_sk",
+    {
+      name: "Mall.sk",
+      logo: "mall_logo",
+      url: "https://www.mall.sk/",
+      viewBox: "0 0 68 19"
+    }
+  ],
+  [
     "mironet",
     {
       name: "Mironet",
@@ -99,12 +144,39 @@ export const shops = new Map([
     }
   ],
   [
+    "pilulka",
+    {
+      name: "Pilulka.cz",
+      logo: "pilulka_logo",
+      url: "https://www.pilulka.cz/",
+      viewBox: null
+    }
+  ],
+  [
+    "prozdravi",
+    {
+      name: "Prozdraví.cz",
+      logo: "prozdravi_logo",
+      url: "https://www.prozdravi.cz/",
+      viewBox: null
+    }
+  ],
+  [
     "rohlik",
     {
       name: "Rohlík.cz",
       logo: "rohlik_logo",
       url: "https://www.rohlik.cz/",
       viewBox: "0 0 51 28"
+    }
+  ],
+  [
+    "sleky",
+    {
+      name: "Sleky.cz",
+      logo: "sleky_logo",
+      url: "https://www.sleky.cz/",
+      viewBox: null
     }
   ],
   [
