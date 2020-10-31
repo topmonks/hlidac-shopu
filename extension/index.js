@@ -219,7 +219,12 @@ const createDataPoint = ({ originalPrice, currentPrice }) => ({
   o: originalPrice || ""
 });
 
-const realDiscount = ({ realDiscount }) => realDiscount;
+function discount(previous, actual) {
+  if (!previous || isNaN(previous)) return null;
+  return (previous - actual) / previous;
+}
+const realDiscount = ({ realDiscount, minPrice, commonPrice }, currentPrice) =>
+  discount(minPrice ?? commonPrice, currentPrice) ?? realDiscount;
 
 /* eslint-disable no-console */
 async function main() {
@@ -285,7 +290,7 @@ async function main() {
       const discountEl = document.getElementById("hlidacShopu2-discount");
       const parentElement = discountEl.parentElement;
       const abbr = parentElement.querySelector("abbr");
-      const discount = realDiscount(res.metadata, info.currentPrice);
+      const discount = realDiscount(res.metadata, parseFloat(info.currentPrice));
       abbr.title = titles.get(res.metadata.type);
       if (discount != null && discount < 0) {
         parentElement.classList.add("hs-real-discount--negative");
@@ -297,21 +302,33 @@ async function main() {
         discountEl.parentElement.classList.add("hs-real-discount--no-data");
       }
 
-      // if (info.currentPrice) {
-      //   res.data.push(createDataPoint(info));
-      // }
+      if (info.currentPrice) {
+        res.data.currentPrice.push({
+          x: new Date().toISOString(),
+          y: parseFloat(info.currentPrice)
+        });
+      }
+      if (info.originalPrice) {
+        res.data.originalPrice.push({
+          x: new Date().toISOString(),
+          y: parseFloat(info.originalPrice)
+        });
+      }
 
       const dataset = Object.assign({}, res.data, {
         currency: getCurrency(shopName)
       });
       const plotElem = document.getElementById("hlidacShopu2-chart");
 
-      console.log(`Chart loaded for ItemID: ${info.itemId}`, { info, res });
+      console.log(`Chart loaded for ItemID: ${info.itemId}`);
+      console.log({ info, metadata: res.metadata, dataset });
       plot(plotElem, dataset);
       console.log(
-        `https://www.hlidacshopu.cz/app/?url=${encodeURIComponent(
-          location.href
-        )}&itemId=${info.itemId}&debug=1`
+        `https://www.hlidacshopu.cz/app/?${new URLSearchParams({
+          url: location.href,
+          itemId: info.itemId,
+          debug: 1
+        })}`
       );
       return true;
     } catch (e) {
