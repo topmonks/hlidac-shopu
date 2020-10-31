@@ -10,7 +10,11 @@ export function discount(previous: number, actual: number) {
   return (previous - actual) / previous;
 }
 
-function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
+function euDiscount(
+  lastDiscountDate: Date,
+  lastIncreaseDate: Date | null,
+  series: [Date, number][]
+) {
   // go 30 days back
   const startDate = subDays(lastDiscountDate, 30);
   // find lowest price in 30 days interval before sale action
@@ -29,11 +33,14 @@ function euDiscount(lastDiscountDate: Date, series: [Date, number][]) {
     currentPrice,
     realDiscount,
     lastDiscountDate,
+    lastIncreaseDate,
     type: "eu-minimum"
   };
 }
 
 function commonPriceDifference(
+  lastDiscountDate: Date | null,
+  lastIncreaseDate: Date | null,
   series: [Date, number][],
   isInInterval: (x: Date) => Boolean
 ) {
@@ -49,7 +56,14 @@ function commonPriceDifference(
   const [commonPrice] = frequencies.reduce(moreFrequent, [0, 0]);
   const [, currentPrice] = <[Date, number]>last(series);
   const realDiscount = discount(commonPrice, currentPrice);
-  return { commonPrice, currentPrice, realDiscount, type: "common-price" };
+  return {
+    commonPrice,
+    currentPrice,
+    realDiscount,
+    lastDiscountDate,
+    lastIncreaseDate,
+    type: "common-price"
+  };
 }
 
 function isEuDiscountApplicable(
@@ -92,8 +106,13 @@ export function getRealDiscount(data: DataRow[]) {
   if (
     isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast90Days)
   )
-    return euDiscount(lastDiscountDate, series);
-  return commonPriceDifference(series, isInLast90Days);
+    return euDiscount(lastDiscountDate, lastIncreaseDate, series);
+  return commonPriceDifference(
+    lastDiscountDate,
+    lastIncreaseDate,
+    series,
+    isInLast90Days
+  );
 }
 
 export function getClaimedDiscount(data: DataRow[]) {
