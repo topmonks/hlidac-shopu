@@ -255,6 +255,13 @@ function logoTemplate({ logo, name, url, viewBox }) {
     </svg>
   `;
   return html`
-    <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
+    <a
+      href="${url}"
+      class="sprite sprite--${logo}"
+      title="${name}"
+      target="_blank"
+      rel="noopener noreferrer"
+      >${image}</a
+    >
   `;
 }
