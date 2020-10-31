@@ -63,11 +63,29 @@ export const shops = new Map([
     }
   ],
   [
+    "datart_sk",
+    {
+      name: "Datart",
+      logo: "datart_logo",
+      url: "https://www.datart.sk/",
+      viewBox: "0 0 98 13"
+    }
+  ],
+  [
     "itesco",
     {
       name: "iTesco",
       logo: "tesco_logo",
       url: "https://www.itesco.cz/",
+      viewBox: "0 0 55 18"
+    }
+  ],
+  [
+    "itesco_sk",
+    {
+      name: "iTesco",
+      logo: "tesco_logo",
+      url: "https://www.itesco.sk/",
       viewBox: "0 0 55 18"
     }
   ],
@@ -135,6 +153,15 @@ export const shops = new Map([
     }
   ],
   [
+    "mountfield_sk",
+    {
+      name: "Mountfield",
+      logo: "mountfield_logo",
+      url: "https://www.mountfield.sk/",
+      viewBox: "0 0 64 11"
+    }
+  ],
+  [
     "notino",
     {
       name: "Notino",
@@ -144,11 +171,47 @@ export const shops = new Map([
     }
   ],
   [
+    "notino_sk",
+    {
+      name: "Notino",
+      logo: "notino_logo",
+      url: "https://www.notino.sk/",
+      viewBox: "0 0 68 13"
+    }
+  ],
+  [
+    "okay",
+    {
+      name: "Okay",
+      logo: "okay_logo",
+      url: "https://www.okay.cz/",
+      viewBox: null
+    }
+  ],
+  [
+    "okay_sk",
+    {
+      name: "Okay",
+      logo: "okay_logo",
+      url: "https://www.okay.sk/",
+      viewBox: null
+    }
+  ],
+  [
     "pilulka",
     {
       name: "Pilulka.cz",
       logo: "pilulka_logo",
       url: "https://www.pilulka.cz/",
+      viewBox: null
+    }
+  ],
+  [
+    "pilulka_sk",
+    {
+      name: "Pilulka.sk",
+      logo: "pilulka_logo",
+      url: "https://www.pilulka.sk/",
       viewBox: null
     }
   ],
