@@ -105,9 +105,7 @@ export function getClaimedDiscount(data: DataRow[]) {
 }
 
 function parseDate(s: string) {
-  const d = new Date(s);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  return new Date(s);
 }
 
 export function parseData({ json }: any): DataRow[] {
