@@ -165,13 +165,18 @@ function resultTemplate({
 
   const realDiscount = (x, discountType) =>
     x !== null &&
-    !isNaN(x) &&
+    !isNaN(x) ?
     html`
       <div class=${classMap(discountClass(x))}>
-        <b><span>${formatPercents(x)}</span></b>
+        <b
+          ><span
+            >${x < 0 ? "↑" : x > 0 ? "↓" : "="}
+            ${formatPercents(Math.abs(x))}</span
+          ></b
+        >
         <abbr title="${titles.get(discountType)}">${discountTitle(x)}*</abbr>
       </div>
-    `;
+    `: null;
   const crawlDate = x =>
     x
       ? html`
@@ -223,7 +228,7 @@ function resultTemplate({
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
-        ${realDiscount(discount, discountType) || null}
+        ${realDiscount(discount, discountType)}
         ${claimedDiscount
           ? html`<div class="claimed-discount">
               Sleva udávaná e-shopem <b>${formatPercents(claimedDiscount)}</b>

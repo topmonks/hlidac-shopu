@@ -214,8 +214,9 @@ class Rohlik extends Shop {
   }
 
   get itemId() {
-    let item = this.url?.searchParams.get("productPopup");
-    if (!item) item = this.url?.pathname.substr(1);
+    const item =
+      this.url?.searchParams.get("productPopup") ??
+      this.url?.pathname.substr(1);
     const match = item?.match(/^(\d+)/);
     return match?.[1];
   }
@@ -412,7 +413,7 @@ export function createShop(
   const url = new URL(decodeURIComponent(params.url));
   // @ts-ignore
   const Klass = shops[url.hostname];
-  return Klass ? new Klass(params, dynamodb) : null;
+  return new Klass?.(params, dynamodb);
 }
 
 export interface ShopParams {
