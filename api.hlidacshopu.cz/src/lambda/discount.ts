@@ -99,7 +99,7 @@ export function getRealDiscount(data: DataRow[]) {
     last(changes.filter(([δ]) => δ < 0).map(([_, date]) => date))
   );
   const lastIncreaseDate = <Date>(
-    last(changes.filter(([δ]) => δ > 0).map(([_, date]) => date))
+    last(changes.filter(([δ]) => δ > 1).map(([_, date]) => date))
   );
   const isInLast90Days = (date: Date) =>
     isWithinInterval(date, { start: subDays(new Date(), 90), end: new Date() });
