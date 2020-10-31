@@ -32,7 +32,7 @@ addEventListener("DOMContentLoaded", async () => {
 const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;
 
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator && isProduction()) {
   try {
     const wb = new Workbox("/sw.js");
     wb.addEventListener("installed", e => {
