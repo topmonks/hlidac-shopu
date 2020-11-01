@@ -70,7 +70,7 @@ export async function handler(event: Request): Promise<Response> {
     });
     return withCORS(["GET", "OPTIONS"])(
       response(
-        { data: createDataset(rows), metadata: transformMetadata(meta) },
+        { data: createDataset(rows), metadata: meta ? transformMetadata(meta) : null },
         { "Cache-Control": "max-age=3600" }
       )
     );
