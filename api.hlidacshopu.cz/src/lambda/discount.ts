@@ -94,14 +94,13 @@ export function getRealDiscount(data: DataRow[]) {
     ([, a], [date, b]) => [a - b, date],
     drop(1, series),
     series
+    // filter out invalid products
   ).filter(([δ]) => Boolean(δ));
   const lastDiscountDate = <Date>(
-    last(changes.filter(([δ]) => δ < 0).map(([_, date]) => date))
+    last(changes.filter(([δ]) => δ < 0).map(([, date]) => date))
   );
   const lastIncreaseDate = <Date>(
-    // We probably don't care about 1 Kč corrections. But maybe we should about Euro.
-    // We should check relative size of delta, like if it is 0.001 of price or something.
-    last(changes.filter(([δ]) => δ > 1).map(([_, date]) => date))
+    last(changes.filter(([δ]) => δ > 0).map(([, date]) => date))
   );
   const isInLast90Days = (date: Date) =>
     isWithinInterval(date, { start: subDays(new Date(), 90), end: new Date() });
@@ -135,17 +134,28 @@ export function parseData({ json }: any): DataRow[] {
     originalPrice: o === "" ? null : parseFloat(o),
     date: parseDate(d)
   }));
+
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
   const days = eachDayOfInterval({
     start: <Date>head(data)?.date,
     end: <Date>last(data)?.date
   });
+
   let prevDay = <DataRow>head(data);
-  return days.map(date =>
+  const fillInMissingData = (date: Date) =>
     Object.assign({}, (prevDay = dataMap.get(date.getTime()) ?? prevDay), {
       date
-    })
-  );
+    });
+
+  const replaceDeviatedData = (x: DataRow, i: number, arr: DataRow[]) => {
+    if (i === 0 || !x.currentPrice) return x;
+    const a = arr[i - 1];
+    const r = a?.currentPrice ?? 0 / x.currentPrice;
+    if (!a?.currentPrice || (0.005 < r && r < 200)) return x;
+    arr[i].currentPrice = x.currentPrice = a.currentPrice;
+    return x;
+  };
+  return days.map(fillInMissingData).map(replaceDeviatedData);
 }
 
 interface AllShopsRow {
