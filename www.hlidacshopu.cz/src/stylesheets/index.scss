@@ -344,7 +344,12 @@
     border: none;
     scrollbar-width: thin;
     @media screen and (max-width: 479px) {
-      height: 100vh;
+      position: fixed;
+      top: 0;
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      height: 100%;
     }
     @media screen and (min-width: 480px) {
       height: 90vh;

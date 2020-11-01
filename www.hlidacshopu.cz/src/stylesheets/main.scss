@@ -537,12 +537,19 @@ footer {
 
   &__inner {
     background: #fff;
-    width: 100%;
-    max-width: 620px;
-    position: relative;
+    @media screen and (max-width: 479px)  {
+      position: fixed;
+      top: 0;
+      bottom: 1px;
+      right: 0;
+      left: 0;
+    }
     @media screen and (min-width: 480px) {
       box-shadow: 0 3px 30px rgba(0, 0, 0, 0.07);
       border-radius: 18px;
+      position: relative;
+      max-width: 620px;
+      width: 100%;
     }
   }
 
