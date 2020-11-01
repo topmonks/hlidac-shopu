@@ -54,7 +54,7 @@ addEventListener("DOMContentLoaded", async e => {
     history.replaceState({ showModal: true, detailUri }, null);
     renderResultsModal(detailUri);
   }
-  render(eShopList(Array.from(shops.values())), eShops);
+  render(eShopList(Array.from(shops.values()).filter(x => x.viewBox)), eShops);
   const installationGuideUrl = getInstallationGuideUrl(searchParams);
   if (installationGuideUrl) {
     const client = await import(installationGuideUrl);

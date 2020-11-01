@@ -32,7 +32,7 @@ export const shops = new Map([
       name: "Alza.sk",
       logo: "alza_logo",
       url: "https://www.alza.sk/",
-      viewBox: "0 0 60 19"
+      viewBox: null
     }
   ],
   [
@@ -68,7 +68,7 @@ export const shops = new Map([
       name: "Datart",
       logo: "datart_logo",
       url: "https://www.datart.sk/",
-      viewBox: "0 0 98 13"
+      viewBox: null
     }
   ],
   [
@@ -86,7 +86,7 @@ export const shops = new Map([
       name: "iTesco",
       logo: "tesco_logo",
       url: "https://www.itesco.sk/",
-      viewBox: "0 0 55 18"
+      viewBox: null
     }
   ],
   [
@@ -131,7 +131,7 @@ export const shops = new Map([
       name: "Mall.sk",
       logo: "mall_logo",
       url: "https://www.mall.sk/",
-      viewBox: "0 0 68 19"
+      viewBox: null
     }
   ],
   [
@@ -158,7 +158,7 @@ export const shops = new Map([
       name: "Mountfield",
       logo: "mountfield_logo",
       url: "https://www.mountfield.sk/",
-      viewBox: "0 0 64 11"
+      viewBox: null
     }
   ],
   [
@@ -176,7 +176,7 @@ export const shops = new Map([
       name: "Notino",
       logo: "notino_logo",
       url: "https://www.notino.sk/",
-      viewBox: "0 0 68 13"
+      viewBox: null
     }
   ],
   [
