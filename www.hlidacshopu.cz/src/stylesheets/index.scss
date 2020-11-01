@@ -323,16 +323,6 @@
   background: rgba(84, 95, 239, 0.07);
 }
 
-.fb-post.fb_iframe_widget {
-  display: flex;
-  justify-content: center;
-  position: relative;
-
-  > span {
-    background: var(--mdc-theme-primary);
-  }
-}
-
 #hlidac-shopu-modal {
   a {
     color: var(--mdc-theme-secondary);
