@@ -152,7 +152,7 @@ export function parseData({ json }: any): DataRow[] {
     const a = arr[i - 1];
     const r = a?.currentPrice ?? 0 / x.currentPrice;
     if (!a?.currentPrice || (0.005 < r && r < 200)) return x;
-    arr[i].currentPrice = x.currentPrice = a.currentPrice;
+    x.currentPrice = a.currentPrice;
     return x;
   };
   return days.map(fillInMissingData).map(replaceDeviatedData);
