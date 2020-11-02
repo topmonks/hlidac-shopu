@@ -150,10 +150,11 @@ export function parseData({ json }: any): DataRow[] {
 
   const replaceDeviatedData = (x: DataRow, i: number, arr: DataRow[]) => {
     if (i === 0 || !x.currentPrice) return x;
-    const a = arr[i - 1];
-    const r = a?.currentPrice ?? 0 / x.currentPrice;
-    if (!a?.currentPrice || (0.005 < r && r < 200)) return x;
-    x.currentPrice = a.currentPrice;
+    const prev = arr[i - 1];
+    if (!prev.currentPrice) return x;
+    const r = prev.currentPrice / x.currentPrice;
+    if (0.005 < r && r < 200) return x;
+    x.currentPrice = prev.currentPrice;
     return x;
   };
   return days.map(fillInMissingData).map(replaceDeviatedData);

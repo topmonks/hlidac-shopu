@@ -50,7 +50,7 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    let extraData;
+    let extraData, imageUrl: string;
     if (params.currentPrice && params.originalPrice !== "null") {
       // store parsed data by extension
       putParsedData(db, shop, params).catch(err => console.error(err));
@@ -67,6 +67,20 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     const rows = parseData(item);
+    if (extraData) {
+      const {
+        currentPrice,
+        originalPrice,
+        imageUrl: imgUrl
+      }: any = await extraData;
+      imageUrl = imgUrl;
+      if (currentPrice)
+        rows.push({
+          currentPrice,
+          originalPrice,
+          date: new Date()
+        });
+    }
     const discount = getRealDiscount(rows);
     const transformMetadata = ({
       itemImage,
@@ -76,7 +90,7 @@ export async function handler(event: Request): Promise<Response> {
       ...rest
     }: any) => ({
       name: itemName,
-      imageUrl: itemImage === "null" ? null : itemImage,
+      imageUrl: imageUrl ?? itemImage === "null" ? null : itemImage,
       claimedDiscount: getClaimedDiscount(rows),
       ...discount,
       ...rest
@@ -85,8 +99,7 @@ export async function handler(event: Request): Promise<Response> {
       response(
         {
           data: createDataset(rows),
-          metadata: meta ? transformMetadata(await meta) : null,
-          extraData: extraData ? (await extraData)?.data : null
+          metadata: meta ? transformMetadata(await meta) : null
         },
         { "Cache-Control": "max-age=3600" }
       )

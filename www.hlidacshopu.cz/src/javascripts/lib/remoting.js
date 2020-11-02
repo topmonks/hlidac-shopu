@@ -89,10 +89,6 @@ export const initChart = detailUrl =>
     fetchDataSet(detailUrl)
   ]);
 
-export function discount(previous, actual) {
-  return (previous - actual) / previous;
-}
-
 export function templateData(
   detailUrl,
   {
@@ -105,39 +101,21 @@ export function templateData(
       type,
       ...prices
     },
-    data: { currentPrice, originalPrice },
-    extraData
+    data: { currentPrice, originalPrice }
   }
 ) {
-  if (extraData && extraData.originalPrice) {
-    originalPrice.push({
-      x: new Date().toISOString(),
-      y: extraData.originalPrice
-    });
-  }
-  if (extraData && extraData.currentPrice) {
-    currentPrice.push({
-      x: new Date().toISOString(),
-      y: extraData.currentPrice
-    });
-  }
-
   const lastDeclaredPrice = originalPrice
     .map(x => x.y)
     .filter(y => y)
     .pop();
   const { y: actualPrice, x: date } = currentPrice.filter(({ y }) => y).pop();
-  const currentDiscount =
-    extraData && extraData.currentPrice
-      ? discount(prices.minPrice || prices.commonPrice, extraData.currentPrice)
-      : realDiscount;
   return {
     detailUrl,
     name,
     shop,
     imageUrl,
     claimedDiscount,
-    discount: currentDiscount,
+    discount: realDiscount,
     actualPrice: actualPrice,
     date: new Date(date),
     lastDeclaredPrice,
