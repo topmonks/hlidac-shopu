@@ -417,7 +417,11 @@ export function createShop(
 }
 
 export interface ShopParams {
-  api?: string;
   url: string;
   itemId?: string;
+  currentPrice?: string;
+  originalPrice?: string;
+  imageUrl?: string;
+  title?: string;
+  api?: string;
 }

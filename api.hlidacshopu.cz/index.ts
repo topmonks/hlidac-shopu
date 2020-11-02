@@ -37,10 +37,31 @@ export function createDatabase() {
   const topslevyAbsoluteTable = aws.dynamodb.getTable({
     name: "topslevy_czk_discount_daily"
   });
+
+  const extensionParsedDataTable = new aws.dynamodb.Table(
+    "extension_parsed_data",
+    {
+      name: "extension_parsed_data",
+      ttl: {
+        attributeName: "expirationDate",
+        enabled: true
+      },
+      hashKey: "pkey",
+      rangeKey: "date",
+      attributes: [
+        { name: "pkey", type: "S" },
+        { name: "date", type: "S" }
+      ],
+      writeCapacity: 1,
+      readCapacity: 1
+    }
+  );
+
   return pulumi.Output.create({
     allShopsTable,
     allShopsMetadataTable,
     allShopsStatsTable,
+    extensionParsingDataTable: extensionParsedDataTable.name,
     topslevyAbsoluteTable,
     topslevyRelativeTable
   });
@@ -67,7 +88,7 @@ export function createApi(domainName: string) {
   new aws.iam.RolePolicyAttachment(
     "hlidac-shopu-lambda-dynamo-read-attachment",
     {
-      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBReadOnlyAccess,
+      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
       role: defaultLambdaRole
     }
   );

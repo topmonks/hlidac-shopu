@@ -2,12 +2,17 @@ import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
-import { getHistoricalData, getMetadata } from "../product-detail";
+import {
+  getHistoricalData,
+  getMetadata,
+  getParsedData,
+  putParsedData
+} from "../product-detail";
 import {
   DataRow,
-  parseData,
+  getClaimedDiscount,
   getRealDiscount,
-  getClaimedDiscount
+  parseData
 } from "../discount";
 
 function createDataset(data: DataRow[]) {
@@ -45,9 +50,17 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    const meta = await getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
+    let extraData;
+    if (params.currentPrice && params.originalPrice !== "null") {
+      // store parsed data by extension
+      putParsedData(db, shop, params).catch(err => console.error(err));
+    } else {
+      // send parsed data to PWA
+      extraData = getParsedData(db, shop);
+    }
+    const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
 
-    itemId = itemId ?? meta?.itemId;
+    itemId = itemId ?? (await meta)?.itemId;
     const item = await getHistoricalData(db, shop.name, itemId ?? "");
     if (!item) {
       return withCORS(["GET", "OPTIONS"])(notFound());
@@ -70,7 +83,11 @@ export async function handler(event: Request): Promise<Response> {
     });
     return withCORS(["GET", "OPTIONS"])(
       response(
-        { data: createDataset(rows), metadata: meta ? transformMetadata(meta) : null },
+        {
+          data: createDataset(rows),
+          metadata: meta ? transformMetadata(await meta) : null,
+          extraData: extraData ? (await extraData)?.data : null
+        },
         { "Cache-Control": "max-age=3600" }
       )
     );
