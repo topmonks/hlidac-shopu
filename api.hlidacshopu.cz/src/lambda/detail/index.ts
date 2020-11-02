@@ -12,7 +12,7 @@ import {
   DataRow,
   getClaimedDiscount,
   getRealDiscount,
-  parseData
+  prepareData
 } from "../discount";
 
 function createDataset(data: DataRow[]) {
@@ -66,7 +66,7 @@ export async function handler(event: Request): Promise<Response> {
       return withCORS(["GET", "OPTIONS"])(notFound());
     }
 
-    const rows = parseData(item);
+    const rows = prepareData(item);
     if (extraData) {
       const { currentPrice, originalPrice, imageUrl: imgUrl }: any =
         (await extraData) ?? {};

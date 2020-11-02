@@ -129,7 +129,7 @@ function parseDate(s: string) {
   return new Date(s);
 }
 
-export function parseData({ json }: any): DataRow[] {
+export function prepareData({ json }: any): DataRow[] {
   const data: DataRow[] = JSON.parse(json).map(({ o, c, d }: AllShopsRow) => ({
     currentPrice: c === "" ? null : parseFloat(c),
     originalPrice: o === "" ? null : parseFloat(o),
@@ -150,10 +150,13 @@ export function parseData({ json }: any): DataRow[] {
 
   const replaceDeviatedData = (x: DataRow, i: number, arr: DataRow[]) => {
     if (i === 0 || !x.currentPrice) return x;
+
     const prev = arr[i - 1];
     if (!prev.currentPrice) return x;
+
     const r = prev.currentPrice / x.currentPrice;
     if (0.005 < r && r < 200) return x;
+
     x.currentPrice = prev.currentPrice;
     return x;
   };

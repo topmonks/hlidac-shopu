@@ -5,7 +5,7 @@ import { drop, head, take } from "ramda";
 import { createShop } from "../shops";
 import { response, withCORS } from "../utils";
 import { getHistoricalData, metadataPkey } from "../product-detail";
-import { getClaimedDiscount, getRealDiscount, parseData } from "../discount";
+import { getClaimedDiscount, getRealDiscount, prepareData } from "../discount";
 
 export async function handler(event: Request): Promise<Response> {
   if (event.headers["Authorization"] !== `Token ${process.env.TOKEN}`) {
@@ -54,7 +54,7 @@ export async function handler(event: Request): Promise<Response> {
     const queries = items.map(async ({ shop, itemId }: any) => {
       let resp: any = await getHistoricalData(db, shop, itemId);
       if (resp) {
-        const data = parseData(resp);
+        const data = prepareData(resp);
         return {
           shop,
           itemId,
