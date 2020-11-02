@@ -1,5 +1,6 @@
 import {
   eachDayOfInterval,
+  endOfToday,
   isAfter,
   isWithinInterval,
   subDays
@@ -138,7 +139,7 @@ export function parseData({ json }: any): DataRow[] {
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
   const days = eachDayOfInterval({
     start: <Date>head(data)?.date,
-    end: <Date>last(data)?.date
+    end: endOfToday()
   });
 
   let prevDay = <DataRow>head(data);
