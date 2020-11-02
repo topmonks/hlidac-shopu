@@ -13,10 +13,11 @@ window.shops["mironet"] = {
       ".product_kosik_info input[name=Code]"
     ).value;
     const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".product_cena_box .product_dph span");
-    const originalPrice = cleanPrice(".fakcbox23 .product_dph");
+    const currentPrice = cleanPrice(".product_cena_box .product_dph");
+    const originalPrice = cleanPrice(".fakcbox23 .product_dph span");
+    const imageUrl = document.getElementById("DetailImg").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
