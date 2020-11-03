@@ -164,6 +164,7 @@
 
 .attendant {
   content-visibility: auto;
+
   .sub-title {
     text-align: center;
   }
@@ -203,6 +204,7 @@
 
 .guidance {
   content-visibility: auto;
+
   .browser-list {
     display: flex;
     justify-content: center;
@@ -286,6 +288,7 @@
 
 .numbers {
   content-visibility: auto;
+
   dt {
     font-size: 13px;
     line-height: 16px;
@@ -310,8 +313,10 @@
   color: var(--mdc-theme-secondary);
   font-weight: 400;
   margin: 0 auto;
+
   a {
     text-decoration: none;
+
     &:hover {
       text-decoration: underline;
     }

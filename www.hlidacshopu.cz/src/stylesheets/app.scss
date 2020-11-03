@@ -184,6 +184,7 @@ label {
   .claimed-price {
     color: var(--mdc-theme-text-secondary-on-light);
   }
+
   .claimed-discount {
     margin-top: 16px;
     font-size: 14px;
@@ -208,17 +209,21 @@ label {
   padding: 6px 10px 6px;
   margin: 16px 0 0;
 }
+
 .hs-real-discount b {
   font-size: 2em;
   display: block;
 }
+
 .hs-real-discount.hs-real-discount--neutral {
   background-color: transparent;
 }
+
 .hs-real-discount.hs-real-discount--negative {
   background-color: #ca0505;
   color: #fff;
 }
+
 .hs-real-discount.hs-real-discount--no-data {
   display: none;
 }

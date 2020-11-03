@@ -53,6 +53,7 @@ body {
 a:link {
   color: var(--mdc-theme-secondary);
 }
+
 a:hover {
   color: var(--mdc-theme-secondary-dark);
 }
@@ -74,6 +75,7 @@ header {
 
   li a {
     color: var(--mdc-theme-text-primary-on-light);
+
     &:link,
     &:visited {
       color: var(--mdc-theme-text-primary-on-light);
@@ -228,10 +230,12 @@ img.responsive {
 
 .text--purple {
   color: var(--mdc-theme-secondary);
+
   a {
     text-decoration: none;
   }
 }
+
 p.title--subtitle {
   text-decoration: none;
   max-width: 600px;
@@ -303,6 +307,7 @@ footer {
 
   a {
     color: var(--mdc-theme-secondary);
+
     &:link,
     &:visited {
       color: var(--mdc-theme-secondary);
@@ -338,6 +343,7 @@ footer {
       color: var(--mdc-theme-text-secondary-on-light);
       text-decoration: none;
     }
+
     a:hover {
       color: var(--mdc-theme-secondary-dark);
       text-decoration: underline;
@@ -348,6 +354,7 @@ footer {
     svg {
       height: 32px;
     }
+
     .sub-info--grey {
       color: var(--mdc-theme-text-secondary-on-light);
       height: 40px;
@@ -379,6 +386,7 @@ footer {
     width: 100vw;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.07);
   }
+
   &.app-bar--open {
     overflow: visible;
   }
@@ -537,7 +545,7 @@ footer {
 
   &__inner {
     background: #fff;
-    @media screen and (max-width: 479px)  {
+    @media screen and (max-width: 479px) {
       position: fixed;
       top: 0;
       bottom: 1px;
@@ -595,11 +603,13 @@ footer {
 
 .social-media-link {
   margin: 0 8px;
+
   svg {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     transition: box-shadow 0.3s ease;
   }
+
   &:hover svg {
     box-shadow: 0 0 24px rgba(92, 98, 205, 0.4);
   }
