@@ -226,7 +226,6 @@ function discount(previous, actual) {
 const realDiscount = ({ realDiscount, minPrice, commonPrice }, currentPrice) =>
   discount(minPrice ?? commonPrice, currentPrice) ?? realDiscount;
 
-/* eslint-disable no-console */
 async function main() {
   console.group("Hlídačshopů.cz");
   const shopName = getShopName(location.href);
