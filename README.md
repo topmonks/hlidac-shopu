@@ -4,12 +4,12 @@
 [![CodeScene Code Health](https://codescene.io/projects/10253/status-badges/code-health)](https://codescene.io/projects/10253)
 [![CodeScene System Mastery](https://codescene.io/projects/10253/status-badges/system-mastery)](https://codescene.io/projects/10253)
 
-Rozšíření do nejrošířenějších prohlížečů, které zobrazuje historická data cen na největších
-českých e-shopech vč. Reálné slevy.
+[PWA](https://www.hlidacshopu.cz/app/) a rozšíření do nejrošířenějších prohlížečů, které zobrazuje historická data cen na největších
+českých a slovenských e-shopech vč. [Reálné slevy](https://www.hlidacshopu.cz/metodika/). 
 
 ---
 
-Extension shows historical prices for biggest czech e-commerce websites.
+PWA and browser extension shows historical prices for biggest czech and slovak e-commerce websites.
 
 ## Development
 
