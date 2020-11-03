@@ -62,6 +62,7 @@ const config = {
   },
 
   generate: {
+    exclude: ["assets.json", "media.json", "images.json"],
     json: [
       {
         collection: "media",
