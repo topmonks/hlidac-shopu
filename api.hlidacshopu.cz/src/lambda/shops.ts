@@ -77,6 +77,16 @@ class AAAAuto extends Shop {
   }
 }
 
+class AAAAutoSk extends AAAAuto {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "aaaauto_sk";
+  }
+}
+
 class Alza extends Shop {
   constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
     super(params, dynamodb);
@@ -181,6 +191,16 @@ class Datart extends Shop {
   }
 }
 
+class DatartSk extends Datart {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "datart_sk";
+  }
+}
+
 class Itesco extends Shop {
   constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
     super(params, dynamodb);
@@ -197,6 +217,16 @@ class Itesco extends Shop {
   get itemId() {
     const match = this.url?.pathname.match(/(\d+)$/);
     return match?.[1];
+  }
+}
+
+class ItescoSk extends Itesco {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "itesco_sk";
   }
 }
 
@@ -234,6 +264,16 @@ class Notino extends Shop {
   get itemUrl() {
     const match = this.url?.pathname.substr(1).replace(/\//g, "");
     return match?.[1];
+  }
+}
+
+class NotinoSk extends Notino {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "notino_sk";
   }
 }
 
@@ -287,6 +327,16 @@ class Mountfield extends Shop {
   get itemId() {
     const match = this.url?.pathname.match(/-([^-]+)$/);
     return match?.[1];
+  }
+}
+
+class MountfieldSk extends Mountfield {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "mountfield_sk";
   }
 }
 
@@ -350,6 +400,41 @@ class Pilulka extends Shop {
   }
 }
 
+class PilulkaSk extends Pilulka {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "pilulka_sk";
+  }
+}
+
+class Okay extends Shop {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "okay";
+  }
+
+  get itemUrl() {
+    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    return match?.[1];
+  }
+}
+
+class OkaySk extends Okay {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "okay_sk";
+  }
+}
+
 class Prozdravi extends Shop {
   constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
     super(params, dynamodb);
@@ -382,7 +467,7 @@ class Sleky extends Shop {
 
 const shops = {
   "www.aaaauto.cz": AAAAuto,
-  "www.aaaauto.sk": AAAAuto,
+  "www.aaaauto.sk": AAAAutoSk,
   "www.alza.cz": Alza,
   "m.alza.cz": Alza,
   "www.alza.sk": AlzaSk,
@@ -390,7 +475,9 @@ const shops = {
   "www.benu.cz": Benu,
   "www.czc.cz": Czc,
   "www.datart.cz": Datart,
+  "www.datart.sk": DatartSk,
   "nakup.itesco.cz": Itesco,
+  "potravinydomov.itesco.sk": ItescoSk,
   "www.kasa.cz": Kasa,
   "www.kosik.cz": Kosik,
   "www.lekarna.cz": Lekarna,
@@ -398,8 +485,13 @@ const shops = {
   "www.mall.sk": MallSk,
   "www.mironet.cz": Mironet,
   "www.mountfield.cz": Mountfield,
+  "www.mountfield.sk": MountfieldSk,
   "www.notino.cz": Notino,
+  "www.notino.sk": NotinoSk,
+  "www.okay.cz": Okay,
+  "www.okay.sk": OkaySk,
   "www.pilulka.cz": Pilulka,
+  "www.pilulka.sk": PilulkaSk,
   "www.prozdravi.cz": Prozdravi,
   "www.rohlik.cz": Rohlik,
   "www.sleky.cz": Sleky,

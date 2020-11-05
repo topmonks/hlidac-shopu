@@ -31,3 +31,4 @@ const pilulka = {
 
 window.shops = window.shops || {};
 window.shops["pilulka"] = pilulka;
+window.shops["pilulka_sk"] = pilulka;
