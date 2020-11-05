@@ -50,14 +50,12 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    let extraData, imageUrl: string;
+    let imageUrl: string;
     if (params.currentPrice && params.currentPrice !== "null") {
       // store parsed data by extension
       putParsedData(db, shop, params).catch(err => console.error(err));
-    } else {
-      // send parsed data to PWA
-      extraData = getParsedData(db, shop);
     }
+    const extraData = getParsedData(db, shop);
     const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
 
     itemId = itemId ?? (await meta)?.itemId;
