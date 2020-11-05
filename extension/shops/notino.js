@@ -57,7 +57,8 @@ const notino = {
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#pd-price");
-    const originalPrice = cleanPrice("[aria-describedby=tippy-tooltip-1]");
+    const originalPrice = cleanPrice("[class^='styled__DiscountWrapper'] span[content]");
+    const imageUrl = document.querySelector("[class^='styled__ImgWrapper'] img").src;
     let itemId = (() => {
       const match = window.location.pathname.match(/\/p-(\d+)\//);
       return match ? match[1] : null;
@@ -68,7 +69,7 @@ const notino = {
       this.masterId = itemId;
     }
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -82,3 +83,4 @@ const notino = {
 
 window.shops = window.shops || {};
 window.shops["notino"] = notino;
+window.shops["notino_sk"] = notino;

@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["lekarna"] = {
+const lekarna = {
   onDetailPage(cb) {
     cb();
   },
@@ -9,6 +8,7 @@ window.shops["lekarna"] = {
   getInfo() {
     const elem = document.querySelector(".detail-top");
     if (!elem) return;
+
     const itemId = document
       .querySelector(".product__code span")
       .textContent.trim();
@@ -17,8 +17,9 @@ window.shops["lekarna"] = {
       .querySelector("[itemprop=price]")
       .getAttribute("content");
     const originalPrice = cleanPrice(".price__old");
+    const imageUrl = document.querySelector(".product__img img").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -30,3 +31,5 @@ window.shops["lekarna"] = {
     return elem;
   }
 };
+window.shops = window.shops || {};
+window.shops["lekarna"] = lekarna;

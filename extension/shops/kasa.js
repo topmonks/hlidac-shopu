@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["kasa"] = {
+let kasa = {
   onDetailPage(cb) {
     cb();
   },
@@ -14,8 +13,9 @@ window.shops["kasa"] = {
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#real_price");
     const originalPrice = cleanPrice(".before-price .text-strike");
+    const imageUrl = document.querySelector(".large-img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -27,3 +27,6 @@ window.shops["kasa"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["kasa"] = kasa;

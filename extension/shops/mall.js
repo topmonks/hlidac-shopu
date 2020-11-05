@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["mall"] = window.shops["mall_sk"] = {
+const mall = {
   onDetailPage(cb) {
     cb();
   },
@@ -11,14 +10,16 @@ window.shops["mall"] = window.shops["mall_sk"] = {
     if (!elem) return;
 
     const itemId = document
-      .querySelector('span[data-sel="catalog-number"]')
+      .querySelector("span[data-sel=\"catalog-number\"]")
       .innerText.trim();
     const title = document
-      .querySelector('h1[itemprop="name"]')
+      .querySelector("h1[itemprop=\"name\"]")
       .innerText.trim();
     const currentPrice = cleanPrice("[itemprop=price]");
     const originalPrice = cleanPrice(".old-new-price .rrp-price, .old-price > del:nth-child(1)");
-    return { itemId, title, currentPrice, originalPrice };
+    const imageUrl = document.querySelector(".gallery-magnifier__normal").src;
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -30,3 +31,7 @@ window.shops["mall"] = window.shops["mall_sk"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["mall"] = mall;
+window.shops["mall_sk"] = mall;

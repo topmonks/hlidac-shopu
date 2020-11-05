@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["czc"] = {
+const czc = {
   onDetailPage(cb) {
     cb();
   },
@@ -26,3 +25,6 @@ window.shops["czc"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["czc"] = czc;

@@ -4,8 +4,7 @@
 let itesco_loaded = false;
 let last_href = null;
 
-window.shops = window.shops || {};
-window.shops["itesco"] = {
+const iTesco = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
       if (window.location.href !== last_href) {
@@ -45,8 +44,9 @@ window.shops["itesco"] = {
     }
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".price-per-sellable-unit .value");
+    const imageUrl = document.querySelector(".product-image").src;
     // TODO: parse originalPrice with regex from .promo-content-small .offer-text
-    return { itemId, title, currentPrice };
+    return { itemId, title, currentPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -81,3 +81,7 @@ window.shops["itesco"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["itesco"] = iTesco;
+window.shops["itesco_sk"] = iTesco;

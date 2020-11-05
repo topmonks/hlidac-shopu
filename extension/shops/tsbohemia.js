@@ -1,7 +1,6 @@
-/* global $ */
+/* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["tsbohemia"] = {
+const tsbohemia = {
   onDetailPage(cb) {
     cb();
   },
@@ -16,9 +15,12 @@ window.shops["tsbohemia"] = {
       .textContent.split("Kč")[0]
       .replace(",-", "")
       .replace(/\s/g, "");
-    const originalPrice = cleanPrice(".prc.endprc .price");
+    const originalPrice = cleanPrice(
+      ".prc.endprc .price, .prc.endprc .line_through"
+    );
+    const imageUrl = document.querySelector("#sti_bigimg img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -33,3 +35,6 @@ window.shops["tsbohemia"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["tsbohemia"] = tsbohemia;

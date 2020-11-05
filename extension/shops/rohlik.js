@@ -4,8 +4,7 @@
 let rohlik_loaded = false;
 let rohlik_last_href = null;
 
-window.shops = window.shops || {};
-window.shops["rohlik"] = {
+const rohlik = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
       if (window.location.href !== rohlik_last_href) {
@@ -38,8 +37,9 @@ window.shops["rohlik"] = {
        #productDetail .currentPrice`
     );
     const originalPrice = cleanPrice("#productDetail del");
+    const imageUrl = document.querySelector("[data-gtm-item=product-image] img").src;
 
-    return { itemId, title: t, currentPrice, originalPrice };
+    return { itemId, title: t, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -51,3 +51,6 @@ window.shops["rohlik"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["rohlik"] = rohlik;

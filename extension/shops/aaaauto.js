@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["aaaauto"] = {
+const aaaAuto = {
   onDetailPage(cb) {
     cb();
   },
@@ -10,6 +9,7 @@ window.shops["aaaauto"] = {
     const url = new URL(location.href);
     const itemId = url.searchParams.get("id");
     if (!itemId) return false;
+    const imageUrl = document.querySelector("meta[name='og:image']").content;
 
     // eng variant
     const engTabCard = document.querySelector("#tab-card");
@@ -17,25 +17,37 @@ window.shops["aaaauto"] = {
       const title = engTabCard.querySelector("h1").textContent;
       const priceRows = engTabCard.querySelectorAll("#priceTable .priceRow");
       let currentPrice;
-      if (priceRows.length == 2) {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .carPrice span"));
+      if (priceRows.length === 2) {
+        currentPrice = cleanPrice(
+          engTabCard.querySelector("#priceTable .carPrice span")
+        );
       } else {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .priceRow:last-child span"));
+        currentPrice = cleanPrice(
+          engTabCard.querySelector("#priceTable .priceRow:last-child span")
+        );
       }
 
       const originalPrice = null;
-      return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+      return { itemId, title, currentPrice, originalPrice, imageUrl };
     }
     const title = document.querySelector("#carCardHead h1").innerText;
-    const price = document.querySelector(".sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate");
-    const originalPrice = cleanPrice(price.firstChild);
-    const currentPrice = cleanPrice(price.lastChild);
+    const price = document.querySelector(`
+      .sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate,
+      .sidebar ul.infoBoxNav .fixedBarScrollHide span.notranslate,
+      .sidebar ul.infoBoxNav .infoBoxNavTitle span.notranslate
+    `);
+    const originalPrice =
+      price && price.hasChildNodes() ? cleanPrice(price.firstChild) : null;
+    const currentPrice =
+      price && price.hasChildNodes()
+        ? cleanPrice(price.lastChild)
+        : cleanPrice(price);
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
-    let elem = document.querySelector(".sidebar .infoBox .btnSubText");
+    let elem = document.querySelector(".sidebar .infoBox .bonusText");
     if (elem) {
       const markup = chartMarkup();
       elem.insertAdjacentHTML("afterend", markup);
@@ -53,3 +65,7 @@ window.shops["aaaauto"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["aaaauto"] = aaaAuto;
+window.shops["aaaauto_sk"] = aaaAuto;

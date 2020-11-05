@@ -8,8 +8,7 @@ function matchGroup(str, regex, groupN) {
   return match[groupN];
 }
 
-window.shops = window.shops || {};
-window.shops["alza"] = window.shops["alza_sk"] = {
+const alza = {
   onDetailPage(cb) {
     cb();
   },
@@ -22,7 +21,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
       .querySelector(".shoppingListsAdd")
       .getAttribute("data-id");
     const title = document
-      .querySelector('h1[itemprop="name"]')
+      .querySelector("h1[itemprop=\"name\"]")
       .innerText.trim();
     const currentPrice = cleanPrice(
       `#prices .price_withVat,
@@ -37,7 +36,9 @@ window.shops["alza"] = window.shops["alza_sk"] = {
        .pricecatalog1 .c2`
     );
 
-    return { itemId, title, currentPrice, originalPrice };
+    const imageUrl = document.querySelector("#imgMain").dataset["src"];
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   getDailySlasherInfo() {
@@ -121,3 +122,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
     throw new Error("Element to add chart not found");
   }
 };
+
+window.shops = window.shops || {};
+window.shops["alza"] = alza;
+window.shops["alza_sk"] = alza;

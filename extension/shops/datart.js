@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["datart"] = {
+const datart = {
   onDetailPage(cb) {
     cb();
   },
@@ -16,8 +15,9 @@ window.shops["datart"] = {
     const originalPrice = cleanPrice(
       ".product-detail-strike-price-box .original del"
     );
+    const imageUrl = document.querySelector("#detail-image-0 img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -55,3 +55,7 @@ window.shops["datart"] = {
     throw new Error("Element to add chart not found");
   }
 };
+
+window.shops = window.shops || {};
+window.shops["datart"] = datart;
+window.shops["datart_sk"] = datart;

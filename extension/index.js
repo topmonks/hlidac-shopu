@@ -23,6 +23,17 @@ const toCssString = obj =>
     .map(([key, value]) => `${key}:${value};`)
     .join("");
 
+const saleTitles = new Map([
+  [
+    "eu-minimum",
+    "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
+  ],
+  [
+    "common-price",
+    "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
+  ]
+]);
+
 function chartWrapper(styles) {
   const basicStyles = {
     "background-color": "#fff",
@@ -155,14 +166,11 @@ function chartWrapper(styles) {
   `;
 }
 
-function fetchData(url, itemId, title, originalPrice, currentPrice) {
-  const searchString = new URLSearchParams({
-    url,
-    itemId,
-    title,
-    originalPrice,
-    currentPrice
-  });
+function fetchData(url, info) {
+  const searchString = new URLSearchParams(
+    Object.entries(info).filter(([, val]) => Boolean(val))
+  );
+  searchString.append("url", url);
   return fetch(`https://api2.hlidacshopu.cz/detail?${searchString}`).then(
     response => {
       if (response.status === 404) {
@@ -174,16 +182,6 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
       return response.json();
     }
   );
-}
-
-function* daysBetween(start, end) {
-  const startDay = new Date(start.getTime());
-  startDay.setHours(0, 0, 0, 0);
-  const endDay = new Date(end.getTime());
-  endDay.setHours(0, 0, 0, 0);
-  for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
-    yield new Date(d.getTime());
-  }
 }
 
 /**
@@ -198,43 +196,45 @@ function getShopName(href) {
   const url = new URL(href);
   const domainParts = url.host.split(".");
   const domain = domainParts.pop();
-  let shopName = domainParts.pop();
-  if (domain !== "cz") {
-    return `${shopName}_${domain}`;
-  }
-  return shopName;
+  const shopName = domainParts.pop();
+  return domain !== "cz" ? `${shopName}_${domain}` : shopName;
 }
 
-function getCurrency(shopName) {
-  if (shopName.endsWith("sk")) {
-    return "€";
-  }
-  return "Kč";
-}
-
+const getCurrency = shopName => (shopName.endsWith("_sk") ? "€" : "Kč");
 const formatPercents = x => `${Math.round(x * 100).toLocaleString("cs")} %`;
-const createDataPoint = ({ originalPrice, currentPrice }) => ({
-  c: currentPrice,
-  d: new Date().toISOString().substring(0, 10),
-  o: originalPrice || ""
-});
 
-function discount(previous, actual) {
-  if (!previous || isNaN(previous)) return null;
-  return (previous - actual) / previous;
-}
-const realDiscount = ({ realDiscount, minPrice, commonPrice }, currentPrice) =>
-  discount(minPrice ?? commonPrice, currentPrice) ?? realDiscount;
-
-async function main() {
-  console.group("Hlídačshopů.cz");
-  const shopName = getShopName(location.href);
-  const shop = window.shops[shopName];
-  if (!shop) {
-    console.log("No shop found");
-    return;
+function renderDiscount(res, info) {
+  const discountEl = document.getElementById("hlidacShopu2-discount");
+  const parentElement = discountEl.parentElement;
+  const abbr = parentElement.querySelector("abbr");
+  const discount = res.metadata.realDiscount;
+  abbr.title = saleTitles.get(res.metadata.type);
+  if (discount != null && discount < 0) {
+    parentElement.classList.add("hs-real-discount--negative");
+    abbr.textContent = "Reálně zdraženo";
+    discountEl.innerText = "";
+  } else if (discount != null) {
+    discountEl.innerText = formatPercents(discount);
+  } else {
+    discountEl.parentElement.classList.add("hs-real-discount--no-data");
   }
-  shop.onDetailPage(async repaint => {
+}
+
+function renderHTML(repaint, shop) {
+  if (repaint) {
+    // remove canvas to delete and clear previous chart
+    document.getElementById("hlidacShopu2-chart").remove();
+    const container = document.getElementById("hlidacShopu2-chart-container");
+    const newCanvas = document.createElement("canvas");
+    newCanvas.id = "hlidacShopu2-chart";
+    container.appendChild(newCanvas);
+  } else {
+    shop.insertChartElement(styles => chartWrapper(styles));
+  }
+}
+
+function handleDetail(shop, shopName) {
+  return async repaint => {
     try {
       const info = await Promise.resolve(shop.getInfo());
       if (!info) {
@@ -247,78 +247,24 @@ async function main() {
         return false;
       }
       const url = info.url || location.href;
-      const res = await fetchData(
-        url,
-        info.itemId,
-        info.title,
-        info.originalPrice,
-        info.currentPrice
-      );
-      if (res.metadata.error) {
-        console.error("Error fetching data: ", res.metadata.error);
+      const res = await fetchData(url, info);
+      if (res.error || (res.metadata && res.metadata.error)) {
+        console.error("Error fetching data: ", res.error || res.metadata.error);
         return false;
       }
-      if (res.data.length === 0) {
+      if (!res.data || res.data.length === 0) {
         console.error("No data found:", res);
         return false;
       }
+
       // Inject our HTML code
-      if (repaint) {
-        // remove canvas to delete and clear previous chart
-        document.getElementById("hlidacShopu2-chart").remove();
-        const container = document.getElementById(
-          "hlidacShopu2-chart-container"
-        );
-        const newCanvas = document.createElement("canvas");
-        newCanvas.id = "hlidacShopu2-chart";
-        container.appendChild(newCanvas);
-      } else {
-        shop.insertChartElement(styles => chartWrapper(styles));
-      }
-
-      const titles = new Map([
-        [
-          "eu-minimum",
-          "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
-        ],
-        [
-          "common-price",
-          "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
-        ]
-      ]);
-      const discountEl = document.getElementById("hlidacShopu2-discount");
-      const parentElement = discountEl.parentElement;
-      const abbr = parentElement.querySelector("abbr");
-      const discount = realDiscount(res.metadata, parseFloat(info.currentPrice));
-      abbr.title = titles.get(res.metadata.type);
-      if (discount != null && discount < 0) {
-        parentElement.classList.add("hs-real-discount--negative");
-        abbr.textContent = "Reálně zdraženo";
-        discountEl.innerText = "";
-      } else if (discount != null) {
-        discountEl.innerText = formatPercents(discount);
-      } else {
-        discountEl.parentElement.classList.add("hs-real-discount--no-data");
-      }
-
-      if (info.currentPrice) {
-        res.data.currentPrice.push({
-          x: new Date().toISOString(),
-          y: parseFloat(info.currentPrice)
-        });
-      }
-      if (info.originalPrice) {
-        res.data.originalPrice.push({
-          x: new Date().toISOString(),
-          y: parseFloat(info.originalPrice)
-        });
-      }
+      renderHTML(repaint, shop);
+      renderDiscount(res, info);
 
       const dataset = Object.assign({}, res.data, {
         currency: getCurrency(shopName)
       });
       const plotElem = document.getElementById("hlidacShopu2-chart");
-
       console.log(`Chart loaded for ItemID: ${info.itemId}`);
       console.log({ info, metadata: res.metadata, dataset });
       plot(plotElem, dataset);
@@ -336,7 +282,19 @@ async function main() {
     } finally {
       console.groupEnd();
     }
-  });
+  };
+}
+
+async function main() {
+  console.group("Hlídačshopů.cz");
+  const shopName = getShopName(location.href);
+  const shop = window.shops[shopName];
+  if (!shop) {
+    console.log("No shop found");
+    console.groupEnd();
+    return;
+  }
+  shop.onDetailPage(handleDetail(shop, shopName));
 }
 
 main().catch(err => console.error(err));

@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["sleky"] = {
+const sleky = {
   onDetailPage(cb) {
     cb();
   },
@@ -30,8 +29,9 @@ window.shops["sleky"] = {
     const itemId = form.dataset.productId;
     const currentPrice = cleanPrice(form.querySelector("strong.fullprice"));
     const originalPrice = cleanPrice(form.querySelector("dl>dt+dd"));
+    const imageUrl = document.querySelector("img[itemprop=image]").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -45,3 +45,5 @@ window.shops["sleky"] = {
   }
 };
 
+window.shops = window.shops || {};
+window.shops["sleky"] = sleky;

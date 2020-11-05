@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["pilulka"] = {
+const pilulka = {
   onDetailPage(cb) {
     cb();
   },
@@ -11,9 +10,13 @@ window.shops["pilulka"] = {
     const priceContainer = document.querySelector("div.js-product-prev");
     const itemId = priceContainer.attributes["data-product-id"].textContent;
     const currentPrice = cleanPrice(`.js-product-price-${itemId}`);
-    const originalPrice = cleanPrice(document.querySelector(`.js-product-price-${itemId}`).nextElementSibling);
+    const originalPrice = cleanPrice(
+      document.querySelector(`.js-product-price-${itemId}`).nextElementSibling
+    );
+    const imageUrl = document.querySelector(".product-detail__images--img")
+      .dataset["src"];
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -26,3 +29,5 @@ window.shops["pilulka"] = {
   }
 };
 
+window.shops = window.shops || {};
+window.shops["pilulka"] = pilulka;

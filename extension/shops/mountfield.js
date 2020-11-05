@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["mountfield"] = {
+const mountfield = {
   onDetailPage(cb) {
     cb();
   },
@@ -16,8 +15,9 @@ window.shops["mountfield"] = {
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".actionPrice.val");
     const originalPrice = cleanPrice(".retailPrice.val");
+    const imageUrl = document.querySelector(".mainImage img").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -33,3 +33,7 @@ window.shops["mountfield"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["mountfield"] = mountfield;
+window.shops["mountfield_sk"] = mountfield;

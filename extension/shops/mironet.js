@@ -1,7 +1,6 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["mironet"] = {
+const mironet = {
   onDetailPage(cb) {
     cb();
   },
@@ -29,3 +28,6 @@ window.shops["mironet"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["mironet"] = mironet;

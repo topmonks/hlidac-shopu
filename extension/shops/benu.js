@@ -1,26 +1,30 @@
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["benu"] = {
+const benu = {
   onDetailPage(cb) {
     cb();
   },
 
   getInfo() {
-    const title = document.querySelector(".product-title-rating .title").innerText;
-    const itemId = document.querySelector("table.info-table tr:nth-child(2) td").innerText;
+    const title = document.querySelector(".product-title-rating .title")
+      .innerText;
     const currentPrice = cleanPrice(".buy strong.buy-box__big-price");
     const originalPrice = cleanPrice(".buy .buy-box__price-head del");
+    const imageUrl = document.querySelector("meta[property='og:image']")
+      .content;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-desc");
+    const elem = document.querySelector(".buy-box__price-foot");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("beforeend", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["benu"] = benu;
