@@ -101,19 +101,19 @@ jobs:
             mkdir -p results
             yarn lint:extension
             yarn lint:extension -o json > results/lint.json
+      - store_artifacts:
+          path: ./results
       - run:
           name: Build web extensions
           command: |
             yarn build:chrome
             yarn build:firefox
+      - store_artifacts:
+          path: ./dist
       - browser-tools/install-chrome
       - run:
           name: Make screenshots
           command: node ./scripts/screenshotter.js
-      - store_artifacts:
-          path: ./results
-      - store_artifacts:
-          path: ./dist
       - store_artifacts:
           path: ./screenshots
       - slack/notify:
