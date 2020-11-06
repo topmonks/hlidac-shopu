@@ -24,6 +24,18 @@ if (tableRootPercent) {
       render(buttonsTemplatePercent(data), buttonsSection);
       document.getElementById("show-more").addEventListener("click", showMore);
       document.getElementById("subscribe").addEventListener("click", subscribe);
+
+      document.querySelector('#table-root-percent').
+        addEventListener('click', e => {
+          let t = e.target;
+          if (t.href) {
+            console.log('in href');
+            console.log(`href=${t.href}`);
+            renderResultsModal(t.href);
+          }
+          e.preventDefault(); // Don't follow the links
+      });
+
     } catch (ex) {
       console.error(ex);
     }
@@ -244,7 +256,6 @@ function shopTemplatePercent({
         <td>${formatMoney(Math.round(currentPrice))}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${productImageTemplate(itemImage)}</td>
         <td>${logoTemplate(shop)}</td>
       </tr>
     `;
@@ -258,7 +269,6 @@ function shopTemplatePercent({
         <td>${formatMoney(Math.round(currentPrice))}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${productImageTemplate(itemImage)}</td>
         <td>${logoTemplate(shop)}</td>
       </tr>
     `;
@@ -289,7 +299,6 @@ function shopTemplateKc({
       <td>${formatPercents(salePerc / 100)}</td>
       <td style="white-space: nowrap;">${formatedDate}</td>
       <td>${productLinkTemplate(itemName, itemUrl)}</td>
-      <td>${productImageTemplate(itemImage)}</td>
       <td>${logoTemplate(shop)}</td>
     </tr>
   `;
@@ -321,7 +330,7 @@ function logoTemplate(shop) {
 }
 
 function productLinkTemplate(itemName, itemUrl) {
-  return html` <a href="${itemUrl}" rel="noopener" target="_blank">${itemName}</a> `;
+  return html` <a href="${itemUrl}" rel="noopener" target="_blank">${itemName}</a>`;
 }
 
 function productImageTemplate(itemImage) {
@@ -329,3 +338,24 @@ function productImageTemplate(itemImage) {
     <img src="${itemImage}" style="width:40px;height:40px;" alt="Not Found" />
   `;
 }
+
+async function renderResultsModal(detailUrl) {
+  const modalRenderRoot = document.getElementById(
+    "hlidac-shopu-modal__placeholder"
+  );
+  render(resultsEmbedd(detailUrl), modalRenderRoot);
+  showResultsModal();
+}
+
+function resultsEmbedd(url) {
+  const parameters = new URLSearchParams({ url }).toString();
+  return html`<iframe class="hs-result__embedd" src="/app/?${parameters}"></iframe>`;
+}
+
+function showResultsModal() {
+  const modal = document.getElementById("hlidac-shopu-modal");
+  modal.classList.remove("modal--hidden");
+  document.body.classList.add("no-scroll");
+}
+
+
