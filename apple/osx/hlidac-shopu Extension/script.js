@@ -19451,8 +19451,7 @@ function plot(canvas, prices) {
 }
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["aaaauto"] = {
+const aaaAuto = {
   onDetailPage(cb) {
     cb();
   },
@@ -19461,6 +19460,7 @@ window.shops["aaaauto"] = {
     const url = new URL(location.href);
     const itemId = url.searchParams.get("id");
     if (!itemId) return false;
+    const imageUrl = document.querySelector("meta[name='og:image']").content;
 
     // eng variant
     const engTabCard = document.querySelector("#tab-card");
@@ -19468,25 +19468,37 @@ window.shops["aaaauto"] = {
       const title = engTabCard.querySelector("h1").textContent;
       const priceRows = engTabCard.querySelectorAll("#priceTable .priceRow");
       let currentPrice;
-      if (priceRows.length == 2) {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .carPrice span"));
+      if (priceRows.length === 2) {
+        currentPrice = cleanPrice(
+          engTabCard.querySelector("#priceTable .carPrice span")
+        );
       } else {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .priceRow:last-child span"));
+        currentPrice = cleanPrice(
+          engTabCard.querySelector("#priceTable .priceRow:last-child span")
+        );
       }
 
       const originalPrice = null;
-      return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+      return { itemId, title, currentPrice, originalPrice, imageUrl };
     }
     const title = document.querySelector("#carCardHead h1").innerText;
-    const price = document.querySelector(".sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate");
-    const originalPrice = cleanPrice(price.firstChild);
-    const currentPrice = cleanPrice(price.lastChild);
+    const price = document.querySelector(`
+      .sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate,
+      .sidebar ul.infoBoxNav .fixedBarScrollHide span.notranslate,
+      .sidebar ul.infoBoxNav .infoBoxNavTitle span.notranslate
+    `);
+    const originalPrice =
+      price && price.hasChildNodes() ? cleanPrice(price.firstChild) : null;
+    const currentPrice =
+      price && price.hasChildNodes()
+        ? cleanPrice(price.lastChild)
+        : cleanPrice(price);
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
-    let elem = document.querySelector(".sidebar .infoBox .btnSubText");
+    let elem = document.querySelector(".sidebar .infoBox .bonusText");
     if (elem) {
       const markup = chartMarkup();
       elem.insertAdjacentHTML("afterend", markup);
@@ -19504,6 +19516,10 @@ window.shops["aaaauto"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["aaaauto"] = aaaAuto;
+window.shops["aaaauto_sk"] = aaaAuto;
 /* global cleanPrice */
 
 function matchGroup(str, regex, groupN) {
@@ -19514,8 +19530,7 @@ function matchGroup(str, regex, groupN) {
   return match[groupN];
 }
 
-window.shops = window.shops || {};
-window.shops["alza"] = window.shops["alza_sk"] = {
+const alza = {
   onDetailPage(cb) {
     cb();
   },
@@ -19528,7 +19543,7 @@ window.shops["alza"] = window.shops["alza_sk"] = {
       .querySelector(".shoppingListsAdd")
       .getAttribute("data-id");
     const title = document
-      .querySelector('h1[itemprop="name"]')
+      .querySelector("h1[itemprop=\"name\"]")
       .innerText.trim();
     const currentPrice = cleanPrice(
       `#prices .price_withVat,
@@ -19543,7 +19558,9 @@ window.shops["alza"] = window.shops["alza_sk"] = {
        .pricecatalog1 .c2`
     );
 
-    return { itemId, title, currentPrice, originalPrice };
+    const imageUrl = document.querySelector("#imgMain").dataset["src"];
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   getDailySlasherInfo() {
@@ -19627,36 +19644,46 @@ window.shops["alza"] = window.shops["alza_sk"] = {
     throw new Error("Element to add chart not found");
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["benu"] = {
+window.shops["alza"] = alza;
+window.shops["alza_sk"] = alza;
+/* global cleanPrice */
+
+const benu = {
   onDetailPage(cb) {
     cb();
   },
 
   getInfo() {
-    const title = document.querySelector(".product-title-rating .title").innerText;
-    const itemId = document.querySelector("table.info-table tr:nth-child(2) td").innerText;
+    const richSnippet = JSON.parse(document.querySelector("#snippet-productRichSnippet-richSnippet").innerText);
+
+    const title = richSnippet.name || document.querySelector(".product-title-rating .title")
+      .innerText;
+    const itemId = richSnippet.identifier;
     const currentPrice = cleanPrice(".buy strong.buy-box__big-price");
     const originalPrice = cleanPrice(".buy .buy-box__price-head del");
+    const imageUrl = document.querySelector("meta[property='og:image']")
+      .content;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { title, itemId, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-desc");
+    const elem = document.querySelector(".buy-box");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
-    elem.insertAdjacentHTML("beforeend", markup);
+    elem.insertAdjacentHTML("afterend", markup);
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["czc"] = {
+window.shops["benu"] = benu;
+/* global cleanPrice */
+
+const czc = {
   onDetailPage(cb) {
     cb();
   },
@@ -19681,10 +19708,12 @@ window.shops["czc"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["datart"] = {
+window.shops["czc"] = czc;
+/* global cleanPrice */
+
+const datart = {
   onDetailPage(cb) {
     cb();
   },
@@ -19699,8 +19728,9 @@ window.shops["datart"] = {
     const originalPrice = cleanPrice(
       ".product-detail-strike-price-box .original del"
     );
+    const imageUrl = document.querySelector("#detail-image-0 img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -19738,14 +19768,17 @@ window.shops["datart"] = {
     throw new Error("Element to add chart not found");
   }
 };
+
+window.shops = window.shops || {};
+window.shops["datart"] = datart;
+window.shops["datart_sk"] = datart;
 /* global cleanPrice*/
 
 /* exported itesco_loaded */
 let itesco_loaded = false;
 let last_href = null;
 
-window.shops = window.shops || {};
-window.shops["itesco"] = {
+const iTesco = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
       if (window.location.href !== last_href) {
@@ -19785,8 +19818,9 @@ window.shops["itesco"] = {
     }
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".price-per-sellable-unit .value");
+    const imageUrl = document.querySelector(".product-image").src;
     // TODO: parse originalPrice with regex from .promo-content-small .offer-text
-    return { itemId, title, currentPrice };
+    return { itemId, title, currentPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -19821,10 +19855,13 @@ window.shops["itesco"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["kasa"] = {
+window.shops["itesco"] = iTesco;
+window.shops["itesco_sk"] = iTesco;
+/* global cleanPrice */
+
+let kasa = {
   onDetailPage(cb) {
     cb();
   },
@@ -19837,8 +19874,9 @@ window.shops["kasa"] = {
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#real_price");
     const originalPrice = cleanPrice(".before-price .text-strike");
+    const imageUrl = document.querySelector(".large-img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -19850,13 +19888,15 @@ window.shops["kasa"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["kasa"] = kasa;
 /* global cleanPrice */
 
 let kosik_loaded = false;
 let kosik_last_href = null;
 
-window.shops = window.shops || {};
-window.shops["kosik"] = {
+const kosik = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
       if (window.location.href !== kosik_last_href) {
@@ -19887,11 +19927,14 @@ window.shops["kosik"] = {
       const originalPrice = cleanPrice(
         ".price__old-price.price__old-price--exists"
       );
+      const imageUrl = document.querySelector(".product-detail__image").src;
+
       return {
         itemId: data.id,
         title: data.itemName,
         currentPrice: data.stepPrice,
-        originalPrice
+        originalPrice,
+        imageUrl
       };
     } catch (e) {
       console.error("Could not find product info", e);
@@ -19899,7 +19942,7 @@ window.shops["kosik"] = {
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-detail__cart");
+    const elem = document.querySelector(".product-detail__cart, .product-detail__cart-info");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -19907,10 +19950,12 @@ window.shops["kosik"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["lekarna"] = {
+window.shops["kosik"] = kosik;
+/* global cleanPrice */
+
+const lekarna = {
   onDetailPage(cb) {
     cb();
   },
@@ -19918,6 +19963,7 @@ window.shops["lekarna"] = {
   getInfo() {
     const elem = document.querySelector(".detail-top");
     if (!elem) return;
+
     const itemId = document
       .querySelector(".product__code span")
       .textContent.trim();
@@ -19926,8 +19972,9 @@ window.shops["lekarna"] = {
       .querySelector("[itemprop=price]")
       .getAttribute("content");
     const originalPrice = cleanPrice(".price__old");
+    const imageUrl = document.querySelector(".product__img img").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -19939,10 +19986,11 @@ window.shops["lekarna"] = {
     return elem;
   }
 };
+window.shops = window.shops || {};
+window.shops["lekarna"] = lekarna;
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["mall"] = window.shops["mall_sk"] = {
+const mall = {
   onDetailPage(cb) {
     cb();
   },
@@ -19952,14 +20000,16 @@ window.shops["mall"] = window.shops["mall_sk"] = {
     if (!elem) return;
 
     const itemId = document
-      .querySelector('span[data-sel="catalog-number"]')
+      .querySelector("span[data-sel=\"catalog-number\"]")
       .innerText.trim();
     const title = document
-      .querySelector('h1[itemprop="name"]')
+      .querySelector("h1[itemprop=\"name\"]")
       .innerText.trim();
     const currentPrice = cleanPrice("[itemprop=price]");
     const originalPrice = cleanPrice(".old-new-price .rrp-price, .old-price > del:nth-child(1)");
-    return { itemId, title, currentPrice, originalPrice };
+    const imageUrl = document.querySelector(".gallery-magnifier__normal").src;
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -19971,10 +20021,13 @@ window.shops["mall"] = window.shops["mall_sk"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["mironet"] = {
+window.shops["mall"] = mall;
+window.shops["mall_sk"] = mall;
+/* global cleanPrice */
+
+const mironet = {
   onDetailPage(cb) {
     cb();
   },
@@ -19986,10 +20039,11 @@ window.shops["mironet"] = {
       ".product_kosik_info input[name=Code]"
     ).value;
     const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".product_cena_box .product_dph span");
-    const originalPrice = cleanPrice(".fakcbox23 .product_dph");
+    const currentPrice = cleanPrice(".product_cena_box .product_dph");
+    const originalPrice = cleanPrice(".fakcbox23 .product_dph span");
+    const imageUrl = document.getElementById("DetailImg").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20001,10 +20055,12 @@ window.shops["mironet"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["mountfield"] = {
+window.shops["mironet"] = mironet;
+/* global cleanPrice */
+
+const mountfield = {
   onDetailPage(cb) {
     cb();
   },
@@ -20019,8 +20075,9 @@ window.shops["mountfield"] = {
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".actionPrice.val");
     const originalPrice = cleanPrice(".retailPrice.val");
+    const imageUrl = document.querySelector(".mainImage img").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20036,6 +20093,10 @@ window.shops["mountfield"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["mountfield"] = mountfield;
+window.shops["mountfield_sk"] = mountfield;
 /* global cleanPrice */
 
 let notinoLastHref = null;
@@ -20095,7 +20156,8 @@ const notino = {
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#pd-price");
-    const originalPrice = cleanPrice("[aria-describedby=tippy-tooltip-1]");
+    const originalPrice = cleanPrice("[class^='styled__DiscountWrapper'] span[content]");
+    const imageUrl = document.querySelector("[class^='styled__ImgWrapper'] img").src;
     let itemId = (() => {
       const match = window.location.pathname.match(/\/p-(\d+)\//);
       return match ? match[1] : null;
@@ -20106,7 +20168,7 @@ const notino = {
       this.masterId = itemId;
     }
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20120,10 +20182,43 @@ const notino = {
 
 window.shops = window.shops || {};
 window.shops["notino"] = notino;
+window.shops["notino_sk"] = notino;
 /* global cleanPrice */
 
+let okay = {
+  onDetailPage(cb) {
+    cb();
+  },
+
+  getInfo() {
+    const elem = document.querySelector("#page-product-detail");
+    if (!elem) return;
+    const data = JSON.parse(document.querySelector(".js-gtm-product").dataset.product)
+    const itemId = data.id;
+    const title = data.name;
+    const currentPrice = data.priceWithTax;
+    const originalPrice = cleanPrice("#product_price_recomended");
+    const imageUrl = document.querySelector(".js-zoomingImageSmall").src;
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
+  },
+
+  insertChartElement(chartMarkup) {
+    const elem = document.querySelector("#potrebujeteporadit");
+    if (!elem) throw new Error("Element to add chart not found");
+
+    const markup = chartMarkup();
+    elem.insertAdjacentHTML("beforebegin", markup);
+    return elem;
+  }
+};
+
 window.shops = window.shops || {};
-window.shops["pilulka"] = {
+window.shops["okay"] = okay;
+window.shops["okay_sk"] = okay;
+/* global cleanPrice */
+
+const pilulka = {
   onDetailPage(cb) {
     cb();
   },
@@ -20133,9 +20228,13 @@ window.shops["pilulka"] = {
     const priceContainer = document.querySelector("div.js-product-prev");
     const itemId = priceContainer.attributes["data-product-id"].textContent;
     const currentPrice = cleanPrice(`.js-product-price-${itemId}`);
-    const originalPrice = cleanPrice(document.querySelector(`.js-product-price-${itemId}`).nextElementSibling);
+    const originalPrice = cleanPrice(
+      document.querySelector(`.js-product-price-${itemId}`).nextElementSibling
+    );
+    const imageUrl = document.querySelector(".product-detail__images--img")
+      .dataset["src"];
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20148,10 +20247,12 @@ window.shops["pilulka"] = {
   }
 };
 
+window.shops = window.shops || {};
+window.shops["pilulka"] = pilulka;
+window.shops["pilulka_sk"] = pilulka;
 /* global cleanPrice */
 
-window.shops = window.shops || {};
-window.shops["prozdravi"] = {
+const prozdravi = {
   onDetailPage(cb) {
     cb();
   },
@@ -20176,16 +20277,27 @@ window.shops["prozdravi"] = {
 
   async getInfo() {
     const title = document.querySelector("h1.product-header__header").innerText;
-    const priceContainer = await this.waitForElement(".product-prices-block__inner");
-    const itemId = priceContainer.querySelector("input[name='product-code']").value;
-    const originalPrice = cleanPrice(priceContainer.querySelector("span.product-prices-block__backup-price"));
-    const currentPrice = cleanPrice(priceContainer.querySelector(".product-prices-block__final-price"));
+    const priceContainer = await this.waitForElement(
+      ".product-prices-block__inner"
+    );
+    const itemId = priceContainer.querySelector("input[name='product-code']")
+      .value;
+    const originalPrice = cleanPrice(
+      priceContainer.querySelector("span.product-prices-block__backup-price")
+    );
+    const currentPrice = cleanPrice(
+      priceContainer.querySelector(".product-prices-block__final-price")
+    );
+    const imageUrl = document.querySelector(".product-image-gallery__image")
+      .src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
-    const elem = document.querySelector(".product-prices-block.product-prices-block--single-product");
+    const elem = document.querySelector(
+      ".product-prices-block.product-prices-block--single-product"
+    );
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = chartMarkup();
@@ -20194,14 +20306,15 @@ window.shops["prozdravi"] = {
   }
 };
 
+window.shops = window.shops || {};
+window.shops["prozdravi"] = prozdravi;
 /* global cleanPrice */
 
 /* exported itesco_loaded */
 let rohlik_loaded = false;
 let rohlik_last_href = null;
 
-window.shops = window.shops || {};
-window.shops["rohlik"] = {
+const rohlik = {
   onDetailPage(cb) {
     const observer = new MutationObserver(function() {
       if (window.location.href !== rohlik_last_href) {
@@ -20234,8 +20347,9 @@ window.shops["rohlik"] = {
        #productDetail .currentPrice`
     );
     const originalPrice = cleanPrice("#productDetail del");
+    const imageUrl = document.querySelector("[data-gtm-item=product-image] img").src;
 
-    return { itemId, title: t, currentPrice, originalPrice };
+    return { itemId, title: t, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20247,10 +20361,12 @@ window.shops["rohlik"] = {
     return elem;
   }
 };
-/* global cleanPrice */
 
 window.shops = window.shops || {};
-window.shops["sleky"] = {
+window.shops["rohlik"] = rohlik;
+/* global cleanPrice */
+
+const sleky = {
   onDetailPage(cb) {
     cb();
   },
@@ -20279,8 +20395,9 @@ window.shops["sleky"] = {
     const itemId = form.dataset.productId;
     const currentPrice = cleanPrice(form.querySelector("strong.fullprice"));
     const originalPrice = cleanPrice(form.querySelector("dl>dt+dd"));
+    const imageUrl = document.querySelector("img[itemprop=image]").src;
 
-    return { itemId, title, currentPrice, originalPrice, dataType: "dynamo" };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20294,10 +20411,11 @@ window.shops["sleky"] = {
   }
 };
 
-/* global $ */
-
 window.shops = window.shops || {};
-window.shops["tsbohemia"] = {
+window.shops["sleky"] = sleky;
+/* global cleanPrice */
+
+const tsbohemia = {
   onDetailPage(cb) {
     cb();
   },
@@ -20312,9 +20430,12 @@ window.shops["tsbohemia"] = {
       .textContent.split("Kč")[0]
       .replace(",-", "")
       .replace(/\s/g, "");
-    const originalPrice = cleanPrice(".prc.endprc .price");
+    const originalPrice = cleanPrice(
+      ".prc.endprc .price, .prc.endprc .line_through"
+    );
+    const imageUrl = document.querySelector("#sti_bigimg img").src;
 
-    return { itemId, title, currentPrice, originalPrice };
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   },
 
   insertChartElement(chartMarkup) {
@@ -20329,6 +20450,9 @@ window.shops["tsbohemia"] = {
     return elem;
   }
 };
+
+window.shops = window.shops || {};
+window.shops["tsbohemia"] = tsbohemia;
 /* global plot, GRAPH_ICON */
 
 /* exported cleanPrice */
@@ -20353,6 +20477,17 @@ const toCssString = obj =>
   Object.entries(obj)
     .map(([key, value]) => `${key}:${value};`)
     .join("");
+
+const saleTitles = new Map([
+  [
+    "eu-minimum",
+    "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
+  ],
+  [
+    "common-price",
+    "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
+  ]
+]);
 
 function chartWrapper(styles) {
   const basicStyles = {
@@ -20486,14 +20621,11 @@ function chartWrapper(styles) {
   `;
 }
 
-function fetchData(url, itemId, title, originalPrice, currentPrice) {
-  const searchString = new URLSearchParams({
-    url,
-    itemId,
-    title,
-    originalPrice,
-    currentPrice
-  });
+function fetchData(url, info) {
+  const searchString = new URLSearchParams(
+    Object.entries(info).filter(([, val]) => Boolean(val))
+  );
+  searchString.append("url", url);
   return fetch(`https://api2.hlidacshopu.cz/detail?${searchString}`).then(
     response => {
       if (response.status === 404) {
@@ -20505,16 +20637,6 @@ function fetchData(url, itemId, title, originalPrice, currentPrice) {
       return response.json();
     }
   );
-}
-
-function* daysBetween(start, end) {
-  const startDay = new Date(start.getTime());
-  startDay.setHours(0, 0, 0, 0);
-  const endDay = new Date(end.getTime());
-  endDay.setHours(0, 0, 0, 0);
-  for (const d = startDay; d <= endDay; d.setDate(d.getDate() + 1)) {
-    yield new Date(d.getTime());
-  }
 }
 
 /**
@@ -20529,44 +20651,45 @@ function getShopName(href) {
   const url = new URL(href);
   const domainParts = url.host.split(".");
   const domain = domainParts.pop();
-  let shopName = domainParts.pop();
-  if (domain !== "cz") {
-    return `${shopName}_${domain}`;
-  }
-  return shopName;
+  const shopName = domainParts.pop();
+  return domain !== "cz" ? `${shopName}_${domain}` : shopName;
 }
 
-function getCurrency(shopName) {
-  if (shopName.endsWith("sk")) {
-    return "€";
-  }
-  return "Kč";
-}
-
+const getCurrency = shopName => (shopName.endsWith("_sk") ? "€" : "Kč");
 const formatPercents = x => `${Math.round(x * 100).toLocaleString("cs")} %`;
-const createDataPoint = ({ originalPrice, currentPrice }) => ({
-  c: currentPrice,
-  d: new Date().toISOString().substring(0, 10),
-  o: originalPrice || ""
-});
 
-function discount(previous, actual) {
-  if (!previous || isNaN(previous)) return null;
-  return (previous - actual) / previous;
-}
-const realDiscount = ({ realDiscount, minPrice, commonPrice }, currentPrice) =>
-  discount(minPrice ?? commonPrice, currentPrice) ?? realDiscount;
-
-/* eslint-disable no-console */
-async function main() {
-  console.group("Hlídačshopů.cz");
-  const shopName = getShopName(location.href);
-  const shop = window.shops[shopName];
-  if (!shop) {
-    console.log("No shop found");
-    return;
+function renderDiscount(res, info) {
+  const discountEl = document.getElementById("hlidacShopu2-discount");
+  const parentElement = discountEl.parentElement;
+  const abbr = parentElement.querySelector("abbr");
+  const discount = res.metadata.realDiscount;
+  abbr.title = saleTitles.get(res.metadata.type);
+  if (discount != null && discount < 0) {
+    parentElement.classList.add("hs-real-discount--negative");
+    abbr.textContent = "Reálně zdraženo";
+    discountEl.innerText = "";
+  } else if (discount != null) {
+    discountEl.innerText = formatPercents(discount);
+  } else {
+    discountEl.parentElement.classList.add("hs-real-discount--no-data");
   }
-  shop.onDetailPage(async repaint => {
+}
+
+function renderHTML(repaint, shop) {
+  if (repaint) {
+    // remove canvas to delete and clear previous chart
+    document.getElementById("hlidacShopu2-chart").remove();
+    const container = document.getElementById("hlidacShopu2-chart-container");
+    const newCanvas = document.createElement("canvas");
+    newCanvas.id = "hlidacShopu2-chart";
+    container.appendChild(newCanvas);
+  } else {
+    shop.insertChartElement(styles => chartWrapper(styles));
+  }
+}
+
+function handleDetail(shop, shopName) {
+  return async repaint => {
     try {
       const info = await Promise.resolve(shop.getInfo());
       if (!info) {
@@ -20579,78 +20702,24 @@ async function main() {
         return false;
       }
       const url = info.url || location.href;
-      const res = await fetchData(
-        url,
-        info.itemId,
-        info.title,
-        info.originalPrice,
-        info.currentPrice
-      );
-      if (res.metadata.error) {
-        console.error("Error fetching data: ", res.metadata.error);
+      const res = await fetchData(url, info);
+      if (res.error || (res.metadata && res.metadata.error)) {
+        console.error("Error fetching data: ", res.error || res.metadata.error);
         return false;
       }
-      if (res.data.length === 0) {
+      if (!res.data || res.data.length === 0) {
         console.error("No data found:", res);
         return false;
       }
+
       // Inject our HTML code
-      if (repaint) {
-        // remove canvas to delete and clear previous chart
-        document.getElementById("hlidacShopu2-chart").remove();
-        const container = document.getElementById(
-          "hlidacShopu2-chart-container"
-        );
-        const newCanvas = document.createElement("canvas");
-        newCanvas.id = "hlidacShopu2-chart";
-        container.appendChild(newCanvas);
-      } else {
-        shop.insertChartElement(styles => chartWrapper(styles));
-      }
-
-      const titles = new Map([
-        [
-          "eu-minimum",
-          "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
-        ],
-        [
-          "common-price",
-          "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
-        ]
-      ]);
-      const discountEl = document.getElementById("hlidacShopu2-discount");
-      const parentElement = discountEl.parentElement;
-      const abbr = parentElement.querySelector("abbr");
-      const discount = realDiscount(res.metadata, parseFloat(info.currentPrice));
-      abbr.title = titles.get(res.metadata.type);
-      if (discount != null && discount < 0) {
-        parentElement.classList.add("hs-real-discount--negative");
-        abbr.textContent = "Reálně zdraženo";
-        discountEl.innerText = "";
-      } else if (discount != null) {
-        discountEl.innerText = formatPercents(discount);
-      } else {
-        discountEl.parentElement.classList.add("hs-real-discount--no-data");
-      }
-
-      if (info.currentPrice) {
-        res.data.currentPrice.push({
-          x: new Date().toISOString(),
-          y: parseFloat(info.currentPrice)
-        });
-      }
-      if (info.originalPrice) {
-        res.data.originalPrice.push({
-          x: new Date().toISOString(),
-          y: parseFloat(info.originalPrice)
-        });
-      }
+      renderHTML(repaint, shop);
+      renderDiscount(res, info);
 
       const dataset = Object.assign({}, res.data, {
         currency: getCurrency(shopName)
       });
       const plotElem = document.getElementById("hlidacShopu2-chart");
-
       console.log(`Chart loaded for ItemID: ${info.itemId}`);
       console.log({ info, metadata: res.metadata, dataset });
       plot(plotElem, dataset);
@@ -20668,7 +20737,19 @@ async function main() {
     } finally {
       console.groupEnd();
     }
-  });
+  };
+}
+
+async function main() {
+  console.group("Hlídačshopů.cz");
+  const shopName = getShopName(location.href);
+  const shop = window.shops[shopName];
+  if (!shop) {
+    console.log("No shop found");
+    console.groupEnd();
+    return;
+  }
+  shop.onDetailPage(handleDetail(shop, shopName));
 }
 
 main().catch(err => console.error(err));
