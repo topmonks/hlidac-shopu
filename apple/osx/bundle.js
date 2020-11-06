@@ -49,6 +49,9 @@ try {
     "Allowed Domains"
   ] = websites;
 
+  // add compliance
+  info_plist["ITSAppUsesNonExemptEncryption"] = false;
+
   fs.writeFileSync(info_plist_path, plist.build(info_plist), {
     encoding: "utf8",
     flag: "w"

@@ -17,9 +17,9 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.5.2</string>
+    <string>1.7.3</string>
     <key>CFBundleVersion</key>
-    <string>16</string>
+    <string>21</string>
     <key>LSMinimumSystemVersion</key>
     <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
     <key>NSExtension</key>
@@ -39,28 +39,36 @@
       <dict>
         <key>Allowed Domains</key>
         <array>
-          <string>www.mall.cz</string>
-          <string>www.mall.sk</string>
+          <string>www.aaaauto.cz</string>
+          <string>www.aaaauto.sk</string>
           <string>www.alza.cz</string>
           <string>www.alza.sk</string>
           <string>m.alza.cz</string>
           <string>m.alza.sk</string>
+          <string>www.benu.cz</string>
           <string>www.czc.cz</string>
-          <string>www.mironet.cz</string>
           <string>www.datart.cz</string>
-          <string>nakup.itesco.cz</string>
-          <string>www.rohlik.cz</string>
-          <string>www.notino.cz</string>
-          <string>www.tsbohemia.cz</string>
-          <string>www.mountfield.cz</string>
-          <string>www.lekarna.cz</string>
+          <string>www.datart.sk</string>
           <string>www.kasa.cz</string>
           <string>www.kosik.cz</string>
-          <string>www.benu.cz</string>
+          <string>www.lekarna.cz</string>
+          <string>www.mall.cz</string>
+          <string>www.mall.sk</string>
+          <string>www.mironet.cz</string>
+          <string>www.mountfield.cz</string>
+          <string>www.mountfield.sk</string>
+          <string>www.notino.cz</string>
+          <string>www.notino.sk</string>
+          <string>www.okay.cz</string>
+          <string>www.okay.sk</string>
           <string>www.pilulka.cz</string>
-          <string>www.aaaauto.cz</string>
+          <string>www.pilulka.sk</string>
           <string>www.prozdravi.cz</string>
+          <string>www.rohlik.cz</string>
           <string>www.sleky.cz</string>
+          <string>nakup.itesco.cz</string>
+          <string>potravinydomov.itesco.sk</string>
+          <string>www.tsbohemia.cz</string>
         </array>
         <key>Level</key>
         <string>Some</string>
@@ -70,5 +78,7 @@
     <string>© 2019 TopMonks</string>
     <key>NSHumanReadableDescription</key>
     <string>Ujistěte se, že nakupujete opravdu se slevou. Není sleva jako sleva. </string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
   </dict>
 </plist>
