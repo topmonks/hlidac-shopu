@@ -201,7 +201,7 @@ class DatartSk extends Datart {
   }
 }
 
-class Itesco extends Shop {
+class ITesco extends Shop {
   constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
     super(params, dynamodb);
   }
@@ -220,7 +220,7 @@ class Itesco extends Shop {
   }
 }
 
-class ItescoSk extends Itesco {
+class ITescoSk extends ITesco {
   constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
     super(params, dynamodb);
   }
@@ -465,6 +465,26 @@ class Sleky extends Shop {
   }
 }
 
+class IGlobus extends Shop {
+  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+    super(params, dynamodb);
+  }
+
+  get name() {
+    return "globus_cz";
+  }
+
+  get itemUrl() {
+    if (this.url?.hash) {
+      // popup
+      const match = this.url?.hash.match(/#(.+)/);
+      return match?.[1];
+    }
+    const match = this.url?.pathname.match(/\/[^\/]+\/([^\/]+)$/);
+    return match?.[1];
+  }
+}
+
 const shops = {
   "www.aaaauto.cz": AAAAuto,
   "www.aaaauto.sk": AAAAutoSk,
@@ -476,8 +496,9 @@ const shops = {
   "www.czc.cz": Czc,
   "www.datart.cz": Datart,
   "www.datart.sk": DatartSk,
-  "nakup.itesco.cz": Itesco,
-  "potravinydomov.itesco.sk": ItescoSk,
+  "www.iglobus.cz": IGlobus,
+  "nakup.itesco.cz": ITesco,
+  "potravinydomov.itesco.sk": ITescoSk,
   "www.kasa.cz": Kasa,
   "www.kosik.cz": Kosik,
   "www.lekarna.cz": Lekarna,

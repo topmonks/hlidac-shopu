@@ -72,6 +72,15 @@ export const shops = new Map([
     }
   ],
   [
+    "iglobus",
+    {
+      name: "iGlobus",
+      logo: "iglobus_logo",
+      url: "https://www.iglobus.cz/",
+      viewBox: null
+    }
+  ],
+  [
     "itesco",
     {
       name: "iTesco",

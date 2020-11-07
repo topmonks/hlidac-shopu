@@ -4,7 +4,8 @@
 function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
-  const priceText = el.textContent.replace(/\s+/g, "");
+  let priceText = el.textContent.replace(/\s+/g, "");
+  if (priceText.includes("cca")) priceText = priceText.split("cca")[1];
   const match = priceText.match(/\d+(:?[,.]\d+)?/);
   if (!match) return null;
   return match[0].replace(",", ".");
