@@ -1,12 +1,11 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { lambda } from "@pulumi/aws/types/input";
-import * as awsx from "@pulumi/awsx";
 import {
+  LambdaAuthorizer,
   Method,
-  Response,
   Request,
-  LambdaAuthorizer
+  Response
 } from "@pulumi/awsx/apigateway";
 import { Parameter } from "@pulumi/awsx/apigateway/requestValidator";
 import {
