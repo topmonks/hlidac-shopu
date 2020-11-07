@@ -72,7 +72,7 @@ function isEuDiscountApplicable(
   lastDiscountDate: Date,
   isInInterval: (date: Date) => boolean
 ) {
-  if (isInInterval(lastDiscountDate)) {
+  if (lastDiscountDate && isInInterval(lastDiscountDate)) {
     return !lastIncreaseDate || isAfter(lastDiscountDate, lastIncreaseDate);
   }
   return false;
