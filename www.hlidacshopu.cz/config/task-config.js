@@ -1,6 +1,7 @@
 const alias = require("@rollup/plugin-alias");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const replace = require("@rollup/plugin-replace");
+const path = require("path");
 const pathConfig = require("./path-config.json");
 
 const config = {
@@ -10,8 +11,8 @@ const config = {
   static: true,
 
   workboxBuild: {
-    swSrc: pathConfig.src + "/javascripts/sw.js",
-    swDest: pathConfig.dest + "/sw.js",
+    swSrc: path.join(pathConfig.src, pathConfig.javascripts.src, "sw.js"),
+    swDest: path.join(pathConfig.dest, "sw.js"),
     globDirectory: pathConfig.dest,
     globPatterns: ["app/index.html", "assets/**/*.{js,css}"]
   },
