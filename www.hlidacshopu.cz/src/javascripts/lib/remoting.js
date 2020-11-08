@@ -23,7 +23,7 @@ const retry = async (n, promiseFactory) => {
 };
 
 const apiUrl = detailUri => {
-  const searchParams = new URLSearchParams({ url: detailUri });
+  const searchParams = new URLSearchParams({ url: detailUri, pwa: "1" });
   return new URL(`/detail?${searchParams}`, apiHost).toString();
 };
 

@@ -167,11 +167,16 @@ function chartWrapper(styles) {
   `;
 }
 
+function getVersion() {
+  return (chrome || browser).runtime.getManifest().version;
+}
+
 function fetchData(url, info) {
   const searchString = new URLSearchParams(
     Object.entries(info).filter(([, val]) => Boolean(val))
   );
   searchString.append("url", url);
+  searchString.append("ext", getVersion());
   return fetch(`https://api2.hlidacshopu.cz/detail?${searchString}`).then(
     response => {
       if (response.status === 404) {
@@ -288,6 +293,7 @@ function handleDetail(shop, shopName) {
 
 async function main() {
   console.group("Hlídačshopů.cz");
+  console.log(`version: %c${getVersion()}`, "font-weight: 700")
   const shopName = getShopName(location.href);
   const shop = window.shops[shopName];
   if (!shop) {
