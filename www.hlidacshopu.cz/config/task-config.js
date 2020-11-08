@@ -1,8 +1,6 @@
-const alias = require("@rollup/plugin-alias");
-const { nodeResolve } = require("@rollup/plugin-node-resolve");
-const replace = require("@rollup/plugin-replace");
-const path = require("path");
+const esbuild = require("gulp-esbuild");
 const pathConfig = require("./path-config.json");
+const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js")
 
 const config = {
   images: true,
@@ -11,8 +9,8 @@ const config = {
   static: true,
 
   workboxBuild: {
-    swSrc: path.join(pathConfig.src, pathConfig.javascripts.src, "sw.js"),
-    swDest: path.join(pathConfig.dest, "sw.js"),
+    swSrc: projectPath(pathConfig.src, pathConfig.esbuild.src, "sw.js"),
+    swDest: projectPath(pathConfig.dest, "sw.js"),
     globDirectory: pathConfig.dest,
     globPatterns: ["app/index.html", "assets/**/*.{js,css}"]
   },
@@ -23,34 +21,7 @@ const config = {
     }
   },
 
-  javascripts: {
-    replacePlugins: true,
-    plugins: [
-      alias({
-        entries: [{ find: "tslib", replacement: "tslib/tslib.es6.js" }]
-      }),
-      nodeResolve({ browser: true }),
-      replace({
-        "process.env.NODE_ENV": JSON.stringify(
-          process.env.NODE_ENV || "production"
-        )
-      })
-    ],
-    modules: {
-      app: "app.js",
-      index: "index.js",
-      dashboard: "dashboard.js",
-      topslevy: "topslevy.js",
-      reviews: "reviews.js",
-      android: "android.js",
-      chrome: "chrome.js",
-      firefox: "firefox.js",
-      safari: "safari.js"
-    },
-    terser: {
-      warnings: "verbose"
-    }
-  },
+  javascripts: false,
 
   svgSprite: {
     svgstore: {
@@ -73,7 +44,7 @@ const config = {
   },
 
   html: {
-    collections: ["media", "images", "assets"],
+    collections: ["media", "images"],
     nunjucksRender: {
       filters: {
         longDate: str =>
@@ -97,6 +68,41 @@ const config = {
       baseDir: pathConfig.dest
     }
   },
+
+  esbuild: {
+    extensions: ["js"],
+    options: {
+      bundle: true,
+      splitting: true,
+      minify: true,
+      format: "esm",
+      target: "es2019",
+      platform: "browser",
+      define: {
+        "process.env.NODE_ENV": "production"
+      }
+    }
+  },
+
+  additionalTasks: {
+    initialize(gulp, pathConfig, taskConfig) {
+      const { src, task, dest } = gulp;
+      const paths = {
+        src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
+        dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
+      };
+      console.log(paths);
+      task("esbuild", () =>
+        src(paths.src)
+          .pipe(esbuild(taskConfig.esbuild.options))
+          .pipe(dest(paths.dest))
+      );
+    },
+    development: { code: ["esbuild"] },
+    production: { code: ["esbuild"] }
+  },
+
+  watch: { tasks: ["esbuild"] },
 
   production: {
     rev: true

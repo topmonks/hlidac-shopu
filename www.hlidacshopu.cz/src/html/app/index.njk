@@ -14,10 +14,6 @@
   <link rel="manifest" href="/site.webmanifest"/>
   <link rel="modulepreload" href="/assets/js/app.js">
   <link rel="preload" as="style" href="/assets/css/app.css">
-  {% set appAssets = assets.output| first  %}
-  {% for asset in appAssets.imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ asset }}" crossorigin>
-  {% endfor %}
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://api2.hlidacshopu.cz">
