@@ -50,7 +50,6 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     let itemId = params.itemId ?? shop.itemId;
-    let imageUrl: string;
     if (params.currentPrice && params.currentPrice !== "null") {
       // store parsed data by extension
       putParsedData(db, shop, params).catch(err => console.error("ERROR: " + err));
@@ -65,17 +64,10 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     const rows = prepareData(item);
-    if (extraData) {
-      const { currentPrice, originalPrice, imageUrl: imgUrl }: any =
-        (await extraData) ?? {};
-      imageUrl = imgUrl;
-      if (currentPrice)
-        rows.push({
-          currentPrice,
-          originalPrice,
-          date: new Date()
-        });
-    }
+    const { currentPrice, originalPrice, imageUrl } = (await extraData) ?? {};
+    if (currentPrice)
+      rows.push({ currentPrice, originalPrice, date: new Date() });
+
     const discount = getRealDiscount(rows);
     const transformMetadata = ({
       itemImage,
@@ -85,7 +77,7 @@ export async function handler(event: Request): Promise<Response> {
       ...rest
     }: any) => ({
       name: itemName,
-      imageUrl: imageUrl ?? (itemImage === "null" ? null : itemImage),
+      imageUrl: itemImage === "null" ? imageUrl : itemImage,
       claimedDiscount: getClaimedDiscount(rows),
       ...discount,
       ...rest
