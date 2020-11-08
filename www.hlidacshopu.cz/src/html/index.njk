@@ -554,26 +554,4 @@
 
 {% block scripts %}
   <script type="module" src="/assets/js/index.js"></script>
-  <script type="module">
-    import { Workbox } from "https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-window.prod.mjs";
-
-    const isProduction = () => ["localhost", "127"].indexOf(location.hostname) === -1;
-    window.isUpdateAvailable = new Promise(async (resolve, reject) => {
-      if ("serviceWorker" in navigator && isProduction()) {
-        try {
-          const wb = new Workbox("/sw.js");
-          wb.addEventListener("installed", e => {
-            console.log("ServiceWorker registration successful with scope: ", e.sw.scope);
-            resolve(e.isUpdate);
-          });
-          wb.addEventListener("activated", e => resolve(e.isUpdate));
-          wb.addEventListener("controlling", e => resolve(e.isUpdate));
-          wb.addEventListener("waiting", e => resolve(e.isUpdate));
-          await wb.register();
-        } catch (ex) {
-          reject(ex);
-        }
-      }
-    });
-  </script>
 {% endblock %}

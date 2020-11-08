@@ -1,6 +1,14 @@
 import { html, svg, render } from "lit-html/lit-html.js";
 import { shops } from "./lib/shops.js";
 import { fetchDownloadStats, fetchShopsStats } from "./lib/remoting";
+import { Workbox } from "workbox-window";
+
+const isProduction = () =>
+  ["localhost", "127"].indexOf(location.hostname) === -1;
+if ("serviceWorker" in navigator && isProduction()) {
+  const wb = new Workbox("/sw.js");
+  wb.register();
+}
 
 const form = document.getElementById("compare-form");
 const eShops = document.getElementById("e-shopy");
