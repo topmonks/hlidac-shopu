@@ -7,6 +7,7 @@ const config = {
   cloudinary: true,
   fonts: true,
   static: true,
+  javascripts: false,
 
   workboxBuild: {
     swSrc: projectPath(pathConfig.src, pathConfig.esbuild.src, "sw.js"),
@@ -20,8 +21,6 @@ const config = {
       includePaths: ["./node_modules"]
     }
   },
-
-  javascripts: false,
 
   svgSprite: {
     svgstore: {
