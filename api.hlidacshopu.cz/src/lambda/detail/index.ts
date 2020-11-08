@@ -53,7 +53,7 @@ export async function handler(event: Request): Promise<Response> {
     let imageUrl: string;
     if (params.currentPrice && params.currentPrice !== "null") {
       // store parsed data by extension
-      putParsedData(db, shop, params).catch(err => console.error(err));
+      putParsedData(db, shop, params).catch(err => console.error("ERROR: " + err));
     }
     const extraData = getParsedData(db, shop);
     const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
