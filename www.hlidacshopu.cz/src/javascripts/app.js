@@ -2,10 +2,10 @@ import { html, svg, render } from "lit-html/lit-html.js";
 import { classMap } from "lit-html/directives/class-map.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
-import { shops } from "./lib/shops.js";
-import { formatDate, formatMoney, formatPercents } from "./lib/format.js";
-import { fetchDataSet, templateData } from "./lib/remoting.js";
-import "./lib/chart.js";
+import { shops } from "@hlidac-shopu/lib/shops.js";
+import { formatDate, formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
+import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
+import "@hlidac-shopu/lib/chart.js";
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);

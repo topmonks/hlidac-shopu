@@ -1,0 +1,12 @@
+{
+  "name": "@hlidac-shopu/web",
+  "version": "2.0.0",
+  "description": "Website and PWA",
+  "dependencies": {
+    "@material/layout-grid": "^8.0.0",
+    "@material/top-app-bar": "^8.0.0",
+    "@hlidac-shopu/lib": "1.0.0",
+    "lit-html": "^1.3.0",
+    "workbox-window": "^5.1.4"
+  }
+}

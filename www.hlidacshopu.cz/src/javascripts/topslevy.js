@@ -1,8 +1,8 @@
 import { html, render, svg } from "lit-html/lit-html.js";
-import { formatMoney, formatPercents } from "./lib/format.js";
-import { fetchDiscountDataPercent } from "./lib/remoting.js";
-import { fetchDiscountDataCZK } from "./lib/remoting.js";
-import { shops } from "./lib/shops.js";
+import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
+import { fetchDiscountDataPercent } from "@hlidac-shopu/lib/remoting.js";
+import { fetchDiscountDataCZK } from "@hlidac-shopu/lib/remoting.js";
+import { shops } from "@hlidac-shopu/lib/shops.js";
 
 const tableRootPercent = document.getElementById("table-root-percent");
 if (tableRootPercent) {

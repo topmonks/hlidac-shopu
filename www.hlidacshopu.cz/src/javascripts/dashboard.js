@@ -1,6 +1,6 @@
 import { html, svg, render } from "lit-html/lit-html.js";
-import { formatPercents } from "./lib/format.js";
-import { fetchDashboardData } from "./lib/remoting.js";
+import { formatPercents } from "@hlidac-shopu/lib/format.js";
+import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.js";
 
 const tableRoot = document.getElementById("table-root");
 
