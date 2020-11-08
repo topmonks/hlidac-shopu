@@ -4,13 +4,13 @@ import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "./lib/shops.js";
 import { formatDate, formatMoney, formatPercents } from "./lib/format.js";
-import { initChart, templateData } from "./lib/remoting.js";
+import { fetchDataSet, templateData } from "./lib/remoting.js";
+import "./lib/chart.js";
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
 
 const root = document.getElementById("app-root");
-const chart = () => document.getElementById("hlidac-shopu-chart");
 
 const styles = document.createElement("link");
 styles.rel = "stylesheet";
@@ -71,10 +71,9 @@ function getSharedInfo(location) {
 async function renderResultsModal(detailUrl) {
   render(loaderTemplate(), root);
   try {
-    const [{ plot }, chartData] = await initChart(detailUrl);
+    const chartData = await fetchDataSet(detailUrl);
     console.log(chartData);
     render(resultTemplate(templateData(detailUrl, chartData)), root);
-    plot(chart(), chartData);
   } catch (ex) {
     console.error(ex);
     render(notFoundTemplate(), root);
@@ -134,6 +133,7 @@ function resultTemplate({
   discount,
   discountType,
   date,
+  data,
   ...prices
 }) {
   const titles = new Map([
@@ -164,19 +164,21 @@ function resultTemplate({
   });
 
   const realDiscount = (x, discountType) =>
-    x !== null &&
-    !isNaN(x) ?
-    html`
-      <div class=${classMap(discountClass(x))}>
-        <b
-          ><span
-            >${x < 0 ? "↑" : x > 0 ? "↓" : "="}
-            ${formatPercents(Math.abs(x))}</span
-          ></b
-        >
-        <abbr title="${titles.get(discountType)}">${discountTitle(x)}*</abbr>
-      </div>
-    `: null;
+    x !== null && !isNaN(x)
+      ? html`
+          <div class="${classMap(discountClass(x))}">
+            <b
+              ><span
+                >${x < 0 ? "↑" : x > 0 ? "↓" : "="}
+                ${formatPercents(Math.abs(x))}</span
+              ></b
+            >
+            <abbr title="${titles.get(discountType)}"
+              >${discountTitle(x)}*</abbr
+            >
+          </div>
+        `
+      : null;
   const crawlDate = x =>
     x
       ? html`
@@ -184,8 +186,8 @@ function resultTemplate({
             id="latest-date"
             datetime="${x.toISOString()}"
             title="Datum posledního čtení cen"
-            >${formatDate(x)}</time
-          >
+            >${formatDate(x)}
+          </time>
         `
       : null;
   const shopLogo = x => x && logoTemplate(x);
@@ -236,17 +238,7 @@ function resultTemplate({
           : null}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <div style="display:flex;justify-content: flex-end;font-size: 12px">
-          <div
-            style="width:12px;height:12px;background-color:#5c62cd;border-radius:2px;margin-right:5px;margin-top:2px;"
-          ></div>
-          <span>Uváděná původní cena</span>
-          <div
-            style="width:12px;height:12px;background-color:#ff8787;border-radius:2px;margin: 2px 5px 0 8px;"
-          ></div>
-          <span>Prodejní cena</span>
-        </div>
-        <canvas id="hlidac-shopu-chart" width="100%"></canvas>
+        <hs-chart .data="${data}"></hs-chart>
       </div>
     </div>
   `;
@@ -256,7 +248,7 @@ function logoTemplate({ logo, name, url, viewBox }) {
   const image = svg`
     <svg viewBox="${viewBox}">
       <title>${name}</title>
-      <use href='#${logo}'></use>
+      <use href="#${logo}"></use>
     </svg>
   `;
   return html`

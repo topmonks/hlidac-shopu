@@ -41,15 +41,11 @@ const config = {
       dashboard: "dashboard.js",
       topslevy: "topslevy.js",
       reviews: "reviews.js",
-      extension: "extension.js",
       android: "android.js",
       chrome: "chrome.js",
       firefox: "firefox.js",
       safari: "safari.js"
     },
-    external: [
-      "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"
-    ],
     terser: {
       warnings: "verbose"
     }
@@ -88,6 +84,7 @@ const config = {
       }
     },
     htmlmin: {
+      minifyJS: false,
       minifyCSS: {
         compatibility: { properties: { urlQuotes: true } }
       }

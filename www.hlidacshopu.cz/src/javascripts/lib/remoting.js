@@ -27,7 +27,7 @@ const apiUrl = detailUri => {
   return new URL(`/detail?${searchParams}`, apiHost).toString();
 };
 
-async function fetchDataSet(detailUri) {
+export async function fetchDataSet(detailUri) {
   const resp = await retry(3, () =>
     fetch(apiUrl(detailUri), {
       signal: signalTimeout(requestTimeout)
@@ -80,15 +80,6 @@ export async function fetchDownloadStats() {
   };
 }
 
-export const initChart = detailUrl =>
-  Promise.all([
-    // when upgrading version do not forget to change `task-config.js\javascripts\external` entry
-    import(
-      "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"
-    ).then(() => import("../extension.js")),
-    fetchDataSet(detailUrl)
-  ]);
-
 export function templateData(
   detailUrl,
   {
@@ -115,11 +106,12 @@ export function templateData(
     shop,
     imageUrl,
     claimedDiscount,
-    discount: realDiscount,
-    actualPrice: actualPrice,
-    date: new Date(date),
+    actualPrice,
     lastDeclaredPrice,
+    discount: realDiscount,
     discountType: type,
+    date: new Date(date),
+    data: { currentPrice, originalPrice },
     ...prices
   };
 }
