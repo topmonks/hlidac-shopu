@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.js";
+import { Shop } from "./shop.mjs";
 
 function matchGroup(str, regex, groupN) {
   const match = str.match(regex);

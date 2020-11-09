@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.js";
+import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
   async scrape() {

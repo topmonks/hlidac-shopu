@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.js";
+import { AsyncShop } from "./shop.mjs";
 
 export class Tesco extends AsyncShop {
   get waitForSelector() {

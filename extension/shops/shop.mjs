@@ -20,7 +20,7 @@ export class AsyncShop extends Shop {
     throw new Error("Property not implemented");
   }
   scheduleRendering(cb) {
-    const observer = new MutationObserver( () => {
+    const observer = new MutationObserver(() => {
       if (location.href !== this.lastHref) {
         this.loaded = false;
         this.lastHref = location.href;
@@ -30,7 +30,7 @@ export class AsyncShop extends Shop {
       const elem = document.querySelector(this.waitForSelector);
       if (elem) {
         this.loaded = true;
-        cb(true).then(res => {
+        cb(false).then(res => {
           this.loaded = res;
         });
       }

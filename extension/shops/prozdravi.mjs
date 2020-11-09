@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.js";
+import { AsyncShop } from "./shop.mjs";
 
 export class Prozdravi extends AsyncShop {
   get waitForSelector() {
@@ -11,6 +11,8 @@ export class Prozdravi extends AsyncShop {
     const priceContainer = document.querySelector(
       ".product-prices-block__inner"
     );
+    if (!priceContainer) return;
+
     const itemId = priceContainer.querySelector("input[name='product-code']")
       .value;
     const originalPrice = cleanPrice(
@@ -29,9 +31,11 @@ export class Prozdravi extends AsyncShop {
     const elem = document.querySelector(
       ".product-prices-block.product-prices-block--single-product"
     );
+    console.log("inject", {elem});
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = renderMarkup();
+    console.log({markup});
     elem.insertAdjacentElement("beforeend", markup);
     return elem;
   }

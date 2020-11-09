@@ -8,16 +8,17 @@ Object with getInfo and insertChartElement methods.
 
 To create new shop create new shop with those two methods:
 
-`getInfo` method selects itemId and title of the product from the page. Returns object `{ itemId, title }`.
+`scrape` method selects itemId, image, title, original and current price of the product from the page. 
+Returns of object with .
 
-`insertChartElement` method inserts chart element to the page. Element can be simple div with id `hlidacShopu-chart`. Usually it inserts whole chart wrapper with border and info text.
-First param is `chartWrapper` function that returns wrapper html, you can add styles to the root element of the wrapper by passing string to it.
+`inject` method inserts widget element to the page. Usually it inserts whole chart wrapper with border and info text.
+First param is `renderMarkup` function that returns html element, you can add styles to the root element of the wrapper
+by passing string to it.
 
 Example:
 ```javascript
-window.shops = window.shops || {};
-window.shops["alza"] = {
-  getInfo() {
+class Alza extends Shop {
+  scrape() {
     const elem = document.querySelector("#pricec");
     if (!elem) return;
 
@@ -25,17 +26,16 @@ window.shops["alza"] = {
     const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
 
     return { itemId, title };
-  },
+  }
 
-  insertChartElement(chartMarkup) {
-    const elem = document.querySelector;("#pricec");
+  inject(renderMarkup) {
+    const elem = document.querySelector("#pricec");
     if (!elem) throw new Error("Element to add chart not found");
     const styles = "border: 1px solid lightgray; margin: 5px; padding: 5px; margin-bottom: 50px;";
-    const markup = chartMarkup(styles);
-    elem.insertAdjacentHTML("afterend", markup);
+    const markup = renderMarkup(styles);
+    elem.insertAdjacentElement("afterend", markup);
     return elem;
-  },
-};
-
+  }
+}
 ```
 

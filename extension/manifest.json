@@ -3,7 +3,7 @@
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
   "default_locale": "cs",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "author": "TopMonks",
   "homepage_url": "https://www.hlidacshopu.cz/",
   "background": {
@@ -60,6 +60,7 @@
         "https://www.czc.cz/*",
         "https://www.datart.cz/*",
         "https://www.datart.sk/*",
+        "https://www.iglobus.cz/*",
         "https://www.kasa.cz/*",
         "https://www.kosik.cz/*",
         "https://www.lekarna.cz/*",
@@ -82,29 +83,7 @@
         "https://www.tsbohemia.cz/*"
       ],
       "js": [
-        "lib/Chart.bundle.js",
-        "lib/plot.js",
-        "lib/graph-icon.js",
-        "shops/alza.js",
-        "shops/mall.js",
-        "shops/czc.js",
-        "shops/mironet.js",
-        "shops/datart.js",
-        "shops/itesco.js",
-        "shops/rohlik.js",
-        "shops/tsbohemia.js",
-        "shops/mountfield.js",
-        "shops/lekarna.js",
-        "shops/kasa.js",
-        "shops/kosik.js",
-        "shops/notino.js",
-        "shops/benu.js",
-        "shops/pilulka.js",
-        "shops/aaaauto.js",
-        "shops/prozdravi.js",
-        "shops/sleky.js",
-        "shops/okay.js",
-        "index.js"
+        "content.js"
       ],
       "run_at": "document_idle"
     }

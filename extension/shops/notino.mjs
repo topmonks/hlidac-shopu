@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.js";
+import { Shop } from "./shop.mjs";
 
 export class Notino extends Shop {
   constructor() {
@@ -88,10 +88,10 @@ export class Notino extends Shop {
   }
 
   inject(renderMarkup) {
-    const elem = document.getElementById("pdAddToCart");
+    const elem = document.querySelector("a[class^='styled__StyledAddToWishlist']");
     if (!elem) throw new Error("Element to add chart not found");
-    const markup = renderMarkup({ margin: "16px" });
-    elem.insertAdjacentElement("afterend", markup);
+    const markup = renderMarkup();
+    elem.insertAdjacentElement("beforebegin", markup);
     return elem;
   }
 }

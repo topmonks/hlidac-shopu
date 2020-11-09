@@ -96,6 +96,9 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run:
+          name: Build extension bundle
+          command: yarn build:extension
+      - run:
           name: Lint web extension
           command: |
             mkdir -p results

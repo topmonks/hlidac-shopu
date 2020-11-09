@@ -1,5 +1,5 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.js";
+import { Shop } from "./shop.mjs";
 
 export class Mountfield extends Shop {
   async scrape() {
@@ -24,7 +24,7 @@ export class Mountfield extends Shop {
     const markup = renderMarkup({
       clear: "right",
       float: "right",
-      width: "338px"
+      width: "348px"
     });
     elem.insertAdjacentElement("beforebegin", markup);
     return elem;
