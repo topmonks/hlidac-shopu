@@ -218,7 +218,7 @@ function resultTemplate({
           ? html`<div class="claimed-price">
               ${discountType === "eu-minimum"
                 ? "Minimální cena před akcí"
-                : "Běžná cena před akcí"}
+                : "Běžná cena"}
               <b
                 >${discountType === "eu-minimum"
                   ? formatMoney(prices.minPrice)
