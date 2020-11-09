@@ -13,21 +13,21 @@
 {% endblock %}
 
 {% block main %}
-  <section class="personal-security">
-    <div class="mdc-layout-grid">
-      <div class="mdc-layout-grid__inner layout-wrapper">
-        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <h1>Metodika výpočtu reálné slevy</h1>
+  <div class="mdc-layout-grid">
+    <div class="mdc-layout-grid__inner layout-wrapper">
+      <article class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <h1>Metodika výpočtu reálné slevy</h1>
 
-          <p>Na Hlídači shopů se snažíme pomoci lidem pochopit co se na e-shopech
-            děje s&nbsp;cenami zboží. Dlouhodobě bojujeme proti zneužívání
-            přeškrtnuté (původní) ceny, kde vzniká nejvíce prostoru pro kreativní
-            slevotvorbu.</p>
+        <p>Na Hlídači shopů se snažíme pomoci lidem pochopit co se na e-shopech
+          děje s&nbsp;cenami zboží. Dlouhodobě bojujeme proti zneužívání
+          přeškrtnuté (původní) ceny, kde vzniká nejvíce prostoru pro kreativní
+          slevotvorbu.</p>
 
-          <p>Naším cílem je, aby slevy na e-shopech byly férové a neklamaly
-            zákazníky. Proto jsme pro sezónu 2020&nbsp;připravili novou metodiku výpočtu
-            reálné&nbsp;slevy.</p>
+        <p>Naším cílem je, aby slevy na e-shopech byly férové a neklamaly
+          zákazníky. Proto jsme pro sezónu 2020&nbsp;připravili novou metodiku výpočtu
+          reálné&nbsp;slevy.</p>
 
+        <section id="puvodni">
           <h2>Původní metodika</h2>
 
           <p>Doposud jsme reálnou slevu počítali vůči <i>nejvyšší ceně, za kterou
@@ -36,7 +36,9 @@
             Například se v&nbsp;ní ztratí skokové zdražování zboží před slevovou
             akcí. Výsledná sleva pak pořád vypadá o&nbsp;dost zajímavěji než je
             realita.</p>
+        </section>
 
+        <section id="nova">
           <h2>Nová metodika</h2>
 
           <p>O&nbsp;slabině původní metodiky jsme věděli už před rokem a dost
@@ -85,8 +87,8 @@
             slevu za tržní korekci cen. V&nbsp;takovém případě počítáme reálnou slevu
             vůči běžné ceně. Za <b>běžnou cenu</b> považujeme <i>cenu takovou, za
               kterou se zboží prodávalo nejčastěji za posledních 90&nbsp;dní</i>.</p>
-        </div>
-      </div>
+        </section>
+      </article>
     </div>
-  </section>
+  </div>
 {% endblock %}
