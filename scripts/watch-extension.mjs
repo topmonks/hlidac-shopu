@@ -2,6 +2,9 @@ import chokidar from "chokidar";
 import esbuild from "esbuild";
 import path from "path";
 
+const entryPoint = path.resolve("extension/content.mjs");
+const output = path.resolve("extension/content.js");
+
 async function build() {
   const service = await esbuild.startService();
   try {
