@@ -149,11 +149,11 @@ function resultTemplate({
 
   const discountTitle = x => {
     if (x > 0) {
-      return "Reálná sleva";
+      return "Podle nás sleva";
     } else if (x === 0) {
-      return "Reálně bez slevy";
+      return "Podle nás bez slevy";
     } else {
-      return "Reálně zdraženo";
+      return "Podle nás zdraženo";
     }
   };
 
@@ -163,7 +163,7 @@ function resultTemplate({
     "hs-real-discount--negative": x < 0
   });
 
-  const realDiscount = (x, discountType) =>
+  const ourDiscount = (x, discountType) =>
     x !== null && !isNaN(x)
       ? html`
           <div class="${classMap(discountClass(x))}">
@@ -230,7 +230,7 @@ function resultTemplate({
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
-        ${realDiscount(discount, discountType)}
+        ${ourDiscount(discount, discountType)}
         ${claimedDiscount
           ? html`<div class="claimed-discount">
               Sleva udávaná e-shopem <b>${formatPercents(claimedDiscount)}</b>
