@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block styles %}
+  <link rel="stylesheet" href="/assets/css/index.css"/>
   <style>
     .shops-stats {
       border-spacing: 0 12px;
@@ -77,7 +78,6 @@
                   <th scope="col">Reálná sleva v %</th>
                   <th scope="col">Zlevněno od data</th>
                   <th scope="col">Produkt</th>
-                  <th scope="col">Obrázek</th>
                   <th scope="col">Eshop</th>
                 </tr>
               </thead>
@@ -93,6 +93,7 @@
                 </tr>
               </tbody>
             </table>
+            <div id="below-buttons"></div>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <p class="explanation">
@@ -103,6 +104,14 @@
       </div>
     </div>
   </section>
+  <div id="hlidac-shopu-modal" class="modal modal--hidden">
+    <div class="modal__inner">
+      <div class="modal__close" title="Zavřít - Esc">
+        <a href="/topslevy/kcslevy/">&times;</a>
+      </div>
+      <div id="hlidac-shopu-modal__placeholder"></div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block scripts %}

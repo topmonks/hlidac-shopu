@@ -22,8 +22,8 @@ if (tableRootPercent) {
       render(tableTemplatePercent(data), tableRootPercent);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplatePercent(data), buttonsSection);
-      document.getElementById("show-more").addEventListener("click", showMore);
-      document.getElementById("subscribe").addEventListener("click", subscribe);
+      document.getElementById("show-more-perc").addEventListener("click", showMorePerc);
+      document.getElementById("subscribe-perc").addEventListener("click", subscribe);
 
       document.querySelector('#table-root-percent').
         addEventListener('click', e => {
@@ -57,6 +57,21 @@ if (tableRootKc) {
       }
       data = a;
       render(tableTemplateKc(data), tableRootKc);
+      const buttonsSection = document.getElementById("below-buttons");
+      render(buttonsTemplateCZK(data), buttonsSection);
+      document.getElementById("show-more-czk").addEventListener("click", showMoreCZK);
+      document.getElementById("subscribe-czk").addEventListener("click", subscribe);
+
+      document.querySelector('#table-root-kc').
+      addEventListener('click', e => {
+        let t = e.target;
+        if (t.href) {
+          console.log('in href');
+          console.log(`href=${t.href}`);
+          renderResultsModal(t.href);
+        }
+        e.preventDefault(); // Don't follow the links
+      });
     } catch (ex) {
       console.error(ex);
     }
@@ -72,12 +87,21 @@ addEventListener("keydown", e => {
   }
 });
 
-function showMore() {
+function showMorePerc() {
   const secondPart = document.querySelectorAll("[id=secondPart]");
   secondPart.forEach(function (o) {
     o.style.display = "";
   });
-  const button = document.getElementById("show-more");
+  const button = document.getElementById("show-more-perc");
+  button.style.display = "none";
+}
+
+function showMoreCZK() {
+  const secondPart = document.querySelectorAll("[id=secondPart]");
+  secondPart.forEach(function (o) {
+    o.style.display = "";
+  });
+  const button = document.getElementById("show-more-czk");
   button.style.display = "none";
 }
 
@@ -212,8 +236,18 @@ function buttonsTemplatePercent(data) {
   return html`
     <p></p>
     <div class="btn">
-      <a class="button" role="button" id="show-more">Zobrazit další slevy</a>
-      <a class="button" role="button" id="subscribe">Přihlásit k odběru slev</a>
+      <a class="button" role="button" id="show-more-perc">Zobrazit další slevy</a>
+      <a class="button" role="button" id="subscribe-perc">Přihlásit k odběru slev</a>
+    </div>
+  `;
+}
+
+function buttonsTemplateCZK(data) {
+  return html`
+    <p></p>
+    <div class="btn">
+      <a class="button" role="button" id="show-more-czk">Zobrazit další slevy</a>
+      <a class="button" role="button" id="subscribe-czk">Přihlásit k odběru slev</a>
     </div>
   `;
 }
@@ -290,6 +324,12 @@ function shopTemplateKc({
   saleAbs,
   salePerc
 }) {
+  const rowId = Number(sequenceId);
+  let toHide = false;
+  if (rowId > 10) {
+    toHide = true;
+  }
+  if (!toHide) {
   return html`
     <tr class="dashboard-row">
       <th>${sequenceId}</th>
@@ -301,7 +341,20 @@ function shopTemplateKc({
       <td>${productLinkTemplate(itemName, itemUrl)}</td>
       <td>${logoTemplate(shop)}</td>
     </tr>
+  `;} else {
+    return html`
+    <tr class="dashboard-row" id="secondPart" style="display: none">
+      <th>${sequenceId}</th>
+      <td>${formatMoney(Math.round(saleAbs))}</td>
+      <td>${formatMoney(Math.round(currentPrice))}</td>
+      <td>${formatMoney(Math.round(minPriceTDays))}</td>
+      <td>${formatPercents(salePerc / 100)}</td>
+      <td style="white-space: nowrap;">${formatedDate}</td>
+      <td>${productLinkTemplate(itemName, itemUrl)}</td>
+      <td>${logoTemplate(shop)}</td>
+    </tr>
   `;
+  }
 }
 
 function logoTemplate(shop) {
