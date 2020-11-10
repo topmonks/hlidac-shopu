@@ -90,7 +90,6 @@ const config = {
         src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
         dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
       };
-      console.log(paths);
       task("esbuild", () =>
         src(paths.src)
           .pipe(esbuild(taskConfig.esbuild.options))
