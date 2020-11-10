@@ -20,11 +20,11 @@ export class Globus extends AsyncShop {
   }
 
   inject(renderMarkup) {
-    const elem = document.querySelector("#detail-box");
+    const elem = document.querySelector("#detail-tabs-content");
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = renderMarkup();
-    elem.insertAdjacentElement("beforeend", markup);
+    elem.insertAdjacentElement("beforebegin", markup);
     return elem;
   }
 }
