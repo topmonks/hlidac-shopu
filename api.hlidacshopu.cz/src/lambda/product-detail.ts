@@ -97,5 +97,5 @@ export function getParsedData(db: DynamoDB.DocumentClient, shop: Shop) {
       }
     })
     .promise()
-    .then(x => x.Item);
+    .then(x => x.Item?.data);
 }

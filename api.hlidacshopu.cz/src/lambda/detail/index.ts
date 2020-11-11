@@ -2,18 +2,8 @@ import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { createShop, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
-import {
-  getHistoricalData,
-  getMetadata,
-  getParsedData,
-  putParsedData
-} from "../product-detail";
-import {
-  DataRow,
-  getClaimedDiscount,
-  getRealDiscount,
-  prepareData
-} from "../discount";
+import { getHistoricalData, getMetadata, getParsedData, putParsedData } from "../product-detail";
+import { DataRow, getClaimedDiscount, getRealDiscount, prepareData } from "../discount";
 
 function createDataset(data: DataRow[]) {
   const originalPrice = new Array(data.length);
