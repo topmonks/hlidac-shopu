@@ -64,7 +64,7 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     const rows = prepareData(item);
-    const { currentPrice, originalPrice, imageUrl } = (await extraData) ?? {};
+    const { currentPrice, originalPrice, imageUrl } = (await extraData) ?? {...params};
     if (currentPrice)
       rows.push({ currentPrice, originalPrice, date: new Date() });
 
