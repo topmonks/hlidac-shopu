@@ -1,9 +1,11 @@
 import chokidar from "chokidar";
 import esbuild from "esbuild";
 import path from "path";
+import fs from "fs";
 
 const entryPoint = path.resolve("extension/content.mjs");
 const output = path.resolve("extension/content.js");
+const outputFF = path.resolve("extension-dist/content.js");
 
 async function build() {
   const service = await esbuild.startService();
@@ -16,6 +18,7 @@ async function build() {
       bundle: true
     });
     console.timeEnd("build");
+    fs.copyFileSync(output, outputFF);
   } catch (err) {
     console.error(err);
   } finally {
