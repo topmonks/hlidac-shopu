@@ -1,6 +1,6 @@
 export class Shop {
-  scheduleRendering(cb) {
-    cb();
+  scheduleRendering(render, cleanup) {
+    render();
   }
   async scrape() {
     throw new Error("Method not implemented");
@@ -19,7 +19,7 @@ export class AsyncShop extends Shop {
   get waitForSelector() {
     throw new Error("Property not implemented");
   }
-  scheduleRendering(cb) {
+  scheduleRendering(render, cleanup) {
     const observer = new MutationObserver(() => {
       if (location.href !== this.lastHref) {
         this.loaded = false;
@@ -30,13 +30,13 @@ export class AsyncShop extends Shop {
       const elem = document.querySelector(this.waitForSelector);
       if (elem) {
         this.loaded = true;
-        cb(false).then(res => {
+        render(false).then(res => {
           this.loaded = res;
         });
       }
     });
     // Start observing the target node for configured mutations
     observer.observe(document.body, { childList: true, subtree: true });
-    addEventListener("load", () => cb());
+    addEventListener("load", () => render());
   }
 }

@@ -337,7 +337,8 @@ function fetchData(url, info) {
 }
 
 const renderRoot = document.createElement("div");
-
+const shadow = renderRoot.attachShadow({ mode: 'closed' });
+let chart;
 function renderHTML(repaint, shop, data, metadata) {
   if (!shop.loaded || !repaint) {
     shop.inject(styles => {
@@ -345,10 +346,10 @@ function renderHTML(repaint, shop, data, metadata) {
       return renderRoot;
     });
   }
-  const shadow = renderRoot.attachShadow({ mode: 'closed' });
+  if (repaint && chart) chart.destroy();
   render(widgetTemplate(data, metadata), shadow);
   const ctx = getCanvasContext(shadow);
-  createChart(
+  chart = createChart(
     ctx,
     data.currentPrice,
     data.originalPrice,
@@ -400,6 +401,10 @@ function handleDetail(shop) {
     } finally {
       console.groupEnd();
     }
+  }, () => {
+    renderRoot.remove();
+    if (chart) chart.destroy();
+    shop.loaded = false;
   });
 }
 
