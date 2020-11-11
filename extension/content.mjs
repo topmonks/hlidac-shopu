@@ -1,6 +1,6 @@
-import { render, html, svg } from "lit-html";
-import { css } from "lit-element/lib/css-tag.js";
+import { render, html, svg } from "lit-html/lit-html.js";
 import { classMap } from "lit-html/directives/class-map.js";
+import { css } from "lit-element/lib/css-tag.js";
 import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
 import {
   chartTemplate,
