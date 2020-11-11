@@ -67,7 +67,7 @@ async function main(puppeteer) {
     try {
       console.log(`Taking screenshot of ${url}`);
       await page.goto(url);
-      await page.waitForSelector("#hlidacShopu", { timeout: 10000 });
+      await page.waitForSelector("[data-hs]", { timeout: 10000 });
       await page.screenshot({
         path: getFilePath(screenshotsDir, url),
         fullPage: true

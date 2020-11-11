@@ -337,6 +337,7 @@ function fetchData(url, info) {
 }
 
 const renderRoot = document.createElement("div");
+renderRoot.dataset["hs"] = getVersion();
 const shadow = renderRoot.attachShadow({ mode: 'closed' });
 let chart;
 function renderHTML(repaint, shop, data, metadata) {
