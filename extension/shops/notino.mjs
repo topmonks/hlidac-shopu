@@ -5,27 +5,22 @@ export class Notino extends Shop {
   constructor() {
     super();
     this.masterId = null;
-    this.lastHref = null;
+    this.lastHref = location.href;
   }
 
-  scheduleRendering(cb) {
+  scheduleRendering(render, cleanup) {
     const elem = document.getElementById("pd-price");
     if (!elem) return false;
+    render();
 
-    const observer = new MutationObserver( () => {
-      if (location.href !== this.lastHref) {
-        this.lastHref = location.href;
-        cb(true);
-      }
-    });
-    // Observe changes in variant selection by change of price
-    observer.observe(document.body, {
-      characterData: true,
+    new MutationObserver(() => {
+      if (location.href === this.lastHref) return;
+      this.lastHref = location.href;
+      render(true);
+    }).observe(document.body, {
+      childList: true,
       subtree: true
     });
-    // This page is rendered with React and data are side-loaded from API
-    // defer execution to `load` event when all data are loaded and rendered
-    addEventListener("load", () => cb());
   }
 
   waitStateObject() {
@@ -88,7 +83,9 @@ export class Notino extends Shop {
   }
 
   inject(renderMarkup) {
-    const elem = document.querySelector("a[class^='styled__StyledAddToWishlist']");
+    const elem = document.querySelector(
+      "a[class^='styled__StyledAddToWishlist']"
+    );
     if (!elem) throw new Error("Element to add chart not found");
     const markup = renderMarkup();
     elem.insertAdjacentElement("beforebegin", markup);

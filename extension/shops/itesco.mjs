@@ -1,9 +1,29 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Tesco extends AsyncShop {
-  get waitForSelector() {
-    return "h1.product-details-tile__title";
+const didRenderDetail = mutations =>
+  mutations.find(
+    x =>
+      x.target.classList.contains("main__content") &&
+      x.addedNodes.length === 1 &&
+      x.addedNodes[0].innerHTML.indexOf("product-details-page") > 0
+  );
+
+export class Tesco extends StatefulShop {
+  get detailSelector() {
+    return ".product-details-page";
+  }
+
+  get observerTarget() {
+    return document.body;
+  }
+
+  shouldRender(mutations) {
+    return didRenderDetail(mutations);
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "removedNodes", "loading-spa");
   }
 
   async scrape() {

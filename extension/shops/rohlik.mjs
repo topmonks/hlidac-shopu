@@ -1,9 +1,28 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Rohlik extends AsyncShop {
-  get waitForSelector() {
+const didRenderDetail = mutations =>
+  mutations.find(x =>
+    Array.from(x.addedNodes).find(
+      y => y.id === "productDetail" || y.innerHTML.indexOf("productDetail") > 0
+    )
+  );
+
+export class Rohlik extends StatefulShop {
+  get detailSelector() {
     return "#productDetail";
+  }
+
+  get observerTarget() {
+    return document.querySelector("#__next");
+  }
+
+  shouldRender(mutations) {
+    return didRenderDetail(mutations);
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "removedNodes", "product_detail_modal");
   }
 
   async scrape() {

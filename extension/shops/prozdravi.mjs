@@ -31,11 +31,9 @@ export class Prozdravi extends AsyncShop {
     const elem = document.querySelector(
       ".product-prices-block.product-prices-block--single-product"
     );
-    console.log("inject", {elem});
     if (!elem) throw new Error("Element to add chart not found");
 
     const markup = renderMarkup();
-    console.log({markup});
     elem.insertAdjacentElement("beforeend", markup);
     return elem;
   }

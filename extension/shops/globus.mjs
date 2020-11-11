@@ -1,10 +1,21 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Globus extends AsyncShop {
+export class Globus extends StatefulShop {
+  get detailSelector() {
+    return "#detail-container";
+  }
 
-  get waitForSelector() {
-    return ".detail-title h1";
+  get observerTarget() {
+    return document.body;
+  }
+
+  shouldRender(mutations) {
+    return this.didMutate(mutations, "addedNodes", "modal-backdrop");
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "removedNodes", "modal-backdrop");
   }
 
   async scrape() {

@@ -1,9 +1,21 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Kosik extends AsyncShop {
-  get waitForSelector() {
+export class Kosik extends StatefulShop {
+  get detailSelector() {
     return ".product-detail__main-info";
+  }
+
+  get observerTarget() {
+    return document.querySelector(".product-overlay-content");
+  }
+
+  shouldRender(mutations) {
+    return this.didMutate(mutations, "addedNodes", "mfp-wrap");
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "removedNodes", "mfp-wrap");
   }
 
   async scrape() {

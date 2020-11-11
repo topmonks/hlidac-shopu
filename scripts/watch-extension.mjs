@@ -10,14 +10,14 @@ const outputFF = path.resolve("extension-dist/content.js");
 async function build() {
   const service = await esbuild.startService();
   try {
-    console.time("build");
+    console.time();
     await service.build({
       color: true,
       entryPoints: [entryPoint],
       outfile: output,
       bundle: true
     });
-    console.timeEnd("build");
+    console.timeEnd();
     fs.copyFileSync(output, outputFF);
   } catch (err) {
     console.error(err);
