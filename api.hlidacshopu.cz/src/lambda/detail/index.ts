@@ -52,7 +52,9 @@ export async function handler(event: Request): Promise<Response> {
     let itemId = params.itemId ?? shop.itemId;
     if (params.currentPrice && params.currentPrice !== "null") {
       // store parsed data by extension
-      putParsedData(db, shop, params).catch(err => console.error("ERROR: " + err));
+      putParsedData(db, shop, params).catch(err =>
+        console.error("ERROR: " + err)
+      );
     }
     const extraData = getParsedData(db, shop);
     const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
@@ -64,7 +66,20 @@ export async function handler(event: Request): Promise<Response> {
     }
 
     const rows = prepareData(item);
-    const { currentPrice, originalPrice, imageUrl } = (await extraData) ?? {...params};
+    const { currentPrice, originalPrice, imageUrl } = Object.assign(
+      {},
+      await extraData,
+      params.currentPrice
+        ? {
+            currentPrice: parseFloat(params.currentPrice ?? "0"),
+            originalPrice:
+              params.originalPrice === "null"
+                ? null
+                : parseFloat(params.originalPrice ?? "0"),
+            imageUrl: params.imageUrl === "null" ? null : params.imageUrl
+          }
+        : {}
+    );
     if (currentPrice)
       rows.push({ currentPrice, originalPrice, date: new Date() });
 

@@ -171,6 +171,6 @@ interface AllShopsRow {
 
 export interface DataRow {
   currentPrice: number | null;
-  originalPrice: number | null;
+  originalPrice: number | null | undefined;
   date: Date;
 }
