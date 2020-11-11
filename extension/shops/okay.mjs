@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
+  get injectionPoint() {
+    return ["beforebegin", ".box-presents, .annotation"];
+  }
+
   async scrape() {
     const elem = document.querySelector("#page-product-detail");
     if (!elem) return;
@@ -15,15 +19,6 @@ export class Okay extends Shop {
     const imageUrl = document.querySelector(".js-zoomingImageSmall").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector("#potrebujeteporadit");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

@@ -2,6 +2,13 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Prozdravi extends AsyncShop {
+  get injectionPoint() {
+    return [
+      "beforeend",
+      ".product-prices-block.product-prices-block--single-product"
+    ];
+  }
+
   get waitForSelector() {
     return ".product-prices-block__inner";
   }
@@ -25,17 +32,6 @@ export class Prozdravi extends AsyncShop {
       .src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(
-      ".product-prices-block.product-prices-block--single-product"
-    );
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforeend", markup);
-    return elem;
   }
 }
 

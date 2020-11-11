@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Benu extends Shop {
+  get injectionPoint() {
+    return ["afterend", ".buy-box"];
+  }
+
   async scrape() {
     const richSnippet = JSON.parse(
       document.querySelector("#snippet-productRichSnippet-richSnippet")
@@ -18,15 +22,6 @@ export class Benu extends Shop {
       .content;
 
     return { title, itemId, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".buy-box");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

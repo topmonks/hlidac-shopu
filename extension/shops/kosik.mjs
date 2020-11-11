@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { StatefulShop } from "./shop.mjs";
 
 export class Kosik extends StatefulShop {
+  get injectionPoint() {
+    return ["afterend", ".product-detail__cart, .product-detail__cart-info"];
+  }
+
   get detailSelector() {
     return ".product-detail__main-info";
   }
@@ -41,17 +45,6 @@ export class Kosik extends StatefulShop {
     } catch (e) {
       console.error("Could not find product info", e);
     }
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(
-      ".product-detail__cart, .product-detail__cart-info"
-    );
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

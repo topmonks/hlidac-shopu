@@ -9,6 +9,10 @@ const didRenderDetail = mutations =>
   );
 
 export class Rohlik extends StatefulShop {
+  get injectionPoint() {
+    return ["afterend", "#productDetail .AmountCounter"];
+  }
+
   get detailSelector() {
     return "#productDetail";
   }
@@ -42,15 +46,6 @@ export class Rohlik extends StatefulShop {
       .src;
 
     return { itemId, title: t, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector("#productDetail .AmountCounter");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

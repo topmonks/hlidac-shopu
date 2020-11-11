@@ -8,6 +8,10 @@ export class Notino extends Shop {
     this.lastHref = location.href;
   }
 
+  get injectionPoint() {
+    return ["beforebegin", "a[class^='styled__StyledAddToWishlist']"];
+  }
+
   scheduleRendering(render, cleanup) {
     const elem = document.getElementById("pd-price");
     if (!elem) return false;
@@ -80,16 +84,6 @@ export class Notino extends Shop {
     }
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(
-      "a[class^='styled__StyledAddToWishlist']"
-    );
-    if (!elem) throw new Error("Element to add chart not found");
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

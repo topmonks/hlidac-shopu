@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Mironet extends Shop {
+  get injectionPoint() {
+    return ["afterend", ".product_kosik_info"];
+  }
+
   async scrape() {
     const elem = document.querySelector(".product_detail");
     if (!elem) return;
@@ -14,15 +18,6 @@ export class Mironet extends Shop {
     const imageUrl = document.getElementById("DetailImg").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".product_kosik_info");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

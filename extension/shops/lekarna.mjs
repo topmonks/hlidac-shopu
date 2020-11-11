@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Lekarna extends Shop {
+  get injectionPoint() {
+    return ["afterend", ".product-detail-box"];
+  }
+
   async scrape() {
     const elem = document.querySelector(".detail-top");
     if (!elem) return;
@@ -17,15 +21,6 @@ export class Lekarna extends Shop {
     const imageUrl = document.querySelector(".product__img img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".product__price-and-form");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

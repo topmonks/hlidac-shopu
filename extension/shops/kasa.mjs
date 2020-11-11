@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Kasa extends Shop {
+  get injectionPoint() {
+    return ["beforebegin", ".product-summary-tools"];
+  }
+
   async scrape() {
     const elem = document.querySelector(".product-detail");
     if (!elem) return;
@@ -13,15 +17,6 @@ export class Kasa extends Shop {
     const imageUrl = document.querySelector(".large-img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".product-summary-tools");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

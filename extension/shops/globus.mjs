@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { StatefulShop } from "./shop.mjs";
 
 export class Globus extends StatefulShop {
+  get injectionPoint() {
+    return ["beforebegin", "#detail-tabs-content"];
+  }
+
   get detailSelector() {
     return "#detail-container";
   }
@@ -28,15 +32,6 @@ export class Globus extends StatefulShop {
     const imageUrl = document.querySelector(".detail-image img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector("#detail-tabs-content");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

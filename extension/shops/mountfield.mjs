@@ -2,6 +2,18 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Mountfield extends Shop {
+  get injectionPoint() {
+    return [
+      "beforebegin",
+      ".productCompare",
+      {
+        clear: "right",
+        float: "right",
+        width: "374px"
+      }
+    ];
+  }
+
   async scrape() {
     const elem = document.querySelector(".productDetail");
     if (!elem) return;
@@ -15,19 +27,6 @@ export class Mountfield extends Shop {
     const imageUrl = document.querySelector(".mainImage img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".productCompare");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup({
-      clear: "right",
-      float: "right",
-      width: "348px"
-    });
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

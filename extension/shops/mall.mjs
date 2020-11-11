@@ -2,6 +2,15 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Mall extends Shop {
+  get injectionPoint() {
+    return [
+      "afterend",
+      `.product-footer,
+       .other-options-box,
+       .detail-prices-wrapper`
+    ];
+  }
+
   async scrape() {
     const elem = document.querySelector(".price-wrapper, .prices-wrapper");
     if (!elem) return;
@@ -19,18 +28,6 @@ export class Mall extends Shop {
     const imageUrl = document.querySelector(".gallery-magnifier__normal").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(`
-      .product-footer,
-      .other-options-box,
-      .detail-prices-wrapper`);
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 

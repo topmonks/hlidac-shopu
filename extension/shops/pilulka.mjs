@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Pilulka extends Shop {
+  get injectionPoint() {
+    return ["beforeend", ".product-detail__reduced h1+div+div"];
+  }
+
   async scrape() {
     const title = document.querySelector(".product-detail__header").innerText;
     const priceContainer = document.querySelector("div.js-product-prev");
@@ -14,15 +18,6 @@ export class Pilulka extends Shop {
       .dataset["src"];
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".product-detail__reduced h1+div+div");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforeend", markup);
-    return elem;
   }
 }
 

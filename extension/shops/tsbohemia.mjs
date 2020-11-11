@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class TSBohemia extends Shop {
+  get injectionPoint() {
+    return ["beforebegin", ".product-tools"]
+  }
+
   async scrape() {
     const elem = document.querySelector("#stoitem_detail");
     if (!elem) return;
@@ -18,18 +22,6 @@ export class TSBohemia extends Shop {
     const imageUrl = document.querySelector("#sti_bigimg img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".product-tools");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup({
-      width: "calc(100% - 32px)",
-      "align-self": "center"
-    });
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
   }
 }
 

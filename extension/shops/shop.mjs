@@ -7,8 +7,16 @@ export class Shop {
     throw new Error("Method not implemented");
   }
 
+  get injectionPoint() {
+    throw new Error("Property not implemented");
+  }
+
   inject(renderMarkup) {
-    throw new Error("Method not implemented");
+    const [position, selector, extraStyles] = this.injectionPoint;
+    const elem = document.querySelector(selector);
+    if (!elem) throw new Error("Element to add chart not found");
+    elem.insertAdjacentElement(position, renderMarkup(extraStyles));
+    return elem;
   }
 }
 
@@ -71,7 +79,7 @@ export class StatefulShop extends Shop {
   }
 
   didMutate(mutations, prop, token) {
-   return mutations.find(x =>
+    return mutations.find(x =>
       Array.from(x[prop]).find(y => y.classList && y.classList.contains(token))
     );
   }

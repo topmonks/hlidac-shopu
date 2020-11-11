@@ -2,6 +2,10 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class CZC extends Shop {
+  get injectionPoint() {
+    return ["beforeend", ".pd-price-delivery"];
+  }
+
   async scrape() {
     const elem = document.querySelector(".product-detail");
     if (!elem) return;
@@ -12,15 +16,6 @@ export class CZC extends Shop {
     const imageUrl = document.querySelector("meta[itemprop=image]").content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".pd-price-delivery");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("beforeend", markup);
-    return elem;
   }
 }
 
