@@ -9,13 +9,13 @@ import Cocoa
 import SafariServices.SFSafariApplication
 import SafariServices.SFSafariExtensionManager
 
-let appName = "hlidac shopu"
-let extensionBundleIdentifier = "com.topmonks.hlidac-shopu-Extension"
+//let appName = "hlidac shopu"
+let extensionBundleIdentifier = "com.topmonks.hlidac-shopu.extension"
 
 class ViewController: NSViewController {
 
     @IBOutlet var appNameLabel: NSTextField!
-    
+
 //    override func viewDidLoad() {
 //        super.viewDidLoad()
 //        self.appNameLabel.stringValue = appName
@@ -34,7 +34,7 @@ class ViewController: NSViewController {
 //            }
 //        }
 //    }
-    
+
     @IBAction func openSafariExtensionPreferences(_ sender: AnyObject?) {
         SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
             guard error == nil else {
