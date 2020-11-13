@@ -45,7 +45,7 @@ GEM
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
     fastimage (2.2.0)
-    fastlane (2.165.0)
+    fastlane (2.166.0)
       CFPropertyList (>= 2.3, < 4.0.0)
       addressable (>= 2.3, < 3.0.0)
       aws-sdk-s3 (~> 1.0)
@@ -118,7 +118,7 @@ GEM
     json (2.3.1)
     jwt (2.2.2)
     memoist (0.16.2)
-    mini_magick (4.10.1)
+    mini_magick (4.11.0)
     mini_mime (1.0.2)
     multi_json (1.15.0)
     multipart-post (2.0.0)
@@ -177,4 +177,4 @@ DEPENDENCIES
   fastlane
 
 BUNDLED WITH
-   2.1.0.pre.1
+   2.1.4
