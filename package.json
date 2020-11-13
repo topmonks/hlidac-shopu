@@ -61,8 +61,6 @@
     "build:chrome": "web-ext build --overwrite-dest",
     "postbuild:chrome": "rename -f 's/hl_da_shop_/chrome-extension/g' dist/*.zip",
     "start:chrome": "web-ext run --target=chromium",
-    "prerelease:osx": "yarn build:extension",
-    "release:osx": "pushd './apple/osx/hlidac shopu'; fastlane release; popd;",
     "open:osx": "open './apple/osx/hlidac shopu/hlidac shopu.xcodeproj'",
     "start:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid",
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build",
