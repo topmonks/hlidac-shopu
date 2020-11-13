@@ -10,7 +10,7 @@ import SafariServices.SFSafariApplication
 import SafariServices.SFSafariExtensionManager
 
 //let appName = "hlidac shopu"
-let extensionBundleIdentifier = "com.topmonks.hlidac-shopu-extension"
+let extensionBundleIdentifier = "com.topmonks.hlidac-shopu.extension"
 
 class ViewController: NSViewController {
 
