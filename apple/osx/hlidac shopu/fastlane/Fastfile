@@ -13,9 +13,9 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-default_platform(:ios)
+default_platform(:mac)
 
-platform :ios do
+platform :mac do
   before_all do
     setup_circle_ci
   end
@@ -24,8 +24,7 @@ platform :ios do
   lane :release do
     match(
       type: "appstore",
-      readonly: is_ci,
-      additional_cert_types: "mac_installer_distribution"
+      readonly: is_ci
     )
     build_mac_app(scheme: "hlidac shopu")
     upload_to_app_store(skip_metadata: true, skip_screenshots: true)
