@@ -22,8 +22,12 @@ platform :ios do
 
   desc "Push a new release build to the App Store"
   lane :release do
-    match(type: "appstore")
-    build_app(scheme: "hlidac shopu")
+    match(
+      type: "appstore",
+      readonly: is_ci,
+      additional_cert_types: "mac_installer_distribution"
+    )
+    build_mac_app(scheme: "hlidac shopu")
     upload_to_app_store(skip_metadata: true, skip_screenshots: true)
   end
 end
