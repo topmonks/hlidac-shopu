@@ -26,7 +26,7 @@ platform :mac do
       type: "appstore",
       readonly: is_ci
     )
-    build_mac_app(scheme: "hlidac shopu")
+    build_mac_app(scheme: "hlidac shopu", export_method: "app-store")
     upload_to_app_store(skip_metadata: true, skip_screenshots: true)
   end
 end
