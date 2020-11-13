@@ -32,6 +32,8 @@ if [ ! -e $new_ver ]; then
   sed -E "s/<small>[0-9]+\.[0-9]+\.[0-9]+<\/small>/<small>$new_ver<\/small>/" extension/popup/about.html > $tmp
   mv $tmp extension/popup/about.html
 
+  exec "node" "scripts/set-osx-version.js"
+
   echo "Version updated to $new_ver"
 fi
 
