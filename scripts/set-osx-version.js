@@ -14,7 +14,8 @@ try {
   const info_plist = plist.parse(fs.readFileSync(info_plist_path, "utf8"));
 
   const { version } = require(`${__ext_path}/manifest.json`);
-  const bundleNumber = parseInt(info_plist['CFBundleVersion']) || 0 + 1;
+  const bundleNumber = info_plist['CFBundleVersion'] + 1;
+
 
   info_plist["CFBundleShortVersionString"] = version;
   info_plist["CFBundleVersion"] = bundleNumber;
