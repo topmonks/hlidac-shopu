@@ -132,8 +132,8 @@ jobs:
           pkg-manager: yarn
           cache-version: osx
       - run:
-          name: Build Safari extensions
-          command: yarn build:safari
+          name: Build and Release Safari extension for Mac
+          command: yarn release:osx
       - slack/notify:
           event: fail
           template: basic_fail_1
