@@ -3,6 +3,9 @@ import chokidar from "chokidar";
 import esbuild from "esbuild";
 import path from "path";
 import fs from "fs";
+import url from "url";
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const entryPoint = path.resolve(__dirname, "../extension/content.mjs");
 const output = path.resolve(__dirname, "../extension/content.js");

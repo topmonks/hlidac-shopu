@@ -2,7 +2,9 @@
 import fs from "fs";
 import path from "path";
 import puppeteer from "puppeteer";
+import url from "url";
 
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const pathToExtension = path.resolve(__dirname, "../extension");
 
 const urlSet = [
