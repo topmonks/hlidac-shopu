@@ -82,8 +82,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
 
   build-web-extension:
     machine:
@@ -124,8 +122,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
 
   build-safari-extension:
     macos:
@@ -147,7 +143,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
           mentions: "@junkycoder"
 
   provision:
@@ -168,8 +163,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
 
   preview-provision:
     executor:
@@ -186,8 +179,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
 
   deploy-site:
     parameters:
@@ -207,12 +198,9 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
-          channel: ntf-hlidac-shopu
           mentions: "@channel"
 
   merge_pr:
@@ -226,23 +214,21 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          channel: ntf-hlidac-shopu
-          mentions: "@$CIRCLE_USERNAME"
 
 workflows:
   ci:
     jobs:
       - preview-provision:
           context:
-            - app-hlidac-shopu
             - org-global
+            - app-hlidac-shopu
           filters:
             branches:
               ignore: master
       - provision:
           context:
-            - app-hlidac-shopu
             - org-global
+            - app-hlidac-shopu
           filters:
             branches:
               only: master
@@ -255,8 +241,8 @@ workflows:
       - deploy-site:
           site_name: www.hlidacshopu.cz
           context:
-            - app-hlidac-shopu
             - org-global
+            - app-hlidac-shopu
           requires:
             - provision
             - build-website
