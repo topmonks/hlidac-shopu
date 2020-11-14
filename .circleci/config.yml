@@ -135,7 +135,7 @@ jobs:
           at: .
       - node/install:
           node-version: "14.14"
-          instal-yarn: true
+          install-yarn: true
       - node/install-packages:
           pkg-manager: yarn
       - persist_to_workspace:
