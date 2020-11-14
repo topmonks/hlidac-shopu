@@ -119,7 +119,7 @@ jobs:
       - browser-tools/install-chrome
       - run:
           name: Make screenshots
-          command: node ./scripts/screenshotter.js
+          command: ./scripts/screenshotter.mjs
       - store_artifacts:
           path: ./screenshots
       - slack/notify:
