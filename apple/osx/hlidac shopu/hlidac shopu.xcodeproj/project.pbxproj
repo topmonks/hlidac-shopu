@@ -405,8 +405,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "hlidac shopu Extension/hlidac_shopu_Extension.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac shopu Extension/Info.plist";
@@ -428,8 +428,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "hlidac shopu Extension/hlidac_shopu_Extension.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "hlidac shopu Extension/Info.plist";
