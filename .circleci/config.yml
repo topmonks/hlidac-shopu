@@ -88,8 +88,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   build-web-extension:
-    machine:
-      image: ubuntu-2004:202010-01
+    executor:
+      name: node/default
+      tag: "14.14"
     steps:
       - checkout
       - run:
@@ -120,16 +121,29 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: [dist]
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+
+  test-web-extension:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - node/install-packages:
+          pkg-manager: yarn
+      - persist_to_workspace:
+          root: .
+          paths: [dist]
       - browser-tools/install-chrome
       - run:
           name: Make screenshots
           command: yarn node ./scripts/screenshotter.mjs
       - store_artifacts:
           path: ./screenshots
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-          channel: ntf-hlidac-shopu
 
   publish-web-extensions:
     executor:
@@ -145,6 +159,15 @@ jobs:
       - run:
           name: Publish Chrome extension
           command: yarn publish:chrome
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          mentions: "@here"
+          channel: ntf-hlidac-shopu
 
   build-safari-extension:
     macos:
@@ -231,7 +254,7 @@ jobs:
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
-          mentions: "@channel"
+          mentions: "@here"
           channel: ntf-hlidac-shopu
 
   merge_pr:
@@ -266,12 +289,19 @@ workflows:
               only: master
       - build-web-extension:
           context: org-global
+      - test-web-extension:
+          require:
+            - build-web-extension
       - confirm-release:
           type: approval
+          filters:
+            branches:
+              only: master
       - publish-web-extensions:
           context: app-hlidac-shopu
           requires:
             - confirm-release
+            - build-web-extension
       - build-safari-extension:
           context: org-global
       - build-website:
