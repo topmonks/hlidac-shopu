@@ -153,6 +153,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - node/install-packages:
+          pkg-manager: yarn
       - run:
           name: Publish Firefox extension
           command: yarn publish:firefox
