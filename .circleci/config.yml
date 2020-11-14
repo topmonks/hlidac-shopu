@@ -137,7 +137,7 @@ jobs:
           pkg-manager: yarn
       - persist_to_workspace:
           root: .
-          paths: [dist]
+          paths: [dist, extension/content.js]
       - browser-tools/install-chrome
       - run:
           name: Make screenshots
@@ -174,12 +174,8 @@ jobs:
       xcode: "12.0.1"
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: osx
-      - run:
-          name: Build pure Web Extension
-          command: yarn build:extension
+      - attach_workspace:
+          at: .
       - run:
           name: Build and Release Mac Extension App
           working_directory: "apple/osx/hlidac shopu"
@@ -304,6 +300,9 @@ workflows:
             - build-web-extension
       - build-safari-extension:
           context: org-global
+          requires:
+            - confirm-release
+            - build-web-extension
       - build-website:
           context: org-global
       - deploy-site:
