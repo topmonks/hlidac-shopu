@@ -48,7 +48,7 @@ export async function handler(event: Request): Promise<Response> {
       items = resp.map(x => x.Items?.[0]).filter(Boolean);
     } else {
       items = take(250, lines)
-        .map(l => l.split(","))
+        .map(l => l.replace(/\"/g, "").split(","))
         .map(([shop, itemId]) => ({ shop, itemId }));
     }
     const queries = items.map(async ({ shop, itemId }: any) => {
