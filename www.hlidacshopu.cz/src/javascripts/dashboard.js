@@ -14,7 +14,10 @@ addEventListener("DOMContentLoaded", async e => {
 });
 
 function tableTemplate(data) {
-  return data.sort((a, b) => a.sortKey - b.sortKey).map(shopTemplate);
+  return data
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .filter(x => x != null)
+    .map(shopTemplate);
 }
 
 function shopTemplate({
