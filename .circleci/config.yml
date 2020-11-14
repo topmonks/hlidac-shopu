@@ -74,6 +74,9 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run:
+          name: Lint website
+          command: yarn lint:website
+      - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
       - persist_to_workspace:
@@ -157,6 +160,9 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install-packages:
           pkg-manager: yarn
+      - run:
+          name: Lint API
+          command: yarn lint:api
       - pulumi/update:
           stack: hlidac-shopu-prod
           skip-preview: true

@@ -59,7 +59,7 @@
     "lint": "run-p lint:*",
     "lint:website": "eslint ./www.hlidacshopu.cz",
     "lint:api": "eslint ./api.hlidacshopu.cz/",
-    "lint:extension": "web-ext lint",
+    "lint:extension": "yarn eslint ./extension; web-ext lint",
     "lint:firefox": "web-ext lint --config web-ext-config.firefox.js",
     "build:extension": "esbuild ./extension/content.mjs --bundle --outfile=extension/content.js",
     "watch:extension": "node ./scripts/watch-extension.mjs",
