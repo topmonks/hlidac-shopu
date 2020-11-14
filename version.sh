@@ -4,9 +4,13 @@ package_json_ver=`jq -r '.version' package.json`
 manifest_ver=`jq -r '.version' extension/manifest.json`
 about_ver=`cat extension/popup/about.html | perl -n -e'/<small>(\d+\.\d+\.\d+)<\/small>/ && print $1'`
 
+if [ "$PRINT" = "manifest" ]; then
+  echo "$manifest_ver";
+else
 echo "package.json $package_json_ver"
 echo "manifest.json $manifest_ver"
 echo "about.html $about_ver"
+fi
 
 if [ "$FORCE" != "1" ]; then
   if [ "$package_json_ver" != "$manifest_ver" ] ||  [ "$manifest_ver" != "$about_ver" ]; then

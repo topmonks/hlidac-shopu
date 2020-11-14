@@ -6,6 +6,12 @@
   "version": "1.8.1",
   "author": "TopMonks",
   "homepage_url": "https://www.hlidacshopu.cz/",
+  "applications": {
+    "gecko": {
+      "id": "{d6f0f975-91a3-4d78-96f7-5f1859ad18b6}",
+      "strict_min_version": "78.0"
+    }
+  },
   "background": {
     "scripts": [
       "background.js"

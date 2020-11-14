@@ -11,6 +11,13 @@
 
 PWA and browser extension shows historical prices for biggest czech and slovak e-commerce websites.
 
+## Install
+
+* [Chrome extension](https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk?hl=cs) - also works in Edge, Brave and Opera
+* [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/)
+* [Safari extension](https://apps.apple.com/us/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?mt=12)
+* [Progressive Web Application](https://www.hlidacshopu.cz/app/)
+
 ## Development
 
 We are using npm scripts for project automation.

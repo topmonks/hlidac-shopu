@@ -117,6 +117,9 @@ jobs:
             yarn build:firefox
       - store_artifacts:
           path: ./dist
+      - persist_to_workspace:
+          root: .
+          paths: [dist]
       - browser-tools/install-chrome
       - run:
           name: Make screenshots
@@ -127,6 +130,21 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+
+  publish-web-extensions:
+    executor:
+      name: node/default
+      tag: "14.14"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Publish Firefox extension
+          command: yarn publish:firefox
+      - run:
+          name: Publish Chrome extension
+          command: yarn publish:chrome
 
   build-safari-extension:
     macos:
@@ -248,6 +266,12 @@ workflows:
               only: master
       - build-web-extension:
           context: org-global
+      - confirm-release:
+          type: approval
+      - publish-web-extensions:
+          context: app-hlidac-shopu
+          requires:
+            - confirm-release
       - build-safari-extension:
           context: org-global
       - build-website:
