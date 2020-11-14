@@ -1,5 +1,5 @@
 import { html, svg, render } from "lit-html/lit-html.js";
-import { formatPercents } from "@hlidac-shopu/lib/format.js";
+import { formatNumber, formatPercents } from "@hlidac-shopu/lib/format.js";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.js";
 
 const tableRoot = document.getElementById("table-root");
@@ -30,8 +30,8 @@ function shopTemplate({
   return html`
     <tr class="dashboard-row">
       <th scope="row">${logoTemplate({ name, url, logo, viewBox })}</th>
-      <td>${allProducts.toLocaleString("cs")}</td>
-      <td>${(bfProducts && bfProducts.toLocaleString("cs")) || "-"}</td>
+      <td>${formatNumber(allProducts)}</td>
+      <td>${formatNumber(bfProducts) || "-"}</td>
       <td>${formatPercents(avgClaimedDiscount) || "-"}</td>
       <td>${formatPercents(avgRealDiscount) || "-"}</td>
     </tr>
