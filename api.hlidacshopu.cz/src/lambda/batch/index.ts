@@ -23,7 +23,7 @@ export async function handler(event: Request): Promise<Response> {
 
   try {
     const payload = Buffer.from(event.body, "base64").toString("ascii");
-    let lines = payload.split(/[\r\n]+/);
+    const lines = payload.split(/[\r\n]+/);
     const db = new aws.sdk.DynamoDB.DocumentClient();
 
     let items;
@@ -48,11 +48,11 @@ export async function handler(event: Request): Promise<Response> {
       items = resp.map(x => x.Items?.[0]).filter(Boolean);
     } else {
       items = take(250, lines)
-        .map(l => l.replace(/\"/g, "").split(","))
+        .map(l => l.replace(/"/g, "").split(","))
         .map(([shop, itemId]) => ({ shop, itemId }));
     }
     const queries = items.map(async ({ shop, itemId }: any) => {
-      let resp: any = await getHistoricalData(db, shop, itemId);
+      const resp: any = await getHistoricalData(db, shop, itemId);
       if (resp) {
         const data = prepareData(resp);
         return {
@@ -64,7 +64,7 @@ export async function handler(event: Request): Promise<Response> {
       }
       return { shop, itemId, error: "no-data" };
     });
-    let results: any = await Promise.all(queries);
+    const results: any = await Promise.all(queries);
     return withCORS(["POST", "OPTIONS"])(response(results));
   } catch (err) {
     console.error(err);

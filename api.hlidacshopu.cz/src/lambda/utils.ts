@@ -1,4 +1,4 @@
-import { Request, Response } from "@pulumi/awsx/apigateway";
+import { Response } from "@pulumi/awsx/apigateway";
 
 export function movedPermanently(location: string): Response {
   return {
@@ -8,7 +8,9 @@ export function movedPermanently(location: string): Response {
   };
 }
 
-export function notFound(body: object = { error: "Data not found" }): Response {
+export function notFound(
+  body: Record<string, unknown> = { error: "Data not found" }
+): Response {
   return {
     statusCode: 404,
     body: JSON.stringify(body)
@@ -16,7 +18,7 @@ export function notFound(body: object = { error: "Data not found" }): Response {
 }
 
 export function response(
-  body: object | string,
+  body: Record<string, unknown> | string,
   headers?: {
     [header: string]: boolean | number | string;
   }

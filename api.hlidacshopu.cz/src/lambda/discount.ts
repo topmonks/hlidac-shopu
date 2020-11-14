@@ -43,7 +43,7 @@ function commonPriceDifference(
   lastDiscountDate: Date | null,
   lastIncreaseDate: Date | null,
   series: [Date, number][],
-  isInInterval: (x: Date) => Boolean
+  isInInterval: (x: Date) => boolean
 ) {
   // find most frequent price in 90 days interval before sale action
   const byPrice = groupBy(([, price]) => price);

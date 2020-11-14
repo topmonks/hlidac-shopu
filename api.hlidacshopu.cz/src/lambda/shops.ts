@@ -97,7 +97,7 @@ class Alza extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.substr(1).match(/[^\/]+$/);
+    const match = this.url?.pathname.substr(1).match(/[^/]+$/);
     return match?.[0]?.replace(".htm", "") ?? this.url?.pathname.substr(1);
   }
 
@@ -186,7 +186,7 @@ class Datart extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.substr(1).match(/([^\/]+)\.html$/);
+    const match = this.url?.pathname.substr(1).match(/([^/]+)\.html$/);
     return match?.[1];
   }
 }
@@ -350,7 +350,7 @@ class Lekarna extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.substr(1).match(/(?:[^\/]+\/)?([^\/]+)/);
+    const match = this.url?.pathname.substr(1).match(/(?:[^/]+\/)?([^/]+)/);
     return match?.[1];
   }
 }
@@ -365,7 +365,7 @@ class Kasa extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -380,7 +380,7 @@ class Benu extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -395,7 +395,7 @@ class Pilulka extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -420,7 +420,7 @@ class Okay extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -445,7 +445,7 @@ class Prozdravi extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -460,7 +460,7 @@ class Sleky extends Shop {
   }
 
   get itemUrl() {
-    const match = this.url?.pathname.match(/\/([^\/]+)/);
+    const match = this.url?.pathname.match(/\/([^/]+)/);
     return match?.[1];
   }
 }
@@ -480,7 +480,7 @@ class IGlobus extends Shop {
       const match = this.url?.hash.match(/#(.+)/);
       return match?.[1];
     }
-    const match = this.url?.pathname.match(/\/[^\/]+\/([^\/]+)$/);
+    const match = this.url?.pathname.match(/\/[^/]+\/([^/]+)$/);
     return match?.[1];
   }
 }
