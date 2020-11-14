@@ -133,9 +133,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - node/install:
-          node-version: "14.14"
-          install-yarn: true
+      - run: nvm install 14.14
       - node/install-packages:
           pkg-manager: yarn
       - run:
