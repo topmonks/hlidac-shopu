@@ -53,7 +53,7 @@ commands:
       after_s3_sync:
         description: Steps that will be execute after S3 sync, but before Cloudfront distribution invalidation
         type: steps
-        default: [ ]
+        default: []
     steps:
       - read_deployment_envs
       - aws-s3/sync:
@@ -85,6 +85,7 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
   build-web-extension:
     machine:
@@ -125,6 +126,7 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
   build-safari-extension:
     macos:
@@ -147,6 +149,7 @@ jobs:
           event: fail
           template: basic_fail_1
           mentions: "@junkycoder"
+          channel: ntf-hlidac-shopu
 
   provision:
     executor:
@@ -169,6 +172,7 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
   preview-provision:
     executor:
@@ -185,6 +189,7 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
   deploy-site:
     parameters:
@@ -192,7 +197,7 @@ jobs:
         type: string
       after_s3_sync:
         type: steps
-        default: [ ]
+        default: []
     executor: aws-cli/default
     steps:
       - checkout
@@ -204,10 +209,12 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
           mentions: "@channel"
+          channel: ntf-hlidac-shopu
 
   merge_pr:
     docker:
@@ -220,6 +227,7 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
 workflows:
   ci:
