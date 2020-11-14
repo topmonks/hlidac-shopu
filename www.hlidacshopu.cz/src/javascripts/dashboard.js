@@ -16,7 +16,7 @@ addEventListener("DOMContentLoaded", async e => {
 function tableTemplate(data) {
   return data
     .sort((a, b) => a.sortKey - b.sortKey)
-    .filter(x => x != null)
+    .filter(x => x.allProducts)
     .map(shopTemplate);
 }
 
