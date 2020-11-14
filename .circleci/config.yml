@@ -120,7 +120,7 @@ jobs:
           path: ./dist
       - persist_to_workspace:
           root: .
-          paths: [dist]
+          paths: [dist, extension-dist, extension/content.js]
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -138,10 +138,6 @@ jobs:
           install-yarn: true
       - node/install-packages:
           pkg-manager: yarn
-      - persist_to_workspace:
-          root: .
-          paths: [dist, extension/content.js]
-      - browser-tools/install-chrome
       - run:
           name: Make screenshots
           command: yarn node ./scripts/screenshotter.mjs
