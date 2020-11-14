@@ -3,7 +3,11 @@ import { classMap } from "lit-html/directives/class-map.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.js";
-import { formatDate, formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
+import {
+  formatDate,
+  formatMoney,
+  formatPercents
+} from "@hlidac-shopu/lib/format.js";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
 import "@hlidac-shopu/lib/chart.js";
 

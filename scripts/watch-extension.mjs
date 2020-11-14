@@ -1,11 +1,12 @@
+#!/usr/bin/env node
 import chokidar from "chokidar";
 import esbuild from "esbuild";
 import path from "path";
 import fs from "fs";
 
-const entryPoint = path.resolve("extension/content.mjs");
-const output = path.resolve("extension/content.js");
-const outputFF = path.resolve("extension-dist/content.js");
+const entryPoint = path.resolve(__dirname, "../extension/content.mjs");
+const output = path.resolve(__dirname, "../extension/content.js");
+const outputFF = path.resolve(__dirname, "../extension-dist/content.js");
 
 async function build() {
   const service = await esbuild.startService();

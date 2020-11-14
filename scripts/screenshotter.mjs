@@ -1,8 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const puppeteer = require("puppeteer");
+#!/usr/bin/env node
+import fs from "fs";
+import path from "path";
+import puppeteer from "puppeteer";
 
-const pathToExtension = path.resolve("./extension");
+const pathToExtension = path.resolve(__dirname, "../extension");
 
 const urlSet = [
   "https://www.aaaauto.cz/cz/mercedes-c/car.html?id=357661795#make=75&promo=gp",

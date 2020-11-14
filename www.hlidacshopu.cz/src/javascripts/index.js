@@ -1,6 +1,9 @@
 import { html, svg, render } from "lit-html/lit-html.js";
 import { shops } from "@hlidac-shopu/lib/shops.js";
-import { fetchDownloadStats, fetchShopsStats } from "@hlidac-shopu/lib/remoting.js";
+import {
+  fetchDownloadStats,
+  fetchShopsStats
+} from "@hlidac-shopu/lib/remoting.js";
 import { Workbox } from "workbox-window";
 
 const isProduction = () =>
@@ -69,12 +72,13 @@ addEventListener("DOMContentLoaded", async e => {
     render(client.installationGuide(), installationGuide);
   }
   eShopsCount.innerText = shops.size.toLocaleString("cs");
-  fetchDownloadStats().then(
-    x => (installsCount.innerText = x.downloads.toLocaleString("cs"))
-  );
+  fetchDownloadStats()
+    .then(x => (installsCount.innerText = x.downloads.toLocaleString("cs")))
+    .catch(ex => console.warn(ex));
   fetchShopsStats()
     .then(xs => xs.reduce((acc, x) => acc + x.allProducts, 0))
-    .then(x => (productsCount.innerText = x.toLocaleString("cs")));
+    .then(x => (productsCount.innerText = x.toLocaleString("cs")))
+    .catch(ex => console.warn(ex));
 });
 
 addEventListener("popstate", e => {
@@ -131,7 +135,10 @@ function getInstallationGuideUrl(searchParams) {
 
 function resultsEmbedd(url) {
   const parameters = new URLSearchParams({ url }).toString();
-  return html`<iframe class="hs-result__embedd" src="/app/?${parameters}"></iframe>`;
+  return html`<iframe
+    class="hs-result__embedd"
+    src="/app/?${parameters}"
+  ></iframe>`;
 }
 
 function logoTemplate({ logo, name, url, viewBox }) {

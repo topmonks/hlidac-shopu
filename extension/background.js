@@ -21,20 +21,23 @@ function activateLightMode() {
 }
 
 function setColorScheme() {
-  const prefersColorScheme = scheme => window.matchMedia(`(prefers-color-scheme: ${scheme})`);
+  const prefersColorScheme = scheme =>
+    window.matchMedia(`(prefers-color-scheme: ${scheme})`);
 
   const isDarkMode = prefersColorScheme("dark").matches;
   const isLightMode = prefersColorScheme("light").matches;
-  const isNotSpecified = prefersColorScheme("no-preference").matches;
 
-  prefersColorScheme("dark")
-    .addEventListener("change", e => e.matches && activateDarkMode());
-  prefersColorScheme("light")
-    .addEventListener("change", e => e.matches && activateLightMode());
+  prefersColorScheme("dark").addEventListener(
+    "change",
+    e => e.matches && activateDarkMode()
+  );
+  prefersColorScheme("light").addEventListener(
+    "change",
+    e => e.matches && activateLightMode()
+  );
 
   if (isDarkMode) activateDarkMode();
   if (isLightMode) activateLightMode();
 }
-
 
 setColorScheme();

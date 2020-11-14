@@ -22,20 +22,24 @@ if (tableRootPercent) {
       render(tableTemplatePercent(data), tableRootPercent);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplatePercent(data), buttonsSection);
-      document.getElementById("show-more-perc").addEventListener("click", showMorePerc);
-      document.getElementById("subscribe-perc").addEventListener("click", subscribe);
+      document
+        .getElementById("show-more-perc")
+        .addEventListener("click", showMorePerc);
+      document
+        .getElementById("subscribe-perc")
+        .addEventListener("click", subscribe);
 
-      document.querySelector('#table-root-percent').
-        addEventListener('click', e => {
+      document
+        .querySelector("#table-root-percent")
+        .addEventListener("click", e => {
           let t = e.target;
           if (t.href) {
-            console.log('in href');
+            console.log("in href");
             console.log(`href=${t.href}`);
             renderResultsModal(t.href);
           }
           e.preventDefault(); // Don't follow the links
-      });
-
+        });
     } catch (ex) {
       console.error(ex);
     }
@@ -59,14 +63,17 @@ if (tableRootKc) {
       render(tableTemplateKc(data), tableRootKc);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplateCZK(data), buttonsSection);
-      document.getElementById("show-more-czk").addEventListener("click", showMoreCZK);
-      document.getElementById("subscribe-czk").addEventListener("click", subscribe);
+      document
+        .getElementById("show-more-czk")
+        .addEventListener("click", showMoreCZK);
+      document
+        .getElementById("subscribe-czk")
+        .addEventListener("click", subscribe);
 
-      document.querySelector('#table-root-kc').
-      addEventListener('click', e => {
+      document.querySelector("#table-root-kc").addEventListener("click", e => {
         let t = e.target;
         if (t.href) {
-          console.log('in href');
+          console.log("in href");
           console.log(`href=${t.href}`);
           renderResultsModal(t.href);
         }
@@ -236,8 +243,12 @@ function buttonsTemplatePercent(data) {
   return html`
     <p></p>
     <div class="btn">
-      <a class="button" role="button" id="show-more-perc">Zobrazit další slevy</a>
-      <a class="button" role="button" id="subscribe-perc">Přihlásit k odběru slev</a>
+      <a class="button" role="button" id="show-more-perc"
+        >Zobrazit další slevy</a
+      >
+      <a class="button" role="button" id="subscribe-perc"
+        >Přihlásit k odběru slev</a
+      >
     </div>
   `;
 }
@@ -246,8 +257,12 @@ function buttonsTemplateCZK(data) {
   return html`
     <p></p>
     <div class="btn">
-      <a class="button" role="button" id="show-more-czk">Zobrazit další slevy</a>
-      <a class="button" role="button" id="subscribe-czk">Přihlásit k odběru slev</a>
+      <a class="button" role="button" id="show-more-czk"
+        >Zobrazit další slevy</a
+      >
+      <a class="button" role="button" id="subscribe-czk"
+        >Přihlásit k odběru slev</a
+      >
     </div>
   `;
 }
@@ -330,30 +345,31 @@ function shopTemplateKc({
     toHide = true;
   }
   if (!toHide) {
-  return html`
-    <tr class="dashboard-row">
-      <th>${sequenceId}</th>
-      <td>${formatMoney(Math.round(saleAbs))}</td>
-      <td>${formatMoney(Math.round(currentPrice))}</td>
-      <td>${formatMoney(Math.round(minPriceTDays))}</td>
-      <td>${formatPercents(salePerc / 100)}</td>
-      <td style="white-space: nowrap;">${formatedDate}</td>
-      <td>${productLinkTemplate(itemName, itemUrl)}</td>
-      <td>${logoTemplate(shop)}</td>
-    </tr>
-  `;} else {
     return html`
-    <tr class="dashboard-row" id="secondPart" style="display: none">
-      <th>${sequenceId}</th>
-      <td>${formatMoney(Math.round(saleAbs))}</td>
-      <td>${formatMoney(Math.round(currentPrice))}</td>
-      <td>${formatMoney(Math.round(minPriceTDays))}</td>
-      <td>${formatPercents(salePerc / 100)}</td>
-      <td style="white-space: nowrap;">${formatedDate}</td>
-      <td>${productLinkTemplate(itemName, itemUrl)}</td>
-      <td>${logoTemplate(shop)}</td>
-    </tr>
-  `;
+      <tr class="dashboard-row">
+        <th>${sequenceId}</th>
+        <td>${formatMoney(Math.round(saleAbs))}</td>
+        <td>${formatMoney(Math.round(currentPrice))}</td>
+        <td>${formatMoney(Math.round(minPriceTDays))}</td>
+        <td>${formatPercents(salePerc / 100)}</td>
+        <td style="white-space: nowrap;">${formatedDate}</td>
+        <td>${productLinkTemplate(itemName, itemUrl)}</td>
+        <td>${logoTemplate(shop)}</td>
+      </tr>
+    `;
+  } else {
+    return html`
+      <tr class="dashboard-row" id="secondPart" style="display: none">
+        <th>${sequenceId}</th>
+        <td>${formatMoney(Math.round(saleAbs))}</td>
+        <td>${formatMoney(Math.round(currentPrice))}</td>
+        <td>${formatMoney(Math.round(minPriceTDays))}</td>
+        <td>${formatPercents(salePerc / 100)}</td>
+        <td style="white-space: nowrap;">${formatedDate}</td>
+        <td>${productLinkTemplate(itemName, itemUrl)}</td>
+        <td>${logoTemplate(shop)}</td>
+      </tr>
+    `;
   }
 }
 
@@ -383,7 +399,9 @@ function logoTemplate(shop) {
 }
 
 function productLinkTemplate(itemName, itemUrl) {
-  return html` <a href="${itemUrl}" rel="noopener" target="_blank">${itemName}</a>`;
+  return html` <a href="${itemUrl}" rel="noopener" target="_blank"
+    >${itemName}</a
+  >`;
 }
 
 function productImageTemplate(itemImage) {
@@ -402,7 +420,10 @@ async function renderResultsModal(detailUrl) {
 
 function resultsEmbedd(url) {
   const parameters = new URLSearchParams({ url }).toString();
-  return html`<iframe class="hs-result__embedd" src="/app/?${parameters}"></iframe>`;
+  return html`<iframe
+    class="hs-result__embedd"
+    src="/app/?${parameters}"
+  ></iframe>`;
 }
 
 function showResultsModal() {
@@ -410,5 +431,3 @@ function showResultsModal() {
   modal.classList.remove("modal--hidden");
   document.body.classList.add("no-scroll");
 }
-
-
