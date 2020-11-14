@@ -133,6 +133,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - node/install:
+          node-version: "14.14"
+          instal-yarn: true
       - node/install-packages:
           pkg-manager: yarn
       - persist_to_workspace:
