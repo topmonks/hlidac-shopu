@@ -1,6 +1,6 @@
 const esbuild = require("gulp-esbuild");
 const pathConfig = require("./path-config.json");
-const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js")
+const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
 
 const config = {
   images: true,

@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "es6": true
@@ -11,6 +12,7 @@
   ],
   "extends": [
     "prettier",
+    "prettier/@typescript-eslint",
     "plugin:ava/recommended",
     "plugin:lit/recommended",
     "plugin:promise/recommended"
