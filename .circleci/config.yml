@@ -83,6 +83,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
 
   build-web-extension:
     machine:
@@ -124,6 +125,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
 
   build-safari-extension:
     macos:
@@ -138,7 +140,7 @@ jobs:
           command: yarn build:extension
       - run:
           name: Build and Release Mac Extension App
-          working_directory: 'apple/osx/hlidac shopu'
+          working_directory: "apple/osx/hlidac shopu"
           command: |
             bundle install
             bundle exec fastlane release
@@ -146,6 +148,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@junkycoder"
 
   provision:
     executor:
@@ -166,6 +169,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
 
   preview-provision:
     executor:
@@ -183,6 +187,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
 
   deploy-site:
     parameters:
@@ -203,10 +208,12 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
           channel: ntf-hlidac-shopu
+          mentions: "@channel"
 
   merge_pr:
     docker:
@@ -216,6 +223,12 @@ jobs:
       - github/install
       - github/merge_pr:
           rebase: true
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+          mentions: "@$CIRCLE_USERNAME"
+
 workflows:
   ci:
     jobs:
