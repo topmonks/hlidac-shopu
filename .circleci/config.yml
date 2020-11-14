@@ -286,7 +286,7 @@ workflows:
       - build-web-extension:
           context: org-global
       - test-web-extension:
-          require:
+          requires:
             - build-web-extension
       - confirm-release:
           type: approval
