@@ -1,4 +1,4 @@
-module.exports = {
+{
   "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "script",
@@ -9,10 +9,10 @@ module.exports = {
     "webextensions": true,
     "browser": true
   },
-  rules: {
+  "rules": {
     "semi": "error",
     "quotes": ["error", "double", { "avoidEscape": true }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": "off"
   }
-};
+}

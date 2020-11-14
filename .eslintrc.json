@@ -1,0 +1,21 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": [
+    "ava",
+    "lit",
+    "prettier",
+    "promise"
+  ],
+  "extends": [
+    "prettier",
+    "plugin:ava/recommended",
+    "plugin:lit/recommended",
+    "plugin:promise/recommended"
+  ],
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}

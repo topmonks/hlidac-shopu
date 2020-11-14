@@ -33,6 +33,12 @@
     "chokidar": "^3.4.3",
     "dotenv-cli": "^4.0.0",
     "esbuild": "^0.8.5",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-ava": "^11.0.0",
+    "eslint-plugin-lit": "^1.2.4",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
     "gulp-esbuild": "^0.2.6",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.2",
@@ -49,10 +55,11 @@
     "start": "run-p start:*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "run-p lint:*",
+    "lint:es": "eslint ./",
     "lint:extension": "web-ext lint",
     "lint:firefox": "web-ext lint --config web-ext-config.firefox.js",
     "build:extension": "esbuild ./extension/content.mjs --bundle --outfile=extension/content.js",
-    "watch:extension": "node scripts/watch-extension.mjs",
+    "watch:extension": "node ./scripts/watch-extension.mjs",
     "prebuild:firefox": "cp -R extension/ ./extension-dist/; cat ./extension/manifest.json | jq 'del(.background)' > ./extension-dist/manifest.json",
     "build:firefox": "web-ext build --config web-ext-config.firefox.js --overwrite-dest",
     "postbuild:firefox": "rename -f 's/hl_da_shop_/firefox-extension/g' dist/*.zip",
@@ -64,23 +71,6 @@
     "start:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid",
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build",
     "version": "./version.sh"
-  },
-  "eslintConfig": {
-    "rules": {
-      "indent": [
-        "error",
-        2,
-        {
-          "SwitchCase": 1
-        }
-      ]
-    }
-  },
-  "prettier": {
-    "tabWidth": 2,
-    "quoteProps": "preserve",
-    "trailingComma": "none",
-    "arrowParens": "avoid"
   },
   "workspaces": [
     "extension",
