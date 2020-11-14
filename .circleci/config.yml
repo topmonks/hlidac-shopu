@@ -136,10 +136,10 @@ jobs:
           command: yarn build:extension
       - run:
           name: Build and Release Mac Extension App
+          working_directory: 'apple/osx/hlidac shopu'
           command: |
             bundle install
             bundle exec fastlane release
-          working_directory: 'apple/osx/hlidac shopu'
       - slack/notify:
           event: fail
           template: basic_fail_1

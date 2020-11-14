@@ -1,15 +1,14 @@
 #!/usr/bin/env node
-const path = require('path');
+const path = require("path");
 const { execSync } = require("child_process");
 
-const __ext_path = path.resolve(__dirname, "../extension");
-const __osx_path = path.resolve(__dirname, "../apple/osx/hlidac shopu");
-const __osx_name = "hlidac shopu";
+const extensionPath = path.resolve(__dirname, "../extension");
+const osxPath = path.resolve(__dirname, "../apple/osx/hlidac shopu");
 
 try {
-  const { version } = require(`${__ext_path}/manifest.json`);
-  execSync(`pushd "${__osx_path}"; xcrun agvtool new-marketing-version ${version}; popd;`);
-  execSync(`pushd "${__osx_path}"; xcrun agvtool next-version -all; popd;`); // this jus increments build num
+  const { version } = require(`${extensionPath}/manifest.json`);
+  execSync(`xcrun agvtool new-marketing-version ${version}`, { cwd: osxPath });
+  execSync(`xcrun agvtool next-version -all`, { cwd: osxPath }); // this just increments build num
 
   console.log(`Mac app version is now ${version}`);
 } catch (error) {
