@@ -92,11 +92,16 @@ export class Alza extends Shop {
   }
 
   inject(renderMarkup) {
-    const detailElem = document.querySelector("#detailText .fceBtns");
+    const detailElem = document.querySelector("#detailText .buy-buttons");
     if (detailElem) {
       detailElem.insertAdjacentElement(
         "beforebegin",
-        renderMarkup({ "margin-bottom": "0" })
+        renderMarkup({
+          "order": "0",
+          "margin": "0",
+          "padding": "4px 0 8px",
+          "background-color": "#fff"
+        })
       );
       return detailElem;
     }

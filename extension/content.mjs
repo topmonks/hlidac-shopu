@@ -27,7 +27,6 @@ function widgetStyles() {
       background-color: #fff;
       border: 1px solid #e8e8e8;
       border-radius: 14px;
-      margin: 16px 0;
       padding: 8px;
       clear: both;
     }
@@ -338,12 +337,15 @@ function fetchData(url, info) {
 
 const renderRoot = document.createElement("div");
 renderRoot.dataset["hs"] = getVersion();
-const shadow = renderRoot.attachShadow({ mode: 'closed' });
+const shadow = renderRoot.attachShadow({ mode: "closed" });
 let chart;
 function renderHTML(repaint, shop, data, metadata) {
   if (!shop.loaded || !repaint) {
     shop.inject(styles => {
-      renderRoot.setAttribute("style", toCssString(styles));
+      renderRoot.setAttribute(
+        "style",
+        toCssString(Object.assign({ "margin": "16px 0" }, styles))
+      );
       return renderRoot;
     });
   }
@@ -368,45 +370,51 @@ function injectFont() {
 }
 
 function handleDetail(shop) {
-  shop.scheduleRendering(async repaint => {
-    try {
-      const info = await shop.scrape();
-      if (!info) {
-        // we don't understand this page
+  shop.scheduleRendering(
+    async repaint => {
+      try {
+        const info = await shop.scrape();
+        if (!info) {
+          // we don't understand this page
+          return false;
+        }
+
+        const url = info.url || location.href;
+        const res = await fetchData(url, info);
+        if (res.error || (res.metadata && res.metadata.error)) {
+          console.error(
+            "Error fetching data: ",
+            res.error || res.metadata.error
+          );
+          return false;
+        }
+        if (!res.data || res.data.length === 0) {
+          console.error("No data found:", res);
+          return false;
+        }
+
+        const { itemId } = info;
+        console.log(`Chart loaded for ItemID: ${itemId}`);
+        console.log({ info, metadata: res.metadata, dataset: res.data });
+
+        renderHTML(repaint, shop, res.data, res.metadata);
+
+        const params = new URLSearchParams({ url, itemId, debug: 1 });
+        console.log(`https://www.hlidacshopu.cz/app/?${params}`);
+        return true;
+      } catch (e) {
+        console.error(e);
         return false;
+      } finally {
+        console.groupEnd();
       }
-
-      const url = info.url || location.href;
-      const res = await fetchData(url, info);
-      if (res.error || (res.metadata && res.metadata.error)) {
-        console.error("Error fetching data: ", res.error || res.metadata.error);
-        return false;
-      }
-      if (!res.data || res.data.length === 0) {
-        console.error("No data found:", res);
-        return false;
-      }
-
-      const { itemId } = info;
-      console.log(`Chart loaded for ItemID: ${itemId}`);
-      console.log({ info, metadata: res.metadata, dataset: res.data });
-
-      renderHTML(repaint, shop, res.data, res.metadata);
-
-      const params = new URLSearchParams({ url, itemId, debug: 1 });
-      console.log(`https://www.hlidacshopu.cz/app/?${params}`);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    } finally {
-      console.groupEnd();
+    },
+    () => {
+      renderRoot.remove();
+      if (chart) chart.destroy();
+      shop.loaded = false;
     }
-  }, () => {
-    renderRoot.remove();
-    if (chart) chart.destroy();
-    shop.loaded = false;
-  });
+  );
 }
 
 async function main() {
