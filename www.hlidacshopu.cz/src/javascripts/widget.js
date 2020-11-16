@@ -53,7 +53,8 @@ async function renderResultsModal(detailUrl) {
       res.data.currentPrice,
       res.data.originalPrice,
       "Uváděná původní cena",
-      "Prodejní cena"
+      "Prodejní cena",
+      false
     );
   } catch (ex) {
     console.error(ex);
