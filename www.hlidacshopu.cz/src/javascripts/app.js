@@ -11,26 +11,42 @@ import {
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
 import "@hlidac-shopu/lib/web-components/chart.js";
 
+registerStylesheet("/assets/css/app.css");
+registerStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons");
+
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
 
 const root = document.getElementById("app-root");
-
-const styles = document.createElement("link");
-styles.rel = "stylesheet";
-styles.href = "/assets/css/app.css";
-document.head.insertAdjacentElement("beforeend", styles);
+const toolbar = document.getElementById("toolbar");
+const shareButton = document.getElementById("share-button");
+const searchButton = document.getElementById("search-button");
 
 addEventListener("DOMContentLoaded", async () => {
   console.group("Hlídačshopů.cz");
   const sharedInfo = getSharedInfo(location);
   console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
-    document.body.classList.remove("home-screen");
+    root.parentElement.classList.remove("home-screen");
     await renderResultsModal(sharedInfo.targetURL);
     performance.mark("UI ready");
   }
+  if (!navigator.share) {
+    shareButton.style.display = "none";
+  }
+  if (sharedInfo.embed) {
+    toolbar.classList.remove("toolbar--visible");
+  }
   console.groupEnd();
+});
+
+shareButton.addEventListener("click", () => {
+  if (!navigator.share) return false;
+  navigator.share({ url: "", title: "Hlídač shopů" });
+});
+
+searchButton.addEventListener("click", () => {
+  location.assign("/app/");
 });
 
 const isProduction = () =>
@@ -45,6 +61,7 @@ if ("serviceWorker" in navigator && isProduction()) {
         e.sw.scope
       );
     });
+    // TODO: implement SW states
     // wb.addEventListener("activated", e => resolve(e.isUpdate));
     // wb.addEventListener("controlling", e => resolve(e.isUpdate));
     // wb.addEventListener("waiting", e => resolve(e.isUpdate));
@@ -69,7 +86,8 @@ function getSharedInfo(location) {
   const targetURL = getTargetURL(searchParams);
   const title = searchParams.get("title");
   const shop = getShop(targetURL);
-  return targetURL && { title, targetURL, shop };
+  const embed = searchParams.get("embed");
+  return targetURL && { title, targetURL, shop, embed };
 }
 
 async function renderResultsModal(detailUrl) {
@@ -77,6 +95,7 @@ async function renderResultsModal(detailUrl) {
   try {
     const chartData = await fetchDataSet(detailUrl);
     console.log(chartData);
+    toolbar.classList.toggle("toolbar--visible");
     render(resultTemplate(templateData(detailUrl, chartData)), root);
   } catch (ex) {
     console.error(ex);
@@ -265,4 +284,11 @@ function logoTemplate({ logo, name, url, viewBox }) {
       >${image}</a
     >
   `;
+}
+
+function registerStylesheet(href) {
+  const styles = document.createElement("link");
+  styles.rel = "stylesheet";
+  styles.href = href;
+  document.head.insertAdjacentElement("beforeend", styles);
 }

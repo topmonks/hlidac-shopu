@@ -110,7 +110,7 @@ function hideResultsModal() {
 }
 
 async function renderResultsModal(detailUrl) {
-  render(resultsEmbedd(detailUrl), modalRenderRoot);
+  render(resultsEmbed(detailUrl), modalRenderRoot);
   showResultsModal();
 }
 
@@ -133,10 +133,10 @@ function getInstallationGuideUrl(searchParams) {
   return guides.get(browser);
 }
 
-function resultsEmbedd(url) {
-  const parameters = new URLSearchParams({ url }).toString();
-  return html`<iframe
-    class="hs-result__embedd"
+function resultsEmbed(url) {
+  const parameters = new URLSearchParams({ url, embed: "1" }).toString();
+  return html` <iframe
+    class="hs-result__embed"
     src="/app/?${parameters}"
   ></iframe>`;
 }

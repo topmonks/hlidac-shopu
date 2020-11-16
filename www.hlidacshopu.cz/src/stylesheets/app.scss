@@ -1,5 +1,6 @@
 @import "@material/layout-grid/mdc-layout-grid";
 @import "@material/top-app-bar/mdc-top-app-bar";
+@import "@material/icon-button/mdc-icon-button";
 
 html {
   padding: 0;
@@ -16,7 +17,7 @@ label {
 }
 
 .mdc-top-app-bar__title {
-  margin: 6px auto 0;
+  margin: 6px 0 0;
 }
 
 .mdc-top-app-bar--fixed-adjust {
@@ -254,4 +255,8 @@ label {
   100% {
     transform: rotate(360deg);
   }
+}
+
+#toolbar.toolbar--visible {
+  display: inline-flex;
 }
