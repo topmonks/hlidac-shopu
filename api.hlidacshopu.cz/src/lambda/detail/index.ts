@@ -71,11 +71,11 @@ export async function handler(event: Request): Promise<Response> {
       await extraData,
       params.currentPrice
         ? {
-            currentPrice: parseFloat(params.currentPrice ?? "0"),
+            currentPrice: parseFloat(params.currentPrice),
             originalPrice:
-              params.originalPrice === "null"
+              params.originalPrice == null
                 ? null
-                : parseFloat(params.originalPrice ?? "0"),
+                : parseFloat(params.originalPrice),
             imageUrl: params.imageUrl === "null" ? null : params.imageUrl
           }
         : {}
