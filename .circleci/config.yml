@@ -289,19 +289,22 @@ workflows:
             - build-web-extension
       - confirm-release:
           type: approval
-          filters:
-            branches:
-              only: master
       - publish-web-extensions:
           context: app-hlidac-shopu
           requires:
             - confirm-release
             - build-web-extension
+          filters:
+            branches:
+              only: master
       - build-safari-extension:
           context: org-global
           requires:
             - confirm-release
             - build-web-extension
+          filters:
+            branches:
+              only: master
       - build-website:
           context: org-global
       - deploy-site:
@@ -312,6 +315,9 @@ workflows:
           requires:
             - provision
             - build-website
+          filters:
+            branches:
+              only: master
       - merge_pr:
           context:
             - org-github
