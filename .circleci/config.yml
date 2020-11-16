@@ -300,7 +300,7 @@ workflows:
       - build-safari-extension:
           context: org-global
           requires:
-            # - confirm-release
+            - confirm-release
             - build-web-extension
           filters:
             branches:
