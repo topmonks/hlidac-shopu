@@ -9,7 +9,7 @@ import {
   formatPercents
 } from "@hlidac-shopu/lib/format.js";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
-import "@hlidac-shopu/lib/chart.js";
+import "@hlidac-shopu/lib/web-components/chart.js";
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
@@ -196,15 +196,6 @@ function resultTemplate({
       : null;
   const shopLogo = x => x && logoTemplate(x);
   return html`
-    <meta property="og:type" content="og:product" />
-    <meta property="og:title" content="${name}" />
-    <meta property="og:image" content="${imageUrl}" />
-    <meta
-      content="Podívejte se na vývoj ceny a reálnost slevy."
-    />
-    <meta property="og:url" content="${location.href}" />
-    <meta property="product:price:amount" content="${actualPrice}" />
-    <meta property="product:price:currency" content="CZK" />
     <div
       id="hlidac-shopu-modal__found"
       class="hs-result mdc-layout-grid__inner layout-wrapper"
