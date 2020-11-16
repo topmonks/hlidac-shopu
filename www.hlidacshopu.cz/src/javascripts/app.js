@@ -200,7 +200,6 @@ function resultTemplate({
     <meta property="og:title" content="${name}" />
     <meta property="og:image" content="${imageUrl}" />
     <meta
-      property="og:description"
       content="Podívejte se na vývoj ceny a reálnost slevy."
     />
     <meta property="og:url" content="${location.href}" />
