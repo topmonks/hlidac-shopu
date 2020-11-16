@@ -76,7 +76,7 @@ export async function handler(event: Request): Promise<Response> {
               params.originalPrice == null
                 ? null
                 : parseFloat(params.originalPrice),
-            imageUrl: params.imageUrl === "null" ? null : params.imageUrl
+            imageUrl: params.imageUrl
           }
         : {}
     );

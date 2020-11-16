@@ -420,11 +420,10 @@ async function renderResultsModal(detailUrl) {
 
 function resultsEmbedd(url) {
   const parameters = new URLSearchParams({ url }).toString();
-  return html`
-    <iframe
-      class="hs-result__embed"
-      src="/app/?${parameters}"
-    ></iframe>`;
+  return html` <iframe
+    class="hs-result__embed"
+    src="/app/?${parameters}"
+  ></iframe>`;
 }
 
 function showResultsModal() {
