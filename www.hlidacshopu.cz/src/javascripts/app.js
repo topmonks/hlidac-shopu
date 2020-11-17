@@ -1,15 +1,18 @@
-import { html, svg, render } from "lit-html/lit-html.js";
-import { classMap } from "lit-html/directives/class-map.js";
+import { html, render } from "lit-html/lit-html.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.js";
-import {
-  formatDate,
-  formatMoney,
-  formatPercents
-} from "@hlidac-shopu/lib/format.js";
+import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.js";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
 import "@hlidac-shopu/lib/web-components/chart.js";
+import {
+  claimedDiscountTemplate,
+  discountTemplate,
+  loaderTemplate,
+  logoTemplate,
+  notFoundTemplate,
+  originalPriceTemplate
+} from "@hlidac-shopu/lib/templates.mjs";
 
 registerStylesheet("/assets/css/app.css");
 registerStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons");
@@ -103,48 +106,6 @@ async function renderResultsModal(detailUrl) {
   }
 }
 
-function notFoundTemplate() {
-  return html`
-    <div
-      id="hlidac-shopu-modal__not-found"
-      class="hs-result mdc-layout-grid__inner"
-    >
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <h2>Nenalezeno</h2>
-      </div>
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
-        <p>
-          Je nám líto, ale hledaný produkt nebo e-shop nemáme v naší databázi.
-        </p>
-      </div>
-    </div>
-  `;
-}
-
-function loaderTemplate() {
-  return html`
-    <div
-      id="hlidac-shopu-modal__loader"
-      class="hs-result mdc-layout-grid__inner"
-    >
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <h2>Ověřuji&hellip;</h2>
-      </div>
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
-        <div class="loading-container">
-          <div class="loader" aria-label="Načítám data…">
-            Váš požadavek se zpracovává&hellip;
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 function resultTemplate({
   detailUrl,
   imageUrl,
@@ -159,49 +120,6 @@ function resultTemplate({
   data,
   ...prices
 }) {
-  const titles = new Map([
-    [
-      "eu-minimum",
-      "Reálná sleva se počítá podle EU směrnice jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo v období 30 dní před slevovou akcí."
-    ],
-    [
-      "common-price",
-      "Počítá se jako aktuální cena ku nejčastější ceně, za kterou se zboží prodávalo za posledních 90 dnů."
-    ]
-  ]);
-
-  const discountTitle = x => {
-    if (x > 0) {
-      return "Podle nás sleva";
-    } else if (x === 0) {
-      return "Podle nás bez slevy";
-    } else {
-      return "Podle nás zdraženo";
-    }
-  };
-
-  const discountClass = x => ({
-    "hs-real-discount": true,
-    "hs-real-discount--neutral": x === 0,
-    "hs-real-discount--negative": x < 0
-  });
-
-  const ourDiscount = (x, discountType) =>
-    x !== null && !isNaN(x)
-      ? html`
-          <div class="${classMap(discountClass(x))}">
-            <b
-              ><span
-                >${x < 0 ? "↑" : x > 0 ? "↓" : "="}
-                ${formatPercents(Math.abs(x))}</span
-              ></b
-            >
-            <abbr title="${titles.get(discountType)}"
-              >${discountTitle(x)}*</abbr
-            >
-          </div>
-        `
-      : null;
   const crawlDate = x =>
     x
       ? html`
@@ -228,7 +146,7 @@ function resultTemplate({
             class="product-name"
             target="_blank"
             rel="noopener noreferrer"
-            >${name || "Vámi vybraný produkt"}</a
+          >${name || "Vámi vybraný produkt"}</a
           >
           ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
         </h2>
@@ -238,51 +156,19 @@ function resultTemplate({
       >
         ${crawlDate(date)}
         ${discount !== 0
-          ? html`<div class="claimed-price">
-              ${discountType === "eu-minimum"
-                ? "Minimální cena před akcí"
-                : "Běžná cena"}
-              <b
-                >${discountType === "eu-minimum"
-                  ? formatMoney(prices.minPrice)
-                  : formatMoney(prices.commonPrice)}</b
-              >
-            </div>`
+          ? originalPriceTemplate({ type: discountType, ...prices })
           : null}
-        <div class="actual-price">
+        <div class="hs-actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
-        ${ourDiscount(discount, discountType)}
-        ${claimedDiscount
-          ? html`<div class="claimed-discount">
-              Sleva udávaná e-shopem <b>${formatPercents(claimedDiscount)}</b>
-            </div>`
-          : null}
+        ${discountTemplate({ realDiscount: discount, type: discountType })}
+        ${claimedDiscount ? claimedDiscountTemplate(claimedDiscount) : null}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <hs-chart .data="${data}"></hs-chart>
       </div>
     </div>
-  `;
-}
-
-function logoTemplate({ logo, name, url, viewBox }) {
-  const image = svg`
-    <svg viewBox="${viewBox}">
-      <title>${name}</title>
-      <use href="#${logo}"></use>
-    </svg>
-  `;
-  return html`
-    <a
-      href="${url}"
-      class="sprite sprite--${logo}"
-      title="${name}"
-      target="_blank"
-      rel="noopener noreferrer"
-      >${image}</a
-    >
   `;
 }
 

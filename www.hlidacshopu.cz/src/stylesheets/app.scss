@@ -175,18 +175,18 @@ label {
     }
   }
 
-  .actual-price {
+  .hs-actual-price {
     color: var(--mdc-theme-third);
     font-weight: bold;
     font-size: 1.2em;
     line-height: 1.6;
   }
 
-  .claimed-price {
+  .hs-original-price {
     color: var(--mdc-theme-text-secondary-on-light);
   }
 
-  .claimed-discount {
+  .hs-claimed-discount {
     margin-top: 16px;
     font-size: 14px;
   }
@@ -211,6 +211,10 @@ label {
   margin: 16px 0 0;
 }
 
+.hs-real-discount a {
+  color: #1d3650;
+}
+
 .hs-real-discount b {
   font-size: 2em;
   display: block;
@@ -222,6 +226,9 @@ label {
 
 .hs-real-discount.hs-real-discount--negative {
   background-color: #ca0505;
+  color: #fff;
+}
+.hs-real-discount.hs-real-discount--negative a {
   color: #fff;
 }
 
