@@ -38,8 +38,7 @@ addEventListener("DOMContentLoaded", async () => {
   console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
     root.parentElement.classList.remove("home-screen");
-    if (sharedInfo.embed) toolbar.classList.remove("toolbar--visible");
-    await renderResultsModal(sharedInfo.targetURL);
+    await renderResultsModal(sharedInfo.targetURL, sharedInfo.embed);
   }
   if (!navigator.share) {
     shareButton.style.display = "none";
@@ -132,12 +131,13 @@ function getSharedInfo(location) {
   return targetURL && { title, targetURL, shop, embed };
 }
 
-async function renderResultsModal(detailUrl) {
+async function renderResultsModal(detailUrl, isEmbed) {
   render(loaderTemplate(), root);
   try {
     const chartData = await fetchDataSet(detailUrl);
     console.log(chartData);
-    toolbar.classList.toggle("toolbar--visible");
+    if (isEmbed) toolbar.classList.remove("toolbar--visible");
+    else toolbar.classList.add("toolbar--visible");
     render(resultTemplate(templateData(detailUrl, chartData)), root);
   } catch (ex) {
     console.error(ex);
