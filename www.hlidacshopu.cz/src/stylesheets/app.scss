@@ -7,6 +7,22 @@ html {
   scrollbar-width: thin;
 }
 
+body {
+  height: 100vh;
+}
+
+fieldset {
+  margin: 0;
+  padding: 16px 0 32px;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: rgba(255, 255,255, 0.6);
+}
+
+fieldset:disabled svg {
+  --icon-color: #909dae !important;
+}
+
 label {
   font-weight: bold;
 }
@@ -20,7 +36,7 @@ label {
   margin: 6px 0 0;
 }
 
-.mdc-top-app-bar--fixed-adjust {
+#app-root.mdc-top-app-bar--fixed-adjust {
   padding-top: 6em;
 }
 
@@ -47,6 +63,10 @@ label {
   &:hover,
   &:focus {
     background-color: var(--mdc-theme-secondary-dark);
+  }
+
+  &:disabled {
+    background-color: #909dae;
   }
 }
 
@@ -266,4 +286,39 @@ label {
 
 #toolbar.toolbar--visible {
   display: inline-flex;
+}
+
+.hs-progress-bar {
+  position: fixed;
+  z-index: 3;
+  left: 0;
+  right: 0;
+
+  &__inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1d3650;
+    color: #ffffff;
+    border-radius: var(--border-radius);
+    margin: 0 auto;
+    max-width: 480px;
+    line-height: 32px;
+    padding-top: var(--border-radius);
+    transform: translateY(calc(-1 * var(--border-radius)));
+    transition: transform 200ms ease-in;
+  }
+
+  &--online {
+    .hs-progress-bar__inner {
+      transform: translateY(-90px);
+    }
+  }
+
+  .material-icons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    margin-right: 8px;
+  }
 }

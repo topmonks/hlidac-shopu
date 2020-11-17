@@ -141,6 +141,8 @@
     }
 
     .home-screen > footer {
+      padding-left: 16px;
+      padding-right: 16px;
       padding-bottom: 16px;
       font-size: 14px;
       line-height: 24px;
@@ -303,35 +305,44 @@
     </div>
   </header>
 
+  <div class="hs-progress-bar mdc-top-app-bar--fixed-adjust">
+    <div class="hs-progress-bar__inner ">
+      <i class="material-icons">cloud_off</i>
+      Offline
+    </div>
+  </div>
+
   <main id="app-root" class="mdc-layout-grid mdc-top-app-bar--fixed-adjust">
     <div class="mdc-layout-grid__inner layout-wrapper">
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-tablet"></div>
       <div class="mdc-layout-grid__cell">
         <p>Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.</p>
         <form class="hs-form">
-          <label for="url-field"
-          >Vložte adresu detailu vybraného produktu:</label
-          >
-          <div class="hs-textfield">
-            <svg class="hs-textfield__icon"
-                 xmlns="http://www.w3.org/2000/svg"
-                 height="24"
-                 viewBox="0 0 24 24"
-                 width="24">
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-                fill="var(--icon-color)" />
-            </svg>
-            <input
-              type="url"
-              name="url"
-              id="url-field"
-              required
-              placeholder="https://www.&hellip;"
-            />
-          </div>
-          <button type="submit">Ověřit vývoj ceny</button>
+          <fieldset>
+            <label for="url-field"
+            >Vložte adresu detailu vybraného produktu:</label
+            >
+            <div class="hs-textfield">
+              <svg class="hs-textfield__icon"
+                   xmlns="http://www.w3.org/2000/svg"
+                   height="24"
+                   viewBox="0 0 24 24"
+                   width="24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                  fill="var(--icon-color)" />
+              </svg>
+              <input
+                type="url"
+                name="url"
+                id="url-field"
+                required
+                placeholder="https://www.&hellip;"
+              />
+            </div>
+            <button type="submit">Ověřit vývoj ceny</button>
+          </fieldset>
         </form>
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-tablet"></div>

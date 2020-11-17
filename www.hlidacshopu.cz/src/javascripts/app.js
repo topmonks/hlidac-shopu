@@ -24,6 +24,7 @@ const root = document.getElementById("app-root");
 const toolbar = document.getElementById("toolbar");
 const shareButton = document.getElementById("share-button");
 const searchButton = document.getElementById("search-button");
+const progressBar = document.querySelector(".hs-progress-bar");
 
 addEventListener("DOMContentLoaded", async () => {
   console.group("Hlídačshopů.cz");
@@ -32,15 +33,30 @@ addEventListener("DOMContentLoaded", async () => {
   if (sharedInfo) {
     root.parentElement.classList.remove("home-screen");
     await renderResultsModal(sharedInfo.targetURL);
-    performance.mark("UI ready");
   }
   if (!navigator.share) {
     shareButton.style.display = "none";
   }
-  if (sharedInfo.embed) {
+  if (sharedInfo && sharedInfo.embed) {
     toolbar.classList.remove("toolbar--visible");
   }
+  if (navigator.onLine) {
+    progressBar.classList.add("hs-progress-bar--online");
+  }
+  performance.mark("UI ready");
   console.groupEnd();
+});
+
+addEventListener("offline", () => {
+  progressBar.classList.remove("hs-progress-bar--online");
+  const form = document.querySelector(".hs-form");
+  if (form) form.firstElementChild.setAttribute("disabled", "disabled");
+});
+
+addEventListener("online", () => {
+  progressBar.classList.add("hs-progress-bar--online");
+  const form = document.querySelector(".hs-form");
+  if (form) form.firstElementChild.removeAttribute("disabled");
 });
 
 shareButton.addEventListener("click", () => {
@@ -146,7 +162,7 @@ function resultTemplate({
             class="product-name"
             target="_blank"
             rel="noopener noreferrer"
-          >${name || "Vámi vybraný produkt"}</a
+            >${name || "Vámi vybraný produkt"}</a
           >
           ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
         </h2>
