@@ -5,7 +5,7 @@ import {
   Workbox,
   messageSW
 } from "workbox-window/build/workbox-window.prod.mjs";
-import { shops } from "@hlidac-shopu/lib/shops.js";
+import { shopName, shops } from "@hlidac-shopu/lib/shops.js";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.js";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
 import "@hlidac-shopu/lib/web-components/chart.js";
@@ -38,13 +38,11 @@ addEventListener("DOMContentLoaded", async () => {
   console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
     root.parentElement.classList.remove("home-screen");
+    if (sharedInfo.embed) toolbar.classList.remove("toolbar--visible");
     await renderResultsModal(sharedInfo.targetURL);
   }
   if (!navigator.share) {
     shareButton.style.display = "none";
-  }
-  if (sharedInfo && sharedInfo.embed) {
-    toolbar.classList.remove("toolbar--visible");
   }
   if (!navigator.onLine) {
     progressBar.classList.remove("hs-progress-bar--online");
@@ -122,9 +120,7 @@ function getTargetURL(searchParams) {
 
 function getShop(targetURL) {
   if (!targetURL) return null;
-  const shop = targetURL.split(".");
-  shop.pop();
-  return shop.pop();
+  return shopName(targetURL);
 }
 
 function getSharedInfo(location) {

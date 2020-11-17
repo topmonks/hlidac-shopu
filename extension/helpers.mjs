@@ -1,3 +1,5 @@
+import { shopName } from "@hlidac-shopu/lib/shops.js";
+
 export function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
@@ -14,14 +16,6 @@ export function registerShop(shop, ...names) {
   for (let name of names) {
     shops.set(name, shop);
   }
-}
-
-function shopName(s) {
-  const url = new URL(s);
-  const domainParts = url.host.split(".");
-  const domain = domainParts.pop();
-  const shopName = domainParts.pop();
-  return domain !== "cz" ? `${shopName}_${domain}` : shopName;
 }
 
 export function getShop(url) {
