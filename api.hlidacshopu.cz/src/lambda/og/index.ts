@@ -16,6 +16,7 @@ export async function handler(event: Request): Promise<Response> {
   const resp = await fetch(
     `https://api.apify.com/v2/actor-tasks/jlafek~screenshots/run-sync?${token}`,
     {
+      method: "POST",
       headers: [["Content-Type", "application/json"]],
       body: JSON.stringify({
         "url": `https://www.hlidacshopu.cz/widget/?${url}`,
