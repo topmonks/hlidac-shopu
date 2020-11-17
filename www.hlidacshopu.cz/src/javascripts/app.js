@@ -1,6 +1,10 @@
 import { html, render } from "lit-html/lit-html.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
-import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
+import { MDCSnackbar } from "@material/snackbar/component.js";
+import {
+  Workbox,
+  messageSW
+} from "workbox-window/build/workbox-window.prod.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.js";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.js";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.js";
@@ -19,6 +23,8 @@ registerStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
+const snackbarElement = document.querySelector(".mdc-snackbar");
+const snackbar = MDCSnackbar.attachTo(snackbarElement);
 
 const root = document.getElementById("app-root");
 const toolbar = document.getElementById("toolbar");
@@ -68,24 +74,45 @@ searchButton.addEventListener("click", () => {
   location.assign("/app/");
 });
 
+function showUpdateSnackbar() {
+  snackbar.actionButtonText = "Aktualizovat";
+  snackbar.labelText = "K dispozici je nová verze.";
+  snackbar.timeoutMs = -1;
+  snackbar.open();
+}
+
+function registerUpdateHandler(wb, registration) {
+  snackbarElement.addEventListener(
+    "MDCSnackbar:closed",
+    e => {
+      if (e.detail.reason === "action") {
+        wb.addEventListener("controlling", () => location.reload(), true);
+        if (registration && registration.waiting) {
+          messageSW(registration.waiting, { type: "SKIP_WAITING" });
+        }
+      }
+    },
+    { once: true }
+  );
+}
+
 const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;
 
 if ("serviceWorker" in navigator && isProduction()) {
-  try {
-    const wb = new Workbox("/sw.js");
-    wb.addEventListener("installed", e => {
-      console.log(
-        "ServiceWorker registration successful with scope: ",
-        e.sw.scope
-      );
-    });
-    // TODO: implement SW states
-    // wb.addEventListener("activated", e => resolve(e.isUpdate));
-    // wb.addEventListener("controlling", e => resolve(e.isUpdate));
-    // wb.addEventListener("waiting", e => resolve(e.isUpdate));
-    wb.register();
-  } catch (ex) {}
+  const wb = new Workbox("/sw.js");
+  let registration;
+
+  const showSkipWaitingPrompt = () => {
+    registerUpdateHandler(wb, registration);
+    showUpdateSnackbar();
+  };
+
+  wb.addEventListener("waiting", showSkipWaitingPrompt);
+  wb.addEventListener("externalwaiting", showSkipWaitingPrompt);
+  wb.register()
+    .then(r => (registration = r))
+    .catch(ex => console.error(ex));
 }
 
 function getTargetURL(searchParams) {
