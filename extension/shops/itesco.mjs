@@ -29,7 +29,7 @@ export class Tesco extends StatefulShop {
   async scrape() {
     const elem = document.querySelector(".product-details-page");
     if (!elem) return;
-    const href = window.location.href;
+    const href = location.href;
     const match = href.match(/(\d+)$/);
     let itemId = null;
     if (match && match[1]) {

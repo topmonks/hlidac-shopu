@@ -14,7 +14,8 @@ export class Okay extends Shop {
     );
     const itemId = data.id;
     const title = data.name;
-    const currentPrice = data.priceWithTax;
+    const afterSale = cleanPrice(".flagmzdetail>span>span");
+    const currentPrice = afterSale || data.priceWithTax;
     const originalPrice = cleanPrice("#product_price_recomended");
     const imageUrl = document.querySelector(".js-zoomingImageSmall").src;
 
