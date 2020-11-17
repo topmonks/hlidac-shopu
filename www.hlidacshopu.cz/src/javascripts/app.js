@@ -40,8 +40,8 @@ addEventListener("DOMContentLoaded", async () => {
   if (sharedInfo && sharedInfo.embed) {
     toolbar.classList.remove("toolbar--visible");
   }
-  if (navigator.onLine) {
-    progressBar.classList.add("hs-progress-bar--online");
+  if (!navigator.onLine) {
+    progressBar.classList.remove("hs-progress-bar--online");
   }
   performance.mark("UI ready");
   console.groupEnd();
