@@ -73,12 +73,12 @@ const config = {
     options: {
       bundle: true,
       splitting: true,
-      minify: true,
+      minify: global.production,
       format: "esm",
       target: "es2019",
       platform: "browser",
       define: {
-        "process.env.NODE_ENV": "production"
+        "process.env.NODE_ENV": global.production ? "production" : "development"
       }
     }
   },
