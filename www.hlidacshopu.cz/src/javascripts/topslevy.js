@@ -1,7 +1,8 @@
-import { html, render, svg } from "lit-html/lit-html.js";
+import { html, render } from "lit-html/lit-html.js";
 import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
 import { fetchDiscountDataPercent } from "@hlidac-shopu/lib/remoting.js";
 import { fetchDiscountDataCZK } from "@hlidac-shopu/lib/remoting.js";
+import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.js";
 
 const tableRootPercent = document.getElementById("table-root-percent");
@@ -305,7 +306,7 @@ function shopTemplatePercent({
         <td>${formatMoney(Math.round(currentPrice))}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${logoTemplate(shop)}</td>
+        <td>${logoTemplate(shops.get(shop))}</td>
       </tr>
     `;
   } else {
@@ -318,7 +319,7 @@ function shopTemplatePercent({
         <td>${formatMoney(Math.round(currentPrice))}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${logoTemplate(shop)}</td>
+        <td>${logoTemplate(shops.get(shop))}</td>
       </tr>
     `;
   }
@@ -354,7 +355,7 @@ function shopTemplateKc({
         <td>${formatPercents(salePerc / 100)}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${logoTemplate(shop)}</td>
+        <td>${logoTemplate(shops.get(shop))}</td>
       </tr>
     `;
   } else {
@@ -367,34 +368,9 @@ function shopTemplateKc({
         <td>${formatPercents(salePerc / 100)}</td>
         <td style="white-space: nowrap;">${formatedDate}</td>
         <td>${productLinkTemplate(itemName, itemUrl)}</td>
-        <td>${logoTemplate(shop)}</td>
+        <td>${logoTemplate(shops.get(shop))}</td>
       </tr>
     `;
-  }
-}
-
-function logoTemplate(shop) {
-  const foundShop = shops.get(shop);
-  if (foundShop) {
-    const { logo, name, url, viewBox } = shops.get(shop);
-
-    const image = svg`
-      <svg viewBox="${viewBox}">
-        <title>${name}</title>
-        <use href="#${logo}"/>
-      </svg>
-    `;
-    return html`
-      <a
-        href="${url}"
-        class="sprite sprite--${logo}"
-        title="${name}"
-        target="_blank"
-        >${image}</a
-      >
-    `;
-  } else {
-    return html` <p>${shop}</p> `;
   }
 }
 
@@ -404,26 +380,12 @@ function productLinkTemplate(itemName, itemUrl) {
   >`;
 }
 
-function productImageTemplate(itemImage) {
-  return html`
-    <img src="${itemImage}" style="width:40px;height:40px;" alt="Not Found" />
-  `;
-}
-
 async function renderResultsModal(detailUrl) {
   const modalRenderRoot = document.getElementById(
     "hlidac-shopu-modal__placeholder"
   );
-  render(resultsEmbedd(detailUrl), modalRenderRoot);
+  render(resultsEmbed(detailUrl), modalRenderRoot);
   showResultsModal();
-}
-
-function resultsEmbedd(url) {
-  const parameters = new URLSearchParams({ url }).toString();
-  return html` <iframe
-    class="hs-result__embed"
-    src="/app/?${parameters}"
-  ></iframe>`;
 }
 
 function showResultsModal() {

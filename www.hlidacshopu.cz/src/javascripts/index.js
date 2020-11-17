@@ -1,10 +1,8 @@
-import { html, svg, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html/lit-html.js";
 import { shops } from "@hlidac-shopu/lib/shops.js";
-import {
-  fetchDownloadStats,
-  fetchShopsStats
-} from "@hlidac-shopu/lib/remoting.js";
+import { fetchDownloadStats, fetchShopsStats } from "@hlidac-shopu/lib/remoting.js";
 import { Workbox } from "workbox-window";
+import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 
 const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;
@@ -131,25 +129,6 @@ function getInstallationGuideUrl(searchParams) {
     browser = browsers.filter(x => ua.indexOf(x) > 0).shift();
   }
   return guides.get(browser);
-}
-
-function resultsEmbed(url) {
-  const parameters = new URLSearchParams({ url, embed: "1" }).toString();
-  return html` <iframe
-    class="hs-result__embed"
-    src="/app/?${parameters}"
-  ></iframe>`;
-}
-
-function logoTemplate({ logo, name, url, viewBox }) {
-  const image = svg`
-        <svg viewBox="${viewBox}">
-          <title>${name}</title>
-          <use href="#${logo}"/>
-        </svg>`;
-  return html`
-    <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
-  `;
 }
 
 function eShopList(shops) {
