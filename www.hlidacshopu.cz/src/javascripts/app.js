@@ -135,7 +135,7 @@ async function renderResultsModal(detailUrl, isEmbed) {
   render(loaderTemplate(), root);
   try {
     const chartData = await fetchDataSet(detailUrl);
-    console.log(chartData);
+    console.log(chartData, { isEmbed });
     if (isEmbed) toolbar.classList.remove("toolbar--visible");
     else toolbar.classList.add("toolbar--visible");
     render(resultTemplate(templateData(detailUrl, chartData)), root);
