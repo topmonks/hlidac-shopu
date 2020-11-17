@@ -38,7 +38,10 @@ export async function handler(event: Request): Promise<Response> {
   const buffer = await resp.buffer();
   return withCORS(["GET", "OPTIONS"])({
     statusCode: 200,
-    headers: { "Content-Type": "image/png" },
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "maxage=3600"
+    },
     isBase64Encoded: true,
     body: buffer.toString("base64")
   });
