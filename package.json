@@ -20,6 +20,7 @@
     "@pulumi/pulumi": "^2.13.2",
     "@topmonks/pulumi-aws": "^1.5.8",
     "date-fns": "^2.16.1",
+    "node-fetch": "^2.6.1",
     "ramda": "^0.27.1"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@topmonks/blendid": "git://github.com/topmonks/blendid.git",
     "@types/firefox-webext-browser": "^82.0.0",
     "@types/node": "^14.14.7",
+    "@types/node-fetch": "^2.5.7",
     "@types/ramda": "^0.27.32",
     "@types/whatwg-url": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^4.8.0",

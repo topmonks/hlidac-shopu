@@ -21,6 +21,7 @@ import * as check from "./src/lambda/check";
 import * as reviewStats from "./src/lambda/reviewStats";
 import * as shopNumbers from "./src/lambda/shopNumbers";
 import * as topslevy from "./src/lambda/topslevy";
+import * as og from "./src/lambda/og";
 
 const config = new pulumi.Config("hlidacshopu");
 
@@ -192,6 +193,14 @@ export function createApi(domainName: string) {
         httpMethod: "GET",
         path: "/topslevy",
         callback: topslevy.handler
+      }),
+      createHandlerRoute("og", {
+        httpMethod: "GET",
+        path: "/og",
+        callback: og.handler,
+        environment: {
+          variables: { "TOKEN": config.get("apify-screenshotter-token") ?? "" }
+        }
       })
     ]
   });
