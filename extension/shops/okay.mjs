@@ -14,8 +14,12 @@ export class Okay extends Shop {
     );
     const itemId = data.id;
     const title = data.name;
-    const afterSale = cleanPrice(".flagmzdetail>span>span");
-    const currentPrice = afterSale || data.priceWithTax;
+    const sale =
+      data.labels
+        .filter(x => x.indexOf("SLEVA") > -1)
+        .map(x => parseFloat(x.match(/SLEVA\s(\d+)/)[1]) / 100)
+        .pop() || 0.0;
+    const currentPrice = data.priceWithTax - sale * data.priceWithTax;
     const originalPrice = cleanPrice("#product_price_recomended");
     const imageUrl = document.querySelector(".js-zoomingImageSmall").src;
 
