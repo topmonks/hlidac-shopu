@@ -1,6 +1,9 @@
 import { html, render } from "lit-html/lit-html.js";
 import { shops } from "@hlidac-shopu/lib/shops.js";
-import { fetchDownloadStats, fetchShopsStats } from "@hlidac-shopu/lib/remoting.js";
+import {
+  fetchDownloadStats,
+  fetchShopsStats
+} from "@hlidac-shopu/lib/remoting.js";
 import { Workbox } from "workbox-window";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 
