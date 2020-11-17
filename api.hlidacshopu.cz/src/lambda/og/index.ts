@@ -20,8 +20,8 @@ export async function handler(event: Request): Promise<Response> {
       headers: [["Content-Type", "application/json"]],
       body: JSON.stringify({
         "url": `https://www.hlidacshopu.cz/widget/?${url}`,
-        "waitUntil": "load",
-        "delay": 200,
+        "waitUntil": "networkidle0",
+        "delay": 1000,
         "viewportWidth": 600,
         "viewportHeight": 315,
         "fullPage": true
