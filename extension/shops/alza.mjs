@@ -20,18 +20,20 @@ export class Alza extends Shop {
     const title = document
       .querySelector('h1[itemprop="name"]')
       .innerText.trim();
-    const currentPrice = cleanPrice(
-      `#prices .price_withVat,
-       #prices .bigPrice,
-       .pricenormal .c2,
-       .priceactionnormal .c2`
-    );
-    const originalPrice = cleanPrice(
-      `#prices .price_compare,
-       .comparePrice .crossPrice,
-       .priceCompare .c2,
-       .pricecatalog1 .c2`
-    );
+    const currentPrice =
+      cleanPrice(".pricenormal .price_withVat") ||
+      cleanPrice(`
+        #prices .bigPrice,
+        .pricenormal .c2,
+        .priceactionnormal .c2
+      `);
+    const originalPrice = cleanPrice(`
+        #prices .price_compare,
+        .pricenormal .pricecatalog,
+        .comparePrice .crossPrice,
+        .priceCompare .c2,
+        .pricecatalog1 .c2
+      `);
 
     const imageUrl = document.querySelector("#imgMain").dataset["src"];
 
