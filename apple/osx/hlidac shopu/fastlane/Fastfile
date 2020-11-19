@@ -28,6 +28,10 @@ platform :mac do
       additional_cert_types: "mac_installer_distribution"
     )
     build_mac_app(scheme: "hlidac shopu", export_method: "app-store")
-    upload_to_app_store(skip_metadata: true, skip_screenshots: true)
+    upload_to_app_store(
+      api_key_path: "fastlane/NWBNM44ASY.json",
+      skip_metadata: true,
+      skip_screenshots: true
+    )
   end
 end

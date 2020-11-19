@@ -180,6 +180,7 @@ jobs:
           working_directory: "apple/osx/hlidac shopu"
           command: |
             bundle install
+            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
             bundle exec fastlane release
       - slack/notify:
           event: fail
@@ -298,9 +299,11 @@ workflows:
             branches:
               only: master
       - build-safari-extension:
-          context: org-global
+          context:
+            - org-global
+            - org-fastlane
           requires:
-            - confirm-release
+            # - confirm-release
             - build-web-extension
           filters:
             branches:
