@@ -8,7 +8,7 @@ import {
 import { shopName, shops } from "@hlidac-shopu/lib/shops.mjs";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";
-import "@hlidac-shopu/lib/web-components/chart.js";
+import "@hlidac-shopu/lib/web-components/chart.mjs";
 import {
   claimedDiscountTemplate,
   discountTemplate,
