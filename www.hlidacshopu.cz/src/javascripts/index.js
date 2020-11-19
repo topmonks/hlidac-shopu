@@ -1,10 +1,10 @@
 import { html, render } from "lit-html/lit-html.js";
-import { shops } from "@hlidac-shopu/lib/shops.js";
+import { Workbox } from "workbox-window";
+import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import {
   fetchDownloadStats,
   fetchShopsStats
-} from "@hlidac-shopu/lib/remoting.js";
-import { Workbox } from "workbox-window";
+} from "@hlidac-shopu/lib/remoting.mjs";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 
 const isProduction = () =>

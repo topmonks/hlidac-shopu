@@ -1,8 +1,7 @@
 import { html, render } from "lit-html/lit-html.js";
-import { fetchDataSet } from "@hlidac-shopu/lib/remoting.js";
-import "@hlidac-shopu/lib/chart.js";
+import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
-import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.js";
+import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
 
 const root = document.getElementById("app-root");
 

@@ -1,9 +1,11 @@
 import { html, render } from "lit-html/lit-html.js";
-import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.js";
-import { fetchDiscountDataPercent } from "@hlidac-shopu/lib/remoting.js";
-import { fetchDiscountDataCZK } from "@hlidac-shopu/lib/remoting.js";
+import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.mjs";
+import {
+  fetchDiscountDataPercent,
+  fetchDiscountDataCZK
+} from "@hlidac-shopu/lib/remoting.mjs";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
-import { shops } from "@hlidac-shopu/lib/shops.js";
+import { shops } from "@hlidac-shopu/lib/shops.mjs";
 
 const tableRootPercent = document.getElementById("table-root-percent");
 if (tableRootPercent) {

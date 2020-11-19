@@ -1,6 +1,6 @@
 import { html, render } from "lit-html/lit-html.js";
-import { fetchReviews } from "@hlidac-shopu/lib/remoting.js";
-import { formatDate } from "@hlidac-shopu/lib/format.js";
+import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
+import { formatDate } from "@hlidac-shopu/lib/format.mjs";
 
 const reviewsRoot = document.getElementById("reviews");
 

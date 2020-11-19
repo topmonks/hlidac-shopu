@@ -1,8 +1,8 @@
 import { render } from "lit-html/lit-html.js";
-import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.js";
+import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
+import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { getShop } from "./helpers.mjs";
 import "./shops/index.mjs";
-import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
 
 function toCssString(obj) {
   if (!obj) return "";

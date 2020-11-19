@@ -1,4 +1,4 @@
-import { shopName } from "@hlidac-shopu/lib/shops.js";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 
 export function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
