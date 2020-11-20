@@ -33,7 +33,10 @@ platform :mac do
       skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
-      submit_for_review: true
+      submit_for_review: true,
+      submission_information: {
+        export_compliance_uses_encryption: false
+      }
     )
   end
 end
