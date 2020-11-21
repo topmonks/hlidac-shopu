@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import AbortController from "abort-controller";
 import { Request, Response } from "@pulumi/awsx/apigateway";
 import { ShopParams } from "../shops";
 import { withCORS } from "../utils";
@@ -29,7 +30,7 @@ export async function handler(event: Request): Promise<Response> {
         "fullPage": true,
         "deviceScaleFactor": 2
       }),
-      signal: <any>abort.signal
+      signal: abort.signal
     }
   );
   if (!resp.ok) {
