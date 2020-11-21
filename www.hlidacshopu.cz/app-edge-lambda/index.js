@@ -1,5 +1,7 @@
 "use strict";
 
+/* global URL, URLSearchParams */
+
 const aws = require("aws-sdk");
 const db = new aws.DynamoDB.DocumentClient();
 
@@ -11,14 +13,19 @@ function optionalChain(first, second) {
   }
 }
 
-function metadataPkey(name, itemUrl) {
-  return `${name}:${itemUrl}`;
+function isSocialMediaBot(ua) {
+  return Boolean(
+    ua.match(/facebookexternalhit/) ||
+      ua.match(/Twitterbot/) ||
+      ua.match(/Slackbot/)
+  );
 }
 
 const shops = new Map([
   [
     "aaaauto",
     url => ({
+      title: "AAAAuto.cz",
       currency: "CZK",
       itemId: url.searchParams.get("id"),
       itemUrl: url.searchParams.get("id")
@@ -27,6 +34,7 @@ const shops = new Map([
   [
     "aaaauto_sk",
     url => ({
+      title: "AAAAuto.sk",
       currency: "EUR",
       itemId: url.searchParams.get("id"),
       itemUrl: url.searchParams.get("id")
@@ -35,6 +43,7 @@ const shops = new Map([
   [
     "alza",
     url => ({
+      title: "Alza.cz",
       currency: "CZK",
       itemId: optionalChain(
         () => url.pathname.match(/d(\d+)\./)[1],
@@ -53,6 +62,7 @@ const shops = new Map([
   [
     "alza_sk",
     url => ({
+      title: "Alza.sk",
       currency: "EUR",
       itemId: optionalChain(
         () => url.pathname.match(/d(\d+)\./)[1],
@@ -71,6 +81,7 @@ const shops = new Map([
   [
     "mall",
     url => ({
+      title: "Mall.cz",
       currency: "CZK",
       itemId: optionalChain(
         () => url.pathname.substr(1).match(/[^/]+$/)[0],
@@ -85,6 +96,7 @@ const shops = new Map([
   [
     "mall_sk",
     url => ({
+      title: "Mall.sk",
       currency: "EUR",
       itemId: optionalChain(
         () => url.pathname.substr(1).match(/[^/]+$/)[0],
@@ -106,6 +118,14 @@ function shopName(s) {
   return domain !== "cz" ? `${shopName}_${domain}` : shopName;
 }
 
+function parseItemDetails(detailUrl) {
+  const name = shopName(detailUrl);
+  const { itemUrl, itemId, currency, title } = shops.get(name)(
+    new URL(detailUrl)
+  );
+  return { name, title, itemUrl, itemId, currency };
+}
+
 const content = (url, name, imageUrl, actualPrice, currency) => `
 <\!DOCTYPE html>
 <html lang="cs">
@@ -121,27 +141,14 @@ const content = (url, name, imageUrl, actualPrice, currency) => `
 <meta name="twitter:description" property="og:description" content="Podívejte se na vývoj ceny a reálnost slevy.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@hlidacshopucz">
-<meta name="twitter:title" content="${name} na Hlídači shopů">
+<meta name="twitter:title" content="${name}">
 </head>
 <body></body>
 </html>
 `;
 
-function isSocialMediaBot(request) {
-  const ua = request.headers["user-agent"][0];
-  return (
-    ua.match(/facebookexternalhit/) ||
-    ua.match(/Twitterbot/) ||
-    ua.match(/Slackbot/)
-  );
-}
-
-function parseItemDetails(detailUrl) {
-  const name = shopName(detailUrl);
-  const { itemUrl, itemId, currency, title } = shops.get(name)(
-    new URL(detailUrl)
-  );
-  return { name, title, itemUrl, itemId, currency };
+function metadataPkey(name, itemUrl) {
+  return `${name}:${itemUrl}`;
 }
 
 function queryDatabase(name, itemUrl, itemId) {
@@ -156,20 +163,13 @@ function queryDatabase(name, itemUrl, itemId) {
         "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
     })
     .promise()
-    .then(x => x.Items?.[0]);
+    .then(x => x.Items && x.Items[0]);
 }
 
-async function createMatadataResponse(request) {
-  const url = request.uri;
-  const { searchParams } = new URL(url);
-  const detailUrl = searchParams.get("url");
-  const { name, title, itemUrl, itemId, currency } = parseItemDetails(
-    detailUrl
-  );
+async function createMetadataResponse(url) {
+  const { name, title, itemUrl, itemId, currency } = parseItemDetails(url);
   const { itemName, currentPrice } = await queryDatabase(name, itemUrl, itemId);
-  const imageUrl = `https://api2.hlidacshopu.cz/og?${new URLSearchParams({
-    url: detailUrl
-  })}`;
+  const query = new URLSearchParams({ url });
   return {
     status: "200",
     statusDescription: "OK",
@@ -177,20 +177,22 @@ async function createMatadataResponse(request) {
       "content-type": [{ value: "text/html" }]
     },
     body: content(
-      url,
+      `https://www.hlidacshopu.cz/app/?${query}`,
       `${title} prodává ${itemName}`,
-      imageUrl,
+      `https://api2.hlidacshopu.cz/og?${query}`,
       currentPrice,
       currency
     )
   };
 }
 
-exports.handler = async function (event, context, callback) {
+exports.handler = async function (event, _context) {
   const request = event.Records[0].cf.request;
-  if (isSocialMediaBot(request)) {
-    callback(null, await createMatadataResponse(request));
-  } else {
-    callback(null, request);
+  const ua = request.headers["user-agent"][0].value;
+  if (isSocialMediaBot(ua)) {
+    const qs = new URLSearchParams(request.querystring);
+    const url = qs.get("url");
+    return await createMetadataResponse(url);
   }
+  return request;
 };
