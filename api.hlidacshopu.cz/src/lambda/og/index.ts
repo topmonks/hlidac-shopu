@@ -13,6 +13,8 @@ export async function handler(event: Request): Promise<Response> {
   }
   const token = new URLSearchParams({ token: process.env.TOKEN ?? "" });
   const url = new URLSearchParams({ url: params.url });
+  const abort = new AbortController();
+  setTimeout(() => abort.abort(), 30000);
   const resp = await fetch(
     `https://api.apify.com/v2/actor-tasks/jlafek~screenshots/run-sync?${token}`,
     {
@@ -26,7 +28,8 @@ export async function handler(event: Request): Promise<Response> {
         "viewportHeight": 315,
         "fullPage": true,
         "deviceScaleFactor": 2
-      })
+      }),
+      signal: <any>abort.signal
     }
   );
   if (!resp.ok) {
