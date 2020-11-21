@@ -21,7 +21,7 @@ export async function handler(event: Request): Promise<Response> {
       body: JSON.stringify({
         "url": `https://www.hlidacshopu.cz/widget/?${url}`,
         "waitUntil": "networkidle0",
-        "delay": 600,
+        "delay": 1000,
         "viewportWidth": 600,
         "viewportHeight": 315,
         "fullPage": true,

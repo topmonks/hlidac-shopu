@@ -198,6 +198,7 @@ export function createApi(domainName: string) {
         httpMethod: "GET",
         path: "/og",
         callback: og.handler,
+        timeout: 60,
         environment: {
           variables: { "TOKEN": config.get("apify-screenshotter-token") ?? "" }
         }
