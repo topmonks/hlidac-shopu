@@ -19,6 +19,13 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
   static create(name: string) {
     const role = createRole(name);
     new aws.iam.RolePolicyAttachment(
+      `${name}-basic-execution-attachment`,
+      {
+        policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+        role,
+      }
+    );
+    new aws.iam.RolePolicyAttachment(
       `${name}-dynamo-read-attachment`,
       {
         policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBReadOnlyAccess,
