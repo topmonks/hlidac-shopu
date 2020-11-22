@@ -11,28 +11,48 @@ const entryPoint = path.resolve(__dirname, "../extension/content.mjs");
 const output = path.resolve(__dirname, "../extension/content.js");
 const outputFF = path.resolve(__dirname, "../extension-dist/content.js");
 
+let service;
+let result;
+
 async function build() {
-  const service = await esbuild.startService();
   try {
-    console.time();
-    await service.build({
+    service = await esbuild.startService();
+    const start = process.hrtime();
+    result = await service.build({
       color: true,
       entryPoints: [entryPoint],
       outfile: output,
-      bundle: true
+      bundle: true,
+      incremental: true
     });
-    console.timeEnd();
     fs.copyFileSync(output, outputFF);
+    const end = process.hrtime(start);
+    console.log("Initial build: %ds %dms", end[0], end[1] / 1000000);
   } catch (err) {
     console.error(err);
-  } finally {
-    service.stop();
   }
 }
 
-console.log("Watchin extension files");
+async function rebuild() {
+  try {
+    const start = process.hrtime();
+    await result.rebuild();
+    fs.copyFileSync(output, outputFF);
+    const end = process.hrtime(start);
+    console.log("Rebuild: %ds %dms", end[0], end[1] / 1000000);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function dispose() {
+  result.rebuild.dispose();
+  service.stop();
+}
 
 build();
 
+console.log("Watching extension files");
 const watcher = chokidar.watch(["lib/**/*.js", "extension/**/*.mjs"]);
-watcher.on("change", () => build());
+watcher.on("change", () => rebuild());
+process.addListener("beforeExit", () => dispose());
