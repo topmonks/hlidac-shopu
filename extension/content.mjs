@@ -36,7 +36,7 @@ function fetchData(url, info) {
 
 const renderRoot = document.createElement("div");
 renderRoot.dataset["hs"] = getVersion();
-const shadow = renderRoot.attachShadow({ mode: "closed" });
+const shadow = renderRoot; //TODO: re-enable .attachShadow({ mode: "closed" }); after Chart.js update
 let chart;
 function renderHTML(repaint, shop, data, metadata) {
   if (!shop.loaded || !repaint) {
