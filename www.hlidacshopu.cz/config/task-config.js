@@ -74,6 +74,7 @@ const config = {
       bundle: true,
       splitting: true,
       minify: global.production,
+      sourcemap: "external",
       format: "esm",
       target: "es2019",
       platform: "browser",

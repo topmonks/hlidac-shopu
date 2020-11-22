@@ -23,6 +23,7 @@ async function build() {
       entryPoints: [entryPoint],
       outfile: output,
       bundle: true,
+      sourcemap: "external",
       incremental: true
     });
     fs.copyFileSync(output, outputFF);
