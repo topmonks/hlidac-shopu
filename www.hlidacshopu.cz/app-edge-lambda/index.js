@@ -4,6 +4,7 @@
 
 const aws = require("aws-sdk");
 const https = require("https");
+
 const db = new aws.DynamoDB.DocumentClient({
   apiVersion: "latest",
   region: "eu-central-1",
@@ -30,7 +31,7 @@ const content = (url, name, imageUrl) => `<\!DOCTYPE html>
 </html>
 `;
 
-function optionalChain(first, second) {
+function optionalChain(first, second = () => null) {
   try {
     return first();
   } catch (_) {
@@ -53,7 +54,9 @@ const shops = new Map([
       title: "AAAAuto.cz",
       currency: "CZK",
       itemId: url.searchParams.get("id"),
-      itemUrl: url.searchParams.get("id")
+      get itemUrl() {
+        return this.itemId;
+      }
     })
   ],
   [
@@ -62,7 +65,9 @@ const shops = new Map([
       title: "AAAAuto.sk",
       currency: "EUR",
       itemId: url.searchParams.get("id"),
-      itemUrl: url.searchParams.get("id")
+      get itemUrl() {
+        return this.itemId;
+      }
     })
   ],
   [
@@ -104,18 +109,122 @@ const shops = new Map([
     })
   ],
   [
+    "benu",
+    url => ({
+      title: "Benu.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.substr(1).match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "czc",
+    url => ({
+      title: "czc.cz",
+      currency: "CZK",
+      itemId: optionalChain(() =>
+        url.pathname.match(/\/(\d+)a?\//)[1].replace("a", "")
+      ),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "datart",
+    url => ({
+      title: "Datart.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(
+        () => url.pathname.substr(1).match(/([^/]+)\.html$/)[1]
+      )
+    })
+  ],
+  [
+    "datart_sk",
+    url => ({
+      title: "Datart.sk",
+      currency: "EUR",
+      itemId: null,
+      itemUrl: optionalChain(
+        () => url.pathname.substr(1).match(/([^/]+)\.html$/)[1]
+      )
+    })
+  ],
+  [
+    "iglobus",
+    url => ({
+      key: "globus_cz",
+      title: "iGlobus.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(
+        () => url.hash.match(/#(.+)/)[1],
+        () => url.pathname.match(/\/[^/]+\/([^/]+)$/)[1]
+      )
+    })
+  ],
+  [
+    "itesco",
+    url => ({
+      title: "iTesco.cz",
+      currency: "CZK",
+      itemId: optionalChain(() => url.pathname.match(/(\d+)$/)[1]),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "itesco_sk",
+    url => ({
+      title: "iTesco.sk",
+      currency: "EUR",
+      itemId: optionalChain(() => url.pathname.match(/(\d+)$/)[1]),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "kasa",
+    url => ({
+      title: "Kasa.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "kosik",
+    url => ({
+      title: "Košík.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/[^/]+$/)[0])
+    })
+  ],
+  [
+    "lekarna",
+    url => ({
+      title: "Lékárna.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(
+        () => url.pathname.substr(1).match(/(?:[^/]+\/)?([^/]+)/)[1]
+      )
+    })
+  ],
+  [
     "mall",
     url => ({
       title: "Mall.cz",
       currency: "CZK",
-      itemId: optionalChain(
-        () => url.pathname.substr(1).match(/[^/]+$/)[0],
-        () => null
-      ),
-      itemUrl: optionalChain(
-        () => url.pathname.substr(1).match(/[^/]+$/)[0],
-        () => null
-      )
+      itemId: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0]),
+      get itemUrl() {
+        return this.itemId;
+      }
     })
   ],
   [
@@ -123,14 +232,138 @@ const shops = new Map([
     url => ({
       title: "Mall.sk",
       currency: "EUR",
+      itemId: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0]),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "mironet",
+    url => ({
+      title: "Mironet.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.replace(/\//g, ""))
+    })
+  ],
+  [
+    "mountfield",
+    url => ({
+      title: "Mountfield.cz",
+      currency: "CZK",
+      itemId: optionalChain(() => url.pathname.pathname.match(/-([^-]+)$/)[1]),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "mountfield_sk",
+    url => ({
+      title: "Mountfield.sk",
+      currency: "EUR",
+      itemId: optionalChain(() => url.pathname.pathname.match(/-([^-]+)$/)[1]),
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "notino",
+    url => ({
+      title: "Notino.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.substr(1).replace(/\//g, "")[1])
+    })
+  ],
+  [
+    "notino_sk",
+    url => ({
+      title: "Notino.sk",
+      currency: "EUR",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.substr(1).replace(/\//g, "")[1])
+    })
+  ],
+  [
+    "okay",
+    url => ({
+      title: "Okay.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "okay_sk",
+    url => ({
+      title: "Okay.sk",
+      currency: "EUR",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "pilulka",
+    url => ({
+      title: "Pilulka.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "pilulka_sk",
+    url => ({
+      title: "Pilulka.sk",
+      currency: "EUR",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "prozdravi",
+    url => ({
+      title: "Prozdravi.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "rohlik",
+    url => ({
+      title: "Rohlík.cz",
+      currency: "CZK",
       itemId: optionalChain(
-        () => url.pathname.substr(1).match(/[^/]+$/)[0],
-        () => null
+        () => url.searchParams.get("productPopup").match(/^(\d+)/)[1],
+        () => url.pathname.substr(1).match(/^(\d+)/)[1]
       ),
-      itemUrl: optionalChain(
-        () => url.pathname.substr(1).match(/[^/]+$/)[0],
-        () => null
-      )
+      get itemUrl() {
+        return this.itemId;
+      }
+    })
+  ],
+  [
+    "sleky",
+    url => ({
+      title: "sLéky.cz",
+      currency: "CZK",
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.match(/\/([^/]+)/)[1])
+    })
+  ],
+  [
+    "tsbohemia",
+    url => ({
+      title: "TSBohemia.cz",
+      currency: "CZK",
+      itemId: optionalChain(() => url.pathname.match(/d(\d+)\.html/)[1]),
+      get itemUrl() {
+        return this.itemId;
+      }
     })
   ]
 ]);
@@ -145,10 +378,10 @@ function shopName(s) {
 
 function parseItemDetails(detailUrl) {
   const name = shopName(detailUrl);
-  const { itemUrl, itemId, currency, title } = shops.get(name)(
+  const { key, itemUrl, itemId, currency, title } = shops.get(name)(
     new URL(detailUrl)
   );
-  return { name, title, itemUrl, itemId, currency };
+  return { name: key || name, title, itemUrl, itemId, currency };
 }
 
 function metadataPkey(name, itemUrl) {
