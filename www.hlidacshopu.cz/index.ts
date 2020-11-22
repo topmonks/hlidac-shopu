@@ -29,7 +29,7 @@ export function createWebsite(domain: string) {
     securityHeadersLambdaArn: securityHeadersLambda.arn,
     edgeLambdas: [
       {
-        pathPattern: "/app-test/*",
+        pathPattern: "/app/*",
         lambdaAssociation: {
           eventType: "viewer-request",
           lambdaArn: appLambda.arn

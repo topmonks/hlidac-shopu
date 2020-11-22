@@ -3,7 +3,32 @@
 /* global URL, URLSearchParams */
 
 const aws = require("aws-sdk");
-const db = new aws.DynamoDB.DocumentClient();
+const https = require("https");
+const db = new aws.DynamoDB.DocumentClient({
+  apiVersion: "latest",
+  region: "eu-central-1",
+  httpOptions: {
+    agent: new https.Agent({ keepAlive: true })
+  }
+});
+
+const content = (url, name, imageUrl) => `<\!DOCTYPE html>
+<html lang="cs">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<meta charset="utf-8">
+<title>${name}</title>
+<meta property="og:type" content="og:website" />
+<meta property="og:title" content="${name}" />
+<meta property="og:url" content="${url}" />
+<meta name="twitter:image" property="og:image" content="${imageUrl}" />
+<meta name="twitter:description" property="og:description" content="Podívejte se na vývoj ceny a reálnost slevy.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@hlidacshopucz">
+<meta name="twitter:title" content="${name}">
+</head>
+<body></body>
+</html>
+`;
 
 function optionalChain(first, second) {
   try {
@@ -126,27 +151,6 @@ function parseItemDetails(detailUrl) {
   return { name, title, itemUrl, itemId, currency };
 }
 
-const content = (url, name, imageUrl, actualPrice, currency) => `
-<\!DOCTYPE html>
-<html lang="cs">
-<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#">
-<meta charset="utf-8">
-<title>${name}</title>
-<meta property="og:type" content="og:product" />
-<meta property="og:title" content="${name}" />
-<meta property="og:url" content="${url}" />
-<meta property="product:price:amount" content="${actualPrice}" />
-<meta property="product:price:currency" content="${currency}" />
-<meta name="twitter:image" property="og:image" content="${imageUrl}" />
-<meta name="twitter:description" property="og:description" content="Podívejte se na vývoj ceny a reálnost slevy.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@hlidacshopucz">
-<meta name="twitter:title" content="${name}">
-</head>
-<body></body>
-</html>
-`;
-
 function metadataPkey(name, itemUrl) {
   return `${name}:${itemUrl}`;
 }
@@ -167,8 +171,8 @@ function queryDatabase(name, itemUrl, itemId) {
 }
 
 async function createMetadataResponse(url) {
-  const { name, title, itemUrl, itemId, currency } = parseItemDetails(url);
-  const { itemName, currentPrice } = await queryDatabase(name, itemUrl, itemId);
+  const { name, title, itemUrl, itemId } = parseItemDetails(url);
+  const { itemName } = await queryDatabase(name, itemUrl, itemId);
   const query = new URLSearchParams({ url });
   return {
     status: "200",
@@ -179,9 +183,7 @@ async function createMetadataResponse(url) {
     body: content(
       `https://www.hlidacshopu.cz/app/?${query}`,
       `${title} prodává ${itemName}`,
-      `https://api2.hlidacshopu.cz/og?${query}`,
-      currentPrice,
-      currency
+      `https://api2.hlidacshopu.cz/og?${query}`
     )
   };
 }
