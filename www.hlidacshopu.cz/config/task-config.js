@@ -69,7 +69,8 @@ const config = {
   },
 
   esbuild: {
-    extensions: ["js"],
+    extensions: ["js", "mjs"],
+    watch: "../../../lib/**/*.mjs",
     options: {
       bundle: true,
       splitting: true,
