@@ -4197,6 +4197,14 @@ eslint-plugin-ava@^11.0.0:
     pkg-dir "^4.2.0"
     resolve-from "^5.0.0"
 
+eslint-plugin-es@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-es/-/eslint-plugin-es-4.1.0.tgz#f0822f0c18a535a97c3e714e89f88586a7641ec9"
+  integrity sha512-GILhQTnjYE2WorX5Jyi5i4dz5ALWxBIdQECVQavL6s7cI76IZTDWleTHkxz/QT3kvcs2QlGHvKLYsSlPOlPXnQ==
+  dependencies:
+    eslint-utils "^2.0.0"
+    regexpp "^3.0.0"
+
 eslint-plugin-lit@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/eslint-plugin-lit/-/eslint-plugin-lit-1.2.4.tgz#fe4e59e9cc898d5721f6d60f6646f6b2a50b41b0"

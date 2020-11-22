@@ -1,16 +1,13 @@
 {
   "parserOptions": {
-    "sourceType": "module",
+    "sourceType": "script",
     "ecmaVersion": 2018
   },
   "env": {
     "es6": true,
-    "webextensions": true,
-    "browser": true,
-    "node": false
-  },
-  "globals": {
-    "globalThis": "writable"
+    "node": true,
+    "browser": false,
+    "webextensions": false
   },
   "extends": ["prettier", "plugin:es/restrict-to-es2018"],
   "rules": {
