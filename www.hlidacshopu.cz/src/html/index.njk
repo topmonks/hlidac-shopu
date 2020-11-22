@@ -4,6 +4,10 @@
 
 {% block preload %}
   <link rel="modulepreload" href="/assets/js/index.js"/>
+  {% set imports = assets.outputs["index.js"].imports %}
+  {% for import in imports %}
+    <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
+  {% endfor %}
   <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin/>
   <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/reviews-stats" crossorigin/>
 {% endblock %}

@@ -13,8 +13,12 @@
   <meta name="description"
         content="Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.">
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="modulepreload" href="/assets/js/app.js">
   <link rel="preload" as="style" href="/assets/css/app.css">
+  <link rel="modulepreload" href="/assets/js/app.js">
+  {% set imports = assets.outputs["app.js"].imports %}
+  {% for import in imports %}
+    <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
+  {% endfor %}
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://api2.hlidacshopu.cz">

@@ -43,7 +43,7 @@ const config = {
   },
 
   html: {
-    collections: ["media", "images"],
+    collections: ["media", "images", "assets"],
     nunjucksRender: {
       filters: {
         longDate: str =>
@@ -79,6 +79,7 @@ const config = {
       format: "esm",
       target: "es2019",
       platform: "browser",
+      metafile: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
       define: {
         "process.env.NODE_ENV": global.production ? "production" : "development"
       }
