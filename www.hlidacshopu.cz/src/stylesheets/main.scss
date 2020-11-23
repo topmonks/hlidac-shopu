@@ -50,6 +50,10 @@ body {
   }
 }
 
+section:target {
+  padding-top: 3em;
+}
+
 a:link {
   color: var(--mdc-theme-secondary);
 }
