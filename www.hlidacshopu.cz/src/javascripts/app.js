@@ -64,7 +64,7 @@ addEventListener("online", () => {
 
 shareButton.addEventListener("click", () => {
   if (!navigator.share) return false;
-  navigator.share({ url: "", title: "Hlídač shopů" });
+  navigator.share({ url: "", title: "Hlídač shopů" }).catch(() => {});
 });
 
 searchButton.addEventListener("click", () => {
