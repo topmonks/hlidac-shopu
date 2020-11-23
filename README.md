@@ -20,16 +20,18 @@ PWA and browser extension shows historical prices for biggest czech and slovak e
 
 ## Development
 
-We are using npm scripts for project automation.
+We are using `package.json` `scripts` (run `yarn run` for a list) for project automation.
 
 ### Prerequisites
 
 You will need:
 
-- Node.js 14
-- Firefox
-- Chrome
-- XCode Command Line Tools
+* Node.js 14 
+* Yarn
+* Firefox
+* Chrome
+* XCode Command Line Tools (for Safari and iOS development)
+* Pulumi (for Infrastructure and backend development)
 
 See `scripts` folder for install scripts for your system.
 
@@ -41,6 +43,9 @@ Firefox supports Dark and Light themes for action icons and we are optimising ac
 Chrome doesn't support action icons theming via `manifest.json` so we use `background.js` script to
 add support for themes programmatically. We are removing `background.js` script, and
 it's entry in manifest, in build step with other unnecessary files.
+
+Content script `content.js` is written in ESM, but ESM is not widely supported in content scripts.
+So we use simple bundle script `yarn build:extension` to convert ESM to IIFE bundle.
 
 ### Firefox extension
 
@@ -61,19 +66,37 @@ To build Chrome extension run `yarn build:chrome`. It will create package in `./
 If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer"
 from TopMonks 1Password.
 
-## Updating version
+## Updating extension version
 
 To check current version in `package.json`, `manifest.json` and `about.html` run
 
 ```
-yarn version
+./version.sh
 ```
 
 Update to new version run
 
 ```
-yarn version x.y.z
+./version.sh x.y.z
 ```
+
+## Extension development
+
+For seamless development experience we have `yarn watch:extension` script with incremental builds
+on source files changes.
+
+We also have convenient script `yarn start:chrome` and `yarn start:firefox` to start browsers with
+already registered extension and automatic reloading on changes.
+
+For visual testing at scale, there is `./scripts/screenshotter.mjs`. This will run Chrome with installed extension
+and take a screenshot of embedded widget on every supported e-shop. You can find resulting pictures in `./screenshots`
+folder.
+
+## Other sources
+
+* [Figma design sources](https://www.figma.com/file/hKLyCOXXN6LtS0NtVAbJzk/Hlidacshopu.cz?node-id=869%3A3)
+* [Apify Actors sources](https://gitlab.com/apify-private-actors/hlidac-shopu/)
+* [Keboola Connect](https://connection.eu-central-1.keboola.com/admin/projects/395/dashboard)
 
 ---
 

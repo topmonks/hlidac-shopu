@@ -63,7 +63,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
-    "build": "run-p build:*",
+    "build": "run-all build:extension -p build:firefox build:chrome",
     "start": "run-p start:*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "run-p lint:*",
