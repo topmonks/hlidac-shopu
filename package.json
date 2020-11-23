@@ -84,8 +84,7 @@
     "publish:chrome": "webstore upload --auto-publish --extension-id=plmlonggbfebcjelncogcnclagkmkikk --source=dist/chrome-extension-$(PRINT=manifest ./version.sh).zip",
     "open:osx": "open './apple/osx/hlidac shopu/hlidac shopu.xcodeproj'",
     "start:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid",
-    "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build",
-    "version": "./version.sh"
+    "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build"
   },
   "workspaces": [
     "extension",
