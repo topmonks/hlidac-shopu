@@ -12,7 +12,7 @@ export function installationGuide() {
       <p class="grey-text">
         Přejděte do
         <a
-          href="https://apps.apple.com/us/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
+          href="https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
           class="text--purple"
           >Apple App Store</a
         >
@@ -51,7 +51,7 @@ export function installationGuide() {
           data-browser="safari"
           class="button"
           role="button"
-          href="https://apps.apple.com/us/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
+          href="https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
           >Nainstalovat do prohlížeče</a
         >
       </div>

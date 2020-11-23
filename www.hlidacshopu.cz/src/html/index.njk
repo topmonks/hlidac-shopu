@@ -153,6 +153,8 @@
             <b class="text--purple"
             ><a
                 title="Link pro Istalaci Hlídače Shopů do Prohlížeče"
+                class="store-link"
+                data-browser="chrome"
                 href="https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
               >nainstalovat přímo do svého prohlížeče</a
               ></b
@@ -274,20 +276,6 @@
             </picture>
           </div>
         </div>
-        <script>
-          const tabList = document.querySelector(".tab-list");
-          const tabs = document.querySelector(".tabs");
-          let activeTab = "tab-1";
-          tabList.addEventListener("click", e => {
-            if (e.target.tagName === "A") {
-              e.preventDefault();
-              const targetTab = e.target.hash.substring(1);
-              tabs.classList.remove(`tabs--open-${activeTab}`);
-              tabs.classList.add(`tabs--open-${targetTab}`);
-              activeTab = targetTab;
-            }
-          });
-        </script>
       </div>
     </div>
   </section>

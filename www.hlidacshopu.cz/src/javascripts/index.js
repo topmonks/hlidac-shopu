@@ -67,6 +67,7 @@ addEventListener("DOMContentLoaded", async e => {
     renderResultsModal(detailUri);
   }
   render(eShopList(Array.from(shops.values()).filter(x => x.viewBox)), eShops);
+  setStoreUrls(searchParams);
   const installationGuideUrl = getInstallationGuideUrl(searchParams);
   if (installationGuideUrl) {
     const client = await import(installationGuideUrl);
@@ -115,6 +116,44 @@ async function renderResultsModal(detailUrl) {
   showResultsModal();
 }
 
+const tabList = document.querySelector(".tab-list");
+const tabs = document.querySelector(".tabs");
+let activeTab = "tab-1";
+tabList.addEventListener("click", e => {
+  if (e.target.tagName === "A") {
+    e.preventDefault();
+    const targetTab = e.target.hash.substring(1);
+    tabs.classList.remove(`tabs--open-${activeTab}`);
+    tabs.classList.add(`tabs--open-${targetTab}`);
+    activeTab = targetTab;
+  }
+});
+
+const storeLinks = new Map([
+  [
+    "firefox",
+    "https://addons.mozilla.org/cs-CZ/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+  ],
+  [
+    "chrome",
+    "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+  ],
+  [
+    "safari",
+    "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
+  ]
+]);
+
+function setStoreUrls(searchParams) {
+  const browsers = Array.from(storeLinks.keys());
+  const browser = findActiveBrowser(browsers, searchParams);
+  const links = document.querySelectorAll(".store-link");
+  for (let link of links) {
+    link.dataset.browser = browser ?? link.dataset.browser;
+    link.href = storeLinks.get(browser) ?? link.href;
+  }
+}
+
 // explicit map of URLs for guides, to be rev-updated in production build
 const guides = new Map([
   ["firefox", "./firefox.js"],
@@ -125,13 +164,16 @@ const guides = new Map([
 
 function getInstallationGuideUrl(searchParams) {
   const browsers = Array.from(guides.keys());
+  const browser = findActiveBrowser(browsers, searchParams);
+  return guides.get(browser);
+}
+
+function findActiveBrowser(browsers, searchParams) {
   // forcing UA via get parameters has precedence
   let browser = browsers.filter(x => searchParams.has(x)).pop();
-  if (!browser) {
-    const ua = navigator.userAgent.toLowerCase();
-    browser = browsers.filter(x => ua.indexOf(x) > 0).shift();
-  }
-  return guides.get(browser);
+  if (browser) return browser;
+  const ua = navigator.userAgent.toLowerCase();
+  return browsers.filter(x => ua.indexOf(x) > 0).shift();
 }
 
 function eShopList(shops) {

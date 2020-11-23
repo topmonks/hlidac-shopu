@@ -44,7 +44,7 @@ export function installationGuide() {
       <p class="grey-text">
         Přejděte do
         <a
-          href="https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+          href="https://addons.mozilla.org/cs-CZ/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
           class="text--purple"
           >obchodu Firefox</a
         >
@@ -143,7 +143,7 @@ export function installationGuide() {
           data-browser="firefox"
           class="button"
           role="button"
-          href="https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+          href="https://addons.mozilla.org/cs-CZ/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
           >Nainstalovat do prohlížeče</a
         >
       </div>
