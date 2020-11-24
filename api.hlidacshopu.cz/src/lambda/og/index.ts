@@ -4,6 +4,8 @@ import { Request, Response } from "@pulumi/awsx/apigateway";
 import { ShopParams } from "../shops";
 import { withCORS } from "../utils";
 
+const cache: Record<string, any> = {};
+
 export async function handler(event: Request): Promise<Response> {
   const params = (<unknown>(event.queryStringParameters || {})) as ShopParams;
   if (!params.url) {
@@ -12,12 +14,17 @@ export async function handler(event: Request): Promise<Response> {
       body: JSON.stringify({ error: "Missing url parameter" })
     });
   }
+
+  if (cache[params.url]) {
+    return cache[params.url];
+  }
+
   const token = new URLSearchParams({ token: process.env.TOKEN ?? "" });
   const url = new URLSearchParams({ url: params.url });
   const abort = new AbortController();
   setTimeout(() => abort.abort(), 30000);
   const resp = await fetch(
-    `https://api.apify.com/v2/actor-tasks/jlafek~screenshots/run-sync?${token}`,
+    `https://api.apify.com/v2/acts/jlafek~actor-screenshot-url/run-sync?${token}`,
     {
       method: "POST",
       headers: [["Content-Type", "application/json"]],
@@ -41,7 +48,7 @@ export async function handler(event: Request): Promise<Response> {
     });
   }
   const buffer = await resp.buffer();
-  return withCORS(["GET", "OPTIONS"])({
+  const response = withCORS(["GET", "OPTIONS"])({
     statusCode: 200,
     headers: {
       "Content-Type": "image/png",
@@ -50,4 +57,6 @@ export async function handler(event: Request): Promise<Response> {
     isBase64Encoded: true,
     body: buffer.toString("base64")
   });
+  cache[params.url] = response;
+  return response;
 }
