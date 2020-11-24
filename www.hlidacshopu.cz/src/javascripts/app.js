@@ -62,8 +62,17 @@ addEventListener("online", () => {
   if (form) form.firstElementChild.removeAttribute("disabled");
 });
 
+function warmImageCache() {
+  const params = new URLSearchParams(location.search);
+  const query = new URLSearchParams({ url: params.get("url") });
+  fetch(`https://api2.hlidacshopu.cz/og?${query}`, {
+    method: "HEAD"
+  }).catch(() => {});
+}
+
 shareButton.addEventListener("click", () => {
   if (!navigator.share) return false;
+  warmImageCache();
   navigator.share({ url: "", title: "Hlídač shopů" }).catch(() => {});
 });
 
