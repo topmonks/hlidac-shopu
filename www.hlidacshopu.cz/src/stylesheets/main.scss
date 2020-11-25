@@ -141,8 +141,10 @@ h3 {
   margin: 16px 0;
 }
 
-p {
-  font-family: "Open Sans", sans-serif;
+p,
+ul,
+ol {
+  font-family: "Work Sans", sans-serif;
   font-kerning: normal;
   color: var(--mdc-theme-text-secondary-on-light);
   line-height: 1.75;
@@ -182,6 +184,7 @@ img.responsive {
 }
 
 .btn {
+  font-family: "Work Sans", sans-serif;
   text-align: center;
 
   a {
@@ -341,11 +344,13 @@ footer {
     font-size: 13px;
     line-height: 26px;
 
+    a {
+      text-decoration: underline;
+    }
     a:link,
     a:visited,
     span {
       color: var(--mdc-theme-text-secondary-on-light);
-      text-decoration: none;
     }
 
     a:hover {

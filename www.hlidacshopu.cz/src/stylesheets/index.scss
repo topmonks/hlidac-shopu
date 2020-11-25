@@ -19,10 +19,7 @@
   }
 
   button {
-    font-family: inherit;
-    font-size: 15px;
-    line-height: 18px;
-    font-weight: 600;
+    font: 600 15px/1.2 "Work Sans", sans-serif;
     text-transform: uppercase;
     color: var(--mdc-theme-primary);
     width: 200px;
@@ -60,7 +57,7 @@
 
     input {
       -webkit-appearance: none;
-      font-family: inherit;
+      font-family: "Work Sans", sans-serif;
       font-size: 16px;
       line-height: 54px;
       color: var(--mdc-theme-text-primary-on-light);
@@ -295,10 +292,8 @@
   }
 
   dd.number {
-    font-size: 44px;
-    font-weight: 700;
+    font: 700 44px/1.2 "Work Sans", sans-serif;
     color: var(--mdc-theme-text-primary-on-light);
-    line-height: 54px;
     text-align: center;
     margin: 0 0 0.5em;
   }

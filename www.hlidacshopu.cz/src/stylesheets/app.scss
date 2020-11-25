@@ -29,6 +29,10 @@ label {
   font-weight: bold;
 }
 
+footer {
+  margin: 16px;
+}
+
 .layout-wrapper {
   max-width: 1100px;
   margin: 0 auto;
@@ -239,6 +243,7 @@ label {
 
 .hs-real-discount b {
   font-size: 2em;
+  line-height: 1.2;
   display: block;
 }
 
