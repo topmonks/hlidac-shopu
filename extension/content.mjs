@@ -64,7 +64,7 @@ function injectFont() {
   const fontImport = document.createElement("link");
   fontImport.rel = "stylesheet";
   fontImport.href =
-    "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap";
+    "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap";
   document.head.insertAdjacentElement("beforeend", fontImport);
 }
 

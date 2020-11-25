@@ -1,85 +1,133 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta http-equiv="Accept-CH" content="DPR,Viewport-Width,Width,Save-Data,UA"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1" />
-    <title>Hlídačshopů.cz</title>
-    <link rel="modulepreload" href="/assets/js/widget.js">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="preconnect" href="https://api2.hlidacshopu.cz">
-    <style>
-        /* latin-ext */
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 400;
-            src: local('Montserrat Regular'), local('Montserrat-Regular'), url(https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kCHKm459WdhyyTh89ZNpQ.woff2) format('woff2');
-            unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-        }
-        /* latin */
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 400;
-            src: local('Montserrat Regular'), local('Montserrat-Regular'), url(https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.woff2) format('woff2');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
-        /* latin-ext */
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 700;
-            src: local('Montserrat Bold'), local('Montserrat-Bold'), url(https://fonts.gstatic.com/s/montserrat/v15/JTURjIg1_i6t8kCHKm45_dJE3gfD_vx3rCubqg.woff2) format('woff2');
-            unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-        }
-        /* latin */
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 700;
-            src: local('Montserrat Bold'), local('Montserrat-Bold'), url(https://fonts.gstatic.com/s/montserrat/v15/JTURjIg1_i6t8kCHKm45_dJE3gnD_vx3rCs.woff2) format('woff2');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
-        :root {
-            --border-radius: 8px;
-        }
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta http-equiv="Accept-CH" content="DPR,Viewport-Width,Width,Save-Data,UA" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1" />
+  <title>Hlídačshopů.cz</title>
+  <link rel="modulepreload" href="/assets/js/widget.js">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://api2.hlidacshopu.cz">
+  <style>
+    /* latin-ext */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
+      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    /* latin */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    /* latin-ext */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
+      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    /* latin */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
 
-        body {
-            font-family: "Montserrat", sans-serif;
-            font-kerning: normal;
-            font-variant-numeric: lining-nums slashed-zero;
-            font-variant-ligatures: common-ligatures contextual;
-            -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
-            font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
-            -webkit-text-size-adjust: 100%;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: geometricPrecision;
-        }
+    :root {
+      --border-radius: 8px;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            text-align: center;
-            background-color: #fff;
-        }
+    body {
+      font-kerning: normal;
+      font-variant-numeric: lining-nums slashed-zero;
+      font-variant-ligatures: common-ligatures contextual;
+      -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+      font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
 
-        #app-root {
-          width: 600px;
-          height: 315px;
-          overflow: hidden;
-          box-sizing: border-box;
-        }
-        #app-root  #hlidacShopu {
-          border: none;
-        }
-        .hs-chart-wrapper {
-          height: 210px;
-        }
-    </style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      text-align: center;
+      background-color: #fff;
+    }
+
+    #app-root {
+      width: 600px;
+      height: 315px;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    #app-root #hlidacShopu {
+      border: none;
+    }
+    #app-root .hs-original-price b {
+      color: #000000;
+      font-size: 14px;
+    }
+
+    .hs-body {
+      display: flex;
+    }
+
+    .hs-chart-wrapper {
+      height: 200px;
+      width: 400px;
+    }
+
+    .hs-product-detail {
+      width: 180px;
+    }
+
+    .hs-product-detail img {
+      max-height: 164px;
+      max-width: 160px;
+    }
+
+    .hs-actual-price {
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .hs-actual-price b {
+      font-size: 24px;
+      display: block;
+      color: #ca0505;
+    }
+
+    .hs-claimed-discount {
+      font-size: 12px;
+    }
+
+    figure {
+      display: flex;
+      flex-direction: column;
+      margin: 0 24px;
+    }
+    figcaption {
+      margin-top: 8px;
+    }
+  </style>
 </head>
 <body class="widget">
 <main id="app-root"></main>

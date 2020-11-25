@@ -43,7 +43,8 @@ async function renderResultsModal(detailUrl) {
     render(
       widgetTemplate(res.data, res.metadata, {
         showFooter: false,
-        showCurrentPrice: true
+        showClaimedDiscount: true,
+        showImage: true
       }),
       root
     );
