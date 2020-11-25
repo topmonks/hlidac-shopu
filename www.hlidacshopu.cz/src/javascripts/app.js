@@ -229,7 +229,7 @@ function resultTemplate(
                 class="tw-button"
                 href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(
                   location.href
-                )}&amp;hashtags=hlidacshopu`}"
+                )}&hashtags=hlidacshopu`}"
                 @click="${() => warmImageCache()}"
                 target="_blank"
                 rel="noopener noreferrer"
