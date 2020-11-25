@@ -261,9 +261,16 @@ class Notino extends Shop {
     return "notino";
   }
 
-  get itemUrl() {
-    const match = this.url?.pathname.substr(1).replace(/\//g, "");
+  get itemId() {
+    const match = this.url?.pathname
+      .substr(1)
+      .replace(/\//g, "")
+      .match(/(\d+)/);
     return match?.[1];
+  }
+
+  get itemUrl() {
+    return this.url?.pathname.substr(1).replace(/\//g, "");
   }
 }
 
