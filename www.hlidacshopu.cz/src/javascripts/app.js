@@ -157,20 +157,23 @@ async function renderResultsModal(detailUrl, isEmbed) {
   }
 }
 
-function resultTemplate({
-  detailUrl,
-  imageUrl,
-  name,
-  shop,
-  lastDeclaredPrice,
-  actualPrice,
-  claimedDiscount,
-  discount,
-  discountType,
-  date,
-  data,
-  ...prices
-}, isEmbed) {
+function resultTemplate(
+  {
+    detailUrl,
+    imageUrl,
+    name,
+    shop,
+    lastDeclaredPrice,
+    actualPrice,
+    claimedDiscount,
+    discount,
+    discountType,
+    date,
+    data,
+    ...prices
+  },
+  isEmbed
+) {
   const crawlDate = x =>
     x
       ? html`
