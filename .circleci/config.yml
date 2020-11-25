@@ -303,7 +303,7 @@ workflows:
             - org-global
             - org-fastlane
           requires:
-            # - confirm-release
+            - confirm-release
             - build-web-extension
           filters:
             branches:
