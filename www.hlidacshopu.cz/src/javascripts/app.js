@@ -68,12 +68,15 @@ function warmImageCache() {
   fetch(`https://api2.hlidacshopu.cz/og?${query}`, {
     method: "HEAD"
   }).catch(() => {});
+  return true;
 }
 
 shareButton.addEventListener("click", () => {
   if (!navigator.share) return false;
   warmImageCache();
-  navigator.share({ url: "", title: "Hlídač shopů" }).catch(() => {});
+  navigator
+    .share({ url: "", title: "Podívejte se na vývoj ceny na Hlídači shopů" })
+    .catch(() => {});
 });
 
 searchButton.addEventListener("click", () => {
@@ -147,7 +150,7 @@ async function renderResultsModal(detailUrl, isEmbed) {
     console.log(chartData, { isEmbed });
     if (isEmbed) toolbar.classList.remove("toolbar--visible");
     else toolbar.classList.add("toolbar--visible");
-    render(resultTemplate(templateData(detailUrl, chartData)), root);
+    render(resultTemplate(templateData(detailUrl, chartData), isEmbed), root);
   } catch (ex) {
     console.error(ex);
     render(notFoundTemplate(), root);
@@ -167,7 +170,7 @@ function resultTemplate({
   date,
   data,
   ...prices
-}) {
+}, isEmbed) {
   const crawlDate = x =>
     x
       ? html`
@@ -216,6 +219,43 @@ function resultTemplate({
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <hs-chart .data="${data}"></hs-chart>
       </div>
+      ${navigator.share && !isEmbed
+        ? null
+        : html`
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+              <a
+                class="tw-button"
+                href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                  location.href
+                )}&amp;hashtags=hlidacshopu`}"
+                @click="${() => warmImageCache()}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i></i>
+                <span>Tweet</span>
+              </a>
+              <a
+                class="fb-button"
+                href="${`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                  location.href
+                )}`}"
+                @click="${() => warmImageCache()}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  class="img"
+                  style="vertical-align:middle"
+                  src="https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/pXqmY8Ggh_m.png"
+                  alt=""
+                  width="16"
+                  height="16"
+                />
+                <span>Sdílet</span>
+              </a>
+            </div>
+          `}
     </div>
   `;
 }
