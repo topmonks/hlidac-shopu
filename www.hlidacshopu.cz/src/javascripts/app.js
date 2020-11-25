@@ -219,9 +219,8 @@ function resultTemplate({
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <hs-chart .data="${data}"></hs-chart>
       </div>
-      ${navigator.share && !isEmbed
-        ? null
-        : html`
+      ${isEmbed || !navigator.share
+        ? html`
             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
               <a
                 class="tw-button"
@@ -255,7 +254,8 @@ function resultTemplate({
                 <span>Sdílet</span>
               </a>
             </div>
-          `}
+          `
+        : null}
     </div>
   `;
 }
