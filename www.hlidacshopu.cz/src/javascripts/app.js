@@ -224,7 +224,9 @@ function resultTemplate(
       </div>
       ${isEmbed || !navigator.share
         ? html`
-            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 hs-share-buttons">
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 hs-share-buttons"
+            >
               <a
                 class="tw-button"
                 href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(
