@@ -6,6 +6,7 @@ import {
   Website
 } from "@topmonks/pulumi-aws";
 import { AppEdgeLambda } from "./app-edge-lambda";
+import { RootEdgeLambda } from "./root-edge-lambda";
 
 export function createWebsite(domain: string) {
   let assetsCachingLambda = AssetsCachingLambda.create("hlidac-shopu-caching");
@@ -13,6 +14,7 @@ export function createWebsite(domain: string) {
     "hlidac-shopu-security"
   );
   let appLambda = AppEdgeLambda.create("hlidac-shopu-app-lambda");
+  let rootLambda = RootEdgeLambda.create("hlidac-shopu-root-lambda");
 
   let gmailRecords = createGoogleMxRecords("hlidacshopu.cz");
   let googleVerification = createTxtRecord(
@@ -33,6 +35,13 @@ export function createWebsite(domain: string) {
         lambdaAssociation: {
           eventType: "viewer-request",
           lambdaArn: appLambda.arn
+        }
+      },
+      {
+        pathPattern: "/*",
+        lambdaAssociation: {
+          eventType: "viewer-request",
+          lambdaArn: rootLambda.arn
         }
       }
     ]
