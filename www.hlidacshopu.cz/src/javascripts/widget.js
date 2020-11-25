@@ -42,7 +42,8 @@ async function renderResultsModal(detailUrl) {
     const res = await fetchDataSet(detailUrl);
     render(
       widgetTemplate(res.data, res.metadata, {
-        showFooter: false
+        showFooter: false,
+        showCurrentPrice: true
       }),
       root
     );
