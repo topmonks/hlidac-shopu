@@ -57,10 +57,19 @@ export function createDatabase() {
     }
   );
 
+  const blackFridayDataTable = new aws.dynamodb.Table("black_friday_data", {
+    name: "black_friday_data",
+    hashKey: "year",
+    attributes: [{ name: "year", type: "S" }],
+    writeCapacity: 1,
+    readCapacity: 1
+  });
+
   return pulumi.Output.create({
     allShopsTable,
     allShopsMetadataTable,
     allShopsStatsTable,
+    blackFridayDataTable: blackFridayDataTable.name,
     extensionParsingDataTable: extensionParsedDataTable.name,
     topslevyAbsoluteTable,
     topslevyRelativeTable
