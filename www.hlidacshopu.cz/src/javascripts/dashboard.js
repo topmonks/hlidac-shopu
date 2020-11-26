@@ -9,7 +9,7 @@ addEventListener("DOMContentLoaded", async e => {
     const data = await fetchDashboardData();
     render(tableTemplate(data), tableRoot);
   } catch (ex) {
-    console.error(ex);d
+    console.error(ex);
   }
 });
 

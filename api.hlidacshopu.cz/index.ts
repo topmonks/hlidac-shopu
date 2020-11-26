@@ -190,7 +190,7 @@ export function createApi(domainName: string) {
         httpMethod: "GET",
         path: "/shop-numbers",
         callback: shopNumbers.handler,
-        cache: { ttl: 3600 }
+        requiredParameters: [{ in: "query", name: "year" }]
       }),
       createHandlerRoute("reviews-stats", {
         httpMethod: "GET",
