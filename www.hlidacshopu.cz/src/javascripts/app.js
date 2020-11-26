@@ -238,7 +238,6 @@ function resultTemplate(
                 href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(
                   location.href
                 )}&hashtags=hlidacshopu`}"
-                @click="${() => warmImageCache()}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -250,7 +249,6 @@ function resultTemplate(
                 href="${`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
                   location.href
                 )}`}"
-                @click="${() => warmImageCache()}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
