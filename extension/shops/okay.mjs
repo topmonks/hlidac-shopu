@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
   get injectionPoint() {
-    return ["beforebegin", ".box-presents, .annotation"];
+    return ["afterend", "#zoom_area"];
   }
 
   async scrape() {
