@@ -216,8 +216,14 @@ function resultTemplate(
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
         </div>
-        ${discountTemplate({ realDiscount: discount, type: discountType })}
-        ${claimedDiscount ? claimedDiscountTemplate(claimedDiscount) : null}
+        ${discountTemplate(
+          {
+            realDiscount: discount,
+            type: discountType,
+            claimedDiscount
+          },
+          true
+        )}
       </div>
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <hs-chart .data="${data}"></hs-chart>
