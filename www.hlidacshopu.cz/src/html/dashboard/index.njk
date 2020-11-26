@@ -1,6 +1,6 @@
 {% extends 'layouts/master.njk' %}
 {% from 'macros/helpers.njk' import sprite %}
-{% block title %}Přehled Black Friday 2019 na Hlídači shopů{% endblock %}
+{% block title %}Přehled Black Friday 2020 na Hlídači shopů{% endblock %}
 
 {% block preload %}
   <link rel="preload" as="fetchSample" href="https://api.hlidacshopu.cz/shop-numbers" crossorigin/>
@@ -61,7 +61,7 @@
       <div class="layout-wrapper">
         <div class="mdc-layout-grid__inner">
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <h2>Black Friday 2019 v číslech</h2>
+            <h2>Black Friday 2020 v číslech</h2>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
@@ -92,9 +92,7 @@
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <p class="explanation">
-              Poznámka: <em>Reálná sleva</em> se počítá jako aktuální cena po
-              slevě ku maximální ceně, za kterou se zboží prodávalo za posledních
-              90 dní.
+              Poznámka: <em>Reálná sleva</em> se počítá podle <a href="/metodika/#nova">naší nové metodiky</a>.
             </p>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">

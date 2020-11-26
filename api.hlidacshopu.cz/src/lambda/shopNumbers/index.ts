@@ -6,8 +6,8 @@ export async function handler(event: Request): Promise<Response> {
   const db = new aws.sdk.DynamoDB.DocumentClient();
   const res = await db
     .get({
-      Key: { "pkey": "shopNumbers" },
-      TableName: "all_shops_stats"
+      Key: { "year": "2020" },
+      TableName: "black_friday_data"
     })
     .promise();
 
