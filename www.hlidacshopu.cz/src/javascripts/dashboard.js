@@ -43,7 +43,7 @@ function shopTemplate({
 
 function logoTemplate({ logo, name, url, viewBox }) {
   const image = svg`
-      <svg viewBox="${viewBox}">
+      <svg viewBox="${viewBox ?? ""}">
         <title>${name}</title>
         <use href="#${logo}"/>
       </svg>
