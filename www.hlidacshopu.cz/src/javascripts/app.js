@@ -255,7 +255,7 @@ function resultTemplate(
                 <img
                   class="img"
                   style="vertical-align:middle"
-                  src="https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/pXqmY8Ggh_m.png"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBBYGJDeRLlUUAAABp0lEQVRIx6WVu04bQRSG/x1jbZCR00RacAJYooksd/RI7qBJHiAlD5F2lQYhkSLFNrwFFVIaUsRRJEspSYnExcRFCguDE1F8FPaavczYXvinmZk955vLmT3HQxaV1dJ7NVRTTVJXXZ3qSCe6t9iSbQERfWzqExFk7dNDn5AB03RDiO8CBLSZR+3kPh7dm5zP5Q5wTjMLCAq4jxBBEuDzw2F4zyfe4lPmJWtspg7iPwJCh3uPrcytJxXGgMB58zu5IKcjEowAkcP9BE0FQIRE2fFs4MNMQJ+yUUtV2fV70tvVdRy1lKpquQ8Alcm6XadNZNSQS7eT3rLTpmFU02x5zi81jxstzXTDCRgYC90bt/xMPU8w6s1xhFhruZnecwF/jDrPAvwy+loAsJqbOfaoqKeK1Xx2FO70yuhWhwX2kNahhkK85r/1mbp+oVhDVpCRdKW9J61/oOu4Lizws/AOvrOQTKp1LgoBuqxm0/oGl3MDztiwFZZ6Jje7AB3euEpbiZB/UwFDPlJy10YhVvg8ztJZwF/2WZ9eXOO2yDZfEuNv7PGOFzbbB6Kd0fTJtKEiAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE5LTA0LTIyVDEzOjM2OjU1LTA3OjAwi4nE0AAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOS0wNC0yMlQxMzozNjo1NS0wNzowMPrUfGwAAAAASUVORK5CYII="
                   alt=""
                   width="16"
                   height="16"
