@@ -3,7 +3,6 @@
 {% block title %}Přehled Black Friday 2020 na Hlídači shopů{% endblock %}
 
 {% block preload %}
-  <link rel="preload" as="fetchSample" href="https://api.hlidacshopu.cz/shop-numbers" crossorigin/>
 {% endblock %}
 
 {% block styles %}
@@ -77,6 +76,7 @@
                 <th scope="col">Produktů v Black Friday</th>
                 <th scope="col">Průměrná uváděná sleva</th>
                 <th scope="col">Průměrná reálná sleva</th>
+                <th scope="col">Začátek akce</th>
               </tr>
               </thead>
               <tbody id="table-root">

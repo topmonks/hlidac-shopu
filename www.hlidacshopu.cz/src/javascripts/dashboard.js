@@ -1,8 +1,46 @@
 import { html, svg, render } from "lit-html/lit-html.js";
-import { formatNumber, formatPercents } from "@hlidac-shopu/lib/format.mjs";
+import {
+  formatNumber,
+  formatPercents,
+  formatShortDate
+} from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.mjs";
 
 const tableRoot = document.getElementById("table-root");
+
+const extraData = new Map([
+  [
+    2020,
+    new Map([
+      ["aaaauto", { startDate: new Date("2020-11-26") }],
+      ["aaaauto_sk", { startDate: new Date("2020-11-26") }],
+      ["alza", { startDate: new Date("2020-11-11") }],
+      ["alza_sk", { startDate: new Date("2020-11-11") }],
+      ["benu", { startDate: new Date("2020-11-25") }],
+      ["czc", { startDate: new Date("2020-10-31") }],
+      ["datart", { startDate: new Date("2020-11-13") }],
+      ["datart_sk", { startDate: new Date("2020-11-13") }],
+      ["kosik", { startDate: new Date("2020-11-26") }],
+      ["lekarna", { startDate: new Date("2020-11-20") }],
+      ["mall", { startDate: new Date("2020-11-28") }],
+      ["mall_sk", { startDate: new Date("2020-11-28") }],
+      ["mironet", { startDate: new Date("2020-10-31") }],
+      ["notino", { startDate: new Date("2020-11-04") }],
+      ["notino_sk", { startDate: new Date("2020-11-04") }],
+      ["okay", { startDate: new Date("2020-11-14") }],
+      ["okay_sk", { startDate: new Date("2020-11-14") }],
+      ["pilulka", { startDate: new Date("2020-11-19") }],
+      ["pilulka_sk", { startDate: new Date("2020-11-19") }],
+      ["prozdravi", { startDate: new Date("2020-11-23") }],
+      ["tsbohemia", { startDate: new Date("2020-10-31") }]
+    ])
+  ]
+]);
+
+function addExtraData(year) {
+  const data = extraData.get(year);
+  return x => Object.assign({}, x, data.get(x.shop));
+}
 
 addEventListener("DOMContentLoaded", async e => {
   try {
@@ -15,6 +53,7 @@ addEventListener("DOMContentLoaded", async e => {
 
 function tableTemplate(data) {
   return data
+    .map(addExtraData(2020))
     .sort((a, b) => a.sortKey - b.sortKey)
     .filter(x => x.allProducts)
     .map(shopTemplate);
@@ -28,7 +67,8 @@ function shopTemplate({
   allProducts,
   bfProducts,
   avgClaimedDiscount,
-  avgRealDiscount
+  avgRealDiscount,
+  startDate
 }) {
   return html`
     <tr class="dashboard-row">
@@ -37,6 +77,7 @@ function shopTemplate({
       <td>${formatNumber(bfProducts) || "-"}</td>
       <td>${formatPercents(avgClaimedDiscount) || "-"}</td>
       <td>${formatPercents(avgRealDiscount) || "-"}</td>
+      <td>${formatShortDate(startDate) || "-"}</td>
     </tr>
   `;
 }
