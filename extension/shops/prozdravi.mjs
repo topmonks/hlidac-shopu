@@ -1,35 +1,26 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { registerShop } from "../helpers.mjs";
+import { Shop } from "./shop.mjs";
 
-export class Prozdravi extends AsyncShop {
+export class Prozdravi extends Shop {
   get injectionPoint() {
-    return [
-      "beforeend",
-      ".product-prices-block.product-prices-block--single-product"
-    ];
-  }
-
-  get waitForSelector() {
-    return ".product-prices-block__inner";
+    return ["afterend", "#product-prices-block"];
   }
 
   async scrape() {
-    const title = document.querySelector("h1.product-header__header").innerText;
-    const priceContainer = document.querySelector(
-      ".product-prices-block__inner"
-    );
-    if (!priceContainer) return;
+    const data = JSON.parse(document.querySelector("#gtm-data input").value);
+    const masterData = document.querySelector(".product-master-data");
 
-    const itemId = priceContainer.querySelector("input[name='product-code']")
-      .value;
-    const originalPrice = cleanPrice(
-      priceContainer.querySelector("span.product-prices-block__backup-price")
+    const title = data.name;
+    const itemId = data.id;
+
+    const { value: originalPrice } = JSON.parse(
+      masterData.querySelector("input[name=backupPrice]").value
     );
-    const currentPrice = cleanPrice(
-      priceContainer.querySelector(".product-prices-block__final-price")
+    const { value: currentPrice } = JSON.parse(
+      masterData.querySelector("input[name=price]").value
     );
-    const imageUrl = document.querySelector(".product-image-gallery__image")
-      .src;
+    const imageUrl = document.querySelector("meta[property='og:image']")
+      .content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
