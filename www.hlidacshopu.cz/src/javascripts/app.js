@@ -32,21 +32,29 @@ const searchButton = document.getElementById("search-button");
 const progressBar = document.querySelector(".hs-progress-bar");
 
 addEventListener("DOMContentLoaded", async () => {
-  console.group("Hlídačshopů.cz");
-  const sharedInfo = getSharedInfo(location);
-  console.log("Shared data:", sharedInfo);
-  if (sharedInfo) {
-    root.parentElement.classList.remove("home-screen");
-    await renderResultsModal(sharedInfo.targetURL, sharedInfo.embed);
+  try {
+    console.group("Hlídačshopů.cz");
+    const sharedInfo = getSharedInfo(location);
+    console.log("Shared data:", sharedInfo);
+    if (sharedInfo) {
+      root.parentElement.classList.remove("home-screen");
+      await renderResultsModal(sharedInfo.targetURL, sharedInfo.embed);
+    }
+    if (!navigator.share) {
+      shareButton.style.display = "none";
+    }
+    if (!navigator.onLine) {
+      progressBar.classList.remove("hs-progress-bar--online");
+    }
+    performance.mark("UI ready");
+  } catch (err) {
+    if (err.message.indexOf("Invalid URL") > -1) {
+      render(invalidURLTemplate(), root);
+    }
+    console.error(err);
+  } finally {
+    console.groupEnd();
   }
-  if (!navigator.share) {
-    shareButton.style.display = "none";
-  }
-  if (!navigator.onLine) {
-    progressBar.classList.remove("hs-progress-bar--online");
-  }
-  performance.mark("UI ready");
-  console.groupEnd();
 });
 
 addEventListener("offline", () => {
@@ -144,6 +152,39 @@ async function renderResultsModal(detailUrl, isEmbed) {
     console.error(ex);
     render(notFoundTemplate(), root);
   }
+}
+
+function invalidURLTemplate() {
+  return html`
+    <div
+      id="hlidac-shopu-modal__not-found"
+      class="hs-result mdc-layout-grid__inner"
+    >
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <h2>Neplatná adresa zboží</h2>
+      </div>
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
+      >
+        <p>
+          Vypadá to, že se snažíte zadat hledavý výraz, místo adresy produktu.
+          Mrzí nás to, ale Hlídač Shopů zatím neumí hledat zboží podle názvu,
+          ale pouze podle adresy webové stránky.
+        </p>
+        <p>
+          Adresu získáte tak, že navštívíte stránky vašeho oblíbeného eshopu a
+          najdete požadované zboží tam. Kliknete do adresního řádku a adresu
+          zkopírujete do schránky. Tu poté vložíte do pole na Hlídači Shopů.
+        </p>
+        <p>
+          Pokud používáte Hlídače Shopů v mobilním telefonu Android, můžete si
+          celý proces zjednodušit přidáním Hlídače Shopů na Plochu. Tí získáte
+          možnost sdílet odkazy jak z webu, tak aplikací e-shopů přímo do
+          Hlídače Shopů.
+        </p>
+      </div>
+    </div>
+  `;
 }
 
 function resultTemplate(

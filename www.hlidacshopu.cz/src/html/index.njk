@@ -60,6 +60,8 @@
                     placeholder="https://www.&hellip;"
                     id="url"
                     title="Zadejte adresu stránky s detailem produktu."
+                    oninvalid="this.setCustomValidity(this.title)"
+                    oninput="this.setCustomValidity('')"
                   />
                 </div>
                 <button type="submit">Ověřit vývoj ceny</button>
