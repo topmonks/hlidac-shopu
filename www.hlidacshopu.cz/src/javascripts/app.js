@@ -10,7 +10,6 @@ import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";
 import "@hlidac-shopu/lib/web-components/chart.mjs";
 import {
-  claimedDiscountTemplate,
   discountTemplate,
   loaderTemplate,
   logoTemplate,
@@ -62,18 +61,8 @@ addEventListener("online", () => {
   if (form) form.firstElementChild.removeAttribute("disabled");
 });
 
-function warmImageCache() {
-  const params = new URLSearchParams(location.search);
-  const query = new URLSearchParams({ url: params.get("url") });
-  fetch(`https://api2.hlidacshopu.cz/og?${query}`, {
-    method: "HEAD"
-  }).catch(() => {});
-  return true;
-}
-
 shareButton.addEventListener("click", () => {
   if (!navigator.share) return false;
-  warmImageCache();
   navigator
     .share({ url: "", title: "Podívejte se na vývoj ceny na Hlídači shopů" })
     .catch(() => {});
