@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
   get injectionPoint() {
-    return ["afterend", "#zoom_area"];
+    return ["afterend", ".add-basket-form"];
   }
 
   async scrape() {
