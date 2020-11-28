@@ -43,11 +43,12 @@ export async function handler(event: Request): Promise<Response> {
       });
     }
 
-    const db = new aws.sdk.DynamoDB.DocumentClient();
     const shop = createShop(params);
     if (!shop) {
-      return withCORS(["GET", "OPTIONS"])(notFound());
+      return withCORS(["GET", "OPTIONS"])(notFound({ error: "Unknown shop" }));
     }
+
+    const db = new aws.sdk.DynamoDB.DocumentClient();
 
     let itemId = params.itemId ?? shop.itemId;
     if (params.currentPrice && params.currentPrice !== "null") {
@@ -62,7 +63,9 @@ export async function handler(event: Request): Promise<Response> {
     itemId = itemId ?? (await meta)?.itemId;
     const item = await getHistoricalData(db, shop.name, itemId ?? "");
     if (!item) {
-      return withCORS(["GET", "OPTIONS"])(notFound());
+      return withCORS(["GET", "OPTIONS"])(
+        notFound({ error: "Unknown item", itemId })
+      );
     }
 
     const rows = prepareData(item);
