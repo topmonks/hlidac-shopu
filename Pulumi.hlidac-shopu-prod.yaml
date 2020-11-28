@@ -1,7 +1,9 @@
 encryptionsalt: v1:QiUd4qNAqng=:v1:tCt5J/nnMKCFE8a0:YRjy4AlM+iMG9p2i6p+INBIec3K14Q==
 config:
   aws:region: eu-central-1
-  hlidacshopu:apify-screenshotter-token:
+  hlidacshopu:screenshotter-host:
+    secure: v1:iXpR/kcnoIBWraUv:XR8WLNcN80Bwipg89FFXfVBUxrLQ96HeanfZ64YFupoiaOFDe2RKumO6535B8jHDe2zg/A==
+  hlidacshopu:screenshotter-token:
     secure: v1:ybTev0xd+QNaEjXX:oan26gwsm19BmBZEh3XIDAwehETuZSOAiPVGLwJCECtWNthO4se9soY=
   hlidacshopu:token:
     secure: v1:tyd2BgDXDlcbgJKN:d39Mz948mxzOG3Y6+RSD7j7YOnOVEX97upZ5CFh0jL+5q0/WHNW2hnD687yIhhjXeriXBro4XkJNgVZzag9L93VR8ijSvYIxhwhmZMF79KU=

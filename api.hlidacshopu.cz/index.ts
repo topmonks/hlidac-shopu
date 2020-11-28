@@ -209,7 +209,10 @@ export function createApi(domainName: string) {
         callback: og.handler,
         timeout: 60,
         environment: {
-          variables: { "TOKEN": config.get("apify-screenshotter-token") ?? "" }
+          variables: {
+            "TOKEN": config.get("screenshotter-token") ?? "",
+            "HOST": config.get("screenshotter-host") ?? ""
+          }
         }
       })
     ]

@@ -4,8 +4,6 @@ import { Request, Response } from "@pulumi/awsx/apigateway";
 import { ShopParams } from "../shops";
 import { withCORS } from "../utils";
 
-const cache: Record<string, any> = {};
-
 export async function handler(event: Request): Promise<Response> {
   const params = (<unknown>(event.queryStringParameters || {})) as ShopParams;
   if (!params.url) {
@@ -15,31 +13,23 @@ export async function handler(event: Request): Promise<Response> {
     });
   }
 
-  if (cache[params.url]) {
-    return cache[params.url];
-  }
-
-  const token = new URLSearchParams({ token: process.env.TOKEN ?? "" });
   const url = new URLSearchParams({ url: params.url });
   const abort = new AbortController();
   setTimeout(() => abort.abort(), 30000);
-  const resp = await fetch(
-    `https://api.apify.com/v2/acts/jlafek~actor-screenshot-url/run-sync?${token}`,
-    {
-      method: "POST",
-      headers: [["Content-Type", "application/json"]],
-      body: JSON.stringify({
-        "url": `https://www.hlidacshopu.cz/widget/?${url}`,
-        "waitUntil": "networkidle0",
-        "delay": 1000,
-        "viewportWidth": 600,
-        "viewportHeight": 315,
-        "fullPage": true,
-        "deviceScaleFactor": 2
-      }),
-      signal: abort.signal
-    }
-  );
+
+  const request = new URLSearchParams({
+    "token": process.env.TOKEN ?? "",
+    "url": `https://www.hlidacshopu.cz/widget/?${url}`,
+    "waitUntil": "networkidle0",
+    "fullPage": "1",
+    "w": "600",
+    "h": "315",
+    "dpr": "2"
+  });
+
+  const resp = await fetch(`${process.env.HOST}/?${request}`, {
+    signal: abort.signal
+  });
   if (!resp.ok) {
     console.error(resp.statusText, await resp.text());
     return withCORS(["GET", "OPTIONS"])({
@@ -48,7 +38,7 @@ export async function handler(event: Request): Promise<Response> {
     });
   }
   const buffer = await resp.buffer();
-  const response = withCORS(["GET", "OPTIONS"])({
+  return withCORS(["GET", "OPTIONS"])({
     statusCode: 200,
     headers: {
       "Content-Type": "image/png",
@@ -57,6 +47,4 @@ export async function handler(event: Request): Promise<Response> {
     isBase64Encoded: true,
     body: buffer.toString("base64")
   });
-  cache[params.url] = response;
-  return response;
 }
