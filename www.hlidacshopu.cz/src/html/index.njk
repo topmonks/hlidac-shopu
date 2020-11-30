@@ -83,11 +83,11 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c"
-             title="Přečtě si výsledky Analýzy Black Friday 2019">
+          <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be"
+             title="Přečtě si výsledky Analýzy Black Friday 2020">
             <picture>
-              {% set mobileBanner = images["mobile-banner.png"]["public_id"] %}
-              {% set desktopBanner = images["desktop-banner.png"]["public_id"] %}
+              {% set mobileBanner = images["mobile-banner-2020.png"]["public_id"] %}
+              {% set desktopBanner = images["desktop-banner-2020.png"]["public_id"] %}
               <source
                 media="screen and (max-width: 360px)"
                 srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
@@ -108,7 +108,7 @@
                 srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
-              <img alt="Analýza Black Friday 2019" class="responsive"
+              <img alt="Analýza Black Friday 2020" class="responsive"
                    src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
             </picture>
           </a>

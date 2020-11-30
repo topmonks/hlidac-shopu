@@ -98,6 +98,37 @@
             </p>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be"
+               title="Přečtě si výsledky Analýzy Black Friday 2020">
+              <picture>
+                {% set mobileBanner = images["mobile-banner-2020.png"]["public_id"] %}
+                {% set desktopBanner = images["desktop-banner-2020.png"]["public_id"] %}
+                <source
+                  media="screen and (max-width: 360px)"
+                  srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x"/>
+                <source
+                  media="screen and (min-width: 361px) and (max-width: 479px)"
+                  srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x"/>
+                <source
+                  media="screen and (min-width: 480px) and (max-width: 839px)"
+                  srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x"/>
+                <source
+                  media="screen and (min-width: 840px)"
+                  srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
+                <img alt="Analýza Black Friday 2020" class="responsive"
+                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
+              </picture>
+            </a>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <h2>Otevřená data <small>beta</small></h2>
             <p>
               Otevíráme
