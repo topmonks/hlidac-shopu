@@ -79,7 +79,9 @@ addEventListener("DOMContentLoaded", async e => {
     .catch(ex => console.warn(ex));
   fetchShopsStats()
     .then(xs => xs.reduce((acc, x) => acc + x.allProducts, 0))
-    .then(x => (productsCount.innerText = x.toLocaleString("cs")))
+    .then(x =>
+      !isNaN(x) ? (productsCount.innerText = x.toLocaleString("cs")) : null
+    )
     .catch(ex => console.warn(ex));
 });
 
