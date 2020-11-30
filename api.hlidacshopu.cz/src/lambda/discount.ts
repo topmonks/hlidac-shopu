@@ -130,7 +130,8 @@ function parseDate(s: string) {
 }
 
 export function prepareData({ json }: any): DataRow[] {
-  const data: DataRow[] = JSON.parse(json).map(({ o, c, d }: AllShopsRow) => ({
+  const rows = typeof json === "string" ? JSON.parse(json) : json;
+  const data: DataRow[] = rows.map(({ o, c, d }: AllShopsRow) => ({
     currentPrice: c === "" ? null : parseFloat(c),
     originalPrice: o === "" ? null : parseFloat(o),
     date: parseDate(d)
