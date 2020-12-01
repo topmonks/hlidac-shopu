@@ -11,7 +11,7 @@ const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;
 if ("serviceWorker" in navigator && isProduction()) {
   const wb = new Workbox("/sw.js");
-  wb.register();
+  wb.register().catch(err => console.error(err));
 }
 
 const form = document.getElementById("compare-form");

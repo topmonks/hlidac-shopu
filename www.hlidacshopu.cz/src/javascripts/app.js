@@ -87,15 +87,13 @@ function showUpdateSnackbar() {
   snackbar.open();
 }
 
-function registerUpdateHandler(wb, registration) {
+function registerUpdateHandler(wb) {
   snackbarElement.addEventListener(
     "MDCSnackbar:closed",
     e => {
       if (e.detail.reason === "action") {
         wb.addEventListener("controlling", () => location.reload(), true);
-        if (registration && registration.waiting) {
-          messageSW(registration.waiting, { type: "SKIP_WAITING" });
-        }
+        wb.messageSkipWaiting();
       }
     },
     { once: true }
@@ -107,18 +105,14 @@ const isProduction = () =>
 
 if ("serviceWorker" in navigator && isProduction()) {
   const wb = new Workbox("/sw.js");
-  let registration;
 
   const showSkipWaitingPrompt = () => {
-    registerUpdateHandler(wb, registration);
+    registerUpdateHandler(wb);
     showUpdateSnackbar();
   };
 
   wb.addEventListener("waiting", showSkipWaitingPrompt);
-  wb.addEventListener("externalwaiting", showSkipWaitingPrompt);
-  wb.register()
-    .then(r => (registration = r))
-    .catch(ex => console.error(ex));
+  wb.register().catch(ex => console.error(ex));
 }
 
 function getTargetURL(searchParams) {
