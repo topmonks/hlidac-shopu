@@ -68,12 +68,11 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "15.3"
+      tag: "14.14"
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - run:
           name: Lint website
           command: yarn lint:website
@@ -91,7 +90,7 @@ jobs:
   build-web-extension:
     executor:
       name: node/default
-      tag: "15.3"
+      tag: "14.14"
     steps:
       - checkout
       - run:
@@ -101,7 +100,6 @@ jobs:
             sudo apt-get install rename
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - run:
           name: Build extension bundle
           command: yarn build:extension
@@ -135,10 +133,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: nvm install 15.3
+      - run: nvm install 14.14
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - run:
           name: Make screenshots
           command: yarn node ./scripts/screenshotter.mjs
@@ -148,14 +145,13 @@ jobs:
   publish-web-extensions:
     executor:
       name: node/default
-      tag: "15.3"
+      tag: "14.14"
     steps:
       - checkout
       - attach_workspace:
           at: .
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - run:
           name: Publish Firefox extension
           command: yarn publish:firefox
@@ -195,7 +191,7 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "15.3"
+      tag: "14.14"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -204,7 +200,6 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - run:
           name: Lint API
           command: yarn lint:api
@@ -219,14 +214,13 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "15.3"
+      tag: "14.14"
     steps:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install-packages:
           pkg-manager: yarn
-          cache-version: v2
       - pulumi/preview:
           stack: hlidac-shopu-prod
       - slack/notify:
