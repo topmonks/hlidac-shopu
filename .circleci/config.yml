@@ -73,6 +73,7 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Lint website
           command: yarn lint:website
@@ -100,6 +101,7 @@ jobs:
             sudo apt-get install rename
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Build extension bundle
           command: yarn build:extension
@@ -136,6 +138,7 @@ jobs:
       - run: nvm install 15.3
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Make screenshots
           command: yarn node ./scripts/screenshotter.mjs
@@ -152,6 +155,7 @@ jobs:
           at: .
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Publish Firefox extension
           command: yarn publish:firefox
@@ -200,6 +204,7 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Lint API
           command: yarn lint:api
@@ -221,6 +226,7 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install-packages:
           pkg-manager: yarn
+          cache-version: v2
       - pulumi/preview:
           stack: hlidac-shopu-prod
       - slack/notify:
