@@ -68,7 +68,7 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "15.3"
     steps:
       - checkout
       - node/install-packages:
@@ -90,7 +90,7 @@ jobs:
   build-web-extension:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "15.3"
     steps:
       - checkout
       - run:
@@ -133,7 +133,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: nvm install 14.14
+      - run: nvm install 15.3
       - node/install-packages:
           pkg-manager: yarn
       - run:
@@ -145,7 +145,7 @@ jobs:
   publish-web-extensions:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "15.3"
     steps:
       - checkout
       - attach_workspace:
@@ -191,7 +191,7 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "15.3"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -214,7 +214,7 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "15.3"
     steps:
       - checkout
       - pulumi/login:
