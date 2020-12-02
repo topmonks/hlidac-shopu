@@ -4,8 +4,7 @@ import { JSDOM } from "jsdom";
 import fs from "fs";
 import path from "path";
 
-const template = ({ url, title, date, perex, filename }) => `
----
+const template = ({ url, title, date, perex, filename }) => `---
 title: "${title}"
 url: "${url}"
 published: ${date}
@@ -58,7 +57,7 @@ function writeImgFile(filename, imageExt, imageData) {
   return fs.promises.writeFile(imgPath, new Uint8Array(imageData));
 }
 
-const test = true;
+const test = false;
 
 for (let url of urls) {
   const {
