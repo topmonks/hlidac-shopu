@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import formatISO from "date-fns/formatISO/index.js";
 import fetch from "node-fetch/lib/index.mjs";
 import { JSDOM } from "jsdom";
@@ -15,17 +16,8 @@ ${perex}
 `;
 
 const urls = [
-  "https://www.ceskenoviny.cz/zpravy/hlidac-shopu-vetsina-e-shopu-pocita-slevy-z-doporucene-ceny/1963942",
-  "https://www.mobilmania.cz/clanky/nespalte-se-pri-black-friday-ani-nikdy-jindy-skutecne-slevy-vam-pohlida-hlidac-shopu/sc-3-a-1349977/default.aspx",
-  "https://insmart.cz/overeni-slevy-v-eshopu-hlidac-shopu/",
-  "http://www.24zpravy.com/ekonomika/black-friday-letos-startuje-online-utraty-mohou-poprve-presahnout-miliardu-korun-pozor-na-manipulaci-s-cenou/476804-zpravy",
-  "https://www.svetandroida.cz/hlidac-shopu-kontrola-slev/",
-  "https://tech.ihned.cz/geekosfera/c1-66849970-black-friday-neni-vyprodej-nejlepsi-nakupy-nabizeji-primo-vyrobci-vymetani-skladu-je-pod-uroven",
-  "https://www.czechcrunch.cz/2020/11/klamave-ceny-byly-dlouho-standard-rikaji-tvurci-hlidace-shopu-letos-zdvojnasobili-pocet-sledovanych-e-shopu",
-  "https://www.podnikatel.cz/clanky/velky-test-black-friday-u-e-shopu-alza-cz-mall-cz-a-datart-cz-fixluji-slevy/",
-  "https://www.zive.cz/clanky/analyza-black-friday-inzerovane-slevy-az-80--realne-okolo-15-/sc-3-a-207245/default.aspx",
-  "https://www.podnikatel.cz/clanky/black-friday-v-ceskem-podani-nektere-e-shopy-opet-podvadely-se-slevami/",
-  "https://mam.cz/zpravy/2020-11/hlidac-shopu-chrani-pred-falesnymi-black-friday-slevami-nove-hlida-e-shopy-i-na-slovensku/"
+  "https://www.lupa.cz/clanky/black-friday-2020-blyska-se-na-lepsi-casy/",
+  "https://www.penize.cz/slevy/422584-pravda-o-slevach-nove-dukazy-jak-e-shopy-caruji-s-cenou",
 ];
 
 function writeMdFile(filename, url, title, date, perex, imageExt) {
