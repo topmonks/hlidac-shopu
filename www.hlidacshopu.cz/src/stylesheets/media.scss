@@ -2,6 +2,7 @@
   overflow-y: scroll;
   scroll-behavior: smooth;
 }
+
 .media {
   ul {
     margin: 0;
@@ -10,13 +11,15 @@
     align-items: center;
     justify-content: center;
   }
+
   li a {
     padding: 0 1em;
   }
 
   .media-item:target {
-    padding-top:100px;
+    padding-top: 140px;
   }
+
   h2.media-heading {
     font-size: 22px;
     font-weight: bold;
