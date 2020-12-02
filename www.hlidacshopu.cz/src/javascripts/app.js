@@ -27,6 +27,7 @@ const snackbar = MDCSnackbar.attachTo(snackbarElement);
 
 const root = document.getElementById("app-root");
 const toolbar = document.getElementById("toolbar");
+const logoLink = document.getElementById("logo-link");
 const shareButton = document.getElementById("share-button");
 const searchButton = document.getElementById("search-button");
 const progressBar = document.querySelector(".hs-progress-bar");
@@ -45,6 +46,9 @@ addEventListener("DOMContentLoaded", async () => {
     }
     if (!navigator.onLine) {
       progressBar.classList.remove("hs-progress-bar--online");
+    }
+    if (navigator.standalone) {
+      logoLink.href = "/app/";
     }
     performance.mark("UI ready");
   } catch (err) {
