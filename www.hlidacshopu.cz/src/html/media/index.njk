@@ -1,5 +1,6 @@
 {% extends 'layouts/master.njk' %}
 {% block title %}Hlídač shopů v médiích{% endblock %}
+{% set bodyClass = "media-page" %}
 
 {% block styles %}
   <link rel="stylesheet" href="/assets/css/media.css">
@@ -35,13 +36,30 @@
   <section class="media">
     <div class="mdc-layout-grid">
       <div class="layout-wrapper">
-        {% for year in range(2020, 2016, -1) %}
-          <h2 class="media-heading">{{ year }}</h2>
-          <div class="media-article-list">
-            {% for article in media[year] | sort(true, false, "published") %}
-              {{ mediaArticle(article) }}
-            {% endfor %}
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <h2>Hlídač Shopů v médiích</h2>
           </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <ul>
+              {% for year in range(2021, 2016, -1) %}
+                {% if media[year].length %}
+                  <li><a href="#rok-{{ year }}">{{ year }}</a></li>
+                {% endif %}
+              {% endfor %}</ul>
+          </div>
+        </div>
+        {% for year in range(2021, 2016, -1) %}
+          {% if media[year].length %}
+            <div id="rok-{{ year }}" class="media-item">
+              <h2 class="media-heading">{{ year }}</h2>
+              <div class="media-article-list">
+                {% for article in media[year] | sort(true, false, "published") %}
+                  {{ mediaArticle(article) }}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
         {% endfor %}
       </div>
     </div>

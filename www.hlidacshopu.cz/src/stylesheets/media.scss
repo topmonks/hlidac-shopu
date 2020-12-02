@@ -1,4 +1,22 @@
+.media-page {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
 .media {
+  ul {
+    margin: 0;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  li a {
+    padding: 0 1em;
+  }
+
+  .media-item:target {
+    padding-top:100px;
+  }
   h2.media-heading {
     font-size: 22px;
     font-weight: bold;
