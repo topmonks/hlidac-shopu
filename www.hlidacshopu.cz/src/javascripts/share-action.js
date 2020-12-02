@@ -76,13 +76,8 @@ function resultTemplate({
         `
       : null;
   return html`
-    <div
-      id="hlidac-shopu-modal__found"
-      class="hs-result mdc-layout-grid__inner layout-wrapper"
-    >
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
+    <div class="hs-result">
+      <div class="box box--purple">
         ${crawlDate(date)}
         ${discount !== 0
           ? originalPriceTemplate({ type: discountType, ...prices })
@@ -100,7 +95,7 @@ function resultTemplate({
           true
         )}
       </div>
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+      <div class="">
         <hs-chart .data="${data}"></hs-chart>
       </div>
     </div>

@@ -11,7 +11,6 @@
   />
   <title>Hlídačshopů.cz</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://api2.hlidacshopu.cz" crossorigin>
   <meta name="theme-color" content="#ffffff" />
   <meta name="mobile-web-app-capable" content="yes">
@@ -50,7 +49,7 @@
       --mdc-layout-grid-margin-desktop: 24px;
       --mdc-layout-grid-gutter-desktop: 20px;
       --mdc-layout-grid-column-width-desktop: 60px;
-      --mdc-typography-font-family: "SF Pro", sans-serif;
+      --mdc-typography-font-family: -apple-system, system-ui, BlinkMacSystemFont, "SF Pro", sans-serif;
     }
 
     body {
@@ -96,8 +95,13 @@
       width: 100%;
     }
 
+    .hs-result {
+      margin: 16px;
+    }
+
     .box {
       text-align: center;
+      margin-bottom: 16px;
     }
 
     .box.box--purple {
@@ -166,8 +170,6 @@
       font-size: 14px;
     }
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/@material/layout-grid@8.0.0/dist/mdc.layout-grid.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="modulepreload" href="/assets/js/share-action.js">
   {% set imports = assets.outputs["share-action.js"].imports %}
   {% for import in imports %}
@@ -462,12 +464,8 @@
   ></iframe>
 </noscript>
 <!-- End Google Tag Manager (noscript) -->
-<div class="home-screen">
-  <main id="app-root" class="mdc-layout-grid">
-    <div class="mdc-layout-grid__inner layout-wrapper">
-    </div>
-  </main>
-</div>
+<main id="app-root">
+</main>
 <script type="module" src="/assets/js/share-action.js"></script>
 </body>
 </html>
