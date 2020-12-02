@@ -1,4 +1,3 @@
-
 ---
 title: "Jak nenaletět falešným slevám? Toto rozšíření do prohlížeče vám pomůže"
 url: "https://www.svetandroida.cz/hlidac-shopu-kontrola-slev/"

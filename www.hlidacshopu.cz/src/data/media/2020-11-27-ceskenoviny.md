@@ -1,4 +1,3 @@
-
 ---
 title: "České noviny"
 url: "https://www.ceskenoviny.cz/zpravy/hlidac-shopu-vetsina-e-shopu-pocita-slevy-z-doporucene-ceny/1963942"

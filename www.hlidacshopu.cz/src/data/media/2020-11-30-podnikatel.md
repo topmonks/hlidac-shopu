@@ -1,4 +1,3 @@
-
 ---
 title: "Black Friday v českém podání, některé e-shopy opět podváděly se slevami"
 url: "https://www.podnikatel.cz/clanky/black-friday-v-ceskem-podani-nektere-e-shopy-opet-podvadely-se-slevami/"

@@ -1,4 +1,3 @@
-
 ---
 title: "Velký test Black Friday u e-shopů Alza.cz, Mall.cz a Datart.cz. Fixlují slevy?"
 url: "https://www.podnikatel.cz/clanky/velky-test-black-friday-u-e-shopu-alza-cz-mall-cz-a-datart-cz-fixluji-slevy/"
