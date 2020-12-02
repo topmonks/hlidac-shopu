@@ -39,7 +39,10 @@ addEventListener("DOMContentLoaded", async () => {
     console.log("Shared data:", sharedInfo);
     if (sharedInfo) {
       root.parentElement.classList.remove("home-screen");
-      await renderResultsModal(sharedInfo.targetURL, sharedInfo.embed);
+      await renderResultsModal(
+        sharedInfo.targetURL,
+        sharedInfo.view === "embed"
+      );
     }
     if (!navigator.share) {
       shareButton.style.display = "none";
@@ -49,6 +52,9 @@ addEventListener("DOMContentLoaded", async () => {
     }
     if (navigator.standalone) {
       logoLink.href = "/app/";
+    }
+    if (sharedInfo.view === "action") {
+      document.body.classList.add("ios-share-action");
     }
     performance.mark("UI ready");
   } catch (err) {
@@ -134,8 +140,8 @@ function getSharedInfo(location) {
   const targetURL = getTargetURL(searchParams);
   const title = searchParams.get("title");
   const shop = getShop(targetURL);
-  const embed = searchParams.get("embed");
-  return targetURL && { title, targetURL, shop, embed };
+  const view = searchParams.get("view");
+  return targetURL && { title, targetURL, shop, view };
 }
 
 async function renderResultsModal(detailUrl, isEmbed) {

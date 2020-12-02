@@ -33,6 +33,13 @@ footer {
   margin: 16px;
 }
 
+.ios-share-action {
+  h2 img,
+  h2 svg {
+    display: none;
+  }
+}
+
 .layout-wrapper {
   max-width: 1100px;
   margin: 0 auto;
