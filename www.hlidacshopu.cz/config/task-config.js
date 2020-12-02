@@ -1,4 +1,5 @@
 const esbuild = require("gulp-esbuild");
+const mode = require("gulp-mode")();
 const pathConfig = require("./path-config.json");
 const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
 
@@ -55,7 +56,6 @@ const config = {
       }
     },
     htmlmin: {
-      minifyJS: false,
       minifyCSS: {
         compatibility: { properties: { urlQuotes: true } }
       }
@@ -74,14 +74,14 @@ const config = {
     options: {
       bundle: true,
       splitting: true,
-      minify: global.production,
+      minify: mode.production(),
       sourcemap: "external",
       format: "esm",
       target: "es2019",
       platform: "browser",
       metafile: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
       define: {
-        "process.env.NODE_ENV": global.production ? "production" : "development"
+        "process.env.NODE_ENV": mode.production() ? "production" : "development"
       }
     }
   },
