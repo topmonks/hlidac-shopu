@@ -1,0 +1,513 @@
+{% from 'macros/helpers.njk' import spriteTarget %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta http-equiv="Accept-CH" content="DPR,Viewport-Width,Width,Save-Data,UA" />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1"
+  />
+  <title>Hlídačshopů.cz</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://api2.hlidacshopu.cz" crossorigin>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Hlídač shopů" />
+  <meta name="apple-mobile-web-app-title" content="Hlídač shopů" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <style>
+    /* latin-ext */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
+      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    /* latin */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    /* latin-ext */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
+      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    /* latin */
+    @font-face {
+      font-family: 'Work Sans';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    :root {
+      --mdc-theme-primary: #fff;
+      --mdc-theme-on-primary: #000;
+
+      --mdc-theme-secondary: #545fef;
+      --mdc-theme-secondary-dark: #3a42a0;
+      --mdc-theme-secondary-light: #f7f7ff;
+
+      --mdc-theme-third: #ca0505;
+      --mdc-theme-fourth: #5dbd2f;
+
+      --mdc-theme-text-primary-on-light: #000;
+      --mdc-theme-text-secondary-on-light: #2e2828;
+      --mdc-theme-text-third-on-light: #979797;
+
+      --mdc-theme-primary-background: rgba(84, 95, 239, 0.07);
+      --mdc-theme-secondary-background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.1) 24.48%,
+        rgba(84, 95, 239, 0.1) 100%
+      );
+
+      --hs-theme-background: #fff;
+      --hs-theme-border: #e6e6ff;
+      --border-radius: 8px;
+
+      --mdc-layout-grid-margin-desktop: 24px;
+      --mdc-layout-grid-gutter-desktop: 20px;
+      --mdc-layout-grid-column-width-desktop: 60px;
+      --mdc-typography-font-family: "Work Sans", sans-serif;
+    }
+
+    body {
+      font-family: var(--mdc-typography-font-family);
+      font-kerning: normal;
+      font-variant-numeric: lining-nums slashed-zero;
+      font-variant-ligatures: common-ligatures contextual;
+      -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+      font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      text-align: center;
+      background-color: #fff;
+    }
+
+    time {
+      font-weight: bold;
+      line-height: 2;
+    }
+
+    del {
+      text-decoration: none;
+      position: relative;
+      display: inline-block;
+    }
+
+    del::after {
+      content: "";
+      position: absolute;
+      border-bottom: 2px solid var(--mdc-theme-text-primary-on-light);
+      transform: rotate(167.24deg);
+      bottom: 0;
+      left: 0;
+      height: calc(50% - 1px);
+      width: 100%;
+    }
+
+    .box {
+      text-align: center;
+    }
+
+    .box.box--purple {
+      background: var(--mdc-theme-secondary-light);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .hs-real-discount {
+      align-self: flex-start;
+      background-color: #ffe607;
+      color: #1d3650;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 1.6;
+      padding: 6px 10px 6px;
+      margin: 16px 0 0;
+    }
+
+    .hs-real-discount a {
+      color: #1d3650;
+    }
+
+    .hs-real-discount b {
+      font-size: 2em;
+      line-height: 1.2;
+      display: block;
+    }
+
+    .hs-real-discount.hs-real-discount--neutral {
+      background-color: transparent;
+    }
+
+    .hs-real-discount.hs-real-discount--good {
+      background-color: #5dbd2f;
+      color: #ffffff;
+    }
+
+    .hs-real-discount.hs-real-discount--negative {
+      background-color: #ca0505;
+      color: #fff;
+    }
+
+    .hs-real-discount.hs-real-discount--good a,
+    .hs-real-discount.hs-real-discount--negative a {
+      color: #fff;
+    }
+
+    .hs-real-discount.hs-real-discount--no-data {
+      display: none;
+    }
+
+    .hs-actual-price {
+      color: var(--mdc-theme-third);
+      font-weight: bold;
+      font-size: 1.2em;
+      line-height: 1.6;
+    }
+
+    .hs-original-price {
+      color: var(--mdc-theme-text-secondary-on-light);
+    }
+
+    .hs-claimed-discount {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/@material/layout-grid@8.0.0/dist/mdc.layout-grid.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="modulepreload" href="/assets/js/share-action.js">
+  {% set imports = assets.outputs["share-action.js"].imports %}
+  {% for import in imports %}
+    <link rel="preload" as="script" href="/assets/js/{{ import.path }}" crossorigin>
+  {% endfor %}
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        "gtm.start": new Date().getTime(),
+        event: "gtm.js"
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != "dataLayer" ? "&l=" + l : "";
+      j.async = true;
+      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, "script", "dataLayer", "GTM-58WNT3B");
+  </script>
+  <!-- End Google Tag Manager -->
+  <script>
+    var _rollbarConfig = {
+      accessToken: "907e1d1fd2f94767af0a6bd5afda40ed",
+      captureUncaught: true,
+      captureUnhandledRejections: true,
+      payload: {
+        environment: "production"
+      }
+    };
+    // Rollbar Snippet
+    !function(r) {
+      var e = {};
+
+      function o(n) {
+        if (e[n]) return e[n].exports;
+        var t = e[n] = { i: n, l: !1, exports: {} };
+        return r[n].call(t.exports, t, t.exports, o), t.l = !0, t.exports;
+      }
+
+      o.m = r, o.c = e, o.d = function(r, e, n) {
+        o.o(r, e) || Object.defineProperty(r, e, { enumerable: !0, get: n });
+      }, o.r = function(r) {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(r, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(r, "__esModule", { value: !0 });
+      }, o.t = function(r, e) {
+        if (1 & e && (r = o(r)), 8 & e) return r;
+        if (4 & e && "object" == typeof r && r && r.__esModule) return r;
+        var n = Object.create(null);
+        if (o.r(n), Object.defineProperty(n, "default", {
+          enumerable: !0,
+          value: r
+        }), 2 & e && "string" != typeof r) for (var t in r) o.d(n, t, function(e) {
+          return r[e];
+        }.bind(null, t));
+        return n;
+      }, o.n = function(r) {
+        var e = r && r.__esModule ? function() {
+          return r.default;
+        } : function() {
+          return r;
+        };
+        return o.d(e, "a", e), e;
+      }, o.o = function(r, e) {
+        return Object.prototype.hasOwnProperty.call(r, e);
+      }, o.p = "", o(o.s = 0);
+    }([function(r, e, o) {
+      "use strict";
+      var n = o(1), t = o(5);
+      _rollbarConfig = _rollbarConfig || {}, _rollbarConfig.rollbarJsUrl = _rollbarConfig.rollbarJsUrl || "https://cdn.rollbar.com/rollbarjs/refs/tags/v2.19.2/rollbar.min.js", _rollbarConfig.async = void 0 === _rollbarConfig.async || _rollbarConfig.async;
+      var a = n.setupShim(window, _rollbarConfig), l = t(_rollbarConfig);
+      window.rollbar = n.Rollbar, a.loadFull(window, document, !_rollbarConfig.async, _rollbarConfig, l);
+    }, function(r, e, o) {
+      "use strict";
+      var n = o(2), t = o(3);
+
+      function a(r) {
+        return function() {
+          try {
+            return r.apply(this, arguments);
+          } catch (r) {
+            try {
+              console.error("[Rollbar]: Internal error", r);
+            } catch (r) {
+            }
+          }
+        };
+      }
+
+      var l = 0;
+
+      function i(r, e) {
+        this.options = r, this._rollbarOldOnError = null;
+        var o = l++;
+        this.shimId = function() {
+          return o;
+        }, "undefined" != typeof window && window._rollbarShims && (window._rollbarShims[o] = {
+          handler: e,
+          messages: []
+        });
+      }
+
+      var s = o(4), d = function(r, e) {
+        return new i(r, e);
+      }, c = function(r) {
+        return new s(d, r);
+      };
+
+      function u(r) {
+        return a((function() {
+          var e = this, o = Array.prototype.slice.call(arguments, 0), n = { shim: e, method: r, args: o, ts: new Date };
+          window._rollbarShims[this.shimId()].messages.push(n);
+        }));
+      }
+
+      i.prototype.loadFull = function(r, e, o, n, t) {
+        var l = !1, i = e.createElement("script"), s = e.getElementsByTagName("script")[0], d = s.parentNode;
+        i.crossOrigin = "", i.src = n.rollbarJsUrl, o || (i.async = !0), i.onload = i.onreadystatechange = a((function() {
+          if (!(l || this.readyState && "loaded" !== this.readyState && "complete" !== this.readyState)) {
+            i.onload = i.onreadystatechange = null;
+            try {
+              d.removeChild(i);
+            } catch (r) {
+            }
+            l = !0, function() {
+              var e;
+              if (void 0 === r._rollbarDidLoad) {
+                e = new Error("rollbar.js did not load");
+                for (var o, n, a, l, i = 0; o = r._rollbarShims[i++];) for (o = o.messages || []; n = o.shift();) for (a = n.args || [], i = 0; i < a.length; ++i) if ("function" == typeof (l = a[i])) {
+                  l(e);
+                  break;
+                }
+              }
+              "function" == typeof t && t(e);
+            }();
+          }
+        })), d.insertBefore(i, s);
+      }, i.prototype.wrap = function(r, e, o) {
+        try {
+          var n;
+          if (n = "function" == typeof e ? e : function() {
+            return e || {};
+          }, "function" != typeof r) return r;
+          if (r._isWrap) return r;
+          if (!r._rollbar_wrapped && (r._rollbar_wrapped = function() {
+            o && "function" == typeof o && o.apply(this, arguments);
+            try {
+              return r.apply(this, arguments);
+            } catch (o) {
+              var e = o;
+              throw e && ("string" == typeof e && (e = new String(e)), e._rollbarContext = n() || {}, e._rollbarContext._wrappedSource = r.toString(), window._rollbarWrappedError = e), e;
+            }
+          }, r._rollbar_wrapped._isWrap = !0, r.hasOwnProperty)) for (var t in r) r.hasOwnProperty(t) && (r._rollbar_wrapped[t] = r[t]);
+          return r._rollbar_wrapped;
+        } catch (e) {
+          return r;
+        }
+      };
+      for (var p = "log,debug,info,warn,warning,error,critical,global,configure,handleUncaughtException,handleAnonymousErrors,handleUnhandledRejection,captureEvent,captureDomContentLoaded,captureLoad".split(","), f = 0; f < p.length; ++f) i.prototype[p[f]] = u(p[f]);
+      r.exports = {
+        setupShim: function(r, e) {
+          if (r) {
+            var o = e.globalAlias || "Rollbar";
+            if ("object" == typeof r[o]) return r[o];
+            r._rollbarShims = {}, r._rollbarWrappedError = null;
+            var l = new c(e);
+            return a((function() {
+              e.captureUncaught && (l._rollbarOldOnError = r.onerror, n.captureUncaughtExceptions(r, l, !0), e.wrapGlobalEventHandlers && t(r, l, !0)), e.captureUnhandledRejections && n.captureUnhandledRejections(r, l, !0);
+              var a = e.autoInstrument;
+              return !1 !== e.enabled && (void 0 === a || !0 === a || "object" == typeof a && a.network) && r.addEventListener && (r.addEventListener("load", l.captureLoad.bind(l)), r.addEventListener("DOMContentLoaded", l.captureDomContentLoaded.bind(l))), r[o] = l, l;
+            }))();
+          }
+        }, Rollbar: c
+      };
+    }, function(r, e, o) {
+      "use strict";
+
+      function n(r, e, o, n) {
+        r._rollbarWrappedError && (n[4] || (n[4] = r._rollbarWrappedError), n[5] || (n[5] = r._rollbarWrappedError._rollbarContext), r._rollbarWrappedError = null);
+        var t = e.handleUncaughtException.apply(e, n);
+        o && o.apply(r, n), "anonymous" === t && (e.anonymousErrorsPending += 1);
+      }
+
+      r.exports = {
+        captureUncaughtExceptions: function(r, e, o) {
+          if (r) {
+            var t;
+            if ("function" == typeof e._rollbarOldOnError) t = e._rollbarOldOnError; else if (r.onerror) {
+              for (t = r.onerror; t._rollbarOldOnError;) t = t._rollbarOldOnError;
+              e._rollbarOldOnError = t;
+            }
+            e.handleAnonymousErrors();
+            var a = function() {
+              var o = Array.prototype.slice.call(arguments, 0);
+              n(r, e, t, o);
+            };
+            o && (a._rollbarOldOnError = t), r.onerror = a;
+          }
+        }, captureUnhandledRejections: function(r, e, o) {
+          if (r) {
+            "function" == typeof r._rollbarURH && r._rollbarURH.belongsToShim && r.removeEventListener("unhandledrejection", r._rollbarURH);
+            var n = function(r) {
+              var o, n, t;
+              try {
+                o = r.reason;
+              } catch (r) {
+                o = void 0;
+              }
+              try {
+                n = r.promise;
+              } catch (r) {
+                n = "[unhandledrejection] error getting `promise` from event";
+              }
+              try {
+                t = r.detail, !o && t && (o = t.reason, n = t.promise);
+              } catch (r) {
+              }
+              o || (o = "[unhandledrejection] error getting `reason` from event"), e && e.handleUnhandledRejection && e.handleUnhandledRejection(o, n);
+            };
+            n.belongsToShim = o, r._rollbarURH = n, r.addEventListener("unhandledrejection", n);
+          }
+        }
+      };
+    }, function(r, e, o) {
+      "use strict";
+
+      function n(r, e, o) {
+        if (e.hasOwnProperty && e.hasOwnProperty("addEventListener")) {
+          for (var n = e.addEventListener; n._rollbarOldAdd && n.belongsToShim;) n = n._rollbarOldAdd;
+          var t = function(e, o, t) {
+            n.call(this, e, r.wrap(o), t);
+          };
+          t._rollbarOldAdd = n, t.belongsToShim = o, e.addEventListener = t;
+          for (var a = e.removeEventListener; a._rollbarOldRemove && a.belongsToShim;) a = a._rollbarOldRemove;
+          var l = function(r, e, o) {
+            a.call(this, r, e && e._rollbar_wrapped || e, o);
+          };
+          l._rollbarOldRemove = a, l.belongsToShim = o, e.removeEventListener = l;
+        }
+      }
+
+      r.exports = function(r, e, o) {
+        if (r) {
+          var t, a,
+            l = "EventTarget,Window,Node,ApplicationCache,AudioTrackList,ChannelMergerNode,CryptoOperation,EventSource,FileReader,HTMLUnknownElement,IDBDatabase,IDBRequest,IDBTransaction,KeyOperation,MediaController,MessagePort,ModalWindow,Notification,SVGElementInstance,Screen,TextTrack,TextTrackCue,TextTrackList,WebSocket,WebSocketWorker,Worker,XMLHttpRequest,XMLHttpRequestEventTarget,XMLHttpRequestUpload".split(",");
+          for (t = 0; t < l.length; ++t) r[a = l[t]] && r[a].prototype && n(e, r[a].prototype, o);
+        }
+      };
+    }, function(r, e, o) {
+      "use strict";
+
+      function n(r, e) {
+        this.impl = r(e, this), this.options = e, function(r) {
+          for (var e = function(r) {
+            return function() {
+              var e = Array.prototype.slice.call(arguments, 0);
+              if (this.impl[r]) return this.impl[r].apply(this.impl, e);
+            };
+          }, o = "log,debug,info,warn,warning,error,critical,global,configure,handleUncaughtException,handleAnonymousErrors,handleUnhandledRejection,_createItem,wrap,loadFull,shimId,captureEvent,captureDomContentLoaded,captureLoad".split(","), n = 0; n < o.length; n++) r[o[n]] = e(o[n]);
+        }(n.prototype);
+      }
+
+      n.prototype._swapAndProcessMessages = function(r, e) {
+        var o, n, t;
+        for (this.impl = r(this.options); o = e.shift();) n = o.method, t = o.args, this[n] && "function" == typeof this[n] && ("captureDomContentLoaded" === n || "captureLoad" === n ? this[n].apply(this, [t[0], o.ts]) : this[n].apply(this, t));
+        return this;
+      }, r.exports = n;
+    }, function(r, e, o) {
+      "use strict";
+      r.exports = function(r) {
+        return function(e) {
+          if (!e && !window._rollbarInitialized) {
+            for (var o, n, t = (r = r || {}).globalAlias || "Rollbar", a = window.rollbar, l = function(r) {
+              return new a(r);
+            }, i = 0; o = window._rollbarShims[i++];) n || (n = o.handler), o.handler._swapAndProcessMessages(l, o.messages);
+            window[t] = n, window._rollbarInitialized = !0;
+          }
+        };
+      };
+    }]);
+    // End Rollbar Snippet
+  </script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+  <iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-58WNT3B"
+    height="0"
+    width="0"
+    style="display:none;visibility:hidden"
+  ></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div class="home-screen">
+  <main id="app-root" class="mdc-layout-grid">
+    <div class="mdc-layout-grid__inner layout-wrapper">
+    </div>
+  </main>
+</div>
+<script type="module" src="/assets/js/share-action.js"></script>
+</body>
+</html>
