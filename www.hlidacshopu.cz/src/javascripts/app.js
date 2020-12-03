@@ -53,9 +53,6 @@ addEventListener("DOMContentLoaded", async () => {
     if (navigator.standalone) {
       logoLink.href = "/app/";
     }
-    if (sharedInfo.view === "action") {
-      document.body.classList.add("ios-share-action");
-    }
     performance.mark("UI ready");
   } catch (err) {
     if (err.message.indexOf("Invalid URL") > -1) {
@@ -69,12 +66,14 @@ addEventListener("DOMContentLoaded", async () => {
 
 addEventListener("offline", () => {
   progressBar.classList.remove("hs-progress-bar--online");
+  progressBar.classList.add("mdc-top-app-bar--fixed-adjust");
   const form = document.querySelector(".hs-form");
   if (form) form.firstElementChild.setAttribute("disabled", "disabled");
 });
 
 addEventListener("online", () => {
   progressBar.classList.add("hs-progress-bar--online");
+  progressBar.classList.remove("mdc-top-app-bar--fixed-adjust");
   const form = document.querySelector(".hs-form");
   if (form) form.firstElementChild.removeAttribute("disabled");
 });
