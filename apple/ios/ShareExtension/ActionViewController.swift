@@ -21,6 +21,7 @@ class ActionViewController: UIViewController {
     private func getAndOpenURL() {
         let extensionItem = extensionContext?.inputItems.first as! NSExtensionItem
         let itemProvider = extensionItem.attachments?.first!
+        
         let propertyList = String(kUTTypePropertyList)
         if (itemProvider?.hasItemConformingToTypeIdentifier(propertyList))! {
             itemProvider?.loadItem(forTypeIdentifier: propertyList, options: nil, completionHandler: { (item, error) -> Void in
@@ -29,9 +30,10 @@ class ActionViewController: UIViewController {
                     if let results = dictionary[NSExtensionJavaScriptPreprocessingResultsKey] as? NSDictionary,
                         let urlString = results["URL"] as? String,
                         let url = NSURL(string: urlString) {
+                        print("raw \(urlString), url \(url)")
                         
                         // Use gained URL
-                        let myURL = URL(string:"https://www.hlidacshopu.cz/app/?utm_source=ios-app-extension&url=\(url)&view=action")
+                        let myURL = URL(string:"https://www.hlidacshopu.cz/share-action/?utm_source=ios-app-extension&url=\(url)")
                         let myRequest = URLRequest(url: myURL!)
                         self.webView.load(myRequest)
                     }
