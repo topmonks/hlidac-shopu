@@ -5,7 +5,6 @@ import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";
 import "@hlidac-shopu/lib/web-components/chart.mjs";
 import {
   discountTemplate,
-  loaderTemplate,
   notFoundTemplate,
   originalPriceTemplate
 } from "@hlidac-shopu/lib/templates.mjs";
@@ -97,6 +96,37 @@ function resultTemplate({
       </div>
       <div class="">
         <hs-chart .data="${data}"></hs-chart>
+      </div>
+    </div>
+  `;
+}
+
+function loaderTemplate() {
+  return html`
+    <div class="hs-result">
+      <div class="">
+        <h2>Ověřuji&hellip;</h2>
+      </div>
+      <div class="box box--purple">
+        <div class="loading-container">
+          <div class="loader" aria-label="Načítám data…">
+            Váš požadavek se zpracovává&hellip;
+            <div class="spinner">
+              <div class="bar bar1"></div>
+              <div class="bar bar2"></div>
+              <div class="bar bar3"></div>
+              <div class="bar bar4"></div>
+              <div class="bar bar5"></div>
+              <div class="bar bar6"></div>
+              <div class="bar bar7"></div>
+              <div class="bar bar8"></div>
+              <div class="bar bar9"></div>
+              <div class="bar bar10"></div>
+              <div class="bar bar11"></div>
+              <div class="bar bar12"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `;
