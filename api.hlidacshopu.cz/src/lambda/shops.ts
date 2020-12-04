@@ -526,13 +526,17 @@ const shops = {
   "www.tsbohemia.cz": Tsbohemia
 };
 
+export function getShopName(params: ShopParams) {
+  const url = new URL(decodeURIComponent(params?.url));
+  return url.hostname;
+}
+
 export function createShop(
   params: ShopParams,
   dynamodb?: DynamoDB.DocumentClient
 ): Shop | undefined {
-  const url = new URL(decodeURIComponent(params?.url));
   // @ts-ignore
-  const Klass = shops[url.hostname];
+  const Klass = shops[getShopName(params)];
   return Klass ? new Klass(params, dynamodb) : null;
 }
 

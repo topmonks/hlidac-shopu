@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 import { Request, Response } from "@pulumi/awsx/apigateway";
-import { createShop, ShopError, ShopParams } from "../shops";
+import { createShop, getShopName, ShopError, ShopParams } from "../shops";
 import { notFound, response, withCORS } from "../utils";
 import {
   getHistoricalData,
@@ -45,7 +45,9 @@ export async function handler(event: Request): Promise<Response> {
 
     const shop = createShop(params);
     if (!shop) {
-      return withCORS(["GET", "OPTIONS"])(notFound({ error: "Unknown shop" }));
+      return withCORS(["GET", "OPTIONS"])(
+        notFound({ error: "Unsupported shop", shop: getShopName(params) })
+      );
     }
 
     const db = new aws.sdk.DynamoDB.DocumentClient();
@@ -61,10 +63,15 @@ export async function handler(event: Request): Promise<Response> {
     const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
 
     itemId = itemId ?? (await meta)?.itemId;
-    const item = await getHistoricalData(db, shop.name, itemId ?? "");
-    if (!item) {
+    if (!itemId) {
       return withCORS(["GET", "OPTIONS"])(
         notFound({ error: "Unknown item", itemId })
+      );
+    }
+    const item = await getHistoricalData(db, shop.name, itemId);
+    if (!item) {
+      return withCORS(["GET", "OPTIONS"])(
+        notFound({ error: "Missing data", itemId })
       );
     }
 
