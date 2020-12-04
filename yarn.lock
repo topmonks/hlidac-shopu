@@ -12275,10 +12275,10 @@ workbox-core@^5.1.4:
   resolved "https://registry.yarnpkg.com/workbox-core/-/workbox-core-5.1.4.tgz#8bbfb2362ecdff30e25d123c82c79ac65d9264f4"
   integrity sha512-+4iRQan/1D8I81nR2L5vcbaaFskZC2CL17TLbvWVzQ4qiF/ytOGF6XeV54pVxAvKUtkLANhk8TyIUMtiMw2oDg==
 
-workbox-core@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/workbox-core/-/workbox-core-6.0.0.tgz#843b00f6e4aecda88eb143f21d69914999f06e43"
-  integrity sha512-M0un8W+iqPCG8FbMhPXh5y3SmMXy9M54iDX1ygUuJwJEEB6TvPYDt7+uGEN4BrVY7G621zzmfGb32WmrMHYcOg==
+workbox-core@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/workbox-core/-/workbox-core-6.0.2.tgz#2f865cfe633890b4210fd6d6fdb049a6daed0914"
+  integrity sha512-Ksl6qeikGb+BOCILoCUJGxwlEQOeeqdpOnpOr9UDt3NtacPYbfYBmpYpKArw5DFWK+5geBsFqgUUlXThlCYfKQ==
 
 workbox-expiration@^5.1.4:
   version "5.1.4"
@@ -12353,12 +12353,12 @@ workbox-window@^5.1.4:
   dependencies:
     workbox-core "^5.1.4"
 
-workbox-window@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/workbox-window/-/workbox-window-6.0.0.tgz#6f26ada6f80b23c3ec53f7ea4ab4f0c8f4f3ad91"
-  integrity sha512-tGlbJQON8zaevUvI6Sq17YVPJQ2h3mRYl0Mo8yGBUtu+869H/aY3tFaRF5hdRfga2LdM99p77mjjxjZtraowqg==
+workbox-window@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/workbox-window/-/workbox-window-6.0.2.tgz#9b47fdb7c088aa4e8b7d0c6cfda17c8bfca6bf7f"
+  integrity sha512-I/X+qUh1AwN9x/MxFbXsPn7DA27BMtzkXo55w1tBD8V54fv8nUCeC5E4RpXt/mlgdSwBztnURCQTWsdhTrSUjg==
   dependencies:
-    workbox-core "^6.0.0"
+    workbox-core "^6.0.2"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"
