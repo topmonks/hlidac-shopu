@@ -144,6 +144,7 @@ function getSharedInfo(location) {
 }
 
 async function renderResultsModal(detailUrl, isEmbed) {
+  root.classList.add("hs-result");
   render(loaderTemplate(), root);
   try {
     const chartData = await fetchDataSet(detailUrl);
@@ -159,16 +160,11 @@ async function renderResultsModal(detailUrl, isEmbed) {
 
 function invalidURLTemplate() {
   return html`
-    <div
-      id="hlidac-shopu-modal__not-found"
-      class="hs-result mdc-layout-grid__inner"
-    >
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+    <div id="hlidac-shopu-modal__not-found">
+      <div class="">
         <h2>Neplatná adresa zboží</h2>
       </div>
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
+      <div class="box box--purple">
         <p>
           Vypadá to, že se snažíte zadat hledavý výraz, místo adresy produktu.
           Mrzí nás to, ale Hlídač Shopů zatím neumí hledat zboží podle názvu,
@@ -181,7 +177,7 @@ function invalidURLTemplate() {
         </p>
         <p>
           Pokud používáte Hlídače Shopů v mobilním telefonu Android, můžete si
-          celý proces zjednodušit přidáním Hlídače Shopů na Plochu. Tí získáte
+          celý proces zjednodušit přidáním Hlídače Shopů na Plochu. Tím získáte
           možnost sdílet odkazy jak z webu, tak aplikací e-shopů přímo do
           Hlídače Shopů.
         </p>
@@ -220,27 +216,20 @@ function resultTemplate(
       : null;
   const shopLogo = x => x && logoTemplate(x);
   return html`
-    <div
-      id="hlidac-shopu-modal__found"
-      class="hs-result mdc-layout-grid__inner layout-wrapper"
-    >
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <h2>
-          ${shopLogo(shops.get(shop))}
-          <a
-            href="${detailUrl}"
-            id="product-name"
-            class="product-name"
-            target="_blank"
-            rel="noopener noreferrer"
-            >${name || "Vámi vybraný produkt"}</a
-          >
-          ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
-        </h2>
-      </div>
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
+    <div id="hlidac-shopu-modal__found" class="layout-wrapper">
+      <h2>
+        ${shopLogo(shops.get(shop))}
+        <a
+          href="${detailUrl}"
+          id="product-name"
+          class="product-name"
+          target="_blank"
+          rel="noopener noreferrer"
+          >${name || "Vámi vybraný produkt"}</a
+        >
+        ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
+      </h2>
+      <div class="box box--purple">
         ${crawlDate(date)}
         ${discount !== 0
           ? originalPriceTemplate({ type: discountType, ...prices })
@@ -258,14 +247,12 @@ function resultTemplate(
           true
         )}
       </div>
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+      <div class="hs-chart">
         <hs-chart .data="${data}"></hs-chart>
       </div>
       ${isEmbed || !navigator.share
         ? html`
-            <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 hs-share-buttons"
-            >
+            <div class="hs-share-buttons">
               <a
                 class="tw-button"
                 href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(

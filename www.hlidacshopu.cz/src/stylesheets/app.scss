@@ -1,37 +1,7 @@
-@use "@material/layout-grid/mdc-layout-grid";
 @use "@material/top-app-bar/mdc-top-app-bar";
 @use "@material/icon-button/mdc-icon-button";
 @use "@material/snackbar/mdc-snackbar";
 @use "@material/button/mdc-button";
-
-html {
-  padding: 0;
-  scrollbar-width: thin;
-}
-
-body {
-  height: 100vh;
-}
-
-fieldset {
-  margin: 0;
-  padding: 16px 0 32px;
-  border: none;
-  border-radius: var(--border-radius);
-  background-color: rgba(255, 255, 255, 0.6);
-}
-
-fieldset:disabled svg {
-  --icon-color: #909dae !important;
-}
-
-label {
-  font-weight: bold;
-}
-
-footer {
-  margin: 16px;
-}
 
 .ios-share-action {
   header, h2 {
@@ -39,118 +9,15 @@ footer {
   }
 }
 
-.layout-wrapper {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.mdc-top-app-bar__title {
-  margin: 6px 0 0;
-}
-
-#app-root.mdc-top-app-bar--fixed-adjust {
-  padding-top: 6em;
-}
-
-.button,
-.hs-form button {
-  font-family: inherit;
-  font-size: 15px;
-  line-height: 18px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--mdc-theme-primary);
-  min-width: 200px;
-  height: 54px;
-  padding: 0 16px;
-  border: none;
-  border-radius: var(--border-radius);
-  background: var(--mdc-theme-secondary);
-  -webkit-appearance: none;
-
-  @media screen and (max-width: 479px) {
-    box-shadow: 0 20px 20px rgba(92, 98, 205, 0.1);
-  }
-
-  &:hover,
-  &:focus {
-    background-color: var(--mdc-theme-secondary-dark);
-  }
-
-  &:disabled {
-    background-color: #909dae;
-  }
-}
-
-.hs-form {
-  text-align: center;
-
-  .button,
-  button {
-    font-family: inherit;
-    font-size: 15px;
-    line-height: 18px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--mdc-theme-primary);
-    width: 200px;
-    height: 54px;
-    border: none;
-    border-radius: var(--border-radius);
-    background: var(--mdc-theme-secondary);
-    -webkit-appearance: none;
-
-    @media screen and (max-width: 479px) {
-      box-shadow: 0 20px 20px rgba(92, 98, 205, 0.1);
-    }
-
-    &:hover,
-    &:focus {
-      background-color: var(--mdc-theme-secondary-dark);
-    }
-  }
-
-  .hs-textfield {
-    border: 1px solid var(--hs-theme-border);
-    border-radius: var(--border-radius);
-    background: var(--mdc-theme-primary);
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    background-color: (--hs-theme-background);
-    justify-content: space-between;
-    margin: 16px 0;
-
-    &__icon {
-      color: var(--mdc-theme-secondary);
-      --icon-color: var(--mdc-theme-secondary);
-      padding: 0 0 0 16px;
-    }
-
-    input {
-      -webkit-appearance: none;
-      border: none;
-      font-family: inherit;
-      font-size: 16px;
-      line-height: 54px;
-      color: var(--mdc-theme-text-on-light);
-      padding: 0 1em;
-      margin: 0;
-      background: none;
-      flex-grow: 2;
-    }
-  }
-}
-
 .hs-result {
+  background-color: #ffffff;
+  color: #000000;
   text-align: center;
-
-  &.layout-wrapper {
-    max-width: 780px;
-  }
+  padding-bottom: 32px;
 
   h2 {
     margin-top: 0;
+    font-size: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -192,7 +59,7 @@ footer {
     text-align: center;
 
     &.box--purple {
-      background: var(--mdc-theme-secondary-light);
+      background: var(--mdc-theme-primary-light);
       border-radius: 6px;
       padding: 16px;
     }
@@ -230,6 +97,10 @@ footer {
     width: 80%;
     display: inline-block;
   }
+}
+
+.hs-chart {
+  margin: 16px 8px 16px 0;
 }
 
 .hs-real-discount {
@@ -300,45 +171,6 @@ footer {
 
   100% {
     transform: rotate(360deg);
-  }
-}
-
-#toolbar.toolbar--visible {
-  display: inline-flex;
-}
-
-.hs-progress-bar {
-  position: fixed;
-  z-index: 3;
-  left: 0;
-  right: 0;
-
-  &__inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #1d3650;
-    color: #ffffff;
-    border-radius: var(--border-radius);
-    margin: 0 auto;
-    max-width: 480px;
-    line-height: 32px;
-    padding-top: var(--border-radius);
-    transform: translateY(calc(-1 * var(--border-radius)));
-    transition: transform 200ms ease-in;
-  }
-
-  &--online {
-    .hs-progress-bar__inner {
-      transform: translateY(-90px);
-    }
-  }
-
-  .material-icons {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    margin-right: 8px;
   }
 }
 
