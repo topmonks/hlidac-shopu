@@ -221,10 +221,8 @@ const shops = new Map([
     url => ({
       title: "Mall.cz",
       currency: "CZK",
-      itemId: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0]),
-      get itemUrl() {
-        return this.itemId;
-      }
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0])
     })
   ],
   [
@@ -232,10 +230,8 @@ const shops = new Map([
     url => ({
       title: "Mall.sk",
       currency: "EUR",
-      itemId: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0]),
-      get itemUrl() {
-        return this.itemId;
-      }
+      itemId: null,
+      itemUrl: optionalChain(() => url.pathname.substr(1).match(/[^/]+$/)[0])
     })
   ],
   [
