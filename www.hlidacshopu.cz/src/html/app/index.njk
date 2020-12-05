@@ -2,31 +2,30 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta http-equiv="Accept-CH" content="DPR,Viewport-Width,Width,Save-Data,UA" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta http-equiv="Accept-CH" content="DPR,Viewport-Width,Width,Save-Data,UA">
   <meta
     name="viewport"
-    content="width=device-width,initial-scale=1,minimum-scale=1"
-  />
+    content="width=device-width,initial-scale=1,minimum-scale=1">
   <title>Hlídačshopů.cz</title>
   <meta name="description"
         content="Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.">
-  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="manifest" href="/site.webmanifest">
   <link rel="preload" as="style" href="/assets/css/app.css">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api2.hlidacshopu.cz" crossorigin>
-  <meta name="theme-color" content="#545fef" />
+  <meta name="theme-color" content="#545fef">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Hlídač shopů" />
-  <meta name="apple-mobile-web-app-title" content="Hlídač shopů" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="application-name" content="Hlídač shopů">
+  <meta name="apple-mobile-web-app-title" content="Hlídač shopů">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <style>
     /* latin-ext */
     @font-face {
-      font-family: 'Work Sans';
+      font-family: "Work Sans";
       font-style: normal;
       font-weight: 400;
       font-display: swap;
@@ -36,7 +35,7 @@
 
     /* latin */
     @font-face {
-      font-family: 'Work Sans';
+      font-family: "Work Sans";
       font-style: normal;
       font-weight: 400;
       font-display: swap;
@@ -46,7 +45,7 @@
 
     /* latin-ext */
     @font-face {
-      font-family: 'Work Sans';
+      font-family: "Work Sans";
       font-style: normal;
       font-weight: 700;
       font-display: swap;
@@ -56,7 +55,7 @@
 
     /* latin */
     @font-face {
-      font-family: 'Work Sans';
+      font-family: "Work Sans";
       font-style: normal;
       font-weight: 700;
       font-display: swap;
@@ -83,7 +82,7 @@
 
       --hs-theme-border: #e6e6ff;
       --hs-theme-input-background: #fff;
-      --hs-theme-font-family: "Work Sans", sans-serif;
+      --hs-theme-font-family: "Work Sans", "SF Pro", sans-serif;
       --border-radius: 8px;
 
       --hs-logo-text-color: #fff;
@@ -338,7 +337,7 @@
   <link rel="modulepreload" href="/assets/js/app.js">
   {% set imports = assets.outputs["app.js"].imports %}
   {% for import in imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ import.path }}" crossorigin>
+    <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
   {% endfor %}
   <!-- Google Tag Manager -->
   <script>
