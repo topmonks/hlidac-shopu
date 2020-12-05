@@ -570,6 +570,10 @@ footer {
     }
   }
 
+  &__placeholder {
+    display: flex;
+  }
+
   &__close {
     position: absolute;
     top: 16px;
