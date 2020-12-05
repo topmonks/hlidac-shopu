@@ -55,7 +55,7 @@ addEventListener("DOMContentLoaded", async () => {
     }
     performance.mark("UI ready");
   } catch (err) {
-    if (err.message.indexOf("Invalid URL") > -1) {
+    if (err.message.indexOf("valid URL") > -1) {
       render(invalidURLTemplate(), root);
     }
     console.error(err);
@@ -160,7 +160,7 @@ async function renderResultsModal(detailUrl, isEmbed) {
 
 function invalidURLTemplate() {
   return html`
-    <div id="hlidac-shopu-modal__not-found">
+    <div id="hlidac-shopu-modal__not-found" class="hs-result">
       <div class="">
         <h2>Neplatná adresa zboží</h2>
       </div>
