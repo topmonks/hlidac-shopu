@@ -15,7 +15,6 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="preload" as="style" href="/assets/css/app.css">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://api2.hlidacshopu.cz" crossorigin>
   <meta name="theme-color" content="#545fef" />
   <meta name="mobile-web-app-capable" content="yes">
@@ -174,6 +173,22 @@
       text-align: left;
     }
 
+    .mdc-top-app-bar {
+      background-color: var(--mdc-theme-primary);
+      color: #fff;
+      display: flex;
+      position: fixed;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100%;
+      z-index: 4;
+    }
+
+    .mdc-top-app-bar--fixed {
+      transition: box-shadow .2s linear;
+    }
+
     .mdc-top-app-bar__title {
       padding-top: 8px;
       margin: 6px 0 0;
@@ -181,6 +196,28 @@
 
     #app-root.mdc-top-app-bar--fixed-adjust {
       padding-top: 6em;
+    }
+
+    .mdc-top-app-bar__row {
+      display: flex;
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+      height: 56px;
+    }
+
+    .mdc-top-app-bar__section {
+      display: inline-flex;
+      flex: 1 1 auto;
+      align-items: center;
+      min-width: 0;
+      padding: 4px;
+      z-index: 1;
+    }
+
+    .mdc-top-app-bar__section--align-start {
+      justify-content: flex-start;
+      order: -1;
     }
 
     .layout-wrapper {
