@@ -338,7 +338,7 @@
   <link rel="modulepreload" href="/assets/js/app.js">
   {% set imports = assets.outputs["app.js"].imports %}
   {% for import in imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
+    <link rel="preload" as="script" href="/assets/js/{{ import.path }}" crossorigin>
   {% endfor %}
   <!-- Google Tag Manager -->
   <script>
