@@ -56,6 +56,7 @@ addEventListener("DOMContentLoaded", async () => {
     performance.mark("UI ready");
   } catch (err) {
     if (err.message.indexOf("valid URL") > -1) {
+      root.classList.add("hs-result");
       render(invalidURLTemplate(), root);
     }
     console.error(err);
@@ -160,13 +161,13 @@ async function renderResultsModal(detailUrl, isEmbed) {
 
 function invalidURLTemplate() {
   return html`
-    <div id="hlidac-shopu-modal__not-found" class="hs-result">
+    <div id="hlidac-shopu-modal__not-found" class="layout-wrapper">
       <div class="">
         <h2>Neplatná adresa zboží</h2>
       </div>
       <div class="box box--purple">
         <p>
-          Vypadá to, že se snažíte zadat hledavý výraz, místo adresy produktu.
+          Vypadá to, že se snažíte zadat hledaný výraz, místo adresy produktu.
           Mrzí nás to, ale Hlídač Shopů zatím neumí hledat zboží podle názvu,
           ale pouze podle adresy webové stránky.
         </p>
