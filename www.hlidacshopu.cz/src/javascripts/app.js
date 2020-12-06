@@ -1,10 +1,7 @@
 import { html, render } from "lit-html/lit-html.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { MDCSnackbar } from "@material/snackbar/component.js";
-import {
-  Workbox,
-  messageSW
-} from "workbox-window/build/workbox-window.prod.mjs";
+import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shopName, shops } from "@hlidac-shopu/lib/shops.mjs";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";
@@ -77,6 +74,15 @@ addEventListener("online", () => {
   progressBar.classList.remove("mdc-top-app-bar--fixed-adjust");
   const form = document.querySelector(".hs-form");
   if (form) form.firstElementChild.removeAttribute("disabled");
+});
+
+addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  console.log("beforeinstallprompt", e);
+});
+
+addEventListener("appinstalled", e => {
+  console.log("appinstalled", e);
 });
 
 shareButton.addEventListener("click", () => {
