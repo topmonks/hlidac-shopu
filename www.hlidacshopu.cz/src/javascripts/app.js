@@ -27,6 +27,7 @@ const toolbar = document.getElementById("toolbar");
 const logoLink = document.getElementById("logo-link");
 const shareButton = document.getElementById("share-button");
 const searchButton = document.getElementById("search-button");
+const installBanner = document.getElementById("install-banner");
 const progressBar = document.querySelector(".hs-progress-bar");
 
 addEventListener("DOMContentLoaded", async () => {
@@ -76,9 +77,18 @@ addEventListener("online", () => {
   if (form) form.firstElementChild.removeAttribute("disabled");
 });
 
+let installPrompt;
 addEventListener("beforeinstallprompt", e => {
   e.preventDefault();
-  console.log("beforeinstallprompt", e);
+  installPrompt = e;
+  if (!installBanner) return;
+  installBanner.classList.add("hs-install-banner--visible");
+  installBanner.addEventListener("click", async () => {
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted")
+      installBanner.classList.remove("hs-install-banner--visible");
+  });
 });
 
 addEventListener("appinstalled", e => {

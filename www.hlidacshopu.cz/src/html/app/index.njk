@@ -334,6 +334,33 @@
       flex-grow: 2;
     }
 
+    .hs-list {
+      margin-top: 32px;
+    }
+
+    .hs-list-item {
+      display: none;
+      justify-content: space-between;
+      text-align: left;
+      color: #000;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--mdc-theme-on-primary);
+      border-radius: var(--border-radius);
+      padding: 8px;
+    }
+    .hs-list-item.hs-install-banner__visible {
+      display: flex;
+    }
+
+    #install-banner button {
+      color: var(--mdc-theme-secondary);
+      background-color: transparent;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
   </style>
   <link rel="modulepreload" href="/assets/js/app.js">
   {% set imports = assets.outputs["app.js"].imports %}
@@ -536,6 +563,13 @@
             <button type="submit">Ověřit vývoj ceny</button>
           </fieldset>
         </form>
+
+      <div class="hs-list">
+        <div id="install-banner" class="hs-list-item">
+          <p>Hlídače Shopů v telefonu vám usnadní ověřování cen pomocí sdílení</p>
+          <button>Nainstalovat</button>
+        </div>
+      </div>
       </div>
   </main>
   <footer>
