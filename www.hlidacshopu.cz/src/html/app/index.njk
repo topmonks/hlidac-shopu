@@ -339,8 +339,6 @@
     }
 
     .hs-list-item {
-      display: none;
-      justify-content: space-between;
       text-align: left;
       color: #000;
       background-color: rgba(255, 255, 255, 0.9);
@@ -348,8 +346,14 @@
       border-radius: var(--border-radius);
       padding: 8px;
     }
-    .hs-list-item.hs-install-banner__visible {
+
+    #install-banner {
+      display: none;
+    }
+
+    #install-banner.hs-install-banner--visible {
       display: flex;
+      justify-content: space-between;
     }
 
     #install-banner button {
@@ -566,7 +570,7 @@
 
       <div class="hs-list">
         <div id="install-banner" class="hs-list-item">
-          <p>Hlídače Shopů v telefonu vám usnadní ověřování cen pomocí sdílení</p>
+          <p>Hlídače Shopů v telefonu vám usnadní ověřování cen pomocí funkce sdílení</p>
           <button>Nainstalovat</button>
         </div>
       </div>
