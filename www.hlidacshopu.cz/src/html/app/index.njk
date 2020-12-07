@@ -365,6 +365,45 @@
       text-transform: uppercase;
     }
 
+    .hs-bottom-sheet {
+      background-color: #fff;
+      color: #000000;
+      text-align: left;
+      border-top-left-radius: calc(2 * var(--border-radius));
+      border-top-right-radius: calc(2 * var(--border-radius));
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 16px;
+    }
+
+    #help {
+      display: none;
+    }
+
+    #help.help--visible {
+      display: block;
+    }
+
+    #help li {
+      padding: 8px 0;
+    }
+
+    @media screen and (max-height: 600px) {
+      #app-root.mdc-top-app-bar--fixed-adjust {
+        padding-top: 4em;
+      }
+      #app-root > .layout-wrapper > p {
+        margin: 0;
+      }
+      .hs-bottom-sheet {
+        padding: 8px;
+      }
+      #help ol {
+        margin: 0;
+      }
+    }
   </style>
   <link rel="modulepreload" href="/assets/js/app.js">
   {% set imports = assets.outputs["app.js"].imports %}
@@ -574,7 +613,15 @@
           <button>Nainstalovat</button>
         </div>
       </div>
-      </div>
+    </div>
+
+    <div id="help" class="hs-bottom-sheet">
+      <ol>
+        <li>Najděte požadovaný produkt na stránkách podporovaného e-shopu</li>
+        <li>Pomocí sdílení si produkt otevřete v Hlídači Shopů</li>
+        <li>Podívejte se na reálnou slevu a vývoj ceny v čase</li>
+      </ol>
+    </div>
   </main>
   <footer>
     <div>© 2018-2020 Apify, Keboola &amp; TopMonks.<br>

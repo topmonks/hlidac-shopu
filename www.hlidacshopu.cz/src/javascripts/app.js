@@ -28,6 +28,7 @@ const logoLink = document.getElementById("logo-link");
 const shareButton = document.getElementById("share-button");
 const searchButton = document.getElementById("search-button");
 const installBanner = document.getElementById("install-banner");
+const help = document.getElementById("help");
 const progressBar = document.querySelector(".hs-progress-bar");
 
 addEventListener("DOMContentLoaded", async () => {
@@ -50,6 +51,7 @@ addEventListener("DOMContentLoaded", async () => {
     }
     if (navigator.standalone) {
       logoLink.href = "/app/";
+      if (help) help.classList.add("help--visible");
     }
     performance.mark("UI ready");
   } catch (err) {
