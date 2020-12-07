@@ -19,19 +19,20 @@ class ActionViewController: UIViewController {
   }
   
   private func getAndOpenURL() {
-    if let item = extensionContext?.inputItems.first as? NSExtensionItem {
-      for (index, _) in (item.attachments?.enumerated())! {
-        let itemProvider = item.attachments?[index]
-        if (itemProvider?.hasItemConformingToTypeIdentifier(String(kUTTypeURL)))! {
-          itemProvider?.loadItem(forTypeIdentifier: String(kUTTypeURL), options: nil, completionHandler: {
-            (result, error) in
-              guard let url = result as? NSURL else { return }
-              OperationQueue.main.addOperation {
-                let myURL = URL(string:"https://www.hlidacshopu.cz/share-action/?utm_source=ios-app-extension&url=\(url)")
-                let myRequest = URLRequest(url: myURL!)
-                self.webView.load(myRequest)
-              }
-          })
+    guard let attachments = (extensionContext?.inputItems.first as? NSExtensionItem)?.attachments else { return }
+    
+    for itemProvider in attachments where itemProvider.hasItemConformingToTypeIdentifier(String(kUTTypeURL)) {
+      itemProvider.loadItem(forTypeIdentifier: String(kUTTypeURL), options: nil) { result, _ in
+        guard
+          let urlString = result as? NSURL,
+          var url = URLComponents(string: "https://www.hlidacshopu.cz/share-action/")
+        else { return }
+        url.queryItems = [
+          URLQueryItem(name: "url", value: urlString.absoluteString),
+          URLQueryItem(name: "utm_source", value: "ios-app-extension")
+        ]
+        DispatchQueue.main.async {
+          self.webView.load(URLRequest(url: url.url!))
         }
       }
     }
