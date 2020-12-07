@@ -19,36 +19,21 @@ class ActionViewController: UIViewController {
   }
   
   private func getAndOpenURL() {
-    let extensionItem = extensionContext?.inputItems.first as! NSExtensionItem
-    let itemProvider = extensionItem.attachments?.first!
-      
-    if (itemProvider?.hasItemConformingToTypeIdentifier(String(kUTTypePropertyList)))! {
-      // shared from Safari, processed by GetURL.js
-        itemProvider?.loadItem(forTypeIdentifier: String(kUTTypePropertyList), options: nil, completionHandler: { (item, error) in
-          guard let dictionary = item as? NSDictionary else { return }
-          if let results = dictionary[NSExtensionJavaScriptPreprocessingResultsKey] as? NSDictionary,
-             let urlString = results["URL"] as? String,
-             let url = NSURL(string: urlString) {
-            OperationQueue.main.addOperation {
-              let myURL = URL(string:"https://www.hlidacshopu.cz/share-action/?utm_source=ios-app-extension&url=\(url)")
-              let myRequest = URLRequest(url: myURL!)
-              self.webView.load(myRequest)
-            }
-          }
-        })
-    } else if (itemProvider?.hasItemConformingToTypeIdentifier("public.url"))! {
-      // Shared from WebView based browsers
-      itemProvider?.loadItem(forTypeIdentifier: "public.url", options: nil, completionHandler: { (result, error) in
-        guard let url = result as? NSURL else { return }
-
-        OperationQueue.main.addOperation {
-          let myURL = URL(string:"https://www.hlidacshopu.cz/share-action/?utm_source=ios-app-extension&url=\(url)")
-          let myRequest = URLRequest(url: myURL!)
-          self.webView.load(myRequest)
+    if let item = extensionContext?.inputItems.first as? NSExtensionItem {
+      for (index, _) in (item.attachments?.enumerated())! {
+        let itemProvider = item.attachments?[index]
+        if (itemProvider?.hasItemConformingToTypeIdentifier(String(kUTTypeURL)))! {
+          itemProvider?.loadItem(forTypeIdentifier: String(kUTTypeURL), options: nil, completionHandler: {
+            (result, error) in
+              guard let url = result as? NSURL else { return }
+              OperationQueue.main.addOperation {
+                let myURL = URL(string:"https://www.hlidacshopu.cz/share-action/?utm_source=ios-app-extension&url=\(url)")
+                let myRequest = URLRequest(url: myURL!)
+                self.webView.load(myRequest)
+              }
+          })
         }
-      })
-    } else {
-      print("nah, error")
+      }
     }
   }
 
