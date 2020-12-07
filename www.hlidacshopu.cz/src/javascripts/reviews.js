@@ -12,6 +12,7 @@ const longDateFormat = {
 
 addEventListener("DOMContentLoaded", async e => {
   const reviews = await fetchReviews();
+  reviewsRoot.innerHTML = null;
   render(reviews.map(reviewTemplate), reviewsRoot);
 });
 

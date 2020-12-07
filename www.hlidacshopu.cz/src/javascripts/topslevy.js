@@ -22,6 +22,7 @@ if (tableRootPercent) {
         );
       }
       data = a;
+      tableRootPercent.innerHTML = null;
       render(tableTemplatePercent(data), tableRootPercent);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplatePercent(data), buttonsSection);
@@ -63,6 +64,7 @@ if (tableRootKc) {
         );
       }
       data = a;
+      tableRootKc.innerHTML = null;
       render(tableTemplateKc(data), tableRootKc);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplateCZK(data), buttonsSection);

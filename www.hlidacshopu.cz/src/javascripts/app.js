@@ -54,6 +54,7 @@ addEventListener("DOMContentLoaded", async () => {
     performance.mark("UI ready");
   } catch (err) {
     if (err.message.indexOf("valid URL") > -1) {
+      root.innerHTML = null;
       root.classList.add("hs-result");
       render(invalidURLTemplate(), root);
     }
@@ -161,6 +162,7 @@ function getSharedInfo(location) {
 }
 
 async function renderResultsModal(detailUrl, isEmbed) {
+  root.innerHTML = null;
   root.classList.add("hs-result");
   render(loaderTemplate(), root);
   try {

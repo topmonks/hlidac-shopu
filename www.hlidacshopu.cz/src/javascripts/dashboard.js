@@ -45,6 +45,7 @@ function addExtraData(year) {
 addEventListener("DOMContentLoaded", async e => {
   try {
     const data = await fetchDashboardData();
+    tableRoot.innerHTML = null;
     render(tableTemplate(data), tableRoot);
   } catch (ex) {
     console.error(ex);
