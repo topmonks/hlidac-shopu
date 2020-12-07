@@ -49,7 +49,7 @@ addEventListener("DOMContentLoaded", async () => {
     if (!navigator.onLine) {
       progressBar.classList.remove("hs-progress-bar--online");
     }
-    if (navigator.standalone) {
+    if (isWebView(navigator.userAgent)) {
       logoLink.href = "/app/";
       if (help) help.classList.add("help--visible");
     }
@@ -108,6 +108,10 @@ shareButton.addEventListener("click", () => {
 searchButton.addEventListener("click", () => {
   location.assign("/app/");
 });
+
+function isWebView(ua) {
+  return /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(ua);
+}
 
 function showUpdateSnackbar() {
   snackbar.actionButtonText = "Aktualizovat";
