@@ -11,7 +11,7 @@ addEventListener("DOMContentLoaded", async () => {
   console.log("Shared data:", sharedInfo);
   if (sharedInfo) {
     document.body.classList.remove("home-screen");
-    await renderResultsModal(sharedInfo.targetURL);
+    await renderResults(sharedInfo.targetURL);
     performance.mark("UI ready");
   }
   console.groupEnd();
@@ -37,7 +37,7 @@ function getSharedInfo(location) {
   return targetURL && { title, targetURL, shop };
 }
 
-async function renderResultsModal(detailUrl) {
+async function renderResults(detailUrl) {
   try {
     const res = await fetchDataSet(detailUrl);
     render(
@@ -65,16 +65,9 @@ async function renderResultsModal(detailUrl) {
 
 function notFoundTemplate() {
   return html`
-    <div
-      id="hlidac-shopu-modal__not-found"
-      class="hs-result mdc-layout-grid__inner"
-    >
-      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-        <h2>Nenalezeno</h2>
-      </div>
-      <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 box box--purple"
-      >
+    <div class="hs-result layout-wrapper">
+      <h2>Nenalezeno</h2>
+      <div class="box box--purple">
         <p>
           Je nám líto, ale hledaný produkt nebo e-shop nemáme v naší databázi.
         </p>
