@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,minimum-scale=1,initial-scale=1"
+    />
+    <title>Jak používat Hlídače shopů na mobilu</title>
+    <link
+      rel="canonical"
+      href="http://www.hlidacshopu.cz/stories/android.html"
+    />
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script
+      async
+      custom-element="amp-story"
+      src="https://cdn.ampproject.org/v0/amp-story-1.0.js"
+    ></script>
+    <style amp-boilerplate>
+      body {
+        -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        -moz-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        -ms-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+      }
+      @-webkit-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-moz-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-ms-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-o-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+    </style>
+    <noscript
+      ><style amp-boilerplate>
+        body {
+          -webkit-animation: none;
+          -moz-animation: none;
+          -ms-animation: none;
+          animation: none;
+        }
+      </style></noscript
+    >
+    <style amp-custom>
+      /* latin-ext */
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Montserrat Regular'), local('Montserrat-Regular'), url(https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kCHKm459WdhyyTh89ZNpQ.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+
+      /* latin */
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Montserrat Regular'), local('Montserrat-Regular'), url(https://fonts.gstatic.com/s/montserrat/v15/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      /* latin-ext */
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 700;
+        src: local('Montserrat Bold'), local('Montserrat-Bold'), url(https://fonts.gstatic.com/s/montserrat/v15/JTURjIg1_i6t8kCHKm45_dJE3gfD_vx3rCubqg.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+
+      /* latin */
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 700;
+        src: local('Montserrat Bold'), local('Montserrat-Bold'), url(https://fonts.gstatic.com/s/montserrat/v15/JTURjIg1_i6t8kCHKm45_dJE3gnD_vx3rCs.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      :root {
+        --mdc-theme-primary: #fff;
+        --mdc-theme-on-primary: #000;
+
+        --mdc-theme-secondary: #545fef;
+        --mdc-theme-secondary-dark: #3a42a0;
+        --mdc-theme-secondary-light: #f7f7ff;
+
+        --mdc-theme-third: #ca0505;
+        --mdc-theme-fourth: #5dbd2f;
+
+        --mdc-theme-text-primary-on-light: #000;
+        --mdc-theme-text-secondary-on-light: #2e2828;
+        --mdc-theme-text-third-on-light: #979797;
+
+        --mdc-theme-primary-background: rgba(84, 95, 239, 0.07);
+        --mdc-theme-secondary-background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.1) 24.48%,
+          rgba(84, 95, 239, 0.1) 100%
+        );
+
+        --hs-theme-background: #fff;
+        --hs-theme-border: #e6e6ff;
+        --border-radius: 8px;
+
+        --mdc-layout-grid-margin-desktop: 24px;
+        --mdc-layout-grid-gutter-desktop: 20px;
+        --mdc-layout-grid-column-width-desktop: 60px;
+        --mdc-typography-font-family: "Montserrat", sans-serif;
+      }
+
+      body {
+        font-family: var(--mdc-typography-font-family);
+        font-kerning: normal;
+        font-variant-numeric: lining-nums slashed-zero;
+        font-variant-ligatures: common-ligatures contextual;
+        -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+        font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: geometricPrecision;
+      }
+
+      .hs-story-page {
+        background-color: var(--mdc-theme-secondary);
+        color: var(--mdc-theme-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <amp-story
+      standalone
+      title="Jak používat Hlídače shopů na mobilu"
+      publisher="Hlídačshopů.cz"
+      publisher-logo-src="/apple-touch-icon.png"
+      poster-portrait-src=""
+    >
+      <amp-story-page id="title-page" class="hs-story-page">
+        <amp-story-grid-layer template="fill">
+
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="vertical">
+          <h1>Nainstalujte si Hlídače shopů do mobilu</h1>
+        </amp-story-grid-layer>
+      </amp-story-page>
+      <amp-story-page id="visit-page" class="hs-story-page">
+        <amp-story-grid-layer template="fill">
+
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="vertical">
+          <h1>Navšivte <a href="/">www.hlidacshopu.cz</a></h1>
+        </amp-story-grid-layer>
+      </amp-story-page>
+      <amp-story-page id="install-page" class="hs-story-page">
+        <amp-story-grid-layer template="fill">
+
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="vertical">
+          <h1>Přidejte si Hlídače shopů na plochu</h1>
+        </amp-story-grid-layer>
+      </amp-story-page>
+      <amp-story-page id="confirm-page" class="hs-story-page">
+        <amp-story-grid-layer template="fill">
+
+        </amp-story-grid-layer>
+        <amp-story-grid-layer template="vertical">
+          <h1>Potvrďte instalaci</h1>
+        </amp-story-grid-layer>
+      </amp-story-page>
+    </amp-story>
+  </body>
+</html>

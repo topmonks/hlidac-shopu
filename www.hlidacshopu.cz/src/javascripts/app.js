@@ -34,7 +34,8 @@ const progressBar = document.querySelector(".hs-progress-bar");
 addEventListener("DOMContentLoaded", async () => {
   try {
     console.group("Hlídačshopů.cz");
-    const sharedInfo = getSharedInfo(location);
+    const url = new URL(location.href);
+    const sharedInfo = getSharedInfo(url);
     console.log("Shared data:", sharedInfo);
     if (sharedInfo) {
       root.parentElement.classList.remove("home-screen");
@@ -42,6 +43,10 @@ addEventListener("DOMContentLoaded", async () => {
         sharedInfo.targetURL,
         sharedInfo.view === "embed"
       );
+    } else if (url.searchParams.has("install")) {
+      installBanner.classList.add("hs-install-banner--visible");
+    } else if (url.searchParams.has("help")) {
+      help.classList.add("help--visible");
     }
     if (!navigator.share) {
       shareButton.style.display = "none";
@@ -158,8 +163,7 @@ function getShop(targetURL) {
   return shopName(targetURL);
 }
 
-function getSharedInfo(location) {
-  const { searchParams } = new URL(location);
+function getSharedInfo({ searchParams }) {
   const targetURL = getTargetURL(searchParams);
   const title = searchParams.get("title");
   const shop = getShop(targetURL);
