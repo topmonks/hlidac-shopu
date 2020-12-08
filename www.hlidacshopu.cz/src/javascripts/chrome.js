@@ -12,30 +12,30 @@ export function installationGuide() {
         <source
           media="screen and (max-width: 479px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/search-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 480px) and (max-width: 839px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/search-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 840px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/search-2.png   2x
           "
         />
         <img
           loading="lazy"
-          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1572715107/www.hlidacshopu.cz/search.png"
+          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1572715107/www.hlidacshopu.cz/search-2.png"
           alt="Najít Rozšíření - Obrázkový Průvodce"
           width="100%"
         />
@@ -98,30 +98,30 @@ export function installationGuide() {
         <source
           media="screen and (max-width: 479px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1572715107/www.hlidacshopu.cz/usage-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 480px) and (max-width: 839px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1572715107/www.hlidacshopu.cz/usage-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 840px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1572715107/www.hlidacshopu.cz/usage-2.png   2x
           "
         />
         <img
           loading="lazy"
-          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1572715107/www.hlidacshopu.cz/usage.png"
+          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1572715107/www.hlidacshopu.cz/usage-2.png"
           alt="Použití Rozšíření - Obrázkový Průvodce"
           width="100%"
         />
