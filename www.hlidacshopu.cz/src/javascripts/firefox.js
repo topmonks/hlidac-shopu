@@ -12,30 +12,30 @@ export function installationGuide() {
         <source
           media="screen and (max-width: 479px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1573135737/www.hlidacshopu.cz/search-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1573135737/www.hlidacshopu.cz/search-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1573135737/www.hlidacshopu.cz/search-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1607433114/www.hlidacshopu.cz/search-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1607433114/www.hlidacshopu.cz/search-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1607433114/www.hlidacshopu.cz/search-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 480px) and (max-width: 839px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1573135737/www.hlidacshopu.cz/search-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1573135737/www.hlidacshopu.cz/search-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1573135737/www.hlidacshopu.cz/search-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1607433114/www.hlidacshopu.cz/search-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1607433114/www.hlidacshopu.cz/search-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1607433114/www.hlidacshopu.cz/search-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 840px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1573135737/www.hlidacshopu.cz/search-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1573135737/www.hlidacshopu.cz/search-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1573135737/www.hlidacshopu.cz/search-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1607433114/www.hlidacshopu.cz/search-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1607433114/www.hlidacshopu.cz/search-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1607433114/www.hlidacshopu.cz/search-ff-2.png   2x
           "
         />
         <img
           loading="lazy"
-          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1573135737/www.hlidacshopu.cz/search-ff-2.png"
+          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1607433114/www.hlidacshopu.cz/search-ff-2.png"
           alt="Najít Rozšíření - Obrázkový Průvodce"
           width="100%"
         />
@@ -58,30 +58,30 @@ export function installationGuide() {
         <source
           media="screen and (max-width: 479px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/install-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/install-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/install-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1607433488/www.hlidacshopu.cz/install-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1607433488/www.hlidacshopu.cz/install-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1607433488/www.hlidacshopu.cz/install-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 480px) and (max-width: 839px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/install-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/install-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/install-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1607433488/www.hlidacshopu.cz/install-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1607433488/www.hlidacshopu.cz/install-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1607433488/www.hlidacshopu.cz/install-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 840px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/install-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/install-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/install-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1607433488/www.hlidacshopu.cz/install-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1607433488/www.hlidacshopu.cz/install-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1607433488/www.hlidacshopu.cz/install-ff-2.png   2x
           "
         />
         <img
           loading="lazy"
-          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1573135738/www.hlidacshopu.cz/install-ff-2.png"
+          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1607433488/www.hlidacshopu.cz/install-ff-2.png"
           alt="Instalovat Rozšíření - Obrázkový Průvodce"
           width="100%"
         />
@@ -96,30 +96,30 @@ export function installationGuide() {
         <source
           media="screen and (max-width: 479px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_380/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_380/v1607433494/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_380/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 480px) and (max-width: 839px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_740/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_740/v1607433494/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_740/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   2x
           "
         />
         <source
           media="screen and (min-width: 840px)"
           srcset="
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   1x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
-            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1573135738/www.hlidacshopu.cz/usage-ff-2.png   2x
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1,q_auto,f_auto,w_340/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   1x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_1.5,q_auto,f_auto,w_340/v1607433494/www.hlidacshopu.cz/usage-ff-2.png 1.5x,
+            https://res.cloudinary.com/topmonks/image/upload/dpr_2,q_auto,f_auto,w_340/v1607433494/www.hlidacshopu.cz/usage-ff-2.png   2x
           "
         />
         <img
           loading="lazy"
-          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1573135738/www.hlidacshopu.cz/usage-ff-2.png"
+          src="https://res.cloudinary.com/topmonks/image/upload/dpr_auto,q_auto,f_auto,w_auto/v1607433494/www.hlidacshopu.cz/usage-ff-2.png"
           alt="Potvrzení instalace - Obrázkový Průvodce"
           width="100%"
         />
