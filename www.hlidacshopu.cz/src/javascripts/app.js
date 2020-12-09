@@ -85,10 +85,9 @@ addEventListener("online", () => {
   if (form) form.firstElementChild.removeAttribute("disabled");
 });
 
-let installPrompt;
 addEventListener("beforeinstallprompt", e => {
   e.preventDefault();
-  installPrompt = e;
+  const installPrompt = e;
   if (!installBanner) return;
   installBanner.classList.add("hs-install-banner--visible");
   installBanner.addEventListener("click", async () => {
