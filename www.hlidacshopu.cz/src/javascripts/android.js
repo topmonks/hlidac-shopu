@@ -84,7 +84,7 @@ export function installationGuide() {
       </picture>
       <h3>Přidejte si Hlídače Shopů do mobilu</h3>
       <p class="grey-text">
-        Potvrďte přidání Hlídače Shopů na domovskou stránku vašeho telefonu
+        Potvrďte přidání Hlídače Shopů na plochu vašeho zařízení
       </p>
     </div>
     <div
