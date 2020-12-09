@@ -153,7 +153,12 @@
     footer a {
       color: #fff;
     }
+    main {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
 
+    .result-screen,
     .home-screen {
       position: fixed;
       top: 0;
@@ -164,8 +169,10 @@
       flex-direction: column;
     }
 
-    .home-screen > main {
-      flex-grow: 1;
+    @media screen and (min-height: 1024px) {
+      .home-screen .layout-wrapper {
+        margin-top: 25%;
+      }
     }
 
     .mdc-top-app-bar {
@@ -371,6 +378,7 @@
       text-align: left;
       border-top-left-radius: calc(2 * var(--border-radius));
       border-top-right-radius: calc(2 * var(--border-radius));
+      box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.3);
       position: fixed;
       left: 0;
       right: 0;

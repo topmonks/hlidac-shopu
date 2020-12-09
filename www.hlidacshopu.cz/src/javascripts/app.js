@@ -39,6 +39,7 @@ addEventListener("DOMContentLoaded", async () => {
     console.log("Shared data:", sharedInfo);
     if (sharedInfo) {
       root.parentElement.classList.remove("home-screen");
+      root.parentElement.classList.add("result-screen");
       await renderResultsModal(
         sharedInfo.targetURL,
         sharedInfo.view === "embed"
