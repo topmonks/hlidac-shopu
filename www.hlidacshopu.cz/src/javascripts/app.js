@@ -119,6 +119,7 @@ function isWebView(ua) {
 }
 
 function showUpdateSnackbar() {
+  snackbarElement.style.display = "block";
   snackbar.actionButtonText = "Aktualizovat";
   snackbar.labelText = "K dispozici je nová verze.";
   snackbar.timeoutMs = -1;
