@@ -1317,7 +1317,8 @@
 
 "@topmonks/blendid@git://github.com/topmonks/blendid.git":
   version "6.0.0"
-  resolved "git://github.com/topmonks/blendid.git#5ffe818a1a736587f997f1cf19e6f201087338ed"
+  uid bbafc8862e0585d146b26cddbd745fc29fbb620d
+  resolved "git://github.com/topmonks/blendid.git#bbafc8862e0585d146b26cddbd745fc29fbb620d"
   dependencies:
     "@rollup/plugin-alias" "^3.1.0"
     "@rollup/plugin-node-resolve" "^11.0.0"
@@ -1351,7 +1352,7 @@
     gulp-svgmin "^3.0.0"
     gulp-svgstore "^7.0.1"
     lodash "^4.17.20"
-    marked "^1.2.3"
+    marked "^1.2.6"
     merge-stream "^2.0.0"
     minify-html-literals "^1.3.0"
     open "^7.3.0"
@@ -7283,10 +7284,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-marked@^1.2.3:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-1.2.5.tgz#a44b31f2a0b8b5bfd610f00d55d1952d1ac1dfdb"
-  integrity sha512-2AlqgYnVPOc9WDyWu7S5DJaEZsfk6dNh/neatQ3IHUW4QLutM/VPSH9lG7bif+XjFWc9K9XR3QvR+fXuECmfdA==
+marked@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-1.2.6.tgz#fa55cf38ab3585005c9fb3c1ebfb3d4590c29fdc"
+  integrity sha512-7vVuSEZ8g/HH3hK/BH/+7u/NJj7x9VY4EHzujLDcqAQLiOUeFJYAsfSAyoWtR17lKrx7b08qyIno4lffwrzTaA==
 
 marky@^1.2.0:
   version "1.2.1"
