@@ -17,19 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-      <key>NSExtensionActivationUsesStrictMatching</key>
-      <integer>2</integer>
 			<key>NSExtensionActivationRule</key>
 			<dict>
-        <key>NSExtensionActivationDictionaryVersion</key>
-        <integer>2</integer>
+				<key>NSExtensionActivationDictionaryVersion</key>
+				<integer>2</integer>
 				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
 				<integer>1</integer>
 			</dict>
