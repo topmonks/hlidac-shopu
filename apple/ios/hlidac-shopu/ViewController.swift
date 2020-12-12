@@ -9,19 +9,20 @@
 import UIKit
 import WebKit
 
-
 class ViewController: UIViewController, WKUIDelegate {
 
-    @IBOutlet weak var webView: WKWebView!
+  @IBOutlet weak var webView: WKWebView!
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    return .lightContent
+  }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let link = URL(string:"https://www.hlidacshopu.cz/app/?utm_source=ios-app")
-        let request = URLRequest(url: link!)
-        
-        self.webView.load(request)
-    }
-
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    let link = URL(string:"https://www.hlidacshopu.cz/app/?utm_source=ios-app")
+    let request = URLRequest(url: link!)
+    
+    self.webView.load(request)
+  }
 }
-
