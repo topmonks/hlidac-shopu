@@ -201,7 +201,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          mentions: "@junkycoder"
           channel: ntf-hlidac-shopu
 
   build-ios-app:
@@ -213,7 +212,7 @@ jobs:
           at: .
       - run:
           name: Build and Release iOS App
-          working_directory: "apple/ios/hlidac-shopu"
+          working_directory: "apple/ios"
           command: |
             bundle install
             echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
@@ -221,7 +220,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-          mentions: "@junkycoder"
           channel: ntf-hlidac-shopu
 
   provision:
