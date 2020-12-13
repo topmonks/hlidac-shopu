@@ -70,6 +70,8 @@ jobs:
     executor:
       name: node/default
       tag: "14.14"
+    environment:
+      ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
       - checkout
       - node/install-packages:
@@ -90,6 +92,9 @@ jobs:
       - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
+      - run:
+          name: Upload sourcemaps to Rollbar
+          command: ./scripts/rollbar-upload-sourcemaps.mjs "$ROLLBAR_ACCESS_TOKEN" "$CIRCLE_SHA1"
       - persist_to_workspace:
           root: .
           paths: [public]
