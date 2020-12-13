@@ -28,8 +28,8 @@ class ActionViewController: UIViewController {
           var url = URLComponents(string: "https://www.hlidacshopu.cz/share-action/")
         else { return }
         url.queryItems = [
-          URLQueryItem(name: "url", value: urlString.absoluteString),
-          URLQueryItem(name: "utm_source", value: "ios-app-extension")
+          URLQueryItem(name: "utm_source", value: "ios-app-extension"),
+          URLQueryItem(name: "url", value: urlString.absoluteString)
         ]
         DispatchQueue.main.async {
           self.webView.load(URLRequest(url: url.url!))
