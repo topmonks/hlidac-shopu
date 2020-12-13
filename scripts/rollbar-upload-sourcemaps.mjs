@@ -28,7 +28,7 @@ function uploadSourceMap([file, rev]) {
   formData.append("access_token", process.argv[2] || "");
   formData.append("version", process.argv[3] || "");
   formData.append("minified_url", `https://www.hlidacshopu.cz/${rev}`);
-  formData.append("source_map", fs.readFileSync(mapPath));
+  formData.append("source_map", fs.createReadStream(mapPath));
 
   return fetch("https://api.rollbar.com/api/1/sourcemap", {
     method: "POST",
