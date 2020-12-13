@@ -79,12 +79,13 @@ jobs:
       - run:
           name: Export build metadata
           command: |
+            echo '{}' | \
             jq --arg key0 'environment' \
                --arg value0 'production' \
                --arg key1 'version' \
                --arg value1 $CIRCLE_SHA1 \
                '. | .[$key0]=$value0 | .[$key1]=$value1' \
-               <<< '{}' > www.hlidacshopu.cz/src/data/build.json
+            > www.hlidacshopu.cz/src/data/build.json
       - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
