@@ -6,3 +6,15 @@ updates:
     interval: daily
     time: "04:00"
   open-pull-requests-limit: 10
+- package-ecosystem: bundler
+  directory: "/apple/ios"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+- package-ecosystem: bundler
+  directory: "/apple/osx/hlidac shopu"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
