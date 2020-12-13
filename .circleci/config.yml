@@ -204,6 +204,26 @@ jobs:
           mentions: "@junkycoder"
           channel: ntf-hlidac-shopu
 
+  build-ios-app:
+    macos:
+      xcode: "12.0.1"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build and Release iOS App
+          working_directory: "apple/ios/hlidac-shopu"
+          command: |
+            bundle install
+            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
+            bundle exec fastlane release
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          mentions: "@junkycoder"
+          channel: ntf-hlidac-shopu
+
   provision:
     executor:
       name: node/default
@@ -305,10 +325,21 @@ workflows:
       - confirm-release:
           type: approval
       - publish-web-extensions:
-          context: app-hlidac-shopu
+          context:
+            - org-global
+            - app-hlidac-shopu
           requires:
             - confirm-release
             - build-web-extension
+          filters:
+            branches:
+              only: master
+      - build-ios-app:
+          context:
+            - org-global
+            - org-fastlane
+#          requires:
+#            - confirm-release
           filters:
             branches:
               only: master
