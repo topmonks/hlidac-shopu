@@ -77,7 +77,8 @@ const config = {
       minify: mode.production(),
       sourcemap: mode.production() ? "external" : true,
       format: "esm",
-      target: "es2019",
+      target: ["es2017", "firefox57", "safari12"],
+      charset: "utf8",
       platform: "browser",
       metafile: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
       define: {
