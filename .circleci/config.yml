@@ -191,13 +191,20 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - v1-gem-cache-macos-{{ checksum "Gemfile.lock" }}
+      - run: bundle install
       - run:
           name: Build and Release Mac Extension App
           working_directory: "apple/osx/hlidac shopu"
           command: |
-            bundle install
             echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
             bundle exec fastlane release
+      - save_cache:
+          paths:
+            - ~/.bundle
+          key: v1-gem-cache-macos-{{ checksum "Gemfile.lock" }}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -210,13 +217,20 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - v1-gem-cache-ios-{{ checksum "Gemfile.lock" }}
+      - run: bundle install
       - run:
           name: Build and Release iOS App
           working_directory: "apple/ios"
           command: |
-            bundle install
             echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
             bundle exec fastlane release
+      - save_cache:
+          paths:
+            - ~/.bundle
+          key: v1-gem-cache-ios-{{ checksum "Gemfile.lock" }}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -336,8 +350,8 @@ workflows:
           context:
             - org-global
             - org-fastlane
-#          requires:
-#            - confirm-release
+          requires:
+            - confirm-release
           filters:
             branches:
               only: master
