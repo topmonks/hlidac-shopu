@@ -27,34 +27,10 @@ export class Notino extends Shop {
     });
   }
 
-  waitStateObject() {
-    return new Promise((resolve, reject) => {
-      const elt = document.createElement("script");
-      elt.innerHTML =
-        'window.postMessage({ type: "HLIDAC_SHOPU_STATE_OBJECT", state: window.__APOLLO_STATE__ }, "*");';
-      document.head.appendChild(elt);
-      const timeout = setTimeout(() => reject(new Error("No item id")), 500);
-      window.addEventListener(
-        "message",
-        function (event) {
-          // We only accept messages from ourselves
-          if (event.source !== window) return;
-
-          if (
-            event.data.type &&
-            event.data.type === "HLIDAC_SHOPU_STATE_OBJECT"
-          ) {
-            clearTimeout(timeout);
-            return resolve(event.data.state);
-          }
-        },
-        false
-      );
-    });
-  }
-
-  async getMasterId() {
-    const apolloState = await this.waitStateObject();
+  getMasterId() {
+    const apolloState = JSON.parse(
+      document.getElementById("__APOLLO_STATE__").textContent
+    );
     const [, [masterRes]] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
       k.startsWith("productDetailByMasterId")
     );
@@ -79,7 +55,7 @@ export class Notino extends Shop {
     })();
 
     if (!itemId) {
-      itemId = this.masterId || (await this.getMasterId());
+      itemId = this.masterId || this.getMasterId();
       this.masterId = itemId;
     }
 
