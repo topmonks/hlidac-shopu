@@ -91,11 +91,9 @@ addEventListener("beforeinstallprompt", e => {
   const installPrompt = e;
   if (!installBanner) return;
   installBanner.classList.add("hs-install-banner--visible");
-  installBanner.addEventListener("click", async () => {
+  installBanner.addEventListener("click", () => {
     installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === "accepted")
-      installBanner.classList.remove("hs-install-banner--visible");
+    installBanner.classList.remove("hs-install-banner--visible");
   });
 });
 
