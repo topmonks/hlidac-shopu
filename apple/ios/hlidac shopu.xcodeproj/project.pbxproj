@@ -46,7 +46,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8214B5762397B3A70068C025 /* hlidac-shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hlidac-shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8214B5762397B3A70068C025 /* hlidac shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hlidac shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8214B5792397B3A70068C025 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8214B57B2397B3A70068C025 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8214B57D2397B3A70068C025 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -94,7 +94,7 @@
 		8214B5772397B3A70068C025 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8214B5762397B3A70068C025 /* hlidac-shopu.app */,
+				8214B5762397B3A70068C025 /* hlidac shopu.app */,
 				82AE438C239BA2E500FC2649 /* ShareExtension.appex */,
 			);
 			name = Products;
@@ -135,9 +135,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8214B5752397B3A70068C025 /* hlidac-shopu */ = {
+		8214B5752397B3A70068C025 /* hlidac shopu */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8214B58A2397B3A80068C025 /* Build configuration list for PBXNativeTarget "hlidac-shopu" */;
+			buildConfigurationList = 8214B58A2397B3A80068C025 /* Build configuration list for PBXNativeTarget "hlidac shopu" */;
 			buildPhases = (
 				8214B5722397B3A70068C025 /* Sources */,
 				8214B5732397B3A70068C025 /* Frameworks */,
@@ -149,9 +149,9 @@
 			dependencies = (
 				82AE4397239BA2E500FC2649 /* PBXTargetDependency */,
 			);
-			name = "hlidac-shopu";
+			name = "hlidac shopu";
 			productName = "hlidac-shopu";
-			productReference = 8214B5762397B3A70068C025 /* hlidac-shopu.app */;
+			productReference = 8214B5762397B3A70068C025 /* hlidac shopu.app */;
 			productType = "com.apple.product-type.application";
 		};
 		82AE438B239BA2E500FC2649 /* ShareExtension */ = {
@@ -189,7 +189,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8214B5712397B3A70068C025 /* Build configuration list for PBXProject "hlidac-shopu" */;
+			buildConfigurationList = 8214B5712397B3A70068C025 /* Build configuration list for PBXProject "hlidac shopu" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -202,7 +202,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8214B5752397B3A70068C025 /* hlidac-shopu */,
+				8214B5752397B3A70068C025 /* hlidac shopu */,
 				82AE438B239BA2E500FC2649 /* ShareExtension */,
 			);
 		};
@@ -500,7 +500,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8214B5712397B3A70068C025 /* Build configuration list for PBXProject "hlidac-shopu" */ = {
+		8214B5712397B3A70068C025 /* Build configuration list for PBXProject "hlidac shopu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8214B5882397B3A80068C025 /* Debug */,
@@ -509,7 +509,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8214B58A2397B3A80068C025 /* Build configuration list for PBXNativeTarget "hlidac-shopu" */ = {
+		8214B58A2397B3A80068C025 /* Build configuration list for PBXNativeTarget "hlidac shopu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8214B58B2397B3A80068C025 /* Debug */,

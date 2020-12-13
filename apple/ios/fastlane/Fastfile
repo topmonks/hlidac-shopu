@@ -23,7 +23,7 @@ platform :ios do
   desc "Push a new release build to the App Store"
   lane :release do
     match(type: "appstore", readonly: is_ci)
-    build_ios_app(scheme: "hlidac-shopu", export_method: "app-store")
+    build_ios_app(scheme: "hlidac shopu", export_method: "app-store")
     upload_to_app_store(
       api_key_path: "fastlane/NWBNM44ASY.json",
       skip_metadata: true,
