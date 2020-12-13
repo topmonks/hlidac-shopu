@@ -77,6 +77,15 @@ jobs:
           name: Lint website
           command: yarn lint:website
       - run:
+          name: Export build metadata
+          command: |
+            jq --arg key0 'environment' \
+               --arg value0 'production' \
+               --arg key1 'version' \
+               --arg value1 $CIRCLE_SHA1 \
+               '. | .[$key0]=$value0 | .[$key1]=$value1' \
+               <<< '{}' > www.hlidacshopu.cz/src/data/build.json
+      - run:
           name: Build website
           command: yarn build:www.hlidacshopu.cz
       - persist_to_workspace:

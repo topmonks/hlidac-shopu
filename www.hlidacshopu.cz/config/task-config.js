@@ -44,7 +44,7 @@ const config = {
   },
 
   html: {
-    collections: ["media", "images", "assets"],
+    collections: ["media", "images", "assets", "build"],
     nunjucksRender: {
       filters: {
         longDate: str =>
@@ -75,7 +75,7 @@ const config = {
       bundle: true,
       splitting: true,
       minify: mode.production(),
-      sourcemap: "external",
+      sourcemap: mode.production() ? "external" : true,
       format: "esm",
       target: "es2019",
       platform: "browser",

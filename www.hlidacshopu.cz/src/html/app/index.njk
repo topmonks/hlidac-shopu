@@ -442,7 +442,8 @@
       captureUncaught: true,
       captureUnhandledRejections: true,
       payload: {
-        environment: "production"
+        environment: "{{ build.environment }}",
+        code_version: "{{ build.version }}"
       }
     };
     // Rollbar Snippet
