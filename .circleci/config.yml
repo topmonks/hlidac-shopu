@@ -7,6 +7,7 @@ orbs:
   github: topmonks/github@1.0.2
   node: circleci/node@4.1.0
   pulumi: pulumi/pulumi@2.0.0
+  rollbar: rollbar/deploy@1.0.1
   slack: circleci/slack@4.1.3
 
 commands:
@@ -246,6 +247,8 @@ jobs:
         type: steps
         default: []
     executor: aws-cli/default
+    environment:
+      ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
       - checkout
       - attach_workspace:
@@ -257,11 +260,7 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
-          mentions: "@here"
-          channel: ntf-hlidac-shopu
+      - rollbar/notify_deploy
 
   merge_pr:
     docker:
