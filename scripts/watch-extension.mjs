@@ -23,7 +23,9 @@ async function build() {
       entryPoints: [entryPoint],
       outfile: output,
       bundle: true,
-      sourcemap: "external",
+      sourcemap: true,
+      target: ["es2017", "firefox57", "safari12"],
+      charset: "utf8",
       incremental: true
     });
     fs.copyFileSync(output, outputFF);

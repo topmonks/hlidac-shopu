@@ -74,7 +74,7 @@
     "lint:api": "eslint ./api.hlidacshopu.cz/",
     "lint:extension": "yarn eslint ./extension; web-ext lint",
     "lint:firefox": "web-ext lint --config web-ext-config.firefox.js",
-    "build:extension": "esbuild ./extension/content.mjs --bundle --outfile=extension/content.js",
+    "build:extension": "node ./scripts/build-extension.mjs",
     "watch:extension": "node ./scripts/watch-extension.mjs",
     "prebuild:firefox": "cp -R extension/ ./extension-dist/; cat ./extension/manifest.json | jq 'del(.background)' > ./extension-dist/manifest.json",
     "build:firefox": "web-ext build --config web-ext-config.firefox.js --overwrite-dest",
