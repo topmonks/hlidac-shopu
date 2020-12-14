@@ -75,9 +75,9 @@ export function putParsedData(
         data: {
           currentPrice: parseFloat(params.currentPrice ?? "0"),
           originalPrice:
-            params.originalPrice === "null"
+            params.originalPrice == null
               ? null
-              : parseFloat(params.originalPrice ?? "0"),
+              : parseFloat(params.originalPrice),
           title: params.title,
           imageUrl: params.imageUrl
         }
