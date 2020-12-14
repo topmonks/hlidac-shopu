@@ -39,7 +39,6 @@ function optionalChain(first, second = () => null) {
   }
 }
 
-
 // For more bots matches see https://github.com/monperrus/crawler-user-agents/blob/master/crawler-user-agents.json
 function isSocialMediaBot(ua) {
   return Boolean(
