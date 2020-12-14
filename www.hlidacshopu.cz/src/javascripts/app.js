@@ -13,6 +13,23 @@ import {
   notFoundTemplate,
   originalPriceTemplate
 } from "@hlidac-shopu/lib/templates.mjs";
+import Rollbar from "rollbar/src/browser/core";
+import telemeter from "rollbar/src/telemetry";
+import instrumenter from "rollbar/src/browser/telemetry";
+
+const getMeta = key =>
+  document.head.querySelector(`meta[name='${key}']`).getAttribute("content");
+
+Rollbar.setComponents({ telemeter, instrumenter });
+Rollbar.init({
+  accessToken: getMeta("hs:rollbar:access-token"),
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  payload: {
+    environment: getMeta("hs:environment"),
+    code_version: getMeta("hs:version")
+  }
+});
 
 registerStylesheet("/assets/css/app.css");
 registerStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons");
