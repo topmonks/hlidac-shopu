@@ -193,7 +193,7 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - v1-gem-cache-macos-{{ checksum "Gemfile.lock" }}
+            - v1-gem-cache-macos-{{ checksum "apple/osx/hlidac shopu/Gemfile.lock" }}
       - run: bundle install
       - run:
           name: Build and Release Mac Extension App
@@ -204,7 +204,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.bundle
-          key: v1-gem-cache-macos-{{ checksum "Gemfile.lock" }}
+          key: v1-gem-cache-macos-{{ checksum "apple/osx/hlidac shopu/Gemfile.lock" }}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -219,7 +219,7 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - v1-gem-cache-ios-{{ checksum "Gemfile.lock" }}
+            - v1-gem-cache-ios-{{ checksum "apple/ios/Gemfile.lock" }}
       - run: bundle install
       - run:
           name: Build and Release iOS App
@@ -230,7 +230,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.bundle
-          key: v1-gem-cache-ios-{{ checksum "Gemfile.lock" }}
+          key: v1-gem-cache-ios-{{ checksum "apple/ios/Gemfile.lock" }}
       - slack/notify:
           event: fail
           template: basic_fail_1
