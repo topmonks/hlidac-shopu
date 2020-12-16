@@ -194,7 +194,9 @@ jobs:
       - restore_cache:
           keys:
             - v1-gem-cache-macos-{{ checksum "apple/osx/hlidac shopu/Gemfile.lock" }}
-      - run: bundle install
+      - run:
+          working_directory: "apple/osx/hlidac shopu"
+          command: bundle install
       - run:
           name: Build and Release Mac Extension App
           working_directory: "apple/osx/hlidac shopu"
@@ -220,7 +222,9 @@ jobs:
       - restore_cache:
           keys:
             - v1-gem-cache-ios-{{ checksum "apple/ios/Gemfile.lock" }}
-      - run: bundle install
+      - run:
+          working_directory: "apple/ios"
+          command: bundle install
       - run:
           name: Build and Release iOS App
           working_directory: "apple/ios"
