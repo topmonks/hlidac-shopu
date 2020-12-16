@@ -494,7 +494,7 @@
 				MARKETING_VERSION = 1.8.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.topmonks.hlidac-shopu";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.topmonks.hlidac-shopu.ShareExtension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
