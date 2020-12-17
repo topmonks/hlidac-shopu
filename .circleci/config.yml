@@ -354,8 +354,8 @@ workflows:
           context:
             - org-global
             - org-fastlane
-         requires:
-           - confirm-release
+          requires:
+            - confirm-release
           filters:
             branches:
               only: master
