@@ -4,7 +4,7 @@
   "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.",
   "type": "web",
   "fullscreen": "true",
-  "launch_path": "/index.html",
+  "launch_path": "/app/",
   "icons": {
     "128": "/kaios-128x128.png"
   },
@@ -16,10 +16,10 @@
     "shopping"
   ],
   "locales": {
-    "en-US": {
+    "cs-CZ": {
       "name": "Hlídač Shopů",
       "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou."
     }
   },
-  "default_locale": "en-US"
+  "default_locale": "cz-CZ"
 }
