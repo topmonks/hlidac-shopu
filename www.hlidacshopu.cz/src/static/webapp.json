@@ -1,0 +1,25 @@
+{
+  "version": "1.8.10",
+  "name": "Hlídač Shopů",
+  "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.",
+  "type": "web",
+  "fullscreen": "true",
+  "launch_path": "/index.html",
+  "icons": {
+    "128": "/kaios-128x128.png"
+  },
+  "developer": {
+    "name": "TopMonks",
+    "url": "https://www.topmonks.com/"
+  },
+  "categories": [
+    "shopping"
+  ],
+  "locales": {
+    "en-US": {
+      "name": "Hlídač Shopů",
+      "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou."
+    }
+  },
+  "default_locale": "en-US"
+}
