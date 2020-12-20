@@ -4,7 +4,8 @@
 @use "@material/button/mdc-button";
 
 .ios-share-action {
-  header, h2 {
+  header,
+  h2 {
     display: none;
   }
 }
@@ -13,7 +14,23 @@
   background-color: #ffffff;
   color: #000000;
   text-align: center;
-  padding-bottom: 32px;
+  padding-bottom: 8px;
+
+  img {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 8px;
+  }
+
+  @media screen and (min-height: 400px) {
+    padding-bottom: 32px;
+
+    img {
+      max-width: 320px;
+      max-height: 240px;
+      margin-top: 32px;
+    }
+  }
 
   h2 {
     margin-top: 0;
@@ -24,12 +41,6 @@
   }
   #hlidac-shopu-modal__not-found h2 {
     font-size: 24px;
-  }
-
-  img {
-    max-width: 320px;
-    max-height: 240px;
-    margin-top: 32px;
   }
 
   a {
@@ -180,6 +191,7 @@
 .hs-share-buttons {
   display: flex;
   justify-content: center;
+  margin-bottom: 16px;
 
   a + a {
     margin-left: 1em;

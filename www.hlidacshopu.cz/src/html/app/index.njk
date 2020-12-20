@@ -114,7 +114,6 @@
     body {
       margin: 0;
       padding: 0;
-      height: 100vh;
       text-align: center;
       color: var(--mdc-theme-on-primary);
       background-color: var(--mdc-theme-primary);
@@ -140,39 +139,56 @@
     }
 
     footer {
-      margin: 16px 0;
-    }
-
-    footer {
-      padding-left: 16px;
-      padding-right: 16px;
-      padding-bottom: 16px;
-      font-size: 14px;
-      line-height: 24px;
+      padding: 8px;
     }
 
     footer a {
       color: #fff;
     }
-    main {
-      flex-grow: 1;
-      overflow-y: auto;
+
+    .layout-wrapper {
+      padding: 0 8px;
     }
 
-    .result-screen,
-    .home-screen {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      flex-direction: column;
+    @media screen and (min-height: 400px) {
+      body {
+        height: 100vh;
+      }
+
+      main {
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+
+      footer {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-bottom: 16px;
+        font-size: 14px;
+        line-height: 24px;
+      }
+
+      .result-screen,
+      .home-screen {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .layout-wrapper {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
     }
 
     @media screen and (min-height: 1024px) {
       .home-screen .layout-wrapper {
-        margin-top: 25%;
+        margin-top: 25vh;
       }
     }
 
@@ -226,12 +242,6 @@
     .mdc-top-app-bar__section--align-start {
       justify-content: flex-start;
       order: -1;
-    }
-
-    .layout-wrapper {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 0 16px;
     }
 
     #toolbar {
@@ -291,11 +301,19 @@
       text-transform: uppercase;
       color: var(--mdc-theme-on-secondary);
       background: var(--mdc-theme-secondary);
-      width: 200px;
-      height: 54px;
+      height: 32px;
+      padding: 0 16px;
       border: none;
       border-radius: var(--border-radius);
       -webkit-appearance: none;
+    }
+
+    @media screen and (min-height: 400px) {
+      .hs-form .button,
+      .hs-form button {
+        width: 200px;
+        height: 54px;
+      }
     }
 
     @media screen and (max-width: 479px) {
@@ -326,20 +344,30 @@
     .hs-textfield__icon {
       color: var(--mdc-theme-primary);
       --icon-color: var(--mdc-theme-primary);
-      padding: 0 0 0 16px;
+      padding: 0 0 0 4px;
     }
 
     .hs-form input {
       -webkit-appearance: none;
       border: none;
       font-family: inherit;
-      font-size: 16px;
-      line-height: 54px;
       color: var(--mdc-theme-text-primary-on-light);
-      padding: 0 1em;
       margin: 0;
+      padding: 0 8px;
+      line-height: 32px;
       background: none;
       flex-grow: 2;
+    }
+
+    @media screen and (min-height: 400px) {
+      .hs-form input {
+        padding: 0 1em;
+        font-size: 16px;
+        line-height: 54px;
+      }
+      .hs-textfield__icon {
+        padding: 0 0 0 16px;
+      }
     }
 
     .hs-list {
