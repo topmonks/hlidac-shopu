@@ -25,6 +25,7 @@ const searchButton = document.getElementById("search-button");
 const installBanner = document.getElementById("install-banner");
 const help = document.getElementById("help");
 const progressBar = document.querySelector(".hs-progress-bar");
+const textField = document.querySelector(".hs-textfield");
 
 addEventListener("DOMContentLoaded", async () => {
   try {
@@ -96,6 +97,13 @@ shareButton.addEventListener("click", () => {
 
 searchButton.addEventListener("click", () => {
   location.assign("/app/");
+});
+
+textField.querySelector("input").addEventListener("focus", () => {
+  textField.classList.add("hs-textfield--focused");
+});
+textField.querySelector("input").addEventListener("blur", () => {
+  textField.classList.remove("hs-textfield--focused");
 });
 
 function isWebView(ua) {
