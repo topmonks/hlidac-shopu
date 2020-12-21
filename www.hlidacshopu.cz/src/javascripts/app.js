@@ -105,6 +105,12 @@ textField.querySelector("input").addEventListener("focus", () => {
 textField.querySelector("input").addEventListener("blur", () => {
   textField.classList.remove("hs-textfield--focused");
 });
+textField.querySelector("input").addEventListener("invalid", () => {
+  textField.classList.add("hs-textfield--invalid");
+});
+textField.querySelector("input").addEventListener("input", () => {
+  textField.classList.remove("hs-textfield--invalid");
+});
 
 function isWebView(ua) {
   return /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(ua);

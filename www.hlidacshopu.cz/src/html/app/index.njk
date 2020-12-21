@@ -18,7 +18,6 @@
   <meta name="theme-color" content="#545fef">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="Hlídač shopů">
-  <meta name="apple-itunes-app" content="app-id=1488295734">
   <meta name="apple-mobile-web-app-title" content="Hlídač shopů">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -339,6 +338,35 @@
       align-items: center;
       justify-content: space-between;
       margin: 16px 0;
+    }
+
+    .hs-textfield--focused {
+      box-shadow:
+        4px 4px 16px #3023ae,
+        -4px 4px 16px #3023ae,
+        -4px -4px 16px #3023ae,
+        4px -4px 16px #3023ae;
+    }
+
+    .hs-textfield--focused input {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .hs-textfield--invalid {
+      box-shadow:
+        4px 4px 16px #c8575a,
+        -4px 4px 16px #c8575a,
+        -4px -4px 16px #c8575a,
+        4px -4px 16px #c8575a;
+    }
+    .hs-textfield input:invalid,
+    .hs-textfield input:-moz-ui-invalid {
+      border:0;
+      outline:none;
+      box-shadow:none;
+      -moz-box-shadow:none;
+      -webkit-box-shadow:none;
     }
 
     .hs-textfield__icon {
