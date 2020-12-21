@@ -6,6 +6,9 @@ import {
 } from "@hlidac-shopu/lib/remoting.mjs";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
+import * as rollbar from "./rollbar.js";
+
+rollbar.init();
 
 const tableRootPercent = document.getElementById("table-root-percent");
 if (tableRootPercent) {

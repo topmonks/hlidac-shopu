@@ -6,6 +6,9 @@ import {
   fetchShopsStats
 } from "@hlidac-shopu/lib/remoting.mjs";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
+import * as rollbar from "./rollbar.js";
+
+rollbar.init();
 
 const isProduction = () =>
   ["localhost", "127"].indexOf(location.hostname) === -1;

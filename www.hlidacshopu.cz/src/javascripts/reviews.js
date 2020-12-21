@@ -1,14 +1,11 @@
 import { html, render } from "lit-html/lit-html.js";
 import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
+import * as rollbar from "./rollbar.js";
+
+rollbar.init();
 
 const reviewsRoot = document.getElementById("reviews");
-
-const longDateFormat = {
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-};
 
 addEventListener("DOMContentLoaded", async e => {
   const reviews = await fetchReviews();

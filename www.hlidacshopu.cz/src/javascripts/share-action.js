@@ -8,6 +8,9 @@ import {
   notFoundTemplate,
   originalPriceTemplate
 } from "@hlidac-shopu/lib/templates.mjs";
+import * as rollbar from "./rollbar.js";
+
+rollbar.init();
 
 const root = document.getElementById("app-root");
 

@@ -2,11 +2,8 @@
 {% from 'macros/helpers.njk' import sprite %}
 {% block title %}Top slevy{% endblock %}
 
-{% block preload %}
-{% endblock %}
-
 {% block styles %}
-  <link rel="stylesheet" href="/assets/css/index.css"/>
+  <link rel="stylesheet" href="/assets/css/index.css" />
   <style>
     .shops-stats {
       border-spacing: 0 12px;
@@ -66,37 +63,38 @@
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
               <colgroup>
-                <col width="150"/>
+                <col width="150" />
               </colgroup>
               <thead>
-                <tr>
-                  <th scope="col">Pořadí</th>
-                  <th scope="col">Reálná sleva v %</th>
-                  <th scope="col">Původní cena v Kč</th>
-                  <th scope="col">Reálná sleva v Kč</th>
-                  <th scope="col">Cena po slevě v Kč</th>
-                  <th scope="col">Zlevněno od data</th>
-                  <th scope="col">Produkt</th>
-                  <th scope="col">Eshop</th>
-                </tr>
+              <tr>
+                <th scope="col">Pořadí</th>
+                <th scope="col">Reálná sleva v %</th>
+                <th scope="col">Původní cena v Kč</th>
+                <th scope="col">Reálná sleva v Kč</th>
+                <th scope="col">Cena po slevě v Kč</th>
+                <th scope="col">Zlevněno od data</th>
+                <th scope="col">Produkt</th>
+                <th scope="col">Eshop</th>
+              </tr>
               </thead>
               <tbody id="table-root-percent">
-                <tr>
-                  <td colspan="9">
-                    <div class="loading-container">
-                      <div class="loader" aria-label="Načítám data…">
+              <tr>
+                <td colspan="9">
+                  <div class="loading-container">
+                    <div class="loader" aria-label="Načítám data…">
                       Chvilku strpení, načítají se data&hellip;
                     </div>
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+              </tr>
               </tbody>
             </table>
             <div id="below-buttons"></div>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <p class="explanation">
-              Poznámka: <em>Reálná sleva</em> se počítá jako aktuální cena po slevě ku minimální ceně, za kterou se zboží prodávalo za předchozích maximálně 30 dní.
+              Poznámka: <em>Reálná sleva</em> se počítá jako aktuální cena po slevě ku minimální ceně, za kterou se
+              zboží prodávalo za předchozích maximálně 30 dní.
             </p>
           </div>
         </div>
@@ -105,6 +103,3 @@
   </section>
 {% endblock %}
 
-{% block scripts %}
-  <script type="module" src="/assets/js/topslevy.js"></script>
-{% endblock %}

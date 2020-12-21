@@ -5,6 +5,9 @@ import {
   formatShortDate
 } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.mjs";
+import * as rollbar from "./rollbar.js";
+
+rollbar.init();
 
 const tableRoot = document.getElementById("table-root");
 
