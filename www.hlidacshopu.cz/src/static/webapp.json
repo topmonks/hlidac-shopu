@@ -8,6 +8,9 @@
   "icons": {
     "128": "/kaios-128x128.png"
   },
+  "permissions": {
+    "serviceworker":{}
+  },
   "developer": {
     "name": "TopMonks",
     "url": "https://www.topmonks.com/"
