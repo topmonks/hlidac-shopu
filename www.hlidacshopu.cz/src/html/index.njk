@@ -3,21 +3,21 @@
 {% block title %}Hlídač shopů{% endblock %}
 
 {% block preload %}
-  <link rel="modulepreload" href="/assets/js/index.js"/>
+  <link rel="modulepreload" href="/assets/js/index.js" />
   {% set imports = assets.outputs["index.js"].imports %}
   {% for import in imports %}
     <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
   {% endfor %}
-  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin/>
-  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/reviews-stats" crossorigin/>
+  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin />
+  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/reviews-stats" crossorigin />
 {% endblock %}
 
 {% block styles %}
-  <link rel="stylesheet" href="/assets/css/index.css"/>
+  <link rel="stylesheet" href="/assets/css/index.css" />
   <meta name="apple-itunes-app" content="app-id=1488295734">
-  <meta name="apple-mobile-web-app-title" content="Hlídač shopů"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Hlídač shopů" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 {% endblock %}
 
 {% block main %}
@@ -84,8 +84,9 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be"
-             title="Přečtě si výsledky Analýzy Black Friday 2020">
+          <a
+            href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be"
+            title="Přečtě si výsledky Analýzy Black Friday 2020">
             <picture>
               {% set mobileBanner = images["mobile-banner-2020.png"]["public_id"] %}
               {% set desktopBanner = images["desktop-banner-2020.png"]["public_id"] %}
@@ -93,24 +94,24 @@
                 media="screen and (max-width: 360px)"
                 srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x" />
               <source
                 media="screen and (min-width: 361px) and (max-width: 479px)"
                 srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x" />
               <source
                 media="screen and (min-width: 480px) and (max-width: 839px)"
                 srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x" />
               <source
                 media="screen and (min-width: 840px)"
                 srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x" />
               <img alt="Analýza Black Friday 2020" class="responsive"
-                   src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
+                   src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} " />
             </picture>
           </a>
         </div>
@@ -145,7 +146,7 @@
       </div>
     </div>
   </section>
-  <link rel="stylesheet" href="/assets/css/md-tabs.css"/>
+  <link rel="stylesheet" href="/assets/css/md-tabs.css" />
   <section class="illustration2">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
@@ -247,7 +248,7 @@
                         {{ chart02 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
               <img alt="" class="responsive" loading="lazy"
                    src="{{ chart02 | cloudinaryUrl(width=1008,dpr="auto") }}"
-                   width="800" height="574"/>
+                   width="800" height="574" />
             </picture>
           </div>
           <div class="tab" id="tab-3">
@@ -275,7 +276,7 @@
                         {{ chart03 | cloudinaryUrl(width=1008,dpr=2) }} 2x">
               <img alt="" class="responsive" loading="lazy"
                    src="{{ chart03 | cloudinaryUrl(width=792,dpr="auto") }}"
-                   width="800" height="574"/>
+                   width="800" height="574" />
             </picture>
           </div>
         </div>
@@ -307,7 +308,7 @@
               </div>
             </a>
             <p class="sub-info--grey">
-              Podporujeme <br/>prohlížeč Google&nbsp;Chrome
+              Podporujeme <br />prohlížeč Google&nbsp;Chrome
             </p>
           </div>
           <div class="browser-support">
@@ -324,7 +325,7 @@
                 />
               </div>
             </a>
-            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Firefox</p>
+            <p class="sub-info--grey">Podporujeme <br />prohlížeč Firefox</p>
           </div>
           <div class="browser-support">
             <a
@@ -340,7 +341,7 @@
                 />
               </div>
             </a>
-            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Safari</p>
+            <p class="sub-info--grey">Podporujeme <br />prohlížeč Safari</p>
           </div>
           <div class="browser-support">
             <a
@@ -356,7 +357,7 @@
                 />
               </div>
             </a>
-            <p class="sub-info--grey">Podporujeme <br/>prohlížeč Brave</p>
+            <p class="sub-info--grey">Podporujeme <br />prohlížeč Brave</p>
           </div>
           <div class="browser-support">
             <a
@@ -373,7 +374,7 @@
               </div>
             </a>
             <p class="sub-info--grey">
-              Podporujeme <br/>prohlížeč Microsoft&nbsp;Edge
+              Podporujeme <br />prohlížeč Microsoft&nbsp;Edge
             </p>
           </div>
         </div>
@@ -435,7 +436,7 @@
     />
   {% endmacro %}
 
-  <link rel="stylesheet" href="/assets/css/reviews.css"/>
+  <link rel="stylesheet" href="/assets/css/reviews.css" />
   <section class="references">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
@@ -445,12 +446,12 @@
         <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
           <div class="review__header">
             {{ avatar("marek-sukup") }}
-            <span class="review__author">Marek Sukup</span><br/>
+            <span class="review__author">Marek Sukup</span><br />
             <time class="review__date text--light-grey" datetime="2018-12-10"
             >10. 12. 2018
             </time
             >
-            <br/>
+            <br />
             <i class="review__rating" data-rating="5" title="Hodnocení: 5">
               <b class="review__rating-value" style="width: 126px"></b>
             </i>
@@ -467,9 +468,9 @@
         <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
           <div class="review__header">
             {{ avatar("tana-lalova") }}
-            <span class="review__author">Táňa Lálová</span><br/>
+            <span class="review__author">Táňa Lálová</span><br />
             <span class="review__date text--light-grey">Mluvčí Mall.cz</span
-            ><br/>
+            ><br />
             <i class="review__rating review__rating--no-rating"></i>
           </div>
           <div class="review__content">
@@ -485,12 +486,12 @@
         <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
           <div class="review__header">
             {{ avatar("jan-verner") }}
-            <span class="review__author">Jan Verner</span><br/>
+            <span class="review__author">Jan Verner</span><br />
             <time class="review__date text--light-grey" datetime="2018-12-14"
             >14. 12. 2018
             </time
             >
-            <br/>
+            <br />
             <i class="review__rating" data-rating="5" title="Hodnocení: 5">
               <b class="review__rating-value" style="width: 126px"></b>
             </i>
@@ -531,6 +532,56 @@
           měli dávat pozor.
         </p>
       </div>
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <h2>Naše analýzy</h2>
+      </div>
+
+      <div class="mdc-layout-grid__cell">
+        <div class="hs-card">
+          <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
+            {% set analyza2019 = images["analyza-2019.png"]["public_id"] %}
+            <img width="340" height="170" class="responsive"
+              src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+              srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                 {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                 {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+              loading="lazy" role="presentation">
+            <h3>BLACK FRIDAY ANALÝZA 2019</h3>
+            <p>V letošním Black Friday bylo na největších českých eshopech dvakrát více produktů&hellip;</p>
+          </a>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__cell">
+        <div class="hs-card">
+          <a href="https://jakubbalada.medium.com/black-friday-po%C4%8Desku-kouzla-se-slevami-po-roce-cf48de109ba">
+            {% set analyza2018 = images["analyza-2018.png"]["public_id"] %}
+            <img width="340" height="170" class="responsive"
+                 src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                 srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                 {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                 {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                 loading="lazy" role="presentation">
+            <h3>BLACK FRIDAY ANALÝZA 2018</h3>
+            <p>Letošní analýzu jsme nedělali sami v Apify, ale v rámci hackathonu na Data fesťáku&hellip;</p>
+          </a>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__cell">
+        <div class="hs-card">
+          <a href="https://blog.apify.com/black-friday-po-%C4%8Desku-kouzla-se-slevami-c7c0d2e7eeaa">
+            {% set analyza2017 = images["analyza-2017.png"]["public_id"] %}
+            <img width="340" height="170" class="responsive"
+                 src="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                 srcset="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                 {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                 {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                 loading="lazy" role="presentation">
+            <h3>BLACK FRIDAY ANALÝZA 2017</h3>
+            <p>Máte český e-shop a jdete se svézt na vlně Black Friday? Vezměte dvě procenta produktů&hellip;</p>
+          </a>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12" style="height: 48px"></div>
     </div>
   </section>
 
