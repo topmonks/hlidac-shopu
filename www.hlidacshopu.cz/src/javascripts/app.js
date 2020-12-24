@@ -99,16 +99,17 @@ searchButton.addEventListener("click", () => {
   location.assign("/app/");
 });
 
-textField.querySelector("input").addEventListener("focus", () => {
+const textFieldInput = textField.querySelector("input");
+textFieldInput.addEventListener("focus", () => {
   textField.classList.add("hs-textfield--focused");
 });
-textField.querySelector("input").addEventListener("blur", () => {
+textFieldInput.addEventListener("blur", () => {
   textField.classList.remove("hs-textfield--focused");
 });
-textField.querySelector("input").addEventListener("invalid", () => {
+textFieldInput.addEventListener("invalid", () => {
   textField.classList.add("hs-textfield--invalid");
 });
-textField.querySelector("input").addEventListener("input", () => {
+textFieldInput.addEventListener("input", () => {
   textField.classList.remove("hs-textfield--invalid");
 });
 
