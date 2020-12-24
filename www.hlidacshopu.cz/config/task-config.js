@@ -93,14 +93,20 @@ const config = {
         src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
         dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
       };
-      task("esbuild", () =>
+      task("esbuild-prod", () =>
         src(paths.src)
           .pipe(esbuild(taskConfig.esbuild.options))
           .pipe(dest(paths.dest))
       );
+      const gulpEsbuild = esbuild.createGulpEsbuild();
+      task("esbuild", () =>
+        src(paths.src)
+          .pipe(gulpEsbuild(taskConfig.esbuild.options))
+          .pipe(dest(paths.dest))
+      );
     },
     development: { code: ["esbuild"] },
-    production: { code: ["esbuild"] }
+    production: { code: ["esbuild-prod"] }
   },
 
   watch: { tasks: ["esbuild"] },
