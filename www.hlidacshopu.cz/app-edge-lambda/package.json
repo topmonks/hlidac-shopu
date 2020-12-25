@@ -1,9 +1,0 @@
-{
-  "name": "@hlidac-shopu/app-edge-lambda",
-  "version": "1.0.0",
-  "description": "Lambda@EDGE for /app endpoint",
-  "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1.0",
-    "@aws-sdk/util-dynamodb": "^3.1.0"
-  }
-}
