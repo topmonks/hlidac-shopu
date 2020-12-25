@@ -2,18 +2,15 @@
 
 /* global URL, URLSearchParams */
 
-const aws = require("aws-sdk");
-const https = require("https");
+const { DynamoDBClient, QueryCommand } = require("@aws-sdk/client-dynamodb");
+const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 
-const db = new aws.DynamoDB.DocumentClient({
+const db = new DynamoDBClient({
   apiVersion: "latest",
-  region: "eu-central-1",
-  httpOptions: {
-    agent: new https.Agent({ keepAlive: true })
-  }
+  region: "eu-central-1"
 });
 
-const content = (url, name, imageUrl) => `<\!DOCTYPE html>
+const content = ({ url, name, imageUrl }) => `<\!DOCTYPE html>
 <html lang="cs">
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
 <meta charset="utf-8">
@@ -387,17 +384,18 @@ function metadataPkey(name, itemUrl) {
 
 function queryDatabase(name, itemUrl, itemId) {
   return db
-    .query({
-      TableName: "all_shops_metadata",
-      ExpressionAttributeValues: {
-        ":pkey": metadataPkey(name, itemUrl),
-        ...(itemId ? { ":itemId": itemId } : {})
-      },
-      KeyConditionExpression:
-        "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
-    })
-    .promise()
-    .then(x => x.Items && x.Items[0]);
+    .send(
+      new QueryCommand({
+        TableName: "all_shops_metadata",
+        ExpressionAttributeValues: marshall({
+          ":pkey": metadataPkey(name, itemUrl),
+          ...(itemId ? { ":itemId": itemId } : {})
+        }),
+        KeyConditionExpression:
+          "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
+      })
+    )
+    .then(x => unmarshall(x.Items && x.Items[0]));
 }
 
 async function createMetadataResponse(url) {
@@ -410,21 +408,21 @@ async function createMetadataResponse(url) {
     headers: {
       "content-type": [{ value: "text/html" }]
     },
-    body: content(
-      `https://www.hlidacshopu.cz/app/?${query}`,
-      `${title} prodává ${itemName}`,
-      `https://api2.hlidacshopu.cz/og?${query}`
-    )
+    body: content({
+      url: `https://www.hlidacshopu.cz/app/?${query}`,
+      name: `${title} prodává ${itemName}`,
+      imageUrl: `https://api2.hlidacshopu.cz/og?${query}`
+    })
   };
 }
 
-exports.handler = async function (event, _context) {
+exports.handler = async function (event) {
   const request = event.Records[0].cf.request;
   const ua = request.headers["user-agent"][0].value;
   if (isSocialMediaBot(ua)) {
     const qs = new URLSearchParams(request.querystring);
     const url = qs.get("url");
-    return await createMetadataResponse(url);
+    return createMetadataResponse(url);
   }
   return request;
 };
