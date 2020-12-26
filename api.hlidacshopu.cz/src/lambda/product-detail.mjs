@@ -57,7 +57,10 @@ function getMetadataQuery(name, itemUrl, itemId) {
  */
 export async function getMetadata(db, name, itemUrl, itemId) {
   const query = getMetadataQuery(name, itemUrl, itemId);
-  return db.send(query).then(x => x.Items && unmarshall(x.Items[0]));
+  return db
+    .send(query)
+    .then(x => x.Items && unmarshall(x.Items[0]))
+    .catch(() => ({}));
 }
 
 /**
