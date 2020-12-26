@@ -100,8 +100,9 @@ export async function handler(event) {
           }
         : {}
     );
-    if (currentPrice)
+    if (currentPrice) {
       rows.push({ currentPrice, originalPrice, date: new Date() });
+    }
 
     const discount = getRealDiscount(rows);
     const transformMetadata = ({
