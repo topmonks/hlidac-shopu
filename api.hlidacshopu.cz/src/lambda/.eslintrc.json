@@ -1,0 +1,20 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "globals": {
+    "globalThis": "writable"
+  },
+  "extends": ["prettier"],
+  "rules": {
+    "semi": "error",
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "off"
+  }
+}
