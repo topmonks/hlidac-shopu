@@ -103,7 +103,7 @@ export async function createApi(domainName: string) {
     const promise = buildService
       .build({
         bundle: true,
-        minify: true,
+        //minify: true,
         charset: "utf8",
         platform: "node",
         target: "node12",
