@@ -20,7 +20,7 @@ function isSocialMediaBot(ua) {
   );
 }
 
-async function createMetadataResponse(url) {
+async function createRedirectResponse(url) {
   const query = new URLSearchParams({ url });
   return {
     status: "301",
@@ -40,7 +40,7 @@ exports.handler = async function (event, _context) {
   const url = qs.get("url");
   console.log(request.uri, url);
   if (isSocialMediaBot(ua) && request.uri === "/" && url) {
-    return await createMetadataResponse(url);
+    return await createRedirectResponse(url);
   }
   return request;
 };

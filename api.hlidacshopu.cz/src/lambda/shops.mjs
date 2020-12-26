@@ -557,7 +557,7 @@ const shops = {
 /**
  * @param {ShopParams} params
  */
-export function getShopName(params) {
+export function getShopKey(params) {
   const url = new URL(decodeURIComponent(params?.url));
   return url.hostname;
 }
@@ -568,6 +568,6 @@ export function getShopName(params) {
  * @returns {Shop | null}
  */
 export function createShop(params, dynamodb) {
-  const Klass = shops[getShopName(params)];
+  const Klass = shops[getShopKey(params)];
   return Klass ? new Klass(params, dynamodb) : null;
 }

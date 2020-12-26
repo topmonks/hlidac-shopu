@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
-import { createShop, getShopName, ShopError } from "../shops.mjs";
+import { createShop, getShopKey, ShopError } from "../shops.mjs";
 import { notFound, response, withCORS } from "../utils.mjs";
 import {
   getHistoricalData,
@@ -59,7 +59,7 @@ export async function handler(event) {
     const shop = createShop(params);
     if (!shop) {
       return withCORS(["GET", "OPTIONS"])(
-        notFound({ error: "Unsupported shop", shop: getShopName(params) })
+        notFound({ error: "Unsupported shop", shop: getShopKey(params) })
       );
     }
 
