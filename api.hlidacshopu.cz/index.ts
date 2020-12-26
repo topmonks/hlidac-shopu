@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import * as esbuild from "esbuild";
 import { lambda } from "@pulumi/aws/types/input";
 import { LambdaAuthorizer, Method } from "@pulumi/awsx/apigateway";
 import { Parameter } from "@pulumi/awsx/apigateway/requestValidator";
@@ -10,6 +9,7 @@ import {
   CacheSettings,
   CustomDomainDistribution
 } from "@topmonks/pulumi-aws";
+import * as lambdaBuilder from "../lambda-builder";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
@@ -93,28 +93,9 @@ export async function createApi(domainName: string) {
     }
   );
 
-  interface RouteHandlerArgs {
-    timeout?: number;
-    environment?: lambda.FunctionEnvironment;
-  }
-  const buildService = await esbuild.startService();
-  const buildTasks: Promise<string>[] = [];
-  const build = (name: string) => {
-    const promise = buildService
-      .build({
-        bundle: true,
-        //minify: true,
-        charset: "utf8",
-        platform: "node",
-        target: "node12",
-        mainFields: ["module", "main"],
-        entryPoints: [path.join(__dirname, "src/lambda/", name)],
-        write: false
-      })
-      .then(result => result?.outputFiles?.[0].text ?? "");
-    buildTasks.push(promise);
-    return promise;
-  };
+  const builder = await lambdaBuilder.init();
+  const buildAssets = (fileName: string) =>
+    builder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName));
 
   const getRouteHandler = (
     name: string,
@@ -127,9 +108,7 @@ export async function createApi(domainName: string) {
       runtime: aws.lambda.Runtime.NodeJS12dX,
       role: role.arn,
       handler: "index.handler",
-      code: new pulumi.asset.AssetArchive({
-        "index.js": new pulumi.asset.StringAsset(build(fileName))
-      }),
+      code: buildAssets(fileName),
       timeout, // reasonable timeout for initial request without 500
       environment
     });
@@ -160,18 +139,6 @@ export async function createApi(domainName: string) {
     path,
     cache
   });
-
-  interface RouteArgs {
-    httpMethod: Method;
-    path: string;
-    fileName: string;
-    role?: aws.iam.Role;
-    requiredParameters?: Parameter[];
-    cache?: CacheSettings;
-    timeout?: number;
-    authorizers?: LambdaAuthorizer[] | LambdaAuthorizer;
-    environment?: lambda.FunctionEnvironment;
-  }
 
   const api = new Api("hlidac-shopu-api", {
     stageName: "v1",
@@ -244,9 +211,24 @@ export async function createApi(domainName: string) {
     openApiUrl: api.openApiUrl,
     apiDistribution,
     stop() {
-      Promise.all(buildTasks)
-        .then(() => buildService.stop())
-        .catch(err => console.error(err));
+      builder.stop();
     }
   };
+}
+
+interface RouteHandlerArgs {
+  timeout?: number;
+  environment?: lambda.FunctionEnvironment;
+}
+
+interface RouteArgs {
+  httpMethod: Method;
+  path: string;
+  fileName: string;
+  role?: aws.iam.Role;
+  requiredParameters?: Parameter[];
+  cache?: CacheSettings;
+  timeout?: number;
+  authorizers?: LambdaAuthorizer[] | LambdaAuthorizer;
+  environment?: lambda.FunctionEnvironment;
 }
