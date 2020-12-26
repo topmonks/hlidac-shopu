@@ -63,7 +63,8 @@
   },
   "resolutions": {
     "lodash": "npm:lodash@4.17.19",
-    "object-path": "npm:object-path@0.11.5"
+    "object-path": "npm:object-path@0.11.5",
+    "tslib": "npm:tslib@2.0.3"
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
@@ -91,6 +92,7 @@
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build --production"
   },
   "workspaces": [
+    "api.hlidacshopu.cz/src/lambda",
     "extension",
     "lib",
     "www.hlidacshopu.cz/src/javascripts"

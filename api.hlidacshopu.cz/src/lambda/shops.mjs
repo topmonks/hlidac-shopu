@@ -1,24 +1,52 @@
-import { DynamoDB } from "aws-sdk";
-import { getMetadata, pkey } from "./product-detail";
+import { getMetadata, pkey } from "./product-detail.mjs";
+
+/** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
+/**
+ * @typedef {Object} ShopParams
+ * @property {string} url
+ * @property {string} [itemId]
+ * @property {string} [currentPrice]
+ * @property {string} [originalPrice]
+ * @property {string} [imageUrl]
+ * @property {string} [title]
+ * @property {string} [api]
+ */
 
 export class ShopError extends Error {}
 
-export abstract class Shop {
-  protected url: URL;
-  public metadata: any;
-
-  protected constructor(
-    protected params: ShopParams,
-    protected dynamodb?: DynamoDB.DocumentClient
-  ) {
+export class Shop {
+  /**
+   * @param {ShopParams} params
+   * @param {DynamoDBClient} [dynamodb]
+   * @protected
+   */
+  constructor(params, dynamodb) {
+    /** @protected */
+    this.params = params;
+    /** @protected */
+    this.dynamodb = dynamodb;
+    /** @type {URL} */
     this.url = new URL(decodeURIComponent(params.url));
   }
 
-  abstract get name(): string;
+  /**
+   * @type {string}
+   * @abstract
+   */
+  get name() {
+    throw new Error("Not implemented");
+  }
 
-  abstract get itemUrl(): string | null | undefined;
+  /**
+   * @type {string | null | undefined}
+   * @abstract
+   */
+  get itemUrl() {
+    throw new Error("Not implemented");
+  }
 
-  get itemId(): string | null | undefined {
+  /** @type {string | null | undefined} */
+  get itemId() {
     return null;
   }
 
@@ -60,7 +88,7 @@ export abstract class Shop {
 }
 
 class AAAAuto extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -78,7 +106,7 @@ class AAAAuto extends Shop {
 }
 
 class AAAAutoSk extends AAAAuto {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -88,7 +116,7 @@ class AAAAutoSk extends AAAAuto {
 }
 
 class Alza extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -108,7 +136,7 @@ class Alza extends Shop {
 }
 
 class AlzaSk extends Alza {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -118,7 +146,7 @@ class AlzaSk extends Alza {
 }
 
 class Mall extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -133,7 +161,7 @@ class Mall extends Shop {
 }
 
 class MallSk extends Mall {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -143,7 +171,7 @@ class MallSk extends Mall {
 }
 
 class Czc extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
     this.params.itemId = this.params.itemId?.replace("a", "");
   }
@@ -163,7 +191,7 @@ class Czc extends Shop {
 }
 
 class Mironet extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -177,7 +205,7 @@ class Mironet extends Shop {
 }
 
 class Datart extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -192,7 +220,7 @@ class Datart extends Shop {
 }
 
 class DatartSk extends Datart {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -202,7 +230,7 @@ class DatartSk extends Datart {
 }
 
 class ITesco extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -221,7 +249,7 @@ class ITesco extends Shop {
 }
 
 class ITescoSk extends ITesco {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -231,7 +259,7 @@ class ITescoSk extends ITesco {
 }
 
 class Rohlik extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -253,7 +281,7 @@ class Rohlik extends Shop {
 }
 
 class Notino extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -275,7 +303,7 @@ class Notino extends Shop {
 }
 
 class NotinoSk extends Notino {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -285,7 +313,7 @@ class NotinoSk extends Notino {
 }
 
 class Tsbohemia extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -304,7 +332,7 @@ class Tsbohemia extends Shop {
 }
 
 class Kosik extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -319,7 +347,7 @@ class Kosik extends Shop {
 }
 
 class Mountfield extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -338,7 +366,7 @@ class Mountfield extends Shop {
 }
 
 class MountfieldSk extends Mountfield {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -348,7 +376,7 @@ class MountfieldSk extends Mountfield {
 }
 
 class Lekarna extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -363,7 +391,7 @@ class Lekarna extends Shop {
 }
 
 class Kasa extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -378,7 +406,7 @@ class Kasa extends Shop {
 }
 
 class Benu extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -393,7 +421,7 @@ class Benu extends Shop {
 }
 
 class Pilulka extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -408,7 +436,7 @@ class Pilulka extends Shop {
 }
 
 class PilulkaSk extends Pilulka {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -418,7 +446,7 @@ class PilulkaSk extends Pilulka {
 }
 
 class Okay extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -433,7 +461,7 @@ class Okay extends Shop {
 }
 
 class OkaySk extends Okay {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -443,7 +471,7 @@ class OkaySk extends Okay {
 }
 
 class Prozdravi extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -458,7 +486,7 @@ class Prozdravi extends Shop {
 }
 
 class Sleky extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -473,7 +501,7 @@ class Sleky extends Shop {
 }
 
 class IGlobus extends Shop {
-  constructor(params: any, dynamodb: DynamoDB.DocumentClient) {
+  constructor(params, dynamodb) {
     super(params, dynamodb);
   }
 
@@ -526,26 +554,20 @@ const shops = {
   "www.tsbohemia.cz": Tsbohemia
 };
 
-export function getShopName(params: ShopParams) {
+/**
+ * @param {ShopParams} params
+ */
+export function getShopName(params) {
   const url = new URL(decodeURIComponent(params?.url));
   return url.hostname;
 }
 
-export function createShop(
-  params: ShopParams,
-  dynamodb?: DynamoDB.DocumentClient
-): Shop | undefined {
-  // @ts-ignore
+/**
+ * @param {ShopParams} params
+ * @param {DynamoDBClient} [dynamodb]
+ * @returns {Shop | null}
+ */
+export function createShop(params, dynamodb) {
   const Klass = shops[getShopName(params)];
   return Klass ? new Klass(params, dynamodb) : null;
-}
-
-export interface ShopParams {
-  url: string;
-  itemId?: string;
-  currentPrice?: string;
-  originalPrice?: string;
-  imageUrl?: string;
-  title?: string;
-  api?: string;
 }

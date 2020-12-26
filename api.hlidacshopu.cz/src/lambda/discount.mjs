@@ -1,21 +1,54 @@
-import {
-  eachDayOfInterval,
-  endOfToday,
-  isAfter,
-  isWithinInterval,
-  subDays
-} from "date-fns";
-import { drop, groupBy, head, last, zipWith } from "ramda";
+import eachDayOfInterval from "date-fns/esm/eachDayOfInterval/index.js";
+import endOfToday from "date-fns/esm/endOfToday/index.js";
+import isAfter from "date-fns/esm/isAfter/index.js";
+import isWithinInterval from "date-fns/esm/isWithinInterval/index.js";
+import subDays from "date-fns/esm/subDays/index.js";
+import drop from "ramda/es/drop.js";
+import groupBy from "ramda/es/groupBy.js";
+import head from "ramda/es/head.js";
+import last from "ramda/es/last.js";
+import zipWith from "ramda/es/zipWith.js";
 
-export function discount(previous: number, actual: number) {
+/**
+ * @callback Predicate.<T>
+ * @param {T}
+ * @returns {Boolean}
+ * @template T
+ */
+
+/**
+ * @typedef {Object} DataRow
+ * @property {number | null} currentPrice
+ * @property {number | null | undefined} originalPrice
+ * @property {Date} date
+ */
+
+/**
+ * @param {number} previous
+ * @param {number} actual
+ * @returns {number}
+ */
+export function discount(previous, actual) {
   return (previous - actual) / previous;
 }
 
-function euDiscount(
-  lastDiscountDate: Date,
-  lastIncreaseDate: Date | null,
-  series: [Date, number][]
-) {
+/**
+ * @typedef {Object} EUDiscount
+ * @param {number} minPrice
+ * @param {number} currentPrice
+ * @param {number} realDiscount
+ * @param {Date} lastDiscountDate
+ * @param {Date} lastIncreaseDate
+ * @param {string} type
+ */
+
+/**
+ * @param {Date} lastDiscountDate
+ * @param {Date | null} lastIncreaseDate
+ * @param {[Date, number][]} series
+ * @returns {EUDiscount}
+ */
+function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
   // go 30 days back
   const startDate = subDays(lastDiscountDate, 30);
   // find lowest price in 30 days interval before sale action
@@ -27,7 +60,7 @@ function euDiscount(
     )
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
-  const [, currentPrice] = <[Date, number]>last(series);
+  const [, currentPrice] = last(series);
   const realDiscount = discount(minPrice, currentPrice);
   return {
     minPrice,
@@ -39,11 +72,28 @@ function euDiscount(
   };
 }
 
+/**
+ * @typedef {Object} CommonPriceDifference
+ * @param {number} commonPrice
+ * @param {number} currentPrice
+ * @param {number} realDiscount
+ * @param {Date} lastDiscountDate
+ * @param {Date} lastIncreaseDate
+ * @param {string} type
+ */
+
+/**
+ * @param {Date | null} lastDiscountDate
+ * @param {Date | null} lastIncreaseDate
+ * @param {[Date, number][]} series
+ * @param {Predicate.<Date>} isInInterval
+ * @returns {CommonPriceDifference}
+ */
 function commonPriceDifference(
-  lastDiscountDate: Date | null,
-  lastIncreaseDate: Date | null,
-  series: [Date, number][],
-  isInInterval: (x: Date) => boolean
+  lastDiscountDate,
+  lastIncreaseDate,
+  series,
+  isInInterval
 ) {
   // find most frequent price in 90 days interval before sale action
   const byPrice = groupBy(([, price]) => price);
@@ -52,10 +102,9 @@ function commonPriceDifference(
       series.filter(([date, price]) => Boolean(price) && isInInterval(date))
     )
   ).map(([price, xs]) => [parseFloat(price), xs.length]);
-  // @ts-ignore
   const moreFrequent = (a, b) => (a[1] > b[1] ? a : b);
   const [commonPrice] = frequencies.reduce(moreFrequent, [0, 0]);
-  const [, currentPrice] = <[Date, number]>last(series);
+  const [, currentPrice] = last(series);
   const realDiscount = discount(commonPrice, currentPrice);
   return {
     commonPrice,
@@ -67,10 +116,16 @@ function commonPriceDifference(
   };
 }
 
+/**
+ * @param {Date} lastIncreaseDate
+ * @param {Date} lastDiscountDate
+ * @param {Predicate.<Date>} isInInterval
+ * @returns {Boolean}
+ */
 function isEuDiscountApplicable(
-  lastIncreaseDate: Date,
-  lastDiscountDate: Date,
-  isInInterval: (date: Date) => boolean
+  lastIncreaseDate,
+  lastDiscountDate,
+  isInInterval
 ) {
   if (lastDiscountDate && isInInterval(lastDiscountDate)) {
     return !lastIncreaseDate || isAfter(lastDiscountDate, lastIncreaseDate);
@@ -84,12 +139,13 @@ function isEuDiscountApplicable(
  * sale action. Sale action is simply last drop of price without any increase.
  * In other cases it counts discount against common price - most used price
  * in 90 days interval.
- * @param data Time series of prices
+ * @param {DataRow[]} data Time series of prices
+ * @returns {EUDiscount | CommonPriceDifference}
  */
-export function getRealDiscount(data: DataRow[]) {
-  const series: [Date, number][] = data
+export function getRealDiscount(data) {
+  const series = data
     .filter(({ currentPrice }) => currentPrice)
-    .map(({ currentPrice, date }) => [date, <number>currentPrice]);
+    .map(({ currentPrice, date }) => [date, currentPrice]);
   // walk thru price series and find changes
   const changes = zipWith(
     ([, a], [date, b]) => [a - b, date],
@@ -97,13 +153,13 @@ export function getRealDiscount(data: DataRow[]) {
     series
     // filter out invalid products
   ).filter(([δ]) => Boolean(δ));
-  const lastDiscountDate = <Date>(
-    last(changes.filter(([δ]) => δ < 0).map(([, date]) => date))
+  const lastDiscountDate = last(
+    changes.filter(([δ]) => δ < 0).map(([, date]) => date)
   );
-  const lastIncreaseDate = <Date>(
-    last(changes.filter(([δ]) => δ > 0).map(([, date]) => date))
+  const lastIncreaseDate = last(
+    changes.filter(([δ]) => δ > 0).map(([, date]) => date)
   );
-  const isInLast90Days = (date: Date) =>
+  const isInLast90Days = date =>
     isWithinInterval(date, { start: subDays(new Date(), 90), end: new Date() });
   if (
     isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast90Days)
@@ -117,7 +173,11 @@ export function getRealDiscount(data: DataRow[]) {
   );
 }
 
-export function getClaimedDiscount(data: DataRow[]) {
+/**
+ * @param {DataRow[]} data
+ * @returns {number}
+ */
+export function getClaimedDiscount(data) {
   const lastRow = last(data);
   if (!(lastRow?.originalPrice && lastRow?.currentPrice)) {
     return null;
@@ -125,13 +185,21 @@ export function getClaimedDiscount(data: DataRow[]) {
   return discount(lastRow.originalPrice, lastRow.currentPrice);
 }
 
-function parseDate(s: string) {
+/**
+ * @param {string} s
+ * @returns {Date}
+ */
+function parseDate(s) {
   return new Date(s);
 }
 
-export function prepareData({ json }: any): DataRow[] {
+/**
+ * @param {Object} json
+ * @returns {DataRow[]}
+ */
+export function prepareData({ json }) {
   const rows = typeof json === "string" ? JSON.parse(json) : json;
-  const data: DataRow[] = rows.map(({ o, c, d }: AllShopsRow) => ({
+  const data = rows.map(({ o, c, d }) => ({
     currentPrice: c === "" ? null : parseFloat(c),
     originalPrice: o === "" ? null : parseFloat(o),
     date: parseDate(d)
@@ -139,17 +207,27 @@ export function prepareData({ json }: any): DataRow[] {
 
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
   const days = eachDayOfInterval({
-    start: <Date>head(data)?.date,
+    start: head(data)?.date,
     end: endOfToday()
   });
 
-  let prevDay = <DataRow>head(data);
-  const fillInMissingData = (date: Date) =>
+  let prevDay = head(data);
+  /**
+   * @param {Date} date
+   * @returns {DataRow}
+   */
+  const fillInMissingData = date =>
     Object.assign({}, (prevDay = dataMap.get(date.getTime()) ?? prevDay), {
       date
     });
 
-  const replaceDeviatedData = (x: DataRow, i: number, arr: DataRow[]) => {
+  /**
+   * @param {DataRow} x
+   * @param {number} i
+   * @param {DataRow[]} arr
+   * @returns {DataRow}
+   */
+  const replaceDeviatedData = (x, i, arr) => {
     if (i === 0 || !x.currentPrice) return x;
 
     const prev = arr[i - 1];
@@ -162,16 +240,4 @@ export function prepareData({ json }: any): DataRow[] {
     return x;
   };
   return days.map(fillInMissingData).map(replaceDeviatedData);
-}
-
-interface AllShopsRow {
-  o: string;
-  c: string;
-  d: string;
-}
-
-export interface DataRow {
-  currentPrice: number | null;
-  originalPrice: number | null | undefined;
-  date: Date;
 }

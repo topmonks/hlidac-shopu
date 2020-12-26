@@ -12,7 +12,8 @@ let certificate = createCertificate("www.hlidacshopu.cz");
 
 let db = createDatabase();
 
-let { apiGateway, apiDistribution, openApiUrl } = createApi("api2.hlidacshopu.cz");
+let api = createApi("api2.hlidacshopu.cz");
+api.then(x => x.stop());
 
 let {
   assetsCachingLambda,
@@ -22,9 +23,9 @@ let {
 } = createWebsite("www.hlidacshopu.cz");
 
 export const certificateArn = certificate;
-export const apiGatewayUrl = apiGateway.url;
-export const apiDocumentationUrl = openApiUrl;
-export const apiUrl = apiDistribution.url;
+export const apiGatewayUrl = api.then(({ apiGateway }) => apiGateway.url);
+export const apiDocumentationUrl = api.then(({ openApiUrl }) => openApiUrl);
+export const apiUrl = api.then(({ apiDistribution }) => apiDistribution.url);
 export const assetsCachingLambdaArn = assetsCachingLambda.arn;
 export const securityHeadersLambdaArn = securityHeadersLambda.arn;
 export const websiteUrl = website.url;
@@ -38,4 +39,3 @@ export const allShopsMetadataTable = db.allShopsMetadataTable.name;
 export const allShopsStatsTable = db.allShopsStatsTable.name;
 export const topslevyAbsoluteTable = db.topslevyAbsoluteTable.name;
 export const topslevyRelativeTable = db.topslevyRelativeTable.name;
-

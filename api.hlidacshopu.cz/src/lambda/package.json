@@ -1,0 +1,17 @@
+{
+  "name": "@hlidac-shopu/api-lambdas",
+  "version": "1.0.0",
+  "description": "Lambdas for handling API Gateway endpoints",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1.0",
+    "@aws-sdk/util-dynamodb": "^3.1.0",
+    "@hlidac-shopu/lib": "^1.0.0",
+    "@pulumi/aws": "^3.22.0",
+    "@pulumi/awsx": "^0.23.0",
+    "abort-controller": "^3.0.0",
+    "crypto": "^1.0.1",
+    "date-fns": "^2.16.1",
+    "node-fetch": "^2.6.1",
+    "ramda": "^0.27.1"
+  }
+}

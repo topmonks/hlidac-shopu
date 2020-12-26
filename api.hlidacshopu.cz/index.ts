@@ -1,12 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as esbuild from "esbuild";
 import { lambda } from "@pulumi/aws/types/input";
-import {
-  LambdaAuthorizer,
-  Method,
-  Request,
-  Response
-} from "@pulumi/awsx/apigateway";
+import { LambdaAuthorizer, Method } from "@pulumi/awsx/apigateway";
 import { Parameter } from "@pulumi/awsx/apigateway/requestValidator";
 import {
   Api,
@@ -15,13 +11,8 @@ import {
   CustomDomainDistribution
 } from "@topmonks/pulumi-aws";
 
-import * as batch from "./src/lambda/batch";
-import * as detail from "./src/lambda/detail";
-import * as check from "./src/lambda/check";
-import * as reviewStats from "./src/lambda/reviewStats";
-import * as shopNumbers from "./src/lambda/shopNumbers";
-import * as topslevy from "./src/lambda/topslevy";
-import * as og from "./src/lambda/og";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require("path");
 
 const config = new pulumi.Config("hlidacshopu");
 
@@ -76,7 +67,7 @@ export function createDatabase() {
   });
 }
 
-export function createApi(domainName: string) {
+export async function createApi(domainName: string) {
   const defaultLambdaRole = new aws.iam.Role(
     "hlidac-shopu-default-lambda-role",
     {
@@ -106,20 +97,41 @@ export function createApi(domainName: string) {
     timeout?: number;
     environment?: lambda.FunctionEnvironment;
   }
+  const buildService = await esbuild.startService();
+  const buildTasks: Promise<string>[] = [];
+  const build = (name: string) => {
+    const promise = buildService
+      .build({
+        bundle: true,
+        minify: true,
+        charset: "utf8",
+        platform: "node",
+        target: "node12",
+        mainFields: ["module", "main"],
+        entryPoints: [path.join(__dirname, "src/lambda/", name)],
+        write: false
+      })
+      .then(result => result?.outputFiles?.[0].text ?? "");
+    buildTasks.push(promise);
+    return promise;
+  };
 
   const getRouteHandler = (
     name: string,
-    callback: aws.lambda.Callback<Request, Response>,
+    fileName: string,
     role: aws.iam.Role,
     { timeout = 15, environment }: RouteHandlerArgs
   ): aws.lambda.Function =>
-    new aws.lambda.CallbackFunction(`hlidac-shopu-api-${name}-lambda`, {
+    new aws.lambda.Function(`hlidac-shopu-api-${name}-lambda`, {
       publish: true,
       runtime: aws.lambda.Runtime.NodeJS12dX,
-      environment,
+      role: role.arn,
+      handler: "index.handler",
+      code: new pulumi.asset.AssetArchive({
+        "index.js": new pulumi.asset.StringAsset(build(fileName))
+      }),
       timeout, // reasonable timeout for initial request without 500
-      callback,
-      role
+      environment
     });
 
   const createHandlerRoute = (
@@ -127,7 +139,7 @@ export function createApi(domainName: string) {
     {
       httpMethod,
       path,
-      callback,
+      fileName,
       role,
       requiredParameters,
       cache,
@@ -137,7 +149,7 @@ export function createApi(domainName: string) {
     }: RouteArgs
   ): ApiRoute => ({
     type: "handler",
-    handler: getRouteHandler(name, callback, role ?? defaultLambdaRole, {
+    handler: getRouteHandler(name, fileName, role ?? defaultLambdaRole, {
       timeout: timeout ?? 15,
       environment
     }),
@@ -152,7 +164,7 @@ export function createApi(domainName: string) {
   interface RouteArgs {
     httpMethod: Method;
     path: string;
-    callback: aws.lambda.Callback<Request, Response>;
+    fileName: string;
     role?: aws.iam.Role;
     requiredParameters?: Parameter[];
     cache?: CacheSettings;
@@ -170,43 +182,43 @@ export function createApi(domainName: string) {
       createHandlerRoute("batch", {
         httpMethod: "POST",
         path: "/batch",
-        callback: batch.handler,
+        fileName: "batch/index.mjs",
         timeout: 300,
         environment: { variables: { "TOKEN": config.get("token") ?? "" } }
       }),
       createHandlerRoute("detail", {
         httpMethod: "GET",
         path: "/detail",
-        callback: detail.handler,
+        fileName: "detail/index.mjs",
         requiredParameters: [{ in: "query", name: "url" }]
       }),
       createHandlerRoute("check", {
         httpMethod: "GET",
         path: "/check",
-        callback: check.handler,
+        fileName: "check/index.mjs",
         requiredParameters: [{ in: "query", name: "url" }]
       }),
       createHandlerRoute("shop-numbers", {
         httpMethod: "GET",
         path: "/shop-numbers",
-        callback: shopNumbers.handler,
+        fileName: "shopNumbers/index.mjs",
         requiredParameters: [{ in: "query", name: "year" }]
       }),
       createHandlerRoute("reviews-stats", {
         httpMethod: "GET",
         path: "/reviews-stats",
-        callback: reviewStats.handler,
+        fileName: "reviewStats/index.mjs",
         cache: { ttl: 3600 }
       }),
       createHandlerRoute("topslevy", {
         httpMethod: "GET",
         path: "/topslevy",
-        callback: topslevy.handler
+        fileName: "topslevy/index.mjs"
       }),
       createHandlerRoute("og", {
         httpMethod: "GET",
         path: "/og",
-        callback: og.handler,
+        fileName: "og/index.mjs",
         timeout: 60,
         environment: {
           variables: {
@@ -218,14 +230,23 @@ export function createApi(domainName: string) {
     ]
   });
 
-  const apiDistribution = new CustomDomainDistribution("hlidac-shopu-api", {
-    gateway: api.gateway,
-    domainName
-  });
+  const apiDistribution = new CustomDomainDistribution(
+    "hlidac-shopu-api",
+    {
+      gateway: api.gateway,
+      domainName
+    },
+    { dependsOn: [api] }
+  );
 
   return {
     apiGateway: api.gateway,
     openApiUrl: api.openApiUrl,
-    apiDistribution
+    apiDistribution,
+    stop() {
+      Promise.all(buildTasks)
+        .then(() => buildService.stop())
+        .catch(err => console.error(err));
+    }
   };
 }

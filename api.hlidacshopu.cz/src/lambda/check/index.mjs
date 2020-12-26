@@ -1,11 +1,21 @@
-import * as aws from "@pulumi/aws";
-import { Request, Response } from "@pulumi/awsx/apigateway";
-import { movedPermanently, response, withCORS } from "../utils";
-import { createShop, ShopError, ShopParams } from "../shops";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
+import { movedPermanently, response, withCORS } from "../utils.mjs";
+import { createShop, ShopError } from "../shops.mjs";
 
-export async function handler(event: Request): Promise<Response> {
-  const params = (<unknown>(event.queryStringParameters || {})) as ShopParams;
-  if (!params.api) {
+/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
+/** @typedef { import("../shops.mjs").ShopParams } ShopParams */
+
+const db = new DynamoDBClient({});
+
+/**
+ * @param {Request} event
+ * @returns {Promise.<Response>}
+ */
+export async function handler(event) {
+  /** @type {ShopParams | undefined} */
+  const params = event.queryStringParameters;
+  if (!params?.api) {
     return withCORS(["GET", "OPTIONS"])(
       movedPermanently("https://www.hlidacshopu.cz/check")
     );
@@ -17,10 +27,8 @@ export async function handler(event: Request): Promise<Response> {
     });
   }
 
-  const result: any = {};
-
+  const result = {};
   try {
-    const db = new aws.sdk.DynamoDB.DocumentClient();
     const shop = createShop(params, db);
     result.shop = {
       name: shop?.name,

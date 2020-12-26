@@ -1,21 +1,27 @@
-import * as aws from "@pulumi/aws";
-import { Request, Response } from "@pulumi/awsx/apigateway";
-import { createShop, getShopName, ShopError, ShopParams } from "../shops";
-import { notFound, response, withCORS } from "../utils";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
+import { createShop, getShopName, ShopError } from "../shops.mjs";
+import { notFound, response, withCORS } from "../utils.mjs";
 import {
   getHistoricalData,
   getMetadata,
   getParsedData,
   putParsedData
-} from "../product-detail";
+} from "../product-detail.mjs";
 import {
-  DataRow,
   getClaimedDiscount,
   getRealDiscount,
   prepareData
-} from "../discount";
+} from "../discount.mjs";
 
-function createDataset(data: DataRow[]) {
+/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
+/** @typedef { import("../shops.mjs").ShopParams } ShopParams */
+/** @typedef { import("../discount.mjs").DataRow } DataRow */
+
+/**
+ * @param {DataRow[]} data
+ */
+function createDataset(data) {
   const originalPrice = new Array(data.length);
   const currentPrice = new Array(data.length);
 
@@ -33,10 +39,17 @@ function createDataset(data: DataRow[]) {
   return { originalPrice, currentPrice };
 }
 
-export async function handler(event: Request): Promise<Response> {
+const db = new DynamoDBClient({});
+
+/**
+ * @param {Request} event
+ * @returns {Promise.<Response>}
+ */
+export async function handler(event) {
   try {
-    const params = (<unknown>(event.queryStringParameters || {})) as ShopParams;
-    if (!params.url) {
+    /** @type {ShopParams | undefined} */
+    const params = event.queryStringParameters;
+    if (!params?.url) {
       return withCORS(["GET", "OPTIONS"])({
         statusCode: 400,
         body: JSON.stringify({ error: "Missing url parameter" })
@@ -50,8 +63,6 @@ export async function handler(event: Request): Promise<Response> {
       );
     }
 
-    const db = new aws.sdk.DynamoDB.DocumentClient();
-
     let itemId = params.itemId ?? shop.itemId;
     if (params.currentPrice && params.currentPrice !== "null") {
       // store parsed data by extension
@@ -60,7 +71,7 @@ export async function handler(event: Request): Promise<Response> {
       );
     }
     const extraData = getParsedData(db, shop);
-    const meta = getMetadata(db, shop.name, <string>shop.itemUrl, itemId);
+    const meta = getMetadata(db, shop.name, shop.itemUrl, itemId);
 
     itemId = itemId ?? (await meta)?.itemId;
     if (!itemId) {
@@ -82,10 +93,9 @@ export async function handler(event: Request): Promise<Response> {
       params.currentPrice
         ? {
             currentPrice: parseFloat(params.currentPrice),
-            originalPrice:
-              params.originalPrice == null
-                ? null
-                : parseFloat(params.originalPrice),
+            originalPrice: params.originalPrice
+              ? parseFloat(params.originalPrice)
+              : null,
             imageUrl: params.imageUrl
           }
         : {}
@@ -100,7 +110,7 @@ export async function handler(event: Request): Promise<Response> {
       real_sale,
       max_price,
       ...rest
-    }: any) => ({
+    }) => ({
       name: itemName,
       imageUrl: itemImage === "null" ? imageUrl : itemImage,
       claimedDiscount: getClaimedDiscount(rows),

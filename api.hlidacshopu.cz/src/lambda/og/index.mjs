@@ -1,12 +1,19 @@
-import fetch from "node-fetch";
 import AbortController from "abort-controller";
-import { Request, Response } from "@pulumi/awsx/apigateway";
-import { ShopParams } from "../shops";
-import { withCORS } from "../utils";
+import fetch from "node-fetch";
+import { withCORS } from "../utils.mjs";
 
-export async function handler(event: Request): Promise<Response> {
-  const params = (<unknown>(event.queryStringParameters || {})) as ShopParams;
-  if (!params.url) {
+/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
+/** @typedef { import("../shops.mjs").ShopParams } ShopParams */
+
+/**
+ * @param {Request} event
+ * @returns {Promise.<Response>}
+ */
+export async function handler(event) {
+  /** @type {ShopParams | undefined} */
+  const params = event.queryStringParameters;
+  if (!params?.url) {
     return withCORS(["GET", "OPTIONS"])({
       statusCode: 400,
       body: JSON.stringify({ error: "Missing url parameter" })
