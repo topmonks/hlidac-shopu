@@ -11,7 +11,6 @@ import {
 } from "@topmonks/pulumi-aws";
 import * as lambdaBuilder from "../lambda-builder";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
 
 const config = new pulumi.Config("hlidacshopu");

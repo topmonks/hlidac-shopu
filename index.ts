@@ -35,5 +35,4 @@ export const allShopsMetadataTable = db.allShopsMetadataTable.name;
 export const allShopsStatsTable = db.allShopsStatsTable.name;
 export const topslevyAbsoluteTable = db.topslevyAbsoluteTable.name;
 export const topslevyRelativeTable = db.topslevyRelativeTable.name;
-export { parseItemDetails } from "./lib/shops.mjs";
-export { isSocialMediaBot } from "./lib/user-agent.mjs";
+
