@@ -6,11 +6,11 @@ export async function init() {
   const buildTasks: Promise<string>[] = [];
 
   return {
-    build(entrypoint: string) {
+    build(entrypoint: string, minify: boolean = false) {
       const promise = buildService
         .build({
           bundle: true,
-          //minify: true,
+          minify,
           charset: "utf8",
           platform: "node",
           target: "node12",
@@ -22,9 +22,9 @@ export async function init() {
       buildTasks.push(promise);
       return promise;
     },
-    buildCodeAsset(entrypoint: string) {
+    buildCodeAsset(entrypoint: string, minify: boolean) {
       return new pulumi.asset.AssetArchive({
-        "index.js": new pulumi.asset.StringAsset(this.build(entrypoint))
+        "index.js": new pulumi.asset.StringAsset(this.build(entrypoint, minify))
       })
     },
     stop() {
