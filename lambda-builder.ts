@@ -15,6 +15,7 @@ export async function init() {
           platform: "node",
           target: "node12",
           mainFields: ["module", "main"],
+          external: ["aws-sdk"],
           entryPoints: [entrypoint],
           write: false
         })
