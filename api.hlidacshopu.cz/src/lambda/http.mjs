@@ -1,8 +1,8 @@
-/** @typedef { import("@pulumi/awsx/apigateway").Response } GatewayResponse */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
 
 /**
  * @param {string} location
- * @returns {GatewayResponse}
+ * @returns {APIGatewayProxyResult}
  */
 export function movedPermanently(location) {
   return {
@@ -13,8 +13,8 @@ export function movedPermanently(location) {
 }
 
 /**
- * @param {Record<string, string | number>} body
- * @returns {GatewayResponse}
+ * @param {Record<string, any>} body
+ * @returns {APIGatewayProxyResult}
  */
 export function notFound(body = { error: "Data not found" }) {
   return {
@@ -24,9 +24,9 @@ export function notFound(body = { error: "Data not found" }) {
 }
 
 /**
- * @param {Record<string, unknown> | string} body
+ * @param {Record<string, any>} body
  * @param {Record<string, boolean | number | string>} [headers]
- * @returns {GatewayResponse}
+ * @returns {APIGatewayProxyResult}
  */
 export function response(body, headers) {
   return {
@@ -38,8 +38,8 @@ export function response(body, headers) {
 
 /**
  * @callback ResponseTransformer
- * @param {GatewayResponse} in
- * @returns {GatewayResponse}
+ * @param {APIGatewayProxyResult} in
+ * @returns {APIGatewayProxyResult}
  */
 /**
  * @param {string | string[]} methods

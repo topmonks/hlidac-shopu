@@ -1,6 +1,6 @@
 import AbortController from "abort-controller";
 import fetch from "node-fetch";
-import { withCORS } from "../utils.mjs";
+import { withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } Response */

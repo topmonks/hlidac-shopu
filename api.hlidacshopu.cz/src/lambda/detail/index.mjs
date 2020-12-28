@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
 import { createShop, getShopKey, ShopError } from "../shops.mjs";
-import { notFound, response, withCORS } from "../utils.mjs";
+import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalData,
   getMetadata,

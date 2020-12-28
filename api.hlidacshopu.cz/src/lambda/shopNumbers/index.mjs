@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.
 import { GetItemCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/GetItemCommand.js";
 import { marshall } from "@aws-sdk/util-dynamodb/dist/es/marshall.js";
 import { unmarshall } from "@aws-sdk/util-dynamodb/dist/es/unmarshall.js";
-import { notFound, response, withCORS } from "../utils.mjs";
+import { notFound, response, withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
