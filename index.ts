@@ -15,27 +15,25 @@ let db = createDatabase();
 let api = createApi("api2.hlidacshopu.cz");
 api.then(x => x.stop());
 
-let {
-  assetsCachingLambda,
-  securityHeadersLambda,
-  nakedDomainRedirect,
-  website
-} = createWebsite("www.hlidacshopu.cz");
+let web = createWebsite("www.hlidacshopu.cz");
+web.then(x => x.stop());
 
 export const certificateArn = certificate;
 export const apiGatewayUrl = api.then(({ apiGateway }) => apiGateway.url);
 export const apiDocumentationUrl = api.then(({ openApiUrl }) => openApiUrl);
 export const apiUrl = api.then(({ apiDistribution }) => apiDistribution.url);
-export const assetsCachingLambdaArn = assetsCachingLambda.arn;
-export const securityHeadersLambdaArn = securityHeadersLambda.arn;
-export const websiteUrl = website.url;
-export const websiteS3BucketUri = website.s3BucketUri;
-export const websiteS3WebsiteUrl = website.s3WebsiteUrl;
-export const websiteCloudFrontId = website.cloudFrontId;
-export const nakedDomainRedirectUrl = nakedDomainRedirect.url;
-export const nakedDomainRedirectCloudFrontId = nakedDomainRedirect.cloudFrontId;
+export const assetsCachingLambdaArn = web.then(({assetsCachingLambda}) => assetsCachingLambda.arn);
+export const securityHeadersLambdaArn = web.then(({securityHeadersLambda}) => securityHeadersLambda.arn);
+export const websiteUrl = web.then(({website}) => website.url);
+export const websiteS3BucketUri = web.then(({website}) => website.s3BucketUri);
+export const websiteS3WebsiteUrl = web.then(({website}) => website.s3WebsiteUrl);
+export const websiteCloudFrontId = web.then(({website}) => website.cloudFrontId);
+export const nakedDomainRedirectUrl = web.then(({nakedDomainRedirect}) => nakedDomainRedirect.url);
+export const nakedDomainRedirectCloudFrontId = web.then(({nakedDomainRedirect}) => nakedDomainRedirect.cloudFrontId);
 export const allShopsTable = db.allShopsTable.name;
 export const allShopsMetadataTable = db.allShopsMetadataTable.name;
 export const allShopsStatsTable = db.allShopsStatsTable.name;
 export const topslevyAbsoluteTable = db.topslevyAbsoluteTable.name;
 export const topslevyRelativeTable = db.topslevyRelativeTable.name;
+export { parseItemDetails } from "./lib/shops.mjs";
+export { isSocialMediaBot } from "./lib/user-agent.mjs";

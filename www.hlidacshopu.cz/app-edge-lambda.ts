@@ -2,6 +2,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { createRole } from "@topmonks/pulumi-aws/lambdas/edge-role";
 import * as path from "path";
+import * as lambdaBuilder from "../lambda-builder";
 
 export class AppEdgeLambda extends pulumi.ComponentResource {
   private lambda: aws.lambda.Function;
@@ -16,22 +17,20 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
     this.lambda = lambda;
   }
 
-  static create(name: string) {
+  static async create(name: string) {
     const role = createRole(name);
-    new aws.iam.RolePolicyAttachment(
-      `${name}-basic-execution-attachment`,
-      {
-        policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
-        role,
-      }
-    );
-    new aws.iam.RolePolicyAttachment(
-      `${name}-dynamo-read-attachment`,
-      {
-        policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBReadOnlyAccess,
-        role: role
-      }
-    );
+    new aws.iam.RolePolicyAttachment(`${name}-basic-execution-attachment`, {
+      policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+      role
+    });
+    new aws.iam.RolePolicyAttachment(`${name}-dynamo-read-attachment`, {
+      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBReadOnlyAccess,
+      role: role
+    });
+
+    const builder = await lambdaBuilder.init();
+    const buildAssets = (fileName: string) =>
+      builder.buildCodeAsset(path.join(__dirname, "app-edge-lambda", fileName), true);
 
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider(`${name}-us-east-1`, {
@@ -45,15 +44,16 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
         timeout: 5,
         handler: "index.handler",
         runtime: aws.lambda.Runtime.NodeJS12dX,
-        code: new pulumi.asset.AssetArchive({
-          ".": new pulumi.asset.FileArchive(
-            path.resolve(__dirname, "./app-edge-lambda")
-          )
-        })
+        code: buildAssets("index.mjs")
       },
       { provider: awsUsEast1 }
     );
 
-    return new AppEdgeLambda(name, lambda);
+    return {
+      lambda: new AppEdgeLambda(name, lambda),
+      stop() {
+        builder.stop();
+      }
+    };
   }
 }

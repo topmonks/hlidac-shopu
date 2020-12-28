@@ -1,6 +1,7 @@
-"use strict";
+import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
 
-/* global URLSearchParams */
+/** @typedef { import("@types/aws-lambda").CloudFrontRequestEvent } CloudFrontRequestEvent */
+/** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */
 
 const content = url => `<\!DOCTYPE html>
 <html lang="cs">
@@ -11,14 +12,6 @@ const content = url => `<\!DOCTYPE html>
 </head>
 </html>
 `;
-
-function isSocialMediaBot(ua) {
-  return Boolean(
-    ua.match(/facebookexternalhit/) ||
-      ua.match(/Twitterbot/) ||
-      ua.match(/Slackbot/)
-  );
-}
 
 async function createRedirectResponse(url) {
   const query = new URLSearchParams({ url });
@@ -33,14 +26,17 @@ async function createRedirectResponse(url) {
   };
 }
 
-exports.handler = async function (event, _context) {
+/**
+ * @param {CloudFrontRequestEvent} event
+ * @returns {Promise<CloudFrontRequestResult>}
+ */
+export async function handler(event) {
   const request = event.Records[0].cf.request;
   const ua = request.headers["user-agent"][0].value;
   const qs = new URLSearchParams(request.querystring);
   const url = qs.get("url");
-  console.log(request.uri, url);
   if (isSocialMediaBot(ua) && request.uri === "/" && url) {
     return await createRedirectResponse(url);
   }
   return request;
-};
+}
