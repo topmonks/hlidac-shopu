@@ -2,9 +2,9 @@ import AbortController from "abort-controller";
 import fetch from "node-fetch";
 import { withCORS } from "../http.mjs";
 
-/** @typedef { import("../shops.mjs").ShopParams } ShopParams */
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
+/** @typedef { import("@hlidac-shopu/lib/shops.mjs").ShopParams } ShopParams */
 
 /**
  * @param {APIGatewayProxyEvent} event

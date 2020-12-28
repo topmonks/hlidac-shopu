@@ -1,6 +1,6 @@
 import { html, render } from "lit-html/lit-html.js";
 import { Workbox } from "workbox-window";
-import { shops } from "@hlidac-shopu/lib/shops.mjs";
+import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
 import {
   fetchDownloadStats,
   fetchShopsStats
@@ -69,7 +69,7 @@ addEventListener("DOMContentLoaded", async e => {
     history.replaceState({ showModal: true, detailUri }, null);
     renderResultsModal(detailUri);
   }
-  render(eShopList(Array.from(shops.values()).filter(x => x.viewBox)), eShops);
+  render(eShopList(shopsArray().filter(x => x.viewBox)), eShops);
   setStoreUrls(searchParams);
   const installationGuideUrl = getInstallationGuideUrl(searchParams);
   if (installationGuideUrl) {

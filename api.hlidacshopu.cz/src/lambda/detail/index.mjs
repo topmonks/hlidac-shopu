@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
-import { createShop, getShopKey, ShopError } from "../shops.mjs";
+import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalData,
@@ -13,9 +13,9 @@ import {
   prepareData
 } from "../discount.mjs";
 
-/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
-/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
-/** @typedef { import("../shops.mjs").ShopParams } ShopParams */
+/** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
+/** @typedef { import("@hlidac-shopu/lib/shops.mjs").ShopParams } ShopParams */
 /** @typedef { import("../discount.mjs").DataRow } DataRow */
 
 /**
@@ -46,95 +46,84 @@ const db = new DynamoDBClient({});
  * @returns {Promise.<APIGatewayProxyResult>}
  */
 export async function handler(event) {
-  try {
-    /** @type {ShopParams | undefined} */
-    const params = event.queryStringParameters;
-    if (!params?.url) {
-      return withCORS(["GET", "OPTIONS"])({
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing url parameter" })
-      });
-    }
-
-    const shop = createShop(params);
-    if (!shop) {
-      return withCORS(["GET", "OPTIONS"])(
-        notFound({ error: "Unsupported shop", shop: getShopKey(params) })
-      );
-    }
-
-    let itemId = params.itemId ?? shop.itemId;
-    if (params.currentPrice && params.currentPrice !== "null") {
-      // store parsed data by extension
-      putParsedData(db, shop, params).catch(err =>
-        console.error("ERROR: " + err)
-      );
-    }
-    const extraData = getParsedData(db, shop);
-    const meta = getMetadata(db, shop.name, shop.itemUrl, itemId);
-
-    itemId = itemId ?? (await meta)?.itemId;
-    if (!itemId) {
-      return withCORS(["GET", "OPTIONS"])(
-        notFound({ error: "Unknown item", itemId })
-      );
-    }
-    const item = await getHistoricalData(db, shop.name, itemId);
-    if (!item) {
-      return withCORS(["GET", "OPTIONS"])(
-        notFound({ error: "Missing data", itemId })
-      );
-    }
-
-    const rows = prepareData(item);
-    const { currentPrice, originalPrice, imageUrl } = Object.assign(
-      {},
-      await extraData,
-      params.currentPrice
-        ? {
-            currentPrice: parseFloat(params.currentPrice),
-            originalPrice: params.originalPrice
-              ? parseFloat(params.originalPrice)
-              : null,
-            imageUrl: params.imageUrl
-          }
-        : {}
-    );
-    if (currentPrice) {
-      rows.push({ currentPrice, originalPrice, date: new Date() });
-    }
-
-    const discount = getRealDiscount(rows);
-    const transformMetadata = ({
-      itemImage,
-      itemName,
-      real_sale,
-      max_price,
-      ...rest
-    }) => ({
-      name: itemName,
-      imageUrl: itemImage === "null" ? imageUrl : itemImage,
-      claimedDiscount: getClaimedDiscount(rows),
-      ...discount,
-      ...rest
+  /** @type {ShopParams | null} */
+  const params = event.queryStringParameters;
+  if (!params?.url) {
+    return withCORS(["GET", "OPTIONS"])({
+      statusCode: 400,
+      body: JSON.stringify({ error: "Missing url parameter" })
     });
-    return withCORS(["GET", "OPTIONS"])(
-      response(
-        {
-          data: createDataset(rows),
-          metadata: meta ? transformMetadata((await meta) ?? {}) : null
-        },
-        { "Cache-Control": "max-age=3600" }
-      )
-    );
-  } catch (error) {
-    if (error instanceof ShopError) {
-      const { message } = error;
-      return withCORS(["GET", "OPTIONS"])(
-        notFound({ data: [], metadata: { "error": message } })
-      );
-    } else {
-      throw error;
-    }
   }
+
+  const shop = parseItemDetails(params.url);
+  if (!shop) {
+    return withCORS(["GET", "OPTIONS"])(
+      notFound({ error: "Unsupported shop", shop: shopHost(params) })
+    );
+  }
+
+  let itemId = params.itemId ?? shop.itemId;
+  if (params.currentPrice && params.currentPrice !== "null") {
+    // store parsed data by extension
+    putParsedData(db, shop, params).catch(err =>
+      console.error("ERROR: " + err)
+    );
+  }
+  const extraData = getParsedData(db, shop);
+  const meta = getMetadata(db, shop.name, shop.itemUrl, itemId);
+
+  itemId = itemId ?? (await meta)?.itemId;
+  if (!itemId) {
+    return withCORS(["GET", "OPTIONS"])(
+      notFound({ error: "Unknown item", itemId })
+    );
+  }
+  const item = await getHistoricalData(db, shop.name, itemId);
+  if (!item) {
+    return withCORS(["GET", "OPTIONS"])(
+      notFound({ error: "Missing data", itemId })
+    );
+  }
+
+  const rows = prepareData(item);
+  const { currentPrice, originalPrice, imageUrl } = Object.assign(
+    {},
+    await extraData,
+    params.currentPrice
+      ? {
+          currentPrice: parseFloat(params.currentPrice),
+          originalPrice: params.originalPrice
+            ? parseFloat(params.originalPrice)
+            : null,
+          imageUrl: params.imageUrl
+        }
+      : {}
+  );
+  if (currentPrice) {
+    rows.push({ currentPrice, originalPrice, date: new Date() });
+  }
+
+  const discount = getRealDiscount(rows);
+  const transformMetadata = ({
+    itemImage,
+    itemName,
+    real_sale,
+    max_price,
+    ...rest
+  }) => ({
+    name: itemName,
+    imageUrl: itemImage === "null" ? imageUrl : itemImage,
+    claimedDiscount: getClaimedDiscount(rows),
+    ...discount,
+    ...rest
+  });
+  return withCORS(["GET", "OPTIONS"])(
+    response(
+      {
+        data: createDataset(rows),
+        metadata: meta ? transformMetadata((await meta) ?? {}) : null
+      },
+      { "Cache-Control": "max-age=3600" }
+    )
+  );
 }

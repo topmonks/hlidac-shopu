@@ -3,14 +3,15 @@ import { QueryCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/QueryCom
 import { PutItemCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/PutItemCommand.js";
 import { marshall } from "@aws-sdk/util-dynamodb/dist/es/marshall.js";
 import { unmarshall } from "@aws-sdk/util-dynamodb/dist/es/unmarshall.js";
+import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { createHash } from "crypto";
 import addDays from "date-fns/esm/addDays/index.js";
 import getUnixTime from "date-fns/esm/getUnixTime/index.js";
 import startOfDay from "date-fns/esm/startOfDay/index.js";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
-/** @typedef { import("./shops.mjs").Shop } Shop */
-/** @typedef { import("./shops.mjs").ShopParams } ShopParams */
+/** @typedef { import("@hlidac-shopu/lib/shops.mjs").Shop } Shop */
+/** @typedef { import("@hlidac-shopu/lib/shops.mjs").ShopParams } ShopParams */
 
 /**
  * @param {string} name
@@ -24,15 +25,6 @@ export function pkey(name, itemId) {
 /**
  * @param {string} name
  * @param {string} itemUrl
- * @returns {string}
- */
-export function metadataPkey(name, itemUrl) {
-  return `${name}:${itemUrl}`;
-}
-
-/**
- * @param {string} name
- * @param {string} itemUrl
  * @param {string | null | undefined} itemId
  * @returns {QueryCommand}
  */
@@ -40,7 +32,7 @@ function getMetadataQuery(name, itemUrl, itemId) {
   return new QueryCommand({
     TableName: "all_shops_metadata",
     ExpressionAttributeValues: marshall({
-      ":pkey": metadataPkey(name, itemUrl),
+      ":pkey": metadata.pkey(name, itemUrl),
       ...(itemId ? { ":itemId": itemId } : {})
     }),
     KeyConditionExpression:
@@ -83,7 +75,10 @@ export function getHistoricalDataQuery(name, itemId) {
  */
 export function getHistoricalData(db, name, itemId) {
   const query = getHistoricalDataQuery(name, itemId);
-  return db.send(query).then(x => x.Item && unmarshall(x.Item));
+  return db
+    .send(query)
+    .then(x => x.Item && unmarshall(x.Item))
+    .catch(() => ({}));
 }
 
 /**
@@ -97,7 +92,7 @@ function getPutParsedDataCommand(shop, today, params) {
     TableName: "extension_parsed_data",
     Item: marshall(
       {
-        pkey: metadataPkey(shop.name, shop.itemUrl),
+        pkey: metadata.pkey(shop.name, shop.itemUrl),
         date: today.toISOString(),
         expirationDate: getUnixTime(addDays(today, 1)),
         data: {
@@ -135,7 +130,7 @@ function getParsedDataQuery(shop, today) {
   return new GetItemCommand({
     TableName: "extension_parsed_data",
     Key: marshall({
-      "pkey": metadataPkey(shop.name, shop.itemUrl),
+      "pkey": metadata.pkey(shop.name, shop.itemUrl),
       "date": today.toISOString()
     })
   });
@@ -149,5 +144,8 @@ function getParsedDataQuery(shop, today) {
 export function getParsedData(db, shop) {
   const today = startOfDay(new Date());
   const query = getParsedDataQuery(shop, today);
-  return db.send(query).then(x => x.Item && unmarshall(x.Item).data);
+  return db
+    .send(query)
+    .then(x => x.Item && unmarshall(x.Item).data)
+    .catch(() => ({}));
 }
