@@ -42,8 +42,8 @@ function createDataset(data) {
 const db = new DynamoDBClient({});
 
 /**
- * @param {Request} event
- * @returns {Promise.<Response>}
+ * @param {APIGatewayProxyEvent} event
+ * @returns {Promise.<APIGatewayProxyResult>}
  */
 export async function handler(event) {
   try {

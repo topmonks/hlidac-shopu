@@ -4,14 +4,14 @@ import { marshall } from "@aws-sdk/util-dynamodb/dist/es/marshall.js";
 import { unmarshall } from "@aws-sdk/util-dynamodb/dist/es/unmarshall.js";
 import { notFound, response, withCORS } from "../http.mjs";
 
-/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
-/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
+/** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
 
 const db = new DynamoDBClient({});
 
 /**
- * @param {Request} event
- * @returns {Promise.<Response>}
+ * @param {APIGatewayProxyEvent} event
+ * @returns {Promise.<APIGatewayProxyResult>}
  */
 export async function handler(event) {
   const params = event.queryStringParameters || {};

@@ -2,16 +2,15 @@ import AbortController from "abort-controller";
 import fetch from "node-fetch";
 import { withCORS } from "../http.mjs";
 
-/** @typedef { import("@pulumi/awsx/apigateway").Request } Request */
-/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
 /** @typedef { import("../shops.mjs").ShopParams } ShopParams */
+/** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
 
 /**
- * @param {Request} event
- * @returns {Promise.<Response>}
+ * @param {APIGatewayProxyEvent} event
+ * @returns {Promise.<APIGatewayProxyResult>}
  */
 export async function handler(event) {
-  /** @type {ShopParams | undefined} */
   const params = event.queryStringParameters;
   if (!params?.url) {
     return withCORS(["GET", "OPTIONS"])({
