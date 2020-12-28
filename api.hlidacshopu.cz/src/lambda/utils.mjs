@@ -1,9 +1,8 @@
-// @ts-check
-/** @typedef { import("@pulumi/awsx/apigateway").Response } Response */
+/** @typedef { import("@pulumi/awsx/apigateway").Response } GatewayResponse */
 
 /**
  * @param {string} location
- * @returns {Response}
+ * @returns {GatewayResponse}
  */
 export function movedPermanently(location) {
   return {
@@ -15,7 +14,7 @@ export function movedPermanently(location) {
 
 /**
  * @param {Record<string, string | number>} body
- * @returns {Response}
+ * @returns {GatewayResponse}
  */
 export function notFound(body = { error: "Data not found" }) {
   return {
@@ -27,7 +26,7 @@ export function notFound(body = { error: "Data not found" }) {
 /**
  * @param {Record<string, unknown> | string} body
  * @param {Record<string, boolean | number | string>} [headers]
- * @returns {Response}
+ * @returns {GatewayResponse}
  */
 export function response(body, headers) {
   return {
@@ -39,8 +38,8 @@ export function response(body, headers) {
 
 /**
  * @callback ResponseTransformer
- * @param {Response} in
- * @returns {Response}
+ * @param {GatewayResponse} in
+ * @returns {GatewayResponse}
  */
 /**
  * @param {string | string[]} methods

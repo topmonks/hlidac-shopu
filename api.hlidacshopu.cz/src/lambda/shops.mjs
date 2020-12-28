@@ -3,13 +3,13 @@ import { getMetadata, pkey } from "./product-detail.mjs";
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
 /**
  * @typedef {Object} ShopParams
- * @property {string} url
- * @property {string} [itemId]
- * @property {string} [currentPrice]
- * @property {string} [originalPrice]
- * @property {string} [imageUrl]
- * @property {string} [title]
- * @property {string} [api]
+ * @property {string | undefined} url
+ * @property {string | undefined} itemId
+ * @property {string | undefined} currentPrice
+ * @property {string | undefined} originalPrice
+ * @property {string | undefined} imageUrl
+ * @property {string | undefined} title
+ * @property {string | undefined} api
  */
 
 export class ShopError extends Error {}
