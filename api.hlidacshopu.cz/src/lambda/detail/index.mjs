@@ -70,7 +70,7 @@ export async function handler(event) {
     );
   }
   const extraData = getParsedData(db, shop);
-  const meta = getMetadata(db, shop.name, shop.itemUrl, itemId);
+  const meta = getMetadata(db, shop.key, shop.itemUrl, itemId);
 
   itemId = itemId ?? (await meta)?.itemId;
   if (!itemId) {
@@ -78,7 +78,7 @@ export async function handler(event) {
       notFound({ error: "Unknown item", itemId })
     );
   }
-  const item = await getHistoricalData(db, shop.name, itemId);
+  const item = await getHistoricalData(db, shop.key, itemId);
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
       notFound({ error: "Missing data", itemId })
