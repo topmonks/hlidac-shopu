@@ -51,7 +51,7 @@ function queryDatabase(name, itemUrl, itemId) {
 
 /**
  * @param {string} url
- * @returns {Promise<CfResponse>}
+ * @returns {Promise<CloudFrontRequestResult>}
  */
 async function createMetadataResponse(url) {
   try {

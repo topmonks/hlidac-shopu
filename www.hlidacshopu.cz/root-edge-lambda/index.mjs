@@ -13,6 +13,10 @@ const content = url => `<\!DOCTYPE html>
 </html>
 `;
 
+/**
+ * @param {string} url
+ * @return {Promise<CloudFrontRequestResult>}
+ */
 async function createRedirectResponse(url) {
   const query = new URLSearchParams({ url });
   return {
