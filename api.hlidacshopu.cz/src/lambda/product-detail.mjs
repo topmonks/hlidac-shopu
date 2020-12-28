@@ -92,7 +92,7 @@ function getPutParsedDataCommand(shop, today, params) {
     TableName: "extension_parsed_data",
     Item: marshall(
       {
-        pkey: metadata.pkey(shop.name, shop.itemUrl),
+        pkey: metadata.pkey(shop.key, shop.itemUrl),
         date: today.toISOString(),
         expirationDate: getUnixTime(addDays(today, 1)),
         data: {
@@ -130,7 +130,7 @@ function getParsedDataQuery(shop, today) {
   return new GetItemCommand({
     TableName: "extension_parsed_data",
     Key: marshall({
-      "pkey": metadata.pkey(shop.name, shop.itemUrl),
+      "pkey": metadata.pkey(shop.key, shop.itemUrl),
       "date": today.toISOString()
     })
   });
