@@ -145,13 +145,6 @@ export async function createApi(domainName: string) {
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
-      createHandlerRoute("batch", {
-        httpMethod: "POST",
-        path: "/batch",
-        fileName: "batch/index.mjs",
-        timeout: 300,
-        environment: { variables: { "TOKEN": config.get("token") ?? "" } }
-      }),
       createHandlerRoute("detail", {
         httpMethod: "GET",
         path: "/detail",
