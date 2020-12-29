@@ -23,16 +23,16 @@ export function pkey(name, itemId) {
 }
 
 /**
- * @param {string} key
+ * @param {string} name
  * @param {string} itemUrl
  * @param {string | null | undefined} itemId
  * @returns {QueryCommand}
  */
-function getMetadataQuery(key, itemUrl, itemId) {
+function getMetadataQuery(name, itemUrl, itemId) {
   return new QueryCommand({
     TableName: "all_shops_metadata",
     ExpressionAttributeValues: marshall({
-      ":pkey": metadata.pkey(key, itemUrl),
+      ":pkey": metadata.pkey(name, itemUrl),
       ...(itemId ? { ":itemId": itemId } : {})
     }),
     KeyConditionExpression:
@@ -42,12 +42,13 @@ function getMetadataQuery(key, itemUrl, itemId) {
 
 /**
  * @param {DynamoDBClient} db
- * @param {Shop} shop
+ * @param {string} name
+ * @param {string} itemUrl
  * @param {string | null} itemId
  * @returns {Promise}
  */
-export async function getMetadata(db, { key, itemUrl }, itemId) {
-  const query = getMetadataQuery(key, itemUrl, itemId);
+export async function getMetadata(db, name, itemUrl, itemId) {
+  const query = getMetadataQuery(name, itemUrl, itemId);
   return db
     .send(query)
     .then(x => x.Items && unmarshall(x.Items[0]))
