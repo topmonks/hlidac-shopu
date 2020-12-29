@@ -70,7 +70,7 @@ export async function handler(event) {
     );
   }
   const extraData = getParsedData(db, shop);
-  const meta = getMetadata(db, shop.key, shop.itemUrl, itemId);
+  const meta = getMetadata(db, shop, itemId);
 
   itemId = itemId ?? (await meta)?.itemId;
   if (!itemId) {
