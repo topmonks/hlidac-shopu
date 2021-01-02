@@ -52,7 +52,8 @@ const config = {
             year: "numeric",
             month: "long",
             day: "numeric"
-          }).format(new Date(str))
+          }).format(new Date(str)),
+        year: () => new Date().getFullYear()
       }
     },
     htmlmin: {
