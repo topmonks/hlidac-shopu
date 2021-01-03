@@ -1,6 +1,8 @@
 # Hlídač Shopů
 
 [![CircleCI](https://circleci.com/gh/topmonks/hlidac-shopu.svg?style=shield)](https://circleci.com/gh/topmonks/hlidac-shopu)
+[![codecov](https://codecov.io/gh/topmonks/hlidac-shopu/branch/master/graph/badge.svg?token=nlCFOKXCHx)](https://codecov.io/gh/topmonks/hlidac-shopu)
+[![CodeFactor](https://www.codefactor.io/repository/github/topmonks/hlidac-shopu/badge)](https://www.codefactor.io/repository/github/topmonks/hlidac-shopu)
 [![CodeScene Code Health](https://codescene.io/projects/10253/status-badges/code-health)](https://codescene.io/projects/10253)
 [![CodeScene System Mastery](https://codescene.io/projects/10253/status-badges/system-mastery)](https://codescene.io/projects/10253)
 
