@@ -68,11 +68,11 @@ commands:
 
 jobs:
   test-lib:
-    executor:
-      name: node/default
-      tag: "14.14"
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
+      - run: nvm install 14.14
       - node/install-packages:
           pkg-manager: yarn
       - run:
