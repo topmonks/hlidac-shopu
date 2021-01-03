@@ -2261,7 +2261,7 @@
     "@types/parse5" "^5.0.3"
     parse5 "^6.0.1"
 
-"@web/test-runner-chrome@^0.8.2":
+"@web/test-runner-chrome@^0.8.0", "@web/test-runner-chrome@^0.8.2":
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/@web/test-runner-chrome/-/test-runner-chrome-0.8.2.tgz#761ac35de8ed496bb5a22157b5c8b654a938d87a"
   integrity sha512-AdSnLFsbTrz5BNwMklnXnRu/75cVdXPkMhEUyxjuZ25C+r+bRViyPQhwwXc8WH/Z+fpDYL+l4lVvGrrNwWiH8w==
@@ -2309,6 +2309,16 @@
     "@web/test-runner-core" "^0.9.0"
     istanbul-lib-coverage "^3.0.0"
     v8-to-istanbul "^7.0.0"
+
+"@web/test-runner-junit-reporter@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@web/test-runner-junit-reporter/-/test-runner-junit-reporter-0.3.0.tgz#509708e0c51d4e6820ddde071b7e63014281a6a7"
+  integrity sha512-9+FbbRS5+0dM1gcKyJ+zIzgamt9yzA7m2jEsCq9BnCuyxOC/jPLeii+VWxdGZ7BwUaA3iGQB05b3BNE5qQS9QA==
+  dependencies:
+    "@web/test-runner-chrome" "^0.8.0"
+    "@web/test-runner-core" "^0.9.0"
+    array-flat-polyfill "^1.0.1"
+    xml "^1.0.1"
 
 "@web/test-runner-mocha@^0.6.0":
   version "0.6.0"
@@ -2755,6 +2765,11 @@ array-find-index@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/array-find-index/-/array-find-index-1.0.2.tgz#df010aa1287e164bbda6f9723b0a96a1ec4187a1"
   integrity sha1-3wEKoSh+Fku9pvlyOwqWoexBh6E=
+
+array-flat-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/array-flat-polyfill/-/array-flat-polyfill-1.0.1.tgz#1e3a4255be619dfbffbfd1d635c1cf357cd034e7"
+  integrity sha512-hfJmKupmQN0lwi0xG6FQ5U8Rd97RnIERplymOv/qpq8AoNKPPAnxJadjFA23FNWm88wykh9HmpLJUUwUtNU/iw==
 
 array-initial@^1.0.0:
   version "1.1.0"
@@ -13137,6 +13152,11 @@ xml2js@~0.4.4:
   dependencies:
     sax ">=0.6.0"
     xmlbuilder "~11.0.0"
+
+xml@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
+  integrity sha1-eLpyAgApxbyHuKgaPPzXS0ovweU=
 
 xmlbuilder@~11.0.0:
   version "11.0.1"
