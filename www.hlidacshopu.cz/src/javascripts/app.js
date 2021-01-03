@@ -3,7 +3,10 @@ import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { MDCSnackbar } from "@material/snackbar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { loaderTemplate } from "@hlidac-shopu/lib/templates.mjs";
+import {
+  loaderTemplate,
+  notFoundTemplate
+} from "@hlidac-shopu/lib/templates.mjs";
 import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import * as rollbar from "./rollbar.js";
 
@@ -208,14 +211,15 @@ function changeView(root) {
 
 function renderResults(root, { targetURL, view }) {
   changeView(root);
-  return Promise.all([fetchDataSet(targetURL), import("./results.js")]).then(
-    ([chartData, { renderResultsModal }]) =>
+  return Promise.all([fetchDataSet(targetURL), import("./results.js")])
+    .then(([chartData, { renderResultsModal }]) =>
       renderResultsModal(targetURL, chartData, {
         isEmbed: view === "embed",
         root,
         toolbar
       })
-  );
+    )
+    .catch(() => render(notFoundTemplate(), root));
 }
 
 function showInstallBanner() {
