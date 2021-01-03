@@ -17,10 +17,9 @@ export class Mall extends Shop {
 
     const itemId = document
       .querySelector('span[data-sel="catalog-number"]')
-      .innerText.trim();
-    const title = document
-      .querySelector('h1[itemprop="name"]')
-      .innerText.trim();
+      .innerText.trim()
+      .replace("a", "");
+    const title = document.querySelector("h1[itemprop=name]").innerText.trim();
     const currentPrice = cleanPrice("[itemprop=price]");
     const originalPrice = cleanPrice(
       ".old-new-price .rrp-price, .old-price > del:nth-child(1)"
