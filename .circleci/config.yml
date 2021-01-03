@@ -342,7 +342,8 @@ jobs:
 workflows:
   ci:
     jobs:
-      - test-lib
+      - test-lib:
+          context: org-global
       - preview-provision:
           context:
             - org-global
