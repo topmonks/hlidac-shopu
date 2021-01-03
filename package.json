@@ -25,6 +25,7 @@
     "ramda": "^0.27.1"
   },
   "devDependencies": {
+    "@esm-bundle/chai": "^4.1.5",
     "@material/button": "^9.0.0",
     "@material/icon-button": "^9.0.0",
     "@material/snackbar": "^9.0.0",
@@ -39,6 +40,7 @@
     "@types/whatwg-url": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
     "@typescript-eslint/parser": "^4.11.1",
+    "@web/test-runner": "^0.11.7",
     "chokidar": "^3.4.3",
     "chrome-webstore-upload-cli": "^1.2.0",
     "dotenv-cli": "^4.0.0",
@@ -70,7 +72,8 @@
     "clean": "rm -rf dist/ extension-dist/",
     "build": "run-all build:extension -p build:firefox build:chrome",
     "start": "run-p start:*",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "run-p test:*",
+    "test:lib": "wtr lib/**/*.test.mjs --node-resolve --coverage",
     "lint": "run-p lint:*",
     "lint:website": "eslint ./www.hlidacshopu.cz",
     "lint:api": "eslint ./api.hlidacshopu.cz/src/lambda/**/*.mjs",
