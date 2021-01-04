@@ -83,7 +83,7 @@ jobs:
       - store_artifacts:
           path: coverage
       - store_test_results:
-          path: test-results.xml
+          path: ./test-results.xml
       - slack/notify:
           event: fail
           template: basic_fail_1
