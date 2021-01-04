@@ -76,7 +76,7 @@ const config = {
       bundle: true,
       splitting: true,
       minify: mode.production(),
-      sourcemap: mode.production() ? "external" : true,
+      sourcemap: true,
       format: "esm",
       target: ["es2017", "firefox57", "safari12"],
       charset: "utf8",
