@@ -1,8 +1,8 @@
 #!/bin/bash
 
-package_json_ver=`jq -r '.version' package.json`
-manifest_ver=`jq -r '.version' extension/manifest.json`
-about_ver=`cat extension/popup/about.html | perl -n -e'/<small>(\d+\.\d+\.\d+)<\/small>/ && print $1'`
+package_json_ver=$(jq -r '.version' package.json)
+manifest_ver=$(jq -r '.version' extension/manifest.json)
+about_ver=$(perl -n -e'/<small>(\d+\.\d+\.\d+)<\/small>/ && print $1' < extension/popup/about.html)
 
 if [ "$PRINT" = "manifest" ]; then
   echo "$manifest_ver";
@@ -24,15 +24,15 @@ if [ ! -e $new_ver ]; then
   echo
 
   echo "updating to $new_ver"
-  tmp=`mktemp`
+  tmp=$(mktemp)
   jq ".version = \"$new_ver\"" package.json > $tmp
   mv $tmp package.json
 
-  tmp=`mktemp`
+  tmp=$(mktemp)
   jq ".version = \"$new_ver\"" extension/manifest.json > $tmp
   mv $tmp extension/manifest.json
 
-  tmp=`mktemp`
+  tmp=$(mktemp)
   sed -E "s/<small>[0-9]+\.[0-9]+\.[0-9]+<\/small>/<small>$new_ver<\/small>/" extension/popup/about.html > $tmp
   mv $tmp extension/popup/about.html
 
