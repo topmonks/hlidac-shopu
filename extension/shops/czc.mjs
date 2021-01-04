@@ -9,7 +9,7 @@ export class CZC extends Shop {
   async scrape() {
     const elem = document.querySelector(".product-detail");
     if (!elem) return;
-    const itemId = elem.dataset.productCode;
+    const itemId = elem.dataset.productCode.replace("a", "");
     const title = document.querySelector("h1").getAttribute("title");
     const currentPrice = cleanPrice(".price .price-vatin");
     const originalPrice = cleanPrice(".price-before .price-vatin");
