@@ -1798,8 +1798,8 @@
 
 "@topmonks/blendid@git://github.com/topmonks/blendid.git":
   version "6.0.0"
-  uid "661d807d947ed15728ed2e7465dd91cdb2f3d7b2"
-  resolved "git://github.com/topmonks/blendid.git#661d807d947ed15728ed2e7465dd91cdb2f3d7b2"
+  uid a98558696cfb3474715d37664fb823d172692c8a
+  resolved "git://github.com/topmonks/blendid.git#a98558696cfb3474715d37664fb823d172692c8a"
   dependencies:
     "@rollup/plugin-alias" "^3.1.0"
     "@rollup/plugin-node-resolve" "^11.0.1"
@@ -1836,13 +1836,13 @@
     marked "^1.2.7"
     merge-stream "^2.0.0"
     minify-html-literals "^1.3.0"
-    open "^7.3.0"
+    open "^7.3.1"
     plugin-error "^1.0.1"
     pretty-hrtime "^1.0.3"
-    rollup "^2.36.0"
+    rollup "^2.36.1"
     rollup-plugin-minify-html-literals "^1.2.5"
     rollup-plugin-terser "^7.0.2"
-    sass "^1.32.0"
+    sass "^1.32.2"
     stream-array "^1.1.2"
     terser "^4.6.13"
     through2 "^4.0.2"
@@ -9561,10 +9561,18 @@ only@~0.0.2:
   resolved "https://registry.yarnpkg.com/only/-/only-0.0.2.tgz#2afde84d03e50b9a8edc444e30610a70295edfb4"
   integrity sha1-Kv3oTQPlC5qO3EROMGEKcCle37Q=
 
-open@7.3.0, open@^7.3.0:
+open@7.3.0:
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/open/-/open-7.3.0.tgz#45461fdee46444f3645b6e14eb3ca94b82e1be69"
   integrity sha512-mgLwQIx2F/ye9SmbrUkurZCnkoXyXyu9EbHtJZrICjVAJfyMArdHp3KkixGdZx1ZHFPNIwl0DDM1dFFqXbTLZw==
+  dependencies:
+    is-docker "^2.0.0"
+    is-wsl "^2.1.1"
+
+open@^7.3.0, open@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.3.1.tgz#111119cb919ca1acd988f49685c4fdd0f4755356"
+  integrity sha512-f2wt9DCBKKjlFbjzGb8MOAW8LH8F0mrs1zc7KTjAJ9PZNQbfenzWbNP1VZJvw6ICMG9r14Ah6yfwPn7T7i646A==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
@@ -11323,7 +11331,7 @@ rollup-pluginutils@^2.8.2:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^2.25.0, rollup@^2.35.1, rollup@^2.36.0:
+rollup@^2.25.0, rollup@^2.35.1, rollup@^2.36.1:
   version "2.36.1"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.36.1.tgz#2174f0c25c7b400d57b05628d0e732c7ae8d2178"
   integrity sha512-eAfqho8dyzuVvrGqpR0ITgEdq0zG2QJeWYh+HeuTbpcaXk8vNFc48B7bJa1xYosTCKx0CuW+447oQOW8HgBIZQ==
@@ -11384,10 +11392,10 @@ sass-graph@2.2.5:
     scss-tokenizer "^0.2.3"
     yargs "^13.3.2"
 
-sass@^1.32.0:
-  version "1.32.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.0.tgz#10101a026c13080b14e2b374d4e15ee24400a4d3"
-  integrity sha512-fhyqEbMIycQA4blrz/C0pYhv2o4x2y6FYYAH0CshBw3DXh5D5wyERgxw0ptdau1orc/GhNrhF7DFN2etyOCEng==
+sass@^1.32.2:
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.2.tgz#66dc0250bc86c15d19ddee7135e93d0cf3d3257b"
+  integrity sha512-u1pUuzqwz3SAgvHSWp1k0mRhX82b2DdlVnP6UIetQPZtYbuJUDaPQhZE12jyjB7vYeOScfz9WPsZJB6Rpk7heA==
   dependencies:
     chokidar ">=2.0.0 <4.0.0"
 
