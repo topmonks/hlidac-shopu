@@ -13199,14 +13199,14 @@ wcwidth@^1.0.0:
   dependencies:
     defaults "^1.0.3"
 
-web-ext-submit@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/web-ext-submit/-/web-ext-submit-5.4.1.tgz#372d3c50a284eb47fe705ab482dde8266a3f6320"
-  integrity sha512-LQVFf8FBTOE5y/5jP35bD8GjgpFX2hl2jE0eT4DfI+b8avL43EdIYL8O5R7NFDYBo/4qzgywlk9YTur6sWpYqg==
+web-ext-submit@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/web-ext-submit/-/web-ext-submit-5.5.0.tgz#df2bc886aa81ba6ecd9f144ba56d6a876a6f4516"
+  integrity sha512-6Rq9xjn5Q4UjzdWdOve1bVehXwihh1kDNYUyKkbDnxH4ooBti4CHEDSC03dgo4YBm3vB3zaIG3EFoM8bFNHmaQ==
   dependencies:
-    web-ext "^5.4.1"
+    web-ext "^5.5.0"
 
-web-ext@^5.4.1, web-ext@^5.5.0:
+web-ext@^5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/web-ext/-/web-ext-5.5.0.tgz#3faf280416b8f1eae19fb5c4105a03d08b11ca42"
   integrity sha512-f+NHiYwbTS0X6eSLkBDWoCYkkIJweVazGf4MD8S+kRX/5z40WsYsnRdVWG+p34Z6rCyNvlHHrnO2S1W8WWg7Tw==
