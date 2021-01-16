@@ -350,7 +350,7 @@ workflows:
             - app-hlidac-shopu
           filters:
             branches:
-              ignore: master
+              ignore: trunk
       - provision:
           context:
             - org-global
@@ -359,7 +359,7 @@ workflows:
             - test-lib
           filters:
             branches:
-              only: master
+              only: trunk
       - build-web-extension:
           context: org-global
           requires:
@@ -378,7 +378,7 @@ workflows:
             - build-web-extension
           filters:
             branches:
-              only: master
+              only: trunk
       - build-ios-app:
           context:
             - org-global
@@ -387,7 +387,7 @@ workflows:
             - confirm-release
           filters:
             branches:
-              only: master
+              only: trunk
       - build-safari-extension:
           context:
             - org-global
@@ -397,7 +397,7 @@ workflows:
             - build-web-extension
           filters:
             branches:
-              only: master
+              only: trunk
       - build-website:
           context: org-global
           requires:
@@ -412,7 +412,7 @@ workflows:
             - build-website
           filters:
             branches:
-              only: master
+              only: trunk
       - merge_pr:
           context:
             - org-github
