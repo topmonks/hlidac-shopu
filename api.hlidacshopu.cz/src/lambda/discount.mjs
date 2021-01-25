@@ -208,7 +208,7 @@ export function prepareData({ json }) {
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
   const days = eachDayOfInterval({
     start: head(data)?.date,
-    end: endOfToday()
+    end: last(data)?.date ?? endOfToday()
   });
 
   let prevDay = head(data);
