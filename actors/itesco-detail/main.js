@@ -227,14 +227,13 @@ Apify.main(async () => {
     groups: development ? undefined : proxyGroups,
     useApifyProxy: !development
   });
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
     maxRequestRetries: 10,
-    additionalMimeTypes: ["application/json", "text/plain"],
-    requestTimeoutSecs: 120,
+    requestTimeoutSecs: 60,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 100
