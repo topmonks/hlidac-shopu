@@ -90,7 +90,7 @@ const parseHlidacShopuData = json => ({
  *  @returns {Promise<void>}
  */
 async function handlePageFunction(context, requestQueue) {
-  const { request, response, json, body, contentType } = context;
+  const { request, response, json, body } = context;
   if (response.statusCode !== 200) {
     log.info("Status code:", response.statusCode);
   }
@@ -113,9 +113,7 @@ async function handlePageFunction(context, requestQueue) {
               "@type": "ItemPage",
               identifier: id,
               url: detailUrl,
-              ...(await parseDetail(
-                cheerio.load(body.toString(contentType.encoding))
-              ))
+              ...(await parseDetail(cheerio.load(body.toString())))
             }
           }
         })
@@ -248,7 +246,7 @@ Apify.main(async () => {
         }
       });
       session.setCookiesFromResponse(response);
-      const { statusCode, body, contentType } = response;
+      const { statusCode, body } = response;
       const allowedStates = new Set([200, 400, 404]);
       if (!allowedStates.has(statusCode)) {
         session.retire();
@@ -259,7 +257,7 @@ Apify.main(async () => {
         throw new Error("Session blocked, retiring.");
       }
       await handlePageFunction(
-        { request, response, body, contentType, json: body },
+        { request, response, body, json: body },
         requestQueue
       );
       await Apify.utils.sleep(sleep * 1000);
