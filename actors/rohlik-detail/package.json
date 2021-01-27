@@ -1,0 +1,18 @@
+{
+  "name": "@hlidac-shopu/rohlik-detail",
+  "version": "0.1.0",
+  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+  "dependencies": {
+    "apify": "^1.0.0",
+    "browser-pool": "^1.0.2",
+    "cheerio": "^1.0.0-rc.5",
+    "modern-random-ua": "^1.0.3",
+    "puppeteer": "^5.5.0"
+  },
+  "devDependencies": {
+    "apify-cli": "^0.6.1"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
