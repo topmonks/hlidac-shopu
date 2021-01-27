@@ -233,8 +233,8 @@ Apify.main(async () => {
   );
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  const fillRequestQueue = new Promise(() =>
-    requests.slice(100).forEach(request => requestQueue.addRequest(request))
+  const fillRequestQueue = Promise.all(
+    requests.slice(100).map(async r => await requestQueue.addRequest(r))
   );
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: development ? undefined : proxyGroups,
