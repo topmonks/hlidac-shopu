@@ -24,7 +24,7 @@ export function notFound(body = { error: "Data not found" }) {
 }
 
 /**
- * @param {Record<string, any>} body
+ * @param {Record<string, any> | string} body
  * @param {Record<string, boolean | number | string>} [headers]
  * @returns {APIGatewayProxyResult}
  */
