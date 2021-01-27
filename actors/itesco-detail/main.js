@@ -82,7 +82,7 @@ const parseHlidacShopuData = json => ({
   }
 });
 
-function pageFunction(requests, proxyConfiguration) {
+function pageFunction(requestQueue, proxyConfiguration) {
   /**
    *  @param {CheerioHandlePageInputs} context
    *  @returns {Promise<void>}
@@ -93,28 +93,39 @@ function pageFunction(requests, proxyConfiguration) {
       log.info("Status code:", response.statusCode);
     }
 
-    const { id, part, detailUrl } = request.userData;
-    const result = (await Apify.getValue(id)) || {
-      "@context": "http://schema.org",
-      "@type": "ItemPage",
-      identifier: id
-    };
-
+    const { id, part, detailUrl, extensions, result } = request.userData;
     const parts = new Map([
       [
         "detail",
         async () =>
-          Apify.setValue(id, {
-            ...result,
-            url: detailUrl,
-            ...(await parseDetail(
-              cheerio.load(body.toString(contentType.encoding))
-            ))
+          requestQueue.addRequest({
+            url: `https://api2.hlidacshopu.cz/detail?${new URLSearchParams({
+              url: detailUrl
+            })}`,
+            retryCount: 10,
+            userData: {
+              part: "hlidac-shopu",
+              result: {
+                "@context": "http://schema.org",
+                "@type": "ItemPage",
+                identifier: id,
+                url: detailUrl,
+                ...(await parseDetail(
+                  cheerio.load(body.toString(contentType.encoding))
+                ))
+              }
+            }
           })
       ],
       [
         "hlidac-shopu",
-        () => Apify.setValue(id, { ...result, ...parseHlidacShopuData(json) })
+        () =>
+          Apify.pushData(
+            postprocess(
+              { ...result, ...parseHlidacShopuData(json) },
+              extensions
+            )
+          )
       ]
     ]);
 
@@ -207,53 +218,44 @@ Apify.main(async () => {
   } = input ?? {};
   const urls = products.map(({ url }) => url);
 
-  const ids = new MemoIds();
-  const requests = new Set();
-  for (const url of urls) {
-    const id = ids.parse(url);
-    requests.add({
-      url,
-      retryCount: 10,
-      userData: { id, part: "detail", detailUrl: url }
-    });
-    if (extensions) {
-      extensions.forEach(requestExtensionData(requests, id, url));
-    }
-  }
-
+  const requests = Array.from(
+    new Set(
+      urls.map(url => ({
+        url,
+        retryCount: 10,
+        userData: { part: "detail", detailUrl: url, extensions }
+      }))
+    )
+  );
   const requestList = await Apify.openRequestList(
     "itesco_detail",
-    Array.from(requests),
-    { persistRequestsKey: "itesco_detail" }
+    requests.slice(0, 100)
+  );
+  /** @type {RequestQueue} */
+  const requestQueue = await Apify.openRequestQueue();
+  const fillRequestQueue = new Promise(() =>
+    requests.slice(100).forEach(request => requestQueue.addRequest(request))
   );
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: development ? undefined : proxyGroups,
     useApifyProxy: !development
   });
-
-  // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestList,
+    requestQueue,
     proxyConfiguration,
     maxConcurrency,
     maxRequestRetries: 10,
     additionalMimeTypes: ["application/json", "text/plain"],
     requestTimeoutSecs: 120,
-    handlePageFunction: pageFunction(requests, proxyConfiguration),
+    handlePageFunction: pageFunction(requestQueue, proxyConfiguration),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
 
-  // Run crawler.
-  await crawler.run();
+  await Promise.all([crawler.run(), fillRequestQueue]);
   log.info("crawler finished");
-
-  for (const id of ids.values()) {
-    const result = await Apify.getValue(id);
-    await Apify.pushData(postprocess(result, extensions));
-  }
-  log.info("datasets stored");
 
   try {
     await uploadToKeboola(getTableName(country));
