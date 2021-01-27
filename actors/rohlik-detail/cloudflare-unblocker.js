@@ -195,7 +195,7 @@ class CloudflareUnblocker extends CrawlerExtension {
    * @private
    */
   _getProxyUrl(session) {
-    return this.proxyConfiguration.newUrl([session.id]);
+    return this.proxyConfiguration.newUrl(session.id);
   }
 
   /**
