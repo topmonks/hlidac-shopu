@@ -236,6 +236,7 @@ Apify.main(async () => {
     sessionPoolOptions: {
       maxPoolSize: 100
     },
+    handleRequestTimeoutSecs: 120,
     handleRequestFunction: async ({ request, session }) => {
       const response = await requestAsBrowser({
         url: request.url,
