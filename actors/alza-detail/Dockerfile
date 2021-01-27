@@ -1,17 +1,14 @@
 FROM apify/actor-node
 
-RUN npm install --global yarn
-
 COPY package.json ./
 
-RUN yarn install --production \
+RUN npm --quiet set progress=false \
+ && npm install --only=prod --no-optional \
  && echo "Installed NPM packages:" \
- && yarn list \
+ && npm list || true \
  && echo "Node.js version:" \
  && node --version \
- && echo "Yarn version:" \
- && yarn --version
+ && echo "NPM version:" \
+ && npm --version
 
 COPY . ./
-
-CMD yarn start
