@@ -238,30 +238,43 @@ Apify.main(async () => {
     },
     handleRequestTimeoutSecs: 120,
     handleRequestFunction: async ({ request, session }) => {
-      const response = await requestAsBrowser({
-        url: request.url,
-        proxyUrl: await proxyConfiguration.newUrl(session.id),
-        headers: {
-          "User-Agent": randomUA.generate(),
-          Cookie: session.getCookieString(request.url)
+      try {
+        const response = await requestAsBrowser({
+          url: request.url,
+          proxyUrl: await proxyConfiguration.newUrl(session.id),
+          headers: {
+            "User-Agent": randomUA.generate(),
+            Cookie: session.getCookieString(request.url)
+          }
+        });
+        session.setCookiesFromResponse(response);
+        const { statusCode, body } = response;
+        const allowedStates = new Set([200, 400, 404]);
+        if (!allowedStates.has(statusCode)) {
+          session.retire();
+          // dont mark this request as bad, it is probably looking for working session
+          request.retryCount--;
+          // dont retry the request right away, wait a little bit
+          await Apify.utils.sleep(5000);
+          throw new Error("Session blocked, retiring.");
         }
-      });
-      session.setCookiesFromResponse(response);
-      const { statusCode, body } = response;
-      const allowedStates = new Set([200, 400, 404]);
-      if (!allowedStates.has(statusCode)) {
-        session.retire();
-        // dont mark this request as bad, it is probably looking for working session
-        request.retryCount--;
-        // dont retry the request right away, wait a little bit
-        await Apify.utils.sleep(5000);
-        throw new Error("Session blocked, retiring.");
+        await handlePageFunction(
+          { request, response, body, json: body },
+          requestQueue
+        );
+        await Apify.utils.sleep(sleep * 1000);
+      } catch (e) {
+        if (e.message.contains("Request Timed-out")) {
+          session.retire();
+          // dont mark this request as bad, it is probably looking for working session
+          request.retryCount--;
+          // dont retry the request right away, wait a little bit
+          await Apify.utils.sleep(5000);
+          throw new Error("Session blocked, retiring.");
+        } else {
+          throw e;
+        }
       }
-      await handlePageFunction(
-        { request, response, body, json: body },
-        requestQueue
-      );
-      await Apify.utils.sleep(sleep * 1000);
     },
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
