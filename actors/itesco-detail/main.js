@@ -5,6 +5,7 @@ const randomUA = require("modern-random-ua");
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
+/** @typedef { import("apify").ProxyConfiguration } ProxyConfiguration */
 
 const { log, requestAsBrowser } = Apify.utils;
 
@@ -223,6 +224,7 @@ Apify.main(async () => {
     for (const r of requests.slice(100)) await requestQueue.addRequest(r);
     resolve();
   });
+  /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: development ? undefined : proxyGroups,
     useApifyProxy: !development
@@ -230,7 +232,6 @@ Apify.main(async () => {
   const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
-    proxyConfiguration,
     maxConcurrency,
     maxRequestRetries: 10,
     requestTimeoutSecs: 60,
@@ -241,7 +242,11 @@ Apify.main(async () => {
     handleRequestFunction: async ({ request, session }) => {
       const response = await requestAsBrowser({
         url: request.url,
-        headers: { "User-Agent": randomUA.generate() }
+        proxyUrl: await proxyConfiguration.newUrl(session.id),
+        headers: {
+          "User-Agent": randomUA.generate(),
+          Cookie: session.getCookieString(request.url)
+        }
       });
       session.setCookiesFromResponse(response);
       const { statusCode, body, contentType } = response;
