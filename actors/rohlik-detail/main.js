@@ -251,6 +251,7 @@ Apify.main(async () => {
     country = "cz",
     extensions = [],
     maxConcurrency = 10,
+    sleep = 1,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input || {};
 
@@ -307,7 +308,7 @@ Apify.main(async () => {
         throw new Error("Session blocked, retiring.");
       }
       await handlePageFunction({ request, response, json: body }, requestQueue);
-      await Apify.utils.sleep(1000);
+      await Apify.utils.sleep(sleep * 1000);
     },
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
