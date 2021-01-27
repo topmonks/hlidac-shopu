@@ -130,26 +130,13 @@ function pageFunction(requestQueue, proxyConfiguration) {
     ]);
 
     const partHandler = parts.get(part);
-    if (partHandler) await partHandler();
+    if (partHandler) {
+      await partHandler();
+      log.info("handled page", { url: request.url, part });
+    } else {
+      log.warning("unknown part", { url: request.url, part });
+    }
   };
-}
-
-class MemoIds {
-  constructor() {
-    this.ids = new Set();
-  }
-
-  parse(s) {
-    const url = new URL(s);
-    const match = url.pathname.match(/(\d+)$/);
-    const id = match?.[1];
-    if (id) this.ids.add(id);
-    return id;
-  }
-
-  values() {
-    return this.ids.values();
-  }
 }
 
 function postprocess(result, extensions) {
