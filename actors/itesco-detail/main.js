@@ -1,11 +1,12 @@
 const Apify = require("apify");
 const cheerio = require("cheerio");
+const randomUA = require("modern-random-ua");
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 
-const { log } = Apify.utils;
+const { log, requestAsBrowser } = Apify.utils;
 
 const parseMainContent = ($, contentSelector) => ({
   "@type": "WebPageElement",
@@ -82,61 +83,58 @@ const parseHlidacShopuData = json => ({
   }
 });
 
-function pageFunction(requestQueue, proxyConfiguration) {
-  /**
-   *  @param {CheerioHandlePageInputs} context
-   *  @returns {Promise<void>}
-   */
-  return async function handlePageFunction(context) {
-    const { request, response, json, body, contentType } = context;
-    if (response.statusCode !== 200) {
-      log.info("Status code:", response.statusCode);
-    }
+/**
+ *  @param {CheerioHandlePageInputs} context
+ *  @param requestQueue {RequestQueue}
+ *  @returns {Promise<void>}
+ */
+async function handlePageFunction(context, requestQueue) {
+  const { request, response, json, body, contentType } = context;
+  if (response.statusCode !== 200) {
+    log.info("Status code:", response.statusCode);
+  }
 
-    const { id, part, detailUrl, extensions, result } = request.userData;
-    const parts = new Map([
-      [
-        "detail",
-        async () =>
-          requestQueue.addRequest({
-            url: `https://api2.hlidacshopu.cz/detail?${new URLSearchParams({
-              url: detailUrl
-            })}`,
-            retryCount: 10,
-            userData: {
-              part: "hlidac-shopu",
-              result: {
-                "@context": "http://schema.org",
-                "@type": "ItemPage",
-                identifier: id,
-                url: detailUrl,
-                ...(await parseDetail(
-                  cheerio.load(body.toString(contentType.encoding))
-                ))
-              }
+  const { id, part, detailUrl, extensions, result } = request.userData;
+  const parts = new Map([
+    [
+      "detail",
+      async () =>
+        requestQueue.addRequest({
+          url: `https://api2.hlidacshopu.cz/detail?${new URLSearchParams({
+            url: detailUrl
+          })}`,
+          retryCount: 10,
+          userData: {
+            part: "hlidac-shopu",
+            extensions,
+            result: {
+              "@context": "http://schema.org",
+              "@type": "ItemPage",
+              identifier: id,
+              url: detailUrl,
+              ...(await parseDetail(
+                cheerio.load(body.toString(contentType.encoding))
+              ))
             }
-          })
-      ],
-      [
-        "hlidac-shopu",
-        () =>
-          Apify.pushData(
-            postprocess(
-              { ...result, ...parseHlidacShopuData(json) },
-              extensions
-            )
-          )
-      ]
-    ]);
+          }
+        })
+    ],
+    [
+      "hlidac-shopu",
+      () =>
+        Apify.pushData(
+          postprocess({ ...result, ...parseHlidacShopuData(json) }, extensions)
+        )
+    ]
+  ]);
 
-    const partHandler = parts.get(part);
-    if (partHandler) {
-      await partHandler();
-      log.info("handled page", { url: request.url, part });
-    } else {
-      log.warning("unknown part", { url: request.url, part });
-    }
-  };
+  const partHandler = parts.get(part);
+  if (partHandler) {
+    await partHandler();
+    log.info("handled page", { url: request.url, part });
+  } else {
+    log.warning("unknown part", { url: request.url, part });
+  }
 }
 
 function postprocess(result, extensions) {
@@ -201,6 +199,7 @@ Apify.main(async () => {
     development,
     extensions = [],
     maxConcurrency = 4,
+    sleep = 5,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
   const urls = products.map(({ url }) => url);
@@ -236,7 +235,32 @@ Apify.main(async () => {
     maxRequestRetries: 10,
     additionalMimeTypes: ["application/json", "text/plain"],
     requestTimeoutSecs: 120,
-    handlePageFunction: pageFunction(requestQueue, proxyConfiguration),
+    useSessionPool: true,
+    sessionPoolOptions: {
+      maxPoolSize: 100
+    },
+    handleRequestFunction: async ({ request, session }) => {
+      const response = await requestAsBrowser({
+        url: request.url,
+        headers: { "User-Agent": randomUA.generate() }
+      });
+      session.setCookiesFromResponse(response);
+      const { statusCode, body, contentType } = response;
+      const allowedStates = new Set([200, 400, 404]);
+      if (!allowedStates.has(statusCode)) {
+        session.retire();
+        // dont mark this request as bad, it is probably looking for working session
+        request.retryCount--;
+        // dont retry the request right away, wait a little bit
+        await Apify.utils.sleep(5000);
+        throw new Error("Session blocked, retiring.");
+      }
+      await handlePageFunction(
+        { request, response, body, contentType, json: body },
+        requestQueue
+      );
+      await Apify.utils.sleep(sleep * 1000);
+    },
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
