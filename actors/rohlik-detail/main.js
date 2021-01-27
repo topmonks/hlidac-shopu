@@ -42,7 +42,7 @@ function parseDetail(json) {
 
   // getting data for offers
   const priceCurrency = product.price.currency;
-  const price = product.price ? product.price.full : "";
+  const price = product.price?.full ?? "";
   const itemCondition = "http://schema.org/NewCondition";
   const availability = product.inStock;
   const offers = {
@@ -147,20 +147,20 @@ function postprocess(result, extensions) {
     }
   };
 
-  result.mainEntity = result.mainEntity || {
+  result.mainEntity = result.mainEntity ?? {
     "@error": "Linked data not found"
   };
   if (result.parameters) {
     result.mainEntity.additionalProperty = result.parameters;
     result.parameters = undefined;
   }
-  result.image = result.image || [];
+  result.image = result.image ?? [];
   result.mainEntity.image = Array.from(
     new Set([result.mainEntity.image, ...result.image]).values()
   );
   result.image = undefined;
 
-  result.mainContentOfPage = result.mainContentOfPage || [];
+  result.mainContentOfPage = result.mainContentOfPage ?? [];
   for (const ext of extensions) {
     extensionHandlers[ext]();
   }
