@@ -99,6 +99,7 @@
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build --production"
   },
   "workspaces": [
+    "actors/alza-detail",
     "actors/itesco-detail",
     "actors/kosik-detail",
     "actors/rohlik-detail",
