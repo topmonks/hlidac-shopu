@@ -4,26 +4,21 @@ const cheerio = require("cheerio");
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
-/** @typedef { import("apify").RequestQueue } RequestQueue */
 
 const { log } = Apify.utils;
 
-function parseMainContent($, contentSelector) {
-  return {
-    "@type": "WebPageElement",
-    cssSelector: contentSelector,
-    encodingFormat: "text/html",
-    encoding: $(contentSelector).html().trim()
-  };
-}
+const parseMainContent = ($, contentSelector) => ({
+  "@type": "WebPageElement",
+  cssSelector: contentSelector,
+  encodingFormat: "text/html",
+  encoding: $(contentSelector).html().trim()
+});
 
-function parseParameter($row) {
-  return {
-    "@type": "PropertyValue",
-    name: $row.find("td:first-of-type").text().trim(),
-    value: $row.find("td:last-of-type").text().trim()
-  };
-}
+const parseParameter = $row => ({
+  "@type": "PropertyValue",
+  name: $row.find("td:first-of-type").text().trim(),
+  value: $row.find("td:last-of-type").text().trim()
+});
 
 const parseParameters = $ => ({
   parameters: $('table[data-tid="product-detail_nutrition_table"] tr')
@@ -31,10 +26,18 @@ const parseParameters = $ => ({
     .map(x => parseParameter($(x)))
 });
 
+const parseOffers = $offer => [
+  {
+    "@type": "Offer",
+    availability: $offer.find("[itemprop=availability]").attr("content"),
+    itemCondition: $offer.find("[itemprop=itemCondition]").attr("content"),
+    priceCurrency: $offer.find("[itemprop=priceCurrency]").attr("content"),
+    price: $offer.find("[itemprop=price]").attr("content")
+  }
+];
+
 async function parseDetail($) {
   const $product = $('.product-detail [itemtype="http://schema.org/Product"]');
-  const $offer = $product.find("[itemprop=offers]");
-
   if (!$product.length) {
     log.error("No linked data found");
     throw new Error("No linked data found");
@@ -57,19 +60,7 @@ async function parseDetail($) {
         .text()
         .trim(),
       category,
-      offers: [
-        {
-          "@type": "Offer",
-          availability: $offer.find("[itemprop=availability]").attr("content"),
-          itemCondition: $offer
-            .find("[itemprop=itemCondition]")
-            .attr("content"),
-          priceCurrency: $offer
-            .find("[itemprop=priceCurrency]")
-            .attr("content"),
-          price: $offer.find("[itemprop=price]").attr("content")
-        }
-      ],
+      offers: parseOffers($product.find("[itemprop=offers]")),
       image: $product.find("[itemprop=image]").attr("src")
     },
     mainContentOfPage: [parseMainContent($, ".product-detail")],
@@ -165,7 +156,7 @@ class MemoIds {
   parse(s) {
     const url = new URL(s);
     const match = url.pathname.match(/[^/]+$/);
-    const id = match?.[0] ?? null;
+    const id = match?.[0];
     if (id) this.ids.add(id);
     return id;
   }
@@ -238,7 +229,7 @@ Apify.main(async () => {
     extensions = [],
     maxConcurrency = 4,
     proxyGroups = ["CZECH_LUMINATI"]
-  } = input || {};
+  } = input ?? {};
   const urls = products.map(({ url }) => url).filter(Boolean);
 
   const ids = new MemoIds();

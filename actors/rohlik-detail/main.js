@@ -10,51 +10,22 @@ const CloudFlareUnBlocker = require("./cloudflare-unblocker");
 
 const { log } = Apify.utils;
 
-function parseDetail(json) {
-  const { product } = json.data;
-  // getting data for main section
-  const identifier = product.productId;
-  const webUrl = `https://www.rohlik.cz/${product.baseLink}`;
-
-  // getting data for breadcrumbs
-  const itemListElement = product.categories.map(category => ({
-    "@type": "ListItem",
-    position: category.level + 1,
-    item: {
-      "@id": `https://www.rohlik.cz/services/frontend-service/products/${category.id}?offset=0&limit=25`,
-      name: category.name
-    }
-  }));
-  const breadcrumbs = {
-    "@context": "http://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement
-  };
-
-  // getting data for main entity
-
-  const name = product.productName;
-  const description = product.description
-    ? cheerio.load(product.description).text()
-    : "";
-  const image = `https://www.rohlik.cz/cdn-cgi/image/f=auto,w=500,h=500/https://cdn.rohlik.cz/images/grocery/products/${product.imgPath}`;
-  const { brand } = product;
-
-  // getting data for offers
+function parseOffers(product) {
   const priceCurrency = product.price.currency;
   const price = product.price?.full ?? "";
   const itemCondition = "http://schema.org/NewCondition";
   const availability = product.inStock;
-  const offers = {
+  return {
     "@type": "Offer",
     priceCurrency,
     price,
     itemCondition,
     availability
   };
+}
 
-  // getting data for additionalProperty
-  const additionalProperty = [
+function parseAdditionalProperties(product, json) {
+  return [
     {
       "@type": "PropertyValue",
       name: "unit",
@@ -93,37 +64,54 @@ function parseDetail(json) {
       value: json.data.similarProducts ?? ""
     }
   ];
+}
 
-  const mainEntity = {
+function parseBreadcrumbs(product) {
+  return {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: product.categories.map(category => ({
+      "@type": "ListItem",
+      position: category.level + 1,
+      item: {
+        "@id": `https://www.rohlik.cz/services/frontend-service/products/${category.id}?offset=0&limit=25`,
+        name: category.name
+      }
+    }))
+  };
+}
+
+function parseProduct(product, json) {
+  return {
     "@context": "http://schema.org",
     "@type": "Product",
-    name,
-    description,
-    image,
-    offers,
-    brand,
-    additionalProperty
+    name: product.productName,
+    description: product.description
+      ? cheerio.load(product.description).text()
+      : "",
+    image: `https://www.rohlik.cz/cdn-cgi/image/f=auto,w=500,h=500/https://cdn.rohlik.cz/images/grocery/products/${product.imgPath}`,
+    offers: parseOffers(product),
+    brand: product.brand,
+    additionalProperty: parseAdditionalProperties(product, json)
   };
+}
 
-  // getting data for mainContentOfPage
-  const mainContentOfPage = [
-    {
-      "@type": "WebPageElement",
-      encodingFormat: "application/json",
-      encoding: JSON.stringify(json.data)
-    }
-  ];
-
-  // Return an object with the data extracted from the page.
-  // It will be stored to the resulting dataset.
+function parseDetail(json) {
+  const { product } = json.data;
   return {
     "@context": "http://schema.org",
     "@type": "ItemPage",
-    identifier,
-    url: webUrl,
-    breadcrumbs,
-    mainEntity,
-    mainContentOfPage
+    identifier: product.productId,
+    url: `https://www.rohlik.cz/${product.baseLink}`,
+    breadcrumbs: parseBreadcrumbs(product),
+    mainEntity: parseProduct(product, json),
+    mainContentOfPage: [
+      {
+        "@type": "WebPageElement",
+        encodingFormat: "application/json",
+        encoding: JSON.stringify(json.data)
+      }
+    ]
   };
 }
 
@@ -247,7 +235,7 @@ Apify.main(async () => {
     maxConcurrency = 10,
     sleep = 1,
     proxyGroups = ["CZECH_LUMINATI"]
-  } = input || {};
+  } = input ?? {};
 
   const urls = products.map(({ url }) => url).filter(Boolean);
   const requests = Array.from(
@@ -261,6 +249,7 @@ Apify.main(async () => {
   );
 
   const requestList = await Apify.openRequestList("rohlik-detail", requests);
+  /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -270,7 +259,6 @@ Apify.main(async () => {
     proxyConfiguration
   });
 
-  // Create crawler.
   const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
@@ -287,7 +275,6 @@ Apify.main(async () => {
       const response = await Apify.utils.requestAsBrowser({
         url: request.url,
         headers: { "User-Agent": randomUA.generate() },
-        json: true,
         ...cloudFlareUnBlocker.getRequestOptions(session)
       });
       session.setCookiesFromResponse(response);
