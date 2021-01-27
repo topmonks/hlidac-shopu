@@ -234,7 +234,6 @@ Apify.main(async () => {
     requestQueue,
     maxConcurrency,
     maxRequestRetries: 10,
-    requestTimeoutSecs: 60,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 100
