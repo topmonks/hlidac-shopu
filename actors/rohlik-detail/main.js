@@ -58,7 +58,7 @@ function parseDetail(json) {
     {
       "@type": "PropertyValue",
       name: "unit",
-      value: product.unit ? product.unit : ""
+      value: product.unit ?? ""
     },
     {
       "@type": "PropertyValue",
@@ -70,33 +70,27 @@ function parseDetail(json) {
     {
       "@type": "PropertyValue",
       name: "country",
-      value:
-        product.countries && product.countries[0]
-          ? product.countries[0].name
-          : ""
+      value: product.countries?.[0]?.name ?? ""
     },
     {
       "@type": "PropertyValue",
       name: "countryCode",
-      value:
-        product.countries && product.countries[0]
-          ? product.countries[0].code
-          : ""
+      value: product.countries?.[0]?.code ?? ""
     },
     {
       "@type": "PropertyValue",
       name: "composition",
-      value: product.composition ? product.composition : ""
+      value: product.composition ?? ""
     },
     {
       "@type": "PropertyValue",
       name: "ingredients",
-      value: product.ingredients ? product.ingredients : ""
+      value: product.ingredients ?? ""
     },
     {
       "@type": "PropertyValue",
       name: "similarProducts",
-      value: json.data.similarProducts ? json.data.similarProducts : ""
+      value: json.data.similarProducts ?? ""
     }
   ];
 
