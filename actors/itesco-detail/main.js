@@ -238,9 +238,6 @@ Apify.main(async () => {
     maxConcurrency,
     maxRequestRetries: 10,
     additionalMimeTypes: ["application/json", "text/plain"],
-    requestOptions: {
-      ignoreSslErrors: true
-    },
     requestTimeoutSecs: 120,
     handlePageFunction: pageFunction(requests, proxyConfiguration),
     handleFailedRequestFunction: async ({ request }) => {
