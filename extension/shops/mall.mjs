@@ -7,7 +7,8 @@ export class Mall extends Shop {
       "afterend",
       `.product-footer,
        .other-options-box,
-       .detail-prices-wrapper`
+       .detail-prices-wrapper,
+       .info-box`
     ];
   }
 
