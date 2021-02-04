@@ -1,7 +1,7 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Mall extends Shop {
+export class Mall extends AsyncShop {
   get injectionPoint() {
     return [
       "afterend",
@@ -10,6 +10,10 @@ export class Mall extends Shop {
        .detail-prices-wrapper,
        .info-box`
     ];
+  }
+
+  get waitForSelector() {
+    return ".detail__main-data .availability-box";
   }
 
   async scrape() {
