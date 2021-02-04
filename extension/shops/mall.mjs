@@ -35,8 +35,8 @@ export class Mall extends AsyncShop {
     const originalPrice = cleanPrice(
       ".old-new-price .rrp-price, .old-price > del:nth-child(1), .price__wrap__box__old"
     );
-    const imageUrl = document.querySelector(".gallery-magnifier__normal").src;
-
+    const imageUrl = document.querySelector(".gallery-magnifier__normal")?.src;
+    if (!currentPrice) return;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
