@@ -35,16 +35,16 @@
   dependencies:
     event-stream "3.3.4"
 
-"@apify/storage-local@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@apify/storage-local/-/storage-local-1.0.3.tgz#5b064aff869cd785ee892428ae0497013bc2b39f"
-  integrity sha512-lIRiRnSH2n+sVnW7eSidNbwB0gcvGxyIO5Z6cYqc5qOuKntfE+DXA4cs7W1CaOpbrU6c/guQa/t6wESajrQtFg==
+"@apify/storage-local@^1.0.4":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@apify/storage-local/-/storage-local-1.0.5.tgz#3ab915050b06c1b90a7657b51c5fed8bfa8de8e4"
+  integrity sha512-uo2Zua4wxcEn9c4PZtkz/HeE3sqp8OHUzr+AauqWMeMKKKVPysAbppzKCVtmAgOsGlB6TKVV7P9muEek1louDA==
   dependencies:
     apify-shared "^0.5.7"
     better-sqlite3-with-prebuilds "^7.1.1"
     content-type "^1.0.4"
     mime-types "^2.1.27"
-    ow "^0.18.0"
+    ow "^0.23.0"
 
 "@aws-crypto/ie11-detection@^1.0.0":
   version "1.0.0"
@@ -3046,17 +3046,17 @@ apify-client@^0.6.0:
     type-check "^0.3.2"
     underscore "^1.9.1"
 
-apify-client@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/apify-client/-/apify-client-1.0.2.tgz#8d929e24f4e94d42a2a0bf66a65e1f3b711cffdf"
-  integrity sha512-5P7sqDwDxmS7pA1TZ2pxh8m4e15X9Je2uA27nk9DCCncv/Kc74cgtWywD3p11h0gszbmw2aDg0jj+EOgXwYvxw==
+apify-client@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/apify-client/-/apify-client-1.0.3.tgz#77828265972dc6261e0d1e2ac1bcaf9ffecbfd48"
+  integrity sha512-/w5XOH/5JHbgJx/eh+pxLTv8RJe/Wzm2oaKWNqKNSUPPcXAsjtPb+VVGeK1obvOIpbHrqOSjyMTe8HxsQ7mGJQ==
   dependencies:
     agentkeepalive "^4.1.3"
     apify-shared "^0.5.0"
     async-retry "^1.3.1"
     axios "^0.21.1"
     content-type "^1.0.4"
-    ow "^0.22.0"
+    ow "^0.23.0"
 
 apify-shared@^0.1.45:
   version "0.1.72"
@@ -3108,21 +3108,21 @@ apify-shared@^0.5.0, apify-shared@^0.5.2, apify-shared@^0.5.7:
     underscore "^1.11.0"
     url "^0.11.0"
 
-apify@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/apify/-/apify-1.0.0.tgz#94e54bf035cf524c7ba589bc57e9696f1c182969"
-  integrity sha512-aq4ys3yeqUUgrXgZcCV7bkJ/0tTRbhKH97lc5rO/+i2BLFXQRKM8P2VVTYeXgtEDcxZ1JwPGHBofuAdmZYVrYw==
+apify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/apify/-/apify-1.0.1.tgz#9cdae74d9bae805f419a41e4e6da673fa918362e"
+  integrity sha512-WzJaRJFTLinLabI2mDWWq+MAHUmpFCT/1NWVkOx2KDKEkK/vNc3t7a3+wAzFBDn+iiZbgTC9LZXF6tkncZdmJg==
   dependencies:
     "@apify/http-request" "^2.1.1"
     "@apify/ps-tree" "^1.1.3"
-    "@apify/storage-local" "^1.0.3"
+    "@apify/storage-local" "^1.0.4"
     "@types/cheerio" "^0.22.22"
     "@types/domhandler" "^2.4.1"
     "@types/node" "^14"
     "@types/puppeteer" "^5.4.0"
     "@types/socket.io" "^2.1.11"
     "@types/tough-cookie" "^4.0.0"
-    apify-client "^1.0.2"
+    apify-client "^1.0.3"
     apify-shared "^0.5.0"
     browser-pool "^1.0.2"
     cheerio "1.0.0-rc.3"
@@ -10066,24 +10066,12 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-mime-db@1.44.0:
-  version "1.44.0"
-  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.44.0.tgz#fa11c5eb0aca1334b4233cb4d52f10c5a6272f92"
-  integrity sha512-/NOTfLrsPBVeH7YtFPgsVWveuL+4SjjYxaQ1xtM1KMFj7HdxlBlxeyNLzhyJVx7r4rZGJAZ/6lkKCitSc/Nmpg==
-
 mime-db@1.45.0:
   version "1.45.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.45.0.tgz#cceeda21ccd7c3a745eba2decd55d4b73e7879ea"
   integrity sha512-CkqLUxUk15hofLoLyljJSrukZi8mAtgd+yE5uO4tqRZsdsAJKv0O+rFMhVDRJgozy+yG6md5KwuXhD4ocIoP+w==
 
-mime-types@^2.1.12, mime-types@~2.1.17, mime-types@~2.1.19, mime-types@~2.1.24:
-  version "2.1.27"
-  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.27.tgz#47949f98e279ea53119f5722e0f34e529bec009f"
-  integrity sha512-JIhqnCasI9yD+SsmkquHBxTSEuZdQX5BuQnS2Vc7puQQQ+8yiP5AY5uWhpdv4YL4VM5c6iliiYWPgJ/nJQLp7w==
-  dependencies:
-    mime-db "1.44.0"
-
-mime-types@^2.1.18, mime-types@^2.1.27:
+mime-types@^2.1.12, mime-types@^2.1.18, mime-types@^2.1.27, mime-types@~2.1.17, mime-types@~2.1.19, mime-types@~2.1.24:
   version "2.1.28"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.28.tgz#1160c4757eab2c5363888e005273ecf79d2a0ecd"
   integrity sha512-0TO2yJ5YHYr7M2zzT7gDU1tbwHxEUWBCLt0lscSNpcdAfFyJOVEpRYNS7EXVcTLNj/25QO8gulHC5JtTzSE2UQ==
@@ -10830,29 +10818,10 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
 
-ow@^0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/ow/-/ow-0.18.0.tgz#68fbd5747c932db398e8be1334408ef4b1f00708"
-  integrity sha512-2Rc7sTon3MDhWsrMB4mbppPA6ldQmGtDQadpE03RQw3ebcgsuNw43IYa1eDWwrSdWglCikduZC8cuBLnA34Teg==
-  dependencies:
-    type-fest "^0.17.0"
-
 ow@^0.20.0:
   version "0.20.0"
   resolved "https://registry.yarnpkg.com/ow/-/ow-0.20.0.tgz#b61447bfbe887b92e4a3be7a19fd9c9c51c9bdf4"
   integrity sha512-jZNOCxOhz8OBNHp24PcII4oyIe9M9X9RZth0pflVT0OkAVLsZLWXKrFGC1QrlNJXsawCdSWkGfm7TRhyjx5+nQ==
-  dependencies:
-    "@sindresorhus/is" "^4.0.0"
-    callsites "^3.1.0"
-    dot-prop "^6.0.1"
-    lodash.isequal "^4.5.0"
-    type-fest "^0.20.2"
-    vali-date "^1.0.0"
-
-ow@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/ow/-/ow-0.22.0.tgz#d83637055b6aebb40a3bcb51447d2825ecb375bc"
-  integrity sha512-VZpjntwsFxg+oM2pZ0Km8p6+FLAugD86TQWHmz0Ldm/rfSs6qezggArumK+FrBUFAXodWULJrbV5ie0LkhWJdQ==
   dependencies:
     "@sindresorhus/is" "^4.0.0"
     callsites "^3.1.0"
@@ -14357,11 +14326,6 @@ type-fest@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.16.0.tgz#3240b891a78b0deae910dbeb86553e552a148860"
   integrity sha512-eaBzG6MxNzEn9kiwvtre90cXaNLkmadMWa1zQMs3XORCXNbsH/OewwbxC5ia9dCxIxnTAsSxXJaa/p5y8DlvJg==
-
-type-fest@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.17.0.tgz#268bb55d38701ce3915f60a4367a1e9f28672deb"
-  integrity sha512-EFi9HE4hHj85XnVV80uAUMgICQmhxYgiEvtmfpcD6jqn6zYr36HxAU6k+i/DSY28TK7/lYL0s4v/kWmiKdqaoA==
 
 type-fest@^0.18.0:
   version "0.18.1"
