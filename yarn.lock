@@ -1533,6 +1533,11 @@
     "@material/touch-target" "^9.0.0"
     "@material/typography" "^9.0.0"
 
+"@material/density@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@material/density/-/density-10.0.0.tgz#24795406d092cf0e6422e1c9dc8bc2b978c46e7a"
+  integrity sha512-nLf8N5e6tEYo+W762z3coTDl2b1FFKJv/uU+E5UsBYOL0ftXrOMtiYSwg9MJjfWtdG+uUBfb3VLcBvIl2x3C0w==
+
 "@material/density@^9.0.0":
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/@material/density/-/density-9.0.0.tgz#b47bc23bbc2b6e8e4eeaeea96508b781268c690b"
@@ -1583,6 +1588,19 @@
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/@material/feature-targeting/-/feature-targeting-9.0.0.tgz#a1072cb74630e1106874fe042bbdaa9da72952e1"
   integrity sha512-SKkvI46TxxpTau9fsXJWAXTJXbu6ut5n6wdN5ZX1DHHLY2AR7abBAhDIvNhIcxH65FK8mo7Z63UfvDwy177ttQ==
+
+"@material/icon-button@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@material/icon-button/-/icon-button-10.0.0.tgz#ab6a18e2e18245ff59eac1bffe4310a258f7da80"
+  integrity sha512-e7oQq2LlUA+UGGzlgvityPV+bTRJ7sFs8grlwM0C86adXzc/6nYBNmmgcqUpQDiCtBj5Dqo8oQSUVGRkHIqEiQ==
+  dependencies:
+    "@material/base" "^10.0.0"
+    "@material/density" "^10.0.0"
+    "@material/feature-targeting" "^10.0.0"
+    "@material/ripple" "^10.0.0"
+    "@material/rtl" "^10.0.0"
+    "@material/theme" "^10.0.0"
+    tslib "^1.9.3"
 
 "@material/icon-button@^9.0.0":
   version "9.0.0"
