@@ -1518,6 +1518,22 @@
   dependencies:
     tslib "^1.9.3"
 
+"@material/button@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@material/button/-/button-10.0.0.tgz#0641e4b758e35821dcb88b62e918ca2a2a90bcbf"
+  integrity sha512-OHIJtlyM+U+MqvPm0N0y9kHf+SFS0I7zE520MulQJywgZhHmU+mz2kwgy+tVxOTceVglQzRZP3KkrwUkf4U0bg==
+  dependencies:
+    "@material/density" "^10.0.0"
+    "@material/dom" "^10.0.0"
+    "@material/elevation" "^10.0.0"
+    "@material/feature-targeting" "^10.0.0"
+    "@material/ripple" "^10.0.0"
+    "@material/rtl" "^10.0.0"
+    "@material/shape" "^10.0.0"
+    "@material/theme" "^10.0.0"
+    "@material/touch-target" "^10.0.0"
+    "@material/typography" "^10.0.0"
+
 "@material/button@^9.0.0":
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/@material/button/-/button-9.0.0.tgz#a9018fb3a7b430b6d926a14593a467e4b4d03920"
@@ -1723,6 +1739,14 @@
     "@material/theme" "^10.0.0"
     "@material/typography" "^10.0.0"
     tslib "^1.9.3"
+
+"@material/touch-target@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@material/touch-target/-/touch-target-10.0.0.tgz#8a7bcb00d54616b0e18544363f2cad9077fc4c12"
+  integrity sha512-uDWxktK/CODyNNyvXwzTFXcxqujQrVX3LoIsOXu87Z0fq4n2u74WlemJoniMbVKdsKsiJWcZ1uvrvhSeOdNQ2Q==
+  dependencies:
+    "@material/base" "^10.0.0"
+    "@material/feature-targeting" "^10.0.0"
 
 "@material/touch-target@^9.0.0":
   version "9.0.0"
