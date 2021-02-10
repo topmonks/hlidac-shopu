@@ -10,17 +10,16 @@ import last from "ramda/es/last.js";
 import zipWith from "ramda/es/zipWith.js";
 
 /**
+ * @typedef { import("./types").DataRow } DataRow
+ * @typedef { import("./types").EUDiscount } EUDiscount
+ * @typedef { import("./types").CommonPriceDifference } CommonPriceDifference
+ */
+
+/**
  * @callback Predicate.<T>
  * @param {T}
  * @returns {Boolean}
  * @template T
- */
-
-/**
- * @typedef {Object} DataRow
- * @property {number | null} currentPrice
- * @property {number | null | undefined} originalPrice
- * @property {Date} date
  */
 
 /**
@@ -31,16 +30,6 @@ import zipWith from "ramda/es/zipWith.js";
 export function discount(previous, actual) {
   return (previous - actual) / previous;
 }
-
-/**
- * @typedef {Object} EUDiscount
- * @param {number} minPrice
- * @param {number} currentPrice
- * @param {number} realDiscount
- * @param {Date} lastDiscountDate
- * @param {Date} lastIncreaseDate
- * @param {string} type
- */
 
 /**
  * @param {Date} lastDiscountDate
@@ -71,16 +60,6 @@ function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
     type: "eu-minimum"
   };
 }
-
-/**
- * @typedef {Object} CommonPriceDifference
- * @param {number} commonPrice
- * @param {number} currentPrice
- * @param {number} realDiscount
- * @param {Date} lastDiscountDate
- * @param {Date} lastIncreaseDate
- * @param {string} type
- */
 
 /**
  * @param {Date | null} lastDiscountDate

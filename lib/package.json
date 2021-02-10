@@ -2,6 +2,7 @@
   "name": "@hlidac-shopu/lib",
   "version": "1.0.0",
   "description": "Common logic for the PWA and Extension",
+  "types": "types.d.ts",
   "dependencies": {
     "chart.js": "^3.0.0-beta.10",
     "chartjs-adapter-date-fns": "1.1.0-alpha.3",
