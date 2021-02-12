@@ -7560,12 +7560,12 @@ gulp-debug@^4.0.0:
     through2 "^2.0.0"
     tildify "^1.1.2"
 
-gulp-esbuild@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/gulp-esbuild/-/gulp-esbuild-0.4.1.tgz#32baa526b04a68728cfa82588ad2109bb0bef578"
-  integrity sha512-yQz+wP6b20BtHyLSWUfm6cv5SJD6hgZmN2GYf1QDsZLM6Ekqq7RoSsxC4S7I+MxNr+Yt+Efrva5SbjyhmNLdoQ==
+gulp-esbuild@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/gulp-esbuild/-/gulp-esbuild-0.4.2.tgz#534ff3616448ee9dccbd1ff7244b0b89e352e4f7"
+  integrity sha512-NrHTlP+OjcCCF5puQjdFll8Bp7nLKH+Yf6/7QobNlfK0lRvfCqPwiBc7uqGoTaangvQnP6O2MMtzG40uifxyQg==
   dependencies:
-    esbuild "^0.8.43"
+    esbuild "^0.8.44"
     plugin-error "^1.0.1"
     vinyl "^2.2.1"
 
