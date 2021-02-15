@@ -1,10 +1,6 @@
-import { precacheAndRoute } from "workbox-precaching";
-import {
-  pageCache,
-  googleFontsCache,
-  staticResourceCache,
-  imageCache
-} from "workbox-recipes";
+importScripts(
+  "https://storage.googleapis.com/workbox-cdn/releases/6.0.2/workbox-sw.js"
+);
 
 addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") {
@@ -12,9 +8,9 @@ addEventListener("message", event => {
   }
 });
 
-precacheAndRoute(self.__WB_MANIFEST);
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
-pageCache();
-googleFontsCache();
-staticResourceCache();
-imageCache();
+workbox.recipes.pageCache();
+workbox.recipes.googleFontsCache();
+workbox.recipes.staticResourceCache();
+workbox.recipes.imageCache();
