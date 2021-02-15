@@ -12,6 +12,13 @@ import * as rollbar from "./rollbar.js";
 
 rollbar.init();
 
+if (typeof ResizeObserver === "undefined") {
+  const polyfill = document.createElement("script");
+  polyfill.src =
+    "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.min.js";
+  document.head.insertAdjacentElement("beforeend", polyfill);
+}
+
 const root = document.getElementById("app-root");
 
 addEventListener("DOMContentLoaded", async () => {

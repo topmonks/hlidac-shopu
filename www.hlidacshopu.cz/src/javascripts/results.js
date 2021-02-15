@@ -10,6 +10,13 @@ import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import { templateData } from "@hlidac-shopu/lib/remoting.mjs";
 import "@hlidac-shopu/lib/web-components/chart.mjs";
 
+if (typeof ResizeObserver === "undefined") {
+  const polyfill = document.createElement("script");
+  polyfill.src =
+    "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.min.js";
+  document.head.insertAdjacentElement("beforeend", polyfill);
+}
+
 export async function renderResultsModal(
   detailUrl,
   chartData,
