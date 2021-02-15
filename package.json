@@ -16,7 +16,7 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "dependencies": {
     "@pulumi/aws": "^3.28.1",
-    "@pulumi/awsx": "^0.22.0",
+    "@pulumi/awsx": "^0.25.0",
     "@pulumi/pulumi": "^2.20.0",
     "@topmonks/pulumi-aws": "^1.7.2",
     "abort-controller": "^3.0.0",
@@ -59,7 +59,7 @@
     "jsdom": "^16.4.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
-    "puppeteer": "^7.0.4",
+    "puppeteer": "^7.1.0",
     "rollbar": "^2.20.0",
     "source-map-explorer": "^2.5.2",
     "stylelint": "^13.10.0",
