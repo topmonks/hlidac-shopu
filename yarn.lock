@@ -1882,7 +1882,7 @@
     "@babel/helper-module-imports" "^7.10.4"
     "@rollup/pluginutils" "^3.1.0"
 
-"@rollup/plugin-node-resolve@^11.0.1", "@rollup/plugin-node-resolve@^11.1.1", "@rollup/plugin-node-resolve@^11.2.0":
+"@rollup/plugin-node-resolve@^11.0.1", "@rollup/plugin-node-resolve@^11.2.0":
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-node-resolve/-/plugin-node-resolve-11.2.0.tgz#a5ab88c35bb7622d115f44984dee305112b6f714"
   integrity sha512-qHjNIKYt5pCcn+5RUBQxK8krhRvf1HnyVgUCcFFcweDS7fhkOLZeYh0mhHK6Ery8/bb9tvN/ubPzmfF0qjDCTA==
@@ -1982,10 +1982,11 @@
 
 "@topmonks/blendid@git://github.com/topmonks/blendid.git":
   version "6.0.0"
-  resolved "git://github.com/topmonks/blendid.git#2118574dcc9c5073bedf595a572003542ff74d2f"
+  uid e9bf82ada9beffc143350fde19101b2ccdf1a51d
+  resolved "git://github.com/topmonks/blendid.git#e9bf82ada9beffc143350fde19101b2ccdf1a51d"
   dependencies:
     "@rollup/plugin-alias" "^3.1.2"
-    "@rollup/plugin-node-resolve" "^11.1.1"
+    "@rollup/plugin-node-resolve" "^11.2.0"
     ansi-colors "4.1.1"
     autoprefixer "9.8.6"
     browser-sync "2.26.14"
@@ -2019,10 +2020,10 @@
     marked "^2.0.0"
     merge-stream "^2.0.0"
     minify-html-literals "^1.3.0"
-    open "^7.4.0"
+    open "^7.4.1"
     plugin-error "^1.0.1"
     pretty-hrtime "^1.0.3"
-    rollup "^2.38.5"
+    rollup "^2.39.0"
     rollup-plugin-minify-html-literals "^1.2.5"
     rollup-plugin-terser "^7.0.2"
     sass "^1.32.7"
@@ -10729,10 +10730,10 @@ open@7.3.0:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-open@^7.3.0, open@^7.3.1, open@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.4.0.tgz#ad95b98f871d9acb0ec8fecc557082cc9986626b"
-  integrity sha512-PGoBCX/lclIWlpS/R2PQuIR4NJoXh6X5AwVzE7WXnWRGvHg7+4TBCgsujUgiPpm0K1y4qvQeWnCWVTpTKZBtvA==
+open@^7.3.0, open@^7.3.1, open@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.4.1.tgz#4ccedc11ca348d398378ffb39c71357df55fe6f7"
+  integrity sha512-Pxv+fKRsd/Ozflgn2Gjev1HZveJJeKR6hKKmdaImJMuEZ6htAvCTbcMABJo+qevlAelTLCrEK3YTKZ9fVTcSPw==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
@@ -12691,10 +12692,10 @@ rollup-pluginutils@^2.8.2:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^2.25.0, rollup@^2.35.1, rollup@^2.38.5:
-  version "2.38.5"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.38.5.tgz#be41ad4fe0c103a8794377afceb5f22b8f603d6a"
-  integrity sha512-VoWt8DysFGDVRGWuHTqZzT02J0ASgjVq/hPs9QcBOGMd7B+jfTr/iqMVEyOi901rE3xq+Deq66GzIT1yt7sGwQ==
+rollup@^2.25.0, rollup@^2.35.1, rollup@^2.39.0:
+  version "2.39.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.39.0.tgz#be4f98c9e421793a8fec82c854fb567c35e22ab6"
+  integrity sha512-+WR3bttcq7zE+BntH09UxaW3bQo3vItuYeLsyk4dL2tuwbeSKJuvwiawyhEnvRdRgrII0Uzk00FpctHO/zB1kw==
   optionalDependencies:
     fsevents "~2.3.1"
 
