@@ -449,10 +449,10 @@
     "@aws-sdk/is-array-buffer" "3.4.1"
     tslib "^1.8.0"
 
-"@aws-sdk/util-dynamodb@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/util-dynamodb/-/util-dynamodb-3.4.1.tgz#87644ec721cf712a2ec3cf0a8f80004c4319f66a"
-  integrity sha512-6SI1oIGRj10krz2dxOGqRZb09ORmw91Cn3f/zuPH8dpMQtzzn01PdBE1tLCi4C260Wv1PxjcfCIx1H6ME0YdyQ==
+"@aws-sdk/util-dynamodb@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/util-dynamodb/-/util-dynamodb-3.5.0.tgz#920d18e8ba170b8f64e0a74ad1190722f14b4ecb"
+  integrity sha512-E7jwPsQd3CvVitLSZ9RaBouoB6FmABCduquv/pjWAdo5iusPgJUnjmxNSDPQgbZicKB+icR5nMWNUrV4qjmefg==
   dependencies:
     tslib "^1.8.0"
 
@@ -6130,7 +6130,7 @@ es6-weak-map@^2.0.1, es6-weak-map@^2.0.2:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.1"
 
-esbuild@^0.8.43, esbuild@^0.8.44:
+esbuild@^0.8.44:
   version "0.8.44"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.44.tgz#2a74f48fe20579081c9d8fe99be6fb8d2848c887"
   integrity sha512-m9yyBZMgWuAB7e7tA2g9L4PovoLa5Xb73+Yg9uBBR2w3Fe4P9/nxqj/HLrw1k/rjdjF1eX1kNJRytboqOtRCCQ==
