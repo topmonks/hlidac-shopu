@@ -2,6 +2,7 @@ import { html, render } from "lit-html/lit-html.js";
 import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
 import * as rollbar from "./rollbar.js";
+import { when } from "@hlidac-shopu/lib/templates.mjs";
 
 rollbar.init();
 
@@ -14,21 +15,22 @@ addEventListener("DOMContentLoaded", async e => {
 });
 
 function avatarTemplate({ name, imageUrl }) {
-  return (
-    imageUrl &&
-    html`
-      <img
-        class="avatar"
-        alt="${name}"
-        loading="lazy"
-        src="https://${imageUrl}"
-        srcset="
-          https://${imageUrl} 1x,
-          https://${imageUrl.replace("s70", "s105")} 1.5x,
-          https://${imageUrl.replace("s70", "s140")} 2x
-        "
-      />
-    `
+  return when(
+    imageUrl,
+    () =>
+      html`
+        <img
+          class="avatar"
+          alt="${name}"
+          loading="lazy"
+          src="https://${imageUrl}"
+          srcset="
+            https://${imageUrl} 1x,
+            https://${imageUrl.replace("s70", "s105")} 1.5x,
+            https://${imageUrl.replace("s70", "s140")} 2x
+          "
+        />
+      `
   );
 }
 

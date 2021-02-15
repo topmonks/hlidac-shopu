@@ -6,7 +6,8 @@ import "@hlidac-shopu/lib/web-components/chart.mjs";
 import {
   discountTemplate,
   notFoundTemplate,
-  originalPriceTemplate
+  originalPriceTemplate,
+  when
 } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
@@ -74,23 +75,24 @@ function resultTemplate({
   ...prices
 }) {
   const crawlDate = x =>
-    x
-      ? html`
-          <time
-            id="latest-date"
-            datetime="${x.toISOString()}"
-            title="Datum posledního čtení cen"
-            >${formatDate(x)}
-          </time>
-        `
-      : null;
+    when(
+      x,
+      () => html`
+        <time
+          id="latest-date"
+          datetime="${x.toISOString()}"
+          title="Datum posledního čtení cen"
+          >${formatDate(x)}
+        </time>
+      `
+    );
   return html`
     <div class="hs-result">
       <div class="box box--purple">
         ${crawlDate(date)}
-        ${discount !== 0
-          ? originalPriceTemplate({ type: discountType, ...prices })
-          : null}
+        ${when(discount !== 0, () =>
+          originalPriceTemplate({ type: discountType, ...prices })
+        )}
         <div class="hs-actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>

@@ -4,7 +4,8 @@ import {
   discountTemplate,
   logoTemplate,
   notFoundTemplate,
-  originalPriceTemplate
+  originalPriceTemplate,
+  when
 } from "@hlidac-shopu/lib/templates.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import { templateData } from "@hlidac-shopu/lib/remoting.mjs";
@@ -51,16 +52,17 @@ function resultTemplate(
   isEmbed
 ) {
   const crawlDate = x =>
-    x
-      ? html`
-          <time
-            id="latest-date"
-            datetime="${x.toISOString()}"
-            title="Datum posledního čtení cen"
-            >${formatDate(x)}
-          </time>
-        `
-      : null;
+    when(
+      x,
+      () => html`
+        <time
+          id="latest-date"
+          datetime="${x.toISOString()}"
+          title="Datum posledního čtení cen"
+          >${formatDate(x)}
+        </time>
+      `
+    );
   const shopLogo = x => x && logoTemplate(x);
   return html`
     <div id="hlidac-shopu-modal__found" class="layout-wrapper">
@@ -74,13 +76,13 @@ function resultTemplate(
           rel="noopener noreferrer"
           >${name || "Vámi vybraný produkt"}</a
         >
-        ${imageUrl ? html`<img alt="${name}" src="${imageUrl}" />` : null}
+        ${when(imageUrl, () => html`<img alt="${name}" src="${imageUrl}" />`)}
       </h2>
       <div class="box box--purple">
         ${crawlDate(date)}
-        ${discount !== 0
-          ? originalPriceTemplate({ type: discountType, ...prices })
-          : null}
+        ${when(discount !== 0, () =>
+          originalPriceTemplate({ type: discountType, ...prices })
+        )}
         <div class="hs-actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>
@@ -97,8 +99,10 @@ function resultTemplate(
       <div class="hs-chart">
         <hs-chart .data="${data}"></hs-chart>
       </div>
-      ${isEmbed || !navigator.share
-        ? html`
+      ${when(
+        isEmbed || !navigator.share,
+        () =>
+          html`
             <div class="hs-share-buttons">
               <a
                 class="tw-button"
@@ -131,7 +135,7 @@ function resultTemplate(
               </a>
             </div>
           `
-        : null}
+      )}
     </div>
   `;
 }
