@@ -1,21 +1,16 @@
 {
-	"name": "datart-cz-detail",
+	"name": "@hlidac-shopu/datart-detail",
 	"version": "0.0.1",
-	"description": "This is a boilerplate of an Apify actor.",
+  "description": "Datart detail page scraper",
+  "author": "Jan Fiedler <jan.fiedler@topmonks.com>",
+  "license": "EPL-2.0",
 	"dependencies": {
-		"apify": "^0.22.2"
-	},
-	"devDependencies": {
-		"@apify/eslint-config": "0.1.3",
-		"eslint": "^7.19.0"
-	},
+    "apify": "^1.0.1"
+  },
+  "devDependencies": {
+    "apify-cli": "^0.6.1"
+  },
 	"scripts": {
-		"clean": "del-cli apify_storage/request_queues",
-		"start": "node main.js",
-		"lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
-		"lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
-		"test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
-	},
-	"author": "It's not you it's me",
-	"license": "ISC"
+		"start": "node main.js"
+	}
 }
