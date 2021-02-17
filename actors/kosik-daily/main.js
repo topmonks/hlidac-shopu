@@ -44,7 +44,7 @@ const parseItem = (item, breadcrumbs) => ({
   discounted: item.percentageDiscount > 0,
   currentPrice: item.price,
   originalPrice: item.recommendedPrice,
-  inStock: null,
+  inStock: !item.firstOrderDay,
   category: breadcrumbs
 });
 
