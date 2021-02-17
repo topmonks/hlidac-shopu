@@ -126,7 +126,7 @@ Apify.main(async () => {
 
   const requestQueue = await Apify.openRequestQueue();
   // TODO: if (type === "BF")
-  requestQueue.addRequest({
+  await requestQueue.addRequest({
     url: "https://www.kosik.cz/api/web/menu/main",
     userData: {
       step: "CATEGORIES"
