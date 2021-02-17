@@ -71,7 +71,8 @@ function pageFunction(requestQueue) {
     } else if (step === "DETAIL") {
       await enqueuePagination(requestQueue, json);
 
-      const breadcrumbs = json.breadcrumbs.map(x => x.name).join(" > ");
+      const breadcrumbs =
+        json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
       for (const item of json.products.items) {
         if (processedIds.has(item.id)) continue;
         await Apify.pushData(parseItem(item, breadcrumbs));
