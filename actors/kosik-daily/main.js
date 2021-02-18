@@ -126,6 +126,7 @@ Apify.main(async () => {
     useApifyProxy: !development
   });
 
+  /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
   // TODO: if (type === "BF")
   await requestQueue.addRequest({
