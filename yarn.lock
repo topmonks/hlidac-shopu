@@ -1984,8 +1984,8 @@
 
 "@topmonks/blendid@git://github.com/topmonks/blendid.git":
   version "6.0.0"
-  uid "52a1e159048492ba67bfea2e565643cb74546be2"
-  resolved "git://github.com/topmonks/blendid.git#52a1e159048492ba67bfea2e565643cb74546be2"
+  uid "79560ed94ffda8a5707dc56f2c2c5f62704b94e6"
+  resolved "git://github.com/topmonks/blendid.git#79560ed94ffda8a5707dc56f2c2c5f62704b94e6"
   dependencies:
     "@rollup/plugin-alias" "^3.1.2"
     "@rollup/plugin-node-resolve" "^11.2.0"
@@ -2028,7 +2028,7 @@
     rollup "^2.39.0"
     rollup-plugin-minify-html-literals "^1.2.5"
     rollup-plugin-terser "^7.0.2"
-    sass "^1.32.7"
+    sass "^1.32.8"
     stream-array "^1.1.2"
     terser "^4.6.13"
     through2 "^4.0.2"
@@ -12850,10 +12850,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.26.3, sass@^1.32.7:
-  version "1.32.7"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.7.tgz#632a9df2b85dc4b346977fcaf2d5e6f2b7039fd8"
-  integrity sha512-C8Z4bjqGWnsYa11o8hpKAuoyFdRhrSHcYjCr+XAWVPSIQqC8mp2f5Dx4em0dKYehPzg5XSekmCjqJnEZbIls9A==
+sass@^1.26.3, sass@^1.32.8:
+  version "1.32.8"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.8.tgz#f16a9abd8dc530add8834e506878a2808c037bdc"
+  integrity sha512-Sl6mIeGpzjIUZqvKnKETfMf0iDAswD9TNlv13A7aAF3XZlRPMq4VvJWBC2N2DXbp94MQVdNSFG6LfF/iOXrPHQ==
   dependencies:
     chokidar ">=2.0.0 <4.0.0"
 
