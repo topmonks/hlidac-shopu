@@ -87,10 +87,39 @@ const parseHtmlData = ($) => {
   /*
         "@context": "http://schema.org",
         "@type": "Product"
-     */
+  */
+
   //Product name
   data.name = dataLayer.name;
 
+  //Product description
+  let shortDescription = $('#stoitem_detail tr.shortnote');
+  let longDescription = $('#stoitem_detail div.stoitemnote');
+  //Check type of product description template
+  if (longDescription.find('div#produkt-popisek').length) {
+    longDescription = longDescription.find('div#produkt-popisek').text();
+    longDescription = longDescription.split('\r\n').filter(line => line.length > 0).join(' ');
+  } else {
+    longDescription = longDescription.find('p').last().text();
+  }
+
+  data.description = shortDescription.find('th').text();
+  data.description += "\n";
+  data.description += longDescription;
+
+  data.image = productImages.concat(descriptionImages);
+
+  //Product brand
+  data.brand = dataLayer.brand;
+
+  //Offer
+  //Availability
+  data.offers = { '@type': 'Offer',
+    availability: "",
+    itemCondition: "",
+    price: dataLayer.price,
+    priceCurrency: "CZK",
+  }
 
 
 
@@ -100,28 +129,6 @@ const parseHtmlData = ($) => {
 
 const parseHtmlData2 = ($) => {
     const data = {};
-    //breadcrumbs
-    let breadcrumbs = $('#stoitem_detail.navbar');
-    breadcrumbs = breadcrumbs.find('a').map((index, element) => ({
-        url_key: $(element)
-            .attr('href'),
-        title: $(element)
-            .text(),
-    }))
-    .get()
-    .filter(item => !item.url_key.includes("index"));
-    data.breadcrumbs = parseBreadcrumbs(breadcrumbs).itemListElement;
-
-    /*
-        "@context": "http://schema.org",
-        "@type": "Product"
-     */
-    //Product name
-    data.name = $('meta[name="pName"]').attr('content');
-
-    //Product description
-    let description = $('div#product-description');
-    data.description = description.find('p').text();
     //Thumbnail
     data.thumbnailUrl = $('meta[property="og:image"]').attr('content').split("?")[0];
     //Images
