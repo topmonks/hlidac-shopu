@@ -4,7 +4,7 @@
   "description": "Lambdas for handling API Gateway endpoints",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.6.1",
-    "@aws-sdk/util-dynamodb": "^3.6.0",
+    "@aws-sdk/util-dynamodb": "^3.6.1",
     "@hlidac-shopu/lib": "^1.0.0",
     "@pulumi/aws": "^3.30.1",
     "@pulumi/awsx": "^0.25.0",
