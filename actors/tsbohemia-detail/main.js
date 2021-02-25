@@ -123,6 +123,22 @@ const parseHtmlData = ($) => {
   //Product brand
   data.brand = dataLayer.brand;
 
+  //PropertyValue
+  let propertyValues = $('div#sticomment div.tabform').find('div.paramnode').map((index, element) => {
+    //Některé položky v propertyValues mají paramnote popisující vlastnost parametru základní definicí parametru.
+    if($('div.paramnote', element).length > 0){
+      $('div.paramnote', element).remove();
+    }
+    const pLabel = $('div.paramname', element).text().trim().replace(':','');
+    const pValue = $('div.paramvalue', element).text().trim();
+    if(pValue.length > 0){
+      return { '@type': 'PropertyValue', name: pLabel, value: pValue }
+    }
+  })
+  .get();
+
+  data.properties = propertyValues;
+
   //Offer
   //Availability
   data.offers = { '@type': 'Offer',
@@ -140,17 +156,7 @@ const parseHtmlData = ($) => {
 
 const parseHtmlData2 = ($) => {
     const data = {};
-    //PropertyValue
-    let propertyValues = $('div#id-attributes table.list').find('tr').map((index, element) => {
-        const pLabel = $('td:first-child span:last-child', element).text().trim();
-        const pValue = $('td:last-child span.value', element).text().trim();
-        if(pValue.length > 0){
-            return { '@type': 'PropertyValue', name: pLabel, value: pValue }
-        }
-    })
-    .get();
 
-    data.properties = propertyValues;
 
     //Offer
     //Availability
