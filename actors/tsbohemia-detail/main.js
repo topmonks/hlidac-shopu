@@ -107,7 +107,18 @@ const parseHtmlData = ($) => {
   data.description += "\n";
   data.description += longDescription;
 
-  data.image = productImages.concat(descriptionImages);
+  //Thumbnail
+  let thumbnailImage = $('div#sti_bigimg').find('a')
+    .toArray()
+    .map(element => $(element).attr('href'));
+
+  data.thumbnailUrl = thumbnailImage;
+  //Images
+  let productImages = $('ul#stigalleryul').find('a')
+    .toArray()
+    .map(element => $(element).attr('href'));
+
+  data.image = thumbnailImage.concat(productImages);
 
   //Product brand
   data.brand = dataLayer.brand;
@@ -129,23 +140,6 @@ const parseHtmlData = ($) => {
 
 const parseHtmlData2 = ($) => {
     const data = {};
-    //Thumbnail
-    data.thumbnailUrl = $('meta[property="og:image"]').attr('content').split("?")[0];
-    //Images
-    let productImages = $('div#product-detail-image').find('a')
-        .toArray()
-        .map(element => $(element).attr('href').split("?")[0]);
-
-    let descriptionImages = description
-        .find('p > img')
-        .toArray()
-        .map(element => $(element).attr('src'));
-
-    data.image = productImages.concat(descriptionImages);
-
-    //Product brand
-    data.brand = $('meta[name="pVendor"]').attr('content');
-
     //PropertyValue
     let propertyValues = $('div#id-attributes table.list').find('tr').map((index, element) => {
         const pLabel = $('td:first-child span:last-child', element).text().trim();
