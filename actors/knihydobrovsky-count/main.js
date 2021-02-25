@@ -1,11 +1,5 @@
-/**
- * This template is a production ready boilerplate for developing with `CheerioCrawler`.
- * Use this to bootstrap your projects using the most up-to-date code.
- * If you're looking for examples or want to learn more, see README.
- */
-
 const Apify = require('apify');
-const { handleStart, handleList, handleSubList, handleDetail } = require('./src/routes');
+const { handleStart, handleList, handleSubList } = require('./src/routes');
 
 const { utils: { log } } = Apify;
 
@@ -39,13 +33,10 @@ Apify.main(async () => {
 
     const proxyConfiguration = await Apify.createProxyConfiguration(
         {
-            groups: ['RESIDENTIAL'],
-            countryCode: 'CZ',
+            groups: ['CZECH_LUMINATI'],
         },
     );
-
     const categoryCount = {};
-
     const crawler = new Apify.CheerioCrawler({
         requestQueue,
         proxyConfiguration,
@@ -58,8 +49,6 @@ Apify.main(async () => {
             switch (label) {
                 case 'LIST':
                     return handleList(context, categoryCount);
-                case 'DETAIL':
-                    return handleDetail(context);
                 case 'SUBLIST':
                     return handleSubList(context);
                 default:

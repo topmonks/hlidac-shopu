@@ -7,8 +7,8 @@ const completeUrl = (x) => `https://www.knihydobrovsky.cz${x}`;
 exports.handleStart = async ({ request, $ }) => {
     const requestQueue = await Apify.openRequestQueue();
     const links = $('#main div.row-main li a').not('div:contains("Magnesia Litera")')
-    .map(function () { return $(this).attr('href'); }).get()
-    .filter((x) => !x.includes('magnesia-litera') && !x.includes('velky-knizni-ctvrtek') && !x.includes('knihomanie'));
+        .map(function () { return $(this).attr('href'); }).get()
+            .filter((x) => !x.includes('magnesia-litera') && !x.includes('velky-knizni-ctvrtek') && !x.includes('knihomanie'));
     const absoluteLinks = links.map((x) => completeUrl(x));
     for (const link of absoluteLinks) {
         await requestQueue.addRequest({ url: link, userData: { label: 'LIST' } });
@@ -61,8 +61,4 @@ exports.handleList = async ({ request, $ }, categoryCount) => {
             await requestQueue.addRequest({ url: completeUrl(hrefTrimmed), userData: { label: 'LIST' } });
         }
     }
-};
-
-exports.handleDetail = async ({ request, $ }) => {
-    // Handle details
 };

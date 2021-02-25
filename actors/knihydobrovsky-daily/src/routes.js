@@ -8,7 +8,7 @@ exports.handleStart = async ({ request, $ }) => {
     const requestQueue = await Apify.openRequestQueue();
     const links = $('#main div.row-main li a').not('div:contains("Magnesia Litera")')
         .map(function () { return $(this).attr('href'); }).get()
-        .filter((x) => !x.includes('magnesia-litera') && !x.includes('velky-knizni-ctvrtek') && !x.includes('knihomanie'));
+            .filter((x) => !x.includes('magnesia-litera') && !x.includes('velky-knizni-ctvrtek') && !x.includes('knihomanie'));
     const absoluteLinks = links.map((x) => completeUrl(x));
     for (const link of absoluteLinks) {
         await requestQueue.addRequest({ url: link, userData: { label: 'LIST' } });
@@ -64,8 +64,4 @@ exports.handleList = async ({ request, $ }) => {
     });
 
     await Apify.pushData(result);
-};
-
-exports.handleDetail = async ({ request, $ }) => {
-    // Handle details
 };
