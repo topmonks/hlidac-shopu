@@ -141,35 +141,14 @@ const parseHtmlData = ($) => {
 
   //Offer
   //Availability
-  data.offers = { '@type': 'Offer',
-    availability: "",
-    itemCondition: "",
+  data.offers = { "@type": "Offer",
+    availability: dataLayer.availability.length > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    itemCondition: $('div#stoitem_detail div.statuscont > div.badge').find('p').text().trim() === "Použité" ? "https://schema.org/UsedCondition" : "https://schema.org/NewCondition",
     price: dataLayer.price,
     priceCurrency: "CZK",
   }
 
-
-
-};
-
-
-
-const parseHtmlData2 = ($) => {
-    const data = {};
-
-
-    //Offer
-    //Availability
-    data.offers = { '@type': 'Offer',
-        availability: $('span[itemprop="availability"]').attr('content'),
-        itemCondition: $('span[itemprop="condition"]').attr('content'),
-        price: $('span[itemprop="price"]').attr('content'),
-        priceCurrency: $('span[itemprop="priceCurrency"]').attr('content'),
-    }
-
-
-
-    return data;
+  return data;
 };
 
 /**
