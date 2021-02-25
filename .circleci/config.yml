@@ -76,7 +76,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run:
-          name: Lint website
+          name: Lint actors
           command: yarn lint:actors
       - slack/notify:
           event: fail
