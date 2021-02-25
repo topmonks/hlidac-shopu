@@ -100,7 +100,11 @@ const parseHtmlData = ($) => {
     longDescription = longDescription.find('div#produkt-popisek').text();
     longDescription = longDescription.split('\r\n').filter(line => line.length > 0).join(' ');
   } else {
-    longDescription = longDescription.find('p').last().text();
+    longDescription = longDescription.find('p').last();
+    if(longDescription.find('br').length){
+      longDescription.find('br').replaceWith(' ');
+    }
+    longDescription = longDescription.text();
   }
 
   data.description = shortDescription.find('th').text();
@@ -126,7 +130,7 @@ const parseHtmlData = ($) => {
   //PropertyValue
   let propertyValues = $('div#sticomment div.tabform').find('div.paramnode').map((index, element) => {
     //Některé položky v propertyValues mají paramnote popisující vlastnost parametru základní definicí parametru.
-    if($('div.paramnote', element).length > 0){
+    if($('div.paramnote', element).length){
       $('div.paramnote', element).remove();
     }
     const pLabel = $('div.paramname', element).text().trim().replace(':','');
