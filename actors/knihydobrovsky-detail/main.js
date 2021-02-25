@@ -21,26 +21,30 @@ async function uploadToKeboola(tableName) {
     log.info(`Keboola upload called: ${run.id}`);
 }
 
-Apify.main(async () => {
-    const { startUrls } = Apify.isAtHome() ? await Apify.getInput()
+Apify.main(async () =>
+{
+    const input = await Apify.getInput();
+    const proxyConfigurationOptions = (input && input.proxyConfiguration) ? input.proxyConfiguration :
+        {
+            groups: ['CZECH_LUMINATI'],
+        };
+    const maxConcurrency = (input && input.maxConcurrency) ? input.maxConcurrency : 10;
+    const { startUrls } = Apify.isAtHome() ? input
         : {
             startUrls: ['https://www.knihydobrovsky.cz/kniha/udoli-295213980',
                 'https://www.knihydobrovsky.cz/kniha/kralovstvi-276784328',
             ],
         };
     const requestList = await Apify.openRequestList('start-urls', startUrls, { persistStateKey: 'listKey' });
-    const proxyConfiguration = await Apify.createProxyConfiguration(
-        {
-            groups: ['CZECH_LUMINATI'],
-        },
-    );
 
+    const proxyConfiguration = await Apify.createProxyConfiguration(proxyConfigurationOptions);
+    
     const crawler = new Apify.CheerioCrawler({
         requestList,
         proxyConfiguration,
         // Be nice to the websites.
         // Remove to unleash full power.
-        maxConcurrency: 10,
+        maxConcurrency,
         handlePageFunction: async (context) => {
             const { $, request: { url } } = context;
             log.info('Page opened.', { url });

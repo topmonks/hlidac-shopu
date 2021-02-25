@@ -22,7 +22,14 @@ async function uploadToKeboola(tableName) {
     log.info(`Keboola upload called: ${run.id}`);
 } 
 
-Apify.main(async () => {
+Apify.main(async () =>
+{
+    const input = await Apify.getInput();
+    const proxyConfigurationOptions = (input && input.proxyConfiguration) ? input.proxyConfiguration :
+        {
+            groups: ['CZECH_LUMINATI'],
+        };
+    const maxConcurrency = (input && input.maxConcurrency) ? input.maxConcurrency : 10;
     const requestQueue = await Apify.openRequestQueue();
     await requestQueue.addRequest({ url: 'https://www.knihydobrovsky.cz/kategorie' });
     await requestQueue.addRequest({ url: 'https://www.knihydobrovsky.cz/e-knihy', userData: { label: 'SUBLIST' } });
@@ -30,29 +37,27 @@ Apify.main(async () => {
     await requestQueue.addRequest({ url: 'https://www.knihydobrovsky.cz/hry', userData: { label: 'SUBLIST' } });
     await requestQueue.addRequest({ url: 'https://www.knihydobrovsky.cz/papirnictvi', userData: { label: 'SUBLIST' } });
     await requestQueue.addRequest({ url: 'https://www.knihydobrovsky.cz/darky', userData: { label: 'SUBLIST' } });
-
-    const proxyConfiguration = await Apify.createProxyConfiguration(
-        {
-            groups: ['CZECH_LUMINATI'],
-        },
-    );
+  
     const categoryCount = {};
+
+    const proxyConfiguration = await Apify.createProxyConfiguration(proxyConfigurationOptions);
+    
     const crawler = new Apify.CheerioCrawler({
         requestQueue,
         proxyConfiguration,
         // Be nice to the websites.
         // Remove to unleash full power.
-        maxConcurrency: 10,
+        maxConcurrency,
         handlePageFunction: async (context) => {
             const { url, userData: { label } } = context.request;
             log.info('Page opened.', { label, url });
             switch (label) {
                 case 'LIST':
-                    return handleList(context, categoryCount);
+                    return handleList(context, categoryCount,requestQueue);
                 case 'SUBLIST':
-                    return handleSubList(context);
+                    return handleSubList(context,requestQueue);
                 default:
-                    return handleStart(context);
+                    return handleStart(context,requestQueue);
             }
         },
     });

@@ -4,8 +4,7 @@ const { utils: { log } } = Apify;
 
 const completeUrl = (x) => `https://www.knihydobrovsky.cz${x}`;
 
-exports.handleStart = async ({ request, $ }) => {
-    const requestQueue = await Apify.openRequestQueue();
+exports.handleStart = async ({ request, $ }, requestQueue) => {
     const links = $('#main div.row-main li a').not('div:contains("Magnesia Litera")')
         .map(function () { return $(this).attr('href'); }).get()
             .filter((x) => !x.includes('magnesia-litera') && !x.includes('velky-knizni-ctvrtek') && !x.includes('knihomanie'));
@@ -15,8 +14,7 @@ exports.handleStart = async ({ request, $ }) => {
     }
 };
 
-exports.handleSubList = async ({ request, $ }) => {
-    const requestQueue = await Apify.openRequestQueue();
+exports.handleSubList = async ({ request, $ }, requestQueue) => {
     // if there are more subcategories enque urls...
     if ($('#bookGenres').text()) {
         const links = $('#bookGenres').next('nav').find('a').map(function () { return $(this).attr('href'); })
@@ -37,9 +35,8 @@ const getCategoryKey = ($) => {
 };
 const getNumberOfProducts = ($) => $('li[data-productinfo]').get().length;
 
-exports.handleList = async ({ request, $ }, categoryCount) => {
+exports.handleList = async ({ request, $ }, categoryCount,requestQueue) => {
     // Handle pagination
-    const requestQueue = await Apify.openRequestQueue();
     const lastText = $('#snippet-categoryBookList-pagination-change-page').find('a').last().next()
         .text()
         .trim();
