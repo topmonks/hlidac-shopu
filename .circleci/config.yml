@@ -67,6 +67,22 @@ commands:
           paths: << parameters.paths >>
 
 jobs:
+  test-actors:
+    executor:
+      name: node/default
+      tag: "14.16"
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Lint website
+          command: yarn lint:actors
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+
   test-lib:
     machine:
       image: ubuntu-2004:202010-01
@@ -342,6 +358,8 @@ jobs:
 workflows:
   ci:
     jobs:
+      - test-actors:
+          context: org-global
       - test-lib:
           context: org-global
       - preview-provision:
