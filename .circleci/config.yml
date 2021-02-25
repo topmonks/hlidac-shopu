@@ -72,7 +72,7 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: nvm install 14.14
+      - run: nvm install 14.16
       - node/install-packages:
           pkg-manager: yarn
       - run:
@@ -92,7 +92,7 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     environment:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
@@ -129,7 +129,7 @@ jobs:
   build-web-extension:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - run:
@@ -172,7 +172,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: nvm install 14.14
+      - run: nvm install 14.16
       - node/install-packages:
           pkg-manager: yarn
       - run:
@@ -184,7 +184,7 @@ jobs:
   publish-web-extensions:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - attach_workspace:
@@ -266,7 +266,7 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -289,7 +289,7 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - pulumi/login:
