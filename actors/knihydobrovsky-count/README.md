@@ -1,0 +1,1 @@
+Scrapes number of all products from knihydobrovsky.cz
