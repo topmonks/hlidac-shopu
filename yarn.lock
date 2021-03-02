@@ -1952,10 +1952,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@pulumi/aws@^3.30.1":
-  version "3.30.1"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-3.30.1.tgz#03d82dd93aa0f5fd7763ad1036743b50af6e7fa3"
-  integrity sha512-L/VjW6GfmFP1S9pYN4Mf+wr3XUzFpnfrn+sB9rOsVNU6I+oNV9/aJm6u0VJBOYPcB1EqfDpLxFzOqK8jbprvBQ==
+"@pulumi/aws@^3.31.0":
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-3.31.0.tgz#33ea1339ba1721a3021eb80fbfce2ed60c30efc7"
+  integrity sha512-udHaE6mhvequPp4wY9pcvmQtKAXX28PC8WygMiO+9npTUTbWSUh6UEQPOgiI9qQrCEGS2Jv03EyeRBlt06k37w==
   dependencies:
     "@pulumi/pulumi" "^2.17.0"
     aws-sdk "^2.0.0"
@@ -9102,7 +9102,7 @@ is-color-stop@^1.0.0:
     rgb-regex "^1.0.1"
     rgba-regex "^1.0.0"
 
-is-core-module@^2.1.0, is-core-module@^2.2.0:
+is-core-module@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.2.0.tgz#97037ef3d52224d85163f5597b2b63d9afed981a"
   integrity sha512-XRAfAdyyY5F5cOXn7hYQDqh2Xmii+DEfIcQGxK/uNwMHhIkPWO0g8msXcbzLe+MpGoR951MlqM/2iIlU4vKDdQ==
@@ -13430,15 +13430,7 @@ resolve-url@^0.2.1:
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
 
-resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.17.0, resolve@^1.19.0, resolve@^1.4.0, resolve@^1.7.1:
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.19.0.tgz#1af5bf630409734a067cae29318aac7fa29a267c"
-  integrity sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==
-  dependencies:
-    is-core-module "^2.1.0"
-    path-parse "^1.0.6"
-
-resolve@^1.13.1, resolve@^1.18.1:
+resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.13.1, resolve@^1.17.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.4.0, resolve@^1.7.1:
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.20.0.tgz#629a013fb3f70755d6f0b7935cc1c2c5378b1975"
   integrity sha512-wENBPt4ySzg4ybFQW2TT1zMQucPK95HSh/nq2CFTZVOGut2+pQvSsgtda4d26YrYcr067wjbmzOG8byDPBX63A==
