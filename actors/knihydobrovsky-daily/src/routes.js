@@ -43,13 +43,12 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
       });
     }
     //put this page also to queue as LIST page
-  } else {
-    await requestQueue.addRequest({
-      url: request.url,
-      uniqueKey: `${request.url}?currentPage=1`,
-      userData: { label: "LIST" }
-    });
   }
+  await requestQueue.addRequest({
+    url: request.url,
+    uniqueKey: `${request.url}?currentPage=1`,
+    userData: { label: "LIST" }
+  });
 };
 
 exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
