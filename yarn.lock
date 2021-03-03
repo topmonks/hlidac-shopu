@@ -6516,7 +6516,7 @@ es6-weak-map@^2.0.1, es6-weak-map@^2.0.2:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.1"
 
-esbuild@^0.8.53, esbuild@^0.8.54:
+esbuild@^0.8.54:
   version "0.8.54"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.54.tgz#2f32ff80e95c69a0f25b799d76a27c05e2857cdf"
   integrity sha512-DJH38OiTgXJxFb/EhHrCrY8eGmtdkTtWymHpN9IYN9AF+4jykT0dQArr7wzFejpVbaB0TMIq2+vfNRWr3LXpvw==
@@ -8175,12 +8175,12 @@ gulp-debug@^4.0.0:
     through2 "^2.0.0"
     tildify "^1.1.2"
 
-gulp-esbuild@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/gulp-esbuild/-/gulp-esbuild-0.5.2.tgz#f3997a72db553898342dfa951fa3ce65e2becbe0"
-  integrity sha512-PDsrfrH+vEM4VsIHuumd5sYWb2RNI+Fl6LNfFLawaa9QvBY5Dv4cjoJPHZOtZDfkGEyeW3YD61aspAPRRylZ9Q==
+gulp-esbuild@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/gulp-esbuild/-/gulp-esbuild-0.5.3.tgz#0a842d60dc0e2579903e30f49f8107cadcf48350"
+  integrity sha512-k2wM8OoBkiR3i/YyaaqvyYwrvMc582JD2ddf7TqdRRmv0C1bZ3/rrpsH1kxI8j27AUdvsQVm2iap6gKQh1sWoQ==
   dependencies:
-    esbuild "^0.8.53"
+    esbuild "^0.8.54"
     plugin-error "^1.0.1"
     vinyl "^2.2.1"
 
