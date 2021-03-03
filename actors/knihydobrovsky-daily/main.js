@@ -32,6 +32,11 @@ Apify.main(async () => {
       : {
           groups: ["CZECH_LUMINATI"]
         };
+  const handledIds = (await Apify.getValue("handledIds")) || new Set();
+  const persistObject = async function () {
+    await Apify.setValue("handledIds", handledIds);
+  };
+  Apify.events.on("persistState", persistObject);
   const maxConcurrency =
     input && input.maxConcurrency ? input.maxConcurrency : 10;
   const requestQueue = await Apify.openRequestQueue();
@@ -77,7 +82,7 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context, requestQueue);
+          return handleList(context, requestQueue, handledIds);
         case "SUBLIST":
           return handleSubList(context, requestQueue);
         default:
