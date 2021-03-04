@@ -88,7 +88,7 @@ function pageFunction(requestQueue) {
 }
 
 function getTableName(country) {
-  return `kosik_${country.toLowerCase()}`;
+  return `kosik`;
 }
 
 async function uploadToKeboola(tableName) {
