@@ -3,6 +3,7 @@ const cheerio = require("cheerio");
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
+/** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 
 const { log } = Apify.utils;
@@ -95,7 +96,11 @@ const parseHlidacShopuData = json => ({
   }
 });
 
-function pageFunction(requests, proxyConfiguration) {
+/**
+ * Creates Page Function for scraping
+ * @returns {CheerioHandlePage}
+ */
+function pageFunction() {
   /**
    *  @param {CheerioHandlePageInputs} context
    *  @returns {Promise<void>}
@@ -261,7 +266,7 @@ Apify.main(async () => {
     maxConcurrency,
     maxRequestRetries: 10,
     additionalMimeTypes: ["application/json", "text/plain"],
-    handlePageFunction: pageFunction(requests, proxyConfiguration),
+    handlePageFunction: pageFunction(),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
