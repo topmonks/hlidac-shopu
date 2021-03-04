@@ -2111,8 +2111,8 @@
 
 "@topmonks/blendid@git://github.com/topmonks/blendid.git":
   version "6.0.0"
-  uid "3e1c8f7a32c40b00b1dd404183dc8702007d65b3"
-  resolved "git://github.com/topmonks/blendid.git#3e1c8f7a32c40b00b1dd404183dc8702007d65b3"
+  uid a317ad558d216544b89297c23d4aebc0ab14e963
+  resolved "git://github.com/topmonks/blendid.git#a317ad558d216544b89297c23d4aebc0ab14e963"
   dependencies:
     "@rollup/plugin-alias" "^3.1.2"
     "@rollup/plugin-node-resolve" "^11.2.0"
@@ -2149,7 +2149,7 @@
     marked "^2.0.1"
     merge-stream "^2.0.0"
     minify-html-literals "^1.3.0"
-    open "^8.0.1"
+    open "^8.0.2"
     plugin-error "^1.0.1"
     pretty-hrtime "^1.0.3"
     rollup "^2.40.0"
@@ -11554,10 +11554,10 @@ open@^7.3.0, open@^7.3.1:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-open@^8.0.1:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/open/-/open-8.0.1.tgz#81f88a8d57b8ce0ccdb4880dfaaee6481c8c146c"
-  integrity sha512-VfWbDBAay2Zbw2QrMMIxuo4H0SUe+TdHHT8qLkbBRF+TxdEhnbDxf7jWMV5Fbk5U4HX3abq2lvYH5v/xoo6CNg==
+open@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/open/-/open-8.0.2.tgz#8c3e95cce93ba2fc8d99968ee8bfefecdb50b84f"
+  integrity sha512-NV5QmWJrTaNBLHABJyrb+nd5dXI5zfea/suWawBhkHzAbVhLLiJdrqMgxMypGK9Eznp2Ltoh7SAVkQ3XAucX7Q==
   dependencies:
     define-lazy-prop "^2.0.0"
     is-docker "^2.1.1"
