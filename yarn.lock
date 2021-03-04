@@ -1486,10 +1486,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@esm-bundle/chai@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@esm-bundle/chai/-/chai-4.3.0.tgz#4a849d1627f30967cef9c688ee5f2377615ace9a"
-  integrity sha512-Hbg4vBb8ZtZCrtFRKVXy3+V5SFCopVJt1w1bS46rGf+NEVfMqg5QyhsvDRjjYvyKEPTZ2khG6SmcouhVyPWE6g==
+"@esm-bundle/chai@^4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@esm-bundle/chai/-/chai-4.3.3.tgz#3d9a036915f6835038cfb43117c860bf9354cd9f"
+  integrity sha512-nrgzOIpvXcmtrM4v9TWtzYrKCoZM/vxJHkXcJsvU2oIEC24rk75MgOaP1et37mGpfCZAg1dIYH1aOliA3NKJ0w==
   dependencies:
     "@types/chai" "^4.2.12"
 
@@ -2204,15 +2204,10 @@
   dependencies:
     "@types/chai" "*"
 
-"@types/chai@*", "@types/chai@^4.1.7", "@types/chai@^4.2.11":
+"@types/chai@*", "@types/chai@^4.1.7", "@types/chai@^4.2.11", "@types/chai@^4.2.12":
   version "4.2.15"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.15.tgz#b7a6d263c2cecf44b6de9a051cf496249b154553"
   integrity sha512-rYff6FI+ZTKAPkJUoyz7Udq3GaoDZnxYDEvdEdFZASiA7PoErltHezDishqQiSDWrGxvxmplH304jyzQmjp0AQ==
-
-"@types/chai@^4.2.12":
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.14.tgz#44d2dd0b5de6185089375d976b4ec5caf6861193"
-  integrity sha512-G+ITQPXkwTrslfG5L/BksmbLUA0M1iybEsmCWPqzSxsRRhJZimBKJkoMi8fr/CPygPTj4zO5pJH7I2/cm9M7SQ==
 
 "@types/cheerio@^0.22.22":
   version "0.22.23"
