@@ -42,8 +42,11 @@ const parseItem = (item, breadcrumbs) => ({
   itemUrl: "https://www.kosik.cz/" + item.url,
   itemName: item.name,
   discounted: item.percentageDiscount > 0,
+  discountedName:
+    item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
   currentPrice: item.price,
-  originalPrice: item.recommendedPrice,
+  originalPrice:
+    item.price == item.recommendedPrice ? null : item.recommendedPrice,
   inStock: !item.firstOrderDay,
   category: breadcrumbs,
   img: item.image
