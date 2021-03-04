@@ -3,7 +3,7 @@ import { StatefulShop } from "./shop.mjs";
 
 export class Kosik extends StatefulShop {
   get injectionPoint() {
-    return ["afterend", ".product-detail__cart, .product-detail__cart-info"];
+    return ["afterend", ".product-detail__cart, product-detail__main-info"];
   }
 
   get detailSelector() {
