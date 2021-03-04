@@ -71,13 +71,13 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     if (dataLink) {
       item.itemId = parseInt(dataLink.split("productId=")[1]);
     } else {
-      item.itemId = parseInt(
-        $("h3 a", this).attr("href").split("-").slice(-1).pop()
-      );
+      item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop()
     }
     if (!item.itemId) {
-      log.info("could not find itemId, book:", $("span.name", this).text());
+      log.info("skipping product - could not find itemId, product:", $("span.name", this).text());
+      return;
     }
+    item.itemId = item.itemId.toString();
     if (handledIds.has(item.itemId)) {
       return;
     }
@@ -85,6 +85,11 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     item.itemUrl = completeUrl($("h3 a", this).attr("href"));
     item.itemName = $("span.name", this).text();
     item.currentPrice = parseInt($("p.price strong", this).text(), 10);
+    if (!item.currentPrice)
+    {
+      log.info("skipping product - could not find price, product:", $("span.name", this).text());
+      return;
+    }
     item.originalPrice = parseInt(
       $("p.price span.price-strike", this).text(),
       10
