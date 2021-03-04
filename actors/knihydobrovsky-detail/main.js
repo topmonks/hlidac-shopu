@@ -77,6 +77,12 @@ Apify.main(async () => {
       result.pocetStran = $('dt:contains("Počet stran")').next().text().trim();
       result.vazba = $('dt:contains("Vazba")').next().text().trim();
       result.ean = $('dt:contains("ean")').next().text().trim();
+      result.category = $("#menu-breadcrumb a")
+        .map(function () {
+          return $(this).text();
+        })
+        .get()
+        .slice(1);
       await Apify.pushData(result);
     }
   });

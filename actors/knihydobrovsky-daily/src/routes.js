@@ -42,17 +42,16 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
         userData: { label: "SUBLIST" }
       });
     }
-    // otherwise put this page to queue as LIST page
-  } else {
-    await requestQueue.addRequest({
-      url: request.url,
-      uniqueKey: `${request.url}?currentPage=1`,
-      userData: { label: "LIST" }
-    });
+    //put this page also to queue as LIST page
   }
+  await requestQueue.addRequest({
+    url: request.url,
+    uniqueKey: `${request.url}?currentPage=1`,
+    userData: { label: "LIST" }
+  });
 };
 
-exports.handleList = async ({ request, $ }, requestQueue) => {
+exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
   // Handle pagination
   const nextPageUrl =
     $('span:contains("Další")').parent("a").attr("href") &&
@@ -66,21 +65,31 @@ exports.handleList = async ({ request, $ }, requestQueue) => {
 
   // Handle items
   const result = [];
-  const category = $("#menu-breadcrumb a")
-    .map(function () {
-      return $(this).text();
-    })
-    .get()
-    .slice(1);
-  category.push($("#menu-breadcrumb span").next("strong").text());
-
   $("li[data-productinfo]").each(function () {
     const item = {};
-    item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop();
+    const dataLink = $("a.buy-now", this).attr("data-link");
+    if (dataLink) {
+      item.itemId = parseInt(dataLink.split("productId=")[1]);
+    } else {
+      item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop()
+    }
+    if (!item.itemId) {
+      log.info("skipping product - could not find itemId, product:", {"name": $("span.name", this).text() });
+      return;
+    }
+    item.itemId = item.itemId.toString();
+    if (handledIds.has(item.itemId)) {
+      return;
+    }
     item.img = $("picture img", this).attr("src");
     item.itemUrl = completeUrl($("h3 a", this).attr("href"));
     item.itemName = $("span.name", this).text();
     item.currentPrice = parseInt($("p.price strong", this).text(), 10);
+    if (!item.currentPrice)
+    {
+      log.info("skipping product - could not find price, product:", {"name": $("span.name", this).text() });
+      return;
+    }
     item.originalPrice = parseInt(
       $("p.price span.price-strike", this).text(),
       10
@@ -90,11 +99,11 @@ exports.handleList = async ({ request, $ }, requestQueue) => {
     item.rating = parseFloat(
       $("span.stars.small span", this).attr("style").split("width: ")[1]
     );
-    item.category = category;
     item.currency = "CZK";
     item.inStock = $("a.buy-now", this).text().includes("Do košíku");
     result.push(item);
   });
 
   await Apify.pushData(result);
+  result.forEach(x => handledIds.add(x.itemId));
 };
