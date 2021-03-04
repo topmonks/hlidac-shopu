@@ -74,7 +74,7 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
       item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop()
     }
     if (!item.itemId) {
-      log.info("skipping product - could not find itemId, product:", $("span.name", this).text());
+      log.info("skipping product - could not find itemId, product:", {"name": $("span.name", this).text() });
       return;
     }
     item.itemId = item.itemId.toString();
@@ -87,7 +87,7 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     item.currentPrice = parseInt($("p.price strong", this).text(), 10);
     if (!item.currentPrice)
     {
-      log.info("skipping product - could not find price, product:", $("span.name", this).text());
+      log.info("skipping product - could not find price, product:", {"name": $("span.name", this).text() });
       return;
     }
     item.originalPrice = parseInt(
