@@ -90,7 +90,7 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     item.currentPrice = parseInt($("p.price strong", this).text(), 10);
     if (!item.currentPrice)
     {
-      log.info("skipping product - could not find price, product:", {"name": $("span.name", this).text() });
+      log.info("skipping product - could not find price, product:", {"name": $("span.name", this).text(), url:request.url });
       return;
     }
     item.originalPrice = parseInt(
