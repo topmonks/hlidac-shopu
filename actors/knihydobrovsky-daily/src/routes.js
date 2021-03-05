@@ -45,8 +45,8 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
     //put this page also to queue as LIST page
   }
   await requestQueue.addRequest({
-    url: request.url,
-    uniqueKey: `${request.url}?currentPage=1&offsetPage=1`,
+    url: `${request.url}?sort=1&currentPage=1&offsetPage=1`,
+    uniqueKey: `${request.url}?sort=1&currentPage=1&offsetPage=1`,
     userData: { label: "LIST" }
   });
 };
