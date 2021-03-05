@@ -58,6 +58,12 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     completeUrl($('span:contains("Další")').parent("a").attr("href").trim());
   if (nextPageUrl)
   {
+    if (request.url == 'https://www.knihydobrovsky.cz/eknihy-cestovani?currentPage=12&sort=1')
+    {
+      log.info('nextPageUrl', { nextPageUrl });
+      log.info('page', {page:$.html()})
+
+    }
     await requestQueue.addRequest({
       url: nextPageUrl,
       userData: { label: "LIST" }
