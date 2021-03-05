@@ -59,7 +59,7 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
   if (nextPageUrl)
   {
     const pageNumber = parseInt(nextPageUrl.split('currentPage=')[1]);
-    const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}`;
+    const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}&sort=1`;
     await requestQueue.addRequest({
       url: nextPageOffsetUrl,
       userData: { label: "LIST" }
