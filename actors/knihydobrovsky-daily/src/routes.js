@@ -46,7 +46,7 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
   }
   await requestQueue.addRequest({
     url: request.url,
-    uniqueKey: `${request.url}?currentPage=1`,
+    uniqueKey: `${request.url}?currentPage=1&offsetPage=1`,
     userData: { label: "LIST" }
   });
 };
@@ -56,9 +56,12 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
   const nextPageUrl =
     $('span:contains("Další")').parent("a").attr("href") &&
     completeUrl($('span:contains("Další")').parent("a").attr("href").trim());
-  if (nextPageUrl) {
+  if (nextPageUrl)
+  {
+    const pageNumber = parseInt(nextPageUrl.split('currentPage=')[1]);
+    const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}`;
     await requestQueue.addRequest({
-      url: nextPageUrl,
+      url: nextPageOffsetUrl,
       userData: { label: "LIST" }
     });
   }
