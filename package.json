@@ -69,9 +69,9 @@
     "web-ext-submit": "^5.5.0"
   },
   "resolutions": {
-    "lodash": "npm:lodash@4.17.19",
+    "lodash": "npm:lodash@4.17.21",
     "object-path": "npm:object-path@0.11.5",
-    "tslib": "npm:tslib@2.0.3"
+    "tslib": "npm:tslib@2.1.0"
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
