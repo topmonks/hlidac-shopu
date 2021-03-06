@@ -2057,7 +2057,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza-detail@workspace:actors/alza-detail"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.5
     request-promise: ^4.2.6
@@ -2093,7 +2093,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2112,7 +2112,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-detail@workspace:actors/itesco-detail"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.5
     modern-random-ua: ^1.0.3
@@ -2123,7 +2123,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2132,7 +2132,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-detail@workspace:actors/kosik-detail"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.5
   languageName: unknown
@@ -2152,7 +2152,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-detail@workspace:actors/rohlik-detail"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
     browser-pool: ^1.1.1
     cheerio: ^1.0.0-rc.5
@@ -2173,7 +2173,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    apify: ^1.0.1
+    apify: ^1.0.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -3870,7 +3870,7 @@ __metadata:
   resolution: "KnihyDobrovskyCount@workspace:actors/knihydobrovsky-count"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.0.1
+    apify: ^1.0.2
   languageName: unknown
   linkType: soft
 
@@ -3879,7 +3879,7 @@ __metadata:
   resolution: "KnihyDobrovskyDaily@workspace:actors/knihydobrovsky-daily"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.0.1
+    apify: ^1.0.2
   languageName: unknown
   linkType: soft
 
@@ -3888,7 +3888,7 @@ __metadata:
   resolution: "KnihyDobrovskyDetail@workspace:actors/knihydobrovsky-detail"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.0.1
+    apify: ^1.0.2
   languageName: unknown
   linkType: soft
 
@@ -4427,9 +4427,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "apify@npm:1.0.1"
+"apify@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "apify@npm:1.0.2"
   dependencies:
     "@apify/http-request": ^2.1.1
     "@apify/ps-tree": ^1.1.3
@@ -4441,7 +4441,7 @@ __metadata:
     "@types/socket.io": ^2.1.11
     "@types/tough-cookie": ^4.0.0
     apify-client: ^1.0.3
-    apify-shared: ^0.5.0
+    apify-shared: ^0.6.0
     browser-pool: ^1.0.2
     cheerio: 1.0.0-rc.3
     content-type: ^1.0.4
@@ -4460,7 +4460,7 @@ __metadata:
     tough-cookie: ^4.0.0
     underscore: ^1.11.0
     ws: ^7.3.1
-  checksum: 52372f4dd2d792f72cf8e36bad716c47abb599830c79db04383647eb1deffaedf06c826db63a34760da33903a1a22149372a59a68dc9e57afd86e474c430f14a
+  checksum: 93bcbc13f56c54a66954666d12a031e78b036961c35e6f7621eff9235e2410b78c107bd7af56de99802a330858e1514c5cde219d8b31080476cbbd4605aca3b0
   languageName: node
   linkType: hard
 
