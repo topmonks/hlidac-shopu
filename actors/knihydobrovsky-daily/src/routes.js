@@ -48,8 +48,8 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
   }
   //put this page also to queue as LIST page
   await requestQueue.addRequest({
-    url: `${request.url}?sort=1&currentPage=1`,
-    uniqueKey: `${request.url}?sort=1&currentPage=1`,
+    url: `${request.url}?sort=2&currentPage=1`,
+    uniqueKey: `${request.url}?sort=2&currentPage=1`,
     userData: { label: "LIST" }
   });
 };
@@ -61,8 +61,11 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     completeUrl($('nav.paging span:contains("Další")').parent("a").attr("href").trim());
   if (nextPageUrl)
   {
+    const pageNumber = parseInt(nextPageUrl.split('currentPage=')[1]);
+    const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}`;
+
     await requestQueue.addRequest({
-      url: nextPageUrl,
+      url: nextPageOffsetUrl,
       userData: { label: "LIST" }
     });
   }
