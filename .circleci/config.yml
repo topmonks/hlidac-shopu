@@ -172,8 +172,8 @@ jobs:
       - run:
           name: Build web extensions
           command: |
-            yarn build:chrome
-            yarn build:firefox
+            npm run build:chrome
+            npm run build:firefox
       - store_artifacts:
           path: ./dist
       - persist_to_workspace:
