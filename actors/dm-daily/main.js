@@ -170,7 +170,7 @@ async function uploadToKeboola(tableName) {
 Apify.main(async () => {
   const input = await Apify.getInput();
 
-  const { country = COUNTRY.CZ, productQuery = ":allCategories" } = input || {};
+  const { country = COUNTRY.CZ, productQuery = ":allCategories" } = input ?? {};
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();

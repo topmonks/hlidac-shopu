@@ -82,10 +82,12 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     if (dataLink) {
       item.itemId = parseInt(dataLink.split("productId=")[1]);
     } else {
-      item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop()
+      item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop();
     }
     if (!item.itemId) {
-      log.info("skipping product - could not find itemId, product:", {"name": $("span.name", this).text() });
+      log.info("skipping product - could not find itemId, product:", {
+        "name": $("span.name", this).text()
+      });
       return;
     }
     item.itemId = item.itemId.toString();

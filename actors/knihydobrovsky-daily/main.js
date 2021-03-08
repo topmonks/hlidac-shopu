@@ -31,12 +31,11 @@ Apify.main(async () => {
       ? input.proxyConfiguration
       : {
           groups: ["CZECH_LUMINATI"]
-      };
+        };
   const arrayHandledIds = await Apify.getValue("handledIds");
-  const handledIds =  arrayHandledIds? new Set(arrayHandledIds): new Set();
-  const persistObject = async function ()
-  {
-    log.info('persisting handledIds', handledIds);
+  const handledIds = arrayHandledIds ? new Set(arrayHandledIds) : new Set();
+  const persistObject = async function () {
+    log.info("persisting handledIds", handledIds);
     await Apify.setValue("handledIds", [...handledIds]);
   };
   Apify.events.on("persistState", persistObject);
