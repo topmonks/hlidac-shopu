@@ -36,7 +36,9 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
       })
       .get();
     const absoluteLinks = links.map(x => completeUrl(x));
-    for (const link of absoluteLinks) {
+    for (const link of absoluteLinks)
+    {
+      log.info('adding subcategory link '+request.url, { link });
       await requestQueue.addRequest({
         url: link,
         userData: { label: "SUBLIST" }
