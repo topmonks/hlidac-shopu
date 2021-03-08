@@ -20,8 +20,9 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
         !x.includes("knihomanie")
     );
   const absoluteLinks = links.map(x => completeUrl(x));
-  for (const link of absoluteLinks) {
-    await requestQueue.addRequest({ url: `${link}?sort=1&currentPage=1`, userData: { label: "LIST" } });
+  for (const link of absoluteLinks)
+  {
+    await requestQueue.addRequest({ url: `${link}`, userData: { label: "SUBLIST" } });
   }
 };
 
@@ -44,8 +45,8 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
         userData: { label: "SUBLIST" }
       });
     }
-    //put this page also to queue as LIST page
   }
+  //put this page also to queue as LIST page
   await requestQueue.addRequest({
     url: `${request.url}?sort=1&currentPage=1`,
     uniqueKey: `${request.url}?sort=1&currentPage=1`,
