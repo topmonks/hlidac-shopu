@@ -204,7 +204,7 @@ const uploadToKeboola = async (country) => {
                 datasetId: env.defaultDatasetId,
                 upload: true,
                 actRunId: env.actorRunId,
-                tableName: `datart_${country.toLowerCase()}_detail`,
+                tableName: `tsbohemia_${country.toLowerCase()}_detail`,
                 manualLimit: 100,
             },
             {
