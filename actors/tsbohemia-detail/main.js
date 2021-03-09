@@ -231,7 +231,6 @@ Apify.main(async () => {
         development,
         country = 'cz',
         extensions = [],
-        maxConcurrency = 10,
     } = input || {};
 
     let { products = {} } = input || {};
@@ -260,14 +259,13 @@ Apify.main(async () => {
 
     // Create crawler.
     const crawler = new Apify.CheerioCrawler({
-        requestList,
-        maxConcurrency,
-        maxRequestRetries: 3,
-        //additionalMimeTypes: ['application/json', 'text/plain'],
-        handlePageFunction: parseData,
-        handleFailedRequestFunction: async ({ request }) => {
-            log.error(`Request ${request.url} failed multiple times`, request);
-        },
+      requestList,
+      maxConcurrency: input.maxConcurrency || 10,
+      maxRequestRetries: input.maxRequestRetries || 3,
+      handlePageFunction: parseData,
+      handleFailedRequestFunction: async ({ request }) => {
+        log.error(`Request ${request.url} failed multiple times`, request);
+      },
     });
 
     // Run crawler.
