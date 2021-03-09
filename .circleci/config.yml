@@ -12,6 +12,13 @@ orbs:
   slack: circleci/slack@4.1.3
 
 commands:
+  install_packages:
+    steps:
+      - node/install-packages:
+          pkg-manager: yarn
+          override-ci-command: yarn install --immutable
+          cache-version: v2
+          cache-path: .yarn/cache
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
@@ -67,14 +74,28 @@ commands:
           paths: << parameters.paths >>
 
 jobs:
+  test-actors:
+    executor:
+      name: node/default
+      tag: "14.16"
+    steps:
+      - checkout
+      - install_packages
+      - run:
+          name: Lint actors
+          command: yarn lint:actors
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+
   test-lib:
     machine:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: nvm install 14.14
-      - node/install-packages:
-          pkg-manager: yarn
+      - run: nvm install 14.16
+      - install_packages
       - run:
           name: Run tests
           command: yarn test:lib
@@ -92,13 +113,12 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     environment:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - install_packages
       - run:
           name: Lint website
           command: yarn lint:website
@@ -129,7 +149,7 @@ jobs:
   build-web-extension:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - run:
@@ -137,8 +157,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install rename
-      - node/install-packages:
-          pkg-manager: yarn
+      - install_packages
       - run:
           name: Build extension bundle
           command: yarn build:extension
@@ -172,9 +191,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run: nvm install 14.14
-      - node/install-packages:
-          pkg-manager: yarn
+      - run: nvm install 15
+      - install_packages
       - run:
           name: Make screenshots
           command: yarn node ./scripts/screenshotter.mjs
@@ -184,13 +202,12 @@ jobs:
   publish-web-extensions:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - node/install-packages:
-          pkg-manager: yarn
+      - install_packages
       - run:
           name: Publish Firefox extension
           command: yarn publish:firefox
@@ -266,15 +283,14 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
-      - node/install-packages:
-          pkg-manager: yarn
+      - install_packages
       - run:
           name: Lint API
           command: yarn lint:api
@@ -289,13 +305,12 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "14.14"
+      tag: "14.16"
     steps:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
-      - node/install-packages:
-          pkg-manager: yarn
+      - install_packages
       - pulumi/preview:
           stack: hlidac-shopu-prod
       - slack/notify:
@@ -342,6 +357,8 @@ jobs:
 workflows:
   ci:
     jobs:
+      - test-actors:
+          context: org-global
       - test-lib:
           context: org-global
       - preview-provision:

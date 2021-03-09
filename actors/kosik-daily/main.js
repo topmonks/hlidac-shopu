@@ -42,10 +42,14 @@ const parseItem = (item, breadcrumbs) => ({
   itemUrl: "https://www.kosik.cz/" + item.url,
   itemName: item.name,
   discounted: item.percentageDiscount > 0,
+  discountedName:
+    item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
   currentPrice: item.price,
-  originalPrice: item.recommendedPrice,
+  originalPrice:
+    item.price == item.recommendedPrice ? null : item.recommendedPrice,
   inStock: !item.firstOrderDay,
-  category: breadcrumbs
+  category: breadcrumbs,
+  img: item.image
 });
 
 /**
@@ -87,7 +91,7 @@ function pageFunction(requestQueue) {
 }
 
 function getTableName(country) {
-  return `kosik_${country.toLowerCase()}`;
+  return `kosik`;
 }
 
 async function uploadToKeboola(tableName) {
@@ -125,6 +129,7 @@ Apify.main(async () => {
     useApifyProxy: !development
   });
 
+  /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
   // TODO: if (type === "BF")
   await requestQueue.addRequest({

@@ -1,14 +1,14 @@
 {
 	"name": "@hlidac-shopu/kosik-daily",
 	"version": "0.1.0",
-  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
-  "license": "EPL-2.0",
+	"author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+	"license": "EPL-2.0",
 	"dependencies": {
-		"apify": "^1.0.1"
+		"apify": "^1.0.2"
 	},
-  "devDependencies": {
-    "apify-cli": "^0.6.1"
-  },
+	"devDependencies": {
+		"apify-cli": "^0.6.2"
+	},
 	"scripts": {
 		"start": "node main.js"
 	}
