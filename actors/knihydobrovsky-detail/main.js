@@ -27,11 +27,7 @@ Apify.main(async () => {
   const input = await Apify.getInput();
 
   //Inicializace hodnot z INPUTU
-  const {
-    development,
-    country = 'cz',
-    extensions = [],
-  } = input || {};
+  const { development, country = "cz", extensions = [] } = input || {};
 
   const proxyConfigurationOptions =
     input && input.proxyConfiguration
@@ -53,12 +49,10 @@ Apify.main(async () => {
     persistStateKey: "listKey"
   });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration(
-    {
-      useApifyProxy: !development,
-      ...proxyConfigurationOptions,
-    }
-  );
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    useApifyProxy: !development,
+    ...proxyConfigurationOptions
+  });
 
   const crawler = new Apify.CheerioCrawler({
     requestList,
@@ -111,5 +105,4 @@ Apify.main(async () => {
       log.error(err);
     }
   }
-
 });

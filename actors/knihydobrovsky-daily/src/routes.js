@@ -20,9 +20,11 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
         !x.includes("knihomanie")
     );
   const absoluteLinks = links.map(x => completeUrl(x));
-  for (const link of absoluteLinks)
-  {
-    await requestQueue.addRequest({ url: `${link}`, userData: { label: "SUBLIST" } });
+  for (const link of absoluteLinks) {
+    await requestQueue.addRequest({
+      url: `${link}`,
+      userData: { label: "SUBLIST" }
+    });
   }
 };
 
@@ -37,9 +39,8 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
       })
       .get();
     const absoluteLinks = links.map(x => completeUrl(x));
-    for (const link of absoluteLinks)
-    {
-      log.info('adding subcategory link '+request.url, { link });
+    for (const link of absoluteLinks) {
+      log.info("adding subcategory link " + request.url, { link });
       await requestQueue.addRequest({
         url: link,
         userData: { label: "SUBLIST" }
@@ -57,21 +58,20 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
 exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
   // Handle pagination
   const nextPageUrl =
-  $('nav.paging span:contains("Další")').parent("a").attr("href") &&
-    completeUrl($('nav.paging span:contains("Další")').parent("a").attr("href").trim());
-  if (nextPageUrl)
-  {
-    const pageNumber = parseInt(nextPageUrl.split('currentPage=')[1]);
+    $('nav.paging span:contains("Další")').parent("a").attr("href") &&
+    completeUrl(
+      $('nav.paging span:contains("Další")').parent("a").attr("href").trim()
+    );
+  if (nextPageUrl) {
+    const pageNumber = parseInt(nextPageUrl.split("currentPage=")[1]);
     const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}`;
 
     await requestQueue.addRequest({
       url: nextPageOffsetUrl,
       userData: { label: "LIST" }
     });
-  }
-  else
-  {
-    log.info('category finish', {url:request.url})
+  } else {
+    log.info("category finish", { url: request.url });
   }
 
   // Handle items
@@ -98,9 +98,11 @@ exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
     item.itemUrl = completeUrl($("h3 a", this).attr("href"));
     item.itemName = $("span.name", this).text();
     item.currentPrice = parseInt($("p.price strong", this).text(), 10);
-    if (!item.currentPrice)
-    {
-      log.info("skipping product - could not find price, product:", {"name": $("span.name", this).text(), url:request.url });
+    if (!item.currentPrice) {
+      log.info("skipping product - could not find price, product:", {
+        "name": $("span.name", this).text(),
+        url: request.url
+      });
       return;
     }
     item.originalPrice = parseInt(
