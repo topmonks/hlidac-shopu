@@ -66,6 +66,14 @@ export function createDatabase() {
   });
 }
 
+export function createDatastore() {
+  const dataBucket = new aws.s3.Bucket("hlidac-shopu-data", {
+    bucket: "data.hlidacshopu.cz"
+  });
+
+  return pulumi.Output.create({ dataBucket });
+}
+
 export async function createApi(domainName: string) {
   const defaultLambdaRole = new aws.iam.Role(
     "hlidac-shopu-default-lambda-role",
