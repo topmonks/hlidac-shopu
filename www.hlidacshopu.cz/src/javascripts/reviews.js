@@ -41,31 +41,42 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
   const starsStyle = `width:${rating}em`;
   return html`
     <div
+      vocab="https://schema.org"
+      typeof="Review"
       class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
       style="${style}"
     >
+      <link property="itemReviewed" href="https://www.hlidacshopu.cz/" />
       <div
         class="review__header ${imageUrl === ""
           ? "review__header--no-avatar"
           : ""}"
       >
         ${avatarTemplate({ name, imageUrl })}
-        <span class="review__author">${name}</span><br />
+        <span property="author" class="review__author">${name}</span><br />
         <time
+          property="datePublished"
           class="review__date text--light-grey"
           datetime="${date.toISOString()}"
           >${formatDate(date)}</time
         ><br />
         <i
+          property="reviewRating"
+          typeof="Rating"
           class="review__rating"
           data-rating="${rating}"
           style="${ratingStyle}"
           title="Hodnocení: ${rating}"
         >
-          <b class="review__rating-value" style="${starsStyle}"></b>
+          <data
+            property="ratingValue"
+            value="${rating}"
+            class="review__rating-value"
+            style="${starsStyle}"
+          ></data>
         </i>
       </div>
-      <div class="review__content">
+      <div class="review__content" property="reviewBody">
         <p>${text}</p>
       </div>
     </div>
