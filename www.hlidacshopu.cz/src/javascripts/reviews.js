@@ -66,6 +66,7 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
           class="review__rating"
           data-rating="${rating}"
           style="${ratingStyle}"
+          aria-label="Obdržené hodnocení ${rating} hvězdiček z 5."
           title="Hodnocení: ${rating}"
         >
           <data
