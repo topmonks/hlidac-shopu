@@ -443,20 +443,36 @@
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <h2>Co o&nbsp;nás říkají uživatelé</h2>
         </div>
-        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+        <div
+          vocab="https://schema.org"
+          typeof="Review"
+          class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
           <div class="review__header">
             {{ avatar("marek-sukup") }}
-            <span class="review__author">Marek Sukup</span><br />
-            <time class="review__date text--light-grey" datetime="2018-12-10"
-            >10. 12. 2018
-            </time
-            >
+            <span property="author" class="review__author">Marek Sukup</span><br />
+            <time
+              property="datePublished"
+              class="review__date text--light-grey"
+              datetime="2018-12-10"
+            >10. 12. 2018</time>
             <br />
-            <i class="review__rating" data-rating="5" title="Hodnocení: 5">
-              <b class="review__rating-value" style="width: 126px"></b>
+            <i
+              property="reviewRating"
+              typeof="Rating"
+              class="review__rating"
+              data-rating="5"
+              aria-label="Obdržené hodnocení 5 hvězdiček z 5."
+              title="Hodnocení 5 ★"
+            >
+              <data
+                property="ratingValue"
+                value="5"
+                class="review__rating-value"
+                style="width: 126px"
+              ></data>
             </i>
           </div>
-          <div class="review__content">
+          <div property="reviewBody" class="review__content">
             <p>
               Skvělý doplněk a výborný nápad něco takového vytvořit. Človek si tak
               udelá představu o&nbsp;tom, jak funguji slevy a z&nbsp;jake ceny se
@@ -465,15 +481,19 @@
           </div>
         </div>
 
-        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+        <div
+          vocab="https://schema.org"
+          typeof="Review"
+          class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
+        >
           <div class="review__header">
             {{ avatar("tana-lalova") }}
-            <span class="review__author">Táňa Lálová</span><br />
+            <span property="author" class="review__author">Táňa Lálová</span><br />
             <span class="review__date text--light-grey">Mluvčí Mall.cz</span
             ><br />
             <i class="review__rating review__rating--no-rating"></i>
           </div>
-          <div class="review__content">
+          <div property="reviewBody" class="review__content">
             <p>
               Aktivity, jako je například Apify vítáme, protože pomáhají
               zákazníkům s&nbsp;orientací na trhu. Naším cílem je být
@@ -483,20 +503,36 @@
           </div>
         </div>
 
-        <div class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+        <div
+          vocab="https://schema.org"
+          typeof="Review"
+          class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
+        >
           <div class="review__header">
             {{ avatar("jan-verner") }}
-            <span class="review__author">Jan Verner</span><br />
-            <time class="review__date text--light-grey" datetime="2018-12-14"
-            >14. 12. 2018
-            </time
-            >
+            <span property="author" class="review__author">Jan Verner</span><br />
+            <time
+              property="datePublished"
+              class="review__date text--light-grey"
+              datetime="2018-12-14"
+            >14. 12. 2018</time>
             <br />
-            <i class="review__rating" data-rating="5" title="Hodnocení: 5">
-              <b class="review__rating-value" style="width: 126px"></b>
+            <i
+              property="reviewRating"
+              typeof="Rating"
+              class="review__rating"
+              data-rating="5"
+              aria-label="Obdržené hodnocení 5 hvězdiček z 5."
+              title="Hodnocení 5 ★">
+              <data
+                property="ratingValue"
+                value="5"
+                class="review__rating-value"
+                style="width: 126px"
+              ></data>
             </i>
           </div>
-          <div class="review__content">
+          <div property="reviewBody" class="review__content">
             <p>
               Poprvé, kdy píšu recenzi na nějaký plugin chromu. A to proto, jak je
               úžasný. Miluje ho každý, komu ho v okolí ukazuji. Super práce,

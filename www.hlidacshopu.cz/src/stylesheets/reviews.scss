@@ -54,3 +54,7 @@
     content: none;
   }
 }
+
+#reviews {
+  grid-template-rows: masonry;
+}

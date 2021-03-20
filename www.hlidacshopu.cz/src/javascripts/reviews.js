@@ -67,11 +67,14 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
           data-rating="${rating}"
           style="${ratingStyle}"
           aria-label="Obdržené hodnocení ${rating} hvězdiček z 5."
-          title="Hodnocení: ${rating}"
+          title="Hodnocení ${rating} ★"
         >
           <data
+            role="meter"
             property="ratingValue"
             value="${rating}"
+            aria-valuemin="1"
+            aria-valuemax="5"
             class="review__rating-value"
             style="${starsStyle}"
           ></data>
