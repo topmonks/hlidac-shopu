@@ -65,10 +65,16 @@ function resultTemplate(
     );
   const shopLogo = x => x && logoTemplate(x);
   return html`
-    <div id="hlidac-shopu-modal__found" class="layout-wrapper">
-      <h2>
+    <article
+      vocab="https://schema.org/"
+      typeof="Product"
+      id="hlidac-shopu-modal__found"
+      class="layout-wrapper"
+    >
+      <h2 property="name">
         ${shopLogo(shops.get(shop))}
         <a
+          property="url"
           href="${detailUrl}"
           id="product-name"
           class="product-name"
@@ -76,16 +82,21 @@ function resultTemplate(
           rel="noopener noreferrer"
           >${name || "Vámi vybraný produkt"}</a
         >
-        ${when(imageUrl, () => html`<img alt="${name}" src="${imageUrl}" />`)}
+        ${when(
+          imageUrl,
+          () => html`<img property="image" alt="${name}" src="${imageUrl}" />`
+        )}
       </h2>
-      <div class="box box--purple">
+      <div property="offers" typeof="Offer" class="box box--purple">
         ${crawlDate(date)}
         ${when(discount !== 0, () =>
           originalPriceTemplate({ type: discountType, ...prices })
         )}
         <div class="hs-actual-price">
           Prodejní cena
-          <span id="current-price">${formatMoney(actualPrice)}</span>
+          <span id="current-price" property="price" content="${actualPrice}"
+            >${formatMoney(actualPrice)}</span
+          >
         </div>
         ${discountTemplate(
           {
@@ -136,6 +147,6 @@ function resultTemplate(
             </div>
           `
       )}
-    </div>
+    </article>
   `;
 }
