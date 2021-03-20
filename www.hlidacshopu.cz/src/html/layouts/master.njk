@@ -1,5 +1,6 @@
 {% from '../macros/helpers.njk' import spriteTarget %}
 {% from '../macros/helpers.njk' import sprite %}
+{% set type = 'WebPage' %}
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -55,7 +56,7 @@
   <meta name="hs:environment" content="{{ build.environment }}">
   <meta name="hs:version" content="{{ build.version }}">
 </head>
-<body class="{{ bodyClass }}">
+<body class="{{ bodyClass }}"  vocab="https://schema.org" typeof="{{ type }}">
 <!-- Google Tag Manager (noscript) -->
 <noscript>
   <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-58WNT3B"
@@ -304,7 +305,7 @@
       </div>
       <div
         class="company mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop">
-        <span>© 2018-{{ "" | year }} Apify, Keboola &amp; TopMonks.<br>
+        <span><span property="copyrightNotice">© 2018-{{ "" | year }} Apify, Keboola &amp; TopMonks.</span><br>
           <a href="/osobni-udaje/">Zásady ochrany osobních údajů</a> |
           <a href="/metodika/" target="_top">Metodika výpočtu reálné slevy</a></span>
       </div>

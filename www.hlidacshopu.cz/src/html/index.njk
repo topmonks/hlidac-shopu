@@ -1,6 +1,7 @@
 {% extends 'layouts/master.njk' %}
 {% from 'macros/helpers.njk' import sprite %}
 {% block title %}Hlídač shopů{% endblock %}
+{% set type = 'WebApplication' %}
 
 {% block preload %}
   <link rel="modulepreload" href="/assets/js/index.js" />
@@ -21,6 +22,7 @@
 {% endblock %}
 
 {% block main %}
+  <meta property="headline" content="Hlídač shopů">
   <section class="main">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
@@ -29,7 +31,7 @@
             <div>
               <h1>Ujistěte se, že nakupujete opravdu se slevou</h1>
 
-              <p>Není sleva jako sleva. Někdy obchody těsně před vlnou slev uměle
+              <p property="abstract">Není sleva jako sleva. Někdy obchody těsně před vlnou slev uměle
                 navyšují původní ceny, aby konečná sleva působila výhodně. Hlídač
                 Shopů vám zobrazí původní cenu produktu a její vývoj v&nbsp;čase,
                 takže díky němu snadno poznáte, jestli nakupujete se slevou
@@ -125,17 +127,20 @@
           <h2 class="sub-title">HLÍDAČE SHOPŮ VÁM PŘINÁŠÍ</h2>
           <div class="logos">
             <ul>
-              <li>
+              <li property="author" typeof="Organization">
+                <meta property="name" content="Apify">
                 <a href="https://apify.com/">
                   {{ sprite("apify_logo", "Apify", "0 0 157 42") }}
                 </a>
               </li>
-              <li>
+              <li property="author" typeof="Organization">
+                <meta property="name" content="Keboola">
                 <a href="https://www.keboola.com/">
                   {{ sprite("keboola_logo", "Keboola", "0 0 161 41") }}
                 </a>
               </li>
-              <li>
+              <li property="author" typeof="Organization">
+                <meta property="name" content="TopMonks">
                 <a href="https://www.topmonks.cz/">
                   {{ sprite("topmonks_logo", "TopMonks", "0 0 632 144") }}
                 </a>
@@ -284,11 +289,11 @@
     </div>
   </section>
 
-  <section id="instalace" class="guidance purple-gradient">
+  <section id="instalace" class="guidance purple-gradient" vocab="https://schema.org/" typeof="HowTo">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <h2>Jak a proč nainstalovat rozšíření Hlídač Shopů?</h2>
+          <h2 property="name">Jak a proč nainstalovat rozšíření Hlídač Shopů?</h2>
         </div>
         <div
           class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 browser-list"
@@ -396,7 +401,10 @@
           </p>
         </div>
 
-        <div class="steps mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <div
+            property="step"
+            typeof="HowToSection"
+            class="steps mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <div id="extension-install-guide" class="mdc-layout-grid__inner"></div>
         </div>
       </div>

@@ -53,7 +53,9 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
           : ""}"
       >
         ${avatarTemplate({ name, imageUrl })}
-        <span property="author" class="review__author">${name}</span><br />
+        <span property="author" typeof="Person" class="review__author"
+          ><span property="name">${name}</span></span
+        ><br />
         <time
           property="datePublished"
           class="review__date text--light-grey"
