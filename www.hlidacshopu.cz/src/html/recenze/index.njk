@@ -1,4 +1,5 @@
 {% extends 'layouts/master.njk' %}
+{% set type = 'WebApplication' %}
 
 {% block title %}Recenze na Hlídač shopů{% endblock %}
 
@@ -12,6 +13,7 @@
 {% endblock %}
 
 {% block main %}
+  <link property="sameAs" href="/">
   <section class="mdc-layout-grid layout-wrapper">
     <div class="mdc-layout-grid__inner">
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
