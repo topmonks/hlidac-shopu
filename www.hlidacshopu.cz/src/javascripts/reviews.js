@@ -42,7 +42,7 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
   return html`
     <div
       vocab="https://schema.org"
-      typeof="Review"
+      typeof="UserReview"
       class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
       style="${style}"
     >
