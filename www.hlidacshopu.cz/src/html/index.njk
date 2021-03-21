@@ -23,6 +23,7 @@
 
 {% block main %}
   <meta property="headline" content="Hlídač shopů">
+  <meta property="applicationCategory" content="Web Extension">
   <section class="main">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
@@ -129,19 +130,19 @@
             <ul>
               <li property="author" typeof="Organization">
                 <meta property="name" content="Apify">
-                <a href="https://apify.com/">
+                <a property="url" href="https://apify.com/">
                   {{ sprite("apify_logo", "Apify", "0 0 157 42") }}
                 </a>
               </li>
               <li property="author" typeof="Organization">
                 <meta property="name" content="Keboola">
-                <a href="https://www.keboola.com/">
+                <a property="url" href="https://www.keboola.com/">
                   {{ sprite("keboola_logo", "Keboola", "0 0 161 41") }}
                 </a>
               </li>
               <li property="author" typeof="Organization">
                 <meta property="name" content="TopMonks">
-                <a href="https://www.topmonks.cz/">
+                <a property="url" href="https://www.topmonks.cz/">
                   {{ sprite("topmonks_logo", "TopMonks", "0 0 632 144") }}
                 </a>
               </li>
@@ -161,6 +162,7 @@
             Hlídač Shopů si můžete
             <b class="text--purple"
             ><a
+                property="installUrl"
                 title="Link pro Istalaci Hlídače Shopů do Prohlížeče"
                 class="store-link"
                 data-browser="chrome"
@@ -289,7 +291,7 @@
     </div>
   </section>
 
-  <section id="instalace" class="guidance purple-gradient" vocab="https://schema.org/" typeof="HowTo">
+  <section id="instalace" class="guidance purple-gradient" typeof="HowTo">
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner layout-wrapper">
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -451,14 +453,26 @@
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <h2>Co o&nbsp;nás říkají uživatelé</h2>
         </div>
+        <div property="aggregateRating" typeof="AggregateRating" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <div class="mdc-layout-grid__inner">
+            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6 mdc-layout-grid__cell--span-8-tablet">
+              <dt class="text--grey">Počet hodnocení</dt>
+              <dd property="ratingCount" id="rating-count" class="number">91</dd>
+            </dl>
+            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6 mdc-layout-grid__cell--span-8-tablet">
+              <dt class="text--grey">Celkové hodnocení</dt>
+              <dd property="ratingValue" id="rating-value" class="number">4.8</dd>
+            </dl>
+          </div>
+        </div>
         <div
           property="review"
-          vocab="https://schema.org"
           typeof="UserReview"
           class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
           <div class="review__header">
             {{ avatar("marek-sukup") }}
-            <span property="author" class="review__author">Marek Sukup</span><br />
+            <span property="author" typeof="Person" class="review__author"
+              ><span property="name">Marek Sukup</span></span><br />
             <time
               property="datePublished"
               class="review__date text--light-grey"
@@ -492,13 +506,13 @@
 
         <div
           property="review"
-          vocab="https://schema.org"
           typeof="Review"
           class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
         >
           <div class="review__header">
             {{ avatar("tana-lalova") }}
-            <span property="author" class="review__author">Táňa Lálová</span><br />
+            <span property="author" typeof="Person" class="review__author"
+              ><span property="name">Táňa Lálová</span></span><br />
             <span class="review__date text--light-grey">Mluvčí Mall.cz</span
             ><br />
             <i class="review__rating review__rating--no-rating"></i>
@@ -515,13 +529,13 @@
 
         <div
           property="review"
-          vocab="https://schema.org"
           typeof="Review"
           class="review mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
         >
           <div class="review__header">
             {{ avatar("jan-verner") }}
-            <span property="author" class="review__author">Jan Verner</span><br />
+            <span property="author" typeof="Person" class="review__author"
+              ><span property="name">Jan Verner</span></span><br />
             <time
               property="datePublished"
               class="review__date text--light-grey"
