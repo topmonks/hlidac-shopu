@@ -1,6 +1,5 @@
 {% from '../macros/helpers.njk' import spriteTarget %}
 {% from '../macros/helpers.njk' import sprite %}
-{% set type = 'WebPage' %}
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -56,7 +55,7 @@
   <meta name="hs:environment" content="{{ build.environment }}">
   <meta name="hs:version" content="{{ build.version }}">
 </head>
-<body class="{{ bodyClass }}"  vocab="https://schema.org" typeof="{{ type }}">
+<body class="{{ bodyClass }}" vocab="https://schema.org" typeof="{{ type if type else 'WebPage' }}">
 <!-- Google Tag Manager (noscript) -->
 <noscript>
   <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-58WNT3B"
