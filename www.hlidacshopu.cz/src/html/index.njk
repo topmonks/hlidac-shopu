@@ -404,9 +404,9 @@
         </div>
 
         <div
-            property="step"
-            typeof="HowToSection"
-            class="steps mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          property="step"
+          typeof="HowToSection"
+          class="steps mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <div id="extension-install-guide" class="mdc-layout-grid__inner"></div>
         </div>
       </div>
@@ -453,22 +453,6 @@
         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <h2>Co o&nbsp;nás říkají uživatelé</h2>
         </div>
-        <div property="aggregateRating" typeof="AggregateRating" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-          <div class="mdc-layout-grid__inner">
-            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
-              <dt class="text--grey">Počet hodnocení</dt>
-              <dd property="ratingCount" id="rating-count" class="number">91</dd>
-            </dl>
-            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
-              <dt class="text--grey">Počet recenzí</dt>
-              <dd property="reviewCount" id="rating-count" class="number">29</dd>
-            </dl>
-            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
-              <dt class="text--grey">Celkové hodnocení</dt>
-              <dd property="ratingValue" id="rating-value" class="number">4.8</dd>
-            </dl>
-          </div>
-        </div>
         <div
           property="review"
           typeof="UserReview"
@@ -476,12 +460,13 @@
           <div class="review__header">
             {{ avatar("marek-sukup") }}
             <span property="author" typeof="Person" class="review__author"
-              ><span property="name">Marek Sukup</span></span><br />
+            ><span property="name">Marek Sukup</span></span><br />
             <time
               property="datePublished"
               class="review__date text--light-grey"
               datetime="2018-12-10"
-            >10. 12. 2018</time>
+            >10. 12. 2018
+            </time>
             <br />
             <i
               property="reviewRating"
@@ -507,7 +492,6 @@
             </p>
           </div>
         </div>
-
         <div
           property="review"
           typeof="Review"
@@ -516,7 +500,7 @@
           <div class="review__header">
             {{ avatar("tana-lalova") }}
             <span property="author" typeof="Person" class="review__author"
-              ><span property="name">Táňa Lálová</span></span><br />
+            ><span property="name">Táňa Lálová</span></span><br />
             <span class="review__date text--light-grey">Mluvčí Mall.cz</span
             ><br />
             <i class="review__rating review__rating--no-rating"></i>
@@ -530,7 +514,6 @@
             </p>
           </div>
         </div>
-
         <div
           property="review"
           typeof="Review"
@@ -539,12 +522,13 @@
           <div class="review__header">
             {{ avatar("jan-verner") }}
             <span property="author" typeof="Person" class="review__author"
-              ><span property="name">Jan Verner</span></span><br />
+            ><span property="name">Jan Verner</span></span><br />
             <time
               property="datePublished"
               class="review__date text--light-grey"
               datetime="2018-12-14"
-            >14. 12. 2018</time>
+            >14. 12. 2018
+            </time>
             <br />
             <i
               property="reviewRating"
@@ -570,10 +554,27 @@
             </p>
           </div>
         </div>
-        <div
-          class="references_link mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
-        >
+        <div class="references_link mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
           <a property="discussionUrl" href="/recenze/">Další hodnocení</a>
+        </div>
+        <div property="aggregateRating" typeof="AggregateRating"
+             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <div class="numbers mdc-layout-grid__inner">
+            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+              <dt class="text--grey">Počet hodnocení</dt>
+              <dd property="ratingCount" id="rating-count" class="number">91</dd>
+            </dl>
+            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+              <dt class="text--grey">Počet recenzí</dt>
+              <dd property="reviewCount" id="review-count" class="number">29</dd>
+            </dl>
+            <dl class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-tablet">
+              <dt class="text--grey">Celkové hodnocení</dt>
+              <dd>
+                <data property="ratingValue" id="rating-value" class="number" value="4.8">4,8 ★</data>
+              </dd>
+            </dl>
+          </div>
         </div>
       </div>
     </div>
@@ -606,11 +607,11 @@
           <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
             {% set analyza2019 = images["analyza-2019.png"]["public_id"] %}
             <img width="340" height="170" class="responsive"
-              src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-              srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                 src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                 srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                  {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                  {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-              loading="lazy" role="presentation">
+                 loading="lazy" role="presentation">
             <h3>BLACK FRIDAY ANALÝZA 2019</h3>
             <p>V letošním Black Friday bylo na největších českých eshopech dvakrát více produktů&hellip;</p>
           </a>
