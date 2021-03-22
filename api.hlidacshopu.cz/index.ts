@@ -101,6 +101,14 @@ export async function createApi(domainName: string) {
     }
   );
 
+  new aws.iam.RolePolicyAttachment(
+    "hlidac-shopu-lambda-dynamo-read-attachment",
+    {
+      policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
+      role: defaultLambdaRole
+    }
+  );
+
   const builder = await lambdaBuilder.init();
   const buildAssets = (fileName: string) =>
     builder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName));
