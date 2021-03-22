@@ -3200,14 +3200,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@topmonks/pulumi-aws@npm:^1.7.4":
-  version: 1.7.4
-  resolution: "@topmonks/pulumi-aws@npm:1.7.4"
+"@topmonks/pulumi-aws@npm:^1.7.5":
+  version: 1.7.5
+  resolution: "@topmonks/pulumi-aws@npm:1.7.5"
   peerDependencies:
     "@pulumi/aws": ^1.0.0 || ^2.0.0 || ^3.0.0
     "@pulumi/awsx": ^0.22.0 || ^1.0.0
     "@pulumi/pulumi": ^1.9.1 || ^2.0.0
-  checksum: 648c7b4408fdfd7dc73ad26ce7358d8233bfced3b00ed2a0997c2ca227b8c37b2068fd7d1940380a525a2786d66171779e5879eaae3bcb380173134ff1f4c66b
+  checksum: b0adb7829902dca911b6a16eeff53ebbca5ab27e89dc6f157f903ca4a0e6fd322ac143d73601ed5c863c7cfd2b275c16b8de7078c1a8078bc8e1b97a6f10f22d
   languageName: node
   linkType: hard
 
@@ -11470,7 +11470,7 @@ fsevents@~2.3.1:
     "@rollup/plugin-node-resolve": ^11.2.0
     "@rollup/plugin-replace": ^2.4.1
     "@topmonks/blendid": "git://github.com/topmonks/blendid.git"
-    "@topmonks/pulumi-aws": ^1.7.4
+    "@topmonks/pulumi-aws": ^1.7.5
     "@types/firefox-webext-browser": ^82.0.0
     "@types/node": ^14.14.31
     "@types/node-fetch": ^2.5.8
