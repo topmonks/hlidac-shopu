@@ -1,0 +1,17 @@
+{
+  "name": "@hlidac-shopu/hs-reviews",
+  "version": "0.1.0",
+  "description": "This is actor for downloading stats and reviews from stores.",
+  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.9.0",
+    "apify": "^1.1.0"
+  },
+  "devDependencies": {
+    "apify-cli": "^0.6.2"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
