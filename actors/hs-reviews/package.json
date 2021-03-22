@@ -4,8 +4,11 @@
   "description": "This is actor for downloading stats and reviews from stores.",
   "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
   "license": "EPL-2.0",
+  "main": "main.js",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.9.0",
+    "@types/cheerio": "^0.22.28",
+    "@types/node": "^14.14.35",
     "apify": "^1.1.0"
   },
   "devDependencies": {
