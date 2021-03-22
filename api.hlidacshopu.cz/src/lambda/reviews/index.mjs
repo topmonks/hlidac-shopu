@@ -6,7 +6,7 @@ import { response, withCORS } from "../http.mjs";
 /** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
 
 /** @type {S3Client} */
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const s3 = new S3Client({ region: process.env.REGION });
 
 /**
  * @param {APIGatewayProxyEvent} _event

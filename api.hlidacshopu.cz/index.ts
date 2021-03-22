@@ -185,7 +185,7 @@ export async function createApi(domainName: string) {
         cache: { ttl: 3600 },
         environment: {
           variables: {
-            AWS_REGION: awsConfig.get("region") ?? "",
+            REGION: awsConfig.get("region") ?? "",
             HS_DATA_BUCKET: config.get("data_bucket") ?? ""
           }
         }
