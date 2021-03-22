@@ -94,20 +94,17 @@ export async function createApi(domainName: string) {
   );
 
   new aws.iam.RolePolicyAttachment(
-    "hlidac-shopu-lambda-dynamo-read-attachment",
+    "hlidac-shopu-lambda-dynamo-read-write-attachment",
     {
       policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
       role: defaultLambdaRole
     }
   );
 
-  new aws.iam.RolePolicyAttachment(
-    "hlidac-shopu-lambda-dynamo-read-attachment",
-    {
-      policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment("hlidac-shopu-lambda-s3-read-attachment", {
+    policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
+    role: defaultLambdaRole
+  });
 
   const builder = await lambdaBuilder.init();
   const buildAssets = (fileName: string) =>
