@@ -13,6 +13,7 @@ import * as lambdaBuilder from "../lambda-builder";
 
 const path = require("path");
 
+const awsConfig = new pulumi.Config("aws");
 const config = new pulumi.Config("hlidacshopu");
 
 export function createDatabase() {
@@ -68,7 +69,7 @@ export function createDatabase() {
 
 export function createDatastore() {
   const dataBucket = new aws.s3.Bucket("hlidac-shopu-data", {
-    bucket: "data.hlidacshopu.cz"
+    bucket: config.get("data_bucket")
   });
 
   return pulumi.Output.create({ dataBucket });
@@ -176,6 +177,18 @@ export async function createApi(domainName: string) {
         path: "/reviews-stats",
         fileName: "reviewStats/index.mjs",
         cache: { ttl: 3600 }
+      }),
+      createHandlerRoute("reviews", {
+        httpMethod: "GET",
+        path: "/reviews",
+        fileName: "reviews/index.mjs",
+        cache: { ttl: 3600 },
+        environment: {
+          variables: {
+            AWS_REGION: awsConfig.get("region") ?? "",
+            HS_DATA_BUCKET: config.get("data_bucket") ?? ""
+          }
+        }
       }),
       createHandlerRoute("topslevy", {
         httpMethod: "GET",
