@@ -1,5 +1,4 @@
 import { html, render } from "lit-html/lit-html.js";
-import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
 import * as rollbar from "./rollbar.js";
 import { when } from "@hlidac-shopu/lib/templates.mjs";
@@ -9,36 +8,43 @@ rollbar.init();
 const reviewsRoot = document.getElementById("reviews");
 
 addEventListener("DOMContentLoaded", async e => {
-  const reviews = await fetchReviews();
+  const reviews = await fetch(
+    "https://data.hlidacshopu.cz/app/reviews.jsonld"
+  ).then(x => x.json());
   reviewsRoot.innerHTML = null;
-  render(reviews.map(reviewTemplate), reviewsRoot);
+  const data = reviews
+    .filter(x => x.reviewBody)
+    .sort((a, b) => b.datePublished.localeCompare(a.datePublished))
+    .map(reviewTemplate);
+  render(data, reviewsRoot);
 });
 
-function avatarTemplate({ name, imageUrl }) {
+function avatarTemplate({ name, image }) {
   return when(
-    imageUrl,
+    image,
     () =>
       html`
         <img
           class="avatar"
           alt="${name}"
           loading="lazy"
-          src="https://${imageUrl}"
+          src="${image}"
           srcset="
-            https://${imageUrl} 1x,
-            https://${imageUrl.replace("s70", "s105")} 1.5x,
-            https://${imageUrl.replace("s70", "s140")} 2x
+            ${image.replace("s40", "s70")} 1x,
+            ${image.replace("s40", "s105")} 1.5x,
+            ${image.replace("s40", "s140")} 2x
           "
         />
       `
   );
 }
 
-function reviewTemplate({ name, date, text, imageUrl, rating }) {
-  const style = text.length > 260 ? "grid-row: span 2;" : "";
+function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
+  const style = reviewBody.length > 260 ? "grid-row: span 2;" : "";
   const oneStarWidth = 25.2;
   const ratingStyle = `font-size:${oneStarWidth}px;line-height:16px`;
-  const starsStyle = `width:${rating}em`;
+  const starsStyle = `width:${reviewRating.ratingValue}em`;
+  const date = new Date(datePublished);
   return html`
     <div
       vocab="https://schema.org"
@@ -48,13 +54,13 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
     >
       <link property="itemReviewed" href="https://www.hlidacshopu.cz/" />
       <div
-        class="review__header ${imageUrl === ""
+        class="review__header ${author.image == null
           ? "review__header--no-avatar"
           : ""}"
       >
-        ${avatarTemplate({ name, imageUrl })}
+        ${avatarTemplate(author)}
         <span property="author" typeof="Person" class="review__author"
-          ><span property="name">${name}</span></span
+          ><span property="name">${author.name}</span></span
         ><br />
         <time
           property="datePublished"
@@ -66,15 +72,15 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
           property="reviewRating"
           typeof="Rating"
           class="review__rating"
-          data-rating="${rating}"
+          data-rating="${reviewRating.ratingValue}"
           style="${ratingStyle}"
-          aria-label="Obdržené hodnocení ${rating} hvězdiček z 5."
-          title="Hodnocení ${rating} ★"
+          aria-label="Obdržené hodnocení ${reviewRating.ratingValue} hvězdiček z 5."
+          title="Hodnocení ${reviewRating.ratingValue} ★"
         >
           <data
             role="meter"
             property="ratingValue"
-            value="${rating}"
+            value="${reviewRating.ratingValue}"
             aria-valuemin="1"
             aria-valuemax="5"
             class="review__rating-value"
@@ -83,7 +89,7 @@ function reviewTemplate({ name, date, text, imageUrl, rating }) {
         </i>
       </div>
       <div class="review__content" property="reviewBody">
-        <p>${text}</p>
+        <p>${reviewBody}</p>
       </div>
     </div>
   `;
