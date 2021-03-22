@@ -7,13 +7,13 @@ import {
   Api,
   ApiRoute,
   CacheSettings,
-  CustomDomainDistribution
+  CustomDomainDistribution,
+  Website
 } from "@topmonks/pulumi-aws";
 import * as lambdaBuilder from "../lambda-builder";
 
 const path = require("path");
 
-const awsConfig = new pulumi.Config("aws");
 const config = new pulumi.Config("hlidacshopu");
 
 export function createDatabase() {
@@ -68,11 +68,8 @@ export function createDatabase() {
 }
 
 export function createDatastore() {
-  const dataBucket = new aws.s3.Bucket("hlidac-shopu-data", {
-    bucket: config.get("data_bucket")
-  });
-
-  return pulumi.Output.create({ dataBucket });
+  const website = Website.create(config.get("data_bucket") ?? "", {});
+  return pulumi.Output.create({ dataBucket: website.contentBucket });
 }
 
 export async function createApi(domainName: string) {
@@ -182,18 +179,6 @@ export async function createApi(domainName: string) {
         path: "/reviews-stats",
         fileName: "reviewStats/index.mjs",
         cache: { ttl: 3600 }
-      }),
-      createHandlerRoute("reviews", {
-        httpMethod: "GET",
-        path: "/reviews",
-        fileName: "reviews/index.mjs",
-        cache: { ttl: 3600 },
-        environment: {
-          variables: {
-            REGION: awsConfig.get("region") ?? "",
-            HS_DATA_BUCKET: config.get("data_bucket") ?? ""
-          }
-        }
       }),
       createHandlerRoute("topslevy", {
         httpMethod: "GET",
