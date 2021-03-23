@@ -1,25 +1,22 @@
 import * as pulumi from "@pulumi/pulumi";
-import { startService } from "esbuild";
+import { build } from "esbuild";
 
 export async function init() {
-  const buildService = await startService();
   const buildTasks: Promise<string>[] = [];
 
   return {
     build(entrypoint: string, minify: boolean) {
-      const promise = buildService
-        .build({
-          bundle: true,
-          minify,
-          charset: "utf8",
-          platform: "node",
-          target: "node12",
-          mainFields: ["module", "main"],
-          external: ["aws-sdk"],
-          entryPoints: [entrypoint],
-          write: false
-        })
-        .then(result => result?.outputFiles?.[0].text ?? "");
+      const promise = build({
+        bundle: true,
+        minify,
+        charset: "utf8",
+        platform: "node",
+        target: "node12",
+        mainFields: ["module", "main"],
+        external: ["aws-sdk"],
+        entryPoints: [entrypoint],
+        write: false
+      }).then(result => result?.outputFiles?.[0].text ?? "");
       buildTasks.push(promise);
       return promise;
     },
@@ -29,9 +26,7 @@ export async function init() {
       });
     },
     stop() {
-      Promise.all(buildTasks)
-        .then(() => buildService.stop())
-        .catch(err => console.error(err));
+      Promise.all(buildTasks).catch(err => console.error(err));
     }
   };
 }
