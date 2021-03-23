@@ -70,7 +70,7 @@ function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
           data-rating="${reviewRating.ratingValue}"
           style="${ratingStyle}"
           aria-label="Obdržené hodnocení ${reviewRating.ratingValue} hvězdiček z 5."
-          title="Hodnocení ${reviewRating.ratingValue} ★"
+          title="Hodnocení ${reviewRating.ratingValue} ⭑"
         >
           <data
             role="meter"
