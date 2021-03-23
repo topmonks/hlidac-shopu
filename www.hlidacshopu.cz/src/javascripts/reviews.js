@@ -2,21 +2,16 @@ import { html, render } from "lit-html/lit-html.js";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
 import * as rollbar from "./rollbar.js";
 import { when } from "@hlidac-shopu/lib/templates.mjs";
+import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
 
 rollbar.init();
 
 const reviewsRoot = document.getElementById("reviews");
 
 addEventListener("DOMContentLoaded", async e => {
-  const reviews = await fetch(
-    "https://data.hlidacshopu.cz/app/reviews.jsonld"
-  ).then(x => x.json());
+  const reviews = await fetchReviews();
   reviewsRoot.innerHTML = null;
-  const data = reviews
-    .filter(x => x.reviewBody)
-    .sort((a, b) => b.datePublished.localeCompare(a.datePublished))
-    .map(reviewTemplate);
-  render(data, reviewsRoot);
+  render(reviews.map(reviewTemplate), reviewsRoot);
 });
 
 function avatarTemplate({ name, image }) {
