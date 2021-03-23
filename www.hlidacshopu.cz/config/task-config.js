@@ -80,7 +80,8 @@ const config = {
       format: "esm",
       target: ["es2017", "firefox57", "safari12"],
       charset: "utf8",
-      metafile: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
+      metafile: true,
+      metafileName: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
       define: {
         "process.env.NODE_ENV": mode.production() ? "production" : "development"
       }
