@@ -1,10 +1,7 @@
 import { html, render } from "lit-html/lit-html.js";
 import { Workbox } from "workbox-window";
 import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
-import {
-  fetchDownloadStats,
-  fetchShopsStats
-} from "@hlidac-shopu/lib/remoting.mjs";
+import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";
 import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
@@ -22,6 +19,7 @@ const eShops = document.getElementById("e-shopy");
 const eShopsCount = document.getElementById("e-shops-count");
 const productsCount = document.getElementById("products-count");
 const installsCount = document.getElementById("installs-count");
+const reviewsCount = document.getElementById("rating-count");
 const modal = document.getElementById("hlidac-shopu-modal");
 const modalRenderRoot = document.getElementById(
   "hlidac-shopu-modal__placeholder"
@@ -62,6 +60,13 @@ addEventListener("keydown", e => {
   }
 });
 
+const countInteractions = type => stats =>
+  stats
+    .filter(x => x.interactionType == `https:/schema.org/${type}`)
+    .reduce((acc, x) => acc + x.userInteractionCount, 0);
+const countReviews = countInteractions("ReviewAction");
+const countInstalls = countInteractions("InstallAction");
+
 addEventListener("DOMContentLoaded", async e => {
   const searchParams = new URLSearchParams(location.search);
   if (searchParams.has("url")) {
@@ -77,9 +82,10 @@ addEventListener("DOMContentLoaded", async e => {
     render(client.installationGuide(), installationGuide);
   }
   eShopsCount.innerText = shops.size.toLocaleString("cs");
-  fetchDownloadStats()
-    .then(x => (installsCount.innerText = x.downloads.toLocaleString("cs")))
-    .catch(ex => console.warn(ex));
+  const stats = await fetchStats();
+  installsCount.innerText = countInstalls(stats).toLocaleString("cs");
+  reviewsCount.innerText = countReviews(stats).toLocaleString("cs");
+
   fetchShopsStats()
     .then(xs => xs.reduce((acc, x) => acc + x.allProducts, 0))
     .then(x =>
