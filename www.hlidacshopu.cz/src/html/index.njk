@@ -10,7 +10,7 @@
     <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
   {% endfor %}
   <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin />
-  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/reviews-stats" crossorigin />
+  <link rel="preload" as="fetch" href="https://data.hlidacshopu.cz/app/stats.jsonld" crossorigin />
 {% endblock %}
 
 {% block styles %}
@@ -602,7 +602,7 @@
           měli dávat pozor.
         </p>
       </div>
-      
+
       <div id="analyzy" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
         <h2>Naše analýzy</h2>
       </div>
