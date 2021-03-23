@@ -62,7 +62,7 @@ addEventListener("keydown", e => {
 
 const countInteractions = type => stats =>
   stats
-    .filter(x => x.interactionType == `https:/schema.org/${type}`)
+    .filter(x => x.interactionType === `https:/schema.org/${type}`)
     .reduce((acc, x) => acc + x.userInteractionCount, 0);
 const countReviews = countInteractions("ReviewAction");
 const countInstalls = countInteractions("InstallAction");
