@@ -2393,7 +2393,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
-    chart.js: ^3.0.0-beta.12
+    chart.js: ^3.0.0-rc.2
     chartjs-adapter-date-fns: 1.1.0-beta.1
     lit-element: ^2.4.0
   languageName: unknown
@@ -6425,10 +6425,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.0.0-beta.12":
-  version: 3.0.0-beta.12
-  resolution: "chart.js@npm:3.0.0-beta.12"
-  checksum: a85792ae32fb1f11ee4adb2aa54a0315663c5815627be6a43d751538c8916d278bbcfd67caa61f332878cbe584874d1fda99d2b77aa150cbb5073c0cd17c3198
+"chart.js@npm:^3.0.0-rc.2":
+  version: 3.0.0-rc.2
+  resolution: "chart.js@npm:3.0.0-rc.2"
+  checksum: 4f2d6ccf65d6159b2dcc0ed07ab2865d0450ab14b1cfc05055306615abc6eb0fcec712806e3816b29905f3862444d77578da761744937b8bba8dda41e3c440a1
   languageName: node
   linkType: hard
 
