@@ -1,16 +1,16 @@
 {
-	"name": "KnihyDobrovskyCount",
-	"version": "0.0.1",
-	"description": "This is a boilerplate of an Apify actor.",
-	"dependencies": {
-		"apify": "^1.1.0"
-	},
-	"devDependencies": {
-		"@apify/eslint-config": "^0.1.3"
-	},
-	"scripts": {
-		"start": "node main.js"
-	},
-	"author": "oodoow@gmail.com",
-	"license": "EPL-2.0"
+  "name": "KnihyDobrovskyCount",
+  "version": "0.0.1",
+  "description": "This is a boilerplate of an Apify actor.",
+  "dependencies": {
+    "apify": "^1.1.1"
+  },
+  "devDependencies": {
+    "@apify/eslint-config": "^0.1.3"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "oodoow@gmail.com",
+  "license": "EPL-2.0"
 }

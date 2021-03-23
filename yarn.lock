@@ -2353,7 +2353,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    apify: ^1.1.0
+    apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2375,7 +2375,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.9.0
     "@types/cheerio": ^0.22.28
     "@types/node": ^14.14.35
-    apify: ^1.1.0
+    apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2384,7 +2384,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    apify: ^1.1.0
+    apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2411,7 +2411,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/sleky-daily@workspace:actors/sleky-daily"
   dependencies:
-    apify: ^1.1.0
+    apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2420,7 +2420,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    apify: ^1.1.0
+    apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2853,7 +2853,7 @@ __metadata:
   resolution: "@product-mapping/knihydobrovsky-detail@workspace:actors/knihydobrovsky-detail"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.0
+    apify: ^1.1.1
   languageName: unknown
   linkType: soft
 
@@ -4282,7 +4282,7 @@ __metadata:
   resolution: "KnihyDobrovskyCount@workspace:actors/knihydobrovsky-count"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.0
+    apify: ^1.1.1
   languageName: unknown
   linkType: soft
 
@@ -4291,7 +4291,7 @@ __metadata:
   resolution: "KnihyDobrovskyDaily@workspace:actors/knihydobrovsky-daily"
   dependencies:
     "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.0
+    apify: ^1.1.1
   languageName: unknown
   linkType: soft
 
@@ -4839,9 +4839,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "apify@npm:1.1.0"
+"apify@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "apify@npm:1.1.1"
   dependencies:
     "@apify/http-request": ^2.1.1
     "@apify/ps-tree": ^1.1.3
@@ -4871,7 +4871,7 @@ __metadata:
     tough-cookie: ^4.0.0
     underscore: ^1.11.0
     ws: ^7.3.1
-  checksum: 61fa4afc527cd2a486980827d6ee17a36f7981f7fa677b8852debe336c423e0448542e7719ffee9b942ba9b07ce6decf3240fb59a51c2334a7ca7dedc111d98a
+  checksum: ac854bc77c3bab314e07d1079bbfc5995562933809190a1f2b79dbcb0f0c42e06319eccadf425b325e5523e52c617f3d343bc829f47621250c38932737204bd8
   languageName: node
   linkType: hard
 
