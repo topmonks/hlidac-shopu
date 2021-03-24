@@ -440,4 +440,4 @@ workflows:
             - preview-provision
           filters:
             branches:
-              only: /dependabot\/.*/
+              only: /renovate\/.*/
