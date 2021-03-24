@@ -5,10 +5,10 @@
 	"author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
 	"license": "EPL-2.0",
 	"dependencies": {
-		"apify": "^1.1.1"
+		"apify": "1.1.1"
 	},
 	"devDependencies": {
-		"apify-cli": "^0.6.2"
+		"apify-cli": "0.6.2"
 	},
 	"scripts": {
 		"start": "node main.js"

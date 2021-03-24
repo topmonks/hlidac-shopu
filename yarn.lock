@@ -14,7 +14,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apify/eslint-config@npm:^0.1.3":
+"@apify/eslint-config@npm:0.1.3":
   version: 0.1.3
   resolution: "@apify/eslint-config@npm:0.1.3"
   dependencies:
@@ -151,7 +151,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:^3.9.0":
+"@aws-sdk/client-dynamodb@npm:3.9.0":
   version: 3.9.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.9.0"
   dependencies:
@@ -192,7 +192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.9.0":
+"@aws-sdk/client-s3@npm:3.9.0, @aws-sdk/client-s3@npm:^3.9.0":
   version: 3.9.0
   resolution: "@aws-sdk/client-s3@npm:3.9.0"
   dependencies:
@@ -872,7 +872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:^3.9.0":
+"@aws-sdk/util-dynamodb@npm:3.9.0":
   version: 3.9.0
   resolution: "@aws-sdk/util-dynamodb@npm:3.9.0"
   dependencies:
@@ -2182,7 +2182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esm-bundle/chai@npm:^4.3.4":
+"@esm-bundle/chai@npm:4.3.4":
   version: 4.3.4
   resolution: "@esm-bundle/chai@npm:4.3.4"
   dependencies:
@@ -2279,17 +2279,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz/src/lambda"
   dependencies:
-    "@aws-sdk/client-dynamodb": ^3.9.0
-    "@aws-sdk/client-s3": ^3.9.0
-    "@aws-sdk/util-dynamodb": ^3.9.0
+    "@aws-sdk/client-dynamodb": 3.9.0
+    "@aws-sdk/client-s3": 3.9.0
+    "@aws-sdk/util-dynamodb": 3.9.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^3.34.2
-    "@pulumi/awsx": ^0.25.0
-    abort-controller: ^3.0.0
-    crypto: ^1.0.1
-    date-fns: ^2.19.0
-    node-fetch: ^2.6.1
-    ramda: ^0.27.1
+    "@pulumi/aws": 3.34.2
+    "@pulumi/awsx": 0.25.0
+    abort-controller: 3.0.0
+    crypto: 1.0.1
+    date-fns: 2.19.0
+    node-fetch: 2.6.1
+    ramda: 0.27.1
   languageName: unknown
   linkType: soft
 
@@ -2305,8 +2305,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    apify: ^1.1.1
-    apify-cli: ^0.6.2
+    apify: 1.1.1
+    apify-cli: 0.6.2
   languageName: unknown
   linkType: soft
 
@@ -2315,8 +2315,8 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.0
-    lit-element: ^2.4.0
-    lit-html: ^1.3.0
+    lit-element: 2.4.0
+    lit-html: 1.3.0
   languageName: unknown
   linkType: soft
 
@@ -2328,7 +2328,7 @@ __metadata:
     "@types/cheerio": ^0.22.28
     "@types/node": ^14.14.35
     apify: ^1.1.1
-    apify-cli: ^0.6.2
+    apify-cli: 0.6.2
   languageName: unknown
   linkType: soft
 
@@ -2336,8 +2336,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    apify: ^1.1.1
-    apify-cli: ^0.6.2
+    apify: 1.1.1
+    apify-cli: 0.6.2
   languageName: unknown
   linkType: soft
 
@@ -2345,9 +2345,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
-    chart.js: ^3.0.0-rc.3
+    chart.js: 3.0.0-rc.3
     chartjs-adapter-date-fns: 1.1.0-beta.1
-    lit-element: ^2.4.0
+    lit-element: 2.4.0
   languageName: unknown
   linkType: soft
 
@@ -2363,8 +2363,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/sleky-daily@workspace:actors/sleky-daily"
   dependencies:
-    apify: ^1.1.1
-    apify-cli: ^0.6.2
+    apify: 1.1.1
+    apify-cli: 0.6.2
   languageName: unknown
   linkType: soft
 
@@ -2372,8 +2372,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    apify: ^1.1.1
-    apify-cli: ^0.6.2
+    apify: 1.1.1
+    apify-cli: 0.6.2
   languageName: unknown
   linkType: soft
 
@@ -2382,10 +2382,10 @@ __metadata:
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
     "@hlidac-shopu/lib": 1.0.0
-    "@material/layout-grid": ^10.0.0
-    "@material/top-app-bar": ^10.0.0
-    lit-html: ^1.3.0
-    workbox-window: ^6.1.2
+    "@material/layout-grid": 10.0.0
+    "@material/top-app-bar": 10.0.0
+    lit-html: 1.3.0
+    workbox-window: 6.1.2
   languageName: unknown
   linkType: soft
 
@@ -2414,7 +2414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/button@npm:^10.0.0":
+"@material/button@npm:10.0.0, @material/button@npm:^10.0.0":
   version: 10.0.0
   resolution: "@material/button@npm:10.0.0"
   dependencies:
@@ -2468,7 +2468,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/icon-button@npm:^10.0.0":
+"@material/icon-button@npm:10.0.0, @material/icon-button@npm:^10.0.0":
   version: 10.0.0
   resolution: "@material/icon-button@npm:10.0.0"
   dependencies:
@@ -2483,7 +2483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/layout-grid@npm:^10.0.0":
+"@material/layout-grid@npm:10.0.0":
   version: 10.0.0
   resolution: "@material/layout-grid@npm:10.0.0"
   checksum: ba8330163b7081c1514c04b2b59eff661b6174149e8f6e4e47f97c667fe48b14d499466a11065634b8ac59f81b263479da08ed841371974f972ed23c37f2bffb
@@ -2524,7 +2524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/snackbar@npm:^10.0.0":
+"@material/snackbar@npm:10.0.0":
   version: 10.0.0
   resolution: "@material/snackbar@npm:10.0.0"
   dependencies:
@@ -2554,7 +2554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/top-app-bar@npm:^10.0.0":
+"@material/top-app-bar@npm:10.0.0":
   version: 10.0.0
   resolution: "@material/top-app-bar@npm:10.0.0"
   dependencies:
@@ -2780,7 +2780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/testing@npm:^2.5.32":
+"@open-wc/testing@npm:2.5.32":
   version: 2.5.32
   resolution: "@open-wc/testing@npm:2.5.32"
   dependencies:
@@ -2804,8 +2804,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@product-mapping/knihydobrovsky-detail@workspace:actors/knihydobrovsky-detail"
   dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
+    "@apify/eslint-config": 0.1.3
+    apify: 1.1.1
   languageName: unknown
   linkType: soft
 
@@ -2882,7 +2882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^3.34.2":
+"@pulumi/aws@npm:3.34.2":
   version: 3.34.2
   resolution: "@pulumi/aws@npm:3.34.2"
   dependencies:
@@ -2896,7 +2896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:^0.25.0":
+"@pulumi/awsx@npm:0.25.0":
   version: 0.25.0
   resolution: "@pulumi/awsx@npm:0.25.0"
   dependencies:
@@ -2917,6 +2917,30 @@ __metadata:
     "@pulumi/pulumi": ^2.0.0
     semver: ^5.4.0
   checksum: 4fd829b9283c56bdc630e29716d50c22f96dd96ad74bba98ac3f87e40aee8ee284125c5ef90991ca2d87ccfb2a1d8eb3c2614d456f86d0612b854df6330b80f0
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:2.23.1":
+  version: 2.23.1
+  resolution: "@pulumi/pulumi@npm:2.23.1"
+  dependencies:
+    "@grpc/grpc-js": ^1.2.7
+    "@logdna/tail-file": ^2.0.6
+    "@pulumi/query": ^0.3.0
+    google-protobuf: ^3.5.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.0
+    normalize-package-data: ^2.4.0
+    protobufjs: ^6.8.6
+    read-package-tree: ^5.3.1
+    require-from-string: ^2.0.1
+    semver: ^6.1.0
+    source-map-support: ^0.4.16
+    split2: ^3.2.2
+    ts-node: ^7.0.1
+    typescript: ~3.7.3
+    upath: ^1.1.0
+  checksum: 52debbdeb9400a8438993c4af516759b991442d92902091032909373713a954e07c8a0a7fb3e9ac28f9abc917fd1160239c971622f442d5f2789600b3805ded8
   languageName: node
   linkType: hard
 
@@ -2942,30 +2966,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.23.1":
-  version: 2.23.1
-  resolution: "@pulumi/pulumi@npm:2.23.1"
-  dependencies:
-    "@grpc/grpc-js": ^1.2.7
-    "@logdna/tail-file": ^2.0.6
-    "@pulumi/query": ^0.3.0
-    google-protobuf: ^3.5.0
-    js-yaml: ^3.14.0
-    minimist: ^1.2.0
-    normalize-package-data: ^2.4.0
-    protobufjs: ^6.8.6
-    read-package-tree: ^5.3.1
-    require-from-string: ^2.0.1
-    semver: ^6.1.0
-    source-map-support: ^0.4.16
-    split2: ^3.2.2
-    ts-node: ^7.0.1
-    typescript: ~3.7.3
-    upath: ^1.1.0
-  checksum: 52debbdeb9400a8438993c4af516759b991442d92902091032909373713a954e07c8a0a7fb3e9ac28f9abc917fd1160239c971622f442d5f2789600b3805ded8
-  languageName: node
-  linkType: hard
-
 "@pulumi/query@npm:^0.3.0":
   version: 0.3.0
   resolution: "@pulumi/query@npm:0.3.0"
@@ -2973,7 +2973,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:^3.1.2":
+"@rollup/plugin-alias@npm:3.1.2, @rollup/plugin-alias@npm:^3.1.2":
   version: 3.1.2
   resolution: "@rollup/plugin-alias@npm:3.1.2"
   dependencies:
@@ -3001,7 +3001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:^11.0.1, @rollup/plugin-node-resolve@npm:^11.2.0":
+"@rollup/plugin-node-resolve@npm:11.2.0, @rollup/plugin-node-resolve@npm:^11.0.1, @rollup/plugin-node-resolve@npm:^11.2.0":
   version: 11.2.0
   resolution: "@rollup/plugin-node-resolve@npm:11.2.0"
   dependencies:
@@ -3033,7 +3033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:^2.4.1":
+"@rollup/plugin-replace@npm:2.4.1, @rollup/plugin-replace@npm:^2.4.1":
   version: 2.4.1
   resolution: "@rollup/plugin-replace@npm:2.4.1"
   dependencies:
@@ -3196,7 +3196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@topmonks/pulumi-aws@npm:^1.7.7":
+"@topmonks/pulumi-aws@npm:1.7.7":
   version: 1.7.7
   resolution: "@topmonks/pulumi-aws@npm:1.7.7"
   peerDependencies:
@@ -3415,7 +3415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/firefox-webext-browser@npm:^82.0.0":
+"@types/firefox-webext-browser@npm:82.0.0":
   version: 82.0.0
   resolution: "@types/firefox-webext-browser@npm:82.0.0"
   checksum: 0edd3f30d59a559f9c30a5d8adbfbb10620442b436248300b4ec52ebef3a5483a56ab7b2ddb64848621f770a922f9179b528cbb2182b3150a1d408cf059712e7
@@ -3585,7 +3585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.5.8":
+"@types/node-fetch@npm:2.5.8":
   version: 2.5.8
   resolution: "@types/node-fetch@npm:2.5.8"
   dependencies:
@@ -3602,17 +3602,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:14.14.35, @types/node@npm:^14.14.35":
+  version: 14.14.35
+  resolution: "@types/node@npm:14.14.35"
+  checksum: 0f6320bf5370d1ff82105fb7f26aa0658499c97d3ec78561e65b65724280244f281602541182b63470d2c8a98db22fbb4f91409c5c7c97da8c3bb8f97fbc5dbc
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^13.7.0":
   version: 13.13.38
   resolution: "@types/node@npm:13.13.38"
   checksum: b373d9285c7c6c867144d83df00095b201b9d6ea9211694c9b5df25bcd0f78f70e46da22aed3e31f7cc3ea4a326fb59c15326a051805e1cac5ae5df6dee56008
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.14.35":
-  version: 14.14.35
-  resolution: "@types/node@npm:14.14.35"
-  checksum: 0f6320bf5370d1ff82105fb7f26aa0658499c97d3ec78561e65b65724280244f281602541182b63470d2c8a98db22fbb4f91409c5c7c97da8c3bb8f97fbc5dbc
   languageName: node
   linkType: hard
 
@@ -3660,7 +3660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:^0.27.39":
+"@types/ramda@npm:0.27.39":
   version: 0.27.39
   resolution: "@types/ramda@npm:0.27.39"
   dependencies:
@@ -3794,7 +3794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:^8.2.0":
+"@types/whatwg-url@npm:8.2.0":
   version: 8.2.0
   resolution: "@types/whatwg-url@npm:8.2.0"
   dependencies:
@@ -3822,7 +3822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.19.0":
+"@typescript-eslint/eslint-plugin@npm:4.19.0":
   version: 4.19.0
   resolution: "@typescript-eslint/eslint-plugin@npm:4.19.0"
   dependencies:
@@ -3860,7 +3860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.19.0":
+"@typescript-eslint/parser@npm:4.19.0":
   version: 4.19.0
   resolution: "@typescript-eslint/parser@npm:4.19.0"
   dependencies:
@@ -4172,7 +4172,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:^0.4.1":
+"@web/test-runner-junit-reporter@npm:0.4.1":
   version: 0.4.1
   resolution: "@web/test-runner-junit-reporter@npm:0.4.1"
   dependencies:
@@ -4194,7 +4194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:^0.12.17":
+"@web/test-runner@npm:0.12.17":
   version: 0.12.17
   resolution: "@web/test-runner@npm:0.12.17"
   dependencies:
@@ -4226,8 +4226,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "KnihyDobrovskyCount@workspace:actors/knihydobrovsky-count"
   dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
+    "@apify/eslint-config": 0.1.3
+    apify: 1.1.1
   languageName: unknown
   linkType: soft
 
@@ -4235,8 +4235,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "KnihyDobrovskyDaily@workspace:actors/knihydobrovsky-daily"
   dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
+    "@apify/eslint-config": 0.1.3
+    apify: 1.1.1
   languageName: unknown
   linkType: soft
 
@@ -4261,7 +4261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abort-controller@npm:^3.0.0":
+"abort-controller@npm:3.0.0, abort-controller@npm:^3.0.0":
   version: 3.0.0
   resolution: "abort-controller@npm:3.0.0"
   dependencies:
@@ -4661,7 +4661,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-cli@npm:^0.6.2":
+"apify-cli@npm:0.6.2":
   version: 0.6.2
   resolution: "apify-cli@npm:0.6.2"
   dependencies:
@@ -4783,7 +4783,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify@npm:^1.1.1":
+"apify@npm:1.1.1, apify@npm:^1.1.1":
   version: 1.1.1
   resolution: "apify@npm:1.1.1"
   dependencies:
@@ -6336,7 +6336,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.0.0-rc.3":
+"chart.js@npm:3.0.0-rc.3":
   version: 3.0.0-rc.3
   resolution: "chart.js@npm:3.0.0-rc.3"
   checksum: 03cff16f097f70366e0d9fa3329e73441329d41ff3bab19294cec51a2d753673e7f43567de8b348466b113df0ad8ebe151ad4f5d0dd97a1b5e7b0bfa88550c60
@@ -6443,7 +6443,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:>=2.0.0 <4.0.0, chokidar@npm:^3.3.0, chokidar@npm:^3.4.3, chokidar@npm:^3.5.1":
+"chokidar@npm:3.5.1, chokidar@npm:>=2.0.0 <4.0.0, chokidar@npm:^3.3.0, chokidar@npm:^3.4.3, chokidar@npm:^3.5.1":
   version: 3.5.1
   resolution: "chokidar@npm:3.5.1"
   dependencies:
@@ -6513,7 +6513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrome-webstore-upload-cli@npm:^1.2.1":
+"chrome-webstore-upload-cli@npm:1.2.1":
   version: 1.2.1
   resolution: "chrome-webstore-upload-cli@npm:1.2.1"
   dependencies:
@@ -7015,6 +7015,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:7.2.0":
+  version: 7.2.0
+  resolution: "commander@npm:7.2.0"
+  checksum: bdc0eca5e25cd24af8440163d3c9a996785bbac4b49a590365699cdc1ed08cefbac8f268153208ab2bc5dc3cb1d3fb573fd1590c681e36e371342186bd331a4c
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.19.0, commander@npm:^2.2.0, commander@npm:^2.20.0, commander@npm:^2.3.0, commander@npm:^2.6.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -7026,13 +7033,6 @@ __metadata:
   version: 5.1.0
   resolution: "commander@npm:5.1.0"
   checksum: d16141ea7f580945156fb8a06de2834c4647c7d9d3732ebd4534ab8e0b7c64747db301e18f2b840f28ea8fef51f7a8d6178e674b45a21931f0b65ff1c7f476b3
-  languageName: node
-  linkType: hard
-
-"commander@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "commander@npm:7.2.0"
-  checksum: bdc0eca5e25cd24af8440163d3c9a996785bbac4b49a590365699cdc1ed08cefbac8f268153208ab2bc5dc3cb1d3fb573fd1590c681e36e371342186bd331a4c
   languageName: node
   linkType: hard
 
@@ -7454,7 +7454,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto@npm:^1.0.1":
+"crypto@npm:1.0.1":
   version: 1.0.1
   resolution: "crypto@npm:1.0.1"
   checksum: e3ecafe330b730e4e7482096b895e1cdab78c189cfe66408de27f4bc1390500346bb02dad2959046a1ac53131c0691e045d03294fa321ce632b1f450d02bd616
@@ -7741,7 +7741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.19.0":
+"date-fns@npm:2.19.0":
   version: 2.19.0
   resolution: "date-fns@npm:2.19.0"
   checksum: 99ec34199c3a61cdb7fd27dcd68dd3c0c949ddfc34aa1daba9a6b2e0b5381bf42d8955d28ec2770f72eee429f5e7ab10fadba7b69108379d2545f003461d04f7
@@ -8409,7 +8409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:^4.0.0":
+"dotenv-cli@npm:4.0.0":
   version: 4.0.0
   resolution: "dotenv-cli@npm:4.0.0"
   dependencies:
@@ -8914,7 +8914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.9.6":
+"esbuild@npm:0.9.6, esbuild@npm:^0.9.6":
   version: 0.9.6
   resolution: "esbuild@npm:0.9.6"
   bin:
@@ -9015,7 +9015,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.1.0":
+"eslint-config-prettier@npm:8.1.0":
   version: 8.1.0
   resolution: "eslint-config-prettier@npm:8.1.0"
   peerDependencies:
@@ -9062,7 +9062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-ava@npm:^11.0.0":
+"eslint-plugin-ava@npm:11.0.0":
   version: 11.0.0
   resolution: "eslint-plugin-ava@npm:11.0.0"
   dependencies:
@@ -9081,7 +9081,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-es@npm:^4.1.0":
+"eslint-plugin-es@npm:4.1.0":
   version: 4.1.0
   resolution: "eslint-plugin-es@npm:4.1.0"
   dependencies:
@@ -9137,7 +9137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:^1.3.0":
+"eslint-plugin-lit@npm:1.3.0":
   version: 1.3.0
   resolution: "eslint-plugin-lit@npm:1.3.0"
   dependencies:
@@ -9159,7 +9159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^3.3.1":
+"eslint-plugin-prettier@npm:3.3.1":
   version: 3.3.1
   resolution: "eslint-plugin-prettier@npm:3.3.1"
   dependencies:
@@ -9174,7 +9174,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^4.2.1, eslint-plugin-promise@npm:^4.3.1":
+"eslint-plugin-promise@npm:4.3.1, eslint-plugin-promise@npm:^4.2.1":
   version: 4.3.1
   resolution: "eslint-plugin-promise@npm:4.3.1"
   checksum: 01aa61c2bea6cfd2e612cda9aaaf079c7652503dd613248a251c99b58414245ee999a8f5ca0a15f62c6b1605aca4dcbace272d67f22d79aac3f698547eb75d9a
@@ -9291,7 +9291,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.22.0":
+"eslint@npm:7.22.0":
   version: 7.22.0
   resolution: "eslint@npm:7.22.0"
   dependencies:
@@ -10156,6 +10156,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"form-data@npm:4.0.0":
+  version: 4.0.0
+  resolution: "form-data@npm:4.0.0"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.8
+    mime-types: ^2.1.12
+  checksum: ecbe8f41bcf5c415f38e39058b34598a9261bb74a3d54b633d0b5dd8b7cf9a30b0626cd06ae8e79874a2ca88c222041142a7893e5afdd35fdfc3272264d03d44
+  languageName: node
+  linkType: hard
+
 "form-data@npm:^3.0.0":
   version: 3.0.0
   resolution: "form-data@npm:3.0.0"
@@ -10164,17 +10175,6 @@ __metadata:
     combined-stream: ^1.0.8
     mime-types: ^2.1.12
   checksum: 1af88217b449eda6566a0d95185f2baa403ed2a0e3b11547069f6062be66cbac7c8d7a25f0fc59560702e96526e659b5b9e5a8c6fefe00f06da44338191a9133
-  languageName: node
-  linkType: hard
-
-"form-data@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "form-data@npm:4.0.0"
-  dependencies:
-    asynckit: ^0.4.0
-    combined-stream: ^1.0.8
-    mime-types: ^2.1.12
-  checksum: ecbe8f41bcf5c415f38e39058b34598a9261bb74a3d54b633d0b5dd8b7cf9a30b0626cd06ae8e79874a2ca88c222041142a7893e5afdd35fdfc3272264d03d44
   languageName: node
   linkType: hard
 
@@ -11092,7 +11092,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-esbuild@npm:^0.6.2":
+"gulp-esbuild@npm:0.6.2":
   version: 0.6.2
   resolution: "gulp-esbuild@npm:0.6.2"
   dependencies:
@@ -11181,7 +11181,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-mode@npm:^1.0.2":
+"gulp-mode@npm:1.0.2":
   version: 1.0.2
   resolution: "gulp-mode@npm:1.0.2"
   dependencies:
@@ -11569,57 +11569,57 @@ fsevents@~2.3.1:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@esm-bundle/chai": ^4.3.4
-    "@material/button": ^10.0.0
-    "@material/icon-button": ^10.0.0
-    "@material/snackbar": ^10.0.0
-    "@open-wc/testing": ^2.5.32
-    "@pulumi/aws": ^3.34.2
-    "@pulumi/awsx": ^0.25.0
-    "@pulumi/pulumi": ^2.23.1
-    "@rollup/plugin-alias": ^3.1.2
-    "@rollup/plugin-node-resolve": ^11.2.0
-    "@rollup/plugin-replace": ^2.4.1
+    "@esm-bundle/chai": 4.3.4
+    "@material/button": 10.0.0
+    "@material/icon-button": 10.0.0
+    "@material/snackbar": 10.0.0
+    "@open-wc/testing": 2.5.32
+    "@pulumi/aws": 3.34.2
+    "@pulumi/awsx": 0.25.0
+    "@pulumi/pulumi": 2.23.1
+    "@rollup/plugin-alias": 3.1.2
+    "@rollup/plugin-node-resolve": 11.2.0
+    "@rollup/plugin-replace": 2.4.1
     "@topmonks/blendid": "git://github.com/topmonks/blendid.git#commit=3da13806e11c7bfe0f378e17e09bac602b39aa7b"
-    "@topmonks/pulumi-aws": ^1.7.7
-    "@types/firefox-webext-browser": ^82.0.0
-    "@types/node": ^14.14.35
-    "@types/node-fetch": ^2.5.8
-    "@types/ramda": ^0.27.39
-    "@types/whatwg-url": ^8.2.0
-    "@typescript-eslint/eslint-plugin": ^4.19.0
-    "@typescript-eslint/parser": ^4.19.0
-    "@web/test-runner": ^0.12.17
-    "@web/test-runner-junit-reporter": ^0.4.1
-    abort-controller: ^3.0.0
-    chokidar: ^3.5.1
-    chrome-webstore-upload-cli: ^1.2.1
-    commander: ^7.2.0
-    date-fns: ^2.19.0
-    dotenv-cli: ^4.0.0
-    esbuild: ^0.9.6
-    eslint: ^7.22.0
-    eslint-config-prettier: ^8.1.0
-    eslint-plugin-ava: ^11.0.0
-    eslint-plugin-es: ^4.1.0
-    eslint-plugin-lit: ^1.3.0
-    eslint-plugin-prettier: ^3.3.1
-    eslint-plugin-promise: ^4.3.1
-    form-data: ^4.0.0
-    gulp-esbuild: ^0.6.2
-    gulp-mode: ^1.0.2
-    jsdom: ^16.5.1
-    node-fetch: ^2.6.1
-    npm-run-all: ^4.1.5
-    prettier: ^2.2.1
-    puppeteer: ^8.0.0
-    ramda: ^0.27.1
-    rollbar: ^2.21.1
-    source-map-explorer: ^2.5.2
-    stylelint: ^13.12.0
-    stylelint-config-prettier: ^8.0.2
-    web-ext: ^6.0.0
-    web-ext-submit: ^6.0.0
+    "@topmonks/pulumi-aws": 1.7.7
+    "@types/firefox-webext-browser": 82.0.0
+    "@types/node": 14.14.35
+    "@types/node-fetch": 2.5.8
+    "@types/ramda": 0.27.39
+    "@types/whatwg-url": 8.2.0
+    "@typescript-eslint/eslint-plugin": 4.19.0
+    "@typescript-eslint/parser": 4.19.0
+    "@web/test-runner": 0.12.17
+    "@web/test-runner-junit-reporter": 0.4.1
+    abort-controller: 3.0.0
+    chokidar: 3.5.1
+    chrome-webstore-upload-cli: 1.2.1
+    commander: 7.2.0
+    date-fns: 2.19.0
+    dotenv-cli: 4.0.0
+    esbuild: 0.9.6
+    eslint: 7.22.0
+    eslint-config-prettier: 8.1.0
+    eslint-plugin-ava: 11.0.0
+    eslint-plugin-es: 4.1.0
+    eslint-plugin-lit: 1.3.0
+    eslint-plugin-prettier: 3.3.1
+    eslint-plugin-promise: 4.3.1
+    form-data: 4.0.0
+    gulp-esbuild: 0.6.2
+    gulp-mode: 1.0.2
+    jsdom: 16.5.1
+    node-fetch: 2.6.1
+    npm-run-all: 4.1.5
+    prettier: 2.2.1
+    puppeteer: 8.0.0
+    ramda: 0.27.1
+    rollbar: 2.21.1
+    source-map-explorer: 2.5.2
+    stylelint: 13.12.0
+    stylelint-config-prettier: 8.0.2
+    web-ext: 6.0.0
+    web-ext-submit: 6.0.0
   languageName: unknown
   linkType: soft
 
@@ -13019,7 +13019,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^16.5.1":
+"jsdom@npm:16.5.1":
   version: 16.5.1
   resolution: "jsdom@npm:16.5.1"
   dependencies:
@@ -13648,7 +13648,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-element@npm:^2.2.1, lit-element@npm:^2.4.0":
+"lit-element@npm:2.4.0, lit-element@npm:^2.2.1":
   version: 2.4.0
   resolution: "lit-element@npm:2.4.0"
   dependencies:
@@ -13657,7 +13657,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^1.0.0, lit-html@npm:^1.1.1, lit-html@npm:^1.3.0":
+"lit-html@npm:1.3.0, lit-html@npm:^1.0.0, lit-html@npm:^1.1.1":
   version: 1.3.0
   resolution: "lit-html@npm:1.3.0"
   checksum: b32528e92f47d2ad6a306319a16a8301e1d8bd7cd1a065516a4fc14e55904f054bfe38dd1725e584ba2bdd71549c88c90107e493e3094a2f13b507c1ba86bd39
@@ -15099,7 +15099,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.3.0, node-fetch@npm:^2.6.1":
+"node-fetch@npm:2.6.1, node-fetch@npm:^2.3.0, node-fetch@npm:^2.6.1":
   version: 2.6.1
   resolution: "node-fetch@npm:2.6.1"
   checksum: cbb171635e538162b977eac5dfe7a1e07a9a02e991924377a6435502291e2f823d306b95aabc455caebf4a118ccf836868462bc70ccc3095af02bb9da61fda37
@@ -15297,7 +15297,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"npm-run-all@npm:^4.1.5":
+"npm-run-all@npm:4.1.5":
   version: 4.1.5
   resolution: "npm-run-all@npm:4.1.5"
   dependencies:
@@ -16956,7 +16956,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.2.1":
+"prettier@npm:2.2.1":
   version: 2.2.1
   resolution: "prettier@npm:2.2.1"
   bin:
@@ -17203,7 +17203,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^8.0.0":
+"puppeteer@npm:8.0.0":
   version: 8.0.0
   resolution: "puppeteer@npm:8.0.0"
   dependencies:
@@ -17304,7 +17304,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"ramda@npm:^0.27.1":
+"ramda@npm:0.27.1":
   version: 0.27.1
   resolution: "ramda@npm:0.27.1"
   checksum: 9aa4655dffdca66f8ba2ceabebe51996d6c75f6a2fb901a150885ace22c5950c211dd589868780b7a91c1443771702634d4370e7572d8c63c60e4b4f61aa57a9
@@ -18239,7 +18239,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"rollbar@npm:^2.21.1":
+"rollbar@npm:2.21.1":
   version: 2.21.1
   resolution: "rollbar@npm:2.21.1"
   dependencies:
@@ -18986,7 +18986,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"source-map-explorer@npm:^2.5.2":
+"source-map-explorer@npm:2.5.2":
   version: 2.5.2
   resolution: "source-map-explorer@npm:2.5.2"
   dependencies:
@@ -19705,7 +19705,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"stylelint-config-prettier@npm:^8.0.2":
+"stylelint-config-prettier@npm:8.0.2":
   version: 8.0.2
   resolution: "stylelint-config-prettier@npm:8.0.2"
   peerDependencies:
@@ -19717,7 +19717,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"stylelint@npm:^13.12.0":
+"stylelint@npm:13.12.0":
   version: 13.12.0
   resolution: "stylelint@npm:13.12.0"
   dependencies:
@@ -21312,7 +21312,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"web-ext-submit@npm:^6.0.0":
+"web-ext-submit@npm:6.0.0":
   version: 6.0.0
   resolution: "web-ext-submit@npm:6.0.0"
   dependencies:
@@ -21323,7 +21323,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"web-ext@npm:^6.0.0":
+"web-ext@npm:6.0.0, web-ext@npm:^6.0.0":
   version: 6.0.0
   resolution: "web-ext@npm:6.0.0"
   dependencies:
@@ -21704,7 +21704,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"workbox-window@npm:^6.1.2":
+"workbox-window@npm:6.1.2, workbox-window@npm:^6.1.2":
   version: 6.1.2
   resolution: "workbox-window@npm:6.1.2"
   dependencies:
