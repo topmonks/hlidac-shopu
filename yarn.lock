@@ -9062,22 +9062,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-ava@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "eslint-plugin-ava@npm:11.0.0"
+"eslint-plugin-ava@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "eslint-plugin-ava@npm:12.0.0"
   dependencies:
     deep-strict-equal: ^0.2.0
     enhance-visitors: ^1.0.0
     eslint-utils: ^2.1.0
-    espree: ^7.2.0
+    espree: ^7.3.1
     espurify: ^2.0.1
-    import-modules: ^2.0.0
+    import-modules: ^2.1.0
     micro-spelling-correcter: ^1.1.1
-    pkg-dir: ^4.2.0
+    pkg-dir: ^5.0.0
     resolve-from: ^5.0.0
   peerDependencies:
-    eslint: ">=7.7.0"
-  checksum: bc6d28b943503cf6d35b90bd52cb7077116b9ded88a0bba62ab04097ffb5dcf1d999558c928745e8c0c7a14e21726c001875ebbb4260c50fb99d9433dd90e91b
+    eslint: ">=7.22.0"
+  checksum: 5d570444bad0a9396874e4f2449283d578eb505dd178ad0ec4877b60e655476ac1c657a61f6a5ec38ef8a549b1b0f7ddb5a381aa4a79b31fd92a4c5b7c88fb15
   languageName: node
   linkType: hard
 
@@ -9338,7 +9338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"espree@npm:7.3.1, espree@npm:^7.2.0, espree@npm:^7.3.0, espree@npm:^7.3.1":
+"espree@npm:7.3.1, espree@npm:^7.3.0, espree@npm:^7.3.1":
   version: 7.3.1
   resolution: "espree@npm:7.3.1"
   dependencies:
@@ -9974,6 +9974,16 @@ __metadata:
     locate-path: ^5.0.0
     path-exists: ^4.0.0
   checksum: d612d28e02eaca6cd7128fc9bc9b456e2547a3f9875b2b2ae2dbdc6b8cec52bc2885efcb3ac6c18954e838f4c8e20565d196784b190e1d38565f9dc39aade722
+  languageName: node
+  linkType: hard
+
+"find-up@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "find-up@npm:5.0.0"
+  dependencies:
+    locate-path: ^6.0.0
+    path-exists: ^4.0.0
+  checksum: cd0b77415bc59e5af31e4e1b29c6ff8d965d9ca3c60a4b74161f8f116c0d1ad8d35bc6e53bf8f92c69e704e98183f1628a363ed7d519eb28eff54378b8f167a7
   languageName: node
   linkType: hard
 
@@ -11600,7 +11610,7 @@ fsevents@~2.3.1:
     esbuild: ^0.9.6
     eslint: ^7.22.0
     eslint-config-prettier: ^8.1.0
-    eslint-plugin-ava: ^11.0.0
+    eslint-plugin-ava: ^12.0.0
     eslint-plugin-es: ^4.1.0
     eslint-plugin-lit: ^1.3.0
     eslint-plugin-prettier: ^3.3.1
@@ -12018,7 +12028,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"import-modules@npm:^2.0.0":
+"import-modules@npm:^2.1.0":
   version: 2.1.0
   resolution: "import-modules@npm:2.1.0"
   checksum: d9d551623ab92453b98049177e7fe6dc6213a7920d43e62250577928115af6b176eed51ef422c717a6c3b8d172275f7409c5cbc26346ae44b6ba26b39a1e9580
@@ -13753,6 +13763,15 @@ fsevents@~2.3.1:
   dependencies:
     p-locate: ^4.1.0
   checksum: c58f49d45c8672d0a290dea0ce41fcb27205b3f2d61452ba335ef3b42ad36c10c31b1f061b46d96dd4b81e9a00e8a2897bc124d75623b80a9f6d36b1e754a6b5
+  languageName: node
+  linkType: hard
+
+"locate-path@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "locate-path@npm:6.0.0"
+  dependencies:
+    p-locate: ^5.0.0
+  checksum: 4c379638152e0e5fda9a8cc07005702f81fcb9899db0f66d691ac1e64193dea670af14e96c50f14d82d45959daa4c400cb712c158cffe22ae265bfc1b1e3a221
   languageName: node
   linkType: hard
 
@@ -15847,6 +15866,15 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"p-limit@npm:^3.0.2":
+  version: 3.1.0
+  resolution: "p-limit@npm:3.1.0"
+  dependencies:
+    yocto-queue: ^0.1.0
+  checksum: 5301db6a34fc1fe3714ae562c100a0567d8c16ce9db800f547bbe75efc045c40cd74c4a4c893279975dcf15afc1217c8d2c93fe957a156a3a43d7cce98eaad2e
+  languageName: node
+  linkType: hard
+
 "p-locate@npm:^2.0.0":
   version: 2.0.0
   resolution: "p-locate@npm:2.0.0"
@@ -15871,6 +15899,15 @@ fsevents@~2.3.1:
   dependencies:
     p-limit: ^2.2.0
   checksum: 57f9abef0b29f02ff88c0936a392c9a1fbdd08169e636e0d85b7407c108014d71578c0c6fe93fa49b5bf3857b20d6f16b96389e2b356f7f599d4d2150505844f
+  languageName: node
+  linkType: hard
+
+"p-locate@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "p-locate@npm:5.0.0"
+  dependencies:
+    p-limit: ^3.0.2
+  checksum: a233d775c870e00c734adabd29f66f93824df076683c0d5a2dc16e5285b02d80c1bf3bab43b9881e4a5b16b37bb86f1922aebb094674703d30a4973041d5c0f6
   languageName: node
   linkType: hard
 
@@ -16394,6 +16431,15 @@ fsevents@~2.3.1:
   dependencies:
     find-up: ^4.0.0
   checksum: 1956ebf3cf5cc36a5d20e93851fcadd5a786774eb08667078561e72e0ab8ace91fc36a028d5305f0bfe7c89f9bf51886e2a3c8cb2c2620accfa3feb8da3c256b
+  languageName: node
+  linkType: hard
+
+"pkg-dir@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "pkg-dir@npm:5.0.0"
+  dependencies:
+    find-up: ^5.0.0
+  checksum: 86f6ecee1787d8fe1606fd831f823f967c6ea0d760ce714af6afd2fec076ce71fbedcb57b339d93b84edf90ccdd81d4e6e2c10fcde21684ef3ffee5e05fd37dc
   languageName: node
   linkType: hard
 
@@ -22128,6 +22174,13 @@ typescript@~3.7.3:
   version: 2.0.0
   resolution: "yn@npm:2.0.0"
   checksum: 62ac4f229e11099ca72a1531a409056bcab027c2be0be2fea2507dd121f24bb65e6b7beddc9244edc0e328c0b41d155baab1040f559825c12afa9ad2a8c17496
+  languageName: node
+  linkType: hard
+
+"yocto-queue@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "yocto-queue@npm:0.1.0"
+  checksum: 096c3b40beb2804659539be1605a35c58eb0c85285f94b77b3e924f42ee265c1a40bf9f4153770039517146b469a964d51742395f35ca8135fc9f7e4982b785d
   languageName: node
   linkType: hard
 
