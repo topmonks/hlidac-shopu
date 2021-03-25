@@ -37,6 +37,15 @@ You will need:
 
 See `scripts` folder for install scripts for your system.
 
+## Step by step build of exetnsion for Mozilla reviewers
+
+```
+nvm use
+yarn install
+yarn build:extension
+yarn build:firefox
+```
+
 ## Building extensions
 
 All extensions (except Safari version) will be build to `./dist` folder by calling the `npm build` script.
