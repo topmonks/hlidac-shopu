@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";

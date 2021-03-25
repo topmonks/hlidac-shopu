@@ -1,4 +1,4 @@
-import { html, svg, render } from "lit-html/lit-html.js";
+import { html, svg, render } from "lit-html";
 import {
   formatNumber,
   formatPercents,

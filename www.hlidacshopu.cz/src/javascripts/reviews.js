@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
 import * as rollbar from "./rollbar.js";
 import { when } from "@hlidac-shopu/lib/templates.mjs";

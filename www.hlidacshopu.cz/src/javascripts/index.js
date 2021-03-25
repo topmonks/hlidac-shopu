@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { Workbox } from "workbox-window";
 import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
 import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";

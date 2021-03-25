@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";

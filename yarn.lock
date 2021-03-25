@@ -2315,8 +2315,8 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.0
-    lit-element: ^2.4.0
-    lit-html: ^1.3.0
+    lit-element: 3.0.0-pre.3
+    lit-html: 2.0.0-pre.6
   languageName: unknown
   linkType: soft
 
@@ -2345,9 +2345,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
+    "@lit/reactive-element": 1.0.0-pre.2
     chart.js: ^3.0.0-rc.3
     chartjs-adapter-date-fns: 1.1.0-beta.1
-    lit-element: ^2.4.0
+    lit-element: 3.0.0-pre.3
   languageName: unknown
   linkType: soft
 
@@ -2384,10 +2385,17 @@ __metadata:
     "@hlidac-shopu/lib": 1.0.0
     "@material/layout-grid": ^10.0.0
     "@material/top-app-bar": ^10.0.0
-    lit-html: ^1.3.0
+    lit-html: 2.0.0-pre.6
     workbox-window: ^6.1.2
   languageName: unknown
   linkType: soft
+
+"@lit/reactive-element@npm:1.0.0-pre.2, @lit/reactive-element@npm:^1.0.0-pre.1":
+  version: 1.0.0-pre.2
+  resolution: "@lit/reactive-element@npm:1.0.0-pre.2"
+  checksum: da4f9ad6ebe7556b3b2d246278a57bf65b706ce08b8a7ba4fb17048c21d957d96f3a3e436707260434ac9ea5335390879baf9ad5348f676b79127fafe830d223
+  languageName: node
+  linkType: hard
 
 "@logdna/tail-file@npm:^2.0.6":
   version: 2.0.6
@@ -13658,7 +13666,17 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-element@npm:^2.2.1, lit-element@npm:^2.4.0":
+"lit-element@npm:3.0.0-pre.3":
+  version: 3.0.0-pre.3
+  resolution: "lit-element@npm:3.0.0-pre.3"
+  dependencies:
+    "@lit/reactive-element": ^1.0.0-pre.1
+    lit-html: ^2.0.0-pre.4
+  checksum: ffb4a4e86e63ad4c404f4b666d928dce3d390df0eea1b2173fd374b2e2d63015880768b00136c9a01927a1dd261a840d6ffdf075cc551d39b245862d63339f11
+  languageName: node
+  linkType: hard
+
+"lit-element@npm:^2.2.1":
   version: 2.4.0
   resolution: "lit-element@npm:2.4.0"
   dependencies:
@@ -13667,7 +13685,14 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^1.0.0, lit-html@npm:^1.1.1, lit-html@npm:^1.3.0":
+"lit-html@npm:2.0.0-pre.6, lit-html@npm:^2.0.0-pre.4":
+  version: 2.0.0-pre.6
+  resolution: "lit-html@npm:2.0.0-pre.6"
+  checksum: 47d73b4566cfa4791967449218a2b2bf6dc4438d4fbb09e46fa25d492225d1dcb1ab954932696cb4295825d41e8eb50d4b86f24d9acbb8f986ecf7f1760da9ed
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^1.0.0, lit-html@npm:^1.1.1":
   version: 1.3.0
   resolution: "lit-html@npm:1.3.0"
   checksum: b32528e92f47d2ad6a306319a16a8301e1d8bd7cd1a065516a4fc14e55904f054bfe38dd1725e584ba2bdd71549c88c90107e493e3094a2f13b507c1ba86bd39

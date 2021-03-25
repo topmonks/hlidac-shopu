@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { MDCSnackbar } from "@material/snackbar/component.js";
 import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";

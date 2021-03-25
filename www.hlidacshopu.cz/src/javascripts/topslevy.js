@@ -1,4 +1,4 @@
-import { html, render } from "lit-html/lit-html.js";
+import { html, render } from "lit-html";
 import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.mjs";
 import {
   fetchDiscountDataPercent,

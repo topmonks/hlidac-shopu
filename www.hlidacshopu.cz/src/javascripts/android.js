@@ -1,4 +1,4 @@
-import { html } from "lit-html/lit-html.js";
+import { html } from "lit-html";
 
 export function installationGuide() {
   return html`
