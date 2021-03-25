@@ -1,4 +1,4 @@
-import { render } from "lit-html/lit-html.js";
+import { render } from "lit-html";
 import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { getShop } from "./helpers.mjs";
