@@ -2329,6 +2329,7 @@ __metadata:
     "@types/node": ^14.14.35
     apify: ^1.1.1
     apify-cli: ^0.6.2
+    schema-dts: ^0.8.2
   languageName: unknown
   linkType: soft
 
@@ -18509,6 +18510,15 @@ fsevents@~2.3.1:
   dependencies:
     xmlchars: ^2.2.0
   checksum: 6ad14be68da9b84af0fa3de346fd78bd3a8e8a73a462e2852279a1fff1e2619988919294001abe3ecef3783f9498962a0619d960ccca4ec2ca914526fde1acc2
+  languageName: node
+  linkType: hard
+
+"schema-dts@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "schema-dts@npm:0.8.2"
+  peerDependencies:
+    typescript: ">=3.4.0"
+  checksum: f617b11bc227aa326b2b385ab87e4f59233817db2fb81896400b5a45b0a5fa738db6a1895809a67acc3a8778a6f83df22bf7a0dc81bce35ee19ac772f3351c5e
   languageName: node
   linkType: hard
 
