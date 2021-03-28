@@ -1,4 +1,8 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  CloudFrontClient,
+  CreateInvalidationCommand
+} = require("@aws-sdk/client-cloudfront");
 const Apify = require("apify");
 const cheerio = require("cheerio");
 const csv = require("csv-parse/lib/sync");
@@ -348,15 +352,34 @@ async function uploadToS3(s3, fileName, ext, data) {
   );
 }
 
+async function invalidateCDN(cloudfront, distributionId) {
+  await cloudfront.send(
+    new CreateInvalidationCommand({
+      DistributionId: distributionId,
+      InvalidationBatch: {
+        Paths: { Items: ["/app/*"], Quantity: 1 },
+        CallerReference: new Date().getTime().toString()
+      }
+    })
+  );
+}
+
 async function saveData({ awsCredentials, reviews, stats }) {
-  log.info("S3: starting upload");
-  const s3 = new S3Client({
+  const configuration = {
     region: "eu-central-1",
     credentials: awsCredentials
-  });
+  };
+
+  log.info("S3: starting upload of data");
+  const s3 = new S3Client(configuration);
   await uploadToS3(s3, "reviews", "jsonld", reviews);
   await uploadToS3(s3, "stats", "jsonld", stats);
   log.info("S3: done");
+
+  log.info("CloudFront: invalidating data in CDN");
+  const cloudfront = new CloudFrontClient(configuration);
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9");
+  log.info("CloudFront: done");
 }
 
 const APPLE = "Apple";
