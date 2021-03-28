@@ -50,6 +50,8 @@ function appleStats(request, $) {
   ];
 }
 
+const pad = x => `00${x}`.slice(-2);
+
 /**
  * @param {Request} request
  * @param {Response} resp
@@ -57,12 +59,24 @@ function appleStats(request, $) {
  * @returns {InteractionCounter[]}
  */
 async function appleDownloads(request, resp, requestQueue) {
-  if (request.userData.year < new Date().getFullYear()) {
-    const year = request.userData.year + 1;
+  const year = request.userData.year + 1;
+  const thisYear = new Date().getFullYear();
+  const month = request.userData.month ?? 0;
+  const thisMonth = new Date().getMonth();
+  if (year < thisYear) {
     await requestQueue.addRequest({
       url: appleDownloadsUrl(year),
       userData: { ...request.userData, year }
     });
+  } else if (month < thisMonth) {
+    await requestQueue.addRequest({
+      url: appleDownloadsUrl(`${thisYear}-${pad(month + 1)}`, "MONTHLY"),
+      userData: { ...request.userData, thisYear, month: month + 1 }
+    });
+  }
+  if (resp.headers.get("content-type") !== "application/a-gzip") {
+    console.warn(await resp.text());
+    return;
   }
   const data = await resp
     .buffer()
@@ -390,11 +404,11 @@ const FIREFOX_REVIEWS = "Firefox Reviews";
 const GOOGLE = "Google";
 const GOOGLE_REVIEWS = "Google Reviews";
 
-function appleDownloadsUrl(year) {
+function appleDownloadsUrl(date, freq = "YEARLY") {
   return `https://api.appstoreconnect.apple.com/v1/salesReports?${new URLSearchParams(
     {
-      "filter[frequency]": "YEARLY",
-      "filter[reportDate]": year.toString(),
+      "filter[frequency]": freq,
+      "filter[reportDate]": date.toString(),
       "filter[reportSubType]": "SUMMARY",
       "filter[reportType]": "SALES",
       "filter[vendorNumber]": "85389739"
