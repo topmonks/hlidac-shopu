@@ -2329,6 +2329,10 @@ __metadata:
     "@types/node": ^14.14.35
     apify: ^1.1.1
     apify-cli: ^0.6.2
+    cheerio: ^1.0.0-rc.5
+    csv-parse: ^4.15.3
+    jsonwebtoken: ^8.5.1
+    node-fetch: ^2.6.1
     schema-dts: ^0.8.2
   languageName: unknown
   linkType: soft
@@ -6419,7 +6423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:1.0.0-rc.5":
+"cheerio@npm:1.0.0-rc.5, cheerio@npm:^1.0.0-rc.5":
   version: 1.0.0-rc.5
   resolution: "cheerio@npm:1.0.0-rc.5"
   dependencies:
@@ -7701,6 +7705,13 @@ __metadata:
   dependencies:
     cssom: ~0.3.6
   checksum: a778180d2f5eef44742b7083997a0ad6e59eee016724ceac4d6229e48842d3c5ebbb55dc02c555f793bdc486254f6eef8d2049c1815e8fc74514e3eb827d49ec
+  languageName: node
+  linkType: hard
+
+"csv-parse@npm:^4.15.3":
+  version: 4.15.3
+  resolution: "csv-parse@npm:4.15.3"
+  checksum: 7b125fd77f757c8ab605f107dffbd60a91a0a423d2c44b89f20ba050d11e7c5ae2130b58a05216caccea5f5ffee8f2fb9863c8a14ec580ed7532a268a362eb60
   languageName: node
   linkType: hard
 
@@ -13251,7 +13262,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:8.5.1":
+"jsonwebtoken@npm:8.5.1, jsonwebtoken@npm:^8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
   dependencies:
