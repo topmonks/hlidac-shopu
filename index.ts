@@ -55,3 +55,4 @@ export const allShopsStatsTable = db.allShopsStatsTable.name;
 export const topslevyAbsoluteTable = db.topslevyAbsoluteTable.name;
 export const topslevyRelativeTable = db.topslevyRelativeTable.name;
 export const dataBucketName = store.dataBucket.bucket;
+export const dataDistributionID = store.dataDistributionID;
