@@ -9528,15 +9528,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.9.6":
-  version: 0.9.6
-  resolution: "esbuild@npm:0.9.6"
-  bin:
-    esbuild: bin/esbuild
-  checksum: 418512a45d2b4f7227a3bda0af0049bbb517f6ee3bacc6aa29ffbd2699d40b26e2c5b4ae0020f14a20848cb641bd55329e1f62e52164ff98cbc900558ad77e7c
-  languageName: node
-  linkType: hard
-
 "escalade@npm:^3.1.1":
   version: 3.1.1
   resolution: "escalade@npm:3.1.1"
@@ -11725,14 +11716,13 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-esbuild@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "gulp-esbuild@npm:0.6.2"
+"gulp-esbuild@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "gulp-esbuild@npm:0.7.0"
   dependencies:
-    esbuild: ^0.9.6
     plugin-error: ^1.0.1
     vinyl: ^2.2.1
-  checksum: 8d9feb5331fd0fb6a89047e1d71ce97fddecbec7c505fb531cf8b7ad7d70c069a9d616430fe4d3b6f443408d513c4833483e6f2e749d63bed1e4a6478d25b5b5
+  checksum: 0e11571567a0100dc4a6f265bbcba03d2d52eaf37db03ad2e11dcb5d035245d8cb9c949f63291677d2623dd9f0adad82afd57e1ff3be8afd957817f61516ce77
   languageName: node
   linkType: hard
 
@@ -12239,7 +12229,7 @@ fsevents@~2.3.1:
     eslint-plugin-prettier: ^3.3.1
     eslint-plugin-promise: ^4.3.1
     form-data: ^4.0.0
-    gulp-esbuild: ^0.6.2
+    gulp-esbuild: ^0.7.0
     gulp-mode: ^1.0.2
     jsdom: ^16.5.1
     node-fetch: ^2.6.1
