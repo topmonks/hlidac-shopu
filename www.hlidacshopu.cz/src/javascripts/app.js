@@ -13,8 +13,10 @@ import * as rollbar from "./rollbar.js";
 
 rollbar.init();
 
-registerStylesheet("/assets/css/app.css");
-registerStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons");
+registerStylesheets([
+  "/assets/css/app.css",
+  "https://fonts.googleapis.com/icon?family=Material+Icons"
+]);
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
@@ -64,12 +66,21 @@ state.addWatch("render", (id, prev, curr) => {
   });
 });
 
+function removeToolbarFromEmbedView(isEmbed) {
+  if (isEmbed) {
+    toolbar.classList.remove("toolbar--visible");
+  } else {
+    toolbar.classList.add("toolbar--visible");
+  }
+}
+
 addEventListener("DOMContentLoaded", async () => {
   try {
     console.group("Hlídačshopů.cz");
     const url = new URL(location.href);
     const sharedInfo = getSharedInfo(url);
     console.log("Shared data:", sharedInfo);
+    removeToolbarFromEmbedView(isEmbed(sharedInfo));
     if (sharedInfo) {
       await renderResults(root, sharedInfo);
     } else if (url.searchParams.has("install")) {
@@ -175,6 +186,10 @@ function getShop(targetURL) {
   return shopName(targetURL);
 }
 
+function isEmbed({ view }) {
+  return view === "embed";
+}
+
 function getSharedInfo({ searchParams }) {
   const targetURL = getTargetURL(searchParams);
   const title = searchParams.get("title");
@@ -211,26 +226,28 @@ function invalidURLTemplate() {
   `;
 }
 
-function registerStylesheet(href) {
-  const styles = document.createElement("link");
-  styles.rel = "stylesheet";
-  styles.href = href;
-  document.head.insertAdjacentElement("beforeend", styles);
+function registerStylesheets(hrefs) {
+  render(
+    hrefs.map(href => html`<link rel="stylesheet" href="${href}" />`),
+    document.head
+  );
 }
 
-function renderResults(root, { targetURL, view: viewMode }) {
+function changeScreen(screen) {
+  root.parentElement.classList.value = `${screen}-screen`;
+}
+
+function renderResults(root, { targetURL, ...sharedInfo }) {
+  changeScreen("result");
   view(loaderTemplate);
   return Promise.all([fetchDataSet(targetURL), import("./results.js")])
     .then(([chartData, { renderResults }]) => {
-      root.parentElement.classList.remove("home-screen");
-      root.parentElement.classList.add("result-screen");
-
-      const isEmbed = viewMode === "embed";
-      if (isEmbed) toolbar.classList.remove("toolbar--visible");
-      else toolbar.classList.add("toolbar--visible");
-
       const resultsTemplate = () =>
-        renderResults({ detailUrl: targetURL, chartData, isEmbed });
+        renderResults({
+          detailUrl: targetURL,
+          isEmbed: isEmbed(sharedInfo),
+          chartData
+        });
       return view(resultsTemplate);
     })
     .catch(() => view(notFoundTemplate));
