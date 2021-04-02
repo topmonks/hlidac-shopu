@@ -1,9 +1,8 @@
-import { html, render } from "lit-html";
+import { html } from "lit-html";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import {
   discountTemplate,
   logoTemplate,
-  notFoundTemplate,
   originalPriceTemplate,
   when
 } from "@hlidac-shopu/lib/templates.mjs";
@@ -18,20 +17,8 @@ if (typeof ResizeObserver === "undefined") {
   document.head.insertAdjacentElement("beforeend", polyfill);
 }
 
-export async function renderResultsModal(
-  detailUrl,
-  chartData,
-  { isEmbed, root, toolbar }
-) {
-  try {
-    console.log(chartData, { isEmbed });
-    if (isEmbed) toolbar.classList.remove("toolbar--visible");
-    else toolbar.classList.add("toolbar--visible");
-    render(resultTemplate(templateData(detailUrl, chartData), isEmbed), root);
-  } catch (ex) {
-    console.error(ex);
-    render(notFoundTemplate(), root);
-  }
+export function renderResults({ detailUrl, chartData, isEmbed }) {
+  return resultTemplate(templateData(detailUrl, chartData), isEmbed);
 }
 
 function resultTemplate(

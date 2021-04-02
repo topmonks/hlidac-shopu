@@ -2975,6 +2975,7 @@ __metadata:
     "@hlidac-shopu/lib": 1.0.0
     "@material/layout-grid": ^10.0.0
     "@material/top-app-bar": ^10.0.0
+    "@thi.ng/atom": ^4.1.34
     lit-html: 2.0.0-pre.7
     workbox-window: ^6.1.2
   languageName: unknown
@@ -3727,6 +3728,60 @@ __metadata:
   dependencies:
     defer-to-connect: ^2.0.0
   checksum: 13d8f71dbd792b620b2cd13d72d086ef031ebefd5263a9db2f34693a32e4d90920fa1d7075cd59bf0c9810b2b1b93ad36d89fc88aba4cd3b8022df7ecc5ffdec
+  languageName: node
+  linkType: hard
+
+"@thi.ng/api@npm:^7.1.4":
+  version: 7.1.4
+  resolution: "@thi.ng/api@npm:7.1.4"
+  checksum: 48406ac38b88b4e612c259e6637455ff31a21882456fd94069346a5658d889e1c6acafb5752325cdebbbd2658078739bdd412aebde7752d7ba0bbffc59937e91
+  languageName: node
+  linkType: hard
+
+"@thi.ng/atom@npm:^4.1.34":
+  version: 4.1.34
+  resolution: "@thi.ng/atom@npm:4.1.34"
+  dependencies:
+    "@thi.ng/api": ^7.1.4
+    "@thi.ng/equiv": ^1.0.41
+    "@thi.ng/errors": ^1.3.0
+    "@thi.ng/paths": ^4.2.6
+    tslib: ^2.1.0
+  checksum: 42e352886b70732223d287f4ef0c8efe7e63d53612be171e2018d4ef2f86d4915ff349091b16e6c63ece950a994df1ca77d0b8f9aace501a8f6818fcc6aa401c
+  languageName: node
+  linkType: hard
+
+"@thi.ng/checks@npm:^2.9.5":
+  version: 2.9.5
+  resolution: "@thi.ng/checks@npm:2.9.5"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 84e7637093706f0a498b88093c06a48136b2bdf35cc26137743bc87c9f0124250669458586e81014923a0e9c15689e0ddcc6941378fa84ba5cff883ef80a4ba8
+  languageName: node
+  linkType: hard
+
+"@thi.ng/equiv@npm:^1.0.41":
+  version: 1.0.41
+  resolution: "@thi.ng/equiv@npm:1.0.41"
+  checksum: 4cb5d653fc59458ffdaf1ca40747643d4fc34ae674c801c567ca8cebba6213e13f986e0337e232d1edb4d89d054eb4f3e34cfba854477a534aa230c105ca102c
+  languageName: node
+  linkType: hard
+
+"@thi.ng/errors@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@thi.ng/errors@npm:1.3.0"
+  checksum: 890a74ae6468f15c6f1d81c2d05bfb6c888f6e3d5d0917ee113d74488f871bd92028f51fe37b618f6d853f3a6ff993e233fee0acdd4bc56854d1a10313af008e
+  languageName: node
+  linkType: hard
+
+"@thi.ng/paths@npm:^4.2.6":
+  version: 4.2.6
+  resolution: "@thi.ng/paths@npm:4.2.6"
+  dependencies:
+    "@thi.ng/api": ^7.1.4
+    "@thi.ng/checks": ^2.9.5
+    "@thi.ng/errors": ^1.3.0
+  checksum: 1c5a8f0eda84aa8049b3ae0f17ef41121408514ce3428b3cb315eb579a7791fcd6b224e32ee8a79b4093dd9c0e2025ed814ce22b522c4c71ea32ca051c172e47
   languageName: node
   linkType: hard
 

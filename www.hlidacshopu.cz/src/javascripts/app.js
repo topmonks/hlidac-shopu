@@ -1,13 +1,14 @@
-import { html, render } from "lit-html";
-import { MDCTopAppBar } from "@material/top-app-bar/component.js";
-import { MDCSnackbar } from "@material/snackbar/component.js";
-import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
+import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import {
   loaderTemplate,
   notFoundTemplate
 } from "@hlidac-shopu/lib/templates.mjs";
-import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
+import { MDCSnackbar } from "@material/snackbar/component.js";
+import { MDCTopAppBar } from "@material/top-app-bar/component.js";
+import { defAtom } from "@thi.ng/atom";
+import { html, render } from "lit-html";
+import { Workbox } from "workbox-window/build/workbox-window.prod.mjs";
 import * as rollbar from "./rollbar.js";
 
 rollbar.init();
@@ -29,6 +30,39 @@ const installBanner = document.getElementById("install-banner");
 const help = document.getElementById("help");
 const progressBar = document.querySelector(".hs-progress-bar");
 const textField = document.querySelector(".hs-textfield");
+
+const state = defAtom({});
+const view = template => state.resetIn(["view"], template);
+const isProduction = () =>
+  ["localhost", "127"].indexOf(location.hostname) === -1;
+
+if ("serviceWorker" in navigator && isProduction()) {
+  const wb = new Workbox("/sw.js");
+
+  const showSkipWaitingPrompt = () => {
+    registerUpdateHandler(wb);
+    showUpdateSnackbar();
+  };
+
+  wb.addEventListener("waiting", showSkipWaitingPrompt);
+  wb.register().catch(ex => console.error(ex));
+}
+
+const scheduleRendering = renderScheduler();
+state.addWatch("render", (id, prev, curr) => {
+  const { view } = curr;
+  if (typeof view !== "function") return;
+  scheduleRendering({
+    preFirstRender() {
+      root.innerHTML = null;
+    },
+    render() {
+      root.classList.add("hs-result");
+      console.log("Render view: " + view.name);
+      render(view(curr), root);
+    }
+  });
+});
 
 addEventListener("DOMContentLoaded", async () => {
   try {
@@ -56,9 +90,7 @@ addEventListener("DOMContentLoaded", async () => {
     performance.mark("UI ready");
   } catch (err) {
     if (err.message.indexOf("valid URL") > -1) {
-      root.innerHTML = null;
-      root.classList.add("hs-result");
-      render(invalidURLTemplate(), root);
+      view(invalidURLTemplate);
     }
     console.error(err);
   } finally {
@@ -133,21 +165,6 @@ function registerUpdateHandler(wb) {
   );
 }
 
-const isProduction = () =>
-  ["localhost", "127"].indexOf(location.hostname) === -1;
-
-if ("serviceWorker" in navigator && isProduction()) {
-  const wb = new Workbox("/sw.js");
-
-  const showSkipWaitingPrompt = () => {
-    registerUpdateHandler(wb);
-    showUpdateSnackbar();
-  };
-
-  wb.addEventListener("waiting", showSkipWaitingPrompt);
-  wb.register().catch(ex => console.error(ex));
-}
-
 function getTargetURL(searchParams) {
   const targetURL = searchParams.get("url") || searchParams.get("text");
   return targetURL && targetURL.trim().split(" ").pop();
@@ -201,25 +218,22 @@ function registerStylesheet(href) {
   document.head.insertAdjacentElement("beforeend", styles);
 }
 
-function changeView(root) {
-  root.parentElement.classList.remove("home-screen");
-  root.parentElement.classList.add("result-screen");
-  root.innerHTML = null;
-  root.classList.add("hs-result");
-  render(loaderTemplate(), root);
-}
-
-function renderResults(root, { targetURL, view }) {
-  changeView(root);
+function renderResults(root, { targetURL, view: viewMode }) {
+  view(loaderTemplate);
   return Promise.all([fetchDataSet(targetURL), import("./results.js")])
-    .then(([chartData, { renderResultsModal }]) =>
-      renderResultsModal(targetURL, chartData, {
-        isEmbed: view === "embed",
-        root,
-        toolbar
-      })
-    )
-    .catch(() => render(notFoundTemplate(), root));
+    .then(([chartData, { renderResults }]) => {
+      root.parentElement.classList.remove("home-screen");
+      root.parentElement.classList.add("result-screen");
+
+      const isEmbed = viewMode === "embed";
+      if (isEmbed) toolbar.classList.remove("toolbar--visible");
+      else toolbar.classList.add("toolbar--visible");
+
+      const resultsTemplate = () =>
+        renderResults({ targetURL, chartData, isEmbed });
+      return view(resultsTemplate);
+    })
+    .catch(() => view(notFoundTemplate));
 }
 
 function showInstallBanner() {
@@ -264,4 +278,22 @@ function disableForm() {
 function enableForm() {
   const form = document.querySelector(".hs-form");
   if (form) form.firstElementChild.removeAttribute("disabled");
+}
+
+function renderScheduler() {
+  let uiUpdateId;
+  let isFirstUpdate = true;
+  return ({ preFirstRender, render }) => {
+    if (uiUpdateId) {
+      cancelAnimationFrame(uiUpdateId);
+      uiUpdateId = null;
+    }
+    uiUpdateId = requestAnimationFrame(() => {
+      if (isFirstUpdate) {
+        isFirstUpdate = false;
+        preFirstRender();
+      }
+      render();
+    });
+  };
 }
