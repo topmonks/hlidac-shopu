@@ -2337,7 +2337,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.11.0
     "@aws-sdk/util-dynamodb": ^3.11.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^3.34.2
+    "@pulumi/aws": ^3.35.0
     "@pulumi/awsx": ^0.26.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
@@ -2381,7 +2381,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.11.0
     "@aws-sdk/client-s3": ^3.11.0
     "@types/cheerio": ^0.22.28
-    "@types/node": ^14.14.35
+    "@types/node": ^14.14.37
     apify: ^1.1.1
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.5
@@ -2951,9 +2951,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^3.34.2":
-  version: 3.34.2
-  resolution: "@pulumi/aws@npm:3.34.2"
+"@pulumi/aws@npm:^3.35.0":
+  version: 3.35.0
+  resolution: "@pulumi/aws@npm:3.35.0"
   dependencies:
     "@pulumi/pulumi": ^2.17.0
     aws-sdk: ^2.0.0
@@ -2961,7 +2961,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 2e7cab7565c0f8a0355100ca534a36a08ee063febdfbd33ca7fe883cd16711166a98578d606840a24b8870b3f43b27f9f0fbee1c7bfc713978c7f0b3cf8b97cb
+  checksum: 420c2ac1a8887cd2db4d8fd7c9bae1fd94d7271a2adc9686c12e0777191338e4b1b24912f25226a45679209d45ec54f9e595161b20063daf7da7bff923a93417
   languageName: node
   linkType: hard
 
@@ -3011,9 +3011,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.23.1":
-  version: 2.23.1
-  resolution: "@pulumi/pulumi@npm:2.23.1"
+"@pulumi/pulumi@npm:^2.24.1":
+  version: 2.24.1
+  resolution: "@pulumi/pulumi@npm:2.24.1"
   dependencies:
     "@grpc/grpc-js": ^1.2.7
     "@logdna/tail-file": ^2.0.6
@@ -3031,7 +3031,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: 52debbdeb9400a8438993c4af516759b991442d92902091032909373713a954e07c8a0a7fb3e9ac28f9abc917fd1160239c971622f442d5f2789600b3805ded8
+  checksum: 8c53f84cdf35169bbd6386fc59f944aa80cc67dfa1693bdc4ce6a3fdcc3d0f351d9fbc10ec8f8a3a8479029b78e38572c3b6757eedd4ab6f472c1b911b82e7f0
   languageName: node
   linkType: hard
 
@@ -3732,10 +3732,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.14.35":
-  version: 14.14.35
-  resolution: "@types/node@npm:14.14.35"
-  checksum: 0f6320bf5370d1ff82105fb7f26aa0658499c97d3ec78561e65b65724280244f281602541182b63470d2c8a98db22fbb4f91409c5c7c97da8c3bb8f97fbc5dbc
+"@types/node@npm:^14.14.37":
+  version: 14.14.37
+  resolution: "@types/node@npm:14.14.37"
+  checksum: 5e2d9baf7594ebacaf016716515f30de0765169412787f981481c2fb8b468923149bb9e2e3219ee672399811672ceddc339a7372a61cf15bc656836a5494d991
   languageName: node
   linkType: hard
 
@@ -11713,16 +11713,16 @@ fsevents@~2.3.1:
     "@material/icon-button": ^10.0.0
     "@material/snackbar": ^10.0.0
     "@open-wc/testing": ^2.5.32
-    "@pulumi/aws": ^3.34.2
+    "@pulumi/aws": ^3.35.0
     "@pulumi/awsx": ^0.26.0
-    "@pulumi/pulumi": ^2.23.1
+    "@pulumi/pulumi": ^2.24.1
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^11.2.0
     "@rollup/plugin-replace": ^2.4.1
     "@topmonks/blendid": "git://github.com/topmonks/blendid.git#commit=3da13806e11c7bfe0f378e17e09bac602b39aa7b"
     "@topmonks/pulumi-aws": ^1.7.7
     "@types/firefox-webext-browser": ^82.0.0
-    "@types/node": ^14.14.35
+    "@types/node": ^14.14.37
     "@types/node-fetch": ^2.5.8
     "@types/ramda": ^0.27.39
     "@types/whatwg-url": ^8.2.0
