@@ -230,7 +230,7 @@ function renderResults(root, { targetURL, view: viewMode }) {
       else toolbar.classList.add("toolbar--visible");
 
       const resultsTemplate = () =>
-        renderResults({ targetURL, chartData, isEmbed });
+        renderResults({ detailUrl: targetURL, chartData, isEmbed });
       return view(resultsTemplate);
     })
     .catch(() => view(notFoundTemplate));
