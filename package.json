@@ -105,6 +105,7 @@
     "outdated": "yarn upgrade-interactive"
   },
   "workspaces": [
+    "actors/common",
     "actors/dm-daily",
     "actors/hs-reviews",
     "actors/knihydobrovsky-daily",
