@@ -366,6 +366,12 @@ async function uploadToS3(s3, fileName, ext, data) {
   );
 }
 
+/**
+ *
+ * @param {CloudFrontClient} cloudfront
+ * @param {string} distributionId
+ * @returns {Promise<void>}
+ */
 async function invalidateCDN(cloudfront, distributionId) {
   await cloudfront.send(
     new CreateInvalidationCommand({
@@ -378,11 +384,8 @@ async function invalidateCDN(cloudfront, distributionId) {
   );
 }
 
-async function saveData({ awsCredentials, reviews, stats }) {
-  const configuration = {
-    region: "eu-central-1",
-    credentials: awsCredentials
-  };
+async function saveData({ reviews, stats }) {
+  const configuration = { region: "eu-central-1" };
 
   log.info("S3: starting upload of data");
   const s3 = new S3Client(configuration);
@@ -544,7 +547,7 @@ function createAppleJWT(applePK) {
 
 Apify.main(async () => {
   const input = await Apify.getInput();
-  const { awsCredentials, applePK } = input ?? {};
+  const { applePK } = input ?? {};
   const token = createAppleJWT(applePK);
 
   /** @type {RequestList} */
@@ -577,7 +580,6 @@ Apify.main(async () => {
   log.info("CRAWLER: done");
 
   await saveData({
-    awsCredentials,
     reviews,
     stats
   });
