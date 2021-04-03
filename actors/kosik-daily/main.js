@@ -1,17 +1,16 @@
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const {
-  CloudFrontClient,
-  CreateInvalidationCommand
-} = require("@aws-sdk/client-cloudfront");
+const { S3Client } = require("@aws-sdk/client-s3");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const Apify = require("apify");
-const { URLSearchParams } = require("url");
+const {
+  toProduct,
+  uploadToS3,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 
-/** @typedef { import("apify").ApifyEnv } ApifyEnv */
-/** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 /** @typedef { import("apify").RequestQueue } RequestQueue */
-/** @typedef { import("schema-dts").Product} Product */
 
 const { log } = Apify.utils;
 
@@ -58,7 +57,7 @@ async function enqueuePagination(requestQueue, { products }) {
 
 const parseItem = (item, breadcrumbs) => ({
   itemId: item.id,
-  itemUrl: "https://www.kosik.cz/" + item.url,
+  itemUrl: new URL(item.url, "https://www.kosik.cz/").href,
   itemName: item.name,
   discounted: item.percentageDiscount > 0,
   discountedName:
@@ -71,70 +70,9 @@ const parseItem = (item, breadcrumbs) => ({
   img: item.image
 });
 
-/**
- *
- * @param detail
- * @returns {Product}
- */
-const toProduct = detail => ({
-  "@scope": "https://schema.org/",
-  "@type": "Product",
-  sku: detail.itemId,
-  name: detail.itemName,
-  url: detail.itemUrl,
-  image: detail.img,
-  category: detail.category,
-  offers: {
-    "@type": "Offer",
-    availability: `https://schema.org/${
-      detail.inStock ? "InStock" : "OutOfStock"
-    }`,
-    price: detail.currentPrice,
-    priceCurrency: "CZK"
-  }
-});
-
-/**
- * @param {S3Client} s3
- * @param {string} shop
- * @param {string} fileName
- * @param {string} ext
- * @param {*} data
- * @returns {Promise<void>}
- */
-async function uploadToS3(s3, shop, fileName, ext, data) {
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: "data.hlidacshopu.cz",
-      Key: `products/${shop}/${fileName}.${ext}`,
-      ContentType: `application/${ext}`,
-      Body: JSON.stringify(data)
-    })
-  );
-}
-
 function s3FileName(detail) {
   const url = new URL(detail.itemUrl);
   return url.pathname.match(/[^/]+$/)?.[0];
-}
-
-/**
- *
- * @param {CloudFrontClient} cloudfront
- * @param {string} distributionId
- * @param {string} shop
- * @returns {Promise<void>}
- */
-async function invalidateCDN(cloudfront, distributionId, shop) {
-  await cloudfront.send(
-    new CreateInvalidationCommand({
-      DistributionId: distributionId,
-      InvalidationBatch: {
-        Paths: { Items: [`/products/${shop}/*`], Quantity: 1 },
-        CallerReference: new Date().getTime().toString()
-      }
-    })
-  );
 }
 
 /**
@@ -173,7 +111,7 @@ function pageFunction(requestQueue, s3) {
             "kosik.cz",
             s3FileName(detail),
             "jsonld",
-            toProduct(detail)
+            toProduct(detail, { priceCurrency: "CZK" })
           )
         ]);
         processedIds.add(item.id);
@@ -188,25 +126,6 @@ function pageFunction(requestQueue, s3) {
 
 function getTableName(country) {
   return `kosik`;
-}
-
-async function uploadToKeboola(tableName) {
-  /** @type {ApifyEnv} */
-  const env = await Apify.getEnv();
-  /** @type {ActorRun} */
-  const run = await Apify.call(
-    "blackfriday/uploader",
-    {
-      datasetId: env.defaultDatasetId,
-      upload: true,
-      actRunId: env.actorRunId,
-      tableName
-    },
-    {
-      waitSecs: 25
-    }
-  );
-  log.info(`Keboola upload called: ${run.id}`);
 }
 
 Apify.main(async () => {
