@@ -1,4 +1,5 @@
 const Apify = require("apify");
+const { log } = Apify.utils;
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
