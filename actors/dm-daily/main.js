@@ -1,7 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  uploadToS3,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
+const { URL, URLSearchParams } = require("url");
 
-/** @typedef { import("apify").ApifyEnv } ApifyEnv */
-/** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 /** @typedef { import("apify").RequestQueue } RequestQueue */
@@ -35,7 +42,7 @@ const makeListingUrl = (
   )}`;
 
 const createProductUrl = (country, url) =>
-  `https://dm.${country.toLowerCase()}${url}`;
+  new URL(url, `https://dm.${country.toLowerCase()}`).href;
 
 function* traverseCategories(categories, names = []) {
   for (const category of categories) {
@@ -59,12 +66,18 @@ function* paginateResults(category) {
   }
 }
 
+function s3FileName(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/-p(\d+)\.html$/)?.[1];
+}
+
 /**
  * Creates Page Function for scraping
  * @param {RequestQueue} requestQueue
+ * @param {S3Client} s3
  * @returns {CheerioHandlePage}
  */
-function pageFunction(requestQueue) {
+function pageFunction(requestQueue, s3) {
   const processedIds = new Set();
 
   /**
@@ -103,38 +116,53 @@ function pageFunction(requestQueue) {
       const unprocessedProducts = products.filter(
         p => !processedIds.has(p.gtin)
       );
-      requests.push(
-        Apify.pushData(
-          unprocessedProducts.map(p => ({
-            itemId: p.gtin,
-            itemName: `${p.brandName} ${p.name}`,
-            itemUrl: createProductUrl(
-              country,
-              p.links
-                .filter(x => x.rel === "self")
-                .map(x => x.href)
-                .pop()
-            ),
-            img: p.links
-              .filter(x => x.rel.startsWith("productimage"))
-              .map(x => x.href)
-              .pop(),
-            currentPrice: p.price,
-            originalPrice: p.selloutPrice,
-            currency: p.priceCurrencyIso,
-            category,
-            discounted: p.isSellout
-          }))
-        )
-      );
 
-      // mark newly proceeded product IDs
-      for (const id of unprocessedProducts.map(x => x.gtin)) {
-        processedIds.add(id);
+      for (const item of unprocessedProducts) {
+        const detail = parseItem(item);
+        requests.push(
+          // push data to dataset to be ready for upload to Keboola
+          Apify.pushData(detail),
+          // upload JSON+LD data to CDN
+          uploadToS3(
+            s3,
+            `dm.${country.toLowerCase()}`,
+            s3FileName(detail),
+            "jsonld",
+            toProduct(detail, {
+              brand: item.brandName,
+              name: item.name
+            })
+          )
+        );
+        processedIds.add(detail.itemId);
       }
 
       // await all requests, so we don't end before they end
       await Promise.all(requests);
+
+      function parseItem(p) {
+        return {
+          itemId: p.gtin,
+          itemName: `${p.brandName} ${p.name}`,
+          itemUrl: createProductUrl(
+            country,
+            p.links
+              .filter(x => x.rel === "self")
+              .map(x => x.href)
+              .pop()
+          ),
+          img: p.links
+            .filter(x => x.rel.startsWith("productimage"))
+            .map(x => x.href)
+            .pop(),
+          inStock: !p.notAvailable,
+          currentPrice: p.price,
+          originalPrice: p.selloutPrice,
+          currency: p.priceCurrencyIso,
+          category,
+          discounted: p.isSellout
+        };
+      }
     }
   }
   return handler;
@@ -144,30 +172,10 @@ function getTableName(country) {
   return `dm_${country.toLowerCase()}`;
 }
 
-async function uploadToKeboola(tableName) {
-  try {
-    /** @type {ApifyEnv} */
-    const env = await Apify.getEnv();
-    /** @type {ActorRun} */
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        tableName
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (err) {
-    log.error(err);
-  }
-}
-
 Apify.main(async () => {
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
 
   const { country = COUNTRY.CZ, productQuery = ":allCategories" } = input ?? {};
@@ -192,7 +200,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxConcurrency: 10,
     additionalMimeTypes: ["application/json", "text/plain"],
-    handlePageFunction: pageFunction(requestQueue),
+    handlePageFunction: pageFunction(requestQueue, s3),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
@@ -200,6 +208,13 @@ Apify.main(async () => {
 
   await crawler.run();
   log.info("crawler finished");
+
+  await invalidateCDN(
+    cloudfront,
+    "EQYSHWUECAQC9",
+    `dm.${country.toLowerCase()}`
+  );
+  log.info("invalidated Data CDN");
 
   await uploadToKeboola(getTableName(country));
   log.info("Finished.");
