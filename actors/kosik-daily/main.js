@@ -1,10 +1,17 @@
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  CloudFrontClient,
+  CreateInvalidationCommand
+} = require("@aws-sdk/client-cloudfront");
 const Apify = require("apify");
+const { URLSearchParams } = require("url");
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 /** @typedef { import("apify").RequestQueue } RequestQueue */
+/** @typedef { import("schema-dts").Product} Product */
 
 const { log } = Apify.utils;
 
@@ -19,6 +26,12 @@ function* categoriesTree(root) {
   }
 }
 
+/**
+ *
+ * @param {RequestQueue} requestQueue
+ * @param categories
+ * @returns {Promise<void>}
+ */
 async function enqueueCategories(requestQueue, { categories }) {
   for (const url of categoriesTree(categories)) {
     await requestQueue.addRequest({
@@ -28,6 +41,12 @@ async function enqueueCategories(requestQueue, { categories }) {
   }
 }
 
+/**
+ *
+ * @param {RequestQueue} requestQueue
+ * @param products
+ * @returns {Promise<void>}
+ */
 async function enqueuePagination(requestQueue, { products }) {
   if (products?.more) {
     await requestQueue.addRequest({
@@ -53,10 +72,77 @@ const parseItem = (item, breadcrumbs) => ({
 });
 
 /**
+ *
+ * @param detail
+ * @returns {Product}
+ */
+const toProduct = detail => ({
+  "@scope": "https://schema.org/",
+  "@type": "Product",
+  sku: detail.itemId,
+  name: detail.itemName,
+  url: detail.itemUrl,
+  image: detail.img,
+  category: detail.category,
+  offers: {
+    "@type": "Offer",
+    availability: `https://schema.org/${
+      detail.inStock ? "InStock" : "OutOfStock"
+    }`,
+    price: detail.currentPrice,
+    priceCurrency: "CZK"
+  }
+});
+
+/**
+ * @param {S3Client} s3
+ * @param {string} shop
+ * @param {string} fileName
+ * @param {string} ext
+ * @param {*} data
+ * @returns {Promise<void>}
+ */
+async function uploadToS3(s3, shop, fileName, ext, data) {
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: "data.hlidacshopu.cz",
+      Key: `products/${shop}/${fileName}.${ext}`,
+      ContentType: `application/${ext}`,
+      Body: JSON.stringify(data)
+    })
+  );
+}
+
+function s3FileName(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/[^/]+$/)?.[0];
+}
+
+/**
+ *
+ * @param {CloudFrontClient} cloudfront
+ * @param {string} distributionId
+ * @param {string} shop
+ * @returns {Promise<void>}
+ */
+async function invalidateCDN(cloudfront, distributionId, shop) {
+  await cloudfront.send(
+    new CreateInvalidationCommand({
+      DistributionId: distributionId,
+      InvalidationBatch: {
+        Paths: { Items: [`/products/${shop}/*`], Quantity: 1 },
+        CallerReference: new Date().getTime().toString()
+      }
+    })
+  );
+}
+
+/**
  * @param {RequestQueue} requestQueue
+ * @param {S3Client} s3
  * @returns {CheerioHandlePage}
  */
-function pageFunction(requestQueue) {
+function pageFunction(requestQueue, s3) {
   const processedIds = new Set();
 
   /**
@@ -79,7 +165,17 @@ function pageFunction(requestQueue) {
         json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
       for (const item of json.products.items) {
         if (processedIds.has(item.id)) continue;
-        await Apify.pushData(parseItem(item, breadcrumbs));
+        const detail = parseItem(item, breadcrumbs);
+        await Promise.all([
+          Apify.pushData(detail),
+          uploadToS3(
+            s3,
+            "kosik.cz",
+            s3FileName(detail),
+            "jsonld",
+            toProduct(detail)
+          )
+        ]);
         processedIds.add(item.id);
       }
     }
@@ -114,6 +210,9 @@ async function uploadToKeboola(tableName) {
 }
 
 Apify.main(async () => {
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
 
   const {
@@ -143,9 +242,10 @@ Apify.main(async () => {
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
-    maxRequestRetries: 10,
+    maxRequestRetries: 1,
+    requestTimeoutSecs: 60,
     additionalMimeTypes: ["application/json", "text/plain"],
-    handlePageFunction: pageFunction(requestQueue),
+    handlePageFunction: pageFunction(requestQueue, s3),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
@@ -153,6 +253,9 @@ Apify.main(async () => {
 
   await crawler.run();
   log.info("crawler finished");
+
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kosik.cz");
+  log.info("invalidated Data CDN");
 
   try {
     await uploadToKeboola(getTableName(country));
