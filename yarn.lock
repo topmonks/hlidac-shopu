@@ -2329,7 +2329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hlidac-shopu/actors-common@^1.0.2, @hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@^1.0.3, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -2374,7 +2374,8 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.11.0
     "@aws-sdk/client-s3": ^3.11.0
-    "@hlidac-shopu/actors-common": ^1.0.2
+    "@hlidac-shopu/actors-common": ^1.0.3
+    "@types/node": ^14.14.37
     apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2414,7 +2415,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.11.0
     "@aws-sdk/client-s3": ^3.11.0
-    "@hlidac-shopu/actors-common": ^1.0.2
+    "@hlidac-shopu/actors-common": ^1.0.3
     "@types/node": ^14.14.37
     apify: ^1.1.1
     apify-cli: ^0.6.2
