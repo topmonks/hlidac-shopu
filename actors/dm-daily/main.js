@@ -130,7 +130,8 @@ function pageFunction(requestQueue, s3) {
             "jsonld",
             toProduct(detail, {
               brand: item.brandName,
-              name: item.name
+              name: item.name,
+              gtin: item.gtin
             })
           )
         );
@@ -156,8 +157,8 @@ function pageFunction(requestQueue, s3) {
             .map(x => x.href)
             .pop(),
           inStock: !p.notAvailable,
-          currentPrice: p.price,
-          originalPrice: p.selloutPrice,
+          currentPrice: parseFloat(p.price),
+          originalPrice: p.isSellout ? parseFloat(p.selloutPrice) : null,
           currency: p.priceCurrencyIso,
           category,
           discounted: p.isSellout
