@@ -1,12 +1,12 @@
 const { S3Client } = require("@aws-sdk/client-s3");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const Apify = require("apify");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
   toProduct,
   uploadToS3,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const Apify = require("apify");
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
