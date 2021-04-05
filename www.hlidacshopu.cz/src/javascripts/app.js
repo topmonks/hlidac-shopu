@@ -66,38 +66,13 @@ state.addWatch("render", (id, prev, curr) => {
   });
 });
 
-function removeToolbarFromEmbedView(isEmbed) {
-  if (isEmbed) {
-    toolbar.classList.remove("toolbar--visible");
-  } else {
-    toolbar.classList.add("toolbar--visible");
-  }
-}
-
 addEventListener("DOMContentLoaded", async () => {
   try {
     console.group("Hlídačshopů.cz");
     const url = new URL(location.href);
     const sharedInfo = getSharedInfo(url);
     console.log("Shared data:", sharedInfo);
-    removeToolbarFromEmbedView(isEmbed(sharedInfo));
-    if (sharedInfo) {
-      await renderResults(root, sharedInfo);
-    } else if (url.searchParams.has("install")) {
-      showInstallBanner();
-    } else if (url.searchParams.has("help")) {
-      showHelp();
-    }
-    if (!navigator.share) {
-      hideShareButton();
-    }
-    if (!navigator.onLine) {
-      showOfflineBanner();
-    }
-    if (isWebView(navigator.userAgent)) {
-      logoLink.href = "/app/";
-      if (help) showHelp();
-    }
+    await initUI(sharedInfo, url);
     performance.mark("UI ready");
   } catch (err) {
     if (err.message.indexOf("valid URL") > -1) {
@@ -313,4 +288,37 @@ function renderScheduler() {
       render();
     });
   };
+}
+
+function removeToolbarFromEmbedView(sharedInfo) {
+  if (isEmbed(sharedInfo)) {
+    toolbar.classList.remove("toolbar--visible");
+  } else {
+    toolbar.classList.add("toolbar--visible");
+  }
+}
+
+/**
+ * @param {*} sharedInfo
+ * @param {URL} url
+ */
+async function initUI(sharedInfo, url) {
+  removeToolbarFromEmbedView(sharedInfo);
+  if (sharedInfo) {
+    await renderResults(root, sharedInfo);
+  } else if (url.searchParams.has("install")) {
+    showInstallBanner();
+  } else if (url.searchParams.has("help")) {
+    showHelp();
+  }
+  if (!navigator.share) {
+    hideShareButton();
+  }
+  if (!navigator.onLine) {
+    showOfflineBanner();
+  }
+  if (isWebView(navigator.userAgent)) {
+    logoLink.href = "/app/";
+    if (help) showHelp();
+  }
 }
