@@ -32,6 +32,11 @@ if [ ! -e $new_ver ]; then
   jq ".version = \"$new_ver\"" extension/manifest.json > $tmp
   mv $tmp extension/manifest.json
 
+
+  tmp=$(mktemp)
+  jq ".version = \"$new_ver\"" www.hlidacshopu.cz/src/static/webapp.json > $tmp
+  mv $tmp www.hlidacshopu.cz/src/static/webapp.json
+
   tmp=$(mktemp)
   sed -E "s/<small>[0-9]+\.[0-9]+\.[0-9]+<\/small>/<small>$new_ver<\/small>/" extension/popup/about.html > $tmp
   mv $tmp extension/popup/about.html
