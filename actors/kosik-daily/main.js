@@ -161,7 +161,7 @@ Apify.main(async () => {
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
-    maxRequestRetries: 1,
+    maxRequestRetries: 3,
     requestTimeoutSecs: 60,
     additionalMimeTypes: ["application/json", "text/plain"],
     handlePageFunction: pageFunction(requestQueue, s3),
