@@ -1,7 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  uploadToS3,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
+const { URL, URLSearchParams } = require("url");
 
-/** @typedef { import("apify").ApifyEnv } ApifyEnv */
-/** @typedef { import("apify").ActorRun } ActorRun */
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
 /** @typedef { import("apify").RequestQueue } RequestQueue */
@@ -11,17 +18,22 @@ const { log } = Apify.utils;
 const HOST = "https://www.tetadrogerie.cz";
 
 const makeListingUrl = (baseUrl, currentPage = 1, pageSize = 100) =>
-  `${HOST}${baseUrl}?${new URLSearchParams({
-    stranka: currentPage,
-    pocet: pageSize
-  })}`;
+  new URL(
+    `${baseUrl}?${new URLSearchParams({
+      stranka: currentPage,
+      pocet: pageSize
+    })}`,
+    HOST
+  ).href;
+
+const categoryLinkSelectors = [
+  "ul.j-cat-3>li>a",
+  "ul.j-cat-2>li>a",
+  "ul.j-shop-categories-menu>li>a"
+];
 
 function* traverseCategories($, $menu) {
-  for (const selector of [
-    "ul.j-cat-3>li>a",
-    "ul.j-cat-2>li>a",
-    "ul.j-shop-categories-menu>li>a"
-  ]) {
+  for (const selector of categoryLinkSelectors) {
     for (const category of $menu.find(selector).toArray()) {
       yield $(category).attr("href");
     }
@@ -35,43 +47,52 @@ function* paginateResults(count) {
   }
 }
 
+function parseItem($, category) {
+  return el => {
+    const $el = $(el);
+    const actionPrice = $el.find(".sx-item-price-action");
+    const initialPrice = $el.find(".sx-item-price-initial");
+    const itemUrl = new URL($el.find(".sx-item-title").attr("href"), HOST).href;
+    const currentPrice =
+      parseInt((actionPrice.length ? actionPrice : initialPrice).text(), 10) /
+      100;
+    const originalPrice =
+      parseInt((actionPrice.length ? initialPrice : $("<div/>")).text(), 10) /
+      100;
+    return {
+      itemId: $el.find(".j-product").data("skuid"),
+      itemName: $el.find(".sx-item-title").text(),
+      img: $el.find("img").attr("src"),
+      itemUrl,
+      currentPrice,
+      originalPrice: isNaN(originalPrice) ? null : originalPrice,
+      inStock: true,
+      category
+    };
+  };
+}
+
 function parseItems($) {
   const category = $(".sx-breadcrumbs.sx-breadcrumbs-middle a")
     .get()
     .map(x => $(x).text())
     .join(" > ")
     .replace("Úvod > Eshop > ", "");
-  return $(".j-products .j-item")
-    .get()
-    .map(el => {
-      const $el = $(el);
-      const actionPrice = $el.find(".sx-item-price-action");
-      const initialPrice = $el.find(".sx-item-price-initial");
-      const itemUrl = HOST + $el.find(".sx-item-title").attr("href");
-      const currentPrice =
-        parseInt((actionPrice.length ? actionPrice : initialPrice).text(), 10) /
-        100;
-      const originalPrice =
-        parseInt((actionPrice.length ? initialPrice : $("<div/>")).text(), 10) /
-        100;
-      return {
-        itemId: $el.find(".j-product").data("skuid"),
-        itemName: $el.find(".sx-item-title").text(),
-        img: $el.find("img").attr("src"),
-        itemUrl,
-        currentPrice,
-        originalPrice: isNaN(originalPrice) ? null : originalPrice,
-        category
-      };
-    });
+  return $(".j-products .j-item").get().map(parseItem($, category));
+}
+
+function s3FileName(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.replace("/eshop/katalog/", "");
 }
 
 /**
  * Creates Page Function for scraping
  * @param {RequestQueue} requestQueue
+ * @param {S3Client} s3
  * @returns {CheerioHandlePage}
  */
-function pageFunction(requestQueue) {
+function pageFunction(requestQueue, s3) {
   const processedIds = new Set();
 
   /**
@@ -126,13 +147,21 @@ function pageFunction(requestQueue) {
       const unprocessedProducts = parseItems($).filter(
         x => !processedIds.has(x.itemId)
       );
-      requests.push(Apify.pushData(unprocessedProducts));
+      for (const detail of unprocessedProducts) {
+        requests.push(
+          Apify.pushData(detail),
+          uploadToS3(
+            s3,
+            "tetadrogerie.cz",
+            s3FileName(detail),
+            "jsonld",
+            toProduct(detail, { priceCurrency: "CZK" })
+          )
+        );
 
-      // mark newly proceeded product IDs
-      for (const id of unprocessedProducts.map(x => x.itemId)) {
-        processedIds.add(id);
+        // remember processed product IDs
+        processedIds.add(detail.itemId);
       }
-
       // await all requests, so we don't end before they end
       await Promise.all(requests);
     }
@@ -141,30 +170,14 @@ function pageFunction(requestQueue) {
   return handler;
 }
 
-async function uploadToKeboola(tableName) {
-  try {
-    /** @type {ApifyEnv} */
-    const env = await Apify.getEnv();
-    /** @type {ActorRun} */
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        tableName
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (err) {
-    log.error(err);
-  }
-}
-
 Apify.main(async () => {
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
+  const input = await Apify.getInput();
+
+  const { maxConcurrency = 10 } = input ?? {};
+
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
   await requestQueue.addRequest({
@@ -181,8 +194,8 @@ Apify.main(async () => {
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    maxConcurrency: 10,
-    handlePageFunction: pageFunction(requestQueue),
+    maxConcurrency,
+    handlePageFunction: pageFunction(requestQueue, s3),
 
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
@@ -191,6 +204,9 @@ Apify.main(async () => {
 
   await crawler.run();
   log.info("crawler finished");
+
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz");
+  log.info("invalidated Data CDN");
 
   await uploadToKeboola("teta_cz");
   log.info("Finished.");

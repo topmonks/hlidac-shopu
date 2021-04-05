@@ -2454,6 +2454,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
+    "@aws-sdk/client-cloudfront": ^3.11.0
+    "@aws-sdk/client-s3": ^3.11.0
+    "@hlidac-shopu/actors-common": ^1.0.3
+    "@types/node": ^14.14.37
     apify: ^1.1.1
     apify-cli: ^0.6.2
   languageName: unknown
