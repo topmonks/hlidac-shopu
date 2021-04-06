@@ -1,0 +1,20 @@
+{
+	"name": "@hlidac-shopu/iglobus-daily",
+	"version": "0.0.1",
+  "author": "",
+  "license": "EPL-2.0",
+	"description": "This is the iGlobus actor.",
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.11.0",
+    "@aws-sdk/client-s3": "^3.11.0",
+    "@hlidac-shopu/actors-common": "^1.0.3",
+    "apify": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37",
+    "apify-cli": "^0.6.2"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
