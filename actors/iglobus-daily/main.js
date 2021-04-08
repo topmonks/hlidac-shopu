@@ -1,3 +1,4 @@
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const Apify = require("apify");
 const { handleStart, handleList, handleDetail } = require("./routes");
 
@@ -61,23 +62,6 @@ Apify.main(async () => {
     console.log(e);
   }
 
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        tableName: "globus_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
+  await uploadToKeboola("globus_cz");
   console.log("Finished.");
 });
