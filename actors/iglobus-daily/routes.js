@@ -11,11 +11,14 @@ exports.handleStart = async ({ request, $ }) => {
 
   Apify.utils.enqueueLinks({
     $,
-    baseUrl: "https://www.iglobus.cz",
-    selector: "#categories a",
-    pseudoUrls,
     requestQueue,
-    userData: { label: "LIST" }
+    selector: "#categories a",
+    baseUrl: "https://www.iglobus.cz",
+    pseudoUrls,
+    transformRequestFunction: req => {
+      req.userData.label = "LIST";
+      return req;
+    }
   });
 };
 
@@ -25,11 +28,14 @@ exports.handleList = async ({ request, $ }) => {
   const pseudoUrls = [new Apify.PseudoUrl("https://www.iglobus.cz/[.*]")];
   Apify.utils.enqueueLinks({
     $,
-    baseUrl: request.url.split("?")[0],
-    selector: "a.page-link",
-    pseudoUrls,
     requestQueue,
-    userData: { label: "LIST" }
+    selector: "a.page-link",
+    baseUrl: request.url.split("?")[0],
+    pseudoUrls,
+    transformRequestFunction: req => {
+      req.userData.label = "LIST";
+      return req;
+    }
   });
 
   // add details
