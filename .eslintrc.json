@@ -6,7 +6,6 @@
     "node": true
   },
   "plugins": [
-    "ava",
     "es",
     "lit",
     "prettier",
@@ -14,7 +13,6 @@
   ],
   "extends": [
     "prettier",
-    "plugin:ava/recommended",
     "plugin:lit/recommended",
     "plugin:promise/recommended"
   ],
