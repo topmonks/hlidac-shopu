@@ -7,17 +7,19 @@ const {
 } = Apify;
 
 Apify.main(async () => {
+  const input = await Apify.getInput();
+  const { development } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: ["CZECH_LUMINATI"], // List of Apify Proxy groups
+    useApifyProxy: !development,
     countryCode: "CZ"
   });
 
   await requestQueue.addRequest({ url: "https://www.iglobus.cz" });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    useApifyProxy: true,
     proxyConfiguration,
     useSessionPool: true,
     persistCookiesPerSession: false,
@@ -61,7 +63,9 @@ Apify.main(async () => {
   } catch (e) {
     console.log(e);
   }
+  if (!development) {
+    await uploadToKeboola("globus_cz");
+  }
 
-  await uploadToKeboola("globus_cz");
   console.log("Finished.");
 });
