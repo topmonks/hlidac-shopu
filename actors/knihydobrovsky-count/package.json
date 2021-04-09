@@ -1,8 +1,11 @@
 {
-  "name": "KnihyDobrovskyCount",
-  "version": "0.0.1",
-  "description": "This is a boilerplate of an Apify actor.",
+  "name": "@hlidac-shopu/knihydobrovsky-count",
+  "version": "0.1.0",
+  "description": "Knihydobrovsky.cz counting actor",
+  "author": "<oodoow@gmail.com>",
+  "license": "EPL-2.0",
   "dependencies": {
+    "@hlidac-shopu/actors-common": "^1.0.3",
     "apify": "^1.1.1"
   },
   "devDependencies": {
@@ -10,7 +13,5 @@
   },
   "scripts": {
     "start": "node main.js"
-  },
-  "author": "oodoow@gmail.com",
-  "license": "EPL-2.0"
+  }
 }

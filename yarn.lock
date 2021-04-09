@@ -2422,6 +2422,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/knihydobrovsky-count@workspace:actors/knihydobrovsky-count":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/knihydobrovsky-count@workspace:actors/knihydobrovsky-count"
+  dependencies:
+    "@apify/eslint-config": ^0.1.3
+    "@hlidac-shopu/actors-common": ^1.0.3
+    apify: ^1.1.1
+  languageName: unknown
+  linkType: soft
+
+"@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.11.0
+    "@aws-sdk/client-s3": ^3.11.0
+    "@hlidac-shopu/actors-common": ^1.0.3
+    "@types/node": ^14.14.37
+    apify: ^1.1.1
+    apify-cli: ^0.6.2
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
@@ -2915,15 +2938,6 @@ __metadata:
   checksum: 95b982055ea82aa61f5d2109249ad73477fe2f1c738eb17d78afc9733aac2b829caafc26240696645a70777bad801d88cea825cde99edd63fefe61b9d4327dd5
   languageName: node
   linkType: hard
-
-"@product-mapping/knihydobrovsky-detail@workspace:actors/knihydobrovsky-detail":
-  version: 0.0.0-use.local
-  resolution: "@product-mapping/knihydobrovsky-detail@workspace:actors/knihydobrovsky-detail"
-  dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
-  languageName: unknown
-  linkType: soft
 
 "@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
   version: 1.1.2
@@ -4391,24 +4405,6 @@ __metadata:
   checksum: 7eee04e83f9e9c2a815b1b074c9ef16384317b7d041b3315969e4050ca189817ff128a137e9e1aa09612de193ca35d827128079985143664a19fb3da172ecb5e
   languageName: node
   linkType: hard
-
-"KnihyDobrovskyCount@workspace:actors/knihydobrovsky-count":
-  version: 0.0.0-use.local
-  resolution: "KnihyDobrovskyCount@workspace:actors/knihydobrovsky-count"
-  dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
-  languageName: unknown
-  linkType: soft
-
-"KnihyDobrovskyDaily@workspace:actors/knihydobrovsky-daily":
-  version: 0.0.0-use.local
-  resolution: "KnihyDobrovskyDaily@workspace:actors/knihydobrovsky-daily"
-  dependencies:
-    "@apify/eslint-config": ^0.1.3
-    apify: ^1.1.1
-  languageName: unknown
-  linkType: soft
 
 "a-sync-waterfall@npm:^1.0.0":
   version: 1.0.1

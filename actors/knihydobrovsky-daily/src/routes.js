@@ -1,14 +1,20 @@
+const {
+  toProduct,
+  uploadToS3
+} = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
+const { URL } = require("url");
 
 const {
   utils: { log }
 } = Apify;
 
-const completeUrl = x => `https://www.knihydobrovsky.cz${x}`;
+const canonicalUrl = x => new URL(x, "`https://www.knihydobrovsky.cz");
+const canonical = x => canonicalUrl(x).href;
 
 exports.handleStart = async ({ request, $ }, requestQueue) => {
   const links = $("#main div.row-main li a")
-    .not('div:contains("Magnesia Litera")')
+    .not("div:contains('Magnesia Litera')")
     .map(function () {
       return $(this).attr("href");
     })
@@ -19,10 +25,10 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
         !x.includes("velky-knizni-ctvrtek") &&
         !x.includes("knihomanie")
     );
-  const absoluteLinks = links.map(x => completeUrl(x));
+  const absoluteLinks = links.map(x => canonical(x));
   for (const link of absoluteLinks) {
     await requestQueue.addRequest({
-      url: `${link}`,
+      url: link,
       userData: { label: "SUBLIST" }
     });
   }
@@ -30,17 +36,16 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
 
 exports.handleSubList = async ({ request, $ }, requestQueue) => {
   // if there are more subcategories enque urls...
-  if ($("#bookGenres").text()) {
-    const links = $("#bookGenres")
+  let $bookGenres = $("#bookGenres");
+  if ($bookGenres.text()) {
+    const links = $bookGenres
       .next("nav")
       .find("a")
       .map(function () {
         return $(this).attr("href");
       })
       .get();
-    const absoluteLinks = links.map(x => completeUrl(x));
-    for (const link of absoluteLinks) {
-      log.info("adding subcategory link " + request.url, { link });
+    for (const link of links.map(x => canonical(x))) {
       await requestQueue.addRequest({
         url: link,
         userData: { label: "SUBLIST" }
@@ -55,70 +60,80 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
   });
 };
 
-exports.handleList = async ({ request, $ }, requestQueue, handledIds) => {
+function s3FileName(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/-(\d+)$/g)?.[1];
+}
+
+/**
+ *
+ * @param {Request} request
+ * @param {Cheerio} $
+ * @param {RequestQueue} requestQueue
+ * @param {Set} handledIds
+ * @param {S3Client} s3
+ * @returns {Promise<void>}
+ */
+async function handleList({ request, $ }, requestQueue, handledIds, s3) {
   // Handle pagination
-  const nextPageUrl =
-    $('nav.paging span:contains("Další")').parent("a").attr("href") &&
-    completeUrl(
-      $('nav.paging span:contains("Další")').parent("a").attr("href").trim()
-    );
-  if (nextPageUrl) {
-    const pageNumber = parseInt(nextPageUrl.split("currentPage=")[1]);
-    const nextPageOffsetUrl = `${nextPageUrl}&offsetPage=${pageNumber}`;
+  let nextPageHref = $("nav.paging span:contains('Další')")
+    .parent("a")
+    .attr("href");
+  if (nextPageHref) {
+    const url = canonicalUrl(nextPageHref.trim());
+    const pageNumber = url.searchParams.get("currentPage");
+    url.searchParams.set("offsetPage", pageNumber);
 
     await requestQueue.addRequest({
-      url: nextPageOffsetUrl,
+      url: url.href,
       userData: { label: "LIST" }
     });
   } else {
     log.info("category finish", { url: request.url });
   }
 
-  // Handle items
-  const result = [];
-  $("li[data-productinfo]").each(function () {
-    const item = {};
-    const dataLink = $("a.buy-now", this).attr("data-link");
-    if (dataLink) {
-      item.itemId = parseInt(dataLink.split("productId=")[1]);
-    } else {
-      item.itemId = $("h3 a", this).attr("href").split("-").slice(-1).pop();
-    }
-    if (!item.itemId) {
-      log.info("skipping product - could not find itemId, product:", {
-        "name": $("span.name", this).text()
-      });
-      return;
-    }
-    item.itemId = item.itemId.toString();
-    if (handledIds.has(item.itemId)) {
-      return;
-    }
-    item.img = $("picture img", this).attr("src");
-    item.itemUrl = completeUrl($("h3 a", this).attr("href"));
-    item.itemName = $("span.name", this).text();
-    item.currentPrice = parseInt($("p.price strong", this).text(), 10);
-    if (!item.currentPrice) {
-      log.info("skipping product - could not find price, product:", {
-        "name": $("span.name", this).text(),
-        url: request.url
-      });
-      return;
-    }
-    item.originalPrice = parseInt(
-      $("p.price span.price-strike", this).text(),
-      10
-    );
-    item.discounted = item.currentPrice < item.originalPrice;
-    if (!item.discounted) item.originalPrice = null;
-    item.rating = parseFloat(
-      $("span.stars.small span", this).attr("style").split("width: ")[1]
-    );
-    item.currency = "CZK";
-    item.inStock = $("a.buy-now", this).text().includes("Do košíku");
-    result.push(item);
-  });
+  const result = $("li[data-productinfo]")
+    .map(function () {
+      const $item = $(this);
+      const dataLink = new URL($item.find("a.buy-now").attr("data-link"));
+      const originalPrice =
+        parseInt($item.find("p.price span.price-strike").text(), 10) || null;
+      return {
+        itemId:
+          $item
+            .find("h3 a")
+            .attr("href")
+            .match(/-(\d+)$/g)?.[1] ?? dataLink.searchParams.get("productId"),
+        itemUrl: canonical($item.find("h3 a").attr("href")),
+        itemName: $item.find("span.name").text(),
+        img: $item.find("picture img").attr("src"),
+        currentPrice: parseInt($item.find("p.price strong").text(), 10) || 0,
+        originalPrice,
+        discounted: Boolean(originalPrice),
+        rating: parseFloat(
+          $item.find("span.stars.small span").attr("style").split("width: ")[1]
+        ),
+        currency: "CZK",
+        inStock: $item.find("a.buy-now").text().includes("Do košíku")
+      };
+    })
+    .filter(x => x.itemId)
+    .filter(x => !handledIds.has(x.itemId));
 
   await Apify.pushData(result);
-  result.forEach(x => handledIds.add(x.itemId));
-};
+
+  for (const detail of result) {
+    await uploadToS3(
+      s3,
+      "knihydobrovsky.cz",
+      s3FileName(detail),
+      "jsonld",
+      toProduct(detail, {})
+    );
+  }
+  for (const id of result.map(x => x.itemId)) {
+    handledIds.add(id);
+  }
+}
+
+exports.handleList = handleList;

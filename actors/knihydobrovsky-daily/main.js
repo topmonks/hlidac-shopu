@@ -1,3 +1,7 @@
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { S3Client } = require("@aws-sdk/client-s3");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
 const { handleStart, handleList, handleSubList } = require("./src/routes");
 
@@ -5,86 +9,69 @@ const {
   utils: { log }
 } = Apify;
 
-async function uploadToKeboola(tableName) {
-  /** @type {ApifyEnv} */
-  const env = await Apify.getEnv();
-  /** @type {ActorRun} */
-  const run = await Apify.call(
-    "blackfriday/uploader",
-    {
-      datasetId: env.defaultDatasetId,
-      upload: true,
-      actRunId: env.actorRunId,
-      tableName
-    },
-    {
-      waitSecs: 25
-    }
-  );
-  log.info(`Keboola upload called: ${run.id}`);
-}
-
 Apify.main(async () => {
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
-  const proxyConfigurationOptions =
-    input && input.proxyConfiguration
-      ? input.proxyConfiguration
-      : {
-          groups: ["CZECH_LUMINATI"]
-        };
+  const { development, maxConcurrency = 10, proxyGroups = ["CZECH_LUMINATI"] } =
+    input ?? {};
+
   const arrayHandledIds = await Apify.getValue("handledIds");
-  const handledIds = arrayHandledIds ? new Set(arrayHandledIds) : new Set();
-  const persistObject = async function () {
+  const handledIds = new Set(arrayHandledIds);
+
+  Apify.events.on("persistState", async () => {
     log.info("persisting handledIds", handledIds);
     await Apify.setValue("handledIds", [...handledIds]);
-  };
-  Apify.events.on("persistState", persistObject);
-  const maxConcurrency =
-    input && input.maxConcurrency ? input.maxConcurrency : 10;
-  const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/kategorie"
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/e-knihy",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/audioknihy",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/hry",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/papirnictvi",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/darky",
-    userData: { label: "SUBLIST" }
   });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration(
-    proxyConfigurationOptions
-  );
+  const requestQueue = await Apify.openRequestQueue();
+  const requestList = await Apify.openRequestList("categories", [
+    {
+      url: "https://www.knihydobrovsky.cz/kategorie"
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/e-knihy",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/audioknihy",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/hry",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/papirnictvi",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/darky",
+      userData: { label: "SUBLIST" }
+    }
+  ]);
+
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: development ? undefined : proxyGroups,
+    useApifyProxy: !development
+  });
 
   const crawler = new Apify.CheerioCrawler({
+    requestList,
     requestQueue,
     proxyConfiguration,
-    // Be nice to the websites.
-    // Remove to unleash full power.
     maxConcurrency,
-    handlePageFunction: async context => {
+    async handlePageFunction(context) {
+      const { request } = context;
       const {
         url,
         userData: { label }
-      } = context.request;
+      } = request;
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context, requestQueue, handledIds);
+          return handleList(context, requestQueue, handledIds, s3);
         case "SUBLIST":
           return handleSubList(context, requestQueue);
         default:
@@ -96,8 +83,12 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
   log.info("Crawl finished.");
+
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
+  log.info("invalidated Data CDN");
+
   try {
-    await uploadToKeboola("knihydobrovsky_daily");
+    await uploadToKeboola("knihydobrovsky_cz");
     log.info("upload to Keboola finished");
   } catch (err) {
     log.warning("upload to Keboola failed");

@@ -5,71 +5,48 @@ const {
   utils: { log }
 } = Apify;
 
-async function uploadToKeboola(tableName) {
-  /** @type {ApifyEnv} */
-  const env = await Apify.getEnv();
-  /** @type {ActorRun} */
-  const run = await Apify.call(
-    "blackfriday/uploader",
-    {
-      datasetId: env.defaultDatasetId,
-      upload: true,
-      actRunId: env.actorRunId,
-      tableName
-    },
-    {
-      waitSecs: 25
-    }
-  );
-  log.info(`Keboola upload called: ${run.id}`);
-}
-
 Apify.main(async () => {
   const input = await Apify.getInput();
-  const proxyConfigurationOptions =
-    input && input.proxyConfiguration
-      ? input.proxyConfiguration
-      : {
-          groups: ["CZECH_LUMINATI"]
-        };
-  const maxConcurrency =
-    input && input.maxConcurrency ? input.maxConcurrency : 10;
+  const { development, maxConcurrency = 10, proxyGroups = ["CZECH_LUMINATI"] } =
+    input ?? {};
+
   const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/kategorie"
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/e-knihy",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/audioknihy",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/hry",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/papirnictvi",
-    userData: { label: "SUBLIST" }
-  });
-  await requestQueue.addRequest({
-    url: "https://www.knihydobrovsky.cz/darky",
-    userData: { label: "SUBLIST" }
-  });
+  const requestList = await Apify.openRequestList("categories", [
+    {
+      url: "https://www.knihydobrovsky.cz/kategorie"
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/e-knihy",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/audioknihy",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/hry",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/papirnictvi",
+      userData: { label: "SUBLIST" }
+    },
+    {
+      url: "https://www.knihydobrovsky.cz/darky",
+      userData: { label: "SUBLIST" }
+    }
+  ]);
 
   const categoryCount = {};
 
-  const proxyConfiguration = await Apify.createProxyConfiguration(
-    proxyConfigurationOptions
-  );
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups
+  });
 
   const crawler = new Apify.CheerioCrawler({
+    requestList,
     requestQueue,
     proxyConfiguration,
-    // Be nice to the websites.
-    // Remove to unleash full power.
     maxConcurrency,
     handlePageFunction: async context => {
       const {
@@ -92,17 +69,9 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
   log.info("kategorie", categoryCount);
-  const totalCount = Object.entries(categoryCount).reduce(
-    (acc, x) => acc + parseInt(x[1], 10),
-    1
-  );
+  const totalCount = Object.values(categoryCount)
+    .map(x => parseInt(x, 10))
+    .filter(Boolean)
+    .reduce((acc, x) => acc + x, 0);
   await Apify.pushData({ totalCount });
-
-  try {
-    await uploadToKeboola("knihydobrovsky_count");
-    log.info("upload to Keboola finished");
-  } catch (err) {
-    log.warning("upload to Keboola failed");
-    log.error(err);
-  }
 });
