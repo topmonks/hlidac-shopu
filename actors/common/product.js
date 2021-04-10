@@ -68,8 +68,16 @@ async function invalidateCDN(cloudfront, distributionId, shop) {
   );
 }
 
+async function s3FileName(detail) {
+  const { shops, shopName } = await import("@hlidac-shopu/lib/shops.mjs");
+  const url = new URL(detail.itemUrl);
+  const shop = shops.get(shopName(url));
+  return shop.parse(url).itemUrl;
+}
+
 module.exports = {
   toProduct,
   uploadToS3,
+  s3FileName,
   invalidateCDN
 };
