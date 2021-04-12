@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 import formatISO from "date-fns/formatISO/index.js";
 import fetch from "node-fetch/lib/index.mjs";
-import { JSDOM } from "jsdom";
+import { parseHTML } from "linkedom/cached";
 import fs from "fs";
 import path from "path";
+import { URL } from "url";
+
+const test = true;
+const urls = [
+  "https://www.lupa.cz/clanky/black-friday-2020-blyska-se-na-lepsi-casy/",
+  "https://www.penize.cz/slevy/422584-pravda-o-slevach-nove-dukazy-jak-e-shopy-caruji-s-cenou"
+];
 
 const template = ({ url, title, date, perex, filename }) => `---
 title: "${title}"
@@ -14,11 +21,6 @@ image: ${filename}
 
 ${perex}
 `;
-
-const urls = [
-  "https://www.lupa.cz/clanky/black-friday-2020-blyska-se-na-lepsi-casy/",
-  "https://www.penize.cz/slevy/422584-pravda-o-slevach-nove-dukazy-jak-e-shopy-caruji-s-cenou",
-];
 
 function writeMdFile(filename, url, title, date, perex, imageExt) {
   const filePath = path.join(
@@ -49,36 +51,38 @@ function writeImgFile(filename, imageExt, imageData) {
   return fs.promises.writeFile(imgPath, new Uint8Array(imageData));
 }
 
-const test = false;
-
-for (let url of urls) {
-  const {
-    window: { document }
-  } = await JSDOM.fromURL(url);
-
-  let ld;
+function readLinkedData(document) {
   try {
-    ld = JSON.parse(
+    return JSON.parse(
       document.querySelector("script[type='application/ld+json']")?.innerHTML ??
         "{}"
     );
   } catch (o_0) {
-    ld = {};
+    return {};
   }
+}
+
+for (let url of urls) {
+  const resp = await fetch(url, {});
+  const { document } = parseHTML(await resp.text());
+  const ld = readLinkedData(document);
   const title = (
     ld.headline ??
-    document.querySelector("[property='og:title']")?.content ??
+    document.querySelector("[property='og:title']")?.getAttribute("content") ??
     document.querySelector("h1, .post-title, [itemprop=name]")?.textContent
   )?.trim();
-  const imageUrl = document.querySelector(
-    "meta[property='og:image'], meta[property='og:image:url']"
-  )?.content;
+  const imageUrl = document
+    .querySelector("meta[property='og:image'], meta[property='og:image:url']")
+    ?.getAttribute("content");
   let imageResp = fetch(imageUrl);
   const time = new Date(
     ld.datePublished ??
-      document.querySelector("meta[property='og:updated_time']")?.content ??
-      document.querySelector("meta[property='article:published_time']")
-        ?.content ??
+      document
+        .querySelector("meta[property='og:updated_time']")
+        ?.getAttribute("content") ??
+      document
+        .querySelector("meta[property='article:published_time']")
+        ?.getAttribute("content") ??
       document.querySelector("time")?.getAttribute("datetime") ??
       document
         .querySelector("[itemprop=datePublished]")
@@ -86,10 +90,12 @@ for (let url of urls) {
       Date.now()
   );
   const perex = (
-    document.querySelector("meta[property='og:description']")?.content ??
-    document.querySelector("meta[name='description']").content
+    document
+      .querySelector("meta[property='og:description']")
+      ?.getAttribute("content") ??
+    document.querySelector("meta[name='description']").getAttribute("content")
   )?.trim();
-  const parts = document.location.host.split(".");
+  const parts = new URL(url).host.split(".");
   parts.pop();
   const siteName = parts.pop();
 
