@@ -1,3 +1,11 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+
 const Apify = require("apify");
 const { contains } = require("cheerio");
 
@@ -89,5 +97,25 @@ exports.handleDetail = async ({ request, $ }) => {
   //Check if item is available
   const itemAvailability = $(".product-buy").attr("data-availability");
 
-  Apify.pushData(result);
+  //Format item detail for function toProduct()
+  const detail = {};
+  detail.itemId = result.itemId;
+  detail.itemName = result.itemName;
+  detail.itemUrl = result.itemUrl;
+  detail.img = result.itemImgUrl;
+  detail.category = result.itemCategoryPage;
+  detail.inStock = itemAvailability === "skladem";
+  detail.currentPrice = result.currentPrice;
+  detail.currency = result.currency;
+
+  await Promise.all([
+    Apify.pushData(detail),
+    uploadToS3(
+      s3,
+      "iglobus.cz",
+      await s3FileName(detail),
+      "jsonld",
+      toProduct(detail, { priceCurrency: "CZK" })
+    )
+  ]);
 };

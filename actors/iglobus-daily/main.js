@@ -1,4 +1,6 @@
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
 const { handleStart, handleList, handleDetail } = require("./routes");
 
@@ -7,6 +9,8 @@ const {
 } = Apify;
 
 Apify.main(async () => {
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
   const { development } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
@@ -46,25 +50,29 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
 
-  // stats page
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: "globus-cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
   if (!development) {
+    // stats page
+    try {
+      const env = await Apify.getEnv();
+      const run = await Apify.callTask(
+        "blackfriday/status-page-store",
+        {
+          datasetId: env.defaultDatasetId,
+          name: "globus-cz"
+        },
+        {
+          waitSecs: 25
+        }
+      );
+      console.log(`Keboola upload called: ${run.id}`);
+    } catch (e) {
+      console.log(e);
+    }
+
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "iglobus.cz");
+    log.info("invalidated Data CDN");
     await uploadToKeboola("globus_cz");
+    log.info("upload to Keboola finished");
   }
 
   console.log("Finished.");
