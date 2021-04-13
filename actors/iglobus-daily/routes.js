@@ -86,6 +86,8 @@ exports.handleDetail = async ({ request, $ }) => {
   // if (!result.originalPrice) result.originalPrice = result.currentPrice;
   result.discounted = result.currentPrice < result.originalPrice;
   result.currency = "CZK";
+  //Check if item is available
+  const itemAvailability = $(".product-buy").attr("data-availability");
 
   Apify.pushData(result);
 };
