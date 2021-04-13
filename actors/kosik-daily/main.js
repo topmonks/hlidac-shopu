@@ -4,6 +4,7 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
   toProduct,
   uploadToS3,
+  s3FileName,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
@@ -70,11 +71,6 @@ const parseItem = (item, breadcrumbs) => ({
   img: item.image
 });
 
-function s3FileName(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.match(/[^/]+$/)?.[0];
-}
-
 /**
  * @param {RequestQueue} requestQueue
  * @param {S3Client} s3
@@ -109,7 +105,7 @@ function pageFunction(requestQueue, s3) {
           uploadToS3(
             s3,
             "kosik.cz",
-            s3FileName(detail),
+            await s3FileName(detail),
             "jsonld",
             toProduct(detail, { priceCurrency: "CZK" })
           )
