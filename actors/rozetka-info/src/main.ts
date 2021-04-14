@@ -12,9 +12,11 @@ Apify.main(async () => {
     const input = await Apify.getInput();
     const {
         maxConcurrency = 100,
-        proxyCountryCode = undefined,
+        proxyCountryCode,
         startUrls = [],
-    } = typeof input === 'object' ? input : {};
+    } = typeof input === 'object' ? input : {
+        proxyCountryCode: undefined,
+    };
 
     const requestList = await Apify.openRequestList('start-url', startUrls
         .map(request => ({ ...request, userData: { label: OVERVIEW }})));

@@ -13,12 +13,6 @@ export const handleMainPage = async ({
 }: Apify.CheerioHandlePageInputs): Promise<void> => {
     log.info('Entered main page.');
 
-    // TODO: delete this for prod
-    const input = await Apify.getInput();
-    const {
-        maxCategories = undefined,
-    } = typeof input === 'object' ? input : {};
-
     await Apify.utils.enqueueLinks({
         $,
         requestQueue,
@@ -31,7 +25,5 @@ export const handleMainPage = async ({
             }
             return req;
         },
-        // TODO: delete this for prod
-        limit: maxCategories
     });
 };

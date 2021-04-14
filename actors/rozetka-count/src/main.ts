@@ -19,9 +19,12 @@ Apify.main(async () => {
     const input = await Apify.getInput();
     const {
         maxConcurrency = 100,
-        proxyCountryCode = undefined,
-        maxRequestsPerCrawl = undefined,
-    } = typeof input === 'object' ? input : {};
+        proxyCountryCode,
+        maxRequestsPerCrawl,
+    } = typeof input === 'object' ? input : {
+        proxyCountryCode: undefined,
+        maxRequestsPerCrawl: undefined,
+    };
 
     const requestList = await Apify.openRequestList('start-url', START_REQUESTS);
     const requestQueue = await Apify.openRequestQueue();
