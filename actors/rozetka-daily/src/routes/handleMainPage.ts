@@ -16,7 +16,7 @@ export const handleMainPage = async ({
     // TODO: delete this for prod
     const input = await Apify.getInput();
     const {
-        maxCategories = undefined,
+        maxCategories,
     } = typeof input === 'object' ? input : {};
 
     await Apify.utils.enqueueLinks({

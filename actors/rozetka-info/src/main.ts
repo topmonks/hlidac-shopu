@@ -12,7 +12,7 @@ Apify.main(async () => {
     const input = await Apify.getInput();
     const {
         maxConcurrency = 100,
-        proxyCountryCode = undefined,
+        proxyCountryCode,
         startUrls = [],
     } = typeof input === 'object' ? input : {};
 

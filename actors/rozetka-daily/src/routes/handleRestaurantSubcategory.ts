@@ -15,7 +15,7 @@ export const handleRestaurantSubcategory = async ({
 
     const input = await Apify.getInput();
     const {
-        maxSubcategories = undefined,
+        maxSubcategories,
     } = typeof input === 'object' ? input : {};
     await Apify.utils.enqueueLinks({
         $,
