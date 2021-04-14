@@ -21,10 +21,14 @@ Apify.main(async () => {
         maxConcurrency = 100,
         proxyCountryCode,
         maxRequestsPerCrawl,
+<<<<<<< HEAD
     } = typeof input === 'object' ? input : {
         proxyCountryCode: undefined,
         maxRequestsPerCrawl: undefined,
     };
+=======
+    } = typeof input === 'object' ? input : {};
+>>>>>>> 76614c7112e3599a346bdad70fb4d6000b5ae2bc
 
     const requestList = await Apify.openRequestList('start-url', START_REQUESTS);
     const requestQueue = await Apify.openRequestQueue();
