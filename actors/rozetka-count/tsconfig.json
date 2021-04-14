@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "resolveJsonModule": true,
+    "lib": [
+      "es2018",
+      "es2018.asynciterable",
+      "dom",
+      "dom.iterable"
+    ],
+    "skipLibCheck": true,
+    "rootDir": "src/",
+    "outDir": "dist/"
+  },
+  "include": [
+    "src/"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "rozetka-daily",
+  "description": "Hlidac Rozetka Actor 1",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "maxConcurrency": {
+        "title": "maxConcurrency",
+        "type": "integer",
+        "description": "Max concurrency",
+        "editor": "number"
+    },
+    "proxyCountryCode": {
+        "title": "proxyCountryCode",
+        "type": "string",
+        "description": "Country code for proxies",
+        "editor": "textfield"
+    }
+  },
+  "required": []
+}
