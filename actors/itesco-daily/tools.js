@@ -26,14 +26,13 @@ const findArraysUrl = async (urlsCatHtml, country) => {
   });
   let arr = [].concat(childrenArr);
   arr = arr.map(item => {
-    return item.allUrl;
-    if (item.url) {
+    if (item.url.includes("/all")) {
       return item.url;
-    }
-    if (item.allUrl) {
+    } else {
       return item.allUrl;
     }
   });
+
   const url =
     country === COUNTRY.CZ
       ? "https://nakup.itesco.cz/groceries/cs-CZ/shop"
@@ -100,7 +99,9 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
       const { results } = reduxData;
       stats.offers += results.count;
       const { pages } = reduxData.results;
-      const [result] = pages;
+      //Use filter on paginated pages that includes null elements in pages array
+      const filteredPages = pages.filter(Boolean);
+      const [result] = filteredPages;
       const { serializedData } = result;
       resultsData = serializedData;
     } catch (e) {

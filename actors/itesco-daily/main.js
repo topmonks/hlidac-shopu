@@ -65,7 +65,6 @@ Apify.main(async () => {
         const urlsCatHtml = JSON.parse(script);
 
         const startUrls = await findArraysUrl(urlsCatHtml, country);
-        console.log(startUrls);
         log.debug(`Found ${startUrls.length} on ${request.userData.label}`);
         for (const item of startUrls) {
           await requestQueue.addRequest({
@@ -141,7 +140,7 @@ Apify.main(async () => {
   await crawler.run();
   await persistState();
 
-  if (!test) {
+  if (!development) {
     // calling the keboola upload
     try {
       const env = await Apify.getEnv();
