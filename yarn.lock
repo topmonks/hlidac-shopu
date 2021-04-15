@@ -2410,7 +2410,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@aws-sdk/util-dynamodb": ^3.12.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^3.35.0
+    "@pulumi/aws": ^3.38.1
     "@pulumi/awsx": ^0.26.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
@@ -3085,9 +3085,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^3.35.0":
-  version: 3.35.0
-  resolution: "@pulumi/aws@npm:3.35.0"
+"@pulumi/aws@npm:^3.38.1":
+  version: 3.38.1
+  resolution: "@pulumi/aws@npm:3.38.1"
   dependencies:
     "@pulumi/pulumi": ^2.17.0
     aws-sdk: ^2.0.0
@@ -3095,7 +3095,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 420c2ac1a8887cd2db4d8fd7c9bae1fd94d7271a2adc9686c12e0777191338e4b1b24912f25226a45679209d45ec54f9e595161b20063daf7da7bff923a93417
+  checksum: e98bc4935b4fa018633babc150e838b183b8e579dc26e53212321a15fc7d7753ee1d043bcdbb11fe6c661c9c3b2f6785a2a5a12af6ce57f923c959f6a81ce00a
   languageName: node
   linkType: hard
 
@@ -3145,9 +3145,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.24.1":
-  version: 2.24.1
-  resolution: "@pulumi/pulumi@npm:2.24.1"
+"@pulumi/pulumi@npm:^2.25.0":
+  version: 2.25.0
+  resolution: "@pulumi/pulumi@npm:2.25.0"
   dependencies:
     "@grpc/grpc-js": ^1.2.7
     "@logdna/tail-file": ^2.0.6
@@ -3165,7 +3165,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: 8c53f84cdf35169bbd6386fc59f944aa80cc67dfa1693bdc4ce6a3fdcc3d0f351d9fbc10ec8f8a3a8479029b78e38572c3b6757eedd4ab6f472c1b911b82e7f0
+  checksum: fca4b51710e4ef9afa9837e97704fc43f16c741560e8b49e6d822a9b14932398e8fa535bd7dfb2f945871a5905711df4335dc052de79944cdb98b7e9a08f2a84
   languageName: node
   linkType: hard
 
@@ -11731,9 +11731,9 @@ fsevents@~2.3.1:
     "@material/icon-button": ^10.0.0
     "@material/snackbar": ^10.0.0
     "@open-wc/testing": ^2.5.32
-    "@pulumi/aws": ^3.35.0
+    "@pulumi/aws": ^3.38.1
     "@pulumi/awsx": ^0.26.0
-    "@pulumi/pulumi": ^2.24.1
+    "@pulumi/pulumi": ^2.25.0
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^11.2.0
     "@rollup/plugin-replace": ^2.4.1
