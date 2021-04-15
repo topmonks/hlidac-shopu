@@ -56,16 +56,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apify/storage-local@npm:^1.0.4":
-  version: 1.0.5
-  resolution: "@apify/storage-local@npm:1.0.5"
+"@apify/storage-local@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@apify/storage-local@npm:2.0.0"
   dependencies:
-    apify-shared: ^0.5.7
-    better-sqlite3-with-prebuilds: ^7.1.1
+    apify-shared: ^0.7.5
+    better-sqlite3-with-prebuilds: 7.1.7
     content-type: ^1.0.4
-    mime-types: ^2.1.27
+    fs-extra: ^9.1.0
+    mime-types: ^2.1.30
     ow: ^0.23.0
-  checksum: db9afda76a743e8d5774ebb348596b3ec9c8ed993629eed0796ffd1100780844cf30a748489360429705ea7eadc1b14b6844c8c54c1beb4808f4093ce0d65ee6
+    tslib: ^2.2.0
+  checksum: 8d86f5e43f2e65b66c64a80c91e93d3e914ec7899950e5209127b36e4f1da8efd46ca316ed110bb081083b16cb1e1712905df88db891759972ce6fe237fe9935
   languageName: node
   linkType: hard
 
@@ -2434,7 +2436,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2457,7 +2459,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@types/cheerio": ^0.22.28
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.5
     csv-parse: ^4.15.3
@@ -2475,7 +2477,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2488,7 +2490,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2499,7 +2501,7 @@ __metadata:
   dependencies:
     "@apify/eslint-config": ^0.1.3
     "@hlidac-shopu/actors-common": ^1.0.4
-    apify: ^1.1.1
+    apify: ^1.1.2
   languageName: unknown
   linkType: soft
 
@@ -2511,7 +2513,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2524,7 +2526,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2552,7 +2554,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/sleky-daily@workspace:actors/sleky-daily"
   dependencies:
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -2565,7 +2567,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.12.0
     "@hlidac-shopu/actors-common": ^1.0.4
     "@types/node": ^14.14.37
-    apify: ^1.1.1
+    apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
@@ -3516,15 +3518,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cheerio@npm:^0.22.22":
-  version: 0.22.23
-  resolution: "@types/cheerio@npm:0.22.23"
-  dependencies:
-    "@types/node": "*"
-  checksum: bcfa751bb0e6c974bb38422913b369da89368dfda87452373d0e2e360c6967a1ada4fa1eee4413792796c32e14369f930380fbddc1438d891d81a1bd3107fa8f
-  languageName: node
-  linkType: hard
-
 "@types/cheerio@npm:^0.22.28":
   version: 0.22.28
   resolution: "@types/cheerio@npm:0.22.28"
@@ -3706,6 +3699,13 @@ __metadata:
   version: 1.8.0
   resolution: "@types/http-errors@npm:1.8.0"
   checksum: f6a0cf40d026b339f3358771d1a98bce7e637429882255246ccf4056cf0f2df7aaf2997ba3072e13df8688f0cd2f9f99ac4d84bed4665710793de35642b4cdad
+  languageName: node
+  linkType: hard
+
+"@types/integer@npm:latest":
+  version: 1.0.1
+  resolution: "@types/integer@npm:1.0.1"
+  checksum: 9ddde7342e4d2abf55d7af6601bb32e79df4c09f3ec7a4bad899e19abddd4f30770b76467b87933dd3fbec6f98d9aaf9ddbcfe2bed998a2eafbe7e672693f4cf
   languageName: node
   linkType: hard
 
@@ -3892,12 +3892,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/puppeteer@npm:^5.4.0":
-  version: 5.4.2
-  resolution: "@types/puppeteer@npm:5.4.2"
+"@types/puppeteer@npm:^5.4.3":
+  version: 5.4.3
+  resolution: "@types/puppeteer@npm:5.4.3"
   dependencies:
     "@types/node": "*"
-  checksum: e27ca238475a0bdca310bcf80c82a9e654d51038988356b46e9905aa9396dcc7565d7d9409e17e2f41681031953290422d6073dcd32dc852924c4e92c5bf99dd
+  checksum: 8b3aeeb686d71793ac55908cd6b63f71e8e8e447869137f5279f977bded877dc8a17cf84e167cea6841ea46ca9be76f2b3e80785208e0fb5981f0bff5ee7775a
   languageName: node
   linkType: hard
 
@@ -4001,7 +4001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/socket.io@npm:^2.1.11":
+"@types/socket.io@npm:^2.1.13":
   version: 2.1.13
   resolution: "@types/socket.io@npm:2.1.13"
   dependencies:
@@ -4950,7 +4950,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-shared@npm:^0.5.0, apify-shared@npm:^0.5.7":
+"apify-shared@npm:^0.5.0":
   version: 0.5.7
   resolution: "apify-shared@npm:0.5.7"
   dependencies:
@@ -4994,26 +4994,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "apify@npm:1.1.1"
+"apify-shared@npm:^0.7.5":
+  version: 0.7.5
+  resolution: "apify-shared@npm:0.7.5"
+  dependencies:
+    axios: ^0.21.1
+    chalk: ^4.0.0
+    cherow: ^1.6.9
+    clone: ^2.1.1
+    countries-list: ^2.6.1
+    create-hmac: ^1.1.7
+    git-url-parse: ^11.4.4
+    is-buffer: ^2.0.5
+    marked: ^2.0.0
+    match-all: ^1.2.6
+    moment: ^2.29.1
+    request: ^2.88.0
+    underscore: ^1.11.0
+    url: ^0.11.0
+  checksum: 3328fb15e1644ca2a85dac2d62989be03062fc828cb5718d4594d6cee5a74d6a87c7dd8acccd467d56b515991d26f5180315b7417fe0a1858421a90fd91e8e12
+  languageName: node
+  linkType: hard
+
+"apify@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "apify@npm:1.1.2"
   dependencies:
     "@apify/http-request": ^2.1.1
     "@apify/ps-tree": ^1.1.3
-    "@apify/storage-local": ^1.0.4
-    "@types/cheerio": ^0.22.22
+    "@apify/storage-local": ^2.0.0
+    "@types/cheerio": ^0.22.28
     "@types/domhandler": ^2.4.1
     "@types/node": ^14
-    "@types/puppeteer": ^5.4.0
-    "@types/socket.io": ^2.1.11
+    "@types/puppeteer": ^5.4.3
+    "@types/socket.io": ^2.1.13
     "@types/tough-cookie": ^4.0.0
     apify-client: ^1.0.3
-    apify-shared: ^0.6.0
+    apify-shared: ^0.7.5
     browser-pool: ^1.1.2
     cheerio: 1.0.0-rc.3
     content-type: ^1.0.4
     express: ^4.17.1
-    fs-extra: ^9.0.1
+    fs-extra: ^9.1.0
     htmlparser2: ^6.0.0
     iconv-lite: ^0.6.2
     jquery: ^3.5.1
@@ -5024,9 +5046,9 @@ __metadata:
     socket.io: ^3.0.3
     stream-json: ^1.7.1
     tough-cookie: ^4.0.0
-    underscore: ^1.11.0
+    underscore: ^1.13.0
     ws: ^7.3.1
-  checksum: ac854bc77c3bab314e07d1079bbfc5995562933809190a1f2b79dbcb0f0c42e06319eccadf425b325e5523e52c617f3d343bc829f47621250c38932737204bd8
+  checksum: 2053efb599c3e66b75d1707266f6c484f46c75eb8926c17a4d4b52ed1dc85bd37c9c9beb927425f60c4945ad5255286c494062f81d5118083343f62aa2f35393
   languageName: node
   linkType: hard
 
@@ -5763,15 +5785,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3-with-prebuilds@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "better-sqlite3-with-prebuilds@npm:7.1.1"
+"better-sqlite3-with-prebuilds@npm:7.1.7":
+  version: 7.1.7
+  resolution: "better-sqlite3-with-prebuilds@npm:7.1.7"
   dependencies:
+    "@types/integer": latest
     bindings: ^1.5.0
     node-gyp: latest
-    prebuild-install: ^5.3.3
-    tar: 4.4.10
-  checksum: 9d6c773380f9cffd527fd49623da83023af62d553af15e2a12740e644ef07bb680a2029e52004a2b4c534fc45b6eb329d01ec647ff7ddf66ac4afc35b08f20eb
+    prebuild-install: ^6.0.1
+    tar: ^6.0.5
+  checksum: b8434c46a3f2e38f9c3fbd7fc531f99992ecbec523dd23be08deec15f789c962b06632b09e3f36b9d0faeb72ba1782b5126ae3084f842c79f72a4eb369a9eecf
   languageName: node
   linkType: hard
 
@@ -10425,15 +10448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-minipass@npm:^1.2.5":
-  version: 1.2.7
-  resolution: "fs-minipass@npm:1.2.7"
-  dependencies:
-    minipass: ^2.6.0
-  checksum: eb59a93065f25457e5d1d10a064e22565e704b03140d5ef86a71a57155b13aa645811126fed2a5a282df8dc9c40df9c9d696f6b2d93c181071a971221d0a454b
-  languageName: node
-  linkType: hard
-
 "fs-minipass@npm:^2.0.0":
   version: 2.1.0
   resolution: "fs-minipass@npm:2.1.0"
@@ -14690,12 +14704,28 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"mime-db@npm:1.47.0":
+  version: 1.47.0
+  resolution: "mime-db@npm:1.47.0"
+  checksum: f5f9220dd53c240c9234323571f632486c663e36676ebfdca9963fb9a92d1dd28b16124bceff60868fb70743764ade8466dd5e6a1a833decde89ae6d15211503
+  languageName: node
+  linkType: hard
+
 "mime-types@npm:^2.1.12, mime-types@npm:^2.1.18, mime-types@npm:^2.1.27, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24":
   version: 2.1.28
   resolution: "mime-types@npm:2.1.28"
   dependencies:
     mime-db: 1.45.0
   checksum: 89d14a1af2be7f3c9682d1af98f422addce894b9c3ed1e67acb6e59e4c910c58a3586db686d894b47708d07c2ae76de4246b66dc4a7d698b0d1bd761c309bb92
+  languageName: node
+  linkType: hard
+
+"mime-types@npm:^2.1.30":
+  version: 2.1.30
+  resolution: "mime-types@npm:2.1.30"
+  dependencies:
+    mime-db: 1.47.0
+  checksum: c7ca8a9980bdae0b760820aded39ea9541a8236f4abc105df645ea5b09a9c4a5299e28667c0c9596ab8e4ca84b219fd8b94b5c68e32b59891ca1f57a7e848c02
   languageName: node
   linkType: hard
 
@@ -14814,31 +14844,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"minipass@npm:^2.3.5, minipass@npm:^2.6.0, minipass@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "minipass@npm:2.9.0"
-  dependencies:
-    safe-buffer: ^5.1.2
-    yallist: ^3.0.0
-  checksum: 57a49f9523fdc495625184f4ef5a101615d3ee0c06f0c37e2ed7140c12deeecbd404539bd605b985100836006409b11b627a3148941dcc4ade24f0f078557836
-  languageName: node
-  linkType: hard
-
 "minipass@npm:^3.0.0":
   version: 3.1.3
   resolution: "minipass@npm:3.1.3"
   dependencies:
     yallist: ^4.0.0
   checksum: d12b95a845f15950bce7a77730c89400cf0c4f55e7066338da1d201ac148ece4ea8efa79e45a2c07c868c61bcaf9e996c4c3d6bf6b85c038ffa454521fc6ecd5
-  languageName: node
-  linkType: hard
-
-"minizlib@npm:^1.2.1":
-  version: 1.3.3
-  resolution: "minizlib@npm:1.3.3"
-  dependencies:
-    minipass: ^2.9.0
-  checksum: 8d12782dd943ea92bb3e8e5dc4fe21201b56e77e5f12723c29159cf01dd0d50330dd071897dec270b3861994fb07a982b2473e5c2f42bf5f4b180ab18bf81c06
   languageName: node
   linkType: hard
 
@@ -14896,7 +14907,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:>=0.5 0, mkdirp@npm:^0.5.0, mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.3, mkdirp@npm:^0.5.5, mkdirp@npm:~0.5.1":
+"mkdirp@npm:>=0.5 0, mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.3, mkdirp@npm:^0.5.5, mkdirp@npm:~0.5.1":
   version: 0.5.5
   resolution: "mkdirp@npm:0.5.5"
   dependencies:
@@ -15174,12 +15185,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"node-abi@npm:^2.7.0":
-  version: 2.19.3
-  resolution: "node-abi@npm:2.19.3"
+"node-abi@npm:^2.21.0":
+  version: 2.21.0
+  resolution: "node-abi@npm:2.21.0"
   dependencies:
     semver: ^5.4.1
-  checksum: 503acaa092dbf3e1d4cd96fb8496f726d6d0b3f441e37c8e8be8a622fe88d9fcda495e2016a687c1c147a28c2a9b24bd9ce39f5ae5ac8223c30ab20aece376d8
+  checksum: c4932878cb278a029982434bcb9ec393f177cc9356086f013e5f4a8226dc925852a4fea897fbfa0cad60470a117841c18ca2e7b550380322adaecb0a326c5c36
   languageName: node
   linkType: hard
 
@@ -16981,9 +16992,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^5.3.3":
-  version: 5.3.6
-  resolution: "prebuild-install@npm:5.3.6"
+"prebuild-install@npm:^6.0.1":
+  version: 6.1.1
+  resolution: "prebuild-install@npm:6.1.1"
   dependencies:
     detect-libc: ^1.0.3
     expand-template: ^2.0.3
@@ -16991,7 +17002,7 @@ fsevents@~2.3.1:
     minimist: ^1.2.3
     mkdirp-classic: ^0.5.3
     napi-build-utils: ^1.0.1
-    node-abi: ^2.7.0
+    node-abi: ^2.21.0
     noop-logger: ^0.1.1
     npmlog: ^4.0.1
     pump: ^3.0.0
@@ -16999,10 +17010,9 @@ fsevents@~2.3.1:
     simple-get: ^3.0.3
     tar-fs: ^2.0.0
     tunnel-agent: ^0.6.0
-    which-pm-runs: ^1.0.0
   bin:
-    prebuild-install: bin.js
-  checksum: 81ff157668dc26349e1f8076fce0ba990f45481e39a64645efad60c9ae2d61e73e3c420d56f5f38fbe6dc3275e8e27067d2613d941c778f41658a6110e544130
+    prebuild-install: ./bin.js
+  checksum: 232508b7170226359491e27961509a35edca8500a7135f7817a03617c98760a4a6c68a9a469a5b71bf9c25c0267dd049808d35a8bf438668698d791b0d39519c
   languageName: node
   linkType: hard
 
@@ -20026,22 +20036,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"tar@npm:4.4.10":
-  version: 4.4.10
-  resolution: "tar@npm:4.4.10"
-  dependencies:
-    chownr: ^1.1.1
-    fs-minipass: ^1.2.5
-    minipass: ^2.3.5
-    minizlib: ^1.2.1
-    mkdirp: ^0.5.0
-    safe-buffer: ^5.1.2
-    yallist: ^3.0.3
-  checksum: a86bd3cdde67108ecd7264aed4ec076d573a409e6de868113c7412cb8e8f155e1e5788286b548298616507d8a94ec0ee2527c7be4f091a1dc1357408b0bd409b
-  languageName: node
-  linkType: hard
-
-"tar@npm:^6.0.2":
+"tar@npm:^6.0.2, tar@npm:^6.0.5":
   version: 6.1.0
   resolution: "tar@npm:6.1.0"
   dependencies:
@@ -20775,6 +20770,13 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
+"underscore@npm:^1.13.0":
+  version: 1.13.1
+  resolution: "underscore@npm:1.13.1"
+  checksum: 19527b2db3d34f783c3f2db9716a2c1221fef2958866925545697c46f430f59d1b384b8105cc7e7c809bdf0dc9075f2bfff90b8fb270b9d3a6c58347de2dd79d
+  languageName: node
+  linkType: hard
+
 "undertaker-registry@npm:^1.0.0":
   version: 1.0.1
   resolution: "undertaker-registry@npm:1.0.1"
@@ -21480,13 +21482,6 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"which-pm-runs@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "which-pm-runs@npm:1.0.0"
-  checksum: 0bb79a782e98955afec8f35a3ae95c4711fdd3d0743772ee98211da67c2421fdd4c92c95c93532cc0b4dcc085d8e27f3ad2f8a9173cb632692379bd3d2818821
-  languageName: node
-  linkType: hard
-
 "which@npm:1.2.4":
   version: 1.2.4
   resolution: "which@npm:1.2.4"
@@ -21954,13 +21949,6 @@ typescript@~3.7.3:
   version: 2.1.2
   resolution: "yallist@npm:2.1.2"
   checksum: f83e3d18eeba68a0276be2ab09260be3f2a300307e84b1565c620ef71f03f106c3df9bec4c3a91e5fa621a038f8826c19b3786804d3795dd4f999e5b6be66ea3
-  languageName: node
-  linkType: hard
-
-"yallist@npm:^3.0.0, yallist@npm:^3.0.3":
-  version: 3.1.1
-  resolution: "yallist@npm:3.1.1"
-  checksum: f352c93b92f601bb0399210bca37272e669c961e9bd886bac545380598765cbfdfb4f166e7b6c57ca4ec8a5af4ab3fa0fd78a47f9a7d655a3d580ff0fc9e7d79
   languageName: node
   linkType: hard
 
