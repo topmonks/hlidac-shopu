@@ -1,6 +1,0 @@
-export * from './handleMainPage'
-export * from './handleCategory'
-export * from './handleProductList'
-export * from './handleRestaurantCategory'
-export * from './handleRestaurantSubcategory'
-export * from './handleClothesCategory'
