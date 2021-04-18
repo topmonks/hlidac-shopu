@@ -2371,7 +2371,7 @@ __metadata:
     "@pulumi/awsx": ^0.26.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
-    date-fns: ^2.19.0
+    date-fns: ^2.21.1
     node-fetch: ^2.6.1
     ramda: ^0.27.1
   languageName: unknown
@@ -2418,8 +2418,8 @@ __metadata:
     "@types/node": ^14.14.41
     apify: ^1.1.2
     apify-cli: ^0.6.2
-    cheerio: ^1.0.0-rc.5
-    csv-parse: ^4.15.3
+    cheerio: ^1.0.0-rc.6
+    csv-parse: ^4.15.4
     jsonwebtoken: ^8.5.1
     node-fetch: ^2.6.1
     schema-dts: ^0.8.2
@@ -2537,7 +2537,7 @@ __metadata:
     "@hlidac-shopu/lib": 1.0.0
     "@material/layout-grid": ^11.0.0
     "@material/top-app-bar": ^11.0.0
-    "@thi.ng/atom": ^4.1.34
+    "@thi.ng/atom": ^4.1.35
     lit-html: 2.0.0-pre.7
     workbox-window: ^6.1.5
   languageName: unknown
@@ -3341,25 +3341,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:^4.1.34":
-  version: 4.1.34
-  resolution: "@thi.ng/atom@npm:4.1.34"
+"@thi.ng/atom@npm:^4.1.35":
+  version: 4.1.35
+  resolution: "@thi.ng/atom@npm:4.1.35"
   dependencies:
     "@thi.ng/api": ^7.1.4
     "@thi.ng/equiv": ^1.0.41
     "@thi.ng/errors": ^1.3.0
-    "@thi.ng/paths": ^4.2.6
+    "@thi.ng/paths": ^4.2.7
     tslib: ^2.1.0
-  checksum: 42e352886b70732223d287f4ef0c8efe7e63d53612be171e2018d4ef2f86d4915ff349091b16e6c63ece950a994df1ca77d0b8f9aace501a8f6818fcc6aa401c
+  checksum: a944482dac0703857c2ff9e3dca521e01621fc91c1ab0a681e568641dff88485be4caba42ec642a3040c0bb49340af6256d36908da7f7e86b0011c8094bebd0d
   languageName: node
   linkType: hard
 
-"@thi.ng/checks@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@thi.ng/checks@npm:2.9.5"
+"@thi.ng/checks@npm:^2.9.6":
+  version: 2.9.6
+  resolution: "@thi.ng/checks@npm:2.9.6"
   dependencies:
     tslib: ^2.1.0
-  checksum: 84e7637093706f0a498b88093c06a48136b2bdf35cc26137743bc87c9f0124250669458586e81014923a0e9c15689e0ddcc6941378fa84ba5cff883ef80a4ba8
+  checksum: 20639efb8b81304192a5b41558d594683e07149f46bd34b5a53ca8301554089c926105906c7a2b3cffe98c6233c8043a45180d36d9c479642b20723e9920133c
   languageName: node
   linkType: hard
 
@@ -3377,14 +3377,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^4.2.6":
-  version: 4.2.6
-  resolution: "@thi.ng/paths@npm:4.2.6"
+"@thi.ng/paths@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@thi.ng/paths@npm:4.2.7"
   dependencies:
     "@thi.ng/api": ^7.1.4
-    "@thi.ng/checks": ^2.9.5
+    "@thi.ng/checks": ^2.9.6
     "@thi.ng/errors": ^1.3.0
-  checksum: 1c5a8f0eda84aa8049b3ae0f17ef41121408514ce3428b3cb315eb579a7791fcd6b224e32ee8a79b4093dd9c0e2025ed814ce22b522c4c71ea32ca051c172e47
+  checksum: 8ead8cd959d9cf066b7097d37ac46edabc1094e0474bd42e31748a3ae8baa2793849f5b89c5371aa9bafc5bb731a2c0fde6c63445bcc63302bcbe51734e87a06
   languageName: node
   linkType: hard
 
@@ -6528,6 +6528,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cheerio-select@npm:^1.3.0":
+  version: 1.4.0
+  resolution: "cheerio-select@npm:1.4.0"
+  dependencies:
+    css-select: ^4.1.2
+    css-what: ^5.0.0
+    domelementtype: ^2.2.0
+    domhandler: ^4.2.0
+    domutils: ^2.6.0
+  checksum: e36fe92681e7987e3c23b16915c25538daa644ae870ef0eee0fbec1bc108d147a1c1a2e356a6e6b6aeba8156fe076ab13e6a3557598acfeb44fbe65f3be9beb3
+  languageName: node
+  linkType: hard
+
 "cheerio@npm:0.*":
   version: 0.22.0
   resolution: "cheerio@npm:0.22.0"
@@ -6566,7 +6579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:1.0.0-rc.5, cheerio@npm:^1.0.0-rc.5":
+"cheerio@npm:1.0.0-rc.5":
   version: 1.0.0-rc.5
   resolution: "cheerio@npm:1.0.0-rc.5"
   dependencies:
@@ -6578,6 +6591,20 @@ __metadata:
     parse5: ^6.0.0
     parse5-htmlparser2-tree-adapter: ^6.0.0
   checksum: 9e5c762323c3e3b56027a2e638aab6afa28191df399a57e517300a31b35e8b1665c588ab15baf9cb3a7f7ea7de7446e0e4d975cc3386027c2eb06c8ec5ed0b0d
+  languageName: node
+  linkType: hard
+
+"cheerio@npm:^1.0.0-rc.6":
+  version: 1.0.0-rc.6
+  resolution: "cheerio@npm:1.0.0-rc.6"
+  dependencies:
+    cheerio-select: ^1.3.0
+    dom-serializer: ^1.3.1
+    domhandler: ^4.1.0
+    htmlparser2: ^6.1.0
+    parse5: ^6.0.1
+    parse5-htmlparser2-tree-adapter: ^6.0.1
+  checksum: 75778a0f749972322a36107622ed5b9d1888dc7bc01809bb1f94ef9b095a410ae8ca91a91a66c23682cc1742ef0d3346040c24306aa89cdcfdcc64f2e42ff628
   languageName: node
   linkType: hard
 
@@ -7635,6 +7662,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-select@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "css-select@npm:4.1.2"
+  dependencies:
+    boolbase: ^1.0.0
+    css-what: ^5.0.0
+    domhandler: ^4.2.0
+    domutils: ^2.6.0
+    nth-check: ^2.0.0
+  checksum: fccd24173473d5a3d8f342c1e5646068bab7a196b95023da37d7bde36612a3ed02ba98a15558fe7a8130e184801670021632a3d3bb4fa417abd952f5de5a413d
+  languageName: node
+  linkType: hard
+
 "css-select@npm:~1.2.0":
   version: 1.2.0
   resolution: "css-select@npm:1.2.0"
@@ -7685,6 +7725,13 @@ __metadata:
   version: 4.0.0
   resolution: "css-what@npm:4.0.0"
   checksum: 2116d25ed233597bfe0b2fb50b56076f5dfc1665f602f8a367bbaa8d086ce91c188d92a47118fa0daf35118456b0a0e537241f89b34b4d98161d63da63740471
+  languageName: node
+  linkType: hard
+
+"css-what@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "css-what@npm:5.0.0"
+  checksum: e41b63a3ebed7bbf6fc97ace63c06ddad44da3399a65e2d8075715ffe1a24aceb223badbf219c93aa7c64938872964b9f8fe5854379c6f089b306b5e9e91867b
   languageName: node
   linkType: hard
 
@@ -7797,10 +7844,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^4.15.3":
-  version: 4.15.3
-  resolution: "csv-parse@npm:4.15.3"
-  checksum: 7b125fd77f757c8ab605f107dffbd60a91a0a423d2c44b89f20ba050d11e7c5ae2130b58a05216caccea5f5ffee8f2fb9863c8a14ec580ed7532a268a362eb60
+"csv-parse@npm:^4.15.4":
+  version: 4.15.4
+  resolution: "csv-parse@npm:4.15.4"
+  checksum: 04bdb9a5d45c70cbaa59a7e5811841562a7414c701d892a9364631d6a3cbf645358b41be5a2b45838a76a955ed33e2e8b8ebb21705923650838bfb08119e9d9d
   languageName: node
   linkType: hard
 
@@ -7832,10 +7879,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "date-fns@npm:2.19.0"
-  checksum: 99ec34199c3a61cdb7fd27dcd68dd3c0c949ddfc34aa1daba9a6b2e0b5381bf42d8955d28ec2770f72eee429f5e7ab10fadba7b69108379d2545f003461d04f7
+"date-fns@npm:^2.21.1":
+  version: 2.21.1
+  resolution: "date-fns@npm:2.21.1"
+  checksum: 00a2ddea1047c4ce6eaadda76a0ee0782d1cfe65061641bbff94f7a70d2d6ab12dac89e027b39d49710bdb2cf264bc1a4e096b0324c7de79699296a4c19f4a40
   languageName: node
   linkType: hard
 
@@ -8347,6 +8394,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dom-serializer@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "dom-serializer@npm:1.3.1"
+  dependencies:
+    domelementtype: ^2.0.1
+    domhandler: ^4.0.0
+    entities: ^2.0.0
+  checksum: b5260cc10372a0a36661c429fa4bf351930ee130ca4370bad99a9440bda34f43e592190e6bff060957d1f38f11945991fe95a6fb043ef99dcdd8107e8c31d755
+  languageName: node
+  linkType: hard
+
 "dom-serializer@npm:~0.1.0, dom-serializer@npm:~0.1.1":
   version: 0.1.1
   resolution: "dom-serializer@npm:0.1.1"
@@ -8371,6 +8429,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"domelementtype@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "domelementtype@npm:2.2.0"
+  checksum: 70af22cd69a8e0c0cd4fbbba0459991aacb015f60765050b4a6d1750fd201b4bd4fd1e6922e945200f9cc725cd61be1cd393a3b9b576187759e3b046f33a4a30
+  languageName: node
+  linkType: hard
+
 "domhandler@npm:^2.3.0":
   version: 2.4.2
   resolution: "domhandler@npm:2.4.2"
@@ -8386,6 +8451,15 @@ __metadata:
   dependencies:
     domelementtype: ^2.1.0
   checksum: 22cc8e1335728a7c49434d1d12ff1563aea758c26c8ebf50fcf9e28ceb2bd0e5a15518d69abdb5db37aa7c0c347c8f68d323d12fc744a68853fb7641cbdcec89
+  languageName: node
+  linkType: hard
+
+"domhandler@npm:^4.1.0, domhandler@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "domhandler@npm:4.2.0"
+  dependencies:
+    domelementtype: ^2.2.0
+  checksum: 1bdb0ae6b9a93f4a2e8a77da304a435bfd35af0e52c5208f24277093b7fa2e6084cdbd4eb7fdd5c0ca5bf2c67736a19b258fe9e61588f4c49eaa0abde8d3595d
   languageName: node
   linkType: hard
 
@@ -8428,6 +8502,17 @@ __metadata:
     domelementtype: ^2.0.1
     domhandler: ^4.0.0
   checksum: abee29c1aade78506fb9ccb7bd7a2720fb18a87f230a7f7f2e3438458c27dee03b8abad4f3e448ed39da86d2a573e8bc7323d8dd0f2a473f26a455c017e303ce
+  languageName: node
+  linkType: hard
+
+"domutils@npm:^2.5.2, domutils@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "domutils@npm:2.6.0"
+  dependencies:
+    dom-serializer: ^1.0.1
+    domelementtype: ^2.2.0
+    domhandler: ^4.2.0
+  checksum: 9da918510929e787d029034986287760f304ce089bdc3538482a3eee3e50abe9c055fa0c44f4366117efb8323615bd0228bdcbb0ca9799f80f7d3c2fc4df20ba
   languageName: node
   linkType: hard
 
@@ -11369,7 +11454,7 @@ fsevents@~2.3.1:
     chokidar: ^3.5.1
     chrome-webstore-upload-cli: ^1.2.1
     commander: ^7.2.0
-    date-fns: ^2.19.0
+    date-fns: ^2.21.1
     dotenv-cli: ^4.0.0
     esbuild: ^0.11.12
     eslint: ^7.24.0
@@ -11521,6 +11606,18 @@ fsevents@~2.3.1:
     domutils: ^2.4.4
     entities: ^2.0.0
   checksum: 03819682d894316d1f8d1a11c9212bdf9c8b2e7a2adc0e19262ac8105d0a4d0577caa1f40bf52ac4876961720342e9f12b86dbf2488f0a8263cf278c03129833
+  languageName: node
+  linkType: hard
+
+"htmlparser2@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "htmlparser2@npm:6.1.0"
+  dependencies:
+    domelementtype: ^2.0.1
+    domhandler: ^4.0.0
+    domutils: ^2.5.2
+    entities: ^2.0.0
+  checksum: 37b0b2c0ae99aed0537f6373a6ad3dc6f19fddfd10799a75e76213458a0f754bbd3a829f075d175c9f5e3c70c7e354cb5a1dd1b582cee90e28a0845a96d524dc
   languageName: node
   linkType: hard
 
