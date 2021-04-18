@@ -78,12 +78,15 @@ const config = {
       minify: mode.production(),
       sourcemap: true,
       format: "esm",
-      target: ["es2017", "firefox57", "safari12"],
+      platform: "browser",
+      target: ["es2017", "firefox67", "safari12"],
       charset: "utf8",
       metafile: true,
       metafileName: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
       define: {
-        "process.env.NODE_ENV": mode.production() ? "production" : "development"
+        "process.env.NODE_ENV": mode.production()
+          ? "'production'"
+          : "'development'"
       }
     }
   },
@@ -100,7 +103,7 @@ const config = {
           .pipe(esbuild(taskConfig.esbuild.options))
           .pipe(dest(paths.dest))
       );
-      const gulpEsbuild = esbuild.createGulpEsbuild();
+      const gulpEsbuild = esbuild.createGulpEsbuild({ incremental: true });
       task("esbuild", () =>
         src(paths.src)
           .pipe(gulpEsbuild(taskConfig.esbuild.options))
