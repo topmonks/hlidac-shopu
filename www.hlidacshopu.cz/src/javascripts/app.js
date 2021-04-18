@@ -161,8 +161,8 @@ function getShop(targetURL) {
   return shopName(targetURL);
 }
 
-function isEmbed({ view }) {
-  return view === "embed";
+function isEmbed(sharedInfo) {
+  return sharedInfo?.view === "embed";
 }
 
 function getSharedInfo({ searchParams }) {
