@@ -2368,7 +2368,7 @@ __metadata:
     "@aws-sdk/util-dynamodb": ^3.13.0
     "@hlidac-shopu/lib": ^1.0.0
     "@pulumi/aws": ^3.38.1
-    "@pulumi/awsx": ^0.26.0
+    "@pulumi/awsx": ^0.30.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
     date-fns: ^2.21.1
@@ -3070,31 +3070,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "@pulumi/awsx@npm:0.26.0"
+"@pulumi/awsx@npm:^0.30.0":
+  version: 0.30.0
+  resolution: "@pulumi/awsx@npm:0.30.0"
   dependencies:
-    "@pulumi/docker": ^1.0.0 || ^2.0.0
+    "@pulumi/docker": ^3.0.0
     "@types/aws-lambda": ^8.10.23
     mime: ^2.0.0
   peerDependencies:
-    "@pulumi/aws": ^3.25.1
-    "@pulumi/pulumi": ^1.9.1 || ^2.0.0
-  checksum: 70c21d33adf630be0fa49f8162194a616990f76dd4183d7ee3c5c5cec04434eb9138a26345a913438ce9a49c082dd2e7dc00fd6963d56aa8d59a926459c370fd
+    "@pulumi/aws": ^4.0.0
+    "@pulumi/pulumi": ^3.0.0
+  checksum: 3a97e8c9563fff953310f681ba871751c68ffe4382c4d605339b24b18ce93dbab8d35ffa643d895cd8e73f0c62ca2e09a519cdedf2387a1ccbd68ff828d05f0b
   languageName: node
   linkType: hard
 
-"@pulumi/docker@npm:^1.0.0 || ^2.0.0":
-  version: 2.5.0
-  resolution: "@pulumi/docker@npm:2.5.0"
+"@pulumi/docker@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@pulumi/docker@npm:3.0.0"
   dependencies:
-    "@pulumi/pulumi": ^2.0.0
+    "@pulumi/pulumi": ^3.0.0
     semver: ^5.4.0
-  checksum: 4fd829b9283c56bdc630e29716d50c22f96dd96ad74bba98ac3f87e40aee8ee284125c5ef90991ca2d87ccfb2a1d8eb3c2614d456f86d0612b854df6330b80f0
+  checksum: ebbaf71437caaf82abddc95f7284827a281cb0a1f6d0970848776451ffe8d2e6c4b7e60fd726d66627659dcfa512ff1844357959b09fe636b20a69d1cd198dbb
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.0.0, @pulumi/pulumi@npm:^2.17.0":
+"@pulumi/pulumi@npm:^2.17.0":
   version: 2.22.0
   resolution: "@pulumi/pulumi@npm:2.22.0"
   dependencies:
@@ -3137,6 +3137,30 @@ __metadata:
     typescript: ~3.7.3
     upath: ^1.1.0
   checksum: 41c42b0801b06b67041445fc414d2f5dd9fa0d13e6eeda89dcf13cda35ab61ca78899de9341240846c12c9b6556a3f6a9797439d273cc817b1db834c940f9ef5
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@pulumi/pulumi@npm:3.0.0"
+  dependencies:
+    "@grpc/grpc-js": ^1.2.7
+    "@logdna/tail-file": ^2.0.6
+    "@pulumi/query": ^0.3.0
+    google-protobuf: ^3.5.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.0
+    normalize-package-data: ^2.4.0
+    protobufjs: ^6.8.6
+    read-package-tree: ^5.3.1
+    require-from-string: ^2.0.1
+    semver: ^6.1.0
+    source-map-support: ^0.4.16
+    split2: ^3.2.2
+    ts-node: ^7.0.1
+    typescript: ~3.7.3
+    upath: ^1.1.0
+  checksum: 6bbdad4c730b5ac6e00dca99d1d0134adab0367c51fcc67c011bd080ae6dabc1d666262652a22b2bb762e8347e84ed102d227aabac03888deed0ea8516322087
   languageName: node
   linkType: hard
 
@@ -11434,7 +11458,7 @@ fsevents@~2.3.1:
     "@material/snackbar": ^11.0.0
     "@open-wc/testing": ^2.5.32
     "@pulumi/aws": ^3.38.1
-    "@pulumi/awsx": ^0.26.0
+    "@pulumi/awsx": ^0.30.0
     "@pulumi/pulumi": ^2.25.2
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^11.2.1
