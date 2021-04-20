@@ -6,6 +6,6 @@ export const LABELS = {
 export const CSS_SELECTORS = {
     DETAIL_FIELDSETS: 'div.characteristics-full__item',
     DETAIL_FIELDSET_LEGEND: 'dt',
-}
+};
 
 export const CHARACTERISTICS_PATH = 'characteristics/';

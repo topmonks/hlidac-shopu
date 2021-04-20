@@ -4,9 +4,8 @@ export async function tableRowsOrListItemsIntoArray({
     fieldsetLegendSelector,
 }) {
     const allFieldsetEls = $(fieldsetSelector).toArray();
-        return allFieldsetEls.map((fieldsetEl) => {
+    return allFieldsetEls.map((fieldsetEl) => {
         let title;
-        let fieldData;
 
         if (fieldsetLegendSelector) {
             const legendEl = $(fieldsetLegendSelector, fieldsetEl);
@@ -18,7 +17,7 @@ export async function tableRowsOrListItemsIntoArray({
             title = $(fieldsetEl)?.text()?.trim();
         }
 
-        fieldData = $('li', fieldsetEl).toArray()
+        const fieldData = $('li', fieldsetEl).toArray()
             .map((el) => $(el).text()?.trim()).join(', ');
         return { title, data: fieldData };
     });

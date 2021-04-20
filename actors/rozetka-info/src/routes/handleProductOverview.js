@@ -1,9 +1,4 @@
-import Apify from 'apify';
 import { LABELS, CHARACTERISTICS_PATH } from '../consts.js';
-
-const {
-    utils: { log },
-} = Apify;
 
 export const handleProductOverview = async ({
     $,
@@ -16,8 +11,8 @@ export const handleProductOverview = async ({
     image.push(...smallImagesArr);
 
     await requestQueue.addRequest({
-        url: loadedUrl[loadedUrl.length -1] === '/'
-            ?  loadedUrl + CHARACTERISTICS_PATH : loadedUrl + '/' + CHARACTERISTICS_PATH,
+        url: loadedUrl[loadedUrl.length - 1] === '/'
+            ? loadedUrl + CHARACTERISTICS_PATH : `${loadedUrl}/${CHARACTERISTICS_PATH}`,
         userData: { image, label: LABELS.DETAIL },
-    })
+    });
 };

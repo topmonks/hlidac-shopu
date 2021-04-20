@@ -9,19 +9,16 @@ const {
 const { OVERVIEW, DETAIL } = LABELS;
 
 Apify.main(async () => {
-    const input = await Apify.getInput();
     const {
         maxConcurrency = 100,
         proxyCountryCode,
         startUrls = [],
-    } = typeof input === 'object' ? input : {
-        proxyCountryCode: undefined,
-    };
+    } = (await Apify.getInput()) || {};
 
     const requestList = await Apify.openRequestList('start-url', startUrls
-        .map(request => ({ ...request, userData: { label: OVERVIEW }})));
-        const requestQueue = await Apify.openRequestQueue();
-        const proxyConfiguration = await Apify.createProxyConfiguration({
+        .map((request) => ({ ...request, userData: { label: OVERVIEW } })));
+    const requestQueue = await Apify.openRequestQueue();
+    const proxyConfiguration = await Apify.createProxyConfiguration({
         countryCode: proxyCountryCode,
     });
 
@@ -42,10 +39,9 @@ Apify.main(async () => {
 
             log.info('Page opened.', { url });
             switch (label) {
-                case OVERVIEW: {
+                case OVERVIEW:
                     handleProductOverview(context);
                     break;
-                };
                 case DETAIL: {
                     handleProductDetails(context);
                     break;

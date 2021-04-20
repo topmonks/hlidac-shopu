@@ -1,19 +1,19 @@
 export function getDatasetItemTemplate() {
     return {
-        "@context": "http://schema.org",
-        "@type": "ItemPage",
+        '@context': 'http://schema.org',
+        '@type': 'ItemPage',
         mainEntity: {
-            "@context": "http://schema.org",
-            "@type": "Product",
+            '@context': 'http://schema.org',
+            '@type': 'Product',
             aggregateRating: {
-                "@type": "AggregateRating",
+                '@type': 'AggregateRating',
             },
         },
         mainContentOfPage: [
             {
-                "@type": "WebPageElement",
-                encodingFormat: "text/html",
-            }
-        ]
-    }
+                '@type': 'WebPageElement',
+                encodingFormat: 'text/html',
+            },
+        ],
+    };
 }
