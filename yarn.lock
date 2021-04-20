@@ -4178,12 +4178,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/browser-logs@npm:^0.2.0, @web/browser-logs@npm:^0.2.1":
+"@web/browser-logs@npm:^0.2.1":
   version: 0.2.1
   resolution: "@web/browser-logs@npm:0.2.1"
   dependencies:
     errorstacks: ^2.2.0
   checksum: 7ea0e0dcfc5a9f911c3ac7c68f3d423e8b60907aa25258251526c87730c04393c85f688c26d4f7189eb30dde7a85aa679610611ab6d97e83179abf92ffe8993e
+  languageName: node
+  linkType: hard
+
+"@web/browser-logs@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@web/browser-logs@npm:0.2.2"
+  dependencies:
+    errorstacks: ^2.2.0
+  checksum: 41ea2fa72eceabc43e42d05807632cf7f368eae6746bbf811c1434fe95c19b3fc8081082db1e8abfe9ee085da449cf871fc8c4d514ce91ce3ac10a31d6a41a1b
   languageName: node
   linkType: hard
 
@@ -4193,6 +4202,32 @@ __metadata:
   dependencies:
     semver: ^7.3.4
   checksum: 2c66d1bf548ae39b1a4c05ee3d2fc61748d8fb5cd9a49aac1b19039caf67cc005828d735809c6f69aa384cf9649b9b29a53d2ee65dd1ccf3f426e5058e0a330a
+  languageName: node
+  linkType: hard
+
+"@web/dev-server-core@npm:^0.3.10":
+  version: 0.3.10
+  resolution: "@web/dev-server-core@npm:0.3.10"
+  dependencies:
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^1.2.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^0.4.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^4.0.6
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^6.0.0
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: 2fc133159a44130440a22a9ff1f84e22dba0ea15d32c072e4f1537f6c1a1b8c5ca248222c956285476cde39c546eea6f254ff39320d8a558a3bce85318002e84
   languageName: node
   linkType: hard
 
@@ -4248,32 +4283,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-core@npm:^0.3.8":
-  version: 0.3.8
-  resolution: "@web/dev-server-core@npm:0.3.8"
-  dependencies:
-    "@types/koa": ^2.11.6
-    "@types/ws": ^7.4.0
-    "@web/parse5-utils": ^1.2.0
-    chokidar: ^3.4.3
-    clone: ^2.1.2
-    es-module-lexer: ^0.4.0
-    get-stream: ^6.0.0
-    is-stream: ^2.0.0
-    isbinaryfile: ^4.0.6
-    koa: ^2.13.0
-    koa-etag: ^4.0.0
-    koa-send: ^5.0.1
-    koa-static: ^5.0.0
-    lru-cache: ^6.0.0
-    mime-types: ^2.1.27
-    parse5: ^6.0.1
-    picomatch: ^2.2.2
-    ws: ^7.4.2
-  checksum: 6d1ecccc183b50fab2bcc161991bf21caa3c09a1fb98f75170f216e3a19f6b0929c1f7005ba4e6a8ca110d18f2eba7bb631fc3b041e8aa5106320e807011b75c
-  languageName: node
-  linkType: hard
-
 "@web/dev-server-rollup@npm:^0.3.3":
   version: 0.3.3
   resolution: "@web/dev-server-rollup@npm:0.3.3"
@@ -4287,15 +4296,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:^0.1.11":
-  version: 0.1.11
-  resolution: "@web/dev-server@npm:0.1.11"
+"@web/dev-server@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "@web/dev-server@npm:0.1.14"
   dependencies:
     "@babel/code-frame": ^7.12.11
     "@rollup/plugin-node-resolve": ^11.0.1
     "@types/command-line-args": ^5.0.0
     "@web/config-loader": ^0.1.3
-    "@web/dev-server-core": ^0.3.8
+    "@web/dev-server-core": ^0.3.10
     "@web/dev-server-rollup": ^0.3.3
     camelcase: ^6.2.0
     chalk: ^4.1.0
@@ -4309,7 +4318,7 @@ __metadata:
   bin:
     wds: dist/bin.js
     web-dev-server: dist/bin.js
-  checksum: 1c0743f1d7bde897805cb5bf90a8970151f0b1175d3d806e97dcdf2a059a9941619af2caea415f1e92362f5a9ce6d811b4b50877291e88fbf898ef0245c1a9e3
+  checksum: da8b75b85725a7e83ae7a9b44c7d0f13eb2c24d7551a9f91ca4bd4cd52bf330d8676fbb184e089bae670222968ac248056592da163b1f964ef621b447e9be2b5
   languageName: node
   linkType: hard
 
@@ -4333,7 +4342,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-chrome@npm:^0.9.0, @web/test-runner-chrome@npm:^0.9.4":
+"@web/test-runner-chrome@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "@web/test-runner-chrome@npm:0.10.0"
+  dependencies:
+    "@web/test-runner-core": ^0.10.8
+    "@web/test-runner-coverage-v8": ^0.4.5
+    chrome-launcher: ^0.13.4
+    puppeteer-core: ^8.0.0
+  checksum: 66a3213f292a0bca341c25cc6854ec343b0b4a821e10d9911d30b361dabc33e6fdc0d4cc2a60fc231efc2083dfb9b0008fc10a876005500a5ea212c94a194d2b
+  languageName: node
+  linkType: hard
+
+"@web/test-runner-chrome@npm:^0.9.0":
   version: 0.9.4
   resolution: "@web/test-runner-chrome@npm:0.9.4"
   dependencies:
@@ -4345,12 +4366,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-commands@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@web/test-runner-commands@npm:0.4.2"
+"@web/test-runner-commands@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "@web/test-runner-commands@npm:0.4.4"
   dependencies:
     "@web/test-runner-core": ^0.10.14
-  checksum: 5572e2a9122f5c8a6fb956790b5daf428752000d97dfdec6e23756157b76bb80bd039663013f57ff0bcdf881d89eb8522ca81bb05425e788a137320c9245acdc
+  checksum: 857e55f04855bb1bd2b7936bac1a2cab06f6352fc7fd76d3c81883880e93f77ca37c026b85573f7c633d6fffbbfb8f37f6c911cbc0590ee436593fa05fe314a4
   languageName: node
   linkType: hard
 
@@ -4450,15 +4471,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:^0.12.19":
-  version: 0.12.19
-  resolution: "@web/test-runner@npm:0.12.19"
+"@web/test-runner@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@web/test-runner@npm:0.13.0"
   dependencies:
-    "@web/browser-logs": ^0.2.0
+    "@web/browser-logs": ^0.2.2
     "@web/config-loader": ^0.1.3
-    "@web/dev-server": ^0.1.11
-    "@web/test-runner-chrome": ^0.9.4
-    "@web/test-runner-commands": ^0.4.2
+    "@web/dev-server": ^0.1.14
+    "@web/test-runner-chrome": ^0.10.0
+    "@web/test-runner-commands": ^0.4.4
     "@web/test-runner-core": ^0.10.14
     "@web/test-runner-mocha": ^0.7.2
     camelcase: ^6.2.0
@@ -4473,7 +4494,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: bc5681d56ea7b7e90019f37cdd524f7cf2f28bb9b4f95b444a6395451c18e241ba2965eb639aee3b79b8c6469ef34d8092ab6b081ad438640489091b526d919c
+  checksum: ac252c6cb161344db35ff49c54f00f6673e6c10ef65ee0e6f24de51ada5cba345699e52d1823a7204f1ba06c53a01dd4c1136f8518d299381b84a5891b2140f9
   languageName: node
   linkType: hard
 
@@ -11450,7 +11471,7 @@ fsevents@~2.3.1:
     "@types/whatwg-url": ^8.2.0
     "@typescript-eslint/eslint-plugin": ^4.22.0
     "@typescript-eslint/parser": ^4.22.0
-    "@web/test-runner": ^0.12.19
+    "@web/test-runner": ^0.13.0
     "@web/test-runner-junit-reporter": ^0.4.1
     abort-controller: ^3.0.0
     chokidar: ^3.5.1
@@ -16688,6 +16709,26 @@ fsevents@~2.3.1:
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
   checksum: 2ac92cb41ad23747dcea719511ab7681ba3ed7474f54497e24eb9b2a69934f99198aa76fd96e413641c84e662ee3a29a0b677dfe5024e698429a46b9b500e981
+  languageName: node
+  linkType: hard
+
+"puppeteer-core@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "puppeteer-core@npm:8.0.0"
+  dependencies:
+    debug: ^4.1.0
+    devtools-protocol: 0.0.854822
+    extract-zip: ^2.0.0
+    https-proxy-agent: ^5.0.0
+    node-fetch: ^2.6.1
+    pkg-dir: ^4.2.0
+    progress: ^2.0.1
+    proxy-from-env: ^1.1.0
+    rimraf: ^3.0.2
+    tar-fs: ^2.0.0
+    unbzip2-stream: ^1.3.3
+    ws: ^7.2.3
+  checksum: 318b4d19be3b4ccfd2b3a57643b5a08dd3abefed572d1a3bec6894e694021f80dc915d1d621fea762c274ffddc8c0fd00bad7a5785ee12974dc48eabc6250fc3
   languageName: node
   linkType: hard
 
