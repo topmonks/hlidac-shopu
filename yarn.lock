@@ -2367,7 +2367,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.13.0
     "@aws-sdk/util-dynamodb": ^3.13.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^3.38.1
+    "@pulumi/aws": ^4.0.0
     "@pulumi/awsx": ^0.30.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
@@ -3056,17 +3056,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^3.38.1":
-  version: 3.38.1
-  resolution: "@pulumi/aws@npm:3.38.1"
+"@pulumi/aws@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@pulumi/aws@npm:4.0.0"
   dependencies:
-    "@pulumi/pulumi": ^2.17.0
+    "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
     builtin-modules: 3.0.0
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: e98bc4935b4fa018633babc150e838b183b8e579dc26e53212321a15fc7d7753ee1d043bcdbb11fe6c661c9c3b2f6785a2a5a12af6ce57f923c959f6a81ce00a
+  checksum: 269aba46248543fb426f3910822ee8ae9c82173656578152db2e87663f906a00205385e2e37c63899a4fbe2ac6c6bd4b333f1ea6148d4513591440b0c2311e7e
   languageName: node
   linkType: hard
 
@@ -3091,28 +3091,6 @@ __metadata:
     "@pulumi/pulumi": ^3.0.0
     semver: ^5.4.0
   checksum: ebbaf71437caaf82abddc95f7284827a281cb0a1f6d0970848776451ffe8d2e6c4b7e60fd726d66627659dcfa512ff1844357959b09fe636b20a69d1cd198dbb
-  languageName: node
-  linkType: hard
-
-"@pulumi/pulumi@npm:^2.17.0":
-  version: 2.22.0
-  resolution: "@pulumi/pulumi@npm:2.22.0"
-  dependencies:
-    "@grpc/grpc-js": ^1.2.7
-    "@pulumi/query": ^0.3.0
-    google-protobuf: ^3.5.0
-    js-yaml: ^3.14.0
-    minimist: ^1.2.0
-    normalize-package-data: ^2.4.0
-    protobufjs: ^6.8.6
-    read-package-tree: ^5.3.1
-    require-from-string: ^2.0.1
-    semver: ^6.1.0
-    source-map-support: ^0.4.16
-    ts-node: ^7.0.1
-    typescript: ~3.7.3
-    upath: ^1.1.0
-  checksum: e84ab18bc718d4355f417034654828b9ff05ae5b14e97d42a3b1e506c9bc8164a32f9eeb2732aa7c66523eea6c46e64f5f4b1cd5e1f6d72cd386d0cd2098fb01
   languageName: node
   linkType: hard
 
@@ -11457,7 +11435,7 @@ fsevents@~2.3.1:
     "@material/icon-button": ^11.0.0
     "@material/snackbar": ^11.0.0
     "@open-wc/testing": ^2.5.32
-    "@pulumi/aws": ^3.38.1
+    "@pulumi/aws": ^4.0.0
     "@pulumi/awsx": ^0.30.0
     "@pulumi/pulumi": ^2.25.2
     "@rollup/plugin-alias": ^3.1.2
