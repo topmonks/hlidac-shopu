@@ -55,10 +55,9 @@ const formatPrice = string => {
  */
 const getProductImage = (productId, reduxResults) => {
   try {
-    if (reduxResults[productId]) {
-      const {
-        serializedData: { product }
-      } = reduxResults[productId];
+    const objReduxResults = Object.fromEntries(reduxResults);
+    if (objReduxResults[productId.toString()]) {
+      const { product } = objReduxResults[productId.toString()];
       if (product) {
         return product.defaultImageUrl;
       }
