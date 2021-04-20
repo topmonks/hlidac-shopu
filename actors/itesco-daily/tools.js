@@ -112,7 +112,7 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
   if ($(".product-list--list-item")) {
     $(".product-list--list-item").each(function () {
       const result = {
-        currency: country === COUNTRY.CZ ? "Kč" : "Eur"
+        currency: country === COUNTRY.CZ ? "CZK" : "EUR"
       };
       result.category = category;
       /* results.categories = category; */
