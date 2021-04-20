@@ -3094,30 +3094,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.25.2":
-  version: 2.25.2
-  resolution: "@pulumi/pulumi@npm:2.25.2"
-  dependencies:
-    "@grpc/grpc-js": ^1.2.7
-    "@logdna/tail-file": ^2.0.6
-    "@pulumi/query": ^0.3.0
-    google-protobuf: ^3.5.0
-    js-yaml: ^3.14.0
-    minimist: ^1.2.0
-    normalize-package-data: ^2.4.0
-    protobufjs: ^6.8.6
-    read-package-tree: ^5.3.1
-    require-from-string: ^2.0.1
-    semver: ^6.1.0
-    source-map-support: ^0.4.16
-    split2: ^3.2.2
-    ts-node: ^7.0.1
-    typescript: ~3.7.3
-    upath: ^1.1.0
-  checksum: 41c42b0801b06b67041445fc414d2f5dd9fa0d13e6eeda89dcf13cda35ab61ca78899de9341240846c12c9b6556a3f6a9797439d273cc817b1db834c940f9ef5
-  languageName: node
-  linkType: hard
-
 "@pulumi/pulumi@npm:^3.0.0":
   version: 3.0.0
   resolution: "@pulumi/pulumi@npm:3.0.0"
@@ -11437,7 +11413,7 @@ fsevents@~2.3.1:
     "@open-wc/testing": ^2.5.32
     "@pulumi/aws": ^4.0.0
     "@pulumi/awsx": ^0.30.0
-    "@pulumi/pulumi": ^2.25.2
+    "@pulumi/pulumi": ^3.0.0
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^11.2.1
     "@rollup/plugin-replace": ^2.4.2
