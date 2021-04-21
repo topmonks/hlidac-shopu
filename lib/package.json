@@ -4,7 +4,7 @@
   "description": "Common logic for the PWA, Extension and Actors",
   "types": "types.d.ts",
   "dependencies": {
-    "@lit/reactive-element": "1.0.0-pre.3",
+    "@lit/reactive-element": "1.0.0-rc.1",
     "chart.js": "^3.1.1",
     "chartjs-adapter-date-fns": "2.0.0",
     "lit-element": "3.0.0-pre.4"
