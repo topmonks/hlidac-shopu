@@ -6,7 +6,7 @@ const {
   ExtractItems,
   findArraysUrl,
   formatPrice,
-  getProductImage
+  getProductRedux
 } = require("./tools");
 
 const stats = {

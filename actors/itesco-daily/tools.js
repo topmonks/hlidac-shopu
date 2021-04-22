@@ -53,13 +53,13 @@ const formatPrice = string => {
  * @param {int} productId
  * @param {Object} reduxResults
  */
-const getProductImage = (productId, reduxResults) => {
+const getProductRedux = (productId, reduxResults) => {
   try {
     const objReduxResults = Object.fromEntries(reduxResults);
     if (objReduxResults[productId.toString()]) {
       const { product } = objReduxResults[productId.toString()];
       if (product) {
-        return product.defaultImageUrl;
+        return product;
       }
     }
     return null;
@@ -115,9 +115,6 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
       };
       result.category = category;
       /* results.categories = category; */
-      if ($(this).find("h3")) {
-        result.itemName = $(this).find("h3").text().trim();
-      }
       if (parseInt($(this).find(".tile-content"))) {
         result.itemId = parseInt(
           $(this).find(".tile-content").attr("data-auto-id")
@@ -135,6 +132,10 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
           .find(".product-image-wrapper")
           .attr("href")}`;
       }
+
+      const productRedux = getProductRedux(result.itemId, resultsData);
+      result.itemName = productRedux.title;
+
       const promotionProduct = $(this).find(".product-promotion .offer-text");
       if (promotionProduct) {
         const offer = promotionProduct.text();
@@ -165,7 +166,8 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
         }
       }
 
-      result.img = getProductImage(result.itemId, resultsData);
+      result.img = productRedux.defaultImageUrl;
+      result.inStock = productRedux.status === "AvailableForSale";
 
       if ($(this).find(".weightedProduct-text").length !== 0) {
         const unitOfMeasure = $(this)
@@ -194,5 +196,5 @@ module.exports = {
   ExtractItems,
   findArraysUrl,
   formatPrice,
-  getProductImage
+  getProductRedux
 };
