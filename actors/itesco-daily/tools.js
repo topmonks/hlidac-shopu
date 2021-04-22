@@ -192,7 +192,7 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
         await Promise.all([
           uploadToS3(
             s3,
-            "itesco.cz",
+            `itesco.${country.toLowerCase()}`,
             await s3FileName(result),
             "jsonld",
             toProduct(result, {})
