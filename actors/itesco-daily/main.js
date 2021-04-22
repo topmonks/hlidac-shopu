@@ -1,5 +1,6 @@
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const Apify = require("apify");
 const _ = require("underscore");
 const { COUNTRY, LABELS, STARTURLS } = require("./consts");
@@ -18,6 +19,10 @@ const stats = {
 const uniqueItems = new Set();
 
 const { log } = Apify.utils;
+
+function getTableName(country) {
+  return country === COUNTRY.CZ ? "itesco" : "itesco_sk";
+}
 
 Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
@@ -160,28 +165,9 @@ Apify.main(async () => {
     } catch (e) {
       console.log(e);
     }
-
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "itesco.cz");
     log.info("invalidated Data CDN");
-    // calling the keboola upload
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: false,
-          tableName: country === COUNTRY.CZ ? "itesco" : "itesco_sk"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
+    await uploadToKeboola(getTableName(country));
+    log.info("upload to Keboola finished");
   }
 });
