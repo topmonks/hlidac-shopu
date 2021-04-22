@@ -148,23 +148,6 @@ Apify.main(async () => {
   await crawler.run();
   await persistState();
   if (!development) {
-    // stats page
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          tableName: country === COUNTRY.CZ ? "itesco" : "itesco_sk"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`stats upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "itesco.cz");
     log.info("invalidated Data CDN");
     await uploadToKeboola(getTableName(country));
