@@ -1,5 +1,11 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
-
 const { log } = Apify.utils;
 const { COUNTRY } = require("./consts");
 
@@ -109,7 +115,7 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
   }
 
   if ($(".product-list--list-item")) {
-    $(".product-list--list-item").each(function () {
+    $(".product-list--list-item").each(async function () {
       const result = {
         currency: country === COUNTRY.CZ ? "CZK" : "EUR"
       };
@@ -183,6 +189,15 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
       if (!uniqueItems.has(result.itemId)) {
         uniqueItems.add(result.itemId);
         itemsArray.push(result);
+        await Promise.all([
+          uploadToS3(
+            s3,
+            "itesco.cz",
+            await s3FileName(result),
+            "jsonld",
+            toProduct(result, {})
+          )
+        ]);
       }
     });
   }
