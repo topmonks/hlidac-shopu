@@ -51,24 +51,6 @@ Apify.main(async () => {
   log.info("Crawl finished.");
 
   if (!development) {
-    // stats page
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          name: "globus-cz"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
-
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "iglobus.cz");
     log.info("invalidated Data CDN");
     await uploadToKeboola("globus_cz");
