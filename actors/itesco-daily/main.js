@@ -148,7 +148,11 @@ Apify.main(async () => {
   await crawler.run();
   await persistState();
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "itesco.cz");
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `itesco.${country.toLowerCase()}`
+    );
     log.info("invalidated Data CDN");
     await uploadToKeboola(getTableName(country));
     log.info("upload to Keboola finished");
