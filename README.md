@@ -37,7 +37,7 @@ You will need:
 
 See `scripts` folder for install scripts for your system.
 
-## Step by step build of exetnsion for Mozilla reviewers
+## Step by step build of extension for reviewers
 
 ```
 nvm use
