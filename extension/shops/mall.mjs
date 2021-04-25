@@ -1,7 +1,7 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Mall extends AsyncShop {
+export class Mall extends StatefulShop {
   get injectionPoint() {
     return [
       "afterend",
@@ -12,8 +12,20 @@ export class Mall extends AsyncShop {
     ];
   }
 
-  get waitForSelector() {
-    return ".detail__main-data .availability-box";
+  get detailSelector() {
+    return ".detail__main-data";
+  }
+
+  get observerTarget() {
+    return document.querySelector(".detail__main-data .availability-box");
+  }
+
+  shouldRender(mutations) {
+    return this.didMutate(mutations, "addedNodes", "mfp-wrap");
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "removedNodes", "mfp-wrap");
   }
 
   async scrape() {
