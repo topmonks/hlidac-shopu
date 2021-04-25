@@ -1,5 +1,5 @@
 {
-  "version": "1.8.19",
+  "version": "1.8.20",
   "name": "Hlídač Shopů",
   "description": "Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.",
   "type": "web",
@@ -15,7 +15,10 @@
     "name": "TopMonks",
     "url": "https://www.topmonks.com/"
   },
-  "categories": ["shopping", "utilities"],
+  "categories": [
+    "shopping",
+    "utilities"
+  ],
   "locales": {
     "cs-CZ": {
       "name": "Hlídač Shopů",
