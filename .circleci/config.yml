@@ -200,6 +200,9 @@ jobs:
           path: ./screenshots
 
   publish-web-extensions:
+    parameters:
+      browser:
+        type: string
     executor:
       name: node/default
       tag: "14.16"
@@ -209,11 +212,8 @@ jobs:
           at: .
       - install_packages
       - run:
-          name: Publish Firefox extension
-          command: yarn publish:firefox
-      - run:
-          name: Publish Chrome extension
-          command: yarn publish:chrome
+          name: Publish extension
+          command: yarn publish:<< parameters.browser >>
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -381,40 +381,47 @@ workflows:
           context: org-global
           requires:
             - test-lib
-      - test-web-extension:
-          requires:
-            - build-web-extension
-      - confirm-release:
-          type: approval
+#      - test-web-extension:
+#          requires:
+#            - build-web-extension
       - publish-web-extensions:
+          name: publish-chrome-web-extension
+          browser: chrome
           context:
             - org-global
             - app-hlidac-shopu
           requires:
-            - confirm-release
             - build-web-extension
           filters:
-            branches:
-              only: trunk
+            tags:
+              only: /extension-.*/
+#      - publish-web-extensions:
+#          name: publish-firefox-web-extension
+#          browser: firefox
+#          context:
+#            - org-global
+#            - app-hlidac-shopu
+#          requires:
+#            - build-web-extension
+#          filters:
+#            tags:
+#              only: /extension-.*/
       - build-ios-app:
           context:
             - org-global
             - org-fastlane
-          requires:
-            - confirm-release
           filters:
-            branches:
-              only: trunk
+            tags:
+              only: /extension-.*/
       - build-safari-extension:
           context:
             - org-global
             - org-fastlane
           requires:
-            - confirm-release
             - build-web-extension
           filters:
-            branches:
-              only: trunk
+            tags:
+              only: /extension-.*/
       - build-website:
           context: org-global
           requires:
