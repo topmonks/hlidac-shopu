@@ -28,18 +28,25 @@ We are using `package.json` `scripts` (run `yarn run` for a list) for project au
 
 You will need:
 
-* Node.js 14 
+* Node.js 15 
 * Yarn
 * Firefox
 * Chrome
 * XCode Command Line Tools (for Safari and iOS development)
 * Pulumi (for Infrastructure and backend development)
+* `jq`, `rename`
 
-See `scripts` folder for install scripts for your system.
+We have install scripts for Debian and macOS. See `scripts` folder for install scripts for your system.
+
+On debian run `bash ./scripts/install-debian-tools.sh` - this will use apt-get to install `jq` and `rename` tools.
+On macOS run `bash ./scripts/install-macos-tools.sh` - this will use homebrew to install `jq`, `rename`, `nvm` and `pulumi`.
 
 ## Step by step build of extension for reviewers
 
+Make sure your system meets all prerequisites. See previous section.
+
 ```
+nvm install $(< .nvmrc)
 nvm use
 yarn install
 yarn build:extension
