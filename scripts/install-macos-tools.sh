@@ -6,4 +6,4 @@ brew install rename
 brew install yarn
 brew install nvm
 brew install pulumi
-nvm use
+nvm install $(< .nvmrc)
