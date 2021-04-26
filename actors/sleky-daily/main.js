@@ -1,5 +1,6 @@
 const Apify = require("apify");
 const randomUA = require("modern-random-ua");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const { log } = Apify.utils;
 const web = "https://www.sleky.cz";
@@ -11,6 +12,8 @@ const web = "https://www.sleky.cz";
 // scrappingMode = 'DETAIL'; // prices and other attrs are taken from product detail page
 
 Apify.main(async () => {
+  rollbar.init();
+
   const input = await Apify.getInput();
 
   let scrappingMode = "LIST";

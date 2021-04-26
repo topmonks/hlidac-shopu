@@ -3,6 +3,7 @@ const {
   CloudFrontClient,
   CreateInvalidationCommand
 } = require("@aws-sdk/client-cloudfront");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
 const csv = require("csv-parse/lib/sync");
@@ -546,6 +547,8 @@ function createAppleJWT(applePK) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
+
   const input = await Apify.getInput();
   const { applePK } = input ?? {};
   const token = createAppleJWT(applePK);

@@ -1,16 +1,11 @@
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const Apify = require("apify");
 const _ = require("underscore");
 const { COUNTRY, LABELS, STARTURLS } = require("./consts");
-const {
-  flat,
-  ExtractItems,
-  findArraysUrl,
-  formatPrice,
-  getProductRedux
-} = require("./tools");
+const { ExtractItems, findArraysUrl } = require("./tools");
 
 const stats = {
   offers: 0
@@ -25,6 +20,8 @@ function getTableName(country) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
+
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const {
     development = false,

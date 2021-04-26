@@ -2450,6 +2450,7 @@ __metadata:
     "@types/node": ^14.14.41
     apify: ^1.1.2
     apify-cli: ^0.6.2
+    underscore: ^1.13.1
   languageName: unknown
   linkType: soft
 
@@ -2513,6 +2514,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/sleky-daily@workspace:actors/sleky-daily"
   dependencies:
+    "@hlidac-shopu/actors-common": ^1.1.0
     apify: ^1.1.2
     apify-cli: ^0.6.2
   languageName: unknown
@@ -20032,7 +20034,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"underscore@npm:^1.13.0":
+"underscore@npm:^1.13.0, underscore@npm:^1.13.1":
   version: 1.13.1
   resolution: "underscore@npm:1.13.1"
   checksum: 19527b2db3d34f783c3f2db9716a2c1221fef2958866925545697c46f430f59d1b384b8105cc7e7c809bdf0dc9075f2bfff90b8fb270b9d3a6c58347de2dd79d

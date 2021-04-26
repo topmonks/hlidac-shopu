@@ -6,6 +6,7 @@ const {
   uploadToS3,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { URL, URLSearchParams } = require("url");
 
@@ -171,6 +172,8 @@ function pageFunction(requestQueue, s3) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
+
   const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 

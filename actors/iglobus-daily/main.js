@@ -1,6 +1,7 @@
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { handleStart, handleList, handleDetail } = require("./routes");
 
@@ -9,6 +10,8 @@ const {
 } = Apify;
 
 Apify.main(async () => {
+  rollbar.init();
+
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
