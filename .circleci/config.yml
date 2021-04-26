@@ -361,6 +361,9 @@ workflows:
           context: org-global
       - test-lib:
           context: org-global
+          filters:
+            branches:
+              only: /.*/
       - preview-provision:
           context:
             - org-global
@@ -381,6 +384,9 @@ workflows:
           context: org-global
           requires:
             - test-lib
+          filters:
+            branches:
+              only: /.*/
 #      - test-web-extension:
 #          requires:
 #            - build-web-extension
@@ -393,8 +399,10 @@ workflows:
           requires:
             - build-web-extension
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /extension-.*/
+              only: /^extension-.*/
 #      - publish-web-extensions:
 #          name: publish-firefox-web-extension
 #          browser: firefox
@@ -404,15 +412,19 @@ workflows:
 #          requires:
 #            - build-web-extension
 #          filters:
+#            branches:
+#              ignore: /.*/
 #            tags:
-#              only: /extension-.*/
+#              only: /^extension-.*/
       - build-ios-app:
           context:
             - org-global
             - org-fastlane
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /extension-.*/
+              only: /^extension-.*/
       - build-safari-extension:
           context:
             - org-global
@@ -420,8 +432,10 @@ workflows:
           requires:
             - build-web-extension
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /extension-.*/
+              only: /^extension-.*/
       - build-website:
           context: org-global
           requires:
