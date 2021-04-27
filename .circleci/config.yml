@@ -5,7 +5,7 @@ orbs:
   aws-s3: circleci/aws-s3@2.0.0
   browser-tools: circleci/browser-tools@1.1.3
   codecov: codecov/codecov@1.1.5
-  github: topmonks/github@1.0.2
+  github: topmonks/github@1.1.0
   node: circleci/node@4.3.0
   pulumi: pulumi/pulumi@2.0.0
   rollbar: rollbar/deploy@1.0.1
@@ -354,6 +354,17 @@ jobs:
           template: basic_fail_1
           channel: ntf-hlidac-shopu
 
+  github_release:
+    docker:
+      - image: cimg/base:2020.12
+    steps:
+      - attach_workspace:
+          at: .
+      - github/install
+      - github/release:
+          tag: "$CIRCLE_TAG"
+          files: dist/*.zip
+
 workflows:
   ci:
     jobs:
@@ -390,6 +401,17 @@ workflows:
 #      - test-web-extension:
 #          requires:
 #            - build-web-extension
+      - github_release:
+          context:
+            - org-github
+            - org-global
+          requires:
+            - build-web-extension
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^extension-.*/
       - publish-web-extensions:
           name: publish-chrome-web-extension
           browser: chrome
