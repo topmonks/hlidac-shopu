@@ -20,6 +20,7 @@
 
   button {
     font: 600 15px/1.2 var(--hs-font-family);
+    letter-spacing: 0.066em;
     text-transform: uppercase;
     color: var(--mdc-theme-primary);
     width: 200px;
@@ -364,7 +365,6 @@
     text-decoration: none;
     color: inherit;
   }
-
 
   h3 {
     font-family: "Work Sans", sans-serif;
