@@ -375,6 +375,8 @@ workflows:
           filters:
             branches:
               only: /.*/
+            tags:
+              only: /^extension-.*/
       - preview-provision:
           context:
             - org-global
@@ -398,6 +400,8 @@ workflows:
           filters:
             branches:
               only: /.*/
+            tags:
+              only: /^extension-.*/
 #      - test-web-extension:
 #          requires:
 #            - build-web-extension
