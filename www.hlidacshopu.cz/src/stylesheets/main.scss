@@ -1,6 +1,8 @@
 @use "@material/layout-grid/mdc-layout-grid";
 
 :root {
+  --hs-font-family: bc-novatica-cyr, sans-serif;
+
   --mdc-theme-primary: #ffff;
 
   --mdc-theme-secondary: #545fef;
@@ -32,7 +34,7 @@
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--hs-font-family);
   font-kerning: normal;
   font-variant-numeric: lining-nums slashed-zero;
   font-variant-ligatures: common-ligatures contextual;
@@ -144,8 +146,6 @@ h3 {
 p,
 ul,
 ol {
-  font-family: "Work Sans", sans-serif;
-  font-kerning: normal;
   color: var(--mdc-theme-text-secondary-on-light);
   line-height: 1.75;
 }
@@ -184,7 +184,6 @@ img.responsive {
 }
 
 .btn {
-  font-family: "Work Sans", sans-serif;
   text-align: center;
 
   a {
