@@ -3,4 +3,3 @@
 git stash
 ./version.sh $1
 git commit -a -m "Extension version $1"
-git tag -a -m "" "extension-$1"
