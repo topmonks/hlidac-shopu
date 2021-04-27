@@ -8974,12 +8974,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.11.11, esbuild@npm:^0.11.12":
-  version: 0.11.12
-  resolution: "esbuild@npm:0.11.12"
+"esbuild@npm:^0.11.14, esbuild@npm:^0.11.15":
+  version: 0.11.15
+  resolution: "esbuild@npm:0.11.15"
   bin:
     esbuild: bin/esbuild
-  checksum: 06139e5fe1f960db65d093f8439f3da73f63f3ec7202bf08dd8ca64d60efe49335fec4f24e637fc815bf5f77c3a047b83c91c07a08f2c09ea2c5d79f2600ad85
+  checksum: 107341ba22dbd5977a24c57416c3fb77edc96e2913fbbe6f84e4fea8705c729ab2c7da8549fbf5c2818c7b0dd7642edbdd6884b4adb6678e5d99ed7b289a3e7c
   languageName: node
   linkType: hard
 
@@ -10936,14 +10936,14 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-esbuild@npm:^0.7.4":
-  version: 0.7.4
-  resolution: "gulp-esbuild@npm:0.7.4"
+"gulp-esbuild@npm:^0.7.5":
+  version: 0.7.5
+  resolution: "gulp-esbuild@npm:0.7.5"
   dependencies:
-    esbuild: ^0.11.11
+    esbuild: ^0.11.14
     plugin-error: ^1.0.1
     vinyl: ^2.2.1
-  checksum: 5f038657654bec7879f46b3e15947c2452ca99f24b7866a3833b8a484b204dbd57bd7f23ca8656ec335f04544624286b74c5542eda3e16ceef9a68310b697c1a
+  checksum: 55e6ca22a3fac8ef16acbc1c40ba72deb2cf2564b8826cda7e194c450556a449988adfcc0de56abd95ec7e1ab059a0a033024c353d92101fd8b0254a828d542a
   languageName: node
   linkType: hard
 
@@ -11417,7 +11417,7 @@ fsevents@~2.3.1:
     commander: ^7.2.0
     date-fns: ^2.21.1
     dotenv-cli: ^4.0.0
-    esbuild: ^0.11.12
+    esbuild: ^0.11.15
     eslint: ^7.25.0
     eslint-config-prettier: ^8.3.0
     eslint-plugin-compat: ^3.9.0
@@ -11426,7 +11426,7 @@ fsevents@~2.3.1:
     eslint-plugin-prettier: ^3.4.0
     eslint-plugin-promise: ^5.1.0
     form-data: ^4.0.0
-    gulp-esbuild: ^0.7.4
+    gulp-esbuild: ^0.7.5
     gulp-mode: ^1.1.0
     linkedom: ^0.7.3
     node-fetch: ^2.6.1
