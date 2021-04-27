@@ -19,7 +19,7 @@
   }
 
   button {
-    font: 600 15px/1.2 "Work Sans", sans-serif;
+    font: 600 15px/1.2 var(--hs-font-family);
     text-transform: uppercase;
     color: var(--mdc-theme-primary);
     width: 200px;
@@ -292,7 +292,7 @@
   }
 
   dd.number {
-    font: 700 44px/1.2 "Work Sans", sans-serif;
+    font: 700 44px/1.2 var(--hs-font-family);
     color: var(--mdc-theme-text-primary-on-light);
     text-align: center;
     margin: 0 0 0.5em;
