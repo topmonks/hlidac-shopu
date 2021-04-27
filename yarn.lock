@@ -2517,7 +2517,7 @@ __metadata:
     playwright: ^1.7.1
     proxy-agent: ^3.1.0
     puppeteer: 3.3.0
-    random-mua: ^0.4.1
+    random-mua: ^0.5.0
     tough-cookie: ^3.0.1
     uuid: ^3.3.2
   languageName: unknown
@@ -17109,12 +17109,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"random-mua@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "random-mua@npm:0.4.1"
+"random-mua@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "random-mua@npm:0.5.0"
   dependencies:
-    suni: ^0.4.2
-  checksum: 30fdea1ae9c004b9d9bceb9b8d521b0914ae530b805264fe26ce1cbb0f318cc30a1927aad565fe5bc60e73635c0f23bba325e758f7cfabefd6c9931f4359f589
+    suni: ^1.1.0
+  checksum: a96e9958204421c351d034246c971f57200891c908c92de00252bd0ac762cecc68bb4d8a17033cb9817d96edbbba1430375efc9910005b7dcaffc1dc9c7a9e6b
   languageName: node
   linkType: hard
 
@@ -19527,10 +19527,10 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"suni@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "suni@npm:0.4.2"
-  checksum: 707619ce2e000746d5190788f622e8fa582ffc05837f42c124bd06f237a994080ac67dea4f19e4ae99597ee35c8674ebd765ab45f6d0b2842b6555019a02a0c2
+"suni@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "suni@npm:1.1.0"
+  checksum: 79e70ebc44c4b64701881315ec3bdb70023c96400229ff98d76a2c7ffcc7b1a67ba8a26e266ef4df83d5dce989250c501c528775ce709f99037d23c1888a63ae
   languageName: node
   linkType: hard
 
