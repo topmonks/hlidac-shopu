@@ -58,9 +58,7 @@
 
     input {
       -webkit-appearance: none;
-      font-family: "Work Sans", sans-serif;
-      font-size: 16px;
-      line-height: 54px;
+      font: 16px/54px var(--hs-font-family);
       color: var(--mdc-theme-text-primary-on-light);
       padding: 0 1em;
       margin: 0;
