@@ -2518,7 +2518,7 @@ __metadata:
     proxy-agent: ^4.0.0
     puppeteer: 3.3.0
     random-mua: ^0.5.0
-    tough-cookie: ^3.0.1
+    tough-cookie: ^4.0.0
     uuid: ^3.3.2
   languageName: unknown
   linkType: soft
@@ -12095,13 +12095,6 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"ip-regex@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "ip-regex@npm:2.1.0"
-  checksum: 2fd2190ada81b55a8a6f913bcb5a6fd6ff9da127905b4c01521f09a1d391e86d415dfe8c131ed2989d536949bb2f9654a71b9fa6f7ae2ac3ae6111b2026cc902
-  languageName: node
-  linkType: hard
-
 "ip-regex@npm:^4.0.0":
   version: 4.3.0
   resolution: "ip-regex@npm:4.3.0"
@@ -20005,17 +19998,6 @@ fsevents@~2.3.1:
     psl: ^1.1.28
     punycode: ^2.1.1
   checksum: bf5d6fac5ce0bebc5876cb9b9a79d3d9ea21c9e4099f3d3e64701d6ba170a052cb88cece6737ec2473bac4f0a4f6c75d46ec17985be8587c6bbdd38d91625cb4
-  languageName: node
-  linkType: hard
-
-"tough-cookie@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "tough-cookie@npm:3.0.1"
-  dependencies:
-    ip-regex: ^2.1.0
-    psl: ^1.1.28
-    punycode: ^2.1.1
-  checksum: dc1eee69c61a6d5598144ff41c9b5e758207130d92d2b89facad075140a99c10d674a6278764b9edfe8e074cb7840c15e7b786b93d0672875026c2ce5172d774
   languageName: node
   linkType: hard
 
