@@ -94,7 +94,7 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: nvm install 14.16
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Run tests
@@ -113,7 +113,7 @@ jobs:
   build-website:
     executor:
       name: node/default
-      tag: "14.16"
+      tag: "16.0"
     environment:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
@@ -149,7 +149,7 @@ jobs:
   build-web-extension:
     executor:
       name: node/default
-      tag: "14.16"
+      tag: "16.0"
     steps:
       - checkout
       - run:
@@ -206,7 +206,7 @@ jobs:
         type: string
     executor:
       name: node/default
-      tag: "14.16"
+      tag: "16.0"
     steps:
       - checkout
       - attach_workspace:
@@ -284,7 +284,7 @@ jobs:
   provision:
     executor:
       name: node/default
-      tag: "14.16"
+      tag: "16.0"
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -306,7 +306,7 @@ jobs:
   preview-provision:
     executor:
       name: node/default
-      tag: "14.16"
+      tag: "16.0"
     steps:
       - checkout
       - pulumi/login:
