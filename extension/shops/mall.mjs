@@ -17,7 +17,7 @@ export class Mall extends StatefulShop {
   }
 
   get observerTarget() {
-    return document.querySelector(".detail__main-data .availability-box");
+    return document.querySelector("#main-content");
   }
 
   shouldRender(mutations) {

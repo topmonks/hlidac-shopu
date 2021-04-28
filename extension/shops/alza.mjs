@@ -44,11 +44,7 @@ export class Alza extends Shop {
     const elem = document.querySelector("#dailySlasher");
     if (!elem) return;
 
-    const itemId = matchGroup(
-      document.querySelector("#dailySlasher a.btn-buy").href,
-      /boxOrder\((\d+)\)/,
-      1
-    );
+    const itemId = matchGroup(elem.querySelector("a.name").href, /dq=(\d+)/, 1);
     const url = document.querySelector("#dailySlasher a.name").href;
     const currentPrice = cleanPrice(".blPrice .price");
     const originalPrice = cleanPrice(".blPrice .cprice");
@@ -114,7 +110,9 @@ export class Alza extends Shop {
       return mobileElem;
     }
 
-    const dailySlasherElem = document.querySelector("#dailySlasher .running");
+    const dailySlasherElem = document.querySelector(
+      "#dailySlasher .running, #dailySlasher .cStart"
+    );
     if (dailySlasherElem) {
       const c1w = document.querySelector("#dailySlasher .c1").offsetWidth;
       dailySlasherElem.insertAdjacentElement(
