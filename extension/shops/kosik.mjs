@@ -1,47 +1,47 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
 import { StatefulShop } from "./shop.mjs";
+
+const didRenderDetail = mutations =>
+  mutations.find(x =>
+    Array.from(x.addedNodes).find(
+      y => (typeof y.classList !== "undefined" &&  y.classList.contains("product-detail-modal")) || (y.localName === "article" && y.dataset.tid === "product-detail")
+    )
+  );
 
 export class Kosik extends StatefulShop {
   get injectionPoint() {
-    return ["afterend", ".product-detail__cart, .product-detail__main-info"];
+    return ["afterend", ".product-header-box"];
   }
 
   get detailSelector() {
-    return ".product-detail__main-info";
+    return "article[data-tid=product-detail]";
   }
 
   get observerTarget() {
-    return document.querySelector(".product-overlay-content");
+    return document.body;
   }
 
   shouldRender(mutations) {
-    return this.didMutate(mutations, "addedNodes", "mfp-wrap");
+    return didRenderDetail(mutations);
   }
 
   shouldCleanup(mutations) {
-    return this.didMutate(mutations, "removedNodes", "mfp-wrap");
+    return this.didMutate(mutations, "removedNodes", "product-detail-modal");
   }
 
   async scrape() {
     const elem = document.querySelector(
-      "#snippet-addProductToCartForm->.amount[product-data]"
+      "article[data-tid=product-detail]"
     );
     if (!elem) return;
     try {
-      const json = elem.getAttribute("product-data");
-      const data = JSON.parse(json);
-      const originalPrice = cleanPrice(
-        ".price__old-price.price__old-price--exists"
-      );
-      const imageUrl = document.querySelector(".product-detail__image").src;
-
-      return {
-        itemId: data.id,
-        title: data.itemName,
-        currentPrice: data.stepPrice,
-        originalPrice,
-        imageUrl
-      };
+      const data = {};
+      data.itemId = elem.querySelector("[itemprop=productID]").getAttribute("content");
+      data.title = elem.querySelector("[itemprop=name]").textContent;
+      data.currentPrice = cleanPriceText(elem.querySelector("[itemprop=price]").textContent);
+      data.originalPrice = cleanPrice(".product-header-box s");
+      data.imageUrl = elem.querySelector("[itemprop=image] img").getAttribute("srcset").split(',').pop().trim().split(' ')[0];
+      return data;
     } catch (e) {
       console.error("Could not find product info", e);
     }
