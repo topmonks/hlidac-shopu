@@ -11,14 +11,12 @@ const entryPoint = path.resolve(__dirname, "../extension/content.mjs");
 const output = path.resolve(__dirname, "../extension/content.js");
 const outputFF = path.resolve(__dirname, "../extension-dist/content.js");
 
-let service;
 let result;
 
 async function build() {
   try {
-    service = await esbuild.startService();
     const start = process.hrtime();
-    result = await service.build({
+    result = await esbuild.build({
       color: true,
       entryPoints: [entryPoint],
       outfile: output,
@@ -50,7 +48,6 @@ async function rebuild() {
 
 function dispose() {
   result.rebuild.dispose();
-  service.stop();
 }
 
 build();
