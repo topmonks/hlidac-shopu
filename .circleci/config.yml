@@ -152,12 +152,6 @@ jobs:
       tag: "16.0"
     steps:
       - checkout
-      - run:
-          name: Install CLI tools
-          command: |
-            sudo apt-get update
-            sudo apt-get install rename
-            rename --version
       - install_packages
       - run:
           name: Build extension bundle
