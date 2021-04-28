@@ -13,7 +13,7 @@ export class Mall extends StatefulShop {
   }
 
   get detailSelector() {
-    return ".detail__main-data";
+    return ".info-box";
   }
 
   get observerTarget() {
@@ -21,11 +21,11 @@ export class Mall extends StatefulShop {
   }
 
   shouldRender(mutations) {
-    return this.didMutate(mutations, "addedNodes", "mfp-wrap");
+    return this.didMutate(mutations, "addedNodes", "info-box");
   }
 
   shouldCleanup(mutations) {
-    return this.didMutate(mutations, "removedNodes", "mfp-wrap");
+    return this.didMutate(mutations, "removedNodes", "info-box");
   }
 
   async scrape() {
