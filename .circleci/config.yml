@@ -157,6 +157,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install rename
+            rename --version
       - install_packages
       - run:
           name: Build extension bundle
