@@ -13,7 +13,7 @@
         content="Ověřte si, jestli v nejoblíbenějších českých e-shopech nakupujete opravdu se slevou.">
   <link rel="manifest" href="/sitemanifest.json">
   <link rel="preload" as="style" href="/assets/css/app.css">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="preconnect" href="https://api2.hlidacshopu.cz" crossorigin>
   <meta name="theme-color" content="#545fef">
   <meta name="mobile-web-app-capable" content="yes">
@@ -23,44 +23,28 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <style>
-    /* latin-ext */
     @font-face {
-      font-family: "Work Sans";
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
-      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      font-family:"bc-novatica-cyr";
+      src:url("https://use.typekit.net/af/3c6e99/00000000000000007735b6c1/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=i4&v=3") format("woff2"),url("https://use.typekit.net/af/3c6e99/00000000000000007735b6c1/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=i4&v=3") format("woff"),url("https://use.typekit.net/af/3c6e99/00000000000000007735b6c1/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=i4&v=3") format("opentype");
+      font-display:swap;font-style:italic;font-weight:400;
     }
 
-    /* latin */
     @font-face {
-      font-family: "Work Sans";
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
-      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      font-family:"bc-novatica-cyr";
+      src:url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("woff2"),url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("woff"),url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("opentype");
+      font-display:swap;font-style:normal;font-weight:400;
     }
 
-    /* latin-ext */
     @font-face {
-      font-family: "Work Sans";
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_cqDptfpA4cD3.woff2) format('woff2');
-      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      font-family:"bc-novatica-cyr";
+      src:url("https://use.typekit.net/af/d008cd/00000000000000007735b6d3/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n6&v=3") format("woff2"),url("https://use.typekit.net/af/d008cd/00000000000000007735b6d3/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n6&v=3") format("woff"),url("https://use.typekit.net/af/d008cd/00000000000000007735b6d3/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n6&v=3") format("opentype");
+      font-display:swap;font-style:normal;font-weight:600;
     }
 
-    /* latin */
     @font-face {
-      font-family: "Work Sans";
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/worksans/v8/QGYsz_wNahGAdqQ43Rh_fKDptfpA4Q.woff2) format('woff2');
-      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      font-family:"bc-novatica-cyr";
+      src:url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("woff2"),url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("woff"),url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("opentype");
+      font-display:swap;font-style:normal;font-weight:700;
     }
 
     :root {
@@ -82,7 +66,7 @@
 
       --hs-theme-border: #e6e6ff;
       --hs-theme-input-background: #fff;
-      --hs-theme-font-family: "Work Sans", "SF Pro", sans-serif;
+      --hs-theme-font-family: bc-novatica-cyr, "SF Pro", sans-serif;
       --border-radius: 8px;
 
       --hs-logo-text-color: #fff;
@@ -100,10 +84,10 @@
     body {
       font-family: var(--hs-theme-font-family);
       font-kerning: normal;
-      font-variant-numeric: lining-nums slashed-zero;
+      font-variant-numeric: lining-nums;
       font-variant-ligatures: common-ligatures contextual;
-      -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
-      font-feature-settings: "kern", "liga", "clig", "calt", "lnum", "zero";
+      -webkit-font-feature-settings: "kern", "liga", "clig", "calt", "lnum";
+      font-feature-settings: "kern", "liga", "clig", "calt", "lnum";
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;

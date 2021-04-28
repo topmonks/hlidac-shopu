@@ -1,4 +1,4 @@
-import { render } from "lit-html";
+import { render, html } from "lit-html";
 import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { getShop } from "./helpers.mjs";
@@ -61,11 +61,10 @@ function renderHTML(repaint, shop, data, metadata) {
 }
 
 function injectFont() {
-  const fontImport = document.createElement("link");
-  fontImport.rel = "stylesheet";
-  fontImport.href =
-    "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap";
-  document.head.insertAdjacentElement("beforeend", fontImport);
+  render(
+    html`<link rel="stylesheet" href="https://use.typekit.net/nxm2nnh.css" />`,
+    document.head
+  );
 }
 
 function handleDetail(shop) {
@@ -104,8 +103,6 @@ function handleDetail(shop) {
       } catch (e) {
         console.error(e);
         return false;
-      } finally {
-        console.groupEnd();
       }
     },
     () => {
@@ -117,8 +114,7 @@ function handleDetail(shop) {
 }
 
 async function main() {
-  console.group("Hlídačshopů.cz");
-  console.log(`version: %c${getVersion()}`, "font-weight: 700");
+  console.log(`Hlídačshopů.cz version: %c${getVersion()}`, "font-weight: 700");
   const shop = getShop(location.href);
   if (!shop) {
     console.log("No shop found");
