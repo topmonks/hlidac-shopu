@@ -358,6 +358,7 @@ jobs:
     docker:
       - image: cimg/base:2020.12
     steps:
+      - checkout
       - attach_workspace:
           at: .
       - github/install
