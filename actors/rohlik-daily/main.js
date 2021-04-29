@@ -1,3 +1,4 @@
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const CloudFlareUnBlocker = require("./cloudflare-unblocker");
 const getItems = require("./itemParser");
@@ -14,6 +15,7 @@ const firstPage =
   "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
 
 Apify.main(async () => {
+  rollbar.init();
   const input = await Apify.getInput();
 
   const {
