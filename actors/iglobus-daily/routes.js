@@ -109,7 +109,7 @@ exports.handleDetail = async ({ request, $ }) => {
   detail.currency = result.currency;
 
   await Promise.all([
-    Apify.pushData(detail),
+    Apify.pushData(result),
     uploadToS3(
       s3,
       "iglobus.cz",
