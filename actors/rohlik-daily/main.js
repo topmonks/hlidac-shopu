@@ -1,3 +1,4 @@
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const CloudFlareUnBlocker = require("./cloudflare-unblocker");
@@ -10,6 +11,8 @@ const getItems = require("./itemParser");
 /** @typedef { import("./apify.json").RequestList } RequestList */
 /** @typedef { import("./apify.json").ProxyConfiguration } ProxyConfiguration */
 
+const { log } = Apify.utils;
+
 let jsonCategories = {};
 const firstPage =
   "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
@@ -19,12 +22,8 @@ Apify.main(async () => {
   const input = await Apify.getInput();
 
   const {
-    development,
-    products = [],
     country = "cz",
-    extensions = [],
     maxConcurrency = 10,
-    sleep = 1,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
 
@@ -38,8 +37,8 @@ Apify.main(async () => {
   );
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: development ? undefined : proxyGroups,
-    useApifyProxy: !development
+    groups: proxyGroups,
+    useApifyProxy: true
   });
   const cloudFlareUnBlocker = new CloudFlareUnBlocker({
     unblockUrl: firstPage,
@@ -154,4 +153,13 @@ Apify.main(async () => {
 
   // Run crawler.
   await crawler.run();
+  log.info("crawler finished");
+
+  try {
+    await uploadToKeboola("rohlik");
+    log.info("upload to Keboola finished");
+  } catch (err) {
+    log.warning("upload to Keboola failed");
+    log.error(err);
+  }
 });
