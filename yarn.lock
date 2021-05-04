@@ -3217,9 +3217,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:^11.2.1":
-  version: 11.2.1
-  resolution: "@rollup/plugin-node-resolve@npm:11.2.1"
+"@rollup/plugin-node-resolve@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@rollup/plugin-node-resolve@npm:13.0.0"
   dependencies:
     "@rollup/pluginutils": ^3.1.0
     "@types/resolve": 1.17.1
@@ -3228,8 +3228,8 @@ __metadata:
     is-module: ^1.0.0
     resolve: ^1.19.0
   peerDependencies:
-    rollup: ^1.20.0||^2.0.0
-  checksum: ae1bed46a949a1d8c077e021751c0140a523f731bea464ed0bfc3d335096493d1638be2a756f72d96f1f3a00fbdad8ba8fad8e86381d3eafce5ea2dffd62f175
+    rollup: ^2.42.0
+  checksum: 4b323e8ad5f1245449cd44b4857ed94a8dd3b998178ce139e74542c216a5abeb5a9e44885f3809ac747296a108f0562f986f9561055e76d1b0b268cf788a5c83
   languageName: node
   linkType: hard
 
@@ -11482,7 +11482,7 @@ fsevents@~2.3.1:
     "@pulumi/awsx": ^0.30.0
     "@pulumi/pulumi": ^2.25.2
     "@rollup/plugin-alias": ^3.1.2
-    "@rollup/plugin-node-resolve": ^11.2.1
+    "@rollup/plugin-node-resolve": ^13.0.0
     "@rollup/plugin-replace": ^2.4.2
     "@topmonks/blendid": "git://github.com/topmonks/blendid.git#commit=3da13806e11c7bfe0f378e17e09bac602b39aa7b"
     "@topmonks/pulumi-aws": ^1.7.7
