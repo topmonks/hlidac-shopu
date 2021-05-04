@@ -2512,14 +2512,14 @@ __metadata:
     "@types/node": ^14.14.41
     apify: ^1.1.2
     apify-cli: ^0.6.2
-    browser-pool: ^1.1.1
-    got: ^11.0.0
+    browser-pool: ^1.1.2
+    got: ^11.8.2
     playwright: ^1.7.1
-    proxy-agent: ^4.0.0
-    puppeteer: 3.3.0
+    proxy-agent: ^4.0.1
+    puppeteer: ^9.1.0
     random-mua: ^0.5.0
     tough-cookie: ^4.0.0
-    uuid: ^8.0.0
+    uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
@@ -4686,13 +4686,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-base@npm:5":
-  version: 5.1.1
-  resolution: "agent-base@npm:5.1.1"
-  checksum: aff8e856932ba63bbe097ac460f2f474669c5a1ca7674d3be19d4c258b4276a6b71863fb25c8bc3d424320d0c81652044098346403e759a65a76712e697633fa
-  languageName: node
-  linkType: hard
-
 "agent-base@npm:6, agent-base@npm:^6.0.0":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -5970,7 +5963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-pool@npm:^1.1.1, browser-pool@npm:^1.1.2":
+"browser-pool@npm:^1.1.2":
   version: 1.1.2
   resolution: "browser-pool@npm:1.1.2"
   dependencies:
@@ -10829,25 +10822,6 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"got@npm:^11.0.0, got@npm:^11.8.0":
-  version: 11.8.2
-  resolution: "got@npm:11.8.2"
-  dependencies:
-    "@sindresorhus/is": ^4.0.0
-    "@szmarczak/http-timer": ^4.0.5
-    "@types/cacheable-request": ^6.0.1
-    "@types/responselike": ^1.0.0
-    cacheable-lookup: ^5.0.3
-    cacheable-request: ^7.0.1
-    decompress-response: ^6.0.0
-    http2-wrapper: ^1.0.0-beta.5.2
-    lowercase-keys: ^2.0.0
-    p-cancelable: ^2.0.0
-    responselike: ^2.0.0
-  checksum: 6415f98ec249e932ca8223396e58ec18017ade64e21efc40db62f994f3551eaf7eca945671d40b2486f0650b1f17b5a2a0f11655ea501712566ef60be010f07f
-  languageName: node
-  linkType: hard
-
 "got@npm:^11.2.0":
   version: 11.8.1
   resolution: "got@npm:11.8.1"
@@ -10864,6 +10838,25 @@ fsevents@~2.3.1:
     p-cancelable: ^2.0.0
     responselike: ^2.0.0
   checksum: 739e7ffe359b73a21270136a917f0837471b87758773439bc178bcf7dba21f43872f0b72ad107f5ebf9487f74eea19391b3ed7902acf4576610c51c3396315a1
+  languageName: node
+  linkType: hard
+
+"got@npm:^11.8.0, got@npm:^11.8.2":
+  version: 11.8.2
+  resolution: "got@npm:11.8.2"
+  dependencies:
+    "@sindresorhus/is": ^4.0.0
+    "@szmarczak/http-timer": ^4.0.5
+    "@types/cacheable-request": ^6.0.1
+    "@types/responselike": ^1.0.0
+    cacheable-lookup: ^5.0.3
+    cacheable-request: ^7.0.1
+    decompress-response: ^6.0.0
+    http2-wrapper: ^1.0.0-beta.5.2
+    lowercase-keys: ^2.0.0
+    p-cancelable: ^2.0.0
+    responselike: ^2.0.0
+  checksum: 6415f98ec249e932ca8223396e58ec18017ade64e21efc40db62f994f3551eaf7eca945671d40b2486f0650b1f17b5a2a0f11655ea501712566ef60be010f07f
   languageName: node
   linkType: hard
 
@@ -11544,7 +11537,7 @@ fsevents@~2.3.1:
     node-fetch: ^2.6.1
     npm-run-all: ^4.1.5
     prettier: ^2.2.1
-    puppeteer: ^9.0.0
+    puppeteer: ^9.1.0
     ramda: ^0.27.1
     rollbar: ^2.21.1
     source-map-explorer: ^2.5.2
@@ -11812,16 +11805,6 @@ fsevents@~2.3.1:
     agent-base: 6
     debug: 4
   checksum: 18aa04ea08cc069fa0c83d03475d1bc43e13bfa43d5cffc0c3a07430f755e1ac914049570302775adac82aa5a779643ef2c6c270c057d7a8523a7f6f46b4866a
-  languageName: node
-  linkType: hard
-
-"https-proxy-agent@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "https-proxy-agent@npm:4.0.0"
-  dependencies:
-    agent-base: 5
-    debug: 4
-  checksum: d3d20730cdcfa1b1ac492280501fa7b14ee89eb4fa2e7d300cc260463b48ea98b6cf1d4b287f40faa8c36c2f88d87819b4b419be5ec4055e9dcd2db501ce4680
   languageName: node
   linkType: hard
 
@@ -14379,7 +14362,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"mime@npm:^2.0.0, mime@npm:^2.0.3, mime@npm:^2.4.6, mime@npm:^2.5.2":
+"mime@npm:^2.0.0, mime@npm:^2.4.6, mime@npm:^2.5.2":
   version: 2.5.2
   resolution: "mime@npm:2.5.2"
   bin:
@@ -16771,7 +16754,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"proxy-agent@npm:^4.0.0":
+"proxy-agent@npm:^4.0.1":
   version: 4.0.1
   resolution: "proxy-agent@npm:4.0.1"
   dependencies:
@@ -16902,27 +16885,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:3.3.0":
-  version: 3.3.0
-  resolution: "puppeteer@npm:3.3.0"
-  dependencies:
-    debug: ^4.1.0
-    extract-zip: ^2.0.0
-    https-proxy-agent: ^4.0.0
-    mime: ^2.0.3
-    progress: ^2.0.1
-    proxy-from-env: ^1.0.0
-    rimraf: ^3.0.2
-    tar-fs: ^2.0.0
-    unbzip2-stream: ^1.3.3
-    ws: ^7.2.3
-  checksum: f981f50118d65891aa42e181923c20af5f32a2d1a4608586d2c3bd08e5a08d4383aeb7c5e7570430b146c5e63c9ee75e1f086cdb411a23da24800cc3ce6b35cd
-  languageName: node
-  linkType: hard
-
-"puppeteer@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "puppeteer@npm:9.0.0"
+"puppeteer@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "puppeteer@npm:9.1.0"
   dependencies:
     debug: ^4.1.0
     devtools-protocol: 0.0.869402
@@ -16936,7 +16901,7 @@ fsevents@~2.3.1:
     tar-fs: ^2.0.0
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
-  checksum: 35af7ab296f91cac69be93d99914b5b6c7fc8d5f38f5b3484c4fb917d34b4f819d93795580f8052793236414069f613469a208e23ba86e6f65ed812504be57dd
+  checksum: b081fd0ebd8fb0bf070bb572e722e9865f31bd335b19ca2f382f818bde6fde03ead7150c3a6716e84719d3f3f44416acda833a2312df7b36202274d503c32116
   languageName: node
   linkType: hard
 
@@ -20755,7 +20720,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+"uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:

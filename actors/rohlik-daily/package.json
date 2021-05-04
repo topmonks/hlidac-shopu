@@ -9,14 +9,14 @@
     "@aws-sdk/client-s3": "^3.14.0",
     "@hlidac-shopu/actors-common": "^1.1.0",
     "apify": "^1.1.2",
-    "browser-pool": "^1.1.1",
-    "got": "^11.0.0",
+    "browser-pool": "^1.1.2",
+    "got": "^11.8.2",
     "playwright": "^1.7.1",
-    "proxy-agent": "^4.0.0",
-    "puppeteer": "3.3.0",
+    "proxy-agent": "^4.0.1",
+    "puppeteer": "^9.1.0",
     "random-mua": "^0.5.0",
     "tough-cookie": "^4.0.0",
-    "uuid": "^8.0.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
