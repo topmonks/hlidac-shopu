@@ -23,7 +23,7 @@ function getItems(items, jsonCategories) {
         item.pricePerUnit && item.pricePerUnit.full
           ? item.pricePerUnit.full
           : null,
-      currency: item.currency ? item.currency : null,
+      currency: item.price.currency ? item.price.currency : null,
       inStock: item.inStock ? "true" : "false"
     };
     if (item.sales.length !== 0) {
