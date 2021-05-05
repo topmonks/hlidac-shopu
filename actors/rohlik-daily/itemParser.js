@@ -50,6 +50,9 @@ function getItems(items, jsonCategories) {
       result.discounted = true;
     }
     result.breadcrumbs = getBreadCrumbs(item.mainCategoryId, jsonCategories);
+    result.category = getBreadCrumbs(item.mainCategoryId, jsonCategories).join(
+      " > "
+    );
     results.push(result);
   }
   return results;
