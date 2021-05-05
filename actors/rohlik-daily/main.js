@@ -33,6 +33,10 @@ async function processItem(products) {
   const requests = [];
   const unprocessedProducts = products.filter(p => !processedIds.has(p.itemId));
   for (const item of unprocessedProducts) {
+    const product = {
+      ...item,
+      category: item.breadcrumbs.join(" > ")
+    };
     requests.push(
       // push data to dataset to be ready for upload to Keboola
       Apify.pushData(item),
@@ -40,9 +44,9 @@ async function processItem(products) {
       uploadToS3(
         s3,
         `rohlik.cz`,
-        await s3FileName(item),
+        await s3FileName(product),
         "jsonld",
-        toProduct(item, { priceCurrency: "CZK" })
+        toProduct(product, { priceCurrency: "CZK" })
       )
     );
     processedIds.add(item.itemId);
