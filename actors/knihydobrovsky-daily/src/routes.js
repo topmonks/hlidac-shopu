@@ -9,7 +9,7 @@ const {
   utils: { log }
 } = Apify;
 
-const canonicalUrl = x => new URL(x, "`https://www.knihydobrovsky.cz");
+const canonicalUrl = x => new URL(x, "https://www.knihydobrovsky.cz");
 const canonical = x => canonicalUrl(x).href;
 
 exports.handleStart = async ({ request, $ }, requestQueue) => {
