@@ -25,7 +25,7 @@ const toProduct = (detail, { priceCurrency, ...additionalData }) => ({
       detail.inStock ? "InStock" : "OutOfStock"
     }`,
     price: detail.currentPrice,
-    priceCurrency: detail.currency ?? priceCurrency
+    priceCurrency: currencyToISO4217(detail.currency) ?? priceCurrency
   },
   ...additionalData
 });
@@ -73,6 +73,10 @@ async function s3FileName(detail) {
   const url = new URL(detail.itemUrl);
   const shop = shops.get(shopName(url));
   return shop.parse(url).itemUrl;
+}
+
+function currencyToISO4217(currency) {
+  return currency.toLowerCase() === "kč" ? "CZK" : currency;
 }
 
 module.exports = {
