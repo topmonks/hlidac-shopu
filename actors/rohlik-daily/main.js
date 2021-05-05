@@ -1,4 +1,13 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const CloudFlareUnBlocker = require("./cloudflare-unblocker");
@@ -17,8 +26,36 @@ let jsonCategories = {};
 const firstPage =
   "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
 
+const processedIds = new Set();
+
+async function processItem(products) {
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
+  const unprocessedProducts = products.filter(p => !processedIds.has(p.itemId));
+  for (const item of unprocessedProducts) {
+    requests.push(
+      // push data to dataset to be ready for upload to Keboola
+      Apify.pushData(item),
+      // upload JSON+LD data to CDN
+      uploadToS3(
+        s3,
+        `rohlik.cz`,
+        await s3FileName(item),
+        "jsonld",
+        toProduct(item, { priceCurrency: "CZK" })
+      )
+    );
+    processedIds.add(item.itemId);
+  }
+  // await all requests, so we don't end before they end
+  await Promise.all(requests);
+}
+
 Apify.main(async () => {
   rollbar.init();
+
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
 
   const {
@@ -124,7 +161,8 @@ Apify.main(async () => {
           console.log(
             `Stroring ${body.data.productList.length} items for category ${categoryId}`
           );
-          await Apify.pushData(getItems(body.data.productList, jsonCategories));
+          const products = getItems(body.data.productList, jsonCategories);
+          await processItem(products);
         }
       } else if (request.userData.label === "PAGE") {
         const { categoryId } = request.userData;
@@ -132,7 +170,8 @@ Apify.main(async () => {
           console.log(
             `Stroring ${body.data.productList.length} items for category ${categoryId}`
           );
-          await Apify.pushData(getItems(body.data.productList, jsonCategories));
+          const products = getItems(body.data.productList, jsonCategories);
+          await processItem(products);
         }
       }
 
@@ -156,6 +195,8 @@ Apify.main(async () => {
   log.info("crawler finished");
 
   try {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz");
+    log.info("invalidated Data CDN");
     await uploadToKeboola("rohlik");
     log.info("upload to Keboola finished");
   } catch (err) {
