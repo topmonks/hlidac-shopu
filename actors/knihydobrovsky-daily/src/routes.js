@@ -126,7 +126,7 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
       "knihydobrovsky.cz",
       await s3FileName(detail),
       "jsonld",
-      toProduct(detail, {})
+      toProduct({ ...detail, category: "" }, {})
     );
   }
   for (const id of result.map(x => x.itemId)) {
