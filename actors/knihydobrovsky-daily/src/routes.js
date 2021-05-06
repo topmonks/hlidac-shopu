@@ -1,7 +1,6 @@
 const {
   toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3
 } = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
 const { URL } = require("url");
@@ -60,6 +59,11 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
     userData: { label: "LIST" }
   });
 };
+
+function s3FileName(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/-(\d+)$/g)?.[0].substr(1);
+}
 
 /**
  *
@@ -124,7 +128,7 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
     await uploadToS3(
       s3,
       "knihydobrovsky.cz",
-      await s3FileName(detail),
+      s3FileName(detail),
       "jsonld",
       toProduct({ ...detail, category: "" }, {})
     );
