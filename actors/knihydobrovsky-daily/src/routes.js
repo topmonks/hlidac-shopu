@@ -91,7 +91,7 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
   const result = $("li[data-productinfo]")
     .map(function () {
       const $item = $(this);
-      const dataLink = new URL($item.find("a.buy-now").attr("data-link"));
+      const dataLink = canonicalUrl($item.find("a.buy-now").attr("data-link"));
       const originalPrice =
         parseInt($item.find("p.price span.price-strike").text(), 10) || null;
       return {
@@ -99,7 +99,8 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
           $item
             .find("h3 a")
             .attr("href")
-            .match(/-(\d+)$/g)?.[1] ?? dataLink.searchParams.get("productId"),
+            .match(/-(\d+)$/g)?.[1] ??
+          dataLink.searchParams.get("categoryBookList-itemPreview-productId"),
         itemUrl: canonical($item.find("h3 a").attr("href")),
         itemName: $item.find("span.name").text(),
         img: $item.find("picture img").attr("src"),
@@ -113,6 +114,7 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
         inStock: $item.find("a.buy-now").text().includes("Do košíku")
       };
     })
+    .toArray()
     .filter(x => x.itemId)
     .filter(x => !handledIds.has(x.itemId));
 
