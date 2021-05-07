@@ -338,7 +338,7 @@ jobs:
 
   merge_pr:
     docker:
-      - image: cimg/base:2020.12
+      - image: cimg/base:2021.05
     steps:
       - checkout
       - github/install
@@ -351,7 +351,7 @@ jobs:
 
   github_release:
     docker:
-      - image: cimg/base:2020.12
+      - image: cimg/base:2021.05
     steps:
       - checkout
       - attach_workspace:
