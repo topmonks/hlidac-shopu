@@ -157,7 +157,7 @@
   }
 
   dd.number {
-    font: 700 44px/1.2 "Work Sans", sans-serif;
+    font: 700 44px/1.2 var(--hs-font-family);
     color: var(--mdc-theme-text-primary-on-light);
     text-align: center;
     margin: 0 0 0.5em;
@@ -232,7 +232,8 @@
 
 
   h3 {
-    font-family: "Work Sans", sans-serif;
+    font-family: bc-novatica-cyr, sans-serif;
+    font-family: var(--hs-font-family);
     margin: 16px 20px;
     color: var(--mdc-theme-text-primary-on-light);
     font-weight: bold;
