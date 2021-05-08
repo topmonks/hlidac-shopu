@@ -11,7 +11,7 @@ export async function init() {
         minify,
         charset: "utf8",
         platform: "node",
-        target: "node12",
+        target: "node14",
         mainFields: ["module", "main"],
         external: ["aws-sdk"],
         entryPoints: [entrypoint],

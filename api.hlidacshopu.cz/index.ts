@@ -118,7 +118,7 @@ export async function createApi(domainName: string) {
   ): aws.lambda.Function =>
     new aws.lambda.Function(`hlidac-shopu-api-${name}-lambda`, {
       publish: true,
-      runtime: aws.lambda.Runtime.NodeJS12dX,
+      runtime: aws.lambda.Runtime.NodeJS14dX,
       role: role.arn,
       handler: "index.handler",
       code: buildAssets(fileName),

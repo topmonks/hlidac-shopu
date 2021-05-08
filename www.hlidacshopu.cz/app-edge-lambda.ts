@@ -30,7 +30,10 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
 
     const builder = await lambdaBuilder.init();
     const buildAssets = (fileName: string) =>
-      builder.buildCodeAsset(path.join(__dirname, "app-edge-lambda", fileName), true);
+      builder.buildCodeAsset(
+        path.join(__dirname, "app-edge-lambda", fileName),
+        true
+      );
 
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider(`${name}-us-east-1`, {
@@ -43,7 +46,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
         role: role.arn,
         timeout: 5,
         handler: "index.handler",
-        runtime: aws.lambda.Runtime.NodeJS12dX,
+        runtime: aws.lambda.Runtime.NodeJS14dX,
         code: buildAssets("index.mjs")
       },
       { provider: awsUsEast1 }

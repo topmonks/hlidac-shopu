@@ -42,7 +42,7 @@ export class RootEdgeLambda extends pulumi.ComponentResource {
         role: role.arn,
         timeout: 5,
         handler: "index.handler",
-        runtime: aws.lambda.Runtime.NodeJS12dX,
+        runtime: aws.lambda.Runtime.NodeJS14dX,
         code: buildAssets("index.mjs")
       },
       { provider: awsUsEast1 }
