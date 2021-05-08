@@ -39,6 +39,7 @@ commands:
     steps:
       - pulumi/login:
           cloud-url: << parameters.pulumi_backend_uri >>
+      - run: pulumi stack select << parameters.stack >>
       - pulumi/stack_output:
           stack: << parameters.stack >>
           property_name: << parameters.s3_bucket_uri_property >>
@@ -289,6 +290,7 @@ jobs:
       - run:
           name: Lint API
           command: yarn lint:api
+      - run: pulumi stack select hlidac-shopu-prod
       - pulumi/update:
           stack: hlidac-shopu-prod
           skip-preview: true
@@ -306,6 +308,7 @@ jobs:
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - install_packages
+      - run: pulumi stack select hlidac-shopu-prod
       - pulumi/preview:
           stack: hlidac-shopu-prod
       - slack/notify:
