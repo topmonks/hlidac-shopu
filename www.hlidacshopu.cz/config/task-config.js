@@ -1,6 +1,7 @@
 const babel = require("gulp-babel");
 const esbuild = require("gulp-esbuild");
 const mode = require("gulp-mode")();
+const cssvariables = require("postcss-css-variables");
 const pathConfig = require("./path-config.json");
 const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
 
@@ -19,6 +20,9 @@ const config = {
   },
 
   stylesheets: {
+    postcss: {
+      plugins: [cssvariables({ preserve: true })]
+    },
     sass: {
       includePaths: ["./node_modules"]
     }
