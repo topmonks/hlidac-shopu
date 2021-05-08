@@ -2404,7 +2404,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.0
-    lit-element: 3.0.0-rc.1
+    lit-element: 3.0.0-rc.2
     lit-html: 2.0.0-rc.2
   languageName: unknown
   linkType: soft
@@ -2498,7 +2498,7 @@ __metadata:
     "@lit/reactive-element": 1.0.0-rc.2
     chart.js: ^3.2.1
     chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.1
+    lit-element: 3.0.0-rc.2
   languageName: unknown
   linkType: soft
 
@@ -2567,17 +2567,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lit/reactive-element@npm:1.0.0-rc.2":
+"@lit/reactive-element@npm:1.0.0-rc.2, @lit/reactive-element@npm:^1.0.0-rc.2":
   version: 1.0.0-rc.2
   resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
   checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^1.0.0-rc.1":
-  version: 1.0.0-rc.1
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.1"
-  checksum: 6850cedae11d9e64cbaff7aba754d221067052d99f3bc3d764cf48e43268e40508e94574704a646e15c139d9adb0b87e1061524a2090705fa1075c1fa6490032
   languageName: node
   linkType: hard
 
@@ -13482,13 +13475,13 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.1":
-  version: 3.0.0-rc.1
-  resolution: "lit-element@npm:3.0.0-rc.1"
+"lit-element@npm:3.0.0-rc.2":
+  version: 3.0.0-rc.2
+  resolution: "lit-element@npm:3.0.0-rc.2"
   dependencies:
-    "@lit/reactive-element": ^1.0.0-rc.1
-    lit-html: ^2.0.0-rc.1
-  checksum: a424ed1e06dc7db635b99048f100b9b4fa7843c8270e2c9fdbf537017a9efcd648b686ce4a077f0acc1ed233a10dcfd21c017068266fdd04f383ea78efd78379
+    "@lit/reactive-element": ^1.0.0-rc.2
+    lit-html: ^2.0.0-rc.3
+  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
   languageName: node
   linkType: hard
 
@@ -13517,10 +13510,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "lit-html@npm:2.0.0-rc.1"
-  checksum: be3a05e5b3a739ea3208659a545e36505f5edefe0c6d4bbb3772481d7a6713a51c14ee616a1ee1d8139816fe00d9df29c6ca82b89e15c4daffa33d5fe1c57597
+"lit-html@npm:^2.0.0-rc.3":
+  version: 2.0.0-rc.3
+  resolution: "lit-html@npm:2.0.0-rc.3"
+  dependencies:
+    "@types/trusted-types": ^1.0.1
+  checksum: 6e7f6411f1749dd925d6bb2ff9af9d9fc5bede25c6cf3ef45b7d1fcd888a43096fa6be555fee43626ea1be1c2a82a282d73ce90a7465c775aed03bc1a8398cac
   languageName: node
   linkType: hard
 
