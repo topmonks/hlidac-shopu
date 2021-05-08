@@ -32,5 +32,7 @@
 
 {% block scripts %}
   <script type="module" src="/assets/esm/reviews.js"></script>
+  <script nomodule src="https://polyfill.io/v3/polyfill.min.js"></script>
+  <script nomodule src="https://unpkg.com/regenerator-runtime@0.13.7/runtime.js"></script>
   <script nomodule src="/assets/js/reviews.js"></script>
 {% endblock %}
