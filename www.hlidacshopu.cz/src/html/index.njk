@@ -4,10 +4,10 @@
 {% set type = 'WebApplication' %}
 
 {% block preload %}
-  <link rel="modulepreload" href="/assets/js/index.js" />
+  <link rel="modulepreload" href="/assets/esm/index.js" />
   {% set imports = assets.outputs["index.js"].imports %}
   {% for import in imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ import.path }}">
+    <link rel="preload" as="script" href="/assets/esm/{{ import.path }}">
   {% endfor %}
   <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin />
   <link rel="preload" as="fetch" href="https://data.hlidacshopu.cz/app/stats.jsonld" crossorigin />
@@ -770,5 +770,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script type="module" src="/assets/js/index.js"></script>
+  <script type="module" src="/assets/esm/index.js"></script>
+  <script nomodule src="/assets/js/index.js"></script>
 {% endblock %}

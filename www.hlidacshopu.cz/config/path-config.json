@@ -23,6 +23,11 @@
 
   "esbuild": {
     "src": "javascripts",
+    "dest": "assets/esm"
+  },
+
+  "esbuild-legacy": {
+    "src": "javascripts",
     "dest": "assets/js"
   },
 

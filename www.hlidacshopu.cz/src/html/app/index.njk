@@ -454,10 +454,10 @@
       }
     }
   </style>
-  <link rel="modulepreload" href="/assets/js/app.js">
+  <link rel="modulepreload" href="/assets/esm/app.js">
   {% set imports = assets.outputs["app.js"].imports %}
   {% for import in imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ import.path }}" crossorigin>
+    <link rel="preload" as="script" href="/assets/esm/{{ import.path }}" crossorigin>
   {% endfor %}
   <!-- Google Tag Manager -->
   <script>
@@ -688,6 +688,7 @@
   </div>
 </div>
 {{ spriteTarget() }}
-<script type="module" src="/assets/js/app.js"></script>
+<script type="module" src="/assets/esm/app.js"></script>
+<script nomodule src="/assets/js/app.js"></script>
 </body>
 </html>

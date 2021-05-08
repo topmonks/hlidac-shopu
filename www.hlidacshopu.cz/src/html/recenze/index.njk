@@ -4,7 +4,7 @@
 {% block title %}Recenze na Hlídač shopů{% endblock %}
 
 {% block preload %}
-  <link rel="modulepreload" href="/assets/js/reviews.js"/>
+  <link rel="modulepreload" href="/assets/esm/reviews.js"/>
   <link rel="preload" href="https://data.hlidacshopu.cz/app/reviews.jsonld" as="fetch" crossorigin>
 {% endblock %}
 
@@ -31,5 +31,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script type="module" src="/assets/js/reviews.js"></script>
+  <script type="module" src="/assets/esm/reviews.js"></script>
+  <script nomodule src="/assets/js/reviews.js"></script>
 {% endblock %}

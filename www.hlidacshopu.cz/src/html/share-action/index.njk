@@ -250,10 +250,10 @@
     }
 
   </style>
-  <link rel="modulepreload" href="/assets/js/share-action.js">
+  <link rel="modulepreload" href="/assets/esm/share-action.js">
   {% set imports = assets.outputs["share-action.js"].imports %}
   {% for import in imports %}
-    <link rel="preload" as="script" href="/assets/js/{{ import.path }}" crossorigin>
+    <link rel="preload" as="script" href="/assets/esm/{{ import.path }}" crossorigin>
   {% endfor %}
   <!-- Google Tag Manager -->
   <script>
@@ -288,6 +288,6 @@
 </noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main id="app-root"></main>
-<script type="module" src="/assets/js/share-action.js"></script>
+<script type="module" src="/assets/esm/share-action.js"></script>
 </body>
 </html>

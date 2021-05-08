@@ -1,3 +1,4 @@
+const babel = require("gulp-babel");
 const esbuild = require("gulp-esbuild");
 const mode = require("gulp-mode")();
 const pathConfig = require("./path-config.json");
@@ -82,12 +83,20 @@ const config = {
       target: ["es2017", "firefox67", "safari12"],
       charset: "utf8",
       metafile: true,
-      metafileName: `../../../../www.hlidacshopu.cz/src/data/assets.json`,
-      define: {
-        "process.env.NODE_ENV": mode.production()
-          ? "'production'"
-          : "'development'"
-      }
+      metafileName: `../../../../www.hlidacshopu.cz/src/data/assets.json`
+    }
+  },
+
+  "esbuild-legacy": {
+    extensions: ["js", "mjs"],
+    watch: "../../../lib/**/*.mjs",
+    options: {
+      bundle: true,
+      splitting: false,
+      minify: mode.production(),
+      platform: "browser",
+      target: ["es6"],
+      charset: "utf8"
     }
   },
 
@@ -98,10 +107,38 @@ const config = {
         src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
         dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
       };
+      const legacyPaths = {
+        src: projectPath(
+          pathConfig.src,
+          pathConfig["esbuild-legacy"].src,
+          "*.js"
+        ),
+        dest: projectPath(pathConfig.dest, pathConfig["esbuild-legacy"].dest)
+      };
       task("esbuild-prod", () =>
         src(paths.src)
           .pipe(esbuild(taskConfig.esbuild.options))
           .pipe(dest(paths.dest))
+      );
+      task("esbuild-legacy", () =>
+        src(legacyPaths.src)
+          .pipe(esbuild(taskConfig["esbuild-legacy"].options))
+          .pipe(
+            babel({
+              presets: [
+                [
+                  "@babel/preset-env",
+                  {
+                    useBuiltIns: "usage",
+                    corejs: "3.12"
+                  }
+                ]
+              ],
+              browserslistEnv: "legacy",
+              minified: true
+            })
+          )
+          .pipe(dest(legacyPaths.dest))
       );
       const gulpEsbuild = esbuild.createGulpEsbuild({ incremental: true });
       task("esbuild", () =>
@@ -111,7 +148,7 @@ const config = {
       );
     },
     development: { code: ["esbuild"] },
-    production: { code: ["esbuild-prod"] }
+    production: { code: ["esbuild-prod", "esbuild-legacy"] }
   },
 
   watch: { tasks: ["esbuild"] },
