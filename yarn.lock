@@ -2419,7 +2419,7 @@ __metadata:
     "@types/node": ^14.14.44
     apify: ^1.1.2
     apify-cli: ^0.6.2
-    cheerio: ^1.0.0-rc.6
+    cheerio: ^1.0.0-rc.9
     csv-parse: ^4.15.4
     jsonwebtoken: ^8.5.1
     node-fetch: ^2.6.1
@@ -2516,7 +2516,7 @@ __metadata:
     got: ^11.8.2
     playwright: ^1.10.0
     proxy-agent: ^4.0.1
-    puppeteer: ^9.1.0
+    puppeteer: ^9.1.1
     random-mua: ^0.5.0
     tough-cookie: ^4.0.0
     uuid: ^8.3.2
@@ -6585,7 +6585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio-select@npm:^1.3.0":
+"cheerio-select@npm:^1.3.0, cheerio-select@npm:^1.4.0":
   version: 1.4.0
   resolution: "cheerio-select@npm:1.4.0"
   dependencies:
@@ -6636,7 +6636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:1.0.0-rc.6, cheerio@npm:^1.0.0-rc.6":
+"cheerio@npm:1.0.0-rc.6":
   version: 1.0.0-rc.6
   resolution: "cheerio@npm:1.0.0-rc.6"
   dependencies:
@@ -6647,6 +6647,21 @@ __metadata:
     parse5: ^6.0.1
     parse5-htmlparser2-tree-adapter: ^6.0.1
   checksum: 75778a0f749972322a36107622ed5b9d1888dc7bc01809bb1f94ef9b095a410ae8ca91a91a66c23682cc1742ef0d3346040c24306aa89cdcfdcc64f2e42ff628
+  languageName: node
+  linkType: hard
+
+"cheerio@npm:^1.0.0-rc.9":
+  version: 1.0.0-rc.9
+  resolution: "cheerio@npm:1.0.0-rc.9"
+  dependencies:
+    cheerio-select: ^1.4.0
+    dom-serializer: ^1.3.1
+    domhandler: ^4.2.0
+    htmlparser2: ^6.1.0
+    parse5: ^6.0.1
+    parse5-htmlparser2-tree-adapter: ^6.0.1
+    tslib: ^2.2.0
+  checksum: 0fafd41c8063675280978071d97bd7f9dec3b111d93e0fded74aeb0634bd72afcf4fae0597507e30f9fac4a8f744d85683ccdbc2150ca4d64067c5f6d12e12da
   languageName: node
   linkType: hard
 
@@ -11516,7 +11531,7 @@ fsevents@~2.3.1:
     node-fetch: ^2.6.1
     npm-run-all: ^4.1.5
     prettier: ^2.2.1
-    puppeteer: ^9.1.0
+    puppeteer: ^9.1.1
     ramda: ^0.27.1
     rollbar: ^2.21.1
     source-map-explorer: ^2.5.2
@@ -16857,9 +16872,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "puppeteer@npm:9.1.0"
+"puppeteer@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "puppeteer@npm:9.1.1"
   dependencies:
     debug: ^4.1.0
     devtools-protocol: 0.0.869402
@@ -16873,7 +16888,7 @@ fsevents@~2.3.1:
     tar-fs: ^2.0.0
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
-  checksum: b081fd0ebd8fb0bf070bb572e722e9865f31bd335b19ca2f382f818bde6fde03ead7150c3a6716e84719d3f3f44416acda833a2312df7b36202274d503c32116
+  checksum: d680e469c2ac724bae1bb7087748b903a7a965fe00f622e17fd40aafd9589351bfa0c472fc200a717706d04f846788e63ab9d07e2d418f994612cb2c0cb68943
   languageName: node
   linkType: hard
 
