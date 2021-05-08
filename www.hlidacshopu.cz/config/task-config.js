@@ -122,7 +122,6 @@ const config = {
       );
       task("esbuild-legacy", () =>
         src(legacyPaths.src)
-          .pipe(esbuild(taskConfig["esbuild-legacy"].options))
           .pipe(
             babel({
               presets: [
@@ -134,6 +133,13 @@ const config = {
                   }
                 ]
               ],
+              browserslistEnv: "legacy"
+            })
+          )
+          .pipe(esbuild(taskConfig["esbuild-legacy"].options))
+          .pipe(
+            babel({
+              presets: [["@babel/preset-env"]],
               browserslistEnv: "legacy",
               minified: true
             })
