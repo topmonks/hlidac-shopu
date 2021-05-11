@@ -8,8 +8,8 @@ const { log, requestAsBrowser } = Apify.utils;
 
 Apify.main(async () => {
   log.info("ACTOR - start");
-  const { debugLog = false } = await Apify.getInput();
-  if (debugLog) {
+  const { development = false } = await Apify.getInput();
+  if (development) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
