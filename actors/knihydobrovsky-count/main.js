@@ -7,8 +7,11 @@ const {
 
 Apify.main(async () => {
   const input = await Apify.getInput();
-  const { development, maxConcurrency = 10, proxyGroups = ["CZECH_LUMINATI"] } =
-    input ?? {};
+  const {
+    development,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("categories", [

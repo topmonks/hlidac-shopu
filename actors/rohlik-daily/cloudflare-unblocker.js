@@ -262,7 +262,7 @@ class CloudflareUnblocker extends CrawlerExtension {
     }, request.url);
 
     await this._waitUntilChallengeFinishedFunction();
-    this.puppeteerPool.recyclePage(page).catch();
+    this.puppeteerPool.recyclePage(page).catch(() => {});
     return authRequest;
   }
 
@@ -422,9 +422,8 @@ class CloudflareUnblocker extends CrawlerExtension {
         cheerioCrawler.requestOptions = { ciphers: newOptions.ciphers };
       }
     };
-    cheerioCrawler.basicCrawler.sessionPoolOptions.createSessionFunction = this.createSessionFunction.bind(
-      this
-    );
+    cheerioCrawler.basicCrawler.sessionPoolOptions.createSessionFunction =
+      this.createSessionFunction.bind(this);
     cheerioCrawler.persistCookiesPerSession = true;
     cheerioCrawler.useApifyProxy = true;
     cheerioCrawler.apifyProxyGroups = this.apifyProxyGroups;

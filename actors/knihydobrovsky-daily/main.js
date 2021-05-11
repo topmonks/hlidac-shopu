@@ -17,8 +17,11 @@ Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
-  const { development, maxConcurrency = 10, proxyGroups = ["CZECH_LUMINATI"] } =
-    input ?? {};
+  const {
+    development,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = input ?? {};
 
   const arrayHandledIds = await Apify.getValue("handledIds");
   const handledIds = new Set(arrayHandledIds);

@@ -183,9 +183,8 @@ Apify.main(async () => {
     },
     sessionPoolOptions: {
       maxPoolSize: 100,
-      createSessionFunction: cloudFlareUnBlocker.createSessionFunction.bind(
-        cloudFlareUnBlocker
-      )
+      createSessionFunction:
+        cloudFlareUnBlocker.createSessionFunction.bind(cloudFlareUnBlocker)
     },
 
     // If request failed 4 times then this function is executed.
