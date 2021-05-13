@@ -12743,7 +12743,7 @@ fsevents@~2.3.1:
     linkedom: ^0.8.0
     node-fetch: ^2.6.1
     npm-run-all: ^4.1.5
-    postcss-css-variables: ^0.17.0
+    postcss-css-variables: ^0.18.0
     prettier: ^2.3.0
     puppeteer: ^9.1.1
     ramda: ^0.27.1
@@ -17389,15 +17389,16 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"postcss-css-variables@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "postcss-css-variables@npm:0.17.0"
+"postcss-css-variables@npm:^0.18.0":
+  version: 0.18.0
+  resolution: "postcss-css-variables@npm:0.18.0"
   dependencies:
     balanced-match: ^1.0.0
     escape-string-regexp: ^1.0.3
     extend: ^3.0.1
-    postcss: ^6.0.8
-  checksum: 65ea03e9c89b124a4631b8e06ceafd63f3cbf467631359d631563e65f0403126fcacf2382f61f77010bbc6495142a0c9e016212a9cbf442703b1697f7de68f0d
+  peerDependencies:
+    postcss: ^8.2.6
+  checksum: d40ef46b35afef32951848edcb4dc9bedda9372dbf368ec9993fd5d158b31b544ece6124bdf2b4bb02f9dcfeb5218caa2d07d65d57b262f7ba8e743b6041f08b
   languageName: node
   linkType: hard
 
@@ -17805,17 +17806,6 @@ fsevents@~2.3.1:
     nanoid: ^3.1.22
     source-map: ^0.6.1
   checksum: 83912f846376ceb501d887951bb3c7f5efc16452b124ba5ffbdd27f718dabd1edce8f6ef777a88aeb93366081cc2a3804581b2e6711a1e89ecaecb0dff2d2b73
-  languageName: node
-  linkType: hard
-
-"postcss@npm:^6.0.8":
-  version: 6.0.23
-  resolution: "postcss@npm:6.0.23"
-  dependencies:
-    chalk: ^2.4.1
-    source-map: ^0.6.1
-    supports-color: ^5.4.0
-  checksum: 9b61abdfb366491debc6a633ba3703ae43c674b6c1c64def54e131c8ec01862fc95b3271bde221db805389fc76c3b3f1447b5a9c1d0b332c53cfcc9bfe1b1fa6
   languageName: node
   linkType: hard
 
@@ -20700,7 +20690,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^5.3.0, supports-color@npm:^5.4.0":
+"supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
   dependencies:
