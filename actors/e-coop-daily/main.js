@@ -218,9 +218,9 @@ Apify.main(async () => {
 
   log.info("ACTOR - crawler end");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
-  log.info("invalidated Data CDN");
   if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
+    log.info("invalidated Data CDN");
     await uploadToKeboola("coop_cz");
     log.info("upload to Keboola finished");
   }
