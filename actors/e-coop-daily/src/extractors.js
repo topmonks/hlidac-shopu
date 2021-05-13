@@ -144,6 +144,7 @@ const extractItem = function ($, request) {
       result.itemUrl = item.url;
       result.itemId = item.id;
       result.concatId = `${result.marketId}-${item.id}`;
+      result.inStock = item.is_salable === "1";
       result.img = item.images.length > 0 ? item.images[0].url : null;
       const { price_info } = item;
       result.currentPrice = price_info.final_price;

@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { load } = require("cheerio");
 const extractor = require("./src/extractors");
@@ -15,7 +26,7 @@ const stats = async () => {
   );
 };
 const uniqueItemId = new Set();
-
+const processedIds = new Set();
 /**
  * Creates Page Function for scraping
  * @param {RequestQueue} requestQueue
@@ -23,8 +34,6 @@ const uniqueItemId = new Set();
  * @returns {CheerioHandlePage}
  */
 function pageFunction(requestQueue) {
-  const processedIds = new Set();
-
   /**
    *  @param {CheerioHandlePageInputs} context
    *  @returns {Promise<void>}
@@ -113,7 +122,10 @@ function pageFunction(requestQueue) {
       case LABELS.DETAIL:
         item = extractor.extractItem($, request);
         stats.items++;
-        await Apify.pushData(item);
+        await processItem(item);
+        // dont retry the request right away, wait a little bit
+        await Apify.utils.sleep(100);
+
         break;
     }
     for (const r of requests) {
@@ -129,12 +141,38 @@ function pageFunction(requestQueue) {
   return handler;
 }
 
+async function processItem(item) {
+  // we don't need to block pushes, we will await them all at the end
+  if (!processedIds.has(item.itemId)) {
+    processedIds.add(item.itemId);
+    const product = {
+      ...item,
+      category: ""
+    };
+    // push data to dataset to be ready for upload to Keboola
+    await Apify.pushData(item);
+    // upload JSON+LD data to CDN
+    await uploadToS3(
+      s3,
+      `e-coop.cz`,
+      item.itemId,
+      "jsonld",
+      toProduct(product, { priceCurrency: "CZK" })
+    );
+  }
+}
+
 Apify.main(async () => {
+  rollbar.init();
+
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   log.info("ACTOR - start");
   const input = await Apify.getInput();
   const {
-    development,
-    maxRequestRetries = 1,
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 4,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
@@ -167,6 +205,7 @@ Apify.main(async () => {
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
+    maxConcurrency,
     handlePageFunction: pageFunction(requestQueue),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
@@ -178,41 +217,12 @@ Apify.main(async () => {
   await crawler.run();
 
   log.info("ACTOR - crawler end");
-  // stats page
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: "coop-cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
 
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        tableName: "coop_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
+  log.info("invalidated Data CDN");
+  if (!development) {
+    await uploadToKeboola("coop_cz");
+    log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");
 });
