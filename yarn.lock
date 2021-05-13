@@ -3473,6 +3473,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/e-coop-daily@workspace:actors/e-coop-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/e-coop-daily@workspace:actors/e-coop-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.15.0
+    "@aws-sdk/client-s3": ^3.15.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@types/node": ^14.14.44
+    apify: ^1.2.0
+    apify-cli: ^0.6.2
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/extension@workspace:extension":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/extension@workspace:extension"
@@ -12727,7 +12740,7 @@ fsevents@~2.3.1:
     gulp-babel: ^8.0.0
     gulp-esbuild: ^0.7.7
     gulp-mode: ^1.1.0
-    linkedom: ^0.7.6
+    linkedom: ^0.8.0
     node-fetch: ^2.6.1
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.17.0
@@ -14671,16 +14684,16 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.7.6":
-  version: 0.7.6
-  resolution: "linkedom@npm:0.7.6"
+"linkedom@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "linkedom@npm:0.8.0"
   dependencies:
     "@ungap/event-target": ^0.2.2
     css-select: ^4.1.2
     html-escaper: ^3.0.3
     htmlparser2: ^6.1.0
     uhyphen: ^0.1.0
-  checksum: c8442ba6002baf22e05ad410982b85885fd213b11f46cd66b30753807ea7c39dc02d175249b68c279fc0891b20e116a17ed9a0a0d5d0d28637f67083767f537d
+  checksum: 221dfa512cab034cb00e20892a983ba93a1262e77544252b3296bb904cf3ecba6c973c040c163b94e5864f5d713c6d1760a7dcbe2bfbc2f9274c0add26eeab3b
   languageName: node
   linkType: hard
 
