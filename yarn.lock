@@ -10195,6 +10195,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esbuild@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "esbuild@npm:0.12.0"
+  bin:
+    esbuild: bin/esbuild
+  checksum: 73be24fcbd943776f92e2d6f71d0f6a31c9c3426163391e1351eb5f2bbcfed5eece22230319a9f353d20b293a3b50daa81d1b32af587fd0d5ae787d988bb5cdb
+  languageName: node
+  linkType: hard
+
 "escalade@npm:^3.1.1":
   version: 3.1.1
   resolution: "escalade@npm:3.1.1"
@@ -12728,7 +12737,7 @@ fsevents@~2.3.1:
     commander: ^7.2.0
     date-fns: ^2.21.3
     dotenv-cli: ^4.0.0
-    esbuild: ^0.11.20
+    esbuild: ^0.12.0
     eslint: ^7.26.0
     eslint-config-prettier: ^8.3.0
     eslint-plugin-compat: ^3.9.0
