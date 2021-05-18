@@ -80,7 +80,7 @@ export class StatefulShop extends Shop {
 
   didMutate(mutations, prop, token) {
     return mutations.find(x =>
-      Array.from(x[prop]).find(y => y.classList && y.classList.contains(token))
+      Array.from(x[prop]).find(y => y.classList?.contains(token))
     );
   }
 
