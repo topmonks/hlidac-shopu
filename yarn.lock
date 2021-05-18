@@ -135,7 +135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.15.0":
+"@aws-sdk/client-cloudfront@npm:^3.16.0":
   version: 3.16.0
   resolution: "@aws-sdk/client-cloudfront@npm:3.16.0"
   dependencies:
@@ -178,7 +178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:^3.15.0":
+"@aws-sdk/client-dynamodb@npm:^3.16.0":
   version: 3.16.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.16.0"
   dependencies:
@@ -220,7 +220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.15.0":
+"@aws-sdk/client-s3@npm:^3.16.0":
   version: 3.16.0
   resolution: "@aws-sdk/client-s3@npm:3.16.0"
   dependencies:
@@ -973,7 +973,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:^3.15.0":
+"@aws-sdk/util-dynamodb@npm:^3.16.0":
   version: 3.16.0
   resolution: "@aws-sdk/util-dynamodb@npm:3.16.0"
   dependencies:
@@ -1095,7 +1095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.14.3, @babel/core@npm:>=7.9.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.14.0":
+"@babel/core@npm:7.14.3, @babel/core@npm:>=7.9.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.14.3":
   version: 7.14.3
   resolution: "@babel/core@npm:7.14.3"
   dependencies:
@@ -2135,7 +2135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.11.0, @babel/preset-env@npm:^7.14.1":
+"@babel/preset-env@npm:^7.11.0, @babel/preset-env@npm:^7.14.2":
   version: 7.14.2
   resolution: "@babel/preset-env@npm:7.14.2"
   dependencies:
@@ -2434,7 +2434,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     rollbar: ^2.21.1
     schema-dts: ^0.8.2
   peerDependencies:
@@ -2448,11 +2448,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz/src/lambda"
   dependencies:
-    "@aws-sdk/client-dynamodb": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
-    "@aws-sdk/util-dynamodb": ^3.15.0
+    "@aws-sdk/client-dynamodb": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
+    "@aws-sdk/util-dynamodb": ^3.16.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^4.3.0
+    "@pulumi/aws": ^4.4.1
     "@pulumi/awsx": ^0.30.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
@@ -2474,10 +2474,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2487,10 +2487,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/e-coop-daily@workspace:actors/e-coop-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2510,10 +2510,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@types/cheerio": ^0.22.28
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.9
@@ -2528,10 +2528,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/iglobus-daily@workspace:actors/iglobus-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2541,10 +2541,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
     underscore: ^1.13.1
@@ -2556,7 +2556,7 @@ __metadata:
   resolution: "@hlidac-shopu/knihydobrovsky-count@workspace:actors/knihydobrovsky-count"
   dependencies:
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2566,10 +2566,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2579,10 +2579,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2603,10 +2603,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
     browser-pool: ^1.1.2
@@ -2642,10 +2642,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.15.0
-    "@aws-sdk/client-s3": ^3.15.0
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -3187,7 +3187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^4.3.0":
+"@pulumi/aws@npm:^4.4.1":
   version: 4.4.1
   resolution: "@pulumi/aws@npm:4.4.1"
   dependencies:
@@ -3955,7 +3955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14, @types/node@npm:^14.14.44":
+"@types/node@npm:^14, @types/node@npm:^14.14.45":
   version: 14.14.45
   resolution: "@types/node@npm:14.14.45"
   checksum: b9ad381a8cc5273bfd75d5870f57eed2b0978a5afe9e7e0347fcdb955e9fed502277a374c2837c3e1fe6a7ade58d53a460d954dbbe50e2f18bdd7e86075ffca9
@@ -4168,7 +4168,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.23.0":
+"@typescript-eslint/eslint-plugin@npm:^4.24.0":
   version: 4.24.0
   resolution: "@typescript-eslint/eslint-plugin@npm:4.24.0"
   dependencies:
@@ -4206,7 +4206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.23.0":
+"@typescript-eslint/parser@npm:^4.24.0":
   version: 4.24.0
   resolution: "@typescript-eslint/parser@npm:4.24.0"
   dependencies:
@@ -9096,7 +9096,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:^1.4.0":
+"eslint-plugin-lit@npm:^1.4.1":
   version: 1.4.1
   resolution: "eslint-plugin-lit@npm:1.4.1"
   dependencies:
@@ -11462,14 +11462,14 @@ fsevents@~2.3.1:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@babel/core": ^7.14.0
-    "@babel/preset-env": ^7.14.1
+    "@babel/core": ^7.14.3
+    "@babel/preset-env": ^7.14.2
     "@esm-bundle/chai": ^4.3.4
     "@material/button": ^11.0.0
     "@material/icon-button": ^11.0.0
     "@material/snackbar": ^11.0.0
     "@open-wc/testing": ^2.5.33
-    "@pulumi/aws": ^4.3.0
+    "@pulumi/aws": ^4.4.1
     "@pulumi/awsx": ^0.30.0
     "@pulumi/pulumi": ^3.2.1
     "@rollup/plugin-alias": ^3.1.2
@@ -11478,12 +11478,12 @@ fsevents@~2.3.1:
     "@topmonks/blendid": topmonks/blendid
     "@topmonks/pulumi-aws": ^1.7.9
     "@types/firefox-webext-browser": ^82.0.0
-    "@types/node": ^14.14.44
+    "@types/node": ^14.14.45
     "@types/node-fetch": ^2.5.10
     "@types/ramda": ^0.27.40
     "@types/whatwg-url": ^8.2.0
-    "@typescript-eslint/eslint-plugin": ^4.23.0
-    "@typescript-eslint/parser": ^4.23.0
+    "@typescript-eslint/eslint-plugin": ^4.24.0
+    "@typescript-eslint/parser": ^4.24.0
     "@web/test-runner": ^0.13.4
     "@web/test-runner-junit-reporter": ^0.4.2
     abort-controller: ^3.0.0
@@ -11497,7 +11497,7 @@ fsevents@~2.3.1:
     eslint-config-prettier: ^8.3.0
     eslint-plugin-compat: ^3.9.0
     eslint-plugin-es: ^4.1.0
-    eslint-plugin-lit: ^1.4.0
+    eslint-plugin-lit: ^1.4.1
     eslint-plugin-prettier: ^3.4.0
     eslint-plugin-promise: ^5.1.0
     form-data: ^4.0.0
