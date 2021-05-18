@@ -123,9 +123,6 @@ function pageFunction(requestQueue) {
         item = extractor.extractItem($, request);
         stats.items++;
         await processItem(item);
-        // dont retry the request right away, wait a little bit
-        await Apify.utils.sleep(100);
-
         break;
     }
     for (const r of requests) {
@@ -172,7 +169,7 @@ Apify.main(async () => {
   const {
     development = false,
     maxRequestRetries = 3,
-    maxConcurrency = 4,
+    maxConcurrency = 10,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
@@ -184,7 +181,7 @@ Apify.main(async () => {
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: false
+    useApifyProxy: !development
   });
 
   await requestQueue.addRequest({
