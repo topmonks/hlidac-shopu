@@ -1,0 +1,18 @@
+{
+  "name": "@hlidac-shopu/kasa-count",
+  "version": "0.1.0",
+  "description": "kasa.cz counting actor",
+  "author": "Zuzana Pelechová <zpelechova@gmail.com>",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "@hlidac-shopu/actors-common": "^1.1.0",
+    "apify": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.45",
+    "apify-cli": "^0.6.2"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
