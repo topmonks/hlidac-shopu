@@ -9000,21 +9000,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.11.20":
-  version: 0.11.23
-  resolution: "esbuild@npm:0.11.23"
-  bin:
-    esbuild: bin/esbuild
-  checksum: 9226fc3d74f7555c96778c5d9204312c578e9c11b472deebfbab52c4ac58b9efc3a40be529368f6ccbe257d0059c6b8fd142c179824a3227d055d912c7b5a94a
-  languageName: node
-  linkType: hard
-
 "esbuild@npm:^0.12.0":
   version: 0.12.0
   resolution: "esbuild@npm:0.12.0"
   bin:
     esbuild: bin/esbuild
   checksum: 73be24fcbd943776f92e2d6f71d0f6a31c9c3426163391e1351eb5f2bbcfed5eece22230319a9f353d20b293a3b50daa81d1b32af587fd0d5ae787d988bb5cdb
+  languageName: node
+  linkType: hard
+
+"esbuild@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "esbuild@npm:0.12.1"
+  bin:
+    esbuild: bin/esbuild
+  checksum: 9fad417f76b9bd8d8f62ae76572659066dfeefb11583cef73c283f7e0b75c9d1a341f9b9237b420bb1eb02234706e2563fea06ac9a1e01659705b57a3b75baa1
   languageName: node
   linkType: hard
 
@@ -10984,14 +10984,14 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-esbuild@npm:^0.7.7":
-  version: 0.7.7
-  resolution: "gulp-esbuild@npm:0.7.7"
+"gulp-esbuild@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "gulp-esbuild@npm:0.8.0"
   dependencies:
-    esbuild: ^0.11.20
+    esbuild: ^0.12.1
     plugin-error: ^1.0.1
     vinyl: ^2.2.1
-  checksum: eca30118ed4b44ea45452382376812f443c029353eee1916a0a57755498547dc05128315b78015448fea68a3389c734b6c84c75baf84c7fc3e5c4e12259c1ee8
+  checksum: c3d9143c1b6a77d9f72410fcd653d87d9c4350d1253c0d466c5b51352d6668323f55cb56e9784279ee667e5403ca2e50f4d0d938cad4296cd0a576ea7f8fe67a
   languageName: node
   linkType: hard
 
@@ -11526,7 +11526,7 @@ fsevents@~2.3.1:
     eslint-plugin-promise: ^5.1.0
     form-data: ^4.0.0
     gulp-babel: ^8.0.0
-    gulp-esbuild: ^0.7.7
+    gulp-esbuild: ^0.8.0
     gulp-mode: ^1.1.0
     linkedom: ^0.8.0
     node-fetch: ^2.6.1
