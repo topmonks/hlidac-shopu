@@ -2434,7 +2434,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     rollbar: ^2.21.1
     schema-dts: ^0.8.2
   peerDependencies:
@@ -2452,7 +2452,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.16.0
     "@aws-sdk/util-dynamodb": ^3.16.0
     "@hlidac-shopu/lib": ^1.0.0
-    "@pulumi/aws": ^4.4.1
+    "@pulumi/aws": ^4.5.1
     "@pulumi/awsx": ^0.30.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
@@ -2477,7 +2477,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2490,7 +2490,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2512,8 +2512,8 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
-    "@types/cheerio": ^0.22.28
-    "@types/node": ^14.14.45
+    "@types/cheerio": ^0.22.29
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
     cheerio: ^1.0.0-rc.9
@@ -2531,7 +2531,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2544,7 +2544,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
     underscore: ^1.13.1
@@ -2556,7 +2556,7 @@ __metadata:
   resolution: "@hlidac-shopu/kasa-count@workspace:actors/kasa-count"
   dependencies:
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2569,7 +2569,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2580,7 +2580,7 @@ __metadata:
   resolution: "@hlidac-shopu/knihydobrovsky-count@workspace:actors/knihydobrovsky-count"
   dependencies:
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2593,7 +2593,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2606,7 +2606,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -2630,12 +2630,12 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
     browser-pool: ^1.1.2
     got: ^11.8.2
-    playwright: ^1.11.0
+    playwright: ^1.11.1
     proxy-agent: ^4.0.1
     puppeteer: ^9.1.1
     random-mua: ^0.5.0
@@ -2669,7 +2669,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     apify: ^1.2.1
     apify-cli: ^0.6.2
   languageName: unknown
@@ -3211,9 +3211,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "@pulumi/aws@npm:4.4.1"
+"@pulumi/aws@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "@pulumi/aws@npm:4.5.1"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -3221,7 +3221,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 93ff8ee95ec385d9c428f0950e7b06e14347041d4c581e0a6a5cd1ecde68d8a5cac008ee74cd927ffa805b07b61be2ee4e9fcf727050c56105318adcc6cefcbd
+  checksum: db2b54c26fa0d07c85b1937845ad576e180697650c653834521ab36badcb77cd107a2d3bafb55de01ea8bcf87bba30c4ce0cbcb9bf88ce342287237d3c91b295
   languageName: node
   linkType: hard
 
@@ -3249,7 +3249,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.2.1":
+"@pulumi/pulumi@npm:^3.0.0":
   version: 3.2.1
   resolution: "@pulumi/pulumi@npm:3.2.1"
   dependencies:
@@ -3270,6 +3270,30 @@ __metadata:
     typescript: ~3.7.3
     upath: ^1.1.0
   checksum: 1da7203ebc4f8917cd66807ff054eecf80ca4eceb5c4a6f8e64c00c9e29bb8a903c15f35c28f316a869728613d0de5ca73ab6f973bd28246b2c12ebf7eb48e25
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@pulumi/pulumi@npm:3.3.0"
+  dependencies:
+    "@grpc/grpc-js": ^1.2.7
+    "@logdna/tail-file": ^2.0.6
+    "@pulumi/query": ^0.3.0
+    google-protobuf: ^3.5.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.0
+    normalize-package-data: ^2.4.0
+    protobufjs: ^6.8.6
+    read-package-tree: ^5.3.1
+    require-from-string: ^2.0.1
+    semver: ^6.1.0
+    source-map-support: ^0.4.16
+    split2: ^3.2.2
+    ts-node: ^7.0.1
+    typescript: ~3.7.3
+    upath: ^1.1.0
+  checksum: 0ed07da65f27e6a15ea01b61f5d05dd358cef93810f839b442a306bdeb8df46664a09e8a32ae2dd8fe1d8f57004d4932ad45ae0bf88c67c04625123c45985e1b
   languageName: node
   linkType: hard
 
@@ -3656,6 +3680,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cheerio@npm:^0.22.29":
+  version: 0.22.29
+  resolution: "@types/cheerio@npm:0.22.29"
+  dependencies:
+    "@types/node": "*"
+  checksum: 6d230f402cdd033037c5cdf903f364f053196258862ede71265b5c618519f91fef0a891e9d5e47cb20b5660f505cf005c111092ea14822946fdeafc00f9c3476
+  languageName: node
+  linkType: hard
+
 "@types/clean-css@npm:*":
   version: 4.2.4
   resolution: "@types/clean-css@npm:4.2.4"
@@ -3979,10 +4012,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14, @types/node@npm:^14.14.45":
+"@types/node@npm:^14":
   version: 14.14.45
   resolution: "@types/node@npm:14.14.45"
   checksum: b9ad381a8cc5273bfd75d5870f57eed2b0978a5afe9e7e0347fcdb955e9fed502277a374c2837c3e1fe6a7ade58d53a460d954dbbe50e2f18bdd7e86075ffca9
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^14.17.0":
+  version: 14.17.0
+  resolution: "@types/node@npm:14.17.0"
+  checksum: f437147b39e04b23272eae604ec301b5a91956d386f96a2a796efa856d813df116c1afea511b2c23d908c0456c479bad32862aea6d6f0eaffcc1056603b98e64
   languageName: node
   linkType: hard
 
@@ -9000,21 +9040,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.11.20":
-  version: 0.11.23
-  resolution: "esbuild@npm:0.11.23"
+"esbuild@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "esbuild@npm:0.12.1"
   bin:
     esbuild: bin/esbuild
-  checksum: 9226fc3d74f7555c96778c5d9204312c578e9c11b472deebfbab52c4ac58b9efc3a40be529368f6ccbe257d0059c6b8fd142c179824a3227d055d912c7b5a94a
-  languageName: node
-  linkType: hard
-
-"esbuild@npm:^0.12.0":
-  version: 0.12.0
-  resolution: "esbuild@npm:0.12.0"
-  bin:
-    esbuild: bin/esbuild
-  checksum: 73be24fcbd943776f92e2d6f71d0f6a31c9c3426163391e1351eb5f2bbcfed5eece22230319a9f353d20b293a3b50daa81d1b32af587fd0d5ae787d988bb5cdb
+  checksum: 9fad417f76b9bd8d8f62ae76572659066dfeefb11583cef73c283f7e0b75c9d1a341f9b9237b420bb1eb02234706e2563fea06ac9a1e01659705b57a3b75baa1
   languageName: node
   linkType: hard
 
@@ -9046,7 +9077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-string-regexp@npm:4.0.0":
+"escape-string-regexp@npm:4.0.0, escape-string-regexp@npm:^4.0.0":
   version: 4.0.0
   resolution: "escape-string-regexp@npm:4.0.0"
   checksum: c747be8d5ff7873127e3e0cffe7d2206a37208077fa9c30a3c1bb4f26bebd081c8c24d5fba7a99449f9d20670bea3dc5e1b6098b0f074b099bd38766271a272f
@@ -9253,9 +9284,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.26.0":
-  version: 7.26.0
-  resolution: "eslint@npm:7.26.0"
+"eslint@npm:^7.27.0":
+  version: 7.27.0
+  resolution: "eslint@npm:7.27.0"
   dependencies:
     "@babel/code-frame": 7.12.11
     "@eslint/eslintrc": ^0.4.1
@@ -9265,12 +9296,14 @@ __metadata:
     debug: ^4.0.1
     doctrine: ^3.0.0
     enquirer: ^2.3.5
+    escape-string-regexp: ^4.0.0
     eslint-scope: ^5.1.1
     eslint-utils: ^2.1.0
     eslint-visitor-keys: ^2.0.0
     espree: ^7.3.1
     esquery: ^1.4.0
     esutils: ^2.0.2
+    fast-deep-equal: ^3.1.3
     file-entry-cache: ^6.0.1
     functional-red-black-tree: ^1.0.1
     glob-parent: ^5.0.0
@@ -9282,7 +9315,7 @@ __metadata:
     js-yaml: ^3.13.1
     json-stable-stringify-without-jsonify: ^1.0.1
     levn: ^0.4.1
-    lodash: ^4.17.21
+    lodash.merge: ^4.6.2
     minimatch: ^3.0.4
     natural-compare: ^1.4.0
     optionator: ^0.9.1
@@ -9291,12 +9324,12 @@ __metadata:
     semver: ^7.2.1
     strip-ansi: ^6.0.0
     strip-json-comments: ^3.1.0
-    table: ^6.0.4
+    table: ^6.0.9
     text-table: ^0.2.0
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 08f99befd764fbd6ea811e9eec27d5c6b9dc9d1bbfe5ffa1016e4f1fe526a4f45ea127c4e30c554c423ee55eb290ce9af4fb7fedf9b7af3f84076a444c2bbdf6
+  checksum: c91a9a88091fb2654ec599b452f6d8aff22daa4a21761e762536877ec8b65cd6386c29ea2e0fec2668125a07c62973bc23922f924c999e140c1042b8cffca030
   languageName: node
   linkType: hard
 
@@ -9673,7 +9706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-deep-equal@npm:^3.1.1":
+"fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: 451526766b219503131d11e823eaadd1533080b0be4860e316670b039dcaf31cd1007c2fe036a9b922abba7c040dfad5e942ed79d21f2ff849e50049f36e0fb7
@@ -10984,14 +11017,14 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"gulp-esbuild@npm:^0.7.7":
-  version: 0.7.7
-  resolution: "gulp-esbuild@npm:0.7.7"
+"gulp-esbuild@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "gulp-esbuild@npm:0.8.0"
   dependencies:
-    esbuild: ^0.11.20
+    esbuild: ^0.12.1
     plugin-error: ^1.0.1
     vinyl: ^2.2.1
-  checksum: eca30118ed4b44ea45452382376812f443c029353eee1916a0a57755498547dc05128315b78015448fea68a3389c734b6c84c75baf84c7fc3e5c4e12259c1ee8
+  checksum: c3d9143c1b6a77d9f72410fcd653d87d9c4350d1253c0d466c5b51352d6668323f55cb56e9784279ee667e5403ca2e50f4d0d938cad4296cd0a576ea7f8fe67a
   languageName: node
   linkType: hard
 
@@ -11493,16 +11526,16 @@ fsevents@~2.3.1:
     "@material/icon-button": ^11.0.0
     "@material/snackbar": ^11.0.0
     "@open-wc/testing": ^2.5.33
-    "@pulumi/aws": ^4.4.1
+    "@pulumi/aws": ^4.5.1
     "@pulumi/awsx": ^0.30.0
-    "@pulumi/pulumi": ^3.2.1
+    "@pulumi/pulumi": ^3.3.0
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^13.0.0
     "@rollup/plugin-replace": ^2.4.2
     "@topmonks/blendid": topmonks/blendid
     "@topmonks/pulumi-aws": ^1.7.9
     "@types/firefox-webext-browser": ^82.0.0
-    "@types/node": ^14.14.45
+    "@types/node": ^14.17.0
     "@types/node-fetch": ^2.5.10
     "@types/ramda": ^0.27.40
     "@types/whatwg-url": ^8.2.0
@@ -11516,8 +11549,8 @@ fsevents@~2.3.1:
     commander: ^7.2.0
     date-fns: ^2.21.3
     dotenv-cli: ^4.0.0
-    esbuild: ^0.12.0
-    eslint: ^7.26.0
+    esbuild: ^0.12.1
+    eslint: ^7.27.0
     eslint-config-prettier: ^8.3.0
     eslint-plugin-compat: ^3.9.0
     eslint-plugin-es: ^4.1.0
@@ -11526,7 +11559,7 @@ fsevents@~2.3.1:
     eslint-plugin-promise: ^5.1.0
     form-data: ^4.0.0
     gulp-babel: ^8.0.0
-    gulp-esbuild: ^0.7.7
+    gulp-esbuild: ^0.8.0
     gulp-mode: ^1.1.0
     linkedom: ^0.8.0
     node-fetch: ^2.6.1
@@ -13759,7 +13792,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lodash.merge@npm:^4.4.0":
+"lodash.merge@npm:^4.4.0, lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: 4e2bb42a87a148991458d7c384bc197e96f7115e9536fc8e2c86ae9e99ce1c1f693ff15eb85761952535f48d72253aed8e673d9f32dde3e671cd91e3fde220a7
@@ -16080,9 +16113,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.11.0":
-  version: 1.11.0
-  resolution: "playwright@npm:1.11.0"
+"playwright@npm:^1.11.1":
+  version: 1.11.1
+  resolution: "playwright@npm:1.11.1"
   dependencies:
     commander: ^6.1.0
     debug: ^4.1.1
@@ -16100,7 +16133,7 @@ fsevents@~2.3.1:
     yazl: ^2.5.1
   bin:
     playwright: lib/cli/cli.js
-  checksum: c9ba2a930e115c6b65e7bb5aeb6c0bd4851fc288b0073c3223c495b9fb100eb2d4debb4b1a4c76fce51cb71446ad76007b3b63b701153314c982a22670067dfd
+  checksum: 1446964b6ef8b4d7fafb45a38f9b992ee76e456e7072a7179f720cafb4204bce2e737a26929065778336450a598ec83c5fdd19d5199e6b42b4d075a5a930d931
   languageName: node
   linkType: hard
 
@@ -19859,7 +19892,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"table@npm:^6.0.4, table@npm:^6.6.0":
+"table@npm:^6.0.4, table@npm:^6.0.9, table@npm:^6.6.0":
   version: 6.7.1
   resolution: "table@npm:6.7.1"
   dependencies:
