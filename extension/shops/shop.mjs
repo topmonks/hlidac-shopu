@@ -1,8 +1,4 @@
 export class Shop {
-  scheduleRendering(render, cleanup) {
-    render();
-  }
-
   async scrape() {
     throw new Error("Method not implemented");
   }
@@ -18,6 +14,14 @@ export class Shop {
     elem.insertAdjacentElement(position, renderMarkup(extraStyles));
     return elem;
   }
+
+  async scheduleRendering({ render, cleanup, fetchData }) {
+    const info = await this.scrape();
+    if (!info) return;
+    const data = await fetchData(info);
+    if (!data) return;
+    render(false, data);
+  }
 }
 
 export class AsyncShop extends Shop {
@@ -32,8 +36,8 @@ export class AsyncShop extends Shop {
     throw new Error("Property not implemented");
   }
 
-  scheduleRendering(render, cleanup) {
-    const observer = new MutationObserver(() => {
+  async scheduleRendering({ render, cleanup, fetchData }) {
+    const observer = new MutationObserver(async () => {
       if (location.href !== this.lastHref) {
         this.loaded = false;
         this.lastHref = location.href;
@@ -45,21 +49,24 @@ export class AsyncShop extends Shop {
         cleanup();
         return;
       }
+      const info = await this.scrape();
+      if (!info) return;
+      const data = await fetchData(info);
+      if (!data) return;
       this.loaded = true;
-      render(!this.firstLoad).then(x => {
-        this.loaded = x;
-      });
+      this.loaded = render(!this.firstLoad, data);
       this.firstLoad = false;
     });
     // Start observing the target node for configured mutations
     observer.observe(document.body, { childList: true, subtree: true });
 
     if (!document.querySelector(this.waitForSelector)) return;
-
+    const info = await this.scrape();
+    if (!info) return;
+    const data = await fetchData(info);
+    if (!data) return;
+    this.loaded = render(false, data);
     this.firstLoad = false;
-    return render().then(x => {
-      this.loaded = x;
-    });
   }
 }
 
@@ -67,9 +74,11 @@ export class StatefulShop extends Shop {
   get detailSelector() {
     throw new Error("Property not implemented");
   }
+
   get observerTarget() {
-    throw new Error("Property not implemented");
+    return document.body;
   }
+
   shouldRender(mutations) {
     throw new Error("Method not implemented");
   }
@@ -84,16 +93,27 @@ export class StatefulShop extends Shop {
     );
   }
 
-  scheduleRendering(render, cleanup) {
-    new MutationObserver(mutations => {
-      if (this.shouldRender(mutations)) render();
+  async scheduleRendering({ render, cleanup, fetchData }) {
+    new MutationObserver(async mutations => {
       if (this.shouldCleanup(mutations)) cleanup();
+      if (this.shouldRender(mutations)) {
+        const info = await this.scrape();
+        if (!info) return;
+        const data = await fetchData(info);
+        if (!data) return;
+        render(false, data);
+      }
     }).observe(this.observerTarget, {
-      childList: true,
-      subtree: true
+      subtree: true,
+      childList: true
     });
 
     const elem = document.querySelector(this.detailSelector);
-    if (elem) render();
+    if (!elem) return;
+    const info = await this.scrape();
+    if (!info) return;
+    const data = await fetchData(info);
+    if (!data) return;
+    render(false, data);
   }
 }

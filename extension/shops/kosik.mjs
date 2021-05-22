@@ -17,10 +17,6 @@ export class Kosik extends StatefulShop {
     return "article[data-tid=product-detail]";
   }
 
-  get observerTarget() {
-    return document.body;
-  }
-
   shouldRender(mutations) {
     return didRenderDetail(mutations);
   }

@@ -10,10 +10,6 @@ export class Globus extends StatefulShop {
     return "#detail-container";
   }
 
-  get observerTarget() {
-    return document.body;
-  }
-
   shouldRender(mutations) {
     return this.didMutate(mutations, "addedNodes", "modal-backdrop");
   }

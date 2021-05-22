@@ -12,15 +12,25 @@ export class Notino extends Shop {
     return ["beforebegin", "a[class^='styled__StyledAddToWishlist']"];
   }
 
-  scheduleRendering(render, cleanup) {
+  async scheduleRendering({ render, cleanup, fetchData }) {
     const elem = document.getElementById("pd-price");
     if (!elem) return false;
-    render();
 
-    new MutationObserver(() => {
+    const info = await this.scrape();
+    if (!info) return;
+    const data = await fetchData(info);
+    if (!data) return;
+    render(false, data);
+
+    new MutationObserver(async () => {
       if (location.href === this.lastHref) return;
       this.lastHref = location.href;
-      render(true);
+
+      const info = await this.scrape();
+      if (!info) return;
+      const data = await fetchData(info);
+      if (!data) return;
+      render(true, data);
     }).observe(document.body, {
       childList: true,
       subtree: true

@@ -14,10 +14,6 @@ export class Tesco extends StatefulShop {
     return ".product-details-page";
   }
 
-  get observerTarget() {
-    return document.body;
-  }
-
   shouldRender(mutations) {
     return didRenderDetail(mutations);
   }

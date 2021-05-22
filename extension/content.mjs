@@ -68,61 +68,52 @@ function injectFont() {
 }
 
 function handleDetail(shop) {
-  shop.scheduleRendering(
-    async repaint => {
+  return shop.scheduleRendering({
+    async fetchData(info) {
+      const url = info.url ?? location.href;
+      const res = await fetchData(url, info);
+      if (res.error || res.metadata?.error) {
+        console.error("Hlídačshopů.cz - Error fetching data: ", res.error || res.metadata.error);
+        return null;
+      }
+      if (!res.data || res.data.length === 0) {
+        console.error("Hlídačshopů.cz - No data found:", res);
+        return null;
+      }
+      return { url, info, metadata: res.metadata, dataset: res.data };
+    },
+    render(repaint, { url, info, metadata, dataset }) {
       try {
-        const info = await shop.scrape();
-        if (!info) {
-          // we don't understand this page
-          return false;
-        }
-
-        const url = info.url || location.href;
-        const res = await fetchData(url, info);
-        if (res.error || (res.metadata && res.metadata.error)) {
-          console.error(
-            "Error fetching data: ",
-            res.error || res.metadata.error
-          );
-          return false;
-        }
-        if (!res.data || res.data.length === 0) {
-          console.error("No data found:", res);
-          return false;
-        }
-
         const { itemId } = info;
-        console.log(`Chart loaded for ItemID: ${itemId}`);
-        console.log({ info, metadata: res.metadata, dataset: res.data });
-
-        renderHTML(repaint, shop, res.data, res.metadata);
-
+        console.log(`Hlídačshopů.cz - Chart loaded for ItemID: ${itemId}`);
+        console.log("Hlídačshopů.cz - Render:",{ info, metadata, dataset });
+        renderHTML(repaint, shop, dataset, metadata);
         const params = new URLSearchParams({ url, itemId, debug: 1 });
-        console.log(`https://www.hlidacshopu.cz/app/?${params}`);
+        console.log(`Hlídačshopů.cz - Debug URL: https://www.hlidacshopu.cz/app/?${params}`);
         return true;
       } catch (e) {
         console.error(e);
         return false;
       }
     },
-    () => {
+    cleanup() {
       renderRoot.remove();
       if (chart) chart.destroy();
       shop.loaded = false;
     }
-  );
+  });
 }
 
 async function main() {
-  console.log(`Hlídačshopů.cz version: %c${getVersion()}`, "font-weight: 700");
+  console.log(`Hlídačshopů.cz - Version: %c${getVersion()}`, "font-weight: 700");
   const shop = getShop(location.href);
   if (!shop) {
-    console.log("No shop found");
+    console.log("Hlídačshopů.cz - No shop found");
     console.groupEnd();
     return;
   }
   injectFont();
-  handleDetail(shop);
+  await handleDetail(shop);
 }
 
 main().catch(err => console.error(err));
