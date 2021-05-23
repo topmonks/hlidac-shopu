@@ -3,22 +3,25 @@ import { Shop } from "./shop.mjs";
 
 export class Lekarna extends Shop {
   get injectionPoint() {
-    return ["afterend", ".product-detail-box"];
+    return [
+      "afterend",
+      `[itemprop=offers]`
+    ];
   }
 
   async scrape() {
-    const elem = document.querySelector(".detail-top");
-    if (!elem) return;
+    const elem = document.querySelector("[itemtype='https://schema.org/Product']");
+    if (!elem) return null;
 
-    const itemId = document
-      .querySelector(".product__code span")
-      .textContent.trim();
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = document
+    const itemId = elem
+      .querySelector("[itemprop=sku]")
+      ?.textContent.trim();
+    const title = elem.querySelector("[itemprop=name]")?.textContent.trim();
+    const currentPrice = elem
       .querySelector("[itemprop=price]")
-      .getAttribute("content");
-    const originalPrice = cleanPrice(".price__old");
-    const imageUrl = document.querySelector(".product__img img").src;
+      ?.getAttribute("content");
+    const originalPrice = cleanPrice("[itemprop=offers] .line-through");
+    const imageUrl = document.querySelector("[property='og:image']")?.content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

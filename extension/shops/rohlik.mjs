@@ -8,9 +8,7 @@ import { StatefulShop } from "./shop.mjs";
 
 const didRenderDetail = mutations =>
   mutations.find(x =>
-    Array.from(x.addedNodes).find(
-      y => y.id === "productDetail" || y.innerHTML.indexOf("productDetail") > 0
-    )
+    Array.from(x.addedNodes).find(y => y.id === "productDetail")
   );
 
 export class Rohlik extends StatefulShop {
@@ -36,13 +34,13 @@ export class Rohlik extends StatefulShop {
 
   async scrape() {
     const elem = document.querySelector("#productDetail");
-    if (!elem) return;
+    if (!elem) return null;
 
     const originalPrice = isUnitPrice("#productDetail del")
       ? cleanUnitPrice(
-        "#productDetail del",
-        cleanPrice("#productDetail .detailQuantity")
-      )
+          "#productDetail del",
+          cleanPrice("#productDetail .detailQuantity")
+        )
       : cleanPrice("#productDetail del");
 
     const jsonld = elem.querySelector('script[type="application/ld+json"]');
@@ -73,6 +71,7 @@ export class Rohlik extends StatefulShop {
     const imageUrl = document.querySelector(
       "[data-gtm-item=product-image] img"
     ).src;
+    
     return { itemId, title: t, currentPrice, originalPrice, imageUrl };
   }
 }

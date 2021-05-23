@@ -44,7 +44,7 @@ export class AAAAuto extends Shop {
   }
 
   inject(renderMarkup) {
-    let elem = document.querySelector(".sidebar .infoBox .bonusText");
+    let elem = document.querySelector("#testdrive-button");
     if (elem) {
       const markup = renderMarkup();
       elem.insertAdjacentElement("afterend", markup);

@@ -8,23 +8,24 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const pathToExtension = path.resolve(__dirname, "../extension");
 
 const urlSet = [
-  "https://www.aaaauto.cz/cz/mercedes-c/car.html?id=357661795#make=75&promo=gp",
+  "https://www.aaaauto.cz/cz/skoda-kodiaq/car.html?id=385818170#category=45&promo=gm",
   "https://www.alza.cz/trhakdne",
   "https://www.alza.cz/screenshield-motorola-moto-g7-power-xt1955-4-na-displej-d5600645.htm",
   "https://m.alza.sk/intel-core-i7-9700-d5632692.htm",
   "https://www.alza.sk/wd-black-sn750-nvme-ssd-1tb-d5534244.htm",
   "https://www.benu.cz/cemio-metric-308-smart-bezkontaktni-teplomer-cr-sk",
   "https://www.czc.cz/samsung-qe75q800t-189cm/283241a/produkt",
-  "https://www.datart.cz/realme-7-dualsim-8-128gb-gsm-tel-mist-white-rmx2155wh8.html",
-  "https://www.datart.sk/televizor-lg-55nano86-cierna.html",
+  "https://www.czc.cz/max-vysuvny-polohovatelny-drzak-mtm9335t-pro-tv-37-70-cerna/309098/produkt",
+  "https://www.datart.cz/iphone-11-64gb-white-mwlu2cn-a.html",
+  "https://www.datart.sk/iphone-11-64gb-black-mwlt2cn-a.html",
   "https://www.kasa.cz/televize-samsung-qe65q77ta-stribrna/",
   "https://www.kosik.cz/produkt/vitalbite-polomekke-krouzky-pro-dospele-psy-bohate-na-hovezi",
   "https://www.lekarna.cz/vibovit-imunity-jelly-50/",
   "https://www.mall.cz/reproduktory-tablety/lamax-sentinel2",
   "https://www.mall.sk/elektricke-panvice/remoska-r-21-original-teflon-classic",
-  "https://www.mironet.cz/hp-pavilion-15bc501nc-cerna-156quot-fhd-intel-core-i59300h-24ghz-8gb-1tb128gb-ssd-geforce-gtx-1050-3gb-w10+dp398400/",
-  "https://www.mountfield.cz/solarni-sprcha-easy-3bpz0140",
-  "https://www.mountfield.sk/benzinova-motorova-pila-patriot-bp-41-1pil2072",
+  "https://www.mironet.cz/ps5-dualsense-wireless-controller-cervena+dp476176/",
+  "https://www.mountfield.cz/zahradni-traktor-mtf-1430-m-1tkk0115",
+  "https://www.mountfield.sk/bazen-azuro-vario-v1-kruhove-teleso-3bna1173",
   "https://www.notino.cz/yves-saint-laurent/la-nuit-de-lhomme-eau-electrique-toaletni-voda-pro-muze/p-650890/",
   "https://www.notino.sk/hugo-boss/boss-no6-bottled-toaletna-voda-pre-muzov/p-63109/",
   "https://www.okay.cz/mobilni-telefon-vivax-fly-5-lite-3gb-32gb-modra-2/",
@@ -36,7 +37,7 @@ const urlSet = [
   "https://www.sleky.cz/gs-echinacea-forte-600-tbl-70-20-zdarma",
   "https://nakup.itesco.cz/groceries/en-GB/products/2001019467158",
   "https://potravinydomov.itesco.sk/groceries/en-GB/products/2002006194330",
-  "https://www.tsbohemia.cz/elektricke-auto-mini-cooper-cabrio_d287643.html"
+  "https://www.tsbohemia.cz/concept-zk4000_d367355.html"
 ];
 
 function getFilePath(screenshotsDir, url) {

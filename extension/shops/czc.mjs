@@ -8,11 +8,12 @@ export class CZC extends Shop {
 
   async scrape() {
     const elem = document.querySelector(".product-detail");
-    if (!elem) return;
+    if (!elem) return null;
     const itemId = elem.dataset.productCode.replace("a", "");
     const title = document.querySelector("h1").getAttribute("title");
-    const currentPrice = cleanPrice(".price .price-vatin");
-    const originalPrice = cleanPrice(".price-before .price-vatin");
+    const currentPrice = cleanPrice(".pd-info .price .price-vatin");
+    if (!currentPrice) return null;
+    const originalPrice = cleanPrice(".pd-info .price-before .price-vatin");
     const imageUrl = document.querySelector("meta[itemprop=image]").content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
