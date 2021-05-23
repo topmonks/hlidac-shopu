@@ -71,7 +71,7 @@ export class Rohlik extends StatefulShop {
     const imageUrl = document.querySelector(
       "[data-gtm-item=product-image] img"
     ).src;
-    
+
     return { itemId, title: t, currentPrice, originalPrice, imageUrl };
   }
 }
