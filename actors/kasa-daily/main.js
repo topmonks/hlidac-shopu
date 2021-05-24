@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  s3FileName,
+  uploadToS3,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 
 const { log } = Apify.utils;
@@ -9,6 +20,20 @@ const akce = "akce";
 const aktuality = "aktuality";
 const bazar = "bazar";
 const LAST_CATEGORY = "LAST_CATEGORY";
+const processedIds = new Set();
+
+function parseAvailability(availability) {
+  switch (availability) {
+    case "not-available":
+      return false;
+    case "available supplier":
+      return false;
+    case "date-available":
+      return false;
+    default:
+      return true;
+  }
+}
 
 async function extractItems($, $products, breadcrum) {
   const itemsArray = [];
@@ -29,7 +54,9 @@ async function extractItems($, $products, breadcrum) {
       const $actualPriceSpan = $item.find("p.main-price");
       const $oldPriceSpan = $item.find("div.before-price span.text-strike");
       const $itemImgUrl = $item.find(".product-box-thumb img");
-
+      result.inStock = parseAvailability(
+        $item.find("div.availability span").first().attr("class")
+      );
       if ($oldPriceSpan.length > 0) {
         result.originalPrice = parseFloat(
           $oldPriceSpan.text().replace("Kč", "").replace(" ", "").trim()
@@ -72,8 +99,37 @@ async function handleProducts($, request) {
     try {
       const products = await extractItems($, $products, breadCrums);
       log.info(`Found ${products.length} products`);
-      await Apify.pushData(products);
+
+      // we don't need to block pushes, we will await them all at the end
+      const requests = [];
+
+      // push only unique items
+      const unprocessedProducts = products.filter(
+        x => !processedIds.has(x.itemId)
+      );
+
+      for (const detail of unprocessedProducts) {
+        const s3item = detail;
+        //Keboola data structure fix
+        delete detail.inStock;
+        requests.push(
+          uploadToS3(
+            s3,
+            "kasa.cz",
+            await s3FileName(detail),
+            "jsonld",
+            toProduct(s3item, { priceCurrency: "CZK" })
+          ),
+          Apify.pushData(detail)
+        );
+        // remember processed product IDs
+        processedIds.add(detail.itemId);
+      }
+
+      // await all requests, so we don't end before they end
+      await Promise.all(requests);
     } catch (e) {
+      console.error(e);
       console.log(`Failed extraction of items. ${request.url}`);
     }
   }
@@ -112,6 +168,9 @@ async function handleCategories($, categories, requestQueue) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
   const {
     development = false,
@@ -145,7 +204,6 @@ Apify.main(async () => {
       }
     });
   }
-
   // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
@@ -228,35 +286,17 @@ Apify.main(async () => {
       log.info(`Request ${request.url} failed 10 times`);
     }
   });
-  // Run crawler.
+
+  log.info("Starting the crawl.");
   await crawler.run();
+  log.info("Crawl finished.");
 
-  log.info("crawler finished");
-
-  // Run crawler.
-  await crawler.run();
-
-  console.log("crawler finished");
-  /*
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: type !== "FULL",
-        tableName: type !== "FULL" ? "kasa_bf" : "kasacz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kasa.cz");
+    log.info("invalidated Data CDN");
+    await uploadToKeboola(type !== "FULL" ? "kasa_bf" : "kasacz");
+    log.info("upload to Keboola finished");
   }
-*/
+
   console.log("Finished.");
 });
