@@ -8,6 +8,7 @@ const { CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
 /**
  *
  * @param detail
+ * @param priceCurrency
  * @param additionalData
  * @returns {Product}
  */
@@ -25,7 +26,9 @@ const toProduct = (detail, { priceCurrency, ...additionalData }) => ({
       detail.inStock ? "InStock" : "OutOfStock"
     }`,
     price: detail.currentPrice,
-    priceCurrency: currencyToISO4217(detail.currency) ?? priceCurrency
+    priceCurrency: detail.currency
+      ? currencyToISO4217(detail.currency)
+      : priceCurrency
   },
   ...additionalData
 });
