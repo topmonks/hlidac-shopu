@@ -152,7 +152,7 @@ async function processItem(item) {
     await uploadToS3(
       s3,
       `e-coop.cz`,
-      item.itemId,
+      await s3FileName(product),
       "jsonld",
       toProduct(product, { priceCurrency: "CZK" })
     );
