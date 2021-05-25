@@ -168,12 +168,13 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     development = false,
+    debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
-  if (development) {
+  if (development || debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
