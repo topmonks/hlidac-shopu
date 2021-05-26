@@ -225,13 +225,16 @@ Apify.main(async () => {
             const img =
               imgElem.length !== 0 ? `https:${imgElem.attr("src")}` : null;
             const link = linkElem.length !== 0 ? linkElem.attr("href") : null;
-            const id = idElem.length !== 0 ? idElem.text().trim() : null;
+            const id =
+              idElem.length !== 0
+                ? idElem.text().trim().replace("Kód: ", "")
+                : null;
             const name = linkElem.length !== 0 ? linkElem.text().trim() : null;
             const price =
               priceElem.length !== 0 ? priceElem.text().trim() : false;
             const dataItem = {
               img,
-              itemId: id.match(/\d+/)[0],
+              itemId: id,
               itemUrl: `${WEB}${link}`,
               itemName: name,
               discounted: !!oPriceElem,
