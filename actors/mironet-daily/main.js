@@ -64,7 +64,9 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
-  console.log(type);
+  if (development || debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
   // Open request queue and add statrUrl
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
@@ -176,43 +178,45 @@ Apify.main(async () => {
         request.userData.label === "page" ||
         request.userData.label === "pages"
       ) {
-        if (request.userData.label === "page") {
-          let pageNum = 0;
-          $("a.PageNew").each(function () {
-            pageNum =
-              pageNum < parseInt($(this).text().trim())
-                ? parseInt($(this).text().trim())
-                : pageNum;
-            // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
-          });
-          if (pageNum > 0) {
-            log.info(`Found ${pageNum} pages on ${request.url}`);
-            const { baseUrl } = request.userData;
-            const url = baseUrl.includes("?")
-              ? `${baseUrl}&PgID=`
-              : `${baseUrl}?PgID=`;
-            for (let i = 2; i <= pageNum; i++) {
-              await requestQueue.addRequest(
-                new Apify.Request({
-                  userData: {
-                    label: "pages",
-                    baseUrl: request.userData.baseUrl
-                  },
-                  url: `${url}${i}`
-                })
-              );
+        try {
+          if (request.userData.label === "page") {
+            let pageNum = 0;
+            $("a.PageNew").each(function () {
+              pageNum =
+                pageNum < parseInt($(this).text().trim())
+                  ? parseInt($(this).text().trim())
+                  : pageNum;
+              // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
+            });
+            if (pageNum > 0) {
+              log.info(`Found ${pageNum} pages on ${request.url}`);
+              const { baseUrl } = request.userData;
+              const url = baseUrl.includes("?")
+                ? `${baseUrl}&PgID=`
+                : `${baseUrl}?PgID=`;
+              for (let i = 2; i <= pageNum; i++) {
+                await requestQueue.addRequest(
+                  new Apify.Request({
+                    userData: {
+                      label: "pages",
+                      baseUrl: request.userData.baseUrl
+                    },
+                    url: `${url}${i}`
+                  })
+                );
+              }
             }
           }
-        }
-        const breadCrumbs = [];
-        $("div#displaypath > a.CatParent").each(function () {
-          breadCrumbs.push($(this).text().trim());
-        });
-        // Iterate all products and extract data
-        const results = [];
-        $(".item_b").each(function () {
-          const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
-          try {
+          const breadCrumbs = [];
+          $("div#displaypath > a.CatParent").each(function () {
+            breadCrumbs.push($(this).text().trim());
+          });
+          // Iterate all products and extract data
+          const results = [];
+          $(".item_b").each(function () {
+            const toNumber = p =>
+              parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
+
             const idElem = $(this).find(".item_kod");
             const linkElem = $(this).find(".nazev a");
             const priceElem = $(this).find(".item_cena");
@@ -243,14 +247,16 @@ Apify.main(async () => {
 
             // Save data to dataset
             results.push(dataItem);
-          } catch (e) {
-            log.error(e);
-          }
-        });
-        log.info(
-          `Found ${results.length}  items, storing them. ${request.url}`
-        );
-        await Apify.pushData(results);
+          });
+          log.info(
+            `Found ${results.length}  items, storing them. ${request.url}`
+          );
+          await Apify.pushData(results);
+        } catch (e) {
+          log.error(e);
+          console.log(`Failed extraction of items. ${request.url}`);
+          console.error(e);
+        }
       }
     },
     // If request failed 4 times then this function is executed
