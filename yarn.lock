@@ -2635,6 +2635,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@types/node": ^14.17.0
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
