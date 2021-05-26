@@ -228,9 +228,7 @@ Apify.main(async () => {
             const id = idElem.length !== 0 ? idElem.text().trim() : null;
             const name = linkElem.length !== 0 ? linkElem.text().trim() : null;
             const price =
-              priceElem.length !== 0
-                ? priceElem.text().trim()
-                : "Price not defined.";
+              priceElem.length !== 0 ? priceElem.text().trim() : false;
             const dataItem = {
               img,
               itemId: id.match(/\d+/)[0],
