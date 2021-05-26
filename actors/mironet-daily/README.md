@@ -4,6 +4,9 @@
 
 ```json
 {
-  "development": false
+  "development": true,
+  "maxRequestRetries": 3,
+  "maxConcurrency": 10,
+  "type": "FULL"
 }
 ```

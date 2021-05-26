@@ -13,9 +13,9 @@ const BF = "BF";
 const WEB = "https://www.mironet.cz";
 const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
 
-async function enqueueRequests(requestQueue, items, foreFront = false) {
+async function enqueueRequests(requestQueue, items) {
   for (const item of items) {
-    await requestQueue.addRequest(item, { foreFront });
+    await requestQueue.addRequest(item);
   }
 }
 
@@ -54,7 +54,17 @@ async function enqueueAllCategories(requestQueue) {
 
 /** Main function */
 Apify.main(async () => {
-  const { type, test } = await Apify.getValue("INPUT");
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    country = "cz",
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
+  console.log(type);
   // Open request queue and add statrUrl
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
@@ -77,12 +87,18 @@ Apify.main(async () => {
         }); */
   }
 
+  /** @type {ProxyConfiguration} */
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
+
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 10,
-    useApifyProxy: true,
-    apifyProxyGroups: ["CZECH_LUMINATI"],
+    proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
     // Activates the Session pool.
     useSessionPool: true,
     // Overrides default Session pool configuration.
@@ -247,7 +263,7 @@ Apify.main(async () => {
   await crawler.run();
 
   // calling the keboola upload
-  if (!test) {
+  if (!development) {
     try {
       const env = await Apify.getEnv();
       const run = await Apify.call(
