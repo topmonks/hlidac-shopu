@@ -4,6 +4,8 @@ const zlib = require("zlib");
 
 const { log, requestAsBrowser } = Apify.utils;
 const BF = "BF";
+let stats = {};
+const processedIds = new Set();
 
 /**
  * Gets attribute as text from a ElementHandle.
@@ -55,6 +57,13 @@ async function enqueueAllCategories(requestQueue) {
 /** Main function */
 Apify.main(async () => {
   const input = await Apify.getInput();
+  stats = (await Apify.getValue("STATS")) || {
+    urls: 0,
+    pages: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
   const {
     development = false,
     debug = false,
@@ -89,11 +98,18 @@ Apify.main(async () => {
         }); */
   }
 
+  log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
+
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
 
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
@@ -158,6 +174,7 @@ Apify.main(async () => {
               }
             });
           });
+          stats.urls += pages.length;
           log.info(`Found ${pages.length} valid urls by ${request.url}`);
           await enqueueRequests(requestQueue, pages, false);
         } else {
@@ -189,6 +206,7 @@ Apify.main(async () => {
               // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
             });
             if (pageNum > 0) {
+              stats.pages += pageNum;
               log.info(`Found ${pageNum} pages on ${request.url}`);
               const { baseUrl } = request.userData;
               const url = baseUrl.includes("?")
@@ -245,15 +263,21 @@ Apify.main(async () => {
               const oPrice = oPriceElem.text().trim();
               dataItem.originalPrice = toNumber(oPrice);
             }
-
             // Save data to dataset
-            results.push(dataItem);
+            if (!processedIds.has(dataItem.itemId)) {
+              processedIds.add(dataItem.itemId);
+              results.push(dataItem);
+            } else {
+              stats.itemsDuplicity++;
+            }
           });
+          stats.items += results.length;
           log.info(
             `Found ${results.length}  items, storing them. ${request.url}`
           );
           await Apify.pushData(results);
         } catch (e) {
+          stats.failed++;
           log.error(e);
           console.log(`Failed extraction of items. ${request.url}`);
           console.error(e);
