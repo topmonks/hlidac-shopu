@@ -45,6 +45,7 @@ async function enqueueAllCategories(requestQueue) {
   const stream = await requestAsBrowser({ url: SITEMAP_URL, stream: true });
   const buffer = await streamToBuffer(stream);
   const xmlString = zlib.unzipSync(buffer).toString();
+  console.log(xmlString);
   const $ = cheerio.load(xmlString, { xmlMode: true });
   const categoryUrls = [];
 
@@ -60,7 +61,6 @@ async function enqueueAllCategories(requestQueue) {
       }
     });
   });
-
   await enqueueRequests(requestQueue, categoryUrls);
   log.info(`Enqueued ${categoryUrls.length} categories`);
 }
