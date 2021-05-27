@@ -27,12 +27,12 @@ const WEB = "https://www.mironet.cz";
 const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
 
 async function enqueueRequests(requestQueue, items) {
-  console.log("enqueueRequests");
-  console.log(items.length);
+  log.info(
+    `Waiting for ${items.length} categories add to request queue. It will takes some time.`
+  );
   for (const item of items) {
     await requestQueue.addRequest(item);
   }
-  console.log("i am for for");
 }
 
 async function streamToBuffer(stream) {
@@ -62,9 +62,7 @@ async function enqueueAllCategories(requestQueue) {
       }
     });
   });
-  console.log("before enqueueRequests");
   await enqueueRequests(requestQueue, categoryUrls);
-  console.log("after enqueueRequests");
   log.info(`Enqueued ${categoryUrls.length} categories`);
 }
 
@@ -80,7 +78,6 @@ Apify.main(async () => {
     itemsDuplicity: 0,
     failed: 0
   };
-  console.log("init stats " + JSON.stringify(stats));
   const {
     development = false,
     debug = false,
