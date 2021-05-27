@@ -244,16 +244,16 @@ Apify.main(async () => {
           });
           // we don't need to block pushes, we will await them all at the end
           const requests = [];
-          const results = [];
-          $(".item_b").each(async function () {
+          const rawItems = $(".item_b").toArray();
+          for (const item of rawItems) {
             const toNumber = p =>
               parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
 
-            const idElem = $(this).find(".item_kod");
-            const linkElem = $(this).find(".nazev a");
-            const priceElem = $(this).find(".item_cena");
-            const imgElem = $(this).find(".item_obr img");
-            const oPriceElem = $(this).find(".item_s_cena span");
+            const idElem = $(item).find(".item_kod");
+            const linkElem = $(item).find(".nazev a");
+            const priceElem = $(item).find(".item_cena");
+            const imgElem = $(item).find(".item_obr img");
+            const oPriceElem = $(item).find(".item_s_cena span");
             const img =
               imgElem.length !== 0 ? `https:${imgElem.attr("src")}` : null;
             const link = linkElem.length !== 0 ? linkElem.attr("href") : null;
@@ -280,7 +280,6 @@ Apify.main(async () => {
             // Save data to dataset
             if (!processedIds.has(dataItem.itemId)) {
               processedIds.add(dataItem.itemId);
-              results.push(dataItem);
               requests.push(
                 Apify.pushData(dataItem),
                 uploadToS3(
@@ -301,10 +300,10 @@ Apify.main(async () => {
             } else {
               stats.itemsDuplicity++;
             }
-          });
-          stats.items += results.length;
+          }
+          stats.items += requests.length;
           log.info(
-            `Found ${results.length} items, storing them. ${request.url}`
+            `Found ${requests.length} items, storing them. ${request.url}`
           );
           // await all requests, so we don't end before they end
           await Promise.all(requests);
