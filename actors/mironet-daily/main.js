@@ -28,9 +28,11 @@ const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
 
 async function enqueueRequests(requestQueue, items) {
   console.log("enqueueRequests");
+  console.log(items.length);
   for (const item of items) {
     await requestQueue.addRequest(item);
   }
+  console.log("i am for for");
 }
 
 async function streamToBuffer(stream) {
@@ -52,7 +54,6 @@ async function enqueueAllCategories(requestQueue) {
   // Pick all urls from sitemap
   $("url").each(function () {
     const url = $(this).find("loc").text().trim();
-    console.log(url);
     categoryUrls.push({
       url,
       userData: {
@@ -62,7 +63,6 @@ async function enqueueAllCategories(requestQueue) {
     });
   });
   console.log("before enqueueRequests");
-  console.log(categoryUrls);
   await enqueueRequests(requestQueue, categoryUrls);
   console.log("after enqueueRequests");
   log.info(`Enqueued ${categoryUrls.length} categories`);
