@@ -27,6 +27,7 @@ const WEB = "https://www.mironet.cz";
 const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
 
 async function enqueueRequests(requestQueue, items) {
+  console.log("enqueueRequests");
   for (const item of items) {
     await requestQueue.addRequest(item);
   }
@@ -45,14 +46,13 @@ async function enqueueAllCategories(requestQueue) {
   const stream = await requestAsBrowser({ url: SITEMAP_URL, stream: true });
   const buffer = await streamToBuffer(stream);
   const xmlString = zlib.unzipSync(buffer).toString();
-  console.log(xmlString);
   const $ = cheerio.load(xmlString, { xmlMode: true });
   const categoryUrls = [];
 
   // Pick all urls from sitemap
   $("url").each(function () {
     const url = $(this).find("loc").text().trim();
-
+    console.log(url);
     categoryUrls.push({
       url,
       userData: {
@@ -61,7 +61,10 @@ async function enqueueAllCategories(requestQueue) {
       }
     });
   });
+  console.log("before enqueueRequests");
+  console.log(categoryUrls);
   await enqueueRequests(requestQueue, categoryUrls);
+  console.log("after enqueueRequests");
   log.info(`Enqueued ${categoryUrls.length} categories`);
 }
 
@@ -77,6 +80,7 @@ Apify.main(async () => {
     itemsDuplicity: 0,
     failed: 0
   };
+  console.log("init stats " + JSON.stringify(stats));
   const {
     development = false,
     debug = false,
