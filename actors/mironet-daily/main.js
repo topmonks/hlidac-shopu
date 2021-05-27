@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName,
+  invalidateCDN
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
 const zlib = require("zlib");
@@ -56,6 +67,8 @@ async function enqueueAllCategories(requestQueue) {
 
 /** Main function */
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   stats = (await Apify.getValue("STATS")) || {
     urls: 0,
@@ -89,13 +102,13 @@ Apify.main(async () => {
     await enqueueAllCategories(requestQueue);
 
     // for testing of single page
-    /* await requestQueue.addRequest({
-            url: 'https://www.mironet.cz/pameti-ram/do-pocitace-dimm/ddr4/16-gb+c32624/',
-            userData: {
-                label: 'page',
-                baseUrl: 'https://www.mironet.cz/pameti-ram/do-pocitace-dimm/ddr4/16-gb+c32624/',
-            },
-        }); */
+    /*await requestQueue.addRequest({
+      url: "https://www.mironet.cz/graficke-karty+c14402/",
+      userData: {
+        label: "page",
+        baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
+      }
+    });*/
   }
 
   log.info("ACTOR - setUp crawler");
@@ -229,9 +242,10 @@ Apify.main(async () => {
           $("div#displaypath > a.CatParent").each(function () {
             breadCrumbs.push($(this).text().trim());
           });
-          // Iterate all products and extract data
+          // we don't need to block pushes, we will await them all at the end
+          const requests = [];
           const results = [];
-          $(".item_b").each(function () {
+          $(".item_b").each(async function () {
             const toNumber = p =>
               parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
 
@@ -267,15 +281,33 @@ Apify.main(async () => {
             if (!processedIds.has(dataItem.itemId)) {
               processedIds.add(dataItem.itemId);
               results.push(dataItem);
+              requests.push(
+                Apify.pushData(dataItem),
+                uploadToS3(
+                  s3,
+                  "mironet.cz",
+                  await s3FileName(dataItem),
+                  "jsonld",
+                  toProduct(
+                    {
+                      ...dataItem,
+                      category: dataItem.breadCrumbs.join(" > "),
+                      inStock: true
+                    },
+                    { priceCurrency: "CZK" }
+                  )
+                )
+              );
             } else {
               stats.itemsDuplicity++;
             }
           });
           stats.items += results.length;
           log.info(
-            `Found ${results.length}  items, storing them. ${request.url}`
+            `Found ${results.length} items, storing them. ${request.url}`
           );
-          await Apify.pushData(results);
+          // await all requests, so we don't end before they end
+          await Promise.all(requests);
         } catch (e) {
           stats.failed++;
           log.error(e);
@@ -290,48 +322,17 @@ Apify.main(async () => {
     }
   });
 
+  log.info("ACTOR - run crawler");
   // Run crawler
   await crawler.run();
-
-  // calling the keboola upload
+  log.info("ACTOR - crawler end");
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
   if (!development) {
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: type !== "FULL",
-          tableName: type !== "FULL" ? "mironet_bf" : "mironet"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      log.info(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      log.error(e);
-    }
-    // stats page
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          name: type !== "FULL" ? "mironet-black-friday" : "mironet-scraper"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      log.info(`Status page called: ${run.id}`);
-    } catch (e) {
-      log.error(e);
-    }
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "mironet.cz");
+    log.info("invalidated Data CDN");
+    await uploadToKeboola(type !== "FULL" ? "mironet_bf" : "mironet");
+    log.info("upload to Keboola finished");
   }
-
-  log.info("Finished.");
+  log.info("ACTOR - Finished");
 });
