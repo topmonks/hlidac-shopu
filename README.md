@@ -44,7 +44,7 @@ On macOS run `bash ./scripts/install-macos-tools.sh` - this will use homebrew to
 
 ## Step by step build of extension for reviewers
 
-Make sure your system meets all prerequisites. See previous section.
+Make sure your system meets [all prerequisites](#prerequisites). **See previous section.**
 
 ```
 nvm install $(< .nvmrc)
