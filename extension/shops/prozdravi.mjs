@@ -19,8 +19,9 @@ export class Prozdravi extends Shop {
     const { value: currentPrice } = JSON.parse(
       masterData.querySelector("input[name=price]").value
     );
-    const imageUrl = document.querySelector("meta[property='og:image']")
-      .content;
+    const imageUrl = document.querySelector(
+      "meta[property='og:image']"
+    ).content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

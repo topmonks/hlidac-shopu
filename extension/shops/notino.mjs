@@ -57,8 +57,9 @@ export class Notino extends Shop {
     const originalPrice = cleanPrice(
       "[class^='styled__DiscountWrapper'] span[content]"
     );
-    const imageUrl = document.querySelector("[class^='styled__ImgWrapper'] img")
-      .src;
+    const imageUrl = document.querySelector(
+      "[class^='styled__ImgWrapper'] img"
+    ).src;
     let itemId = (() => {
       const match = window.location.pathname.match(/\/p-(\d+)\//);
       return match ? match[1] : null;

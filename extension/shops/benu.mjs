@@ -18,8 +18,9 @@ export class Benu extends Shop {
     const itemId = richSnippet.identifier;
     const currentPrice = cleanPrice(".buy strong.buy-box__big-price");
     const originalPrice = cleanPrice(".buy .buy-box__price-head del");
-    const imageUrl = document.querySelector("meta[property='og:image']")
-      .content;
+    const imageUrl = document.querySelector(
+      "meta[property='og:image']"
+    ).content;
 
     return { title, itemId, currentPrice, originalPrice, imageUrl };
   }
