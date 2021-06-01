@@ -119,4 +119,4 @@ folder.
 
 ---
 
-© 2018-2020 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
+© 2018-2021 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
