@@ -7,6 +7,7 @@ const BF = "BF";
 const web = "https://www.lekarna.cz";
 const SITEMAP_URL = "https://www.lekarna.cz/sitemap.xml";
 const SITEMAP_CATEGORY_URL = "https://www.lekarna.cz/feed/sitemap/category";
+let stats = {};
 
 async function enqueueRequests(requestQueue, items) {
   log.info(
@@ -79,6 +80,7 @@ async function enqueueAllCategories(requestQueue) {
         baseUrl: url
       }
     });
+    stats.urls++;
   });
   await enqueueRequests(requestQueue, categoryUrls);
   log.info(`Enqueued ${categoryUrls.length} categories`);
@@ -136,6 +138,7 @@ async function extractItems($, $products, breadCrumbs) {
       itemsArray.push(result);
     } else {
       log.info(`Skipp non price product [${name}]`);
+      stats.itemsSkipped++;
     }
   });
   return itemsArray;
@@ -152,6 +155,7 @@ async function handleSubCategory($, requestQueue, request) {
         category: request.url
       }
     });
+    stats.pages++;
   }
   //Continue, if this isn't last subcategory
 }
@@ -178,6 +182,7 @@ async function handleProducts($, request, requestQueue) {
         breadCrumbs = "";
       }
       const products = await extractItems($, itemListElements, breadCrumbs);
+      stats.items += products.length;
       console.log(`Found ${products.length} products`);
       await Apify.pushData(products);
     } catch (e) {
@@ -197,6 +202,19 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
+
+  stats = (await Apify.getValue("STATS")) || {
+    urls: 0,
+    pages: 0,
+    items: 0,
+    itemsSkipped: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+
+  if (development || debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
     await requestQueue.addRequest({
@@ -219,6 +237,12 @@ Apify.main(async () => {
      */
   }
 
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
@@ -233,32 +257,7 @@ Apify.main(async () => {
     maxRequestRetries,
     maxConcurrency,
     handlePageFunction: async ({ $, request }) => {
-      console.log(request.userData.label);
-      if (request.userData.label === "START") {
-        console.log("START scrapping Lekarna.cz");
-        const mainCategories = [];
-        $(".menu-items-level-1 > li > a").each(function () {
-          if (!$(this).hasClass("menu-item-orange")) {
-            const $link = $(this).attr("href");
-            let url = `${web}${$(this).attr("href")}`;
-            if ($link.includes("https")) {
-              url = $link;
-            }
-            mainCategories.push({
-              url,
-              userData: {
-                label: "MAIN_CATEGORY",
-                mainCategory: $(this).text().trim()
-              }
-            });
-          }
-        });
-        console.log(`Found ${mainCategories.length} mainCategories.`);
-        await enqueueRequests(requestQueue, mainCategories);
-      } else if (request.userData.label === "MAIN_CATEGORY") {
-        console.log(`START with main category ${request.url}`);
-        await handleSubCategory($, requestQueue, request);
-      } else if (request.userData.label === "SUB_CATEGORY") {
+      if (request.userData.label === "SUB_CATEGORY") {
         console.log(`START with sub category ${request.url}`);
         await handleSubCategory($, requestQueue, request);
       } else if (request.userData.label === "PAGE") {
@@ -287,6 +286,7 @@ Apify.main(async () => {
                 category: request.userData.category
               }
             });
+            stats.pages++;
           }
           console.log(`Found ${paginationPage.length} pages.`);
           await enqueueRequests(requestQueue, paginationPage);
@@ -304,8 +304,9 @@ Apify.main(async () => {
   });
   // Run crawler.
   await crawler.run();
-
   console.log("crawler finished");
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
 
   if (!development) {
     try {
