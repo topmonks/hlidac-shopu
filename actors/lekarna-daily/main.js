@@ -1,6 +1,13 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
@@ -193,7 +200,22 @@ async function handleProducts($, request, requestQueue) {
         // Save data to dataset
         if (!processedIds.has(product.itemId)) {
           processedIds.add(product.itemId);
-          requests.push(Apify.pushData(product));
+          requests.push(
+            Apify.pushData(product),
+            uploadToS3(
+              s3,
+              "lekarna.cz",
+              await s3FileName(product),
+              "jsonld",
+              toProduct(
+                {
+                  ...product,
+                  inStock: true
+                },
+                { priceCurrency: "CZK" }
+              )
+            )
+          );
         } else {
           stats.itemsDuplicity++;
         }
@@ -247,13 +269,12 @@ Apify.main(async () => {
   } else {
     await enqueueAllCategories(requestQueue);
     // to test one item/category
-    /* await requestQueue.addRequest({
+    /*await requestQueue.addRequest({
       url: "https://www.lekarna.cz/masazni-gely-roztoky/",
       userData: {
         label: "SUB_CATEGORY"
       }
-    });
-     */
+    });*/
   }
 
   const persistState = async () => {
