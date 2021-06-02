@@ -5,6 +5,7 @@ const zlib = require("zlib");
 const { log, requestAsBrowser } = Apify.utils;
 const BF = "BF";
 const web = "https://www.lekarna.cz";
+const SITEMAP_URL = "https://www.lekarna.cz/sitemap.xml";
 const SITEMAP_CATEGORY_URL = "https://www.lekarna.cz/feed/sitemap/category";
 
 async function enqueueRequests(requestQueue, items) {
@@ -23,6 +24,39 @@ async function streamToBuffer(stream) {
     stream.on("error", reject);
     stream.on("end", () => resolve(Buffer.concat(chunks)));
   });
+}
+
+async function countAllProducts() {
+  const stream = await requestAsBrowser({
+    url: SITEMAP_URL,
+    stream: true
+  });
+  const buffer = await streamToBuffer(stream);
+  const xmlString = buffer.toString();
+  const $ = cheerio.load(xmlString, { xmlMode: true });
+  const productXmlUrls = [];
+
+  // Pick all product xml urls from sitemap
+  $("sitemap").each(function () {
+    const url = $(this).find("loc").text().trim();
+    if (url.includes("product")) productXmlUrls.push(url);
+  });
+  log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
+
+  let totalProducts = 0;
+  for await (const xmlUrl of productXmlUrls) {
+    const stream = await requestAsBrowser({
+      url: xmlUrl,
+      stream: true
+    });
+    const buffer = await streamToBuffer(stream);
+    const xmlString = zlib.unzipSync(buffer).toString();
+    const $ = cheerio.load(xmlString, { xmlMode: true });
+    $("url").each(function () {
+      totalProducts++;
+    });
+  }
+  log.info(`Total items ${totalProducts}x`);
 }
 
 async function enqueueAllCategories(requestQueue) {
@@ -171,6 +205,8 @@ Apify.main(async () => {
         label: "PAGE"
       }
     });
+  } else if (type === "COUNT") {
+    await countAllProducts();
   } else {
     await enqueueAllCategories(requestQueue);
     // to test one item/category
