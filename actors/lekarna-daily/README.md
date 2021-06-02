@@ -1,13 +1,29 @@
-The actor will scrape all products from Czc.cz, it is going through the whole categories and pagination and get the data visible there. It is not visiting the details.
+# lekarna.cz actor
 
-Example item:
-```
+## Actors INPUT
+<sup>~ apify_storage/key_value_stores/default/INPUT.json</sup>
+
+```json
 {
-    "itemUrl": "https://czc.cz/samsung-galaxy-xcover-4s-3gb-32gb-cerna/263515/produkt",
-    "itemId": "263515",
-    "itemName": "Samsung Galaxy Xcover 4s, 3GB/32GB, černá",
-    "currentPrice": 6499,
-    "discounted": false,
-    "img": "https://iczc.cz/fg8bo5dcloi2m817el48j7h9l7-1_1/obrazek"
+  "development": true,
+  "debug": false,
+  "maxRequestRetries": 3,
+  "maxConcurrency": 10,
+  "type": "FULL"
+}
+```
+<sup>"type": "FULL" || "BF" || "COUNT"</sup>
+## Actors item example OUTPUT
+```json
+{
+  "itemId": "73358",
+  "itemName": "ALTERMED Dubová kůra gel 50 g",
+  "itemUrl": "https://www.lekarna.cz/altermed-dubova-kura-gel-50g-1/",
+  "img": "https://lekarnacz.vshcdn.net/upload/al/te/altermed-dubova-kura-gel-50-g-2297888-300x300-fit.jpg",
+  "category": "Kosmetika a hygiena > Masážní přípravky",
+  "currentPrice": "64",
+  "currency": "CZK",
+  "originalPrice": null,
+  "discounted": false
 }
 ```
