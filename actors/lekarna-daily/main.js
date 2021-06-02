@@ -1,3 +1,4 @@
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
@@ -326,45 +327,11 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
 
-  if (!development) {
+  if (!development && type !== "COUNT") {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "lekarna.cz");
     log.info("invalidated Data CDN");
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          name: type !== "FULL" ? "lekarna-cz-bf" : "lekarna-cz"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
-
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: type !== "FULL",
-          tableName: type !== "FULL" ? "lekarna_bf" : "lekarna_cz"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
+    await uploadToKeboola(type !== "FULL" ? "lekarna-cz-bf" : "lekarna-cz");
+    log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");
 });
