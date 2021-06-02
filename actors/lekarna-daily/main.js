@@ -1,3 +1,4 @@
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
 const zlib = require("zlib");
@@ -205,6 +206,7 @@ async function handleProducts($, request, requestQueue) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
   const input = await Apify.getInput();
   const {
     development = false,
