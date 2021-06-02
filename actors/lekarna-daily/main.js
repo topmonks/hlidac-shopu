@@ -8,6 +8,7 @@ const web = "https://www.lekarna.cz";
 const SITEMAP_URL = "https://www.lekarna.cz/sitemap.xml";
 const SITEMAP_CATEGORY_URL = "https://www.lekarna.cz/feed/sitemap/category";
 let stats = {};
+const processedIds = new Set();
 
 async function enqueueRequests(requestQueue, items) {
   log.info(
@@ -182,9 +183,21 @@ async function handleProducts($, request, requestQueue) {
         breadCrumbs = "";
       }
       const products = await extractItems($, itemListElements, breadCrumbs);
-      stats.items += products.length;
-      console.log(`Found ${products.length} products`);
-      await Apify.pushData(products);
+      // we don't need to block pushes, we will await them all at the end
+      const requests = [];
+      for (const product of products) {
+        // Save data to dataset
+        if (!processedIds.has(product.itemId)) {
+          processedIds.add(product.itemId);
+          requests.push(Apify.pushData(product));
+        } else {
+          stats.itemsDuplicity++;
+        }
+      }
+      stats.items += requests.length;
+      console.log(`Found ${requests.length} unique products`);
+      // await all requests, so we don't end before they end
+      await Promise.all(requests);
     } catch (e) {
       console.log(`Failed extraction of items. ${request.url}`);
     }
