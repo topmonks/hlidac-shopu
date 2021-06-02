@@ -1,3 +1,5 @@
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
@@ -207,6 +209,7 @@ async function handleProducts($, request, requestQueue) {
 
 Apify.main(async () => {
   rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
     development = false,
@@ -324,6 +327,8 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "lekarna.cz");
+    log.info("invalidated Data CDN");
     try {
       const env = await Apify.getEnv();
       const run = await Apify.callTask(
@@ -361,5 +366,5 @@ Apify.main(async () => {
       console.log(e);
     }
   }
-  console.log("Finished.");
+  log.info("ACTOR - Finished");
 });
