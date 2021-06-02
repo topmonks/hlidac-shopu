@@ -6,8 +6,6 @@ const { log, requestAsBrowser } = Apify.utils;
 const BF = "BF";
 const web = "https://www.lekarna.cz";
 const SITEMAP_CATEGORY_URL = "https://www.lekarna.cz/feed/sitemap/category";
-let uniqCat = 0;
-let copyCat = 0;
 
 async function enqueueRequests(requestQueue, items) {
   log.info(
@@ -52,71 +50,59 @@ async function enqueueAllCategories(requestQueue) {
   log.info(`Enqueued ${categoryUrls.length} categories`);
 }
 
-async function extractItems($, $products, breadCrumbs, requestQueue) {
+async function extractItems($, $products, breadCrumbs) {
   const itemsArray = [];
-  const productPages = [];
   $products.each(async function () {
     const result = {};
     const $item = $(this);
-    const $name = $item.find("h2 > a");
-    const itemUrl = $name.attr("href");
-    const name = $name
-      .text()
-      .trim()
-      .replace(/(\n|\t)/g, "");
+    const itemUrl = $item.find("meta[itemprop=url]").attr("content");
+    const name = $item.find("meta[itemprop=name]").last().attr("content");
+    const cartBut = $item.find('input[name="productSkuId"]');
+    let id;
+    if (cartBut.length !== 0) {
+      id = cartBut.attr("value");
+    } else if ($item.find("a[data-gtm]").length !== 0) {
+      const itemJsonObject = JSON.parse(
+        $item.find("a[data-gtm]").attr("data-gtm")
+      );
+      const products =
+        itemJsonObject.ecommerce.click &&
+        itemJsonObject.ecommerce.click.products
+          ? itemJsonObject.ecommerce.click.products
+          : [];
+      const filtredProducts = products.filter(item =>
+        item.variant.indexOf("Dlouhodobě nedostupný")
+      );
+      id = filtredProducts.length !== 0 ? filtredProducts[0].id : null;
+    }
 
-    /*if (!$name.attr("href").includes("produktova-nabidka")) {
-      const itemUrl = $name.attr("href");
-      const cartBut = $item.find('input[name="productSkuId"]');
-      let id;
-      if (cartBut.length !== 0) {
-        id = cartBut.attr("value");
-      } else if ($item.find(".product__name a[data-gtm]").length !== 0) {
-        const jsonObject = JSON.parse(
-          $item.find(".product__name a[data-gtm]").attr("data-gtm")
+    const $actualPriceSpan = $item.find("span[itemprop=price]");
+    const $oldPriceSpan = $item.find("span.text-gray-500.line-through");
+
+    if ($actualPriceSpan.length > 0) {
+      const itemImgUrl = $item.find("picture source").last().attr("srcset");
+      result.itemId = id;
+      result.itemName = name;
+      result.itemUrl = itemUrl;
+      result.img = itemImgUrl;
+      result.category = breadCrumbs;
+      result.currentPrice = $actualPriceSpan.attr("content");
+      result.currency = $item
+        .find("span[itemprop=priceCurrency]")
+        .attr("content");
+      if ($oldPriceSpan.length > 0) {
+        result.originalPrice = parseFloat(
+          $oldPriceSpan.text().replace("Kč", "").replace(/\s/g, "").trim()
         );
-        const products =
-          jsonObject.ecommerce.click && jsonObject.ecommerce.click.products
-            ? jsonObject.ecommerce.click.products
-            : [];
-        const filtredProducts = products.filter(item =>
-          item.variant.indexOf("Dlouhodobě nedostupný")
-        );
-        id = filtredProducts.length !== 0 ? filtredProducts[0].id : null;
-      }
-      const name = $name
-        .text()
-        .trim()
-        .replace(/(\n|\t)/g, "");
-      const $actualPriceSpan = $item.find("span.product__price__actual");
-      const $oldPriceSpan = $item.find("span.product__price__old");
-      if ($actualPriceSpan.length > 0) {
-        const $itemImgUrl = $item.find(".product__img picture img");
-        if ($oldPriceSpan.length > 0) {
-          result.originalPrice = parseFloat(
-            $oldPriceSpan.text().replace("Kč", "").replace(/\s/g, "").trim()
-          );
-          result.currentPrice = parseFloat(
-            $actualPriceSpan.text().replace("Kč", "").replace(/\s/g, "").trim()
-          );
-          result.discounted = true;
-        } else {
-          result.currentPrice = parseFloat(
-            $actualPriceSpan.text().replace("Kč", "").replace(/\s/g, "").trim()
-          );
-          result.originalPrice = null;
-          result.discounted = false;
-        }
-        result.img = `${web}${$itemImgUrl.data("srcset")}`;
-        result.itemId = id;
-        result.itemUrl = `${web}${itemUrl}`;
-        result.itemName = name;
-        result.category = breadCrumbs;
-        itemsArray.push(result);
+        result.discounted = true;
       } else {
-        log.info(`Skipp non price product [${name}]`);
+        result.originalPrice = null;
+        result.discounted = false;
       }
-    }*/
+      itemsArray.push(result);
+    } else {
+      log.info(`Skipp non price product [${name}]`);
+    }
   });
   return itemsArray;
 }
@@ -138,7 +124,6 @@ async function handleSubCategory($, requestQueue, request) {
 
 async function handleProducts($, request, requestQueue) {
   const itemListElements = $('[itemprop="itemListElement"]');
-  console.log(itemListElements.length);
 
   if (itemListElements.length > 0) {
     let breadCrumbs = [];
@@ -158,12 +143,7 @@ async function handleProducts($, request, requestQueue) {
       } else {
         breadCrumbs = "";
       }
-      const products = await extractItems(
-        $,
-        itemListElements,
-        breadCrumbs,
-        requestQueue
-      );
+      const products = await extractItems($, itemListElements, breadCrumbs);
       console.log(`Found ${products.length} products`);
       await Apify.pushData(products);
     } catch (e) {
@@ -192,29 +172,15 @@ Apify.main(async () => {
       }
     });
   } else {
-    //await enqueueAllCategories(requestQueue);
-
-    await requestQueue.addRequest({
-      url: "https://www.lekarna.cz/volne-prodejne-leky-antihistaminika/",
+    await enqueueAllCategories(requestQueue);
+    // to test one item/category
+    /* await requestQueue.addRequest({
+      url: "https://www.lekarna.cz/masazni-gely-roztoky/",
       userData: {
         label: "SUB_CATEGORY"
       }
     });
-    /*await requestQueue.addRequest({
-      url: web,
-      userData: {
-        label: "START"
-      }
-    });*/
-    // to test one item/category
-    /* await requestQueue.addRequest({
-            url: 'https://www.lekarna.cz/glukometry-cholesterolmetry/',
-            userData: {
-                label: 'PAGE',
-                mainCategory: 'test',
-                category: 'test',
-            },
-        }); */
+     */
   }
 
   log.info("ACTOR - setUp crawler");
@@ -305,7 +271,7 @@ Apify.main(async () => {
 
   console.log("crawler finished");
 
-  /*  if (!development) {
+  if (!development) {
     try {
       const env = await Apify.getEnv();
       const run = await Apify.callTask(
@@ -342,8 +308,6 @@ Apify.main(async () => {
     } catch (e) {
       console.log(e);
     }
-  }*/
-  console.log("uniCat: " + uniqCat);
-  console.log("copyCat: " + copyCat);
+  }
   console.log("Finished.");
 });
