@@ -1,0 +1,17 @@
+{
+  "title": "Input schema for the Sleky.cz actor",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "description": "Select the mode of your actor",
+      "editor": "select",
+      "default": "LIST",
+      "enum": ["LIST", "DETAIL"],
+      "enumTitles": ["LIST", "DETAIL"]
+    }
+  },
+  "required": ["mode"]
+}

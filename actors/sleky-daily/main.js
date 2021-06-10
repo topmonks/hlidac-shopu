@@ -10,37 +10,34 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-// const randomUA = require("modern-random-ua");
 
 const { log } = Apify.utils;
 
 const web = "https://www.sleky.cz";
 
 //
-// scrapping mode switch in INPUT.json
-// { "scrappingMode": "DETAIL"}
-// scrappingMode = 'LIST'; // prices and other attrs are taken from product list page
-// scrappingMode = 'DETAIL'; // prices and other attrs are taken from product detail page
+// mode switch in INPUT.json
+// { "mode": "DETAIL"}
+// mode = 'LIST'; // prices and other attrs are taken from product list page
+// mode = 'DETAIL'; // prices and other attrs are taken from product detail page
 
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
 
-  let scrappingMode = "LIST";
+  let mode = "LIST";
 
   if (input) {
-    scrappingMode = input.scrappingMode;
+    mode = input.mode;
   }
 
-  log.info(`Scrapping mode is ${scrappingMode}`);
+  log.info(`Mode is ${mode}`);
   const requestQueue = await Apify.openRequestQueue();
 
   await requestQueue.addRequest({
     url: web,
-    headers: {
-      // userAgent: randomUA.generate()
-    },
+    headers: {},
     userData: {
       label: "START"
     }
@@ -145,13 +142,7 @@ Apify.main(async () => {
     return itemsArray;
   }
 
-  async function extractItems(
-    $,
-    $products,
-    breadCrumbs,
-    requestQueue,
-    scrappingMode
-  ) {
+  async function extractItems($, $products, breadCrumbs, requestQueue, mode) {
     const itemsArray = [];
     const productPages = [];
     $products.each(async function () {
@@ -166,7 +157,7 @@ Apify.main(async () => {
       if ($name.length > 0) {
         const itemUrl = $item.find("a").attr("href");
 
-        if (scrappingMode === "DETAIL") {
+        if (mode === "DETAIL") {
           const detailPages = [];
           const url = `${web}${itemUrl}`;
           detailPages.push({
@@ -221,12 +212,7 @@ Apify.main(async () => {
     }
   }
 
-  async function extractProductFromListPage(
-    $,
-    request,
-    requestQueue,
-    scrappingMode
-  ) {
+  async function extractProductFromListPage($, request, requestQueue, mode) {
     const $products = $(".item");
     if ($products.length > 0) {
       try {
@@ -241,9 +227,9 @@ Apify.main(async () => {
           $products,
           breadCrumbs,
           requestQueue,
-          scrappingMode
+          mode
         );
-        if (scrappingMode === "LIST") {
+        if (mode === "LIST") {
           log.info(`Extracted ${$products.length} products`);
         }
 
@@ -277,7 +263,7 @@ Apify.main(async () => {
 
     handlePageFunction: async ({ $, request }) => {
       if (request.userData.label === "START") {
-        log.info("START scrapping Sleky.cz");
+        log.info("START scraping Sleky.cz");
         const mainPages = [];
         $(".egmenu > li > a").each(function () {
           const $link = $(this).attr("href");
@@ -314,9 +300,7 @@ Apify.main(async () => {
           for (let i = 1; i <= maxPage; i++) {
             paginationPage.push({
               url: `${request.url}?page=${i}`,
-              headers: {
-                // userAgent: randomUA.generate()
-              },
+              headers: {},
               userData: {
                 label: "PAGI_PAGE",
                 mainCategory: request.userData.mainCategory,
@@ -329,12 +313,7 @@ Apify.main(async () => {
         }
       } else if (request.userData.label === "PAGI_PAGE") {
         log.info(`START with page ${request.url}`);
-        await extractProductFromListPage(
-          $,
-          request,
-          requestQueue,
-          scrappingMode
-        );
+        await extractProductFromListPage($, request, requestQueue, mode);
       } else if (request.userData.label === "DETAIL_PAGE") {
         log.info(`START with DETAIL page ${request.url}`);
         await extractProductFromDetailPage($, request);
@@ -347,46 +326,6 @@ Apify.main(async () => {
   });
   // Run crawler.
   await crawler.run();
-
-  /*
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: false,
-        tableName: "sleky_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    log.info(e);
-  }
-
-  // stats page
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: "sleky_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    log.info(e);
-  }
-   */
 
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "sleky.cz");
   log.info("invalidated Data CDN");
