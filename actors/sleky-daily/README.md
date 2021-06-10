@@ -10,4 +10,4 @@ Scrapes data from https://www.sleky.cz/
 or 
 * { "scrappingMode": "LIST"} prices and other attrs are taken from product list page
 
-Default mode is list
+Default mode is LIST

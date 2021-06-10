@@ -1,8 +1,19 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const randomUA = require("modern-random-ua");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const { log } = Apify.utils;
+
 const web = "https://www.sleky.cz";
 
 //
@@ -13,7 +24,7 @@ const web = "https://www.sleky.cz";
 
 Apify.main(async () => {
   rollbar.init();
-
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
 
   let scrappingMode = "LIST";
@@ -39,6 +50,224 @@ Apify.main(async () => {
     useApifyProxy: false,
     groups: ["CZECH_LUMINATI"]
   });
+
+  async function extractProductFromDetailPage($, request) {
+    const itemsArray = [];
+    const itemUrl = request.url;
+
+    $(".content").each(async function () {
+      const result = {};
+      const $item = $(this);
+      const $title = $item.find("h1");
+      const name = $title
+        .text()
+        .trim()
+        .replace(/([\n\t])/g, "");
+      log.debug(`START with product ${name}`);
+      if (name.length > 0) {
+        const $orderbox = $item.find("form.ajaxsubmit");
+        const id = $orderbox.attr("data-product-id");
+
+        const $currentPriceStr = $orderbox.find("strong").text();
+        const $originalPriceStr = $orderbox.find("dd > strike").text();
+
+        const currentPrice = parseFloat(
+          $currentPriceStr.replace("Kč", "").replace(/\s/g, "").trim()
+        );
+        const originalPrice = parseFloat(
+          $originalPriceStr.replace("Kč", "").replace(/\s/g, "").trim()
+        );
+
+        if (isNaN(originalPrice)) {
+          result.originalPrice = currentPrice;
+          result.discounted = false;
+        } else {
+          result.originalPrice = originalPrice;
+          result.discounted = true;
+        }
+
+        result.currentPrice = currentPrice;
+        result.img = $item.find(".img.highslide ").attr("href");
+        result.itemId = id;
+        result.itemUrl = itemUrl;
+        result.itemName = name;
+        result.category = $item.find(".kategorie").text();
+        result.vendor = $item.find(".vyrobce").find("acronym").text();
+        result.indicationGroup = $item.find(".indikace").find("span").text();
+
+        result.group = $item
+          .find(".skupina")
+          .text()
+          .trim()
+          .replace(/([\n\t])/g, "");
+        result.indication = $item
+          .find(".indikace")
+          .text()
+          .trim()
+          .replace(/([\n\t\r])/g, "");
+
+        try {
+          result.SUKLId = $item
+            .find(".skupina")
+            .text()
+            .trim()
+            .replace(/([\n\t])/g, "")
+            .match(/\d+$/)[0]; // assume SUKL id as last number
+        } catch (err) {
+          result.SUKLId = "N/A";
+        }
+
+        itemsArray.push(result);
+
+        await uploadToS3(
+          s3,
+          "sleky.cz",
+          await s3FileName(result),
+          "jsonld",
+          toProduct(
+            {
+              ...result,
+              inStock: true
+            },
+            { priceCurrency: "CZK" }
+          )
+        );
+
+        log.debug(
+          `END with product ${name}, id=${result.itemId}, price=${result.currentPrice}, SUKLId=${result.SUKLId}`
+        );
+      } else {
+        log.info(`Skip non price product [${name}]`);
+      }
+    });
+
+    await Apify.pushData(itemsArray);
+    return itemsArray;
+  }
+
+  async function extractItems(
+    $,
+    $products,
+    breadCrumbs,
+    requestQueue,
+    scrappingMode
+  ) {
+    const itemsArray = [];
+    const productPages = [];
+    $products.each(async function () {
+      const result = {};
+      const $item = $(this);
+      const $image = $item.find("img");
+      const $name = $image
+        .attr("alt")
+        .trim()
+        .replace(/([\n\t])/g, "");
+
+      if ($name.length > 0) {
+        const itemUrl = $item.find("a").attr("href");
+
+        if (scrappingMode === "DETAIL") {
+          const detailPages = [];
+          const url = `${web}${itemUrl}`;
+          detailPages.push({
+            url,
+            userData: {
+              label: "DETAIL_PAGE",
+              mainCategory: $(this).text().trim()
+            }
+          });
+          await enqueuRequests(requestQueue, detailPages);
+        } else {
+          const $itemImgUrl = $image.attr("src");
+
+          const $priceBox = $item.find(".pricebox");
+          const id = $priceBox.find("form").attr("data-product-id");
+
+          const currentPriceTag = $priceBox.find("strong");
+          const originalPriceTag = $priceBox.find("strike");
+
+          const currentPrice = parseFloat(
+            currentPriceTag.text().replace("Kč", "").replace(/\s/g, "").trim()
+          );
+          const originalPrice = parseFloat(
+            originalPriceTag.text().replace("Kč", "").replace(/\s/g, "").trim()
+          );
+
+          if (isNaN(originalPrice)) {
+            result.originalPrice = currentPrice;
+            result.discounted = false;
+          } else {
+            result.originalPrice = originalPrice;
+            result.discounted = true;
+          }
+
+          result.currentPrice = currentPrice;
+          result.img = $itemImgUrl;
+          result.itemId = id;
+          result.itemUrl = `${web}${itemUrl}`;
+          result.itemName = $name;
+          result.category = breadCrumbs;
+          itemsArray.push(result);
+        }
+      }
+    });
+    await enqueuRequests(requestQueue, productPages, true);
+    return itemsArray;
+  }
+
+  async function enqueuRequests(requestQueue, items) {
+    for (const item of items) {
+      await requestQueue.addRequest(item);
+    }
+  }
+
+  async function extractProductFromListPage(
+    $,
+    request,
+    requestQueue,
+    scrappingMode
+  ) {
+    const $products = $(".item");
+    if ($products.length > 0) {
+      try {
+        const breadCrumbs = [];
+        $(".content > h1").each(function () {
+          breadCrumbs.push($(this).text().trim());
+        });
+
+        log.info(`Found ${$products.length} products`);
+        const products = await extractItems(
+          $,
+          $products,
+          breadCrumbs,
+          requestQueue,
+          scrappingMode
+        );
+        if (scrappingMode === "LIST") {
+          log.info(`Extracted ${$products.length} products`);
+        }
+
+        for (const product of products) {
+          await uploadToS3(
+            s3,
+            "sleky.cz",
+            await s3FileName(product),
+            "jsonld",
+            toProduct(
+              {
+                ...product,
+                inStock: true
+              },
+              { priceCurrency: "CZK" }
+            )
+          );
+          await Apify.pushData(product);
+        }
+      } catch (e) {
+        log.info(`Failed extraction of items. ${request.url}`);
+      }
+    }
+  }
 
   // Create crawler.
   const crawler = new Apify.CheerioCrawler({
@@ -100,7 +329,12 @@ Apify.main(async () => {
         }
       } else if (request.userData.label === "PAGI_PAGE") {
         log.info(`START with page ${request.url}`);
-        await handleProducts($, request, requestQueue, scrappingMode);
+        await extractProductFromListPage(
+          $,
+          request,
+          requestQueue,
+          scrappingMode
+        );
       } else if (request.userData.label === "DETAIL_PAGE") {
         log.info(`START with DETAIL page ${request.url}`);
         await extractProductFromDetailPage($, request);
@@ -113,6 +347,8 @@ Apify.main(async () => {
   });
   // Run crawler.
   await crawler.run();
+
+  /*
   try {
     const env = await Apify.getEnv();
     const run = await Apify.call(
@@ -150,189 +386,12 @@ Apify.main(async () => {
   } catch (e) {
     log.info(e);
   }
+   */
+
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "sleky.cz");
+  log.info("invalidated Data CDN");
+  await uploadToKeboola("sleky_cz");
+  log.info("upload to Keboola finished");
 
   log.info("Finished.");
 });
-
-async function extractProductFromDetailPage($, request) {
-  const itemsArray = [];
-  const itemUrl = request.url;
-
-  $(".content").each(async function () {
-    const result = {};
-    const $item = $(this);
-    const $title = $item.find("h1");
-    const name = $title
-      .text()
-      .trim()
-      .replace(/([\n\t])/g, "");
-    log.debug(`START with product ${name}`);
-    if (name.length > 0) {
-      const $orderbox = $item.find("form.ajaxsubmit");
-      const id = $orderbox.attr("data-product-id");
-
-      const $currentPriceStr = $orderbox.find("strong").text();
-      const $originalPriceStr = $orderbox.find("dd > strike").text();
-
-      const currentPrice = parseFloat(
-        $currentPriceStr.replace("Kč", "").replace(/\s/g, "").trim()
-      );
-      const originalPrice = parseFloat(
-        $originalPriceStr.replace("Kč", "").replace(/\s/g, "").trim()
-      );
-
-      if (isNaN(originalPrice)) {
-        result.originalPrice = currentPrice;
-        result.discounted = false;
-      } else {
-        result.originalPrice = originalPrice;
-        result.discounted = true;
-      }
-
-      result.currentPrice = currentPrice;
-      result.img = $item.find(".img.highslide ").attr("href");
-      result.itemId = id;
-      result.itemUrl = itemUrl;
-      result.itemName = name;
-      result.category = $item.find(".kategorie").text();
-      result.vendor = $item.find(".vyrobce").find("acronym").text();
-      result.indicationGroup = $item.find(".indikace").find("span").text();
-
-      result.group = $item
-        .find(".skupina")
-        .text()
-        .trim()
-        .replace(/([\n\t])/g, "");
-      result.indication = $item
-        .find(".indikace")
-        .text()
-        .trim()
-        .replace(/([\n\t\r])/g, "");
-
-      try {
-        result.SUKLId = $item
-          .find(".skupina")
-          .text()
-          .trim()
-          .replace(/([\n\t])/g, "")
-          .match(/\d+$/)[0]; // assume SUKL id as last number
-      } catch (err) {
-        result.SUKLId = "N/A";
-      }
-
-      itemsArray.push(result);
-      log.debug(
-        `END with product ${name}, id=${result.itemId}, price=${result.currentPrice}, SUKLId=${result.SUKLId}`
-      );
-    } else {
-      log.info(`Skip non price product [${name}]`);
-    }
-  });
-
-  await Apify.pushData(itemsArray);
-  return itemsArray;
-}
-
-async function extractItems(
-  $,
-  $products,
-  breadCrumbs,
-  requestQueue,
-  scrappingMode
-) {
-  const itemsArray = [];
-  const productPages = [];
-  $products.each(async function () {
-    const result = {};
-    const $item = $(this);
-    const $image = $item.find("img");
-    const $name = $image
-      .attr("alt")
-      .trim()
-      .replace(/([\n\t])/g, "");
-
-    if ($name.length > 0) {
-      const itemUrl = $item.find("a").attr("href");
-
-      if (scrappingMode === "DETAIL") {
-        const detailPages = [];
-        const url = `${web}${itemUrl}`;
-        detailPages.push({
-          url,
-          userData: {
-            label: "DETAIL_PAGE",
-            mainCategory: $(this).text().trim()
-          }
-        });
-        await enqueuRequests(requestQueue, detailPages);
-      } else {
-        const $itemImgUrl = $image.attr("src");
-
-        const $priceBox = $item.find(".pricebox");
-        const id = $priceBox.find("form").attr("data-product-id");
-
-        const currentPriceTag = $priceBox.find("strong");
-        const originalPriceTag = $priceBox.find("strike");
-
-        const currentPrice = parseFloat(
-          currentPriceTag.text().replace("Kč", "").replace(/\s/g, "").trim()
-        );
-        const originalPrice = parseFloat(
-          originalPriceTag.text().replace("Kč", "").replace(/\s/g, "").trim()
-        );
-
-        if (isNaN(originalPrice)) {
-          result.originalPrice = currentPrice;
-          result.discounted = false;
-        } else {
-          result.originalPrice = originalPrice;
-          result.discounted = true;
-        }
-
-        result.currentPrice = currentPrice;
-        result.img = $itemImgUrl;
-        result.itemId = id;
-        result.itemUrl = `${web}${itemUrl}`;
-        result.itemName = $name;
-        result.category = breadCrumbs;
-        itemsArray.push(result);
-      }
-    }
-  });
-  await enqueuRequests(requestQueue, productPages, true);
-  return itemsArray;
-}
-
-async function enqueuRequests(requestQueue, items) {
-  for (const item of items) {
-    await requestQueue.addRequest(item);
-  }
-}
-
-async function handleProducts($, request, requestQueue, scrappingMode) {
-  const $products = $(".item");
-  if ($products.length > 0) {
-    try {
-      const breadCrumbs = [];
-      $(".content > h1").each(function () {
-        breadCrumbs.push($(this).text().trim());
-      });
-
-      log.info(`Found ${$products.length} products`);
-      const products = await extractItems(
-        $,
-        $products,
-        breadCrumbs,
-        requestQueue,
-        scrappingMode
-      );
-      if (scrappingMode === "LIST") {
-        log.info(`Extracted ${$products.length} products`);
-      }
-
-      await Apify.pushData(products);
-    } catch (e) {
-      log.info(`Failed extraction of items. ${request.url}`);
-    }
-  }
-}
