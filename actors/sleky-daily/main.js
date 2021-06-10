@@ -10,7 +10,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const randomUA = require("modern-random-ua");
+// const randomUA = require("modern-random-ua");
 
 const { log } = Apify.utils;
 
@@ -39,7 +39,7 @@ Apify.main(async () => {
   await requestQueue.addRequest({
     url: web,
     headers: {
-      userAgent: randomUA.generate()
+      // userAgent: randomUA.generate()
     },
     userData: {
       label: "START"
@@ -315,7 +315,7 @@ Apify.main(async () => {
             paginationPage.push({
               url: `${request.url}?page=${i}`,
               headers: {
-                userAgent: randomUA.generate()
+                // userAgent: randomUA.generate()
               },
               userData: {
                 label: "PAGI_PAGE",
