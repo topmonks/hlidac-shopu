@@ -6,6 +6,58 @@ const { LABELS, BASE_URL } = require("./src/const");
 
 const { log, requestAsBrowser } = Apify.utils;
 
+const SITEMAP_URL = "https://www.tsbohemia.cz/sitemap_index.xml";
+
+async function streamToBuffer(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+}
+async function enqueueAllCategories() {
+  const stream = await requestAsBrowser({
+    url: SITEMAP_URL,
+    stream: true
+  });
+  const buffer = await streamToBuffer(stream);
+  const xmlString = buffer.toString();
+  const $ = cheerio.load(xmlString, { xmlMode: true });
+  const categoryXmlUrls = [];
+
+  // Pick all category xml urls from sitemap
+  $("sitemap").each(function () {
+    const url = $(this).find("loc").text().trim();
+    categoryXmlUrls.push(url);
+  });
+  log.info(`Enqueued ${categoryXmlUrls.length} product xml urls`);
+  let requestListSources = [];
+  for await (const xmlUrl of categoryXmlUrls) {
+    const stream = await requestAsBrowser({
+      url: xmlUrl,
+      stream: true
+    });
+    const buffer = await streamToBuffer(stream);
+    const xmlString = buffer.toString();
+    const sitemapUrls = utils.getSitemapUrls(xmlString);
+    requestListSources = requestListSources.concat(
+      sitemapUrls
+        .filter(url => url.match(/_c\d+.html/))
+        .map(url => {
+          return {
+            url,
+            userData: {
+              label: LABELS.PAGE
+            }
+          };
+        })
+    );
+  }
+  log.info(`Found ${requestListSources.length} categories from sitemap`);
+  return requestListSources;
+}
+
 /**
  * Gets attribute as text from a ElementHandle.
  * @param {ElementHandle} element - The element to get attribute from.
@@ -15,57 +67,31 @@ const { log, requestAsBrowser } = Apify.utils;
 Apify.main(async () => {
   log.info("ACTOR - Start");
   const input = await Apify.getInput();
-  const { type } = input;
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    country = "cz",
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
   log.info(`ACTOR - input: ${JSON.stringify(input)}`);
   log.info("ACTOR - SetUp crawler");
   const requestQueue = await Apify.openRequestQueue();
 
-  let requestListSources = [];
+  let requestListSources;
   if (type === LABELS.BF) {
     await requestQueue.addRequest({
       userData: { label: LABELS.BF },
       url: "https://www.tsbohemia.cz/black-friday_c41438.html"
     });
   } else {
-    log.info("before sitemap");
-    const siteMapsResponse = await requestAsBrowser({
-      url: "https://www.tsbohemia.cz/sitemap_index.xml"
-    });
-    log.info("after sitemap");
-    let retries = 0;
-    let loaded = false;
-    do {
-      try {
-        let sitemapUrls = utils.getSitemapUrls(siteMapsResponse.body);
-        for (const url of sitemapUrls) {
-          const { body } = await requestAsBrowser({
-            url
-          });
-          sitemapUrls = utils.getSitemapUrls(body);
-          requestListSources = requestListSources.concat(
-            sitemapUrls
-              .filter(url => url.match(/_c\d+.html/))
-              .map(url => {
-                return {
-                  url,
-                  userData: {
-                    label: LABELS.PAGE
-                  }
-                };
-              })
-          );
-        }
-        log.info(`Found ${requestListSources.length} categories from sitemap`);
-        loaded = true;
-      } catch (e) {
-        log.error(e);
-        retries++;
-      }
-    } while (!loaded && retries < 10);
+    requestListSources = await enqueueAllCategories();
   }
   const requestList = await Apify.openRequestList("LIST", requestListSources);
-
   // Handle page context
+
   const handlePageFunction = async ({ $, request }) => {
     // This is the start page
     if (request.userData.label === LABELS.START) {
@@ -195,21 +221,28 @@ Apify.main(async () => {
       log.info(`Storing ${items.length} for url ${request.url}`);
       await Apify.pushData(items);
     }
+    await Apify.utils.sleep(5000);
   };
+
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
 
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
     requestList,
     requestQueue,
-    useApifyProxy: true,
-    apifyProxyGroups: ["CZECH_LUMINATI"],
-    ignoreSslErrors: true,
-    maxConcurrency: 20,
+    proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
     handlePageFunction,
 
-    // If request failed 4 times then this function is executed
+    // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction: async ({ request }) => {
-      log.error(`Request ${request.url} failed 4 times`);
+      log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
     }
   });
 
@@ -218,43 +251,46 @@ Apify.main(async () => {
   await crawler.run();
   log.info("ACTOR - End crawler");
 
-  // calling the keboola upload
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: type !== "FULL",
-        tableName: type !== "FULL" ? "tsbohemia_bf" : "tsbohemia"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
+  if (!development) {
+    // calling the keboola upload
+    try {
+      const env = await Apify.getEnv();
+      const run = await Apify.call(
+        "blackfriday/uploader",
+        {
+          datasetId: env.defaultDatasetId,
+          upload: true,
+          actRunId: env.actorRunId,
+          blackFriday: type !== "FULL",
+          tableName: type !== "FULL" ? "tsbohemia_bf" : "tsbohemia"
+        },
+        {
+          waitSecs: 25
+        }
+      );
+      log.info(`Keboola upload called: ${run.id}`);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // stats page
+    try {
+      const env = await Apify.getEnv();
+      const run = await Apify.callTask(
+        "blackfriday/status-page-store",
+        {
+          datasetId: env.defaultDatasetId,
+          name: type !== "FULL" ? "tsbohemia-black-friday" : "tsbohemia-scraper"
+        },
+        {
+          waitSecs: 25
+        }
+      );
+      log.info(`Keboola upload called: ${run.id}`);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  // stats page
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: type !== "FULL" ? "tsbohemia-black-friday" : "tsbohemia-scraper"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
   log.info("ACTOR - Finished");
 });
