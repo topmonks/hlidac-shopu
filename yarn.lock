@@ -2470,6 +2470,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/benu-daily@workspace:actors/benu-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/benu-daily@workspace:actors/benu-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@types/node": ^14.17.0
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+    modern-random-ua: ^1.0.3
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/dm-daily@workspace:actors/dm-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
@@ -14749,6 +14763,13 @@ fsevents@~2.3.1:
     _mocha: bin/_mocha
     mocha: bin/mocha
   checksum: 5cae051154b4693a0d416bae6a697efe414fa7d7517344eb447b0435b6bf8feca4774b56b80e596e3fd58833088289ca49c635d145cf48a9610f2e2217852605
+  languageName: node
+  linkType: hard
+
+"modern-random-ua@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "modern-random-ua@npm:1.0.3"
+  checksum: 63bc1507ea877e8ba0cfbffb4764b389f22c451320f4398f7359af7b3bcc2612c983fb10a320565cba469fa06402d32987bc3d1ce2b0ae8b3e3a00d0eee53a50
   languageName: node
   linkType: hard
 
