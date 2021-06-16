@@ -86,7 +86,15 @@ async function enqueuRequests(requestQueu, items) {
 
 Apify.main(async () => {
   const input = await Apify.getInput();
-  const { type = "FULL", country = COUNTRY.CZ } = input;
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    country = COUNTRY.CZ,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
   const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
@@ -104,26 +112,27 @@ Apify.main(async () => {
         label: LABELS.START
       }
     });
-  }
-  /*
-    // for testing, just one page
+  } else if (type === "test") {
     await requestQueue.addRequest({
-        url: 'https://www.datart.cz/kvadrokoptery-drony-a-rc-modely.html',
-        userData: {
-            label: 'CATEGORY_NEXT',
-        },
+      url: "https://www.datart.cz/kvadrokoptery-drony-a-rc-modely.html?startPos=16",
+      userData: {
+        label: "CATEGORY_NEXT"
+      }
     });
-    */
+  }
 
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
-  // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    maxConcurrency: 10,
+    maxRequestRetries,
+    maxConcurrency,
     // Activates the Session pool.
     useSessionPool: true,
     // Overrides default Session pool configuration.
@@ -257,40 +266,25 @@ Apify.main(async () => {
       tableName = "datart_sk_bf";
     }
 
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: type !== "FULL",
-        tableName
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
+    if (!development) {
+      const run = await Apify.call(
+        "blackfriday/uploader",
+        {
+          datasetId: env.defaultDatasetId,
+          upload: true,
+          actRunId: env.actorRunId,
+          blackFriday: type !== "FULL",
+          tableName
+        },
+        {
+          waitSecs: 25
+        }
+      );
+      console.log(`Keboola upload called: ${run.id}`);
+    }
   } catch (e) {
     console.log(e);
   }
 
-  // stats page
-  try {
-    const env = await Apify.getEnv();
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: type !== "FULL" ? "datart-cz-bf" : "datart-cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
   console.log("Finished.");
 });
