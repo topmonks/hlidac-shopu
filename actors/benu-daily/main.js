@@ -170,9 +170,14 @@ Apify.main(async () => {
     proxyConfiguration,
     handlePageFunction: async ({ $, request }) => {
       if (request.userData.label === LABELS.START) {
-        log.info("START scrapping benu.cz");
+        log.info("START scraping benu.cz");
         const allCategories = new Set();
-        $("div.submenu li:not(.title) > a").each(function () {
+        let categories = $("div.submenu li:not(.title) > a");
+        if (type === "TEST") {
+          log.info("type === TEST");
+          categories = categories.slice(0, 1);
+        }
+        categories.each(function () {
           // $('div.submenu > ul.level-3.reset > li:not(.title):not(.goto)')
           const $link = $(this).attr("href");
           let url = `${web}${$(this).attr("href")}`;
@@ -239,8 +244,10 @@ Apify.main(async () => {
 
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz");
   log.info("invalidated Data CDN");
-  await uploadToKeboola("benu_cz");
-  log.info("upload to Keboola finished");
+  if (type !== "TEST") {
+    await uploadToKeboola("benu_cz");
+    log.info("upload to Keboola finished");
+  }
 
   log.info("crawler finished");
 });

@@ -34,9 +34,6 @@ Apify.main(async () => {
     `test mode: ${testMode}, environment: ${testEnv}, country: ${country}`
   );
 
-  // todo
-  return;
-
   global.crawledProducts = 0;
   global.MAX_CRAWLED_PRODUCTS = 50;
 
@@ -75,8 +72,7 @@ Apify.main(async () => {
   // Apify.events.on('persistState', persistState);
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !testMode
+    groups: proxyGroups
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
@@ -88,7 +84,6 @@ Apify.main(async () => {
     },
     ignoreSslErrors: true,
     persistCookiesPerSession: true,
-    requestTimeoutSecs: 120,
     proxyConfiguration,
     handlePageFunction:
       // eslint-disable-next-line max-len

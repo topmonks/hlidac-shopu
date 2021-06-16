@@ -105,7 +105,7 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
     throw "empty categoires";
   }
   stats.categories = links.length;
-  stats.pages += links.length;
+  // stats.pages += links.length;
   // eslint-disable-next-line no-return-await
   await links.forEach(async l => await requestQueue.addRequest(l));
 };
@@ -163,7 +163,7 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
         url: nextPage.url,
         userData: { label: CATEGORY_PAGE }
       });
-      stats.pages += 1;
+      // stats.pages += 1;
     }
   }
   const productsUrls = $("#productsList li a")
@@ -190,7 +190,6 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
       },
       { forefront: true }
     );
-    stats.pages += 1;
   }
   stats.categoriesDone++;
 };
@@ -409,11 +408,6 @@ const handlePageFunction = async (
   stats
 ) => {
   log.info(`Page url ${request.url}`);
-  if (input.testMode) {
-    if (stats.pages >= 20) {
-      return;
-    }
-  }
   const { statusCode } = response;
   if (![404, 200].includes(statusCode)) {
     session.retire();
