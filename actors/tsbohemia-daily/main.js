@@ -1,4 +1,5 @@
 const Apify = require("apify");
+const playwright = require("playwright");
 const cheerio = require("cheerio");
 const { getResponse } = require("./src/requestRetry");
 const utils = require("./src/utils");
@@ -80,11 +81,35 @@ Apify.main(async () => {
   log.info("ACTOR - SetUp crawler");
   const requestQueue = await Apify.openRequestQueue();
 
-  let requestListSources;
+  let requestListSources = [];
   if (type === LABELS.BF) {
     await requestQueue.addRequest({
       userData: { label: LABELS.BF },
       url: "https://www.tsbohemia.cz/black-friday_c41438.html"
+    });
+  } else if (type === "playwright") {
+    const browser = await playwright.chromium.launch({
+      headless: false,
+      proxy: {
+        server: "http://proxy.apify.com:8000",
+        username: "groups-CZECH_LUMINATI,country-CZ",
+        password: "8Wqsv97L7NTcEpJaqn7Q5SEGu" + ""
+      }
+    });
+    // Open a new page / tab in the browser.
+    const page = await browser.newPage();
+    // Tell the tab to navigate to the JavaScript topic page.
+    await page.goto("https://www.tsbohemia.cz/acer_c75.html");
+    // Pause for 10 seconds, to see what's going on.
+    await page.waitForTimeout(360000);
+    // Turn off the browser to clean up after ourselves.
+    await browser.close();
+  } else if (type === "test") {
+    await requestQueue.addRequest({
+      url: "https://www.tsbohemia.cz/acer_c75.html",
+      userData: {
+        label: LABELS.PAGE
+      }
     });
   } else {
     requestListSources = await enqueueAllCategories();
@@ -92,7 +117,8 @@ Apify.main(async () => {
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
 
-  const handlePageFunction = async ({ $, request }) => {
+  const handlePageFunction = async ({ page, request }) => {
+    await page.waitForTimeout(180000);
     // This is the start page
     if (request.userData.label === LABELS.START) {
       const categoryIds = [];
@@ -228,7 +254,7 @@ Apify.main(async () => {
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: !development
+    useApifyProxy: false
   });
 
   // Create crawler
@@ -238,11 +264,39 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
+    useSessionPool: true,
+    persistCookiesPerSession: true,
     handlePageFunction,
 
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
+      const browser = await playwright.chromium.launch({
+        headless: false
+        /*,proxy: {
+          server: "http://proxy.apify.com:8000",
+          username: "groups-CZECH_LUMINATI,country-CZ",
+          password: "8Wqsv97L7NTcEpJaqn7Q5SEGu" + ""
+        }*/
+      });
+      // Open a new page / tab in the browser.
+      const page = await browser.newPage();
+      // Tell the tab to navigate to the JavaScript topic page.
+      await page.goto(request.url);
+      const element = await page.waitForSelector("div#bodyout", {
+        state: "attached",
+        timeout: 0
+      });
+
+      await requestQueue.addRequest({
+        url: request.url,
+        userData: {
+          label: LABELS.PAGE
+        }
+      });
+
+      // Turn off the browser to clean up after ourselves.
+      await browser.close();
     }
   });
 

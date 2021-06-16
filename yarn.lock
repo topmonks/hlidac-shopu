@@ -2802,6 +2802,7 @@ __metadata:
     apify: ^1.2.1
     apify-cli: ^0.6.2
     got: ^11.8.2
+    playwright: ^1.12.1
     proxy-agent: ^4.0.1
     random-mua: ^0.5.0
     tough-cookie: ^4.0.0
@@ -16609,6 +16610,30 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"playwright@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "playwright@npm:1.12.1"
+  dependencies:
+    commander: ^6.1.0
+    debug: ^4.1.1
+    extract-zip: ^2.0.1
+    https-proxy-agent: ^5.0.0
+    jpeg-js: ^0.4.2
+    mime: ^2.4.6
+    pngjs: ^5.0.0
+    progress: ^2.0.3
+    proper-lockfile: ^4.1.1
+    proxy-from-env: ^1.1.0
+    rimraf: ^3.0.2
+    stack-utils: ^2.0.3
+    ws: ^7.4.6
+    yazl: ^2.5.1
+  bin:
+    playwright: lib/cli/cli.js
+  checksum: 6d91e998c5caa13bd79295d1ac2be8b358093ac123bde9360821098d68d71d59b0d07735d2aabccde9cfc67d9ac1b53c88f41110f3c926f025b3f52558b7b0db
+  languageName: node
+  linkType: hard
+
 "plugin-error@npm:^0.1.2":
   version: 0.1.2
   resolution: "plugin-error@npm:0.1.2"
@@ -22364,7 +22389,7 @@ typescript@~3.7.3:
   languageName: node
   linkType: hard
 
-"ws@npm:7.4.6":
+"ws@npm:7.4.6, ws@npm:^7.4.6":
   version: 7.4.6
   resolution: "ws@npm:7.4.6"
   peerDependencies:
