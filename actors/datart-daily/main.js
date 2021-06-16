@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 
 const { log } = Apify.utils;
@@ -14,6 +25,9 @@ const COUNTRY = {
 };
 const BASE_URL = "https://www.datart.cz";
 const BASE_URL_SK = "https://www.datart.sk";
+
+let stats = {};
+const processedIds = new Set();
 
 /**
  *
@@ -53,6 +67,11 @@ async function extractItems($, rootUrl, country) {
         result.img = $(this).find("a.item-thumbnail-link img").attr("src");
       }
 
+      result.inStock =
+        !$(this).find(
+          "div.availability-container > span.in-stock > span.delivery-info > a.red"
+        ).length > 0;
+
       if ($(this).find(".price .tooltip").length > 0) {
         const priceStr = $(this).find(".price .tooltip").text();
         result.currentPrice = parseFloat(
@@ -69,7 +88,7 @@ async function extractItems($, rootUrl, country) {
         );
       }
 
-      result.currency = country === COUNTRY.CZ ? "CZK" : "€";
+      result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
       result.category = categoryArr;
       result.discounted = false;
       itemsArray.push(result);
@@ -85,6 +104,8 @@ async function enqueuRequests(requestQueu, items) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
     development = false,
@@ -95,6 +116,16 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsSkipped: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+
   const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
@@ -112,14 +143,20 @@ Apify.main(async () => {
         label: LABELS.START
       }
     });
-  } else if (type === "test") {
+  } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: "https://www.datart.cz/kvadrokoptery-drony-a-rc-modely.html?startPos=16",
+      url: `https://www.datart.${country.toLowerCase()}/kvadrokoptery-drony-a-rc-modely.html?startPos=16`,
       userData: {
         label: "CATEGORY_NEXT"
       }
     });
   }
+
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
 
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
@@ -181,6 +218,7 @@ Apify.main(async () => {
                   }
                 });
               });
+            stats.categories += items.length;
             console.log(`${request.url} Found ${items.length} subcategories`);
             await enqueuRequests(requestQueue, items);
             return; // Nothing more we can do for this page
@@ -199,6 +237,7 @@ Apify.main(async () => {
               }
             });
           }
+          stats.pages += items.length;
           console.log(`${request.url} Adding ${items.length} pagination pages`);
           await enqueuRequests(requestQueue, items);
         } catch (e) {
@@ -214,8 +253,35 @@ Apify.main(async () => {
       ) {
         try {
           const products = await extractItems($, rootUrl, country);
-          console.log(`${request.url} Found ${products.length} products`);
-          await Apify.pushData(products);
+          // we don't need to block pushes, we will await them all at the end
+          const requests = [];
+          for (const product of products) {
+            const s3item = { ...product };
+            //Keboola data structure fix
+            delete product.inStock;
+            // Save data to dataset
+            if (!processedIds.has(product.itemId)) {
+              processedIds.add(product.itemId);
+              requests.push(
+                Apify.pushData(product),
+                uploadToS3(
+                  s3,
+                  `datart.${country.toLowerCase()}`,
+                  await s3FileName(s3item),
+                  "jsonld",
+                  toProduct(s3item, {})
+                )
+              );
+              stats.items++;
+            } else {
+              stats.itemsDuplicity++;
+            }
+          }
+          console.log(
+            `${request.url} Found ${requests.length / 2} unique products`
+          );
+          // await all requests, so we don't end before they end
+          await Promise.allSettled(requests);
         } catch (e) {
           console.log(`Failed to get products from page ${request.url}`);
           await Apify.pushData({
@@ -251,6 +317,10 @@ Apify.main(async () => {
   await crawler.run();
 
   console.log("crawler finished");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
   try {
     const env = await Apify.getEnv();
 
@@ -267,20 +337,14 @@ Apify.main(async () => {
     }
 
     if (!development) {
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: type !== "FULL",
-          tableName
-        },
-        {
-          waitSecs: 25
-        }
+      await invalidateCDN(
+        cloudfront,
+        "EQYSHWUECAQC9",
+        `datart.${country.toLowerCase()}`
       );
-      console.log(`Keboola upload called: ${run.id}`);
+      log.info("invalidated Data CDN");
+      await uploadToKeboola(tableName);
+      log.info("upload to Keboola finished");
     }
   } catch (e) {
     console.log(e);
