@@ -109,7 +109,7 @@ async function handleProducts($, request) {
       );
 
       for (const detail of unprocessedProducts) {
-        const s3item = detail;
+        const s3item = { ...detail };
         //Keboola data structure fix
         delete detail.inStock;
         requests.push(
