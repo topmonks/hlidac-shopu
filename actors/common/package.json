@@ -5,7 +5,7 @@
 	"license": "EPL-2.0",
 	"dependencies": {
 		"@hlidac-shopu/lib": "^1.0.0",
-		"rollbar": "^2.21.1"
+		"rollbar": "^2.22.0"
 	},
 	"peerDependencies": {
 		"@aws-sdk/client-cloudfront": "^3.11.0",
@@ -13,7 +13,7 @@
 		"apify": "^1.1.1"
 	},
 	"devDependencies": {
-		"@types/node": "^14.17.0",
-		"schema-dts": "^0.8.2"
+		"@types/node": "^14.17.3",
+		"schema-dts": "^0.8.3"
 	}
 }
