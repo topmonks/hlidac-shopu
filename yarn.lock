@@ -2708,6 +2708,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.16.0
+    "@aws-sdk/client-s3": ^3.16.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@types/node": ^14.17.0
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+    modern-random-ua: ^1.0.3
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
