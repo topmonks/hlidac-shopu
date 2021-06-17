@@ -143,11 +143,18 @@ Apify.main(async () => {
         label: LABELS.START
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === "TEST" && country === COUNTRY.CZ) {
     await requestQueue.addRequest({
-      url: `https://www.datart.${country.toLowerCase()}/kvadrokoptery-drony-a-rc-modely.html?startPos=16`,
+      url: `https://www.datart.cz/kvadrokoptery-drony-a-rc-modely.html?startPos=16`,
       userData: {
         label: "CATEGORY_NEXT"
+      }
+    });
+  } else if (type === "TEST" && country === COUNTRY.SK) {
+    await requestQueue.addRequest({
+      url: `https://www.datart.sk/projektory.html`,
+      userData: {
+        label: "CATEGORY"
       }
     });
   }
@@ -180,9 +187,8 @@ Apify.main(async () => {
       if (response.statusCode !== 200) {
         session.retire();
       }
-
       // Process START page
-      if (request.userData.label === LABELS.START) {
+      if (request.userData.label === LABELS.START && country === COUNTRY.CZ) {
         const items = [];
         $("div#content")
           .find("a.list")
@@ -199,25 +205,44 @@ Apify.main(async () => {
         console.log(`${request.url} Found ${items.length} categories`);
         await enqueuRequests(requestQueue, items);
       }
+      if (request.userData.label === LABELS.START && country === COUNTRY.SK) {
+        const items = [];
+        $("div.main-menu-catalog-wrapper ul.category-submenu")
+          .find("li > a")
+          .each(function () {
+            const link = $(this).attr("href");
+            items.push({
+              url: `${rootUrl}${link}`,
+              userData: {
+                label: LABELS.CATEGORY,
+                uniqueKey: Math.random()
+              }
+            });
+          });
+        console.log(`${request.url} Found ${items.length} categories`);
+        await enqueuRequests(requestQueue, items);
+      }
 
       // Process CATEGORY page
-      if (request.userData.label === LABELS.CATEGORY) {
+      if (
+        request.userData.label === LABELS.CATEGORY &&
+        country === COUNTRY.CZ
+      ) {
         try {
           // Add subcategories if this category has no listings
-          if ($("div.subcategory-tree-list").length > 0) {
+          const subcategories = $("div.subcategory-tree-list").find("a");
+          if (subcategories.length > 0) {
             const items = [];
-            $("div.subcategory-tree-list")
-              .find("a")
-              .each(function () {
-                const link = $(this).attr("href");
-                items.push({
-                  url: `${rootUrl}${link}`,
-                  userData: {
-                    label: LABELS.CATEGORY,
-                    uniqueKey: Math.random()
-                  }
-                });
+            subcategories.each(function () {
+              const link = $(this).attr("href");
+              items.push({
+                url: `${rootUrl}${link}`,
+                userData: {
+                  label: LABELS.CATEGORY,
+                  uniqueKey: Math.random()
+                }
               });
+            });
             stats.categories += items.length;
             console.log(`${request.url} Found ${items.length} subcategories`);
             await enqueuRequests(requestQueue, items);
@@ -236,6 +261,64 @@ Apify.main(async () => {
                 uniqueKey: Math.random()
               }
             });
+          }
+          stats.pages += items.length;
+          console.log(`${request.url} Adding ${items.length} pagination pages`);
+          await enqueuRequests(requestQueue, items);
+        } catch (e) {
+          console.log(`Error processing url ${request.url}`);
+          console.error(e);
+        }
+      }
+
+      if (
+        request.userData.label === LABELS.CATEGORY &&
+        country === COUNTRY.SK
+      ) {
+        try {
+          // Add subcategories if this category has no listings
+          const subcategories = $(
+            "div.subcategory-box-list .subcategoryWrapper"
+          ).find("a");
+          if (subcategories.length > 0) {
+            const items = [];
+            subcategories.each(function () {
+              const link = $(this).attr("href");
+              items.push({
+                url: `${rootUrl}${link}`,
+                userData: {
+                  label: LABELS.CATEGORY,
+                  uniqueKey: Math.random()
+                }
+              });
+            });
+            stats.categories += items.length;
+            console.log(`${request.url} Found ${items.length} subcategories`);
+            await enqueuRequests(requestQueue, items);
+            return; // Nothing more we can do for this page
+          }
+
+          //Find maxPaginationPage
+          let lastPagination = 0;
+          $("div.category-actions ul.pagination")
+            .find("a")
+            .each(function () {
+              const page = parseInt($(this).text());
+              if (page > lastPagination) {
+                lastPagination = page;
+              }
+            });
+          // Add pages from pagination
+          const items = [];
+          for (let i = 2; i <= lastPagination; i++) {
+            items.push({
+              url: `${request.url}?showPage&page=${i}&limit=16`,
+              userData: {
+                label: LABELS.CATEGORY_NEXT,
+                uniqueKey: Math.random()
+              }
+            });
+            console.log(`${request.url}?showPage&page=${i}&limit=16`);
           }
           stats.pages += items.length;
           console.log(`${request.url} Adding ${items.length} pagination pages`);
