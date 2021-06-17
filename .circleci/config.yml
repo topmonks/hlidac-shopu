@@ -443,6 +443,8 @@ workflows:
           context:
             - org-global
             - org-fastlane
+          requires:
+            - test-lib
           filters:
             branches:
               ignore: /.*/
