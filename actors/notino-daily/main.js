@@ -1,8 +1,6 @@
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
-  invalidateCDN,
-} = require("@hlidac-shopu/actors-common/product.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
@@ -73,28 +71,27 @@ Apify.main(async () => {
     items: 0,
     itemsDone: 0,
     pages: 0,
-    itemsDuplicity: 0,
+    itemsDuplicity: 0
   };
 
-
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
+    groups: proxyGroups
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
-//    useSessionPool: true,
-//    sessionPoolOptions: {
-//      maxPoolSize: 20
-//    },
-//    ignoreSslErrors: true,
-//    persistCookiesPerSession: true,
+    //    useSessionPool: true,
+    //    sessionPoolOptions: {
+    //      maxPoolSize: 20
+    //    },
+    //    ignoreSslErrors: true,
+    //    persistCookiesPerSession: true,
     proxyConfiguration,
     handlePageFunction:
       // eslint-disable-next-line max-len
-     async ({ request, $, session, response }) => {
-      await handlePageFunction(
+      async ({ request, $, session, response }) => {
+        await handlePageFunction(
           requestQueue,
           request,
           extendCheerio($),
@@ -104,7 +101,7 @@ Apify.main(async () => {
           proxyConfiguration,
           stats
         );
-    },
+      },
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction
   });
@@ -118,9 +115,15 @@ Apify.main(async () => {
   );
   log.info(`Total products: ${global.crawledProducts}.`);
 
-  if (!development && type !== 'CZECHITAS') {
-    const tableName = `notino${country === COUNTRY.CZ ? '' :  ('_' + country.toLowerCase())}${type === 'BF' ? '_bf' : ''}`;
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `notino.${country.toLowerCase()}`);
+  if (!development && type !== "CZECHITAS") {
+    const tableName = `notino${
+      country === COUNTRY.CZ ? "" : "_" + country.toLowerCase()
+    }${type === "BF" ? "_bf" : ""}`;
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `notino.${country.toLowerCase()}`
+    );
     log.info("invalidated Data CDN");
     await uploadToKeboola(tableName);
     log.info("upload to Keboola finished");
