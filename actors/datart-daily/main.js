@@ -37,16 +37,26 @@ const processedIds = new Set();
  * @returns {Promise<[]>}
  */
 async function extractItems($, rootUrl, country) {
+  switch (country) {
+    case "CZ":
+      return await parseItemsCZ($, rootUrl);
+    case "SK":
+      return await parseItemsSK($, rootUrl);
+  }
+}
+
+async function parseItemsCZ($, rootUrl) {
   const itemsArray = [];
   // products
-  if ($("div.category-page-item").length > 0) {
+  const productElements = $("div.category-page-item");
+  if (productElements.length > 0) {
     const categoryArr = [];
     $("p#breadcrumbs > a").each(function () {
       categoryArr.push($(this).text().trim());
     });
     categoryArr.push($("p#breadcrumbs > span").text().trim());
 
-    $("div.category-page-item").each(function () {
+    productElements.each(function () {
       const result = {};
 
       // data id of the item to not enqueue the items multiply
@@ -86,12 +96,85 @@ async function extractItems($, rootUrl, country) {
         result.originalPrice = parseFloat(
           origPriceStr.replace(/[^\d,]+/g, "").replace(",", ".")
         );
+        result.discounted = true;
+      } else {
+        result.originalPrice = null;
+        result.discounted = false;
       }
 
-      result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
+      result.currency = "CZK";
       result.category = categoryArr;
-      result.discounted = false;
       itemsArray.push(result);
+    });
+  }
+  return itemsArray;
+}
+async function parseItemsSK($, rootUrl) {
+  const itemsArray = [];
+  // products
+  const productElements = $("div.product-box-list div.product-box");
+  if (productElements.length > 0) {
+    const categoryArr = [];
+    $("ol.breadcrumb > li > a").each(function () {
+      categoryArr.push($(this).text().trim());
+    });
+
+    productElements.each(function () {
+      if ($(this).attr("data-track")) {
+        const result = {};
+        const productBoxBuyInfoDelivery = $(this).find(
+          "div.product-box-buy-info > div.product-box-buy-info-delivery span.color-text-red"
+        );
+        result.inStock = !productBoxBuyInfoDelivery.length > 0;
+
+        const productBoxBuyInfoCart = $(this).find(
+          "div.product-box-buy-info > div.product-box-buy-info-cart"
+        );
+        const itemCartDataTarget = productBoxBuyInfoCart
+          .find("div.item-link-compare > button")
+          .attr("data-target-add");
+        if (itemCartDataTarget.length > 1) {
+          const searchParams = new URLSearchParams(itemCartDataTarget);
+          result.itemId = searchParams.get("id");
+        }
+        const productBoxTopSide = $(this).find("div.product-box-top-side");
+        const productHeader = productBoxTopSide.find(
+          "div.item-title-holder h3.item-title a"
+        );
+        result.itemName = productHeader.text().trim();
+        result.itemUrl = rootUrl + productHeader.attr("href");
+
+        result.img = productBoxTopSide
+          .find("div.item-thumbnail img")
+          .attr("src");
+
+        result.currentPrice = productBoxBuyInfoCart
+          .find("div.item-price span.actual")
+          .text()
+          .trim()
+          .replace(/[^\d,]+/g, "")
+          .replace(",", ".");
+        const cutPrice = productBoxBuyInfoCart.find(
+          "div.item-price span.cut-price del"
+        );
+
+        if (cutPrice.length > 0) {
+          result.originalPrice = cutPrice
+            .text()
+            .trim()
+            .replace(/[^\d,]+/g, "")
+            .replace(",", ".");
+          result.discounted = true;
+        } else {
+          result.originalPrice = null;
+          result.discounted = false;
+        }
+        result.currency = "EUR";
+
+        result.category = categoryArr;
+
+        itemsArray.push(result);
+      }
     });
   }
   return itemsArray;
@@ -152,9 +235,9 @@ Apify.main(async () => {
     });
   } else if (type === "TEST" && country === COUNTRY.SK) {
     await requestQueue.addRequest({
-      url: `https://www.datart.sk/projektory.html`,
+      url: `https://www.datart.sk/videokamery.html`,
       userData: {
-        label: "CATEGORY"
+        label: "CATEGORY_NEXT"
       }
     });
   }
