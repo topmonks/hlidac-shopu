@@ -8,12 +8,8 @@
 		"@hlidac-shopu/actors-common": "^1.1.0",
 		"apify": "^1.2.1"
 	},
-	"devDependencies": {
-		"eslint": "^7.28.0"
-	},
 	"scripts": {
-		"start": "node main.js",
-		"lint:fix": "./node_modules/.bin/eslint ./ --ext .js,.jsx --fix"
+		"start": "node main.js"
 	},
 	"author": "",
 	"license": "EPL-2.0"

@@ -1,3 +1,10 @@
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
+
 const Apify = require("apify");
 const {
   HOME_PAGE,
@@ -16,22 +23,29 @@ const {
 
 const { log } = Apify.utils;
 
+let stats = {};
+
 Apify.main(async () => {
+  log.info("ACTOR - start");
+
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
   const {
     country = COUNTRY.CZ,
     type = "FULL",
-    testEnv = "cloud",
-    testMode = false,
+    debug = false,
+    development = false,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 10,
-    maxRequestRetries = 5
-  } = input;
-  if (testMode) {
+    maxRequestRetries = 3
+  } = input ?? {};
+  if (development || debug) {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
   log.debug(
-    `test mode: ${testMode}, environment: ${testEnv}, country: ${country}`
+    `development: ${development}, debug: ${debug}, country: ${country}`
   );
 
   global.crawledProducts = 0;
@@ -52,43 +66,35 @@ Apify.main(async () => {
       userData: { label: HOME_PAGE }
     });
   }
-  // todo type === 'COUNT'
 
-  const stats = (await Apify.getValue("STATS")) || {
+  stats = (await Apify.getValue("STATS")) || {
     categories: 0,
     categoriesDone: 0,
     items: 0,
     itemsDone: 0,
-    urls: 0,
     pages: 0,
-    itemsSkipped: 0,
     itemsDuplicity: 0,
-    failed: 0
   };
 
-  // const persistState = async () => {
-  //     await Apify.setValue('STATS', stats).then(() => console.dir(stats));
-  // };
-  // Apify.events.on('persistState', persistState);
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
-    useSessionPool: true,
-    sessionPoolOptions: {
-      maxPoolSize: 20
-    },
-    ignoreSslErrors: true,
-    persistCookiesPerSession: true,
+//    useSessionPool: true,
+//    sessionPoolOptions: {
+//      maxPoolSize: 20
+//    },
+//    ignoreSslErrors: true,
+//    persistCookiesPerSession: true,
     proxyConfiguration,
     handlePageFunction:
       // eslint-disable-next-line max-len
-      ({ request, $, session, response }) =>
-        handlePageFunction(
+     async ({ request, $, session, response }) => {
+      await handlePageFunction(
           requestQueue,
           request,
           extendCheerio($),
@@ -97,11 +103,12 @@ Apify.main(async () => {
           input,
           proxyConfiguration,
           stats
-        ),
-
+        );
+    },
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction
   });
+
   log.info("Crawling start");
   await crawler.run();
   log.info("Crawling finished.");
@@ -111,51 +118,13 @@ Apify.main(async () => {
   );
   log.info(`Total products: ${global.crawledProducts}.`);
 
-  // stats page
-  // if (!testMode && type !== 'CZECHITAS') {
-  //     try {
-  //         const env = await Apify.getEnv();
-  //         const run = await Apify.callTask(
-  //             'blackfriday/status-page-store', {
-  //                 datasetId: env.defaultDatasetId,
-  //                 name: input.type !== 'FULL' ? 'notino-cz-bf' : 'notino-cz',
-  //             }, {
-  //                 waitSecs: 25,
-  //             },
-  //         );
-  //         console.log(`Keboola upload called: ${run.id}`);
-  //     } catch (e) {
-  //         console.log(e);
-  //     }
-  //
-  //     try {
-  //         const env = await Apify.getEnv();
-  //         let tableName = '';
-  //         if (country === 'CZ' && type === 'FULL') {
-  //             tableName = 'notino';
-  //         } else if (country === 'SK' && type === 'FULL') {
-  //             tableName = 'notino_sk';
-  //         } else if (country === 'CZ' && type !== 'FULL') {
-  //             tableName = 'notino_bf';
-  //         } else if (country === 'SK' && type !== 'FULL') {
-  //             tableName = 'notino_sk_bf';
-  //         }
-  //         const run = await Apify.call(
-  //             'blackfriday/uploader', {
-  //                 datasetId: env.defaultDatasetId,
-  //                 upload: true,
-  //                 actRunId: env.actorRunId,
-  //                 blackFriday: input.type !== 'FULL',
-  //                 tableName,
-  //             }, {
-  //                 waitSecs: 25,
-  //             },
-  //         );
-  //         console.log(`Keboola upload called: ${run.id}`);
-  //     } catch (e) {
-  //         console.log(e);
-  //     }
-  // }
+  if (!development && type !== 'CZECHITAS') {
+    const tableName = `notino${country === COUNTRY.CZ ? '' :  ('_' + country.toLowerCase())}${type === 'BF' ? '_bf' : ''}`;
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `notino.${country.toLowerCase()}`);
+    log.info("invalidated Data CDN");
+    await uploadToKeboola(tableName);
+    log.info("upload to Keboola finished");
+  }
 
   log.info("ACTOR - Finished");
 });

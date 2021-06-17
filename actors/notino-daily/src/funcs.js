@@ -12,6 +12,47 @@ const { getReviews } = require("./reviewParser");
 
 const { log } = Apify.utils;
 
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+
+const processedIds = new Set();
+//let myCount = 0;
+async function pushProducts(products, country, stats) {
+  const requests = [];
+  let count = 0;
+  // we don't need to block pushes, we will await them all at the end
+   for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      const fileName = await s3FileName(product);
+//      myCount += 1;
+//    log.debug(`${myCount} ::: fileName=${fileName}, itemUrl=${JSON.stringify(product.itemUrl)}`);
+      processedIds.add(product.itemId);
+      // push data to dataset to be ready for upload to Keboola
+      requests.push(
+        Apify.pushData(product),
+      // upload JSON+LD data to CDN
+        uploadToS3(
+          s3,
+          `notino.${country.toLowerCase()}`,
+          fileName,
+          "jsonld",
+          toProduct(product, {})
+        )
+      );
+      count += 1;
+    } else {
+      stats.itemsDuplicity += 1;
+    }
+  }
+  stats.items += count;
+  await Promise.all(requests);
+}
+
 /**
  *
  * @param {Cheerio} $
@@ -41,6 +82,10 @@ const dig = (o, ...args) => {
   return args.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), o);
 };
 
+const getRootUrl = (input) => {
+  return (!input.country || (input.country === COUNTRY.CZ)) ? BASE_URL : BASE_URL_SK;
+}
+
 const handleHomePage = async (requestQueue, request, $, input, stats) => {
   log.debug("Home page");
   const scripts = $("script").toArray();
@@ -58,7 +103,7 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
   const mainMenu = window.__FRAGMENT_STATES__.find(
     f => f.fragmentType === "main-menu"
   );
-  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+  const rootUrl = getRootUrl(input);
   const links = [];
   if (mainMenu) {
     const categories = dig(
@@ -102,10 +147,10 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
   log.info(`Found categories ${links.length}`);
   if (links.length === 0) {
     await Apify.setValue("empty-categories", $("body").html());
-    throw "empty categoires";
+    throw "empty categories";
   }
   stats.categories = links.length;
-  // stats.pages += links.length;
+   stats.pages += links.length;
   // eslint-disable-next-line no-return-await
   await links.forEach(async l => await requestQueue.addRequest(l));
 };
@@ -163,7 +208,7 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
         url: nextPage.url,
         userData: { label: CATEGORY_PAGE }
       });
-      // stats.pages += 1;
+      stats.pages += 1;
     }
   }
   const productsUrls = $("#productsList li a")
@@ -176,13 +221,15 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
   //     return;
   // }
 
-  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+//  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+  const rootUrl = getRootUrl(input);
   for (let productUrl of productsUrls) {
     productUrl =
       productUrl.search(/notino\.[cz|sk]/) < 0
         ? `${rootUrl}${productUrl}`
         : productUrl;
-    stats.items++;
+//    stats.items++;
+    stats.pages++;
     await requestQueue.addRequest(
       {
         url: productUrl,
@@ -254,7 +301,8 @@ const handleProductInDetailPage = async (
         category.push(catSplit[c].trim());
       }
     }
-    const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+//    const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+    const rootUrl = getRootUrl(input);
 
     for (const variant of variants) {
       const variantGeneralData = productData[`Variant:${variant}`];
@@ -354,7 +402,8 @@ const handleProductInDetailPage = async (
   } else if ($('a[href="#variants"]').exists()) {
     await handleProductUsingHTML();
   }
-
+  const country = input.country ?? COUNTRY.CZ;
+  log.debug(`results length ${results.length}`);
   if (input.type === "CZECHITAS") {
     // solve reviews
     log.info(`Grab reviews for ${request.url}`);
@@ -368,9 +417,11 @@ const handleProductInDetailPage = async (
         ? $('input[name="userJwtToken"]').val()
         : null;
     if (jsonData.offers && jsonData.offers.length !== 0) {
+      const variantList = [];
       for (const variant of results) {
         for (const item of jsonData.offers) {
-          if (`https://www.notino.cz${item.url}` === variant.itemUrl) {
+          if (`https://www.notino.cz${item.url}` === variant.itemUrl)
+          {
             log.info(
               `Match https://www.notino.cz${item.url}, ${variant.itemUrl}`
             );
@@ -382,7 +433,8 @@ const handleProductInDetailPage = async (
               session,
               proxyConfiguration
             });
-            await Apify.pushData(variant);
+//            await Apify.pushData(variant);
+            variantList.push(variant);
           } else {
             log.info(
               `NO Match https://www.notino.cz${item.url}, ${variant.itemUrl}`
@@ -390,10 +442,12 @@ const handleProductInDetailPage = async (
           }
         }
       }
+      await pushProducts(variantList, country, stats);
     }
   } else {
-    stats.itemsDone++;
-    await Apify.pushData(results);
+//    stats.itemsDone++;
+//    await Apify.pushData(results);
+    await pushProducts(results, country, stats);
   }
 };
 
@@ -407,7 +461,7 @@ const handlePageFunction = async (
   proxyConfiguration,
   stats
 ) => {
-  log.info(`Page url ${request.url}`);
+//  log.info(`Page url ${request.url}, stats ${JSON.stringify(stats)}`);
   const { statusCode } = response;
   if (![404, 200].includes(statusCode)) {
     session.retire();
