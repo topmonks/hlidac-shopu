@@ -13,7 +13,10 @@
   "country": "CZ"
 }
 ```
-<sup>"type": "FULL" || "BF" || "TEST"</sup>
+```text
+"type": "FULL" || "BF" || "TEST"
+"country": "CZ" || "SK"
+```
 ## Actors item example OUTPUT
 ```json
 {
