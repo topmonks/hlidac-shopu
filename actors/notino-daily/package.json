@@ -6,11 +6,12 @@
 		"@aws-sdk/client-cloudfront": "^3.18.0",
 		"@aws-sdk/client-s3": "^3.18.0",
 		"@hlidac-shopu/actors-common": "^1.1.0",
+		"@hlidac-shopu/lib": "^1.0.2",
 		"apify": "^1.2.1"
 	},
 	"scripts": {
 		"start": "node main.js"
 	},
-	"author": "",
+	"author": "Topmonks.com",
 	"license": "EPL-2.0"
 }
