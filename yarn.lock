@@ -3741,7 +3741,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@1.0.2, @hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -3751,6 +3751,18 @@ __metadata:
     lit-element: 3.0.0-rc.2
   languageName: unknown
   linkType: soft
+
+"@hlidac-shopu/lib@npm:1.0.2":
+  version: 1.0.2
+  resolution: "@hlidac-shopu/lib@npm:1.0.2"
+  dependencies:
+    "@lit/reactive-element": 1.0.0-rc.2
+    chart.js: ^3.2.1
+    chartjs-adapter-date-fns: 2.0.0
+    lit-element: 3.0.0-rc.2
+  checksum: b42d67c58dffa62032365d1e8ced3cbda95cb30e70506834316a922c931d5e0f3bb22ff4e468a407a06deda471ba195fcd058f51e7afd5437852591484a9515a
+  languageName: node
+  linkType: hard
 
 "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily":
   version: 0.0.0-use.local
@@ -3772,7 +3784,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.18.0
     "@aws-sdk/client-s3": ^3.18.0
     "@hlidac-shopu/actors-common": ^1.1.0
-    "@hlidac-shopu/lib": ^1.0.2
+    "@hlidac-shopu/lib": ^1.0.3
     apify: ^1.2.1
   languageName: unknown
   linkType: soft
@@ -7827,7 +7839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.3.2":
+"chart.js@npm:^3.2.1, chart.js@npm:^3.3.2":
   version: 3.3.2
   resolution: "chart.js@npm:3.3.2"
   checksum: f776eb9d92dc5f8f73c7a6685bd86ad2827c7f50a2d4c83ed56b2f3e10bb4aef651347f35c3424104764bd17d9925b69ea5eacd056a9c91fb9c75cc97cdd2456
