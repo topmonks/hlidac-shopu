@@ -47,7 +47,7 @@ Apify.main(async () => {
   );
 
   global.crawledProducts = 0;
-  global.MAX_CRAWLED_PRODUCTS = 50;
+  // global.MAX_CRAWLED_PRODUCTS = 50;
 
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
@@ -81,12 +81,6 @@ Apify.main(async () => {
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
-    //    useSessionPool: true,
-    //    sessionPoolOptions: {
-    //      maxPoolSize: 20
-    //    },
-    //    ignoreSslErrors: true,
-    //    persistCookiesPerSession: true,
     proxyConfiguration,
     handlePageFunction:
       // eslint-disable-next-line max-len

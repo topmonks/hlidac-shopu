@@ -21,7 +21,6 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 
 const processedIds = new Set();
-//let myCount = 0;
 async function pushProducts(products, country, stats) {
   const requests = [];
   let count = 0;
@@ -29,8 +28,6 @@ async function pushProducts(products, country, stats) {
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       const fileName = await s3FileName(product);
-      //      myCount += 1;
-      //    log.debug(`${myCount} ::: fileName=${fileName}, itemUrl=${JSON.stringify(product.itemUrl)}`);
       processedIds.add(product.itemId);
       // push data to dataset to be ready for upload to Keboola
       requests.push(
@@ -405,7 +402,6 @@ const handleProductInDetailPage = async (
     await handleProductUsingHTML();
   }
   const country = input.country ?? COUNTRY.CZ;
-  log.debug(`results length ${results.length}`);
   if (input.type === "CZECHITAS") {
     // solve reviews
     log.info(`Grab reviews for ${request.url}`);
@@ -446,8 +442,6 @@ const handleProductInDetailPage = async (
       await pushProducts(variantList, country, stats);
     }
   } else {
-    //    stats.itemsDone++;
-    //    await Apify.pushData(results);
     await pushProducts(results, country, stats);
   }
 };
