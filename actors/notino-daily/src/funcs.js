@@ -103,7 +103,7 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
     f => f.fragmentType === "main-menu"
   );
   const rootUrl = getRootUrl(input);
-  const links = [];
+  let links = [];
   if (mainMenu) {
     const categories = dig(
       mainMenu,
@@ -147,6 +147,10 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
   if (links.length === 0) {
     await Apify.setValue("empty-categories", $("body").html());
     throw "empty categories";
+  }
+  if (input && input.development) {
+    links = links.slice(0, 1);
+    log.info("Development mode, find products only in 1 category.");
   }
   stats.categories = links.length;
   stats.pages += links.length;

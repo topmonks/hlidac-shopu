@@ -69,7 +69,7 @@ Apify.main(async () => {
     categories: 0,
     categoriesDone: 0,
     items: 0,
-    itemsDone: 0,
+    // itemsDone: 0,
     pages: 0,
     itemsDuplicity: 0
   };
