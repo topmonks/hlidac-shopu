@@ -5,7 +5,15 @@ const web = "https://www.czc.cz";
 const { log } = Apify.utils;
 Apify.main(async () => {
   // Get queue and enqueue first url.
-  const { type, test } = await Apify.getValue("INPUT");
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
   if (type === "FULL") {
@@ -31,12 +39,17 @@ Apify.main(async () => {
     });
   }
 
-  // Create crawler.
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    useApifyProxy: true,
-    apifyProxyGroups: ["CZECH_LUMINATI"],
-    maxConcurrency: 10,
+    proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
     // Activates the Session pool.
     useSessionPool: true,
     // Overrides default Session pool configuration.
