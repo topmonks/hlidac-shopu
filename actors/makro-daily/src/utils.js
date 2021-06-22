@@ -21,10 +21,13 @@ function parseItems($, request) {
       $(this).find("h3.product-title a").length !== 0
         ? $(this).find("h3.product-title a").attr("href")
         : null;
+    let priceElement = $(this).find(".product-price-value-primary");
+    if (priceElement.length === 0) {
+      priceElement = $(this).find(".product-price-value");
+    }
     const currentPriceText =
-      $(this).find(".product-price-value-primary").length !== 0
-        ? $(this)
-            .find(".product-price-value-primary")
+      priceElement.length !== 0
+        ? priceElement
             .eq(0)
             .text()
             .replace(/(\s)/g, "")
@@ -43,9 +46,9 @@ function parseItems($, request) {
       $(this).find(".product-photo img").length !== 0
         ? $(this).find(".product-photo img").attr("src")
         : null;
-    const currency = currentPriceText.split(
-      currentPriceText.match(/\d+\.\d+/)[0]
-    )[1];
+    const currency = currentPriceText
+      ? currentPriceText.split(currentPriceText.match(/\d+\.\d+/)[0])[1]
+      : "CZK";
     results.push({
       itemName,
       url,

@@ -104,9 +104,8 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawling finished.");
   // await persistState();
-  await Apify.setValue("STATS", stats).then(() =>
-    log.debug(`STATS saved! ${JSON.stringify(stats)}`)
-  );
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
   log.info(`Total products: ${global.crawledProducts}.`);
 
   if (!development && type !== "CZECHITAS") {

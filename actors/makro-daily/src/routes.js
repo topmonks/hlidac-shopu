@@ -34,7 +34,6 @@ exports.handleStart = async ({ $, requestQueue }, stats, input) => {
       }
     });
     stats.urls += 1;
-    log.info(JSON.stringify(stats));
   }
 };
 
@@ -75,44 +74,22 @@ exports.handleList = async ({ request, $, requestQueue }, stats, input) => {
 
 exports.handlePage = async ({ $, request }, stats, processedIds) => {
   // Handle details
-  // await Apify.pushData(parseItems($, request));
   const productList = parseItems($, request);
-  // await Apify.pushData(productList);
-  // stats.items += productList.length;
   let requestList = [];
-  // let count = 0;
   // we don't need to block pushes, we will await them all at the end
   for (const product of productList) {
-    const fileName = await s3FileName(product);
-    if (!processedIds.has(fileName)) {
-      processedIds.add(fileName);
-      // if (!processedIds.has(product.itemId)) {
-      //   // const fileName = await s3FileName(product);
-      //   processedIds.add(product.itemId);
-      //   log.info(`fileName ${fileName}, productUrl ${product.itemUrl}`);
-      // // push data to dataset to be ready for upload to Keboola
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      const fileName = await s3FileName(product);
       requestList.push(
-        Apify.pushData(product)
-        //   // upload JSON+LD data to CDN
-        //   uploadToS3(
-        //     s3,
-        //     `notino.${country.toLowerCase()}`,
-        //     fileName,
-        //     "jsonld",
-        //     toProduct(product, {})
-        //   )
+        Apify.pushData(product),
+        // upload JSON+LD data to CDN
+        uploadToS3(s3, "makro.cz", fileName, "jsonld", toProduct(product, {}))
       );
-      // count += 1;
       stats.items += 1;
     } else {
       stats.itemsDuplicity += 1;
     }
-    // if (count > 49) {
-    //   await Promise.all(requestList);
-    //   requestList = [];
-    //   count = 0;
-    //   await Apify.utils.sleep(2222);
-    // }
   }
   await Promise.all(requestList);
 };

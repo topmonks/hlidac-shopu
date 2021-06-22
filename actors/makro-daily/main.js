@@ -1,13 +1,6 @@
-// const { S3Client } = require("@aws-sdk/client-s3");
-// const s3 = new S3Client({ region: "eu-central-1" });
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
-  invalidateCDN
-  // toProduct,
-  // uploadToS3,
-  // s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
@@ -22,10 +15,9 @@ const processedIds = new Set();
 Apify.main(async () => {
   log.info("ACTOR - start");
 
-  // rollbar.init();
-  // const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
-  // const { mode } = await Apify.getInput();
   const input = await Apify.getInput();
   const {
     debug = false,
@@ -46,7 +38,6 @@ Apify.main(async () => {
 
   const requestQueue = await Apify.openRequestQueue();
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    // apifyProxyGroups: ["CZECH_LUMINATI"],
     groups: proxyGroups
   });
 
@@ -88,43 +79,13 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
 
-  // if (!mode) {
-  //   const env = await Apify.getEnv();
-  //   try {
-  //     const run = await Apify.callTask(
-  //       "blackfriday/status-page-store",
-  //       {
-  //         datasetId: env.defaultDatasetId,
-  //         name: "makro-cz"
-  //       },
-  //       {
-  //         waitSecs: 25
-  //       }
-  //     );
-  //     console.log(`Status upload called: ${run.id}`);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  //
-  //   try {
-  //     const run = await Apify.call(
-  //       "blackfriday/uploader",
-  //       {
-  //         datasetId: env.defaultDatasetId,
-  //         upload: true,
-  //         actRunId: env.actorRunId,
-  //         blackFriday: false,
-  //         tableName: "makro_cz"
-  //       },
-  //       {
-  //         waitSecs: 25
-  //       }
-  //     );
-  //     console.log(`Keboola upload called: ${run.id}`);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "makro.cz");
+  log.info("invalidated Data CDN");
+
+  if (!development) {
+    await uploadToKeboola("makro_cz");
+    log.info("upload to Keboola finished");
+  }
 
   log.info("ACTOR - Finished");
 });
