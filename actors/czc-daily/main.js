@@ -16,6 +16,10 @@ Apify.main(async () => {
   } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
+  if (development || debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
+
   if (type === "FULL") {
     await requestQueue.addRequest({
       url: "https://www.czc.cz/",
@@ -35,6 +39,14 @@ Apify.main(async () => {
       url: "https://www.czc.cz/black-friday/produkty",
       userData: {
         label: "BF"
+      }
+    });
+  } else if (type === "TEST") {
+    await requestQueue.addRequest({
+      url: "https://www.czc.cz/pocitacove-vybaveni-a-doplnky/produkty",
+      userData: {
+        label: "PAGE",
+        baseUrl: "https://www.czc.cz/pocitacove-vybaveni-a-doplnky/produkty"
       }
     });
   }
@@ -110,6 +122,7 @@ Apify.main(async () => {
           }
         }
       } else if (request.userData.label === "PAGE") {
+        log.debug(`START with page ${request.url}`);
         try {
           // we don't want to enqueu pagination on every page
           if (
@@ -191,7 +204,7 @@ Apify.main(async () => {
   await crawler.run();
 
   console.log("crawler finished, calling upload.");
-  if (!test) {
+  if (!development) {
     // calling the keboola upload
     try {
       const env = await Apify.getEnv();
