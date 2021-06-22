@@ -15,6 +15,9 @@ async function extractItems($, request, web) {
         // console.log(result.name);
       }
 
+      result.inStock =
+        $(this).find("span.availability-state-on-stock").length > 0;
+
       if (
         $(this).find("div.price-wrapper").eq(0).find("span.alone").length !== 0
       ) {
