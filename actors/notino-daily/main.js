@@ -69,7 +69,6 @@ Apify.main(async () => {
     categories: 0,
     categoriesDone: 0,
     items: 0,
-    // itemsDone: 0,
     pages: 0,
     itemsDuplicity: 0
   };
@@ -81,6 +80,12 @@ Apify.main(async () => {
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
+    useSessionPool: true,
+    sessionPoolOptions: {
+      maxPoolSize: 20
+    },
+    ignoreSslErrors: true,
+    persistCookiesPerSession: true,
     proxyConfiguration,
     handlePageFunction:
       // eslint-disable-next-line max-len

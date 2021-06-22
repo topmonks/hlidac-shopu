@@ -1,4 +1,4 @@
-# Benu actor
+# Makro actor
 
 Scrapes data from https://www.makro.cz
 

@@ -68,7 +68,6 @@ exports.handleList = async ({ request, $, requestQueue }, stats, input) => {
       }
     );
     stats.urls += 1;
-    log.info(JSON.stringify(stats));
   }
 };
 
