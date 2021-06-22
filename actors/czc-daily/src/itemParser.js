@@ -68,8 +68,12 @@ async function extractItems($, request, web) {
 
       result.discounted = $(this).find(".action").length !== 0;
 
-      if ($(this).find("img").attr("data-src").length !== 0) {
-        result.img = $(this).find("img").attr("data-src").replace("_2", "_1");
+      if ($(this).find("img").last().attr("data-src").length !== 0) {
+        result.img = $(this)
+          .find("img")
+          .last()
+          .attr("data-src")
+          .replace("_2", "_1");
       }
       result.category = [];
       $(".breadcrumbs a:not([class])").each(function () {
