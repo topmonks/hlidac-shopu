@@ -3,6 +3,11 @@ const { extractItems } = require("./src/itemParser");
 
 const web = "https://www.czc.cz";
 const { log } = Apify.utils;
+
+let stats = {};
+let duplicityItems = [];
+const processedIds = new Set();
+
 Apify.main(async () => {
   // Get queue and enqueue first url.
   const input = await Apify.getInput();
@@ -14,6 +19,16 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsSkipped: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+
   const requestQueue = await Apify.openRequestQueue();
 
   if (development || debug) {
@@ -43,10 +58,11 @@ Apify.main(async () => {
     });
   } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: "https://www.czc.cz/pocitacove-vybaveni-a-doplnky/produkty",
+      url: "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty",
       userData: {
         label: "PAGE",
-        baseUrl: "https://www.czc.cz/pocitacove-vybaveni-a-doplnky/produkty"
+        baseUrl:
+          "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty"
       }
     });
   }
@@ -85,6 +101,7 @@ Apify.main(async () => {
             items.push(categoryUrl);
           }
         });
+        stats.categories += items.length;
         console.log(`Found ${items.length} valid urls, going to enqueue them.`);
         for (const categoryUrl of items) {
           await requestQueue.addRequest({
@@ -123,6 +140,7 @@ Apify.main(async () => {
         }
       } else if (request.userData.label === "PAGE") {
         log.debug(`START with page ${request.url}`);
+        stats.pages++;
         try {
           // we don't want to enqueu pagination on every page
           if (
@@ -176,6 +194,7 @@ Apify.main(async () => {
                 }
               });
             });
+            stats.categories += subCategoryUrls.length;
             for (const item of subCategoryUrls) {
               await requestQueue.addRequest(item);
             }
@@ -186,11 +205,26 @@ Apify.main(async () => {
 
         try {
           const items = await extractItems($, request, web);
+          // we don't need to block pushes, we will await them all at the end
+          const requests = [];
+          for (const product of items) {
+            if (!processedIds.has(product.itemId)) {
+              processedIds.add(product.itemId);
+              stats.items++;
+            } else {
+              stats.itemsDuplicity++;
+              duplicityItems.push(product);
+              await Apify.setValue("DUPLICITY", duplicityItems).then(() =>
+                log.debug("DUPLICITY saved!")
+              );
+            }
+          }
           log.debug(`Found ${items.length} storing them, ${request.url}`);
           await Apify.pushData(items);
         } catch (e) {
           log.error(e);
           log.info(`Failed extraction of items. ${request.url}`);
+          stats.failed++;
         }
       }
     },
@@ -203,7 +237,11 @@ Apify.main(async () => {
   // Run crawler.
   await crawler.run();
 
-  console.log("crawler finished, calling upload.");
+  console.log("crawler finished");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
   if (!development) {
     // calling the keboola upload
     try {
