@@ -3828,6 +3828,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.18.0
+    "@aws-sdk/client-s3": ^3.18.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@types/node": ^14.17.3
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+    modern-random-ua: ^1.0.3
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
