@@ -488,8 +488,6 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   try {
-    const env = await Apify.getEnv();
-
     let tableName = "";
 
     if (type === "FULL" && country === "CZ") {
