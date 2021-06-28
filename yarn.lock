@@ -3754,7 +3754,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -3835,6 +3835,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.18.0
     "@aws-sdk/client-s3": ^3.18.0
     "@hlidac-shopu/actors-common": ^1.1.0
+    "@hlidac-shopu/lib": ^1.0.5
     "@types/node": ^14.17.3
     apify: ^1.2.1
     apify-cli: ^0.6.2
