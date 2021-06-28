@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { extractItems } = require("./src/itemParser");
 
@@ -5,10 +16,11 @@ const web = "https://www.czc.cz";
 const { log } = Apify.utils;
 
 let stats = {};
-let duplicityItems = [];
 const processedIds = new Set();
 
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   // Get queue and enqueue first url.
   const input = await Apify.getInput();
   const {
@@ -209,18 +221,31 @@ Apify.main(async () => {
           const requests = [];
           for (const product of items) {
             if (!processedIds.has(product.itemId)) {
+              // Save data to dataset
+              const s3item = { ...product };
+              //Keboola data structure fix
+              delete product.inStock;
               processedIds.add(product.itemId);
+              requests.push(
+                Apify.pushData(product),
+                uploadToS3(
+                  s3,
+                  "czc.cz",
+                  await s3FileName(s3item),
+                  "jsonld",
+                  toProduct(s3item, {})
+                )
+              );
               stats.items++;
             } else {
               stats.itemsDuplicity++;
-              duplicityItems.push(product);
-              await Apify.setValue("DUPLICITY", duplicityItems).then(() =>
-                log.debug("DUPLICITY saved!")
-              );
             }
           }
-          log.debug(`Found ${items.length} storing them, ${request.url}`);
-          await Apify.pushData(items);
+          log.debug(
+            `Found ${requests.length / 2} unique products, ${request.url}`
+          );
+          // await all requests, so we don't end before they end
+          await Promise.allSettled(requests);
         } catch (e) {
           log.error(e);
           log.info(`Failed extraction of items. ${request.url}`);
@@ -243,41 +268,11 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   if (!development) {
-    // calling the keboola upload
     try {
-      const env = await Apify.getEnv();
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: type !== "FULL",
-          tableName: type !== "FULL" ? "czc_bf" : "czc"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
-
-    // stats page
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          name: type !== "FULL" ? "czc-black-friday" : "Czc-cz-complete-eshop"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      console.log(`Status page called: ${run.id}`);
+      await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "czc.cz");
+      log.info("invalidated Data CDN");
+      await uploadToKeboola(type !== "FULL" ? "czc_bf" : "czc");
+      log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);
     }

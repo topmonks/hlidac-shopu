@@ -13,17 +13,26 @@
 }
 ```
 ```text
-"type": "FULL" || "TEST"
+"type": "FULL" || "BF" || "TEST"
 ```
 ## Actors item example OUTPUT
 
 ```json
 {
-    "itemUrl": "https://czc.cz/samsung-galaxy-xcover-4s-3gb-32gb-cerna/263515/produkt",
-    "itemId": "263515",
-    "itemName": "Samsung Galaxy Xcover 4s, 3GB/32GB, černá",
-    "currentPrice": 6499,
-    "discounted": false,
-    "img": "https://iczc.cz/fg8bo5dcloi2m817el48j7h9l7-1_1/obrazek"
+  "itemUrl": "https://www.czc.cz/retrak-vr-headset-utopia-360/225999/produkt",
+  "itemId": "225999",
+  "itemName": "ReTrak VR Headset Utopia 360",
+  "inStock": true,
+  "currentPrice": 299,
+  "originalPrice": 505,
+  "discounted": true,
+  "img": "https://iczc.cz/82rkjl0ftojc8b9175o2hik84a_1/obrazek",
+  "category": [
+    "Úvodní stránka",
+    "Mobily a navigace",
+    "Virtuální realita",
+    "Brýle pro telefony"
+  ],
+  "paginationUrl": "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty"
 }
 ```
