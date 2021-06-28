@@ -109,6 +109,7 @@
     "outdated": "yarn upgrade-interactive"
   },
   "workspaces": [
+    "actors/aaaauto-daily",
     "actors/benu-daily",
     "actors/common",
     "actors/czc-daily",
