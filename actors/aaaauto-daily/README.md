@@ -2,15 +2,35 @@
 
 Scrapes prices of all car offers on AAAAuto.cz
 
-## Dataset
+## Actors INPUT
+<sup>~ apify_storage/key_value_stores/default/INPUT.json</sup>
 
-* carName - car name as shown on offer
-* offerDetailUrl - URL to offer detail
-* finalPrice - final price with applied discount(this is final cash price, not price available when buying on installment)
-* discount - discount applied
-* discountType - type(name) of discount
+```json
+{
+  "development": false,
+  "debug": false,
+  "maxRequestRetries": 3,
+  "maxConcurrency": 10,
+  "type": "FULL"
+}
+```
+## Actors item example OUTPUT
 
-## TODO
-
-* Add some delays between requests
-* for of with cheerio set
+```json
+{
+  "itemUrl": "https://www.aaaauto.sk/sk/hyundai-tucson/car.html?id=399451975#limit=50&promo=b",
+  "itemId": "399451975",
+  "description": "FAMILY, VIN: TMAJ3811AHJ340246",
+  "img": "https://aaaautoeuimg.vshcdn.net/thumb/700097495_640x480x95.jpg?80456",
+  "itemName": "Hyundai Tucson",
+  "currentPrice": "16500",
+  "currency": "Eur",
+  "actionPrice": 14500,
+  "discounted": false,
+  "year": " 2017",
+  "km": " 38 611 km",
+  "transmission": " 6 stupňov",
+  "fuelType": " Benzín",
+  "engine": "1.6 GDI / 97kW"
+}
+```

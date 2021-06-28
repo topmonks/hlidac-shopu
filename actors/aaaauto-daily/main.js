@@ -1,7 +1,16 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const randomUA = require("modern-random-ua");
 const tools = require("./src/tools");
-const { load } = require("cheerio");
 const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
 
 const { log, requestAsBrowser } = Apify.utils;
@@ -10,91 +19,163 @@ const ROOT_URL = "https://aaaauto.cz/ojete-vozy";
 const ROOT_URL_SK = "https://www.aaaauto.sk/ojazdene-vozidla/";
 
 Apify.main(async () => {
-  log.info("Starting AAAAuto prices scraper");
-
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
-  const { country = COUNTRY_TYPE.CZ } = input;
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    country = COUNTRY_TYPE.CZ
+  } = input ?? {};
   const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
   const requestQueue = await Apify.openRequestQueue();
+
+  if (development || debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
+
   const countryType =
     country === COUNTRY_TYPE.CZ ? COUNTRY_TYPE.CZ : COUNTRY_TYPE.SK;
   await requestQueue.addRequest({
-    url: BASE_URL(countryType),
-    headers: { ...HEADER, "User-Agent": randomUA.generate() },
+    url: rootUrl,
     userData: {
       label: LABELS.START
     }
   });
-  const proxyUrl = (await Apify.createProxyConfiguration({})).newUrl();
-
-  // Create route
-  const router = tools.createRouter({
-    requestQueue,
-    country,
-    rootUrl
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
-
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 1,
-    handleRequestTimeoutSecs: 300,
-    handleRequestFunction: async ({ request }) => {
-      log.info(`Scraping ${request.url}`);
-      const { label } = request.userData;
+    proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
+    // Activates the Session pool.
+    useSessionPool: true,
+    // Overrides default Session pool configuration.
+    sessionPoolOptions: {
+      maxPoolSize: maxConcurrency
+    },
+    handlePageTimeoutSecs: 300,
+    handlePageFunction: async ({ request, $ }) => {
+      log.info(`Scraping page ${request.url}`);
 
-      const response = await requestAsBrowser({
-        url: request.url,
-        proxyUrl,
-        headers: request.headers,
-        json: true
-      });
+      if (request.userData.label === "START") {
+        const pages = $("nav.pagenav li");
+        const lastPage = pages
+          .eq(pages.length - 2)
+          .find("a")
+          .text()
+          .trim();
+        await Array.from(
+          { length: lastPage },
+          (_value, index) => index + 1
+        ).map(async pageNumber => {
+          await requestQueue.addRequest({
+            url: BASE_URL(country, pageNumber),
+            userData: { label: LABELS.PAGE, pageNumber }
+          });
+        });
+      } else if (request.userData.label === "PAGE") {
+        const offers = $(".card").toArray();
+        // we don't need to block pushes, we will await them all at the end
+        const requests = [];
+        let sleepTotal = 0;
+        for (const offer of offers) {
+          const $offer = $(offer);
+          const link = $offer.find("a.fullSizeLink").attr("href");
+          const figure = $offer.find("figure");
+          const url = new URL(link, rootUrl);
+          const itemId = url.searchParams.get("id");
+          const itemName = $offer.find("h2 a").text().trim();
+          const arr = itemName.split(",");
 
-      const $ = load(response.body.html);
+          const currentPrice = $offer
+            .find("span[id*=garageHeart]")
+            .attr("data-price");
+          const actionPrice = tools.extractPrice(
+            $offer.find(".carPrice h3.error:not(.hide)").text()
+          );
+          let originalPrice = $offer
+            .find(".carPrice .darkGreyAlt")
+            .find(".hix")
+            .remove();
+          originalPrice = tools.extractPrice(
+            $offer.find(".carFeatures p").text()
+          );
 
-      // Redirect to route
-      await router(request.userData.label, { $, request });
-      if (label === LABELS.START) {
-      } else if (label === LABELS.PAGE) {
+          const description = $offer.find(".carFeatures p").text().trim();
+          const carFeatures = $offer
+            .find(".carFeaturesList li")
+            .toArray()
+            .map(feature => {
+              return $(feature).text();
+            });
+
+          const [km, transmission, fuelType, engine] = carFeatures;
+          const product = {
+            itemUrl: link,
+            itemId,
+            description,
+            img: figure.length > 0 ? figure.find("img").attr("src") : null,
+            itemName: arr[0],
+            currentPrice,
+            originalPrice,
+            currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
+            actionPrice,
+            discounted: !!originalPrice,
+            year: arr[1] ? arr[1] : undefined,
+            km,
+            transmission,
+            fuelType,
+            engine
+          };
+          requests.push(
+            Apify.pushData(product),
+            uploadToS3(
+              s3,
+              "aaaauto.cz",
+              await s3FileName(product),
+              "jsonld",
+              toProduct(
+                {
+                  ...product,
+                  category: "",
+                  inStock: true
+                },
+                {}
+              )
+            )
+          );
+          sleepTotal += tools.getHumanDelayMillis(250, 950);
+        }
+        log.debug(`Found ${requests.length / 2} cars, ${request.url}`);
+        // await all requests, so we don't end before they end
+        await Promise.allSettled(requests);
+        await Apify.utils.sleep(sleepTotal);
       }
     }
   });
   await crawler.run();
 
   log.info("Crawler finished.");
-  const env = await Apify.getEnv();
-  try {
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: false,
-        tableName: country !== "CZ" ? "aaaauto_sk" : "aaaauto_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Keboola upload called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
+
+  if (!development) {
+    try {
+      await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "aaaauto.cz");
+      log.info("invalidated Data CDN");
+      await uploadToKeboola(country !== "CZ" ? "aaaauto_sk" : "aaaauto_cz");
+      log.info("upload to Keboola finished");
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  // stats page
-  try {
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: "aaaauto_cz"
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    console.log(`Status page called: ${run.id}`);
-  } catch (e) {
-    console.log(e);
-  }
+  console.log("Finished.");
 });

@@ -1,5 +1,4 @@
 const Apify = require("apify");
-const routes = require("./routes");
 
 const { log } = Apify.utils;
 /**
@@ -24,14 +23,4 @@ exports.getHumanDelayMillis = (min = 400, max = 800) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-// Create router
-exports.createRouter = globalContext => {
-  return async function (routeName, requestContext) {
-    const route = routes[routeName];
-    if (!route) throw new Error(`No route for name: ${routeName}`);
-    log.debug(`Invoking route: ${routeName}`);
-    return route(requestContext, globalContext);
-  };
 };
