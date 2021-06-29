@@ -3527,6 +3527,8 @@ __metadata:
     "@types/node": ^14.17.3
     apify: ^1.2.1
     apify-cli: ^0.6.2
+    header-generator: ^1.0.0
+    modern-random-ua: ^1.0.3
   languageName: unknown
   linkType: soft
 
@@ -12904,6 +12906,16 @@ fsevents@^1.2.7:
     generative-bayesian-network: 0.1.0-beta.1
     ow: ^0.23.0
   checksum: dba50154cdbe176614968fe045f287f4c58f27990f8a22774559b7a10c6c89cba1a33bc7b3d8c5ccb6ba216f4e0e3942624346b778fc80c5327151385d618fa4
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "header-generator@npm:1.0.0"
+  dependencies:
+    generative-bayesian-network: 0.1.0-beta.1
+    ow: ^0.23.0
+  checksum: da4d8f65749e5ccc70d2df73621e81c3209a257ec066b10e3ae1b92d1522b1a918a91f65220a4ad8f13c097cffa402363d134710324142f76bde7656193a2f1a
   languageName: node
   linkType: hard
 

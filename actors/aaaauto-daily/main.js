@@ -10,9 +10,20 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const randomUA = require("modern-random-ua");
+const HeaderGenerator = require("header-generator");
 const { load } = require("cheerio");
 const tools = require("./src/tools");
-const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
+const { LABELS, COUNTRY_TYPE, BASE_URL } = require("./src/const");
+let HEADER = new HeaderGenerator({
+  browsers: [
+    { name: "firefox", minVersion: 80 },
+    { name: "chrome", minVersion: 87 },
+    "safari"
+  ],
+  devices: ["desktop"],
+  operatingSystems: ["windows"]
+});
 
 const { log, requestAsBrowser } = Apify.utils;
 
@@ -38,8 +49,11 @@ Apify.main(async () => {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
+  console.log(randomUA.generate());
+
   await requestQueue.addRequest({
     url: rootUrl,
+    headers: { ...HEADER, "User-Agent": randomUA.generate() },
     userData: {
       label: LABELS.START
     }
@@ -54,10 +68,10 @@ Apify.main(async () => {
   const crawler = new Apify.BasicCrawler({
     requestQueue,
     maxRequestRetries,
+    maxConcurrency,
     handleRequestTimeoutSecs: 300,
     handleRequestFunction: async ({ request }) => {
       log.info(`Scraping page ${request.url}`);
-
       const response = await requestAsBrowser({
         url: request.url,
         proxyUrl,
@@ -77,6 +91,7 @@ Apify.main(async () => {
         ).map(async pageNumber => {
           await requestQueue.addRequest({
             url: BASE_URL(country, pageNumber),
+            headers: { ...HEADER, "User-Agent": randomUA.generate() },
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
