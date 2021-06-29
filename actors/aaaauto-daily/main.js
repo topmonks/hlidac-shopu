@@ -27,7 +27,7 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"],
+    proxyGroups = ["RESIDENTIAL"],
     country = COUNTRY_TYPE.CZ
   } = input ?? {};
   const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
@@ -47,17 +47,18 @@ Apify.main(async () => {
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: !development
+    useApifyProxy: !development,
+    countryCode: country
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
+    proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    useSessionPool: false,
     handlePageTimeoutSecs: 300,
-    handlePageFunction: async ({ request, $ }) => {
+    handlePageFunction: async ({ request, $, proxyInfo }) => {
       log.info(`Scraping page ${request.url}`);
-
+      console.log(proxyInfo);
       if (request.userData.label === "START") {
         const pages = $("nav.pagenav li");
         const lastPage = pages
