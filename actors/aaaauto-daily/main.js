@@ -27,7 +27,7 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    proxyGroups = ["RESIDENTIAL"],
+    proxyGroups = ["CZECH_LUMINATI"],
     country = COUNTRY_TYPE.CZ
   } = input ?? {};
   const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
@@ -47,8 +47,7 @@ Apify.main(async () => {
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: !development,
-    countryCode: country
+    useApifyProxy: !development
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
@@ -153,6 +152,12 @@ Apify.main(async () => {
         await Promise.allSettled(requests);
         await Apify.utils.sleep(sleepTotal);
       }
+    },
+    handleFailedRequestFunction: async ({ error, request, body }) => {
+      log.error(`Request ${request.url} failed multiple times`, request);
+      console.log(request.statusCode);
+      console.log(error);
+      console.log(body);
     }
   });
   await crawler.run();
