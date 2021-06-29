@@ -35,6 +35,9 @@ const processedIds = new Set();
 Apify.main(async () => {
   log.info("ACTOR - start");
 
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
   const {
     country = COUNTRY.CZ,
@@ -67,30 +70,13 @@ Apify.main(async () => {
     await requestQueue.addRequest({ url: rootUrl });
   }
 
-  // // const { startUrls } = await Apify.getInput();
-  // const { test, mode } = await Apify.getInput();
-  // // const requestList = await Apify.openRequestList('start-urls', startUrls);
-  // const requestQueue = await Apify.openRequestQueue();
-  // if (mode === "BF") {
-  //   await requestQueue.addRequest({
-  //     url: "https://www.okay.cz/blackfriday/",
-  //     userData: { label: "BF" }
-  //   });
-  // } else {
-  //   await requestQueue.addRequest({ url: "https://www.okay.cz/" });
-  // }
-
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
-  // const productList = [];
   let promiseList = [];
   const crawler = new Apify.CheerioCrawler({
-    // requestList,
     requestQueue,
     proxyConfiguration,
-    // useApifyProxy: true,
-    // apifyProxyGroups: ["CZECH_LUMINATI"],
     useSessionPool: true,
     persistCookiesPerSession: true,
     maxConcurrency,
@@ -109,13 +95,10 @@ Apify.main(async () => {
         case "DETAIL":
           const product = await handleDetail(context, stats, country);
           stats.totalItems += 1;
-          // productList.push(product);
           if (!processedIds.has(product.itemId)) {
             processedIds.add(product.itemId);
-            // const fileName = await s3FileName(product);
             promiseList.push(
               Apify.pushData(product),
-              // upload JSON+LD data to CDN
               uploadToS3(
                 s3,
                 `okay.${country.toLowerCase()}`,
@@ -125,6 +108,10 @@ Apify.main(async () => {
               )
             );
             stats.items += 1;
+            if (promiseList.length > 90) {
+              await Promise.all(promiseList);
+              promiseList = [];
+            }
           } else {
             stats.itemsDuplicity += 1;
           }
@@ -134,11 +121,6 @@ Apify.main(async () => {
           break;
         default:
           await handleStart(context, stats, development);
-      }
-      // todo
-      if (promiseList > 80) {
-        await Promise.all(promiseList);
-        promiseList = [];
       }
     }
   });
@@ -150,46 +132,20 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats);
   log.info(JSON.stringify(stats));
 
-  // if (!test) {
-  //   // calling the keboola upload
-  //   try {
-  //     const env = await Apify.getEnv();
-  //     const run = await Apify.call(
-  //       "blackfriday/uploader",
-  //       {
-  //         datasetId: env.defaultDatasetId,
-  //         upload: true,
-  //         actRunId: env.actorRunId,
-  //         blackFriday: mode === "BF",
-  //         tableName: mode === "BF" ? "okay_cz_bf" : "okay_cz"
-  //       },
-  //       {
-  //         waitSecs: 25
-  //       }
-  //     );
-  //     console.log(`Keboola upload called: ${run.id}`);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  //
-  //   // stats page
-  //   try {
-  //     const env = await Apify.getEnv();
-  //     const run = await Apify.callTask(
-  //       "blackfriday/status-page-store",
-  //       {
-  //         datasetId: env.defaultDatasetId,
-  //         name: mode === "BF" ? "okay_cz_bf" : "okay_cz"
-  //       },
-  //       {
-  //         waitSecs: 25
-  //       }
-  //     );
-  //     console.log(`stats upload called: ${run.id}`);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
+  await invalidateCDN(
+    cloudfront,
+    "EQYSHWUECAQC9",
+    `okay.${country.toLowerCase()}`
+  );
+  log.info("invalidated Data CDN");
+
+  if (!development) {
+    const tableName = `okay_${country.toLowerCase()}${
+      type === "BF" ? "_bf" : ""
+    }`;
+    await uploadToKeboola(tableName);
+    log.info("upload to Keboola finished");
+  }
 
   log.info("ACTOR - Finished");
 });

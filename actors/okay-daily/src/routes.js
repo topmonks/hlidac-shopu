@@ -111,7 +111,7 @@ const handleDetail = async ({ request, $ }, stats, country) => {
       .replace(/,/, ".")
       .trim()
   );
-  const discountText = country === COUNTRY.CZ ? "SLEVA" : "ZLAVA";
+  const discountText = country === COUNTRY.CZ ? "SLEVA" : "ZĽAVA";
   let additionalDiscount = productDescription.labels.find(x =>
     x.includes(discountText)
   );
@@ -119,12 +119,20 @@ const handleDetail = async ({ request, $ }, stats, country) => {
     additionalDiscount = parseFloat(
       additionalDiscount.replace(discountText, "").replace(/,/, ".").trim()
     );
-    if (additionalDiscount)
-      result.currentPrice = Math.trunc(
-        result.currentPrice * ((100 - additionalDiscount) / 100)
-      );
-    // todo additionalDiscount for example 15% czk and eur
-    // Math.round(result.currentPrice * ((100 - additionalDiscount) / 100) * 100) / 100;
+    if (additionalDiscount) {
+      let price;
+      if (country === COUNTRY.CZ) {
+        price = Math.trunc(
+          result.currentPrice * ((100 - additionalDiscount) / 100)
+        );
+      } else {
+        price =
+          Math.round(
+            result.currentPrice * ((100 - additionalDiscount) / 100) * 100
+          ) / 100;
+      }
+      result.currentPrice = price;
+    }
   }
   if (!result.originalPrice) result.originalPrice = result.currentPrice;
   result.discounted = result.currentPrice < result.originalPrice;
@@ -136,10 +144,6 @@ const handleDetail = async ({ request, $ }, stats, country) => {
   result.blackFriday = $('p.flags img[alt="Black friday"]').length !== 0;
 
   return result;
-  // await Apify.pushData(result);
-  // // todo Cause:ApifyApiError: You have exceeded the rate limit of 30 requests per second
-  // stats.items += 1;
-  // stats.totalItems += 1;
 };
 
 module.exports = {
