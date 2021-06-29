@@ -53,6 +53,7 @@ Apify.main(async () => {
     requestQueue,
     maxRequestRetries,
     maxConcurrency,
+    useSessionPool: false,
     handlePageTimeoutSecs: 300,
     handlePageFunction: async ({ request, $ }) => {
       log.info(`Scraping page ${request.url}`);
