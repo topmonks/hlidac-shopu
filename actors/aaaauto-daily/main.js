@@ -10,7 +10,6 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const randomUA = require("modern-random-ua");
 const tools = require("./src/tools");
 const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
 
@@ -40,7 +39,6 @@ Apify.main(async () => {
 
   await requestQueue.addRequest({
     url: rootUrl,
-    headers: { ...HEADER, "User-Agent": randomUA.generate() },
     userData: {
       label: LABELS.START
     }
@@ -53,15 +51,8 @@ Apify.main(async () => {
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    // Activates the Session pool.
-    useSessionPool: true,
-    // Overrides default Session pool configuration.
-    sessionPoolOptions: {
-      maxPoolSize: maxConcurrency
-    },
     handlePageTimeoutSecs: 300,
     handlePageFunction: async ({ request, $ }) => {
       log.info(`Scraping page ${request.url}`);
@@ -79,7 +70,6 @@ Apify.main(async () => {
         ).map(async pageNumber => {
           await requestQueue.addRequest({
             url: BASE_URL(country, pageNumber),
-            headers: { ...HEADER, "User-Agent": randomUA.generate() },
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
