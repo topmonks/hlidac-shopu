@@ -10,6 +10,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const { load } = require("cheerio");
 const tools = require("./src/tools");
 const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
 
@@ -45,25 +46,24 @@ Apify.main(async () => {
   });
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development
-  });
-  const crawler = new Apify.CheerioCrawler({
+  const proxyUrl = (
+    await Apify.createProxyConfiguration({
+      groups: proxyGroups
+    })
+  ).newUrl();
+  const crawler = new Apify.BasicCrawler({
     requestQueue,
-    proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
-    useSessionPool: true,
-    sessionPoolOptions: {
-      maxPoolSize: 20
-    },
-    ignoreSslErrors: true,
-    persistCookiesPerSession: true,
-    requestTimeoutSecs: 300,
-    handlePageTimeoutSecs: 300,
-    handlePageFunction: async ({ request, $ }) => {
+    handleRequestTimeoutSecs: 300,
+    handleRequestFunction: async ({ request }) => {
       log.info(`Scraping page ${request.url}`);
+
+      const response = await requestAsBrowser({
+        url: request.url,
+        proxyUrl,
+        headers: request.headers
+      });
+      const $ = load(response.body);
       if (request.userData.label === "START") {
         const pages = $("nav.pagenav li");
         const lastPage = pages
