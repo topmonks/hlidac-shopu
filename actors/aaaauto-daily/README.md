@@ -11,8 +11,11 @@ Scrapes prices of all car offers on AAAAuto.cz
   "debug": false,
   "maxRequestRetries": 3,
   "maxConcurrency": 10,
-  "type": "FULL"
+  "country": "CZ"
 }
+```
+```text
+"country": "CZ" || "SK"
 ```
 ## Actors item example OUTPUT
 

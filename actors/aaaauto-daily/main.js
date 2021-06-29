@@ -37,8 +37,6 @@ Apify.main(async () => {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
-  const countryType =
-    country === COUNTRY_TYPE.CZ ? COUNTRY_TYPE.CZ : COUNTRY_TYPE.SK;
   await requestQueue.addRequest({
     url: rootUrl,
     userData: {
