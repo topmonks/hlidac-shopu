@@ -54,6 +54,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
+    requestTimeoutSecs: 300,
     handlePageTimeoutSecs: 300,
     handlePageFunction: async ({ request, $, proxyInfo }) => {
       log.info(`Scraping page ${request.url}`);
