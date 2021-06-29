@@ -6,8 +6,8 @@
 	"description": "This is the czc.cz actor.",
 	"main": "main.js",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.18.0",
-		"@aws-sdk/client-s3": "^3.18.0",
+		"@aws-sdk/client-cloudfront": "^3.19.0",
+		"@aws-sdk/client-s3": "^3.19.0",
 		"@hlidac-shopu/actors-common": "^1.1.0",
 		"apify": "^1.2.1"
 	},
