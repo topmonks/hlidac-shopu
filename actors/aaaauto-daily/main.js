@@ -54,11 +54,16 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
+    useSessionPool: true,
+    sessionPoolOptions: {
+      maxPoolSize: 20
+    },
+    ignoreSslErrors: true,
+    persistCookiesPerSession: true,
     requestTimeoutSecs: 300,
     handlePageTimeoutSecs: 300,
-    handlePageFunction: async ({ request, $, proxyInfo }) => {
+    handlePageFunction: async ({ request, $ }) => {
       log.info(`Scraping page ${request.url}`);
-      console.log(proxyInfo);
       if (request.userData.label === "START") {
         const pages = $("nav.pagenav li");
         const lastPage = pages
