@@ -141,14 +141,14 @@ Apify.main(async () => {
     "EQYSHWUECAQC9",
     `okay.${country.toLowerCase()}`
   );
-  log.info("invalidated Data CDN");
+  log.info(`invalidated Data CDN: okay.${country.toLowerCase()}`);
 
   if (!development) {
     const tableName = `okay_${country.toLowerCase()}${
       type === "BF" ? "_bf" : ""
     }`;
     await uploadToKeboola(tableName);
-    log.info("upload to Keboola finished");
+    log.info(`upload to Keboola finished: ${tableName}`);
   }
 
   log.info("ACTOR - Finished");
