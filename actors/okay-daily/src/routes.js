@@ -19,7 +19,7 @@ const handleStart = async ({ $, requestQueue }, stats, development = false) => {
     .get();
   if (development) {
     links = links.slice(0, 1);
-    log.info("Develoment mode, adding only 1 list to requestQueue");
+    log.debug("Develoment mode, adding only 1 list to requestQueue");
   }
   for (const link of links) {
     // request is an object, setting url to link and in userdata, setting new dictionary label: LIST
@@ -44,7 +44,7 @@ const handleList = async ({ $, requestQueue }, stats, development) => {
     .get();
   if (development) {
     links = links.slice(0, 1);
-    log.info("Develoment mode, crawl 1 product");
+    log.debug("Develoment mode, crawl 1 product");
   }
   for (const link of links) {
     await requestQueue.addRequest({
@@ -79,7 +79,7 @@ const handleBFListing = async (
     .get();
   if (development) {
     links = links.slice(0, 1);
-    log.info("Develoment mode, adding only 1 list to requestQueue");
+    log.debug("Develoment mode, adding only 1 list to requestQueue");
   }
   for (const link of links) {
     await requestQueue.addRequest({

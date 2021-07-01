@@ -86,7 +86,7 @@ Apify.main(async () => {
         url,
         userData: { label }
       } = context.request;
-      log.info("Page opened.", { label, url });
+      log.debug("Page opened.", { label, url });
       context.requestQueue = requestQueue;
       switch (label) {
         case "LIST":
@@ -108,7 +108,7 @@ Apify.main(async () => {
               )
             );
             stats.items += 1;
-            if (promiseList.length > 90) {
+            if (promiseList.length >= 100) {
               await Promise.all(promiseList);
               promiseList = [];
             }
@@ -127,6 +127,10 @@ Apify.main(async () => {
 
   log.info("Starting the crawl.");
   await crawler.run();
+  if (promiseList.length > 0) {
+    await Promise.all(promiseList);
+    promiseList = [];
+  }
   log.info("Crawl finished.");
 
   await Apify.setValue("STATS", stats);
