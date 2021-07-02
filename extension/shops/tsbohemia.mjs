@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class TSBohemia extends Shop {
   get injectionPoint() {
-    return ["beforebegin", ".product-tools"]
+    return ["beforebegin", ".product-tools"];
   }
 
   async scrape() {
