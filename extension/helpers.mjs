@@ -15,10 +15,10 @@ export function cleanPrice(s) {
   return cleanPriceText(priceText);
 }
 //Check if price is per unit or per weight
-export function isUnitPrice(s){
+export function isUnitPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
-  return el.textContent.includes("/kg")
+  return el.textContent.includes("/kg");
 }
 //Get price for product weight from price per 1 Kg
 export function cleanUnitPrice(s, quantity) {
@@ -26,7 +26,7 @@ export function cleanUnitPrice(s, quantity) {
   if (!el) return null;
   let priceText = el.textContent;
   const unitPrice = cleanUnitPriceText(priceText);
-  return quantity*(unitPrice/1000).toFixed(2);
+  return quantity * (unitPrice / 1000).toFixed(2);
 }
 
 export function cleanUnitPriceText(priceText) {

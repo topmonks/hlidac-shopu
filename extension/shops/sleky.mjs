@@ -12,7 +12,9 @@ export class SLeky extends Shop {
     const itemId = form.dataset.productId;
     const currentPrice = cleanPrice(form.querySelector("strong.fullprice"));
     const originalPrice = cleanPrice(form.querySelector("dl>dt+dd"));
-    const imageUrl = document.querySelector("img[itemprop=image],.content img").src;
+    const imageUrl = document.querySelector(
+      "img[itemprop=image],.content img"
+    ).src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

@@ -4,7 +4,10 @@ import { StatefulShop } from "./shop.mjs";
 const didRenderDetail = mutations =>
   mutations.find(x =>
     Array.from(x.addedNodes).find(
-      y => (typeof y.classList !== "undefined" &&  y.classList.contains("product-detail-modal")) || (y.localName === "article" && y.dataset.tid === "product-detail")
+      y =>
+        (typeof y.classList !== "undefined" &&
+          y.classList.contains("product-detail-modal")) ||
+        (y.localName === "article" && y.dataset.tid === "product-detail")
     )
   );
 
@@ -26,17 +29,25 @@ export class Kosik extends StatefulShop {
   }
 
   async scrape() {
-    const elem = document.querySelector(
-      "article[data-tid=product-detail]"
-    );
+    const elem = document.querySelector("article[data-tid=product-detail]");
     if (!elem) return;
     try {
       const data = {};
-      data.itemId = elem.querySelector("[itemprop=productID]").getAttribute("content");
+      data.itemId = elem
+        .querySelector("[itemprop=productID]")
+        .getAttribute("content");
       data.title = elem.querySelector("[itemprop=name]").textContent;
-      data.currentPrice = cleanPriceText(elem.querySelector("[itemprop=price]").textContent);
+      data.currentPrice = cleanPriceText(
+        elem.querySelector("[itemprop=price]").textContent
+      );
       data.originalPrice = cleanPrice(".product-header-box s");
-      data.imageUrl = elem.querySelector("[itemprop=image] img").getAttribute("srcset").split(',').pop().trim().split(' ')[0];
+      data.imageUrl = elem
+        .querySelector("[itemprop=image] img")
+        .getAttribute("srcset")
+        .split(",")
+        .pop()
+        .trim()
+        .split(" ")[0];
       return data;
     } catch (e) {
       console.error("Could not find product info", e);
