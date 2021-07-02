@@ -9269,6 +9269,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cssom@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "cssom@npm:0.5.0"
+  checksum: e9eff1b678f4f27d0cc4627c6424484043370c72d98738b73853275ff224a54cb378abb128bc9191fc027579c35ff2dd6d3276e53f78db0a30f683f601607544
+  languageName: node
+  linkType: hard
+
 "csv-parse@npm:^4.16.0":
   version: 4.16.0
   resolution: "csv-parse@npm:4.16.0"
@@ -12960,7 +12967,7 @@ fsevents@^1.2.7:
     gulp-babel: ^8.0.0
     gulp-esbuild: ^0.8.2
     gulp-mode: ^1.1.0
-    linkedom: ^0.9.3
+    linkedom: ^0.10.0
     node-fetch: ^2.6.1
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
@@ -14909,16 +14916,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.9.3":
-  version: 0.9.3
-  resolution: "linkedom@npm:0.9.3"
+"linkedom@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "linkedom@npm:0.10.0"
   dependencies:
     "@ungap/event-target": ^0.2.2
     css-select: ^4.1.3
+    cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^6.1.0
     uhyphen: ^0.1.0
-  checksum: b2c07e2caf5c8e43f27a0ba53ada976eef0d15101a1beedbb49dc4684ee15ed92c8ee6566e92982951927e403b5d2bfe80115d03f216b955494d2e3fdc1648ce
+  checksum: e1607837a028a0144a9a143222736e83015f1ae9609b14dee9a1cca643f18ceb1a6ece86b344814d57a59ca004b477386aa4f68e5961a7ef3af1351d64dbf465
   languageName: node
   linkType: hard
 
