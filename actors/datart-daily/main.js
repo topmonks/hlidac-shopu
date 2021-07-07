@@ -36,80 +36,7 @@ const processedIds = new Set();
  * @param {COUNTRY.CZ|COUNTRY.SK} country
  * @returns {Promise<[]>}
  */
-async function extractItems($, rootUrl, country) {
-  switch (country) {
-    case "CZ":
-      return await parseItemsCZ($, rootUrl);
-    case "SK":
-      return await parseItemsSK($, rootUrl);
-  }
-}
-
-async function parseItemsCZ($, rootUrl) {
-  const itemsArray = [];
-  // products
-  const productElements = $("div.category-page-item");
-  if (productElements.length > 0) {
-    const categoryArr = [];
-    $("p#breadcrumbs > a").each(function () {
-      categoryArr.push($(this).text().trim());
-    });
-    categoryArr.push($("p#breadcrumbs > span").text().trim());
-
-    productElements.each(function () {
-      const result = {};
-
-      // data id of the item to not enqueue the items multiply
-      if ($(this).attr("data-id").length > 0) {
-        result.itemId = $(this).attr("data-id");
-      }
-
-      if ($(this).attr("data-name").length > 0) {
-        result.itemName = $(this)
-          .attr("data-name")
-          .replace(/(\n|\r)/g, "");
-      }
-
-      if ($(this).find("h3 a").length > 0) {
-        result.itemUrl = `${rootUrl}${$(this).find("h3 a").attr("href")}`;
-      }
-      if ($(this).find("a.item-thumbnail-link img").length !== 0) {
-        result.img = $(this).find("a.item-thumbnail-link img").attr("src");
-      }
-
-      result.inStock =
-        !$(this).find(
-          "div.availability-container > span.in-stock > span.delivery-info > a.red"
-        ).length > 0;
-
-      if ($(this).find(".price .tooltip").length > 0) {
-        const priceStr = $(this).find(".price .tooltip").text();
-        result.currentPrice = parseFloat(
-          priceStr.replace(/[^\d,]+/g, "").replace(",", ".")
-        );
-      } else {
-        result.currentPrice = "Price not defined.";
-      }
-
-      if ($(this).find(".price del").length > 0) {
-        const origPriceStr = $(this).find(".price del").text();
-        result.originalPrice = parseFloat(
-          origPriceStr.replace(/[^\d,]+/g, "").replace(",", ".")
-        );
-        result.discounted = true;
-      } else {
-        result.originalPrice = null;
-        result.discounted = false;
-      }
-
-      result.currency = "CZK";
-      result.category = categoryArr;
-      itemsArray.push(result);
-    });
-  }
-  return itemsArray;
-}
-async function parseItemsSK($, rootUrl) {
+async function extractItems($, rootUrl) {
   const itemsArray = [];
   // products
   const productElements = $("div.product-box-list div.product-box");
@@ -221,23 +148,23 @@ Apify.main(async () => {
     });
   } else if (type === "FULL") {
     await requestQueue.addRequest({
-      url: `${rootUrl}/katalog/index.html`,
+      url: `${rootUrl}/katalog`,
       userData: {
         label: LABELS.START
       }
     });
   } else if (type === "TEST" && country === COUNTRY.CZ) {
     await requestQueue.addRequest({
-      url: `https://www.datart.cz/kvadrokoptery-drony-a-rc-modely.html?startPos=16`,
+      url: `https://www.datart.cz/televize.html`,
       userData: {
-        label: "CATEGORY_NEXT"
+        label: LABELS.CATEGORY
       }
     });
   } else if (type === "TEST" && country === COUNTRY.SK) {
     await requestQueue.addRequest({
-      url: `https://www.datart.sk/videokamery.html`,
+      url: `https://www.datart.sk/televizory.html`,
       userData: {
-        label: "CATEGORY_NEXT"
+        label: LABELS.CATEGORY
       }
     });
   }
@@ -271,12 +198,13 @@ Apify.main(async () => {
         session.retire();
       }
       // Process START page
-      if (request.userData.label === LABELS.START && country === COUNTRY.CZ) {
+      if (request.userData.label === LABELS.START) {
         const items = [];
-        $("div#content")
-          .find("a.list")
+        $("div.microsite-katalog")
+          .find("ul.category-submenu > li > a")
           .each(function () {
             const link = $(this).attr("href");
+            console.log(`${rootUrl}${link}`);
             items.push({
               url: `${rootUrl}${link}`,
               userData: {
@@ -288,76 +216,8 @@ Apify.main(async () => {
         console.log(`${request.url} Found ${items.length} categories`);
         await enqueuRequests(requestQueue, items);
       }
-      if (request.userData.label === LABELS.START && country === COUNTRY.SK) {
-        const items = [];
-        $("div.main-menu-catalog-wrapper ul.category-submenu")
-          .find("li > a")
-          .each(function () {
-            const link = $(this).attr("href");
-            items.push({
-              url: `${rootUrl}${link}`,
-              userData: {
-                label: LABELS.CATEGORY,
-                uniqueKey: Math.random()
-              }
-            });
-          });
-        console.log(`${request.url} Found ${items.length} categories`);
-        await enqueuRequests(requestQueue, items);
-      }
-
       // Process CATEGORY page
-      if (
-        request.userData.label === LABELS.CATEGORY &&
-        country === COUNTRY.CZ
-      ) {
-        try {
-          // Add subcategories if this category has no listings
-          const subcategories = $("div.subcategory-tree-list").find("a");
-          if (subcategories.length > 0) {
-            const items = [];
-            subcategories.each(function () {
-              const link = $(this).attr("href");
-              items.push({
-                url: `${rootUrl}${link}`,
-                userData: {
-                  label: LABELS.CATEGORY,
-                  uniqueKey: Math.random()
-                }
-              });
-            });
-            stats.categories += items.length;
-            console.log(`${request.url} Found ${items.length} subcategories`);
-            await enqueuRequests(requestQueue, items);
-            return; // Nothing more we can do for this page
-          }
-          // Add pages from pagination
-          const itemsInCategory = parseInt(
-            $("#total-products-category").text()
-          );
-          const items = [];
-          for (let i = 16; i < itemsInCategory; i += 16) {
-            items.push({
-              url: `${request.url}?startPos=${i}`,
-              userData: {
-                label: LABELS.CATEGORY_NEXT,
-                uniqueKey: Math.random()
-              }
-            });
-          }
-          stats.pages += items.length;
-          console.log(`${request.url} Adding ${items.length} pagination pages`);
-          await enqueuRequests(requestQueue, items);
-        } catch (e) {
-          console.log(`Error processing url ${request.url}`);
-          console.error(e);
-        }
-      }
-
-      if (
-        request.userData.label === LABELS.CATEGORY &&
-        country === COUNTRY.SK
-      ) {
+      if (request.userData.label === LABELS.CATEGORY) {
         try {
           // Add subcategories if this category has no listings
           const subcategories = $(
@@ -418,7 +278,7 @@ Apify.main(async () => {
         request.userData.label === LABELS.CATEGORY_NEXT
       ) {
         try {
-          const products = await extractItems($, rootUrl, country);
+          const products = await extractItems($, rootUrl);
           // we don't need to block pushes, we will await them all at the end
           const requests = [];
           for (const product of products) {
