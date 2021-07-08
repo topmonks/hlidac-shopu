@@ -255,7 +255,7 @@ Apify.main(async () => {
           .find("ul.category-submenu > li > a")
           .each(function () {
             const link = $(this).attr("href");
-            console.log(`${rootUrl}${link}`);
+            //console.log(`${rootUrl}${link}`);
             items.push({
               url: `${rootUrl}${link}`,
               userData: {
@@ -270,7 +270,7 @@ Apify.main(async () => {
       // Process CATEGORY page
       if (request.userData.label === LABELS.CATEGORY) {
         try {
-          // Add subcategories if this category has no listings
+          // Add subcategories if this category has also products
           const subcategories = $(
             "div.subcategory-box-list .subcategoryWrapper"
           ).find("a");
@@ -291,8 +291,26 @@ Apify.main(async () => {
             await enqueuRequests(requestQueue, items);
             return; // Nothing more we can do for this page
           }
-
-          //Find maxPaginationPage
+          // Add categories if this page has only categories and no products
+          const categoryTree = $("div.category-tree-box-list").find("a");
+          if (categoryTree.length > 0) {
+            const categories = [];
+            categoryTree.each(function () {
+              const link = $(this).attr("href");
+              categories.push({
+                url: `${rootUrl}${link}`,
+                userData: {
+                  label: LABELS.CATEGORY,
+                  uniqueKey: Math.random()
+                }
+              });
+            });
+            stats.categories += categories.length;
+            console.log(`${request.url} Found ${categories.length} categories`);
+            await enqueuRequests(requestQueue, categories);
+            return; // Nothing more we can do for this page
+          }
+          //No more categories and subcategories continue with find maxPaginationPage
           let lastPagination = 0;
           $("div.category-actions ul.pagination")
             .find("a")
@@ -312,7 +330,7 @@ Apify.main(async () => {
                 uniqueKey: Math.random()
               }
             });
-            console.log(`${request.url}?showPage&page=${i}&limit=16`);
+            //console.log(`${request.url}?showPage&page=${i}&limit=16`);
           }
           stats.pages += items.length;
           console.log(`${request.url} Adding ${items.length} pagination pages`);
