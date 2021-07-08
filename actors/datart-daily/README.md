@@ -14,7 +14,7 @@
 }
 ```
 ```text
-"type": "FULL" || "BF" || "TEST"
+"type": "FULL" || "BF" || "TEST" || "COUNT"
 "country": "CZ" || "SK"
 ```
 ## Actors item example OUTPUT

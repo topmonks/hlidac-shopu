@@ -10,8 +10,9 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const cheerio = require("cheerio");
 
-const { log } = Apify.utils;
+const { log, requestAsBrowser } = Apify.utils;
 const LABELS = {
   START: "START",
   CATEGORY: "CATEGORY",
@@ -28,6 +29,54 @@ const BASE_URL_SK = "https://www.datart.sk";
 
 let stats = {};
 const processedIds = new Set();
+
+async function streamToBuffer(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+}
+
+async function countAllProducts(rootUrl) {
+  const stream = await requestAsBrowser({
+    url: `${rootUrl}/sitemap/sitemapindex.xml`,
+    stream: true
+  });
+  const buffer = await streamToBuffer(stream);
+  const xmlString = buffer.toString();
+  const $ = cheerio.load(xmlString, { xmlMode: true });
+  const productXmlUrls = [];
+
+  // Pick all product xml urls from sitemap
+  $("sitemap").each(function () {
+    const url = $(this).find("loc").text().trim();
+    productXmlUrls.push(url);
+  });
+  log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
+
+  for await (const xmlUrl of productXmlUrls) {
+    const stream = await requestAsBrowser({
+      url: xmlUrl,
+      stream: true
+    });
+    const buffer = await streamToBuffer(stream);
+    const xmlString = buffer.toString();
+    const $ = cheerio.load(xmlString, { xmlMode: true });
+    let readyForProductsLink = false;
+    $("url").each(function () {
+      const priority = $(this).find("priority").text().trim();
+      //Will count only products link with priority "0.9" starting after category links with priority "0.5"
+      if (priority === "0.9" && readyForProductsLink) {
+        stats.items++;
+      } else if (priority === "0.5" && !readyForProductsLink) {
+        readyForProductsLink = true;
+      }
+    });
+  }
+  log.info(`Total items ${stats.items}x`);
+}
 
 /**
  *
@@ -146,6 +195,8 @@ Apify.main(async () => {
         label: LABELS.BF
       }
     });
+  } else if (type === "COUNT") {
+    await countAllProducts(rootUrl);
   } else if (type === "FULL") {
     await requestQueue.addRequest({
       url: `${rootUrl}/katalog`,
