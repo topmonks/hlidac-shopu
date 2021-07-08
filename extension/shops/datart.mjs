@@ -33,23 +33,23 @@ export class Datart extends Shop {
       }
     `;
 
-    const elem = document.querySelector(".product-detail-compare-box");
+    const elem = document.querySelector(".block-info > .justify-content-end");
     if (elem) {
       const markup = renderMarkup({ "margin-bottom": "0" });
-      elem.insertAdjacentElement("beforebegin", markup);
+      elem.insertAdjacentElement("afterend", markup);
       const style = document.createElement("style");
       style.textContent = css;
-      elem.insertAdjacentElement("beforebegin", style);
+      elem.insertAdjacentElement("afterend", style);
       return elem;
     }
 
-    const archiveElem = document.querySelector(".product-detail-price-box");
+    const archiveElem = document.querySelector(".product-price");
     if (archiveElem) {
       const markup = renderMarkup({ "margin-bottom": "0" });
       archiveElem.insertAdjacentElement("afterend", markup);
       const style = document.createElement("style");
       style.textContent = css;
-      archiveElem.insertAdjacentElement("beforebegin", style);
+      archiveElem.insertAdjacentElement("afterend", style);
       return archiveElem;
     }
 
