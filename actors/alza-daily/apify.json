@@ -1,0 +1,9 @@
+{
+  "name": "alza-cz",
+  "template": "project_cheerio_crawler",
+  "version": "0.2",
+  "buildTag": "latest",
+  "env": {
+    "APIFY_LOG_LEVEL": "DEBUG"
+  }
+}
