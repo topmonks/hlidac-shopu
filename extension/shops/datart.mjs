@@ -3,17 +3,21 @@ import { Shop } from "./shop.mjs";
 
 export class Datart extends Shop {
   async scrape() {
-    const elem = document.querySelector(".product-detail-box");
+    const elem = document.querySelector(".product-detail");
     if (!elem) return;
-    const itemId = document.querySelector("#product-detail-header-top-wrapper")
-      .dataset.id;
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".product-detail-price");
-    const originalPrice = cleanPrice(
-      ".product-detail-strike-price-box .original del"
-    );
-    const imageUrl = document.querySelector("#detail-image-0 img").src;
+    const itemIdTarget = elem.getElementsByClassName('btn btn-cart ajax')[0].getAttribute("data-target")
+    if (!itemIdTarget.length>1) return;
 
+    const searchParams = new URLSearchParams(itemIdTarget);
+    const itemId = searchParams.get("id");
+
+    const title = elem.querySelector("h1.product-detail-title").textContent.trim();
+    const currentPrice = elem.getElementsByClassName("product-price")[0].getAttribute("data-price-value");
+    const originalPrice = cleanPrice(
+      ".product-price .cut-price del"
+    );
+    const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").getAttribute("data-src");
+    console.log({ itemId, title, currentPrice, originalPrice, imageUrl });
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
