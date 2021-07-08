@@ -36,7 +36,7 @@ const processedIds = new Set();
  * @param {COUNTRY.CZ|COUNTRY.SK} country
  * @returns {Promise<[]>}
  */
-async function extractItems($, rootUrl) {
+async function extractItems($, rootUrl, country) {
   const itemsArray = [];
   // products
   const productElements = $("div.product-box-list div.product-box");
@@ -96,7 +96,7 @@ async function extractItems($, rootUrl) {
           result.originalPrice = null;
           result.discounted = false;
         }
-        result.currency = "EUR";
+        result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
 
         result.category = categoryArr;
 
@@ -278,7 +278,7 @@ Apify.main(async () => {
         request.userData.label === LABELS.CATEGORY_NEXT
       ) {
         try {
-          const products = await extractItems($, rootUrl);
+          const products = await extractItems($, rootUrl, country);
           // we don't need to block pushes, we will await them all at the end
           const requests = [];
           for (const product of products) {
