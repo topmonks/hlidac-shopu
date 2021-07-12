@@ -1,13 +1,6 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
-  invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
@@ -25,7 +18,7 @@ const getCountry = require("./countryProvider");
 const UserAgentDb = require("./user-agent-db");
 
 const {
-  utils: { log, requestAsBrowser }
+  utils: { log }
 } = Apify;
 
 let stats = {
@@ -142,13 +135,6 @@ Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const { country, type, test = false } = await Apify.getInput();
 
-  let currency = "EUR";
-  if (country === "CZ") {
-    currency = "CZK";
-  }
-  if (country === "HU") {
-    currency = "HUF";
-  }
   if (!country) {
     throw new Error(
       "You need to specify the country on the input. Expecting DE/HU/AT/UK/CZ/SK"
@@ -163,6 +149,7 @@ Apify.main(async () => {
 
   const domain = getCountry(country);
   const apifyProxyGroups = domain.proxies;
+  const currency = domain.currency;
 
   const requestQueue = await Apify.openRequestQueue();
   const proxyConfiguration = await Apify.createProxyConfiguration({
