@@ -3545,6 +3545,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/alza-daily@workspace:actors/alza-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/alza-daily@workspace:actors/alza-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.20.0
+    "@aws-sdk/client-s3": ^3.20.0
+    "@hlidac-shopu/actors-common": ^1.1.0
+    "@hlidac-shopu/lib": ^1.0.6
+    "@types/node": ^14.17.3
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+    modern-random-ua: ^1.0.3
+    parsecurrency: ^1.0.0
+    request-fixed-tunnel-agent: ^2.88.3
+    user-agents: ^1.0.698
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz/src/lambda":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz/src/lambda"
@@ -6015,24 +6033,6 @@ __metadata:
   checksum: 28bad91719e15959e36a791a3538924e07da356ebe3b5f992e7668e8018cfc417a7ba4a69512771e5ffa306c7e028435c7748546f66f72d4f7b0ad694cf55069
   languageName: node
   linkType: hard
-
-"alza-daily@workspace:actors/alza-daily":
-  version: 0.0.0-use.local
-  resolution: "alza-daily@workspace:actors/alza-daily"
-  dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
-    "@hlidac-shopu/actors-common": ^1.1.0
-    "@hlidac-shopu/lib": ^1.0.6
-    "@types/node": ^14.17.3
-    apify: ^1.2.1
-    apify-cli: ^0.6.2
-    modern-random-ua: ^1.0.3
-    parsecurrency: ^1.0.0
-    request-fixed-tunnel-agent: ^2.88.3
-    user-agents: ^1.0.698
-  languageName: unknown
-  linkType: soft
 
 "ansi-align@npm:^3.0.0":
   version: 3.0.0
