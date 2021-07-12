@@ -4,7 +4,7 @@ const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
-const httpRequest = require("@apify/http-request");
+// const httpRequest = require("@apify/http-request");
 const cheerio = require("cheerio");
 const {
   handleDetail,
@@ -18,7 +18,7 @@ const getCountry = require("./countryProvider");
 const UserAgentDb = require("./user-agent-db");
 
 const {
-  utils: { log }
+  utils: { log, requestAsBrowser }
 } = Apify;
 
 let stats = {
@@ -33,6 +33,7 @@ let stats = {
   zeroItems: 0
 };
 
+/*
 async function getXmlLinks(
   domain,
   requestQueue,
@@ -68,6 +69,8 @@ async function getXmlLinks(
   }
   return sources;
 }
+
+ */
 
 async function callKeboolaUpload(country, type) {
   const countryLower = country.toLowerCase();
@@ -218,7 +221,7 @@ Apify.main(async () => {
       log.info(`Visiting: ${request.url}, ${label}`);
       let response;
       try {
-        response = await httpRequest({
+        response = await requestAsBrowser({
           url: request.url,
           proxyUrl: await proxyConfiguration.newUrl(session.id),
           http2: true,
