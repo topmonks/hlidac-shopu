@@ -50,8 +50,8 @@ async function extractItems($, $products, userData, rootUrl) {
     result.itemUrl = `${rootUrl}${itemUrl}`;
     result.itemId = itemCode;
     result.itemName = name;
-    result.mainCategory = userData.mainCategory;
-    result.category = category;
+    result.category = category.join(" > ");
+    result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
     if ($item.find(".image span").length !== 0) {
       result.img = $item.find(".image span").data("image");
     }
@@ -67,7 +67,7 @@ async function extractItems($, $products, userData, rootUrl) {
             ...result,
             inStock: true
           },
-          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
+          { priceCurrency: result.currency }
         )
       )
     );
