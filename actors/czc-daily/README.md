@@ -5,7 +5,7 @@
 
 ```json
 {
-  "development": true,
+  "development": false,
   "debug": false,
   "maxRequestRetries": 3,
   "maxConcurrency": 10,
