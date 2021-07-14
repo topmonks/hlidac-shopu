@@ -4071,9 +4071,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/mountfield-daily@workspace:actors/moutfield-daily":
+"@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily":
   version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/moutfield-daily"
+  resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily"
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.16.0
     "@aws-sdk/client-s3": ^3.16.0
