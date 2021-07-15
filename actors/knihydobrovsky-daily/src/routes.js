@@ -13,7 +13,7 @@ const {
 const canonicalUrl = x => new URL(x, "https://www.knihydobrovsky.cz");
 const canonical = x => canonicalUrl(x).href;
 
-exports.handleStart = async ({ request, $ }, requestQueue) => {
+exports.handleStart = async (request, $, requestQueue) => {
   const links = $("#main div.row-main li a")
     .not("div:contains('Magnesia Litera')")
     .map(function () {
@@ -35,7 +35,7 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
   }
 };
 
-exports.handleSubList = async ({ request, $ }, requestQueue) => {
+exports.handleSubList = async (request, $, requestQueue) => {
   // if there are more subcategories enque urls...
   let $bookGenres = $("#bookGenres");
   if ($bookGenres.text()) {
@@ -70,7 +70,8 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
  * @param {S3Client} s3
  * @returns {Promise<void>}
  */
-async function handleList({ request, $ }, requestQueue, handledIds, s3) {
+async function handleList(request, $, requestQueue, handledIds, s3) {
+  //console.log($.html());
   // Handle pagination
   let nextPageHref = $("nav.paging span:contains('Další')")
     .parent("a")
@@ -117,7 +118,7 @@ async function handleList({ request, $ }, requestQueue, handledIds, s3) {
     .toArray()
     .filter(x => x.itemId)
     .filter(x => !handledIds.has(x.itemId));
-
+  console.log(`Found ${result.length} unique products`);
   await Apify.pushData(result);
 
   for (const detail of result) {

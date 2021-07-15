@@ -6,9 +6,7 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { handleStart, handleList, handleSubList } = require("./src/routes");
 
-const {
-  utils: { log }
-} = Apify;
+const { log } = Apify.utils;
 
 Apify.main(async () => {
   rollbar.init();
@@ -18,9 +16,12 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
-    development,
+    development = false,
+    maxRequestRetries = 3,
     maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"]
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL",
+    testUrl = "https://www.knihydobrovsky.cz/detektivky-thrillery-a-horor?currentPage=130"
   } = input ?? {};
 
   const arrayHandledIds = await Apify.getValue("handledIds");
@@ -32,32 +33,42 @@ Apify.main(async () => {
   });
 
   const requestQueue = await Apify.openRequestQueue();
-  const requestList = await Apify.openRequestList("categories", [
-    {
-      url: "https://www.knihydobrovsky.cz/kategorie"
-    },
-    {
-      url: "https://www.knihydobrovsky.cz/e-knihy",
-      userData: { label: "SUBLIST" }
-    },
-    {
-      url: "https://www.knihydobrovsky.cz/audioknihy",
-      userData: { label: "SUBLIST" }
-    },
-    {
-      url: "https://www.knihydobrovsky.cz/hry",
-      userData: { label: "SUBLIST" }
-    },
-    {
-      url: "https://www.knihydobrovsky.cz/papirnictvi",
-      userData: { label: "SUBLIST" }
-    },
-    {
-      url: "https://www.knihydobrovsky.cz/darky",
-      userData: { label: "SUBLIST" }
-    }
-  ]);
-
+  let requestList = await Apify.openRequestList("categories", []);
+  if (type === "FULL") {
+    requestList = await Apify.openRequestList("categories", [
+      {
+        url: "https://www.knihydobrovsky.cz/kategorie"
+      },
+      {
+        url: "https://www.knihydobrovsky.cz/e-knihy",
+        userData: { label: "SUBLIST" }
+      },
+      {
+        url: "https://www.knihydobrovsky.cz/audioknihy",
+        userData: { label: "SUBLIST" }
+      },
+      {
+        url: "https://www.knihydobrovsky.cz/hry",
+        userData: { label: "SUBLIST" }
+      },
+      {
+        url: "https://www.knihydobrovsky.cz/papirnictvi",
+        userData: { label: "SUBLIST" }
+      },
+      {
+        url: "https://www.knihydobrovsky.cz/darky",
+        userData: { label: "SUBLIST" }
+      }
+    ]);
+  } else if (type === "TEST") {
+    // Navigate to https://www.example.com in Playwright with a POST request
+    await requestQueue.addRequest({
+      url: testUrl,
+      userData: {
+        label: "LIST"
+      }
+    });
+  }
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: development ? undefined : proxyGroups,
     useApifyProxy: !development
@@ -67,9 +78,9 @@ Apify.main(async () => {
     requestList,
     requestQueue,
     proxyConfiguration,
+    maxRequestRetries,
     maxConcurrency,
-    async handlePageFunction(context) {
-      const { request } = context;
+    async handlePageFunction({ request, $, session, response }) {
       const {
         url,
         userData: { label }
@@ -77,11 +88,11 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context, requestQueue, handledIds, s3);
+          return handleList(request, $, requestQueue, handledIds, s3);
         case "SUBLIST":
-          return handleSubList(context, requestQueue);
+          return handleSubList(request, $, requestQueue);
         default:
-          return handleStart(context, requestQueue);
+          return handleStart(request, $, requestQueue);
       }
     }
   });
