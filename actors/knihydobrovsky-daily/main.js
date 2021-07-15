@@ -8,6 +8,8 @@ const { handleStart, handleList, handleSubList } = require("./src/routes");
 
 const { log } = Apify.utils;
 
+let stats = {};
+
 Apify.main(async () => {
   rollbar.init();
 
@@ -20,12 +22,20 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
-    testUrl = "https://www.knihydobrovsky.cz/detektivky-thrillery-a-horor?currentPage=130"
+    type = "FULL"
   } = input ?? {};
 
   const arrayHandledIds = await Apify.getValue("handledIds");
   const handledIds = new Set(arrayHandledIds);
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsSkipped: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
 
   Apify.events.on("persistState", async () => {
     log.info("persisting handledIds", handledIds);
@@ -33,49 +43,48 @@ Apify.main(async () => {
   });
 
   const requestQueue = await Apify.openRequestQueue();
-  let requestList = await Apify.openRequestList("categories", []);
   if (type === "FULL") {
-    requestList = await Apify.openRequestList("categories", [
-      {
-        url: "https://www.knihydobrovsky.cz/kategorie"
-      },
-      {
-        url: "https://www.knihydobrovsky.cz/e-knihy",
-        userData: { label: "SUBLIST" }
-      },
-      {
-        url: "https://www.knihydobrovsky.cz/audioknihy",
-        userData: { label: "SUBLIST" }
-      },
-      {
-        url: "https://www.knihydobrovsky.cz/hry",
-        userData: { label: "SUBLIST" }
-      },
-      {
-        url: "https://www.knihydobrovsky.cz/papirnictvi",
-        userData: { label: "SUBLIST" }
-      },
-      {
-        url: "https://www.knihydobrovsky.cz/darky",
-        userData: { label: "SUBLIST" }
-      }
-    ]);
+    await requestQueue.addRequest({
+      url: "https://www.knihydobrovsky.cz/kategorie"
+    });
+    const requestList = [
+      "https://www.knihydobrovsky.cz/e-knihy",
+      "https://www.knihydobrovsky.cz/audioknihy",
+      "https://www.knihydobrovsky.cz/hry",
+      "https://www.knihydobrovsky.cz/papirnictvi",
+      "https://www.knihydobrovsky.cz/darky"
+    ];
+    for (const list of requestList) {
+      await requestQueue.addRequest({
+        url: list,
+        userData: {
+          label: "SUBLIST"
+        }
+      });
+    }
   } else if (type === "TEST") {
     // Navigate to https://www.example.com in Playwright with a POST request
     await requestQueue.addRequest({
-      url: testUrl,
+      url: "https://www.knihydobrovsky.cz/detektivky-thrillery-a-horor?sort=2&currentPage=130",
       userData: {
         label: "LIST"
       }
     });
   }
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: development ? undefined : proxyGroups,
     useApifyProxy: !development
   });
 
   const crawler = new Apify.CheerioCrawler({
-    requestList,
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
@@ -88,11 +97,11 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(request, $, requestQueue, handledIds, s3);
+          return handleList(request, $, requestQueue, handledIds, s3, stats);
         case "SUBLIST":
-          return handleSubList(request, $, requestQueue);
+          return handleSubList(request, $, requestQueue, stats);
         default:
-          return handleStart(request, $, requestQueue);
+          return handleStart(request, $, requestQueue, stats);
       }
     }
   });
@@ -100,6 +109,9 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
   log.info("Crawl finished.");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
 
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
   log.info("invalidated Data CDN");

@@ -13,7 +13,7 @@ const {
 const canonicalUrl = x => new URL(x, "https://www.knihydobrovsky.cz");
 const canonical = x => canonicalUrl(x).href;
 
-exports.handleStart = async (request, $, requestQueue) => {
+exports.handleStart = async (request, $, requestQueue, stats) => {
   const links = $("#main div.row-main li a")
     .not("div:contains('Magnesia Litera')")
     .map(function () {
@@ -27,6 +27,8 @@ exports.handleStart = async (request, $, requestQueue) => {
         !x.includes("knihomanie")
     );
   const absoluteLinks = links.map(x => canonical(x));
+  stats.categories += absoluteLinks.length;
+  console.log(`Found ${absoluteLinks.length} categories from start`);
   for (const link of absoluteLinks) {
     await requestQueue.addRequest({
       url: link,
@@ -35,7 +37,7 @@ exports.handleStart = async (request, $, requestQueue) => {
   }
 };
 
-exports.handleSubList = async (request, $, requestQueue) => {
+exports.handleSubList = async (request, $, requestQueue, stats) => {
   // if there are more subcategories enque urls...
   let $bookGenres = $("#bookGenres");
   if ($bookGenres.text()) {
@@ -46,6 +48,8 @@ exports.handleSubList = async (request, $, requestQueue) => {
         return $(this).attr("href");
       })
       .get();
+    stats.categories += links.length;
+    console.log(`Found ${links.length} categories from sublist`);
     for (const link of links.map(x => canonical(x))) {
       await requestQueue.addRequest({
         url: link,
@@ -54,6 +58,8 @@ exports.handleSubList = async (request, $, requestQueue) => {
     }
   }
   //put this page also to queue as LIST page
+  stats.pages++;
+  console.log(`Adding pagination page ${request.url}?sort=2&currentPage=1`);
   await requestQueue.addRequest({
     url: `${request.url}?sort=2&currentPage=1`,
     uniqueKey: `${request.url}?sort=2&currentPage=1`,
@@ -68,9 +74,10 @@ exports.handleSubList = async (request, $, requestQueue) => {
  * @param {RequestQueue} requestQueue
  * @param {Set} handledIds
  * @param {S3Client} s3
+ * @param {JSON} stats
  * @returns {Promise<void>}
  */
-async function handleList(request, $, requestQueue, handledIds, s3) {
+async function handleList(request, $, requestQueue, handledIds, s3, stats) {
   //console.log($.html());
   // Handle pagination
   let nextPageHref = $("nav.paging span:contains('Další')")
@@ -80,7 +87,8 @@ async function handleList(request, $, requestQueue, handledIds, s3) {
     const url = canonicalUrl(nextPageHref.trim());
     const pageNumber = url.searchParams.get("currentPage");
     url.searchParams.set("offsetPage", pageNumber);
-
+    console.log(`Adding pagination page ${url.href}`);
+    stats.pages++;
     await requestQueue.addRequest({
       url: url.href,
       userData: { label: "LIST" }
@@ -89,7 +97,7 @@ async function handleList(request, $, requestQueue, handledIds, s3) {
     log.info("category finish", { url: request.url });
   }
 
-  const result = $("li[data-productinfo]")
+  const products = $("li[data-productinfo]")
     .map(function () {
       const $item = $(this);
       const dataLink = canonicalUrl($item.find("a.buy-now").attr("data-link"));
@@ -100,7 +108,7 @@ async function handleList(request, $, requestQueue, handledIds, s3) {
           $item
             .find("h3 a")
             .attr("href")
-            .match(/-(\d+)$/g)?.[1] ??
+            .match(/-(\d+)$/)?.[1] ??
           dataLink.searchParams.get("categoryBookList-itemPreview-productId"),
         itemUrl: canonical($item.find("h3 a").attr("href")),
         itemName: $item.find("span.name").text(),
@@ -116,23 +124,31 @@ async function handleList(request, $, requestQueue, handledIds, s3) {
       };
     })
     .toArray()
-    .filter(x => x.itemId)
-    .filter(x => !handledIds.has(x.itemId));
-  console.log(`Found ${result.length} unique products`);
-  await Apify.pushData(result);
+    .filter(x => x.itemId);
 
-  for (const detail of result) {
-    await uploadToS3(
-      s3,
-      "knihydobrovsky.cz",
-      await s3FileName(detail),
-      "jsonld",
-      toProduct({ ...detail, category: "" }, {})
-    );
+  const requests = [];
+  for (const product of products) {
+    // Save data to dataset
+    if (!handledIds.has(product.itemId)) {
+      handledIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3(
+          s3,
+          "knihydobrovsky.cz",
+          await s3FileName(product),
+          "jsonld",
+          toProduct({ ...product, category: "" }, {})
+        )
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
   }
-  for (const id of result.map(x => x.itemId)) {
-    handledIds.add(id);
-  }
+  console.log(`${request.url} Found ${requests.length / 2} unique products`);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 }
 
 exports.handleList = handleList;
