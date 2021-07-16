@@ -4657,7 +4657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:^2.4.1, @rollup/plugin-replace@npm:^2.4.2":
+"@rollup/plugin-replace@npm:^2.4.1":
   version: 2.4.2
   resolution: "@rollup/plugin-replace@npm:2.4.2"
   dependencies:
@@ -4666,6 +4666,18 @@ __metadata:
   peerDependencies:
     rollup: ^1.20.0 || ^2.0.0
   checksum: b8532ce34011d6384b697e351c6ca6863aeb08b02dfc968efde84dc397d77c7efdff7623c4d05562d21ef62c8a598e765deb9608d6a6bf65835a956325ef20e7
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-replace@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@rollup/plugin-replace@npm:3.0.0"
+  dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    magic-string: ^0.25.7
+  peerDependencies:
+    rollup: ^1.20.0 || ^2.0.0
+  checksum: 4c3324a50d8e64d8ae8cd90907260d16051f903d6f22e48d5194492ed7c55a4722cae8031e960fe5a33822bc1aac05a04bac112454d07770630f277ceb07b9d0
   languageName: node
   linkType: hard
 
@@ -13004,7 +13016,7 @@ fsevents@^1.2.7:
     "@pulumi/pulumi": ^3.4.0
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^13.0.0
-    "@rollup/plugin-replace": ^2.4.2
+    "@rollup/plugin-replace": ^3.0.0
     "@topmonks/blendid": topmonks/blendid
     "@topmonks/pulumi-aws": ^1.8.3
     "@types/firefox-webext-browser": ^82.0.0
