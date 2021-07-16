@@ -6,8 +6,8 @@
   "license": "EPL-2.0",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.20.0",
-    "@aws-sdk/client-s3": "^3.20.0",
+    "@aws-sdk/client-cloudfront": "^3.21.0",
+    "@aws-sdk/client-s3": "^3.21.0",
     "@types/cheerio": "^0.22.29",
     "@types/node": "^14.17.3",
     "apify": "^1.2.1",

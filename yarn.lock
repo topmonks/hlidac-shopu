@@ -135,7 +135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.16.0":
+"@aws-sdk/client-cloudfront@npm:^3.21.0":
   version: 3.21.0
   resolution: "@aws-sdk/client-cloudfront@npm:3.21.0"
   dependencies:
@@ -178,58 +178,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.20.0"
+"@aws-sdk/client-dynamodb@npm:^3.21.0":
+  version: 3.21.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.21.0"
   dependencies:
     "@aws-crypto/sha256-browser": ^1.0.0
     "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/client-sts": 3.20.0
+    "@aws-sdk/client-sts": 3.21.0
     "@aws-sdk/config-resolver": 3.20.0
-    "@aws-sdk/credential-provider-node": 3.20.0
-    "@aws-sdk/fetch-http-handler": 3.20.0
-    "@aws-sdk/hash-node": 3.20.0
-    "@aws-sdk/invalid-dependency": 3.20.0
-    "@aws-sdk/middleware-content-length": 3.20.0
-    "@aws-sdk/middleware-host-header": 3.20.0
-    "@aws-sdk/middleware-logger": 3.20.0
-    "@aws-sdk/middleware-retry": 3.20.0
-    "@aws-sdk/middleware-serde": 3.20.0
-    "@aws-sdk/middleware-signing": 3.20.0
-    "@aws-sdk/middleware-stack": 3.20.0
-    "@aws-sdk/middleware-user-agent": 3.20.0
-    "@aws-sdk/node-config-provider": 3.20.0
-    "@aws-sdk/node-http-handler": 3.20.0
-    "@aws-sdk/protocol-http": 3.20.0
-    "@aws-sdk/smithy-client": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    "@aws-sdk/url-parser": 3.20.0
-    "@aws-sdk/util-base64-browser": 3.20.0
-    "@aws-sdk/util-base64-node": 3.20.0
-    "@aws-sdk/util-body-length-browser": 3.20.0
-    "@aws-sdk/util-body-length-node": 3.20.0
-    "@aws-sdk/util-user-agent-browser": 3.20.0
-    "@aws-sdk/util-user-agent-node": 3.20.0
-    "@aws-sdk/util-utf8-browser": 3.20.0
-    "@aws-sdk/util-utf8-node": 3.20.0
-    "@aws-sdk/util-waiter": 3.20.0
-    "@aws-sdk/xml-builder": 3.20.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.0.0
-  checksum: fa831cd9c816e05c1d00c1806b9de4a0a291fd4ad7d437ce203fc5c285c36968022606d6156a5acb9cded38964b04fcd9d6b694d75a27122075e1a97b20c9b84
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-dynamodb@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.20.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": ^1.0.0
-    "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/client-sts": 3.20.0
-    "@aws-sdk/config-resolver": 3.20.0
-    "@aws-sdk/credential-provider-node": 3.20.0
+    "@aws-sdk/credential-provider-node": 3.21.0
     "@aws-sdk/fetch-http-handler": 3.20.0
     "@aws-sdk/hash-node": 3.20.0
     "@aws-sdk/invalid-dependency": 3.20.0
@@ -243,7 +200,7 @@ __metadata:
     "@aws-sdk/middleware-stack": 3.20.0
     "@aws-sdk/middleware-user-agent": 3.20.0
     "@aws-sdk/node-config-provider": 3.20.0
-    "@aws-sdk/node-http-handler": 3.20.0
+    "@aws-sdk/node-http-handler": 3.21.0
     "@aws-sdk/protocol-http": 3.20.0
     "@aws-sdk/smithy-client": 3.20.0
     "@aws-sdk/types": 3.20.0
@@ -259,11 +216,11 @@ __metadata:
     "@aws-sdk/util-waiter": 3.20.0
     tslib: ^2.0.0
     uuid: ^8.3.2
-  checksum: 43cb920a7ddc6d04842fb0edcd62dd12448f2be7d2e0bedce3b3a2c2519a8787351416ba0ba461074ee139cc2ab3d58661588cad6512e652597efbb1d63d598f
+  checksum: 5ad5d8d8e804ec9e5cc85923ddac54b321797912ce6c7899c2b1ba9bff7b0cac956daa655de0336c54d602f5272b21f7fca09cdf917a64f00515388dd38d317a
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.16.0":
+"@aws-sdk/client-s3@npm:^3.21.0":
   version: 3.21.0
   resolution: "@aws-sdk/client-s3@npm:3.21.0"
   dependencies:
@@ -318,97 +275,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/client-s3@npm:3.20.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": ^1.0.0
-    "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/client-sts": 3.20.0
-    "@aws-sdk/config-resolver": 3.20.0
-    "@aws-sdk/credential-provider-node": 3.20.0
-    "@aws-sdk/eventstream-serde-browser": 3.20.0
-    "@aws-sdk/eventstream-serde-config-resolver": 3.20.0
-    "@aws-sdk/eventstream-serde-node": 3.20.0
-    "@aws-sdk/fetch-http-handler": 3.20.0
-    "@aws-sdk/hash-blob-browser": 3.20.0
-    "@aws-sdk/hash-node": 3.20.0
-    "@aws-sdk/hash-stream-node": 3.20.0
-    "@aws-sdk/invalid-dependency": 3.20.0
-    "@aws-sdk/md5-js": 3.20.0
-    "@aws-sdk/middleware-apply-body-checksum": 3.20.0
-    "@aws-sdk/middleware-bucket-endpoint": 3.20.0
-    "@aws-sdk/middleware-content-length": 3.20.0
-    "@aws-sdk/middleware-expect-continue": 3.20.0
-    "@aws-sdk/middleware-host-header": 3.20.0
-    "@aws-sdk/middleware-location-constraint": 3.20.0
-    "@aws-sdk/middleware-logger": 3.20.0
-    "@aws-sdk/middleware-retry": 3.20.0
-    "@aws-sdk/middleware-sdk-s3": 3.20.0
-    "@aws-sdk/middleware-serde": 3.20.0
-    "@aws-sdk/middleware-signing": 3.20.0
-    "@aws-sdk/middleware-ssec": 3.20.0
-    "@aws-sdk/middleware-stack": 3.20.0
-    "@aws-sdk/middleware-user-agent": 3.20.0
-    "@aws-sdk/node-config-provider": 3.20.0
-    "@aws-sdk/node-http-handler": 3.20.0
-    "@aws-sdk/protocol-http": 3.20.0
-    "@aws-sdk/smithy-client": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    "@aws-sdk/url-parser": 3.20.0
-    "@aws-sdk/util-base64-browser": 3.20.0
-    "@aws-sdk/util-base64-node": 3.20.0
-    "@aws-sdk/util-body-length-browser": 3.20.0
-    "@aws-sdk/util-body-length-node": 3.20.0
-    "@aws-sdk/util-user-agent-browser": 3.20.0
-    "@aws-sdk/util-user-agent-node": 3.20.0
-    "@aws-sdk/util-utf8-browser": 3.20.0
-    "@aws-sdk/util-utf8-node": 3.20.0
-    "@aws-sdk/util-waiter": 3.20.0
-    "@aws-sdk/xml-builder": 3.20.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.0.0
-  checksum: cbccaf5a9ff3e619c091505a28260120823309788bad786e96c443350c212efecfd925e9f9c6b6791513e4847f66053bb81178a22f98deaaeb3a28c1fe0d4974
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-sso@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/client-sso@npm:3.20.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": ^1.0.0
-    "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/config-resolver": 3.20.0
-    "@aws-sdk/fetch-http-handler": 3.20.0
-    "@aws-sdk/hash-node": 3.20.0
-    "@aws-sdk/invalid-dependency": 3.20.0
-    "@aws-sdk/middleware-content-length": 3.20.0
-    "@aws-sdk/middleware-host-header": 3.20.0
-    "@aws-sdk/middleware-logger": 3.20.0
-    "@aws-sdk/middleware-retry": 3.20.0
-    "@aws-sdk/middleware-serde": 3.20.0
-    "@aws-sdk/middleware-stack": 3.20.0
-    "@aws-sdk/middleware-user-agent": 3.20.0
-    "@aws-sdk/node-config-provider": 3.20.0
-    "@aws-sdk/node-http-handler": 3.20.0
-    "@aws-sdk/protocol-http": 3.20.0
-    "@aws-sdk/smithy-client": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    "@aws-sdk/url-parser": 3.20.0
-    "@aws-sdk/util-base64-browser": 3.20.0
-    "@aws-sdk/util-base64-node": 3.20.0
-    "@aws-sdk/util-body-length-browser": 3.20.0
-    "@aws-sdk/util-body-length-node": 3.20.0
-    "@aws-sdk/util-user-agent-browser": 3.20.0
-    "@aws-sdk/util-user-agent-node": 3.20.0
-    "@aws-sdk/util-utf8-browser": 3.20.0
-    "@aws-sdk/util-utf8-node": 3.20.0
-    tslib: ^2.0.0
-  checksum: c46131f88747d2940bc2825dfbae47f986472a251adadb207b7c759618fd75ef12a2b09e52ddb31a37b2167cbc78defd529f322259d8c7553c98255484bccb42
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/client-sso@npm:3.21.0":
   version: 3.21.0
   resolution: "@aws-sdk/client-sso@npm:3.21.0"
@@ -442,47 +308,6 @@ __metadata:
     "@aws-sdk/util-utf8-node": 3.20.0
     tslib: ^2.0.0
   checksum: 21faa17b6099b395b674de7c765b4ce818a225f5ed2dce491507adaad23db85808f9e3e9b373f8321a1b223c67acc451d94eb8ea95834ef6c995e9375970afa3
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-sts@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/client-sts@npm:3.20.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": ^1.0.0
-    "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/config-resolver": 3.20.0
-    "@aws-sdk/credential-provider-node": 3.20.0
-    "@aws-sdk/fetch-http-handler": 3.20.0
-    "@aws-sdk/hash-node": 3.20.0
-    "@aws-sdk/invalid-dependency": 3.20.0
-    "@aws-sdk/middleware-content-length": 3.20.0
-    "@aws-sdk/middleware-host-header": 3.20.0
-    "@aws-sdk/middleware-logger": 3.20.0
-    "@aws-sdk/middleware-retry": 3.20.0
-    "@aws-sdk/middleware-sdk-sts": 3.20.0
-    "@aws-sdk/middleware-serde": 3.20.0
-    "@aws-sdk/middleware-signing": 3.20.0
-    "@aws-sdk/middleware-stack": 3.20.0
-    "@aws-sdk/middleware-user-agent": 3.20.0
-    "@aws-sdk/node-config-provider": 3.20.0
-    "@aws-sdk/node-http-handler": 3.20.0
-    "@aws-sdk/protocol-http": 3.20.0
-    "@aws-sdk/smithy-client": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    "@aws-sdk/url-parser": 3.20.0
-    "@aws-sdk/util-base64-browser": 3.20.0
-    "@aws-sdk/util-base64-node": 3.20.0
-    "@aws-sdk/util-body-length-browser": 3.20.0
-    "@aws-sdk/util-body-length-node": 3.20.0
-    "@aws-sdk/util-user-agent-browser": 3.20.0
-    "@aws-sdk/util-user-agent-node": 3.20.0
-    "@aws-sdk/util-utf8-browser": 3.20.0
-    "@aws-sdk/util-utf8-node": 3.20.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.0.0
-  checksum: 6e6cb2f547a246e276d6e61930b10f1f5882a28b3704b6d4496739773a83307fc449f4b60262cc85e6e5a29d2dcaa08b1cb353572a83064558d58603a3331c69
   languageName: node
   linkType: hard
 
@@ -575,24 +400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/credential-provider-node@npm:3.20.0"
-  dependencies:
-    "@aws-sdk/credential-provider-env": 3.20.0
-    "@aws-sdk/credential-provider-imds": 3.20.0
-    "@aws-sdk/credential-provider-ini": 3.20.0
-    "@aws-sdk/credential-provider-process": 3.20.0
-    "@aws-sdk/credential-provider-sso": 3.20.0
-    "@aws-sdk/credential-provider-web-identity": 3.20.0
-    "@aws-sdk/property-provider": 3.20.0
-    "@aws-sdk/shared-ini-file-loader": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    tslib: ^2.0.0
-  checksum: 4599ed9b7ad4aa7ab1c5eb0bdcb68c85f67fd728cf263840ee0e6cec1fe4784b8c559172a10e1afa471b81cd9328e2fd0bfe8f7d90960c94e03812ebac25a15f
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/credential-provider-node@npm:3.21.0":
   version: 3.21.0
   resolution: "@aws-sdk/credential-provider-node@npm:3.21.0"
@@ -621,20 +428,6 @@ __metadata:
     "@aws-sdk/types": 3.20.0
     tslib: ^2.0.0
   checksum: 7bd86bc2d6e870ab62f362b6c5739677c56ba3b6853a2411161f15b0365b3dbcc2307b98b0c2d46bcf5b9e0b52bdfcb7c647a4c74ab1d1eb2cb7b3352eaba308
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/credential-provider-sso@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/credential-provider-sso@npm:3.20.0"
-  dependencies:
-    "@aws-sdk/client-sso": 3.20.0
-    "@aws-sdk/credential-provider-ini": 3.20.0
-    "@aws-sdk/property-provider": 3.20.0
-    "@aws-sdk/shared-ini-file-loader": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    tslib: ^2.0.0
-  checksum: cf28f5f2b4b38f24b363bf4e1053fc5361cc8ae300ffcdded69169a0a61e1670cab2b8b8a84a9991d7b38184159823073555117c1d94badac8724f764e5c6874
   languageName: node
   linkType: hard
 
@@ -1012,19 +805,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/node-http-handler@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/node-http-handler@npm:3.20.0"
-  dependencies:
-    "@aws-sdk/abort-controller": 3.20.0
-    "@aws-sdk/protocol-http": 3.20.0
-    "@aws-sdk/querystring-builder": 3.20.0
-    "@aws-sdk/types": 3.20.0
-    tslib: ^2.0.0
-  checksum: 148017aee219a33dc8e8484d2c4b3d1ec6bfcd32e1e0c51eca4236c92cc6ab2fc7b6918bb444c6ad86b960f1a2a10161583a63d9080017eed6157889174f35df
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/node-http-handler@npm:3.21.0":
   version: 3.21.0
   resolution: "@aws-sdk/node-http-handler@npm:3.21.0"
@@ -1200,12 +980,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.20.0"
+"@aws-sdk/util-dynamodb@npm:^3.21.0":
+  version: 3.21.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.21.0"
   dependencies:
     tslib: ^2.0.0
-  checksum: 172005cde0443f3c93070212a49d4807956af8250b8033cf1a0770cfa18400134861fa8b595b2c30b1f08e1057659c7de30fee11f2de491656ef34da1a371bbb
+  checksum: 12d9940492a9bc3c6c5eeba774d66adea1815d6ae5ed6a3aad2a1ca3d5b8afa386ce2570d7bf138dbd1560aa85f9fa95d64fe9f0570c5b4bcfda843347ebffb5
   languageName: node
   linkType: hard
 
@@ -3741,8 +3521,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/aaaauto-daily@workspace:actors/aaaauto-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3769,8 +3549,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza-daily@workspace:actors/alza-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.7
     "@types/node": ^14.17.3
@@ -3787,9 +3567,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz/src/lambda"
   dependencies:
-    "@aws-sdk/client-dynamodb": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
-    "@aws-sdk/util-dynamodb": ^3.20.0
+    "@aws-sdk/client-dynamodb": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
+    "@aws-sdk/util-dynamodb": ^3.21.0
     "@hlidac-shopu/lib": ^1.0.0
     "@pulumi/aws": ^4.8.0
     "@pulumi/awsx": ^0.30.0
@@ -3813,8 +3593,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/benu-daily@workspace:actors/benu-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.2
     "@types/node": ^14.17.3
@@ -3828,8 +3608,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/czc-daily@workspace:actors/czc-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3841,8 +3621,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3854,8 +3634,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3867,8 +3647,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/e-coop-daily@workspace:actors/e-coop-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3890,8 +3670,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@types/cheerio": ^0.22.29
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3908,8 +3688,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/iglobus-daily@workspace:actors/iglobus-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3921,8 +3701,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3946,8 +3726,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kasa-daily@workspace:actors/kasa-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3970,8 +3750,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3983,8 +3763,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -3996,8 +3776,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lekarna-daily@workspace:actors/lekarna-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4005,7 +3785,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.7, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@1.0.7, @hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.7, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -4016,24 +3796,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@hlidac-shopu/lib@npm:1.0.6"
-  dependencies:
-    "@lit/reactive-element": 1.0.0-rc.2
-    chart.js: ^3.3.2
-    chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.2
-  checksum: 237c9b05cb6537a271af2089873fe584d88b064813dc3fd4eebd9f851a50a53c8a12b96cd6ad0e5a073db8b11f2ea2ac830b879e07236b088aa5ddc3362c07b1
-  languageName: node
-  linkType: hard
-
 "@hlidac-shopu/makro-daily@workspace:actors/makro-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/makro-daily@workspace:actors/makro-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.4
     apify: ^1.2.1
@@ -4044,8 +3812,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mall-daily@workspace:actors/mall-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.2
     "@types/node": ^14.17.3
@@ -4062,8 +3830,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4075,8 +3843,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.16.0
-    "@aws-sdk/client-s3": ^3.16.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.0
     apify: ^1.2.1
@@ -4090,8 +3858,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/notino-daily@workspace:actors/notino-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.3
     apify: ^1.2.1
@@ -4102,8 +3870,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4116,8 +3884,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.5
     "@types/node": ^14.17.3
@@ -4131,8 +3899,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4160,8 +3928,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/sleky-daily@workspace:actors/sleky-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4173,8 +3941,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4186,8 +3954,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@types/node": ^14.17.3
     apify: ^1.2.1
@@ -4205,7 +3973,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
-    "@hlidac-shopu/lib": 1.0.6
+    "@hlidac-shopu/lib": 1.0.7
     "@material/layout-grid": ^11.0.0
     "@material/top-app-bar": ^11.0.0
     "@thi.ng/atom": ^4.1.36
@@ -17064,8 +16832,8 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "okay-daily@workspace:actors/okay-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.20.0
-    "@aws-sdk/client-s3": ^3.20.0
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
     "@hlidac-shopu/actors-common": ^1.1.0
     "@hlidac-shopu/lib": ^1.0.4
     apify: ^1.2.1
