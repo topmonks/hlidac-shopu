@@ -17,7 +17,7 @@ async function uploadToKeboola(tableName) {
       tableName
     },
     {
-      waitSecs: 25
+      waitSecs: 60
     }
   );
   log.info(`Keboola upload called: ${run.id}`);
