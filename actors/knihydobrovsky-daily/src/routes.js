@@ -120,7 +120,9 @@ async function handleList(request, $, requestQueue, handledIds, s3, stats) {
           $item.find("span.stars.small span").attr("style").split("width: ")[1]
         ),
         currency: "CZK",
-        inStock: $item.find("a.buy-now").text().includes("Do košíku")
+        inStock: $item.find("a.buy-now").text().includes("Do košíku"),
+        category: "",
+        breadCrumbs: ""
       };
     })
     .toArray()
