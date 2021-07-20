@@ -12,6 +12,6 @@
 	},
 	"scripts": {
 		"start": "node main.js",
-    "eslint:fix": "eslint ./ --ext .js,.jsx --fix"
+		"eslint:fix": "eslint ./ --ext .js,.jsx --fix"
 	}
 }
