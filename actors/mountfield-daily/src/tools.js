@@ -104,9 +104,9 @@ const getRootUrl = () => {
 const getTableName = () => {
   const { type, country = COUNTRY.CZ } = global.userInput;
   let tableName = "mountfield";
-  if (country === "SK" && type === "FULL") {
+  if (country === "SK") {
     tableName = "mountfield_sk";
-  } else if (country === "CZ" && type !== "FULL") {
+  } else if (country === "CZ" && type === BF) {
     tableName = "mountfield_bf";
   }
 
