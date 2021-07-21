@@ -103,7 +103,14 @@ const getRootUrl = () => {
  */
 const getTableName = () => {
   const { type, country = COUNTRY.CZ } = global.userInput;
-  return type === BF ? "mountfield_bf" : `mountfield_${country.toLowerCase()}`;
+  let tableName = "mountfield";
+  if (country === "SK" && type === "FULL") {
+    tableName = "mountfield_sk";
+  } else if (country === "CZ" && type !== "FULL") {
+    tableName = "mountfield_bf";
+  }
+
+  return tableName;
 };
 
 module.exports = {
