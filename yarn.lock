@@ -4008,6 +4008,7 @@ __metadata:
     "@types/node": ^14.17.3
     apify: ^1.2.1
     apify-cli: ^0.6.2
+    playwright: ^1.13.0
   languageName: unknown
   linkType: soft
 
@@ -17782,6 +17783,30 @@ fsevents@^1.2.7:
   bin:
     playwright: lib/cli/cli.js
   checksum: 87a77a7973fb72befc698fbcfdc1bfde98ad00466d73eeb018e3cdd70fea6b306cc9d8eaff43cedfa3f973587e8fde9922c56482a4f8a7696d0881920d51ba9a
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.13.0":
+  version: 1.13.0
+  resolution: "playwright@npm:1.13.0"
+  dependencies:
+    commander: ^6.1.0
+    debug: ^4.1.1
+    extract-zip: ^2.0.1
+    https-proxy-agent: ^5.0.0
+    jpeg-js: ^0.4.2
+    mime: ^2.4.6
+    pngjs: ^5.0.0
+    progress: ^2.0.3
+    proper-lockfile: ^4.1.1
+    proxy-from-env: ^1.1.0
+    rimraf: ^3.0.2
+    stack-utils: ^2.0.3
+    ws: ^7.4.6
+    yazl: ^2.5.1
+  bin:
+    playwright: lib/cli/cli.js
+  checksum: 48c9227695ed7bef55f0a37c07bc354492ceb70565e9cbfcc7db7733af94ba2420c43a0fc1a22a3658303a8bde881d2b21e1f9457657ec142304fbbbe44bd051
   languageName: node
   linkType: hard
 
