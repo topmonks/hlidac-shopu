@@ -202,6 +202,7 @@ Apify.main(async () => {
     maxConcurrency,
     navigationTimeoutSecs: 120,
     launchContext: {
+      useChrome: true,
       launchOptions: {
         headless: true
       }
