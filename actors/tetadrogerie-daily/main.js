@@ -8,6 +8,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const cheerio = require("cheerio");
 const { URL, URLSearchParams } = require("url");
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
@@ -101,10 +102,11 @@ function pageFunction(requestQueue, s3) {
    *  @returns {Promise<void>}
    */
   async function handler(context) {
-    const { $, body, contentType, request, response } = context;
+    const { request, response, page } = context;
     const { step, category, currentPage } = request.userData;
-    const text = body.toString(contentType.encoding);
-    if (response.statusCode !== 200) {
+    const text = await page.content();
+    const $ = cheerio.load(text);
+    if (response.status() !== 200) {
       log.info(text);
     }
 
@@ -194,10 +196,16 @@ Apify.main(async () => {
     useApifyProxy: false
   });
 
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.PlaywrightCrawler({
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
+    navigationTimeoutSecs: 120,
+    launchContext: {
+      launchOptions: {
+        headless: true
+      }
+    },
     handlePageFunction: pageFunction(requestQueue, s3),
 
     handleFailedRequestFunction: async ({ request }) => {
