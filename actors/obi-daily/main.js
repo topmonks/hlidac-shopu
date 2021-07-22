@@ -1,63 +1,3 @@
-//https://www.obi.cz/sitemap_index.xml -> https://www.obi.cz/sitemaps/obi_cs_cz/sitemap_obi-category.xml
-
-// label: DETAIL (https://www.obi.cz/zavesne-kreslo-a-vznasejici-se-kreslo/zavesne-kreslo-lytton-z-polycottonu-bila/p/5793559)
-// goal: productAttributes = {
-//           itemId: p.gtin,
-//           itemName: `${p.brandName} ${p.name}`,
-//           itemUrl: createProductUrl(
-//             country,
-//             p.links
-//               .filter(x => x.rel === "self")
-//               .map(x => x.href)
-//               .pop()
-//           ),
-//           img: p.links
-//             .filter(x => x.rel.startsWith("productimage"))
-//             .map(x => x.href)
-//             .pop(),
-//           inStock: !p.notAvailable,
-//           currentPrice: parseFloat(p.price),
-//           originalPrice: p.isSellout ? parseFloat(p.selloutPrice) : null,
-//           currency: p.priceCurrencyIso,
-//           category,
-//           discounted: p.isSellout
-//         };
-// have: dataLayer = [
-//   {
-// 	"page": "cz.assortment.bydlení.nábytek.křesla.závěsné_křeslo_a_vznášející_se_kreslo.závěsné_křeslo_lytton_z_polycottonu_bílá.ads",
-// 	"contentGroup1": "assortment",
-// 	"contentGroup2": "Bydlení",
-// 	"contentGroup3": "Nábytek",
-// 	"contentGroup4": "Křesla",
-// 	"contentGroup5": "Závěsné křeslo a vznášející se kreslo",
-// 	"language": "cz",
-// 	"pagetype": "ads",
-// 	"store": "014 - Praha - Štěrboholy",
-// 	"displayType": "d",
-// 	"userStatus": 0,
-// 	"channel": "mix",
-// 	"ecommerce": {
-// 		"currencyCode": "CZK",
-// 		"detail": {
-// 			"products": [
-// 				{
-// 					"name": "Závěsné křeslo Lytton z polycottonu bílá",
-// 					"id": "5793559",
-// 					"price": "825.62",
-// 					"brand": "",
-// 					"category": "Bydlení/Nábytek/Křesla/Závěsné křeslo a vznášející se kreslo",
-// 					"categoryId": "2368"
-// 				}
-// 			]
-// 		}
-// 	}
-// }
-// ]
-// ?? const dataLayer = await page.evaluate((varname) => window[varname], 'dataLayer');
-// price span.overview__price
-// img img.ads-slider__image [0]
-// inStock: !!dataLayer.store
-
 const { S3Client } = require("@aws-sdk/client-s3");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
@@ -82,19 +22,15 @@ const COUNTRY = {
   CH: "CH"
 };
 
-function s3FileName(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.match(/-p(\d+)\.html$/)?.[1];
+// function s3FileName(detail) {
+//   const url = new URL(detail.itemUrl);
+//   return url.pathname.match(/-p(\d+)\.html$/)?.[1];
+// }
+
+function getHomePageUrl() {
+  return global.homePageUrl;
 }
 
-// label default empty (https://www.obi.country || obi-italia.it)
-// categorie  = div.headr__nav-cat-col-inner > div.headr__nav-cat-row > a.headr__nav-cat-link
-// categorie (url: https://www.obi.cz/bydleni/c/874, label: CAT) -> url
-// ["/stavba/c/877","/zahrada-a-volny-cas/c/860","/technika/c/876","/bydleni/c/874",
-// "/kuchyne/c/875","/koupelna/c/4159","/prodejny/services/market-services/cutting-service/",
-// "/pujcovna/","/prodejny/services/","https://www.obi.cz/prodejny/praha-sterboholy/",
-// "/prodejny/markt-finder/?market=014&view=route","
-//   #"]
 const handleStart = async ({ $, requestQueue, request }) => {
   let categoryLinkList = $(
     "div.headr__nav-cat-col-inner > div.headr__nav-cat-row > a.headr__nav-cat-link"
@@ -106,65 +42,75 @@ const handleStart = async ({ $, requestQueue, request }) => {
       };
     })
     .get();
-  log.debug(`categoryLinkList ${JSON.stringify(categoryLinkList)}`);
+  log.debug(
+    `[handleStart] label: ${
+      request.userData.label
+    }, subcategories: ${JSON.stringify(categoryLinkList)}`
+  );
   if (global.inputData.development) {
     categoryLinkList = categoryLinkList.slice(0, 1);
     log.debug(
-      `development mode, subcatefory is ${JSON.stringify(categoryLinkList)}`
+      `development mode, subcategory is ${JSON.stringify(categoryLinkList)}`
     );
   }
 
-  const homePageUrl = request.url;
+  const homePageUrl = getHomePageUrl();
   for (const categoryObject of categoryLinkList) {
     if (!categoryObject.dataWebtrekk) {
       const categoryUrl = new URL(categoryObject.href, homePageUrl).href;
       // log.debug(categoryUrl);
       await requestQueue.addRequest({
         url: categoryUrl,
-        userData: { label: "CAT" }
+        userData: { label: "SUBCAT" }
       });
     }
   }
 };
 
-// label: CAT (https://www.obi.cz/bydleni/c/874)
-// subcategorie = ul.first-level > li > a
-// subcategorie (url: https://www.obi.cz/bydleni/nabytek/c/2226, label: SUBCAT) > url
-async function handleCategory({ $, requestQueue, request }) {
-  let subCategoryList = $("ul.first-level > li > a")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .get();
-  log.debug(`subCategoryList ${JSON.stringify(subCategoryList)}`);
-  if (global.inputData.development) {
-    subCategoryList = subCategoryList.slice(0, 1);
-    log.debug(
-      `development mode, subcatefory is ${JSON.stringify(subCategoryList)}`
-    );
-  }
-  const homePageUrl = request.url;
-  for (const subcategoryLink of subCategoryList) {
-    const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
-    await requestQueue.addRequest({
-      url: subcategoryUrl,
-      userData: { label: "SUBCAT" }
-    });
+async function handleSubCategory(context) {
+  const { $, requestQueue, request } = context;
+  const productCount = $($("div.variants")).attr("data-productcount");
+  const label = request.userData.label;
+  log.debug(
+    `[handleSubCategory] label: ${label}, url: ${request.url}, productCount ${productCount}`
+  );
+
+  if (productCount) {
+    await handleLastSubCategory(context);
+  } else {
+    let subCategoryList = $('a[wt_name="assortment_menu.level2"]')
+      .map(function () {
+        return $(this).attr("href");
+      })
+      .get();
+    log.debug(`${label}I ${JSON.stringify(subCategoryList)}`);
+    if (global.inputData.development) {
+      subCategoryList = subCategoryList.slice(0, 1);
+      log.debug(
+        `development mode, ${label}I is ${JSON.stringify(subCategoryList)}`
+      );
+    }
+    const homePageUrl = getHomePageUrl();
+    for (const subcategoryLink of subCategoryList) {
+      const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
+      await requestQueue.addRequest({
+        url: subcategoryUrl,
+        userData: { label: label + "I" }
+      });
+    }
   }
 }
 
-// label: SUBCAT ( https://www.obi.cz/bydleni/nabytek/c/2226)
-// get productCount: div.variants --> data-productcount (312 products)
-// get productPerPageCount per page: li.product (72 products per page)
-// pagination: Math.ceil(productCount / productPerPageCount)  (5 pages)
-// add pagination for i=2..5 (url: https://www.obi.cz/bydleni/nabytek/c/2226?page=i, label: LIST ) -> url
-async function handleSubCategory(context) {
+async function handleLastSubCategory(context) {
   const { $, requestQueue, request } = context;
   const productCount = parseInt($($("div.variants")).attr("data-productcount"));
+  log.debug(
+    `[handleLastSubCategory] label: ${request.userData.label}, url: ${request.url}, productCount ${productCount}`
+  );
   const productPerPageCount = $("li.product").get().length;
   let pageCount = Math.ceil(productCount / productPerPageCount);
   if (global.inputData.development) {
-    pageCount = Math.min(2, pageCount);
+    pageCount = 1;
   }
   // for (let i = 2; i <= pageCount; i++) {
   //   const url = `${request.url}/?page=${i}`;
@@ -189,27 +135,67 @@ async function handleSubCategory(context) {
   await handleList(context);
 }
 
-// label: LIST (https://www.obi.cz/bydleni/nabytek/c/2226)
-// product li.product > a , get href
-// detail (url: https://www.obi.cz/zavesne-kreslo-a-vznasejici-se-kreslo/zavesne-kreslo-lytton-z-polycottonu-bila/p/5793559,
-// label: DETAIL) -> url
 async function handleList({ $, requestQueue, request }) {
-  log.debug(`handleList ${request.url}`);
-  const productLinkList = $("li.product > a")
+  let productLinkList = $("li.product > a")
     .map(function () {
       return $(this).attr("href");
     })
     .get();
+  if (global.inputData.development) {
+    productLinkList = productLinkList.slice(0, 1);
+  }
+  const homePageUrl = getHomePageUrl();
   const requestList = productLinkList.map(url => {
+    const productDetailUrl = new URL(url, homePageUrl).href;
     return requestQueue.addRequest({
-      url,
+      url: productDetailUrl,
       userData: { label: "DETAIL" }
     });
   });
+  log.debug(
+    `[handleList] ${request.url}, productDetailCount ${requestList.length}`
+  );
   await Promise.all(requestList);
 }
+//
+// function getProductAttribute($){
+//   const scriptTextList = $('script').map(function () {
+//     return $(this).html();
+//   }).get();
+//   const variableDataLayer = "dataLayer =";
+//   const variableWtConfig = "var wtConfig =";
+//   let dataLayer;
+//   let wtConfig;
+//   const productAttribute = {};
+//   for (const scriptText of scriptTextList) {
+//     const foundDataLayer = scriptText.match(variableDataLayer);
+//     if (foundDataLayer) {
+//       const startIndex = scriptText.search(variableDataLayer);
+//       const endIndex = scriptText.search(";");
+//       if (startIndex != -1 && endIndex != -1) {
+//         const value = scriptText.substring(startIndex + variableDataLayer.length, endIndex);
+//         dataLayer = JSON.parse(value);
+//       }
+//     }
+//     const foundWtConfig = scriptText.match(variableWtConfig);
+//     if (foundWtConfig) {
+//       const startIndex1 = scriptText.search(variableWtConfig);
+//       const endIndex1 = scriptText.search("};");
+//       if (startIndex1 != -1 && endIndex1 != -1) {
+//         const value1 = scriptText.substring(startIndex1 + variableWtConfig.length, endIndex1);
+//         wtConfig = JSON.parse(value1);
+//       }
+//     }
+//     if (dataLayer && wtConfig) {
+//       break;
+//     }
+//   }
+//   return {dataLayer, wtConfig};
+// }
 
-async function handleDetail() {}
+// async function handleDetail({ request }) {
+//   log.debug(`handleDetail ${request.url}`);
+// }
 
 Apify.main(async () => {
   log.info("Actor starts.");
@@ -238,6 +224,7 @@ Apify.main(async () => {
   } else {
     homePageUrl = `https://www.obi.${country.toLowerCase()}`;
   }
+  global.homePageUrl = homePageUrl;
   await requestQueue.addRequest({
     url: homePageUrl,
     userData: {
@@ -245,10 +232,19 @@ Apify.main(async () => {
     }
   });
 
+  // await requestQueue.addRequest({
+  //   url: "https://www.obi.cz/vyrovnavaci-hmoty/cemix-beton-b25-25-kg/p/5811302",
+  //   userData: {
+  //     label: "DETAIL"
+  //   }
+  // });
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
     useApifyProxy: false
   });
 
+  let pushList = [];
+  const processedIds = new Set();
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
@@ -258,14 +254,61 @@ Apify.main(async () => {
       context.requestQueue = requestQueue;
       if (label === "START") {
         await handleStart(context);
-      } else if (label === "CAT") {
-        await handleCategory(context);
-      } else if (label === "SUBCAT") {
+      } else if (label.includes("SUBCAT")) {
         await handleSubCategory(context);
       } else if (label === "LIST") {
         await handleList(context);
       } else if (label === "DETAIL") {
-        await handleDetail(context);
+        const { request, $ } = context;
+        log.debug(`[handleDetail] label: ${label} ${request.url}`);
+
+        const itemName = $(".overview__description >.overview__heading").text();
+        const itemId = $('input[name="code"]').attr("value");
+        // todo currency and currentPrice not good
+        const currency = $('meta[itemprop="priceCurrency"]').attr("content");
+        const currentPrice = parseFloat($(".overview__price").text());
+        const discounted = false;
+        const inStock = $(".overview__flag-available").get().length != 0;
+        const img = `https:${$(".ads-slider__link").attr("href")}`;
+        const category = $("li.breadcrumb__dropdown__wrapper > a")
+          .map(function () {
+            return $(this).text();
+          })
+          .get()
+          .join("/");
+        const result = {
+          itemName,
+          itemId,
+          currency,
+          currentPrice,
+          discounted,
+          originalPrice: currentPrice,
+          inStock,
+          img,
+          category,
+          itemUrl: request.url
+        };
+        if (!processedIds.has(result.itemId)) {
+          pushList.push(
+            // push data to dataset to be ready for upload to Keboola
+            Apify.pushData(result),
+            // upload JSON+LD data to CDN
+            uploadToS3(
+              s3,
+              `obi${
+                country === "IT" ? "-italia" : ""
+              }.${country.toLowerCase()}`,
+              result.itemId,
+              "jsonld",
+              toProduct(result, {})
+            )
+          );
+          processedIds.add(result.itemId);
+        }
+        if (pushList.length > 90) {
+          await Promise.all(pushList);
+          pushList = [];
+        }
       }
     },
     handleFailedRequestFunction: async ({ request }) => {
