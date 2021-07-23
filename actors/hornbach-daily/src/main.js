@@ -53,11 +53,7 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `hornbach.cz`
-  );
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.cz`);
   log.info("invalidated Data CDN");
 
   await uploadToKeboola("hornbach_cz");

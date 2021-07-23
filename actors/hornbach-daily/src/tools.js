@@ -21,8 +21,21 @@ const getIdFromUrl = url => {
   return null;
 };
 
+const getCategories = categoryPath => {
+  const arr = categoryPath.split("/");
+  const category = [];
+  for (const a of arr) {
+    const c = a.split(":");
+    if (c.length === 2) {
+      category.push(c[0]);
+    }
+  }
+  return category.join(" > ");
+};
+
 module.exports = {
   siteMapToLinks,
   getIdFromUrl,
-  getCategoryId
+  getCategoryId,
+  getCategories
 };

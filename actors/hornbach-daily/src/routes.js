@@ -78,7 +78,8 @@ const CATEGORY = async ({ request, json, crawler }) => {
         img: article.imageUrl,
         currentPrice: parseFloat(article.allPrices.displayPrice.price),
         originalPrice: null,
-        discounted: false
+        discounted: false,
+        category: tools.getCategories(article.categoryPath)
       };
       const price = body.filter(p => p.articleCode === article.articleCode);
       if (price) {
