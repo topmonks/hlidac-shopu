@@ -1,0 +1,24 @@
+{
+	"name": "hornbach-daily",
+	"version": "0.0.1",
+	"description": "This is a boilerplate of an Apify actor.",
+	"dependencies": {
+		"@aws-sdk/client-cloudfront": "^3.21.0",
+		"@aws-sdk/client-s3": "^3.21.0",
+		"@hlidac-shopu/actors-common": "^1.1.2",
+		"apify": "^1.2.1",
+		"underscore": "^1.13.1"
+	},
+	"devDependencies": {
+		"@types/node": "^14.17.3",
+		"apify-cli": "^0.6.2"
+	},
+	"scripts": {
+		"start": "node src/main.js",
+		"lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
+		"lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
+		"test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}
