@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { fetchPage, countProducts } = require("./src/crawler");
 const {
@@ -8,7 +19,9 @@ let stats = {};
 const processedIds = new Set();
 
 Apify.main(async () => {
-  const input = (await Apify.getInput()) || {};
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const input = await Apify.getInput();
   const {
     development = false,
     debug = false,
@@ -24,7 +37,7 @@ Apify.main(async () => {
       "https://www.electroworld.cz/male-spotrebice-vysavace-kavovary",
       "https://www.electroworld.cz/zahrada-dum-sport-hobby"
     ]
-  } = input;
+  } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {
     categories: 0,
@@ -53,11 +66,20 @@ Apify.main(async () => {
     requestQueue: requestQueue,
     dataset: dataset,
     stats,
-    processedIds
+    processedIds,
+    s3,
+    toProduct,
+    uploadToS3,
+    s3FileName
   };
 
   if (type === "COUNT") {
     await countProducts(stats);
+  } else if (type === "TEST") {
+    await requestQueue.addRequest({
+      userData: { label: "nthPage", pageN: 0 },
+      url: "https://www.electroworld.cz/smart-televize"
+    });
   } else if (type === "FULL") {
     for (let i = 0; i < startUrls.length; i++) {
       await requestQueue.addRequest({ url: startUrls[i] });
@@ -87,4 +109,11 @@ Apify.main(async () => {
     `Found ${crawlContext.stats.categories} subcategory pages and ${crawlContext.stats.pages} ` +
       `product list pages in total; scraped ${crawlContext.stats.items} products.`
   );
+
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "electroworld.cz");
+    log.info("invalidated Data CDN");
+    await uploadToKeboola("electroworld_cz");
+    log.info("upload to Keboola finished");
+  }
 });

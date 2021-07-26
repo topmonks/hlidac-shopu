@@ -25,11 +25,9 @@ const productCategoriesToken =
 
 function mkPrice(price) {
   if (price !== "") {
-    price = Number(
-      encodeURIComponent(price.substr(0, price.length - 2))
-        .replace(/%C2/g, "")
-        .replace(/%A0/g, "")
-    );
+    price = encodeURIComponent(price.substr(0, price.length - 2))
+      .replace(/%C2/g, "")
+      .replace(/%A0/g, "");
   } else {
     price = null;
   }
@@ -38,7 +36,8 @@ function mkPrice(price) {
 
 async function scrapeProductListPage($, crawlContext) {
   const products = $(productItemToken);
-  const scraped = [];
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
   for (let i = 0; i < products.length; i++) {
     // This is WTF, without it, topElement.parent() sometimes returns 'undefined'
     let p = products[i];
@@ -56,15 +55,10 @@ async function scrapeProductListPage($, crawlContext) {
       .find(productPriceOriginalToken)
       .text();
     productPriceOriginal = mkPrice(productPriceOriginal);
-    let productPrice = topElement.find(productPriceToken).text().trim();
-    productPrice = mkPrice(productPrice);
-    if (isNaN(productPrice)) {
-      productPrice = topElement
-        .find(".product-box__prices")
-        .find(".product-box__price")[0].children[0];
-      productPrice = productPrice.data.replace(/\t/g, "").replace(/\n/g, "");
-      productPrice = mkPrice(productPrice);
-
+    const productPrice = topElement
+      .find('strong[itemprop="price"]')
+      .attr("content");
+    if (isNaN(productPriceOriginal)) {
       productPriceOriginal =
         $(topElement).find(productPriceToken)[1].children[0].data;
       productPriceOriginal = productPriceOriginal
@@ -121,29 +115,40 @@ async function scrapeProductListPage($, crawlContext) {
     if (productPrice !== null && productPriceOriginal !== null) {
       sale = 1 - productPrice / productPriceOriginal;
     }
-
-    if (!crawlContext.processedIds.has(productID)) {
-      scraped.push({
-        itemId: productID,
-        img: productImg,
-        itemUrl: productLink,
-        itemName: productName,
-        currentPrice: productPrice,
-        originalPrice: productPriceOriginal,
-        sale: sale,
-        rating: rating,
-        discounted: discount,
-        category: categories,
-        currency: currency,
-        inStock: available
-      });
+    const product = {
+      itemId: productID,
+      img: productImg,
+      itemUrl: productLink,
+      itemName: productName,
+      currentPrice: productPrice,
+      originalPrice: productPriceOriginal,
+      sale: sale,
+      rating: rating,
+      discounted: discount,
+      category: categories,
+      currency: currency,
+      inStock: available
+    };
+    if (!crawlContext.processedIds.has(product.itemId)) {
+      crawlContext.processedIds.add(product.itemId);
+      requests.push(
+        crawlContext.dataset.pushData(product),
+        crawlContext.uploadToS3(
+          crawlContext.s3,
+          "electroworld.cz",
+          await crawlContext.s3FileName(product),
+          "jsonld",
+          crawlContext.toProduct(product, {})
+        )
+      );
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
     }
   }
 
-  await crawlContext.dataset.pushData(scraped);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 }
 
 async function handleSubCategoryPage($, crawlContext) {
