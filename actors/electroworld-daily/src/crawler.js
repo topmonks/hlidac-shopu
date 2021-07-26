@@ -1,7 +1,8 @@
 const Apify = require("apify");
+const cheerio = require("cheerio");
 
 const {
-  utils: { log }
+  utils: { log, requestAsBrowser }
 } = Apify;
 
 const urlBase = "https://www.electroworld.cz";
@@ -24,11 +25,9 @@ const productCategoriesToken =
 
 function mkPrice(price) {
   if (price !== "") {
-    price = Number(
-      encodeURIComponent(price.substr(0, price.length - 2))
-        .replace(/%C2/g, "")
-        .replace(/%A0/g, "")
-    );
+    price = encodeURIComponent(price.substr(0, price.length - 2))
+      .replace(/%C2/g, "")
+      .replace(/%A0/g, "");
   } else {
     price = null;
   }
@@ -37,7 +36,8 @@ function mkPrice(price) {
 
 async function scrapeProductListPage($, crawlContext) {
   const products = $(productItemToken);
-  const scraped = [];
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
   for (let i = 0; i < products.length; i++) {
     // This is WTF, without it, topElement.parent() sometimes returns 'undefined'
     let p = products[i];
@@ -55,15 +55,10 @@ async function scrapeProductListPage($, crawlContext) {
       .find(productPriceOriginalToken)
       .text();
     productPriceOriginal = mkPrice(productPriceOriginal);
-    let productPrice = topElement.find(productPriceToken).text().trim();
-    productPrice = mkPrice(productPrice);
-    if (isNaN(productPrice)) {
-      productPrice = topElement
-        .find(".product-box__prices")
-        .find(".product-box__price")[0].children[0];
-      productPrice = productPrice.data.replace(/\t/g, "").replace(/\n/g, "");
-      productPrice = mkPrice(productPrice);
-
+    const productPrice = topElement
+      .find('strong[itemprop="price"]')
+      .attr("content");
+    if (isNaN(productPriceOriginal)) {
       productPriceOriginal =
         $(topElement).find(productPriceToken)[1].children[0].data;
       productPriceOriginal = productPriceOriginal
@@ -120,10 +115,7 @@ async function scrapeProductListPage($, crawlContext) {
     if (productPrice !== null && productPriceOriginal !== null) {
       sale = 1 - productPrice / productPriceOriginal;
     }
-
-    crawlContext.productsScraped++;
-
-    scraped.push({
+    const product = {
       itemId: productID,
       img: productImg,
       itemUrl: productLink,
@@ -136,10 +128,27 @@ async function scrapeProductListPage($, crawlContext) {
       category: categories,
       currency: currency,
       inStock: available
-    });
+    };
+    if (!crawlContext.processedIds.has(product.itemId)) {
+      crawlContext.processedIds.add(product.itemId);
+      requests.push(
+        crawlContext.dataset.pushData(product),
+        crawlContext.uploadToS3(
+          crawlContext.s3,
+          "electroworld.cz",
+          await crawlContext.s3FileName(product),
+          "jsonld",
+          crawlContext.toProduct(product, {})
+        )
+      );
+      crawlContext.stats.items++;
+    } else {
+      crawlContext.stats.itemsDuplicity++;
+    }
   }
 
-  await crawlContext.dataset.pushData(scraped);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 }
 
 async function handleSubCategoryPage($, crawlContext) {
@@ -170,31 +179,74 @@ async function addProductListPagesToQueue($, crawlContext, firstPageURL) {
   }
 }
 
+async function streamToBuffer(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+}
+
 exports.fetchPage = async ({ request, $ }, crawlContext) => {
   if (request.userData.label === "nthPage") {
     log.info(
       `Scraping ${request.userData.pageN}th product list page: ${request.url},` +
-        ` ${crawlContext.productListPageCount}`
+        ` ${crawlContext.stats.pages}`
     );
     await scrapeProductListPage($, crawlContext);
-    crawlContext.productListPageCount++;
+    crawlContext.stats.pages++;
   } else {
     const productElements = $(productPageToken).find(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
 
     if (isSubCategoryPage) {
       log.info(
-        `Found new subcategory page: ${request.url}, ${crawlContext.subcategoryPageCount}`
+        `Found new subcategory page: ${request.url}, ${crawlContext.stats.categories}`
       );
       await handleSubCategoryPage($, crawlContext, request);
-      crawlContext.subcategoryPageCount++;
+      crawlContext.stats.categories++;
     } else {
       log.info(
-        `Scraping 1st product list page: ${request.url}, ${crawlContext.productListPageCount}`
+        `Scraping 1st product list page: ${request.url}, ${crawlContext.stats.pages}`
       );
       await addProductListPagesToQueue($, crawlContext, request.url);
       await scrapeProductListPage($, crawlContext);
-      crawlContext.productListPageCount++;
+      crawlContext.stats.pages++;
     }
   }
+};
+
+exports.countProducts = async stats => {
+  const stream = await requestAsBrowser({
+    url: `${urlBase}/sitemap.xml`,
+    stream: true
+  });
+  const buffer = await streamToBuffer(stream);
+  const xmlString = buffer.toString();
+  const $ = cheerio.load(xmlString, { xmlMode: true });
+  const productXmlUrls = [];
+
+  // Pick all product xml urls from sitemap
+  $("sitemap").each(function () {
+    const url = $(this).find("loc").text().trim();
+    if (url.includes("products")) {
+      productXmlUrls.push(url);
+    }
+  });
+  log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
+
+  for await (const xmlUrl of productXmlUrls) {
+    const stream = await requestAsBrowser({
+      url: xmlUrl,
+      stream: true
+    });
+    const buffer = await streamToBuffer(stream);
+    const xmlString = buffer.toString();
+    const $ = cheerio.load(xmlString, { xmlMode: true });
+    $("url").each(function () {
+      stats.items++;
+    });
+  }
+  log.info(`Total items ${stats.items}x`);
 };
