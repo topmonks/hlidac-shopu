@@ -3706,6 +3706,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
+    "@hlidac-shopu/actors-common": ^1.1.2
+    "@types/node": ^14.17.3
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/extension@workspace:extension":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/extension@workspace:extension"

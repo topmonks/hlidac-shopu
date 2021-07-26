@@ -1,7 +1,8 @@
 const Apify = require("apify");
+const cheerio = require("cheerio");
 
 const {
-  utils: { log }
+  utils: { log, requestAsBrowser }
 } = Apify;
 
 const urlBase = "https://www.electroworld.cz";
@@ -170,6 +171,15 @@ async function addProductListPagesToQueue($, crawlContext, firstPageURL) {
   }
 }
 
+async function streamToBuffer(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+}
+
 exports.fetchPage = async ({ request, $ }, crawlContext) => {
   if (request.userData.label === "nthPage") {
     log.info(
@@ -178,6 +188,7 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     );
     await scrapeProductListPage($, crawlContext);
     crawlContext.productListPageCount++;
+  } else if (request.userData.label === "COUNT") {
   } else {
     const productElements = $(productPageToken).find(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
@@ -197,4 +208,38 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
       crawlContext.productListPageCount++;
     }
   }
+};
+
+exports.countProducts = async stats => {
+  const stream = await requestAsBrowser({
+    url: "https://www.electroworld.cz/sitemap.xml",
+    stream: true
+  });
+  const buffer = await streamToBuffer(stream);
+  const xmlString = buffer.toString();
+  const $ = cheerio.load(xmlString, { xmlMode: true });
+  const productXmlUrls = [];
+
+  // Pick all product xml urls from sitemap
+  $("sitemap").each(function () {
+    const url = $(this).find("loc").text().trim();
+    if (url.includes("products")) {
+      productXmlUrls.push(url);
+    }
+  });
+  log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
+
+  for await (const xmlUrl of productXmlUrls) {
+    const stream = await requestAsBrowser({
+      url: xmlUrl,
+      stream: true
+    });
+    const buffer = await streamToBuffer(stream);
+    const xmlString = buffer.toString();
+    const $ = cheerio.load(xmlString, { xmlMode: true });
+    $("url").each(function () {
+      stats.items++;
+    });
+  }
+  log.info(`Total items ${stats.items}x`);
 };
