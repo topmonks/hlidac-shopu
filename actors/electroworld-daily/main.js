@@ -5,10 +5,17 @@ const {
 } = Apify;
 
 let stats = {};
+const processedIds = new Set();
 
 Apify.main(async () => {
   const input = (await Apify.getInput()) || {};
   const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL",
     startUrls = [
       "https://www.electroworld.cz/smart-inteligentni-domacnost",
       "https://www.electroworld.cz/televize-foto-audio-video",
@@ -16,8 +23,7 @@ Apify.main(async () => {
       "https://www.electroworld.cz/velke-spotrebice-chladnicky-pracky",
       "https://www.electroworld.cz/male-spotrebice-vysavace-kavovary",
       "https://www.electroworld.cz/zahrada-dum-sport-hobby"
-    ],
-    type = "FULL"
+    ]
   } = input;
 
   stats = (await Apify.getValue("STATS")) || {
@@ -29,15 +35,25 @@ Apify.main(async () => {
     failed: 0
   };
 
-  const proxyConfiguration = await Apify.createProxyConfiguration();
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
+  log.info("ACTOR - setUp crawler");
+  /** @type {ProxyConfiguration} */
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
   const dataset = await Apify.openDataset();
   const requestQueue = await Apify.openRequestQueue();
   const crawlContext = {
     requestQueue: requestQueue,
     dataset: dataset,
-    subcategoryPageCount: 0,
-    productListPageCount: 0,
-    productsScraped: 0
+    stats,
+    processedIds
   };
 
   if (type === "COUNT") {
@@ -51,7 +67,8 @@ Apify.main(async () => {
   const crawler = new Apify.CheerioCrawler({
     requestQueue: requestQueue,
     proxyConfiguration: proxyConfiguration,
-    // maxConcurrency: 50,
+    maxRequestRetries,
+    maxConcurrency,
     handlePageFunction: async context => {
       await fetchPage(context, crawlContext);
     }
@@ -67,7 +84,7 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   log.info(
-    `Found ${crawlContext.subcategoryPageCount} subcategory pages and ${crawlContext.productListPageCount} ` +
-      `product list pages in total; scraped ${crawlContext.productsScraped} products.`
+    `Found ${crawlContext.stats.categories} subcategory pages and ${crawlContext.stats.pages} ` +
+      `product list pages in total; scraped ${crawlContext.stats.items} products.`
   );
 });

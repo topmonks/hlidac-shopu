@@ -122,22 +122,25 @@ async function scrapeProductListPage($, crawlContext) {
       sale = 1 - productPrice / productPriceOriginal;
     }
 
-    crawlContext.productsScraped++;
-
-    scraped.push({
-      itemId: productID,
-      img: productImg,
-      itemUrl: productLink,
-      itemName: productName,
-      currentPrice: productPrice,
-      originalPrice: productPriceOriginal,
-      sale: sale,
-      rating: rating,
-      discounted: discount,
-      category: categories,
-      currency: currency,
-      inStock: available
-    });
+    if (!crawlContext.processedIds.has(productID)) {
+      scraped.push({
+        itemId: productID,
+        img: productImg,
+        itemUrl: productLink,
+        itemName: productName,
+        currentPrice: productPrice,
+        originalPrice: productPriceOriginal,
+        sale: sale,
+        rating: rating,
+        discounted: discount,
+        category: categories,
+        currency: currency,
+        inStock: available
+      });
+      crawlContext.stats.items++;
+    } else {
+      crawlContext.stats.itemsDuplicity++;
+    }
   }
 
   await crawlContext.dataset.pushData(scraped);
@@ -184,35 +187,34 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
   if (request.userData.label === "nthPage") {
     log.info(
       `Scraping ${request.userData.pageN}th product list page: ${request.url},` +
-        ` ${crawlContext.productListPageCount}`
+        ` ${crawlContext.stats.pages}`
     );
     await scrapeProductListPage($, crawlContext);
-    crawlContext.productListPageCount++;
-  } else if (request.userData.label === "COUNT") {
+    crawlContext.stats.pages++;
   } else {
     const productElements = $(productPageToken).find(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
 
     if (isSubCategoryPage) {
       log.info(
-        `Found new subcategory page: ${request.url}, ${crawlContext.subcategoryPageCount}`
+        `Found new subcategory page: ${request.url}, ${crawlContext.stats.categories}`
       );
       await handleSubCategoryPage($, crawlContext, request);
-      crawlContext.subcategoryPageCount++;
+      crawlContext.stats.categories++;
     } else {
       log.info(
-        `Scraping 1st product list page: ${request.url}, ${crawlContext.productListPageCount}`
+        `Scraping 1st product list page: ${request.url}, ${crawlContext.stats.pages}`
       );
       await addProductListPagesToQueue($, crawlContext, request.url);
       await scrapeProductListPage($, crawlContext);
-      crawlContext.productListPageCount++;
+      crawlContext.stats.pages++;
     }
   }
 };
 
 exports.countProducts = async stats => {
   const stream = await requestAsBrowser({
-    url: "https://www.electroworld.cz/sitemap.xml",
+    url: `${urlBase}/sitemap.xml`,
     stream: true
   });
   const buffer = await streamToBuffer(stream);
