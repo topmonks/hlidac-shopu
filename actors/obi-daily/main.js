@@ -10,18 +10,6 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { log } = Apify.utils;
 
-// const COUNTRY = {
-//   CZ: "CZ",
-//   SK: "SK",
-//   PL: "PL",
-//   HU: "HU",
-//   IT: "IT", // obi-italia.it
-//   DE: "DE",
-//   AT: "AT",
-//   RU: "RU",
-//   CH: "CH"
-// };
-
 const processedIds = new Set();
 let stats = {};
 let pushList = [];
@@ -118,18 +106,17 @@ async function handleLastSubCategory(context) {
   log.debug(
     `[handleLastSubCategory] label: ${request.userData.label}, url: ${request.url}, productCount ${productCount}`
   );
-  const productPerPageCount = $("li.product").get().length;
+  const productPerPageCount = $("li.product > a")
+    .map(function () {
+      if ($(this).attr("data-ui-name")) {
+        return $(this).attr("href");
+      }
+    })
+    .get().length;
   let pageCount = Math.ceil(productCount / productPerPageCount);
   if (global.inputData.development) {
     pageCount = 1;
   }
-  // for (let i = 2; i <= pageCount; i++) {
-  //   const url = `${request.url}/?page=${i}`;
-  //   await requestQueue.addRequest({
-  //     url,
-  //     userData: { label: "LIST" }
-  //   });
-  // }
   if (pageCount > 1) {
     const requestList = Array(pageCount - 1)
       .fill(0)
@@ -150,7 +137,9 @@ async function handleLastSubCategory(context) {
 async function handleList({ $, requestQueue, request }) {
   let productLinkList = $("li.product > a")
     .map(function () {
-      return $(this).attr("href");
+      if ($(this).attr("data-ui-name")) {
+        return $(this).attr("href");
+      }
     })
     .get();
   log.debug(
@@ -158,12 +147,6 @@ async function handleList({ $, requestQueue, request }) {
       request.url
     }, productLinkList: ${JSON.stringify(productLinkList)}`
   );
-  if (global.inputData.development) {
-    productLinkList = productLinkList.slice(0, 1);
-    log.debug(
-      `development mode, productLinkList: ${JSON.stringify(productLinkList)}`
-    );
-  }
   const homePageUrl = getHomePageUrl();
   const requestList = productLinkList.map(url => {
     const productDetailUrl = new URL(url, homePageUrl).href;
@@ -250,7 +233,7 @@ async function handleDetail({ request, $ }, s3, country) {
       uploadToS3(
         s3,
         `obi${country === "it" ? "-italia" : ""}.${country}`,
-        result.itemId,
+        s3FileNameSync(result),
         "jsonld",
         toProduct(result, {})
       )
@@ -278,6 +261,11 @@ function parsePrice(text) {
   return price;
 }
 
+function s3FileNameSync(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/p\/(\d+)(#\/)?$/)?.[1];
+}
+
 Apify.main(async () => {
   log.info("Actor starts.");
 
@@ -287,7 +275,11 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
 
-  const { development = false, debug = false } = input ?? {};
+  const {
+    development = false,
+    debug = false,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = input ?? {};
   const country =
     (input && input.country && input.country.toLowerCase()) || "cz";
   global.inputData = { country, development, debug };
@@ -315,22 +307,9 @@ Apify.main(async () => {
     }
   });
 
-  // await requestQueue.addRequest({
-  //   // url: "https://www.obi.de/lounge-gartenmoebel/lounge-set-3-teilig-aus-polyrattan-geflecht-hellgrau/p/1512136",
-  //   // url: "https://www.obi.ru/napolnye-unitazy/napolnyi-unitaz-kompakt-damixa-palace-bit-s-sidenem-mikrolift/p/4811477",
-  //   // url: "https://www.obi-italia.it/faretti/obi-barra-a-4-faretti-nicosia/p/4716742",
-  //   // url: "https://www.obi.pl/dywany-z-krotkim-runem/multidecor-dywan-chindi-50-cm-x-70-cm-mix/p/3147824",
-  //   // url: "https://www.obi.ch/e-bikes/prophete-e-mountainbike-graveler-aeg-sportdrive-27-5-/p/5361118",
-  //   // url: "https://www.obi.at/elektro-pumpen-hauswasserwerke/gardena-pumpe-hauswasserwerk-3700-4/p/8605347#/",
-  //   // url: "https://www.obi.at/gasgrills/char-broil-gasgrill-all-star-120-b/p/8333437#/",
-  //   url: "https://www.obi.sk/lehatka/acamp-zavesne-kreslo-tonga/p/1447697",
-  //   userData: {
-  //     label: "DETAIL"
-  //   }
-  // });
-
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    useApifyProxy: false
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const crawler = new Apify.CheerioCrawler({
@@ -365,8 +344,9 @@ Apify.main(async () => {
   const directoryName = `obi${country === "it" ? "-italia" : ""}.${country}`;
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", directoryName);
   log.info(`invalidated Data CDN ${directoryName}`);
+
   if (!development) {
-    const tableName = `obi_${country}`;
+    const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
     await uploadToKeboola(tableName);
     log.info(`update to Keboola finished ${tableName}.`);
   }
