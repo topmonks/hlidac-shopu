@@ -10,7 +10,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const { fetchPage, countProducts } = require("./src/crawler");
+const { fetchPage, fetchDetail, countProducts } = require("./src/crawler");
 const {
   utils: { log }
 } = Apify;
@@ -36,6 +36,11 @@ Apify.main(async () => {
       "https://www.electroworld.cz/velke-spotrebice-chladnicky-pracky",
       "https://www.electroworld.cz/male-spotrebice-vysavace-kavovary",
       "https://www.electroworld.cz/zahrada-dum-sport-hobby"
+    ],
+    detailURLs = [
+      "https://www.electroworld.cz/apple-macbook-air-13-m1-256gb-2020-mgn63cz-a-vesmirne-sedy",
+      "https://www.electroworld.cz/nine-eagles-galaxy-visitor-3",
+      "https://www.electroworld.cz/samsung-galaxy-a52-128-gb-cerna"
     ]
   } = input ?? {};
 
@@ -73,17 +78,21 @@ Apify.main(async () => {
     s3FileName
   };
 
-  if (type === "COUNT") {
+  if (type === "FULL") {
+    for (let i = 0; i < startUrls.length; i++) {
+      await requestQueue.addRequest({ url: startUrls[i] });
+    }
+  } else if (type === "DETAIL") {
+    for (let i = 0; i < detailURLs.length; i++) {
+      await requestQueue.addRequest({ url: detailURLs[i] });
+    }
+  } else if (type === "COUNT") {
     await countProducts(stats);
-  } else if (type === "TEST") {
+  } else if (type === "TEST_FULL") {
     await requestQueue.addRequest({
       userData: { label: "nthPage", pageN: 0 },
       url: "https://www.electroworld.cz/smart-televize"
     });
-  } else if (type === "FULL") {
-    for (let i = 0; i < startUrls.length; i++) {
-      await requestQueue.addRequest({ url: startUrls[i] });
-    }
   }
 
   const crawler = new Apify.CheerioCrawler({
@@ -92,7 +101,11 @@ Apify.main(async () => {
     maxRequestRetries,
     maxConcurrency,
     handlePageFunction: async context => {
-      await fetchPage(context, crawlContext);
+      if (type === "FULL") {
+        await fetchPage(context, crawlContext);
+      } else if (type === "DETAIL") {
+        await fetchDetail(context.$, context.request, dataset);
+      }
     }
   });
 
