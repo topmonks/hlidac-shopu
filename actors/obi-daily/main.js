@@ -179,7 +179,7 @@ async function handleDetail({ request, $ }, s3, country) {
   let currentPrice = $('[data-ui-name="ads.price.strong"]').text();
   currentPrice = parsePrice(currentPrice);
   let discountedPrice = $(".saving").get(0);
-  let originalPrice = currentPrice;
+  let originalPrice = null;
   if (discountedPrice) {
     originalPrice = $(discountedPrice.parent.children)
       .map(function () {
