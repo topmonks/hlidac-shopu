@@ -32,6 +32,11 @@ const {
 let stats = {};
 const processedIds = new Set();
 
+function s3FileNameSync(detail) {
+  const url = new URL(detail.itemUrl);
+  return url.pathname.match(/\/([^/]+)/)?.[1];
+}
+
 Apify.main(async () => {
   log.info("ACTOR - start");
 
@@ -102,7 +107,7 @@ Apify.main(async () => {
               uploadToS3(
                 s3,
                 `okay.${country.toLowerCase()}`,
-                `${product.itemId}`,
+                s3FileNameSync(product),
                 "jsonld",
                 toProduct(product, {})
               )

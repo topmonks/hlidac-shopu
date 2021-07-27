@@ -35,7 +35,6 @@ const handleStart = async ({ $, requestQueue, request }) => {
       .map(function () {
         return {
           href: $(this).attr("href")
-          // dataWebtrekk: $(this).attr("wt_name")
         };
       })
       .get();
@@ -56,7 +55,6 @@ const handleStart = async ({ $, requestQueue, request }) => {
   for (const categoryObject of categoryLinkList) {
     if (!categoryObject.dataWebtrekk) {
       const categoryUrl = new URL(categoryObject.href, homePageUrl).href;
-      // log.debug(categoryUrl);
       await requestQueue.addRequest({
         url: categoryUrl,
         userData: { label: "SUBCAT" }
@@ -160,10 +158,10 @@ async function handleList({ $, requestQueue, request }) {
   stats.urls += requestList.length;
 }
 
-async function handleDetail({ request, $ }, country) {
-  log.debug(
-    `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
-  );
+async function handleDetail(request, $, country, dataset) {
+  // log.debug(
+  //   `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
+  // );
 
   const itemName = $(".overview__description >.overview__heading")
     .text()
@@ -227,16 +225,9 @@ async function handleDetail({ request, $ }, country) {
     category
   };
   if (!processedIds.has(result.itemId)) {
-    if (global.inputData.development) {
-      log.debug(
-        `UPLOADS3: ${s3FileNameSync(result)} upload to obi${
-          country === "it" ? "-italia" : ""
-        }.${country}`
-      );
-    }
     pushList.push(
       // push data to dataset to be ready for upload to Keboola
-      Apify.pushData(result),
+      dataset.pushData(result),
       // upload JSON+LD data to CDN
       uploadToS3(
         s3,
@@ -252,8 +243,9 @@ async function handleDetail({ request, $ }, country) {
     stats.itemsDuplicity += 1;
   }
   stats.totalItems += 1;
-  if (pushList.length > 90) {
-    await Promise.all(pushList);
+  if (pushList.length > 70) {
+    // await Promise.all(pushList);
+    await Promise.allSettled(pushList);
     pushList = [];
   }
 }
@@ -303,6 +295,7 @@ Apify.main(async () => {
     itemsDuplicity: 0,
     totalItems: 0
   };
+  const dataset = await Apify.openDataset();
 
   const requestQueue = await Apify.openRequestQueue();
   let homePageUrl = `https://www.obi${
@@ -336,7 +329,7 @@ Apify.main(async () => {
       } else if (label === "LIST") {
         await handleList(context);
       } else if (label === "DETAIL") {
-        await handleDetail(context, country);
+        await handleDetail(context.request, context.$, country, dataset);
       }
     },
     handleFailedRequestFunction: async ({ request }) => {
@@ -355,10 +348,10 @@ Apify.main(async () => {
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", directoryName);
   log.info(`invalidated Data CDN ${directoryName}`);
 
-  if (!development) {
-    const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
-    await uploadToKeboola(tableName);
-    log.info(`update to Keboola finished ${tableName}.`);
-  }
+  // if (!development) {
+  const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
+  await uploadToKeboola(tableName);
+  log.info(`update to Keboola finished ${tableName}.`);
+  // }
   log.info("Actor Finished.");
 });

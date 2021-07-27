@@ -1,3 +1,5 @@
+### Obi eshop
+```
 obi.cz
 obi.sk
 obi.de
@@ -7,10 +9,9 @@ obi.hu
 obi.ru
 obi.at
 obi-italia.it
+```
 
-https://www.obi.cz/sitemap_index.xml -> https://www.obi.cz/sitemaps/obi_cs_cz/sitemap_obi-category.xml
-
-### INPUT
+### INPUT development
 ```
 {
   "country": "cz",
@@ -18,9 +19,17 @@ https://www.obi.cz/sitemap_index.xml -> https://www.obi.cz/sitemaps/obi_cs_cz/si
   "debug": true,
   "proxyGroups": ["CZECH_LUMINATI"],
   "maxRequestRetries": 3,
-  "maxConcurrency": 10,
+  "maxConcurrency": 10
 }
 ```
+
+### INPUT production
+```
+{
+  "country": "cz"
+}
+```
+where country: cz, sk, de, pl, ch, hu, ru, at, it
 
 ### OUTPUT
 ```
