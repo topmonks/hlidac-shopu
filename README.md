@@ -119,4 +119,17 @@ folder.
 
 ---
 
+## Update @hlidac-shopu/lib version for actors
+1. Update version @hlidac-shopu/lib in ./lib/package.json
+1. Publish package to npm. Ask @JanFiedler about login  
+```   
+    cd lib
+    npm login
+    npm publish --access public --tag latest
+```
+1. Update version @hlidac-shopu/lib in yarn.lock 
+```   
+yarn upgrade-interactive
+```
+
 © 2018-2021 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)

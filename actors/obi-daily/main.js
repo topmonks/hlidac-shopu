@@ -1,4 +1,5 @@
 const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
@@ -159,7 +160,7 @@ async function handleList({ $, requestQueue, request }) {
   stats.urls += requestList.length;
 }
 
-async function handleDetail({ request, $ }, s3, country) {
+async function handleDetail({ request, $ }, country) {
   log.debug(
     `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
   );
@@ -226,6 +227,13 @@ async function handleDetail({ request, $ }, s3, country) {
     category
   };
   if (!processedIds.has(result.itemId)) {
+    if (global.inputData.development) {
+      log.debug(
+        `UPLOADS3: ${s3FileNameSync(result)} upload to obi${
+          country === "it" ? "-italia" : ""
+        }.${country}`
+      );
+    }
     pushList.push(
       // push data to dataset to be ready for upload to Keboola
       Apify.pushData(result),
@@ -270,7 +278,6 @@ Apify.main(async () => {
   log.info("Actor starts.");
 
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
@@ -278,7 +285,9 @@ Apify.main(async () => {
   const {
     development = false,
     debug = false,
-    proxyGroups = ["CZECH_LUMINATI"]
+    proxyGroups = ["CZECH_LUMINATI"],
+    maxRequestRetries = 3,
+    maxConcurrency = 10
   } = input ?? {};
   const country =
     (input && input.country && input.country.toLowerCase()) || "cz";
@@ -315,7 +324,8 @@ Apify.main(async () => {
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    maxConcurrency: 5,
+    maxConcurrency,
+    maxRequestRetries,
     handlePageFunction: async context => {
       const { label } = context.request.userData;
       context.requestQueue = requestQueue;
@@ -326,7 +336,7 @@ Apify.main(async () => {
       } else if (label === "LIST") {
         await handleList(context);
       } else if (label === "DETAIL") {
-        await handleDetail(context, s3, country);
+        await handleDetail(context, country);
       }
     },
     handleFailedRequestFunction: async ({ request }) => {
