@@ -66,7 +66,10 @@ Apify.main(async () => {
     }
   );
 
-  const requestList = await Apify.openRequestList('CATEGORY_REQUESTS', categoryRequests);
+  const requestList = await Apify.openRequestList(
+    "CATEGORY_REQUESTS",
+    categoryRequests
+  );
   const requestQueue = await Apify.openRequestQueue();
 
   const crawler = new Apify.CheerioCrawler({
