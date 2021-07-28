@@ -66,17 +66,11 @@ Apify.main(async () => {
     }
   );
 
-  // const requestList = await Apify.openRequestList('CATEGORY_REQUESTS', categoryRequests);
+  const requestList = await Apify.openRequestList('CATEGORY_REQUESTS', categoryRequests);
   const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: "https://www.ikea.com/cz/cs/cat/modulove-pohovky-31786/",
-    userData: {
-      label: "CATEGORY"
-    }
-  });
 
   const crawler = new Apify.CheerioCrawler({
-    // requestList,
+    requestList,
     requestQueue,
     proxyConfiguration,
     maxConcurrency: 35,
