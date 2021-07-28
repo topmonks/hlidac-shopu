@@ -17,7 +17,9 @@ Apify.main(async () => {
   Apify.events.on("migrating", () => {
     Apify.setValue("COUNT", productCount).then(() =>
       log.info("[PRODUCT COUNT] Saved")
-    );
+    )catch(error) {
+      log.error(`[ERROR]: ${error.message.toString()}`)
+    };
   });
 
   setInterval(async () => {
