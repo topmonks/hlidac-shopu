@@ -15,11 +15,11 @@ Apify.main(async () => {
 
   let productCount = (await Apify.getValue("COUNT")) || 0;
   Apify.events.on("migrating", () => {
-    Apify.setValue("COUNT", productCount).then(() =>
-      log.info("[PRODUCT COUNT] Saved")
-    ).catch((error) => {
-      log.error(`[ERROR]: ${error.message.toString()}`)
-    });
+    Apify.setValue("COUNT", productCount)
+      .then(() => log.info("[PRODUCT COUNT] Saved"))
+      .catch(error => {
+        log.error(`[ERROR]: ${error.message.toString()}`);
+      });
   });
 
   setInterval(async () => {
