@@ -1,0 +1,20 @@
+{
+  "name": "@hlidac-shopu/eva-daily",
+  "version": "1.0.0",
+  "author": "Jan Fiedler <jan.fiedler@topmonks.com>",
+  "license": "EPL-2.0",
+  "description": "This is the eva.cz actor.",
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.20.0",
+    "@aws-sdk/client-s3": "^3.20.0",
+    "@hlidac-shopu/actors-common": "^1.1.2",
+    "apify": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.17.3",
+    "apify-cli": "^0.6.2"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
