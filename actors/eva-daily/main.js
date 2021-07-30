@@ -68,7 +68,13 @@ function parseItem($, category) {
           .find("div.st_onstore")
           .text()
           .toLowerCase()
-          .includes("skladem"),
+          .includes("skladem")
+          ? true
+          : $el
+              .find("div.st_onstore2")
+              .text()
+              .toLowerCase()
+              .includes("skladem u dodavatele"),
         category
       };
     }
