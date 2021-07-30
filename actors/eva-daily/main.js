@@ -146,7 +146,7 @@ Apify.main(async () => {
     });
   } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: `https://www.eva.cz/oddeleni/bila-technika/`,
+      url: `https://www.eva.cz/oddeleni/mraznicky-pultove/`,
       userData: {
         label: "CATEGORY"
       }
