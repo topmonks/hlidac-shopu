@@ -165,16 +165,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    // Activates the Session pool.
-    useSessionPool: true,
-    // Overrides default Session pool configuration.
-    sessionPoolOptions: {
-      maxPoolSize: 200
-    },
-    handlePageFunction: async ({ request, $, session, response }) => {
-      if (response.statusCode !== 200) {
-        session.retire();
-      }
+    handlePageFunction: async ({ request, $, response }) => {
       if (request.userData.label === "PAGE") {
         //Check if there is next pagination
         await handlePagination($, request, requestQueue);
