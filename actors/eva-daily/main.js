@@ -1,3 +1,14 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const {
+  invalidateCDN,
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { log, requestAsBrowser } = Apify.utils;
 let stats = {};
@@ -6,13 +17,15 @@ const HOST = "https://www.eva.cz";
 
 const completeUrl = x => `${HOST}${x}`;
 
-async function enqueuRequests(requestQueue, urls, userData) {
-  console.log(urls);
+async function enqueueRequests(requestQueue, urls, userData) {
   for (const url of urls) {
-    await requestQueue.addRequest({
-      url: url,
-      userData: userData
-    });
+    await requestQueue.addRequest(
+      {
+        url: url,
+        userData: userData
+      },
+      { forefront: true }
+    );
   }
 }
 
@@ -23,7 +36,7 @@ async function handlePagination($, request, requestQueue) {
     const url = new URL(request.url);
     url.searchParams.set("first", nextFirst.toString());
     url.search = url.searchParams.toString();
-    console.log(`Adding the pagination page to the queue ${url.toString()}`);
+    console.log(`${request.url} Found pagination page ${url.toString()}`);
     await requestQueue.addRequest(
       {
         url: url.toString(),
@@ -37,7 +50,7 @@ async function handlePagination($, request, requestQueue) {
   }
 }
 
-function parseItem($) {
+function parseItem($, category) {
   return el => {
     const $el = $(el);
     //Check if item is unpacked/used
@@ -48,29 +61,58 @@ function parseItem($) {
         itemName: itemUrl.text(),
         itemUrl: new URL(itemUrl.attr("href"), HOST).href,
         img: "https:" + $el.find("img").attr("data-src"),
+        currentPrice: $el.find("span.price").text(),
         originalPrice: null,
+        currency: "CZK",
         inStock: $el
           .find("div.st_onstore")
           .text()
           .toLowerCase()
-          .includes("skladem")
+          .includes("skladem"),
+        category
       };
     }
   };
 }
 
-async function handleItems($) {
-  const items = $("#content_list div.zitembox")
+async function handleItems($, request) {
+  const category = $("div#regularcontent h1").text();
+  const products = $("#content_list div.zitembox")
     .get()
-    .map(parseItem($))
+    .map(parseItem($, category))
     .filter(function (element) {
       //remove undefined due to unpacked/used items
       return element !== undefined;
     });
-  console.log(items);
+
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3(
+          s3,
+          "eva.cz",
+          await s3FileName(product),
+          "jsonld",
+          toProduct(product, {})
+        )
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
+  }
+  console.log(`${request.url} Found ${requests.length / 2} unique products`);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 }
 
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
     development = false,
@@ -94,7 +136,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
 
   if (type === "COUNT") {
-    //await countAllProducts(rootUrl);
+    //For now no way how count products differently
   } else if (type === "FULL") {
     await requestQueue.addRequest({
       url: "https://eva.cz",
@@ -134,10 +176,12 @@ Apify.main(async () => {
         session.retire();
       }
       if (request.userData.label === "PAGE") {
-        console.log(`${request.url} PAGE`);
-        await handleItems($);
+        //Check if there is next pagination
+        await handlePagination($, request, requestQueue);
+        //Scrap products from page
+        await handleItems($, request);
+        stats.pages++;
       } else if (request.userData.label === "CATEGORY") {
-        console.log(`${request.url} PARENT`);
         try {
           // Add subcategories if this category has also products
           const subcategories = $("div#mele div.lmsubmenu div.mlevel")
@@ -152,7 +196,7 @@ Apify.main(async () => {
             console.log(
               `${request.url} Found ${subcategories.length} subcategories`
             );
-            await enqueuRequests(requestQueue, subcategories, {
+            await enqueueRequests(requestQueue, subcategories, {
               label: "CATEGORY",
               first: 0
             });
@@ -161,7 +205,7 @@ Apify.main(async () => {
           //Check if there is next pagination
           await handlePagination($, request, requestQueue);
           //Scrap products from page
-          await handleItems($);
+          await handleItems($, request);
         } catch (e) {
           console.log(`Error processing url ${request.url}`);
           console.error(e);
@@ -180,17 +224,17 @@ Apify.main(async () => {
               !x.includes("vyprodej")
           );
 
-        await requestQueue.addRequest({
-          url: "https://www.eva.cz/oddeleni/cistici-prostredky-na-koberce/",
+        /*await requestQueue.addRequest({
+          url: "https://www.eva.cz/oddeleni/bila-technika/",
           userData: {
             label: "CATEGORY",
             first: 0
           }
-        });
-        /*await enqueuRequests(requestQueue, links.splice(0, 1), {
+        });*/
+        await enqueueRequests(requestQueue, links, {
           label: "CATEGORY",
           first: 0
-        });*/
+        });
         stats.categories += links.length;
         console.log(`${request.url} Found ${links.length} categories`);
       }
@@ -209,4 +253,11 @@ Apify.main(async () => {
 
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
+
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "eva.cz");
+    log.info("invalidated Data CDN");
+    await uploadToKeboola("eva_cz");
+    log.info("upload to Keboola finished");
+  }
 });
