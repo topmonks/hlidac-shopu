@@ -212,7 +212,7 @@ Apify.main(async () => {
       persistStateKeyValueStoreId: "alza-sessions"
     },
     // persistCookiesPerSession: true,
-    maxConcurrency: 10,
+    maxConcurrency: 30,
     maxRequestRetries: 5,
     handleRequestFunction: async context => {
       const { request, session } = context;
