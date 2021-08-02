@@ -15,6 +15,8 @@
 ```text
 "type": "FULL" || "TEST" || "COUNT"
 ```
+> **COUNT**: Not unique items. Can include hidden items, unpacked, used, duplicity listing!
+
 ## Actors item example OUTPUT
 ```json
 {

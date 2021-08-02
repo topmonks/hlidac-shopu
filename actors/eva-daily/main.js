@@ -141,9 +141,7 @@ Apify.main(async () => {
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
 
-  if (type === "COUNT") {
-    //For now no way how count products differently
-  } else if (type === "FULL") {
+  if (type === "FULL" || type === "COUNT") {
     await requestQueue.addRequest({
       url: "https://eva.cz",
       userData: {
@@ -220,20 +218,23 @@ Apify.main(async () => {
               !x.includes("rozbalene") &&
               !x.includes("vyprodej")
           );
-
-        /*await requestQueue.addRequest({
-          url: "https://www.eva.cz/oddeleni/bila-technika/",
-          userData: {
-            label: "CATEGORY",
-            first: 0
-          }
-        });*/
+        //If type is COUNT, use category urls for count all products
         await enqueueRequests(requestQueue, links, {
-          label: "CATEGORY",
+          label: type === "COUNT" ? "COUNT" : "CATEGORY",
           first: 0
         });
         stats.categories += links.length;
         console.log(`${request.url} Found ${links.length} categories`);
+      } else if (request.userData.label === "COUNT") {
+        //Not unique items. Can include hidden items,unpacked, used, duplicity listing
+        const countElement = $(
+          "div#content_filter div.fpanel_inside div.float-right"
+        );
+        if (countElement.length > 0) {
+          const countItems = parseInt(countElement.text(), 10);
+          stats.items += countItems;
+          console.log(`${request.url} Counted ${countItems} items`);
+        }
       }
     },
 
