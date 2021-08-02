@@ -252,7 +252,7 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
 
-  if (!development) {
+  if (!development && type !== "COUNT") {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "eva.cz");
     log.info("invalidated Data CDN");
     await uploadToKeboola("eva_cz");
