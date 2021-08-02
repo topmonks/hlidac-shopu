@@ -23,6 +23,7 @@ Apify.main(async () => {
     });
 
     const crawler = new Apify.CheerioCrawler({
+        additionalMimeTypes: ['application/octet-stream'],
         requestList,
         requestQueue,
         proxyConfiguration,

@@ -1,12 +1,12 @@
 import { getOrIncStatsValue } from '../../tools.js';
 import { enqueueLastPage } from './enqueueLastPage.js';
 import { splitPriceRangeToTwoRequest } from './splitPriceRangeToTwoRequest.js';
-import { MAX_PAGE_COUNT } from '../../consts.js';
+import { MAX_PAGE_COUNT, PRODUCT_CELL_SELECTOR } from '../../consts.js';
 
 export const countProductsOrSplitPriceRange = async ($, url, requestQueue, userData) => {
     if (!$('.pagination').length
         || !$('.pagination__direction_type_forward[href]').length) {
-        await getOrIncStatsValue($('.catalog-grid__cell').length, url);
+        await getOrIncStatsValue($(PRODUCT_CELL_SELECTOR).length, url);
         return;
     }
 

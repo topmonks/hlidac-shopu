@@ -15,7 +15,7 @@ export const enqueueLastPage = async (
     log.debug(`current product list page ${url} has last page ${lastPageLink}`);
 
     await requestQueue.addRequest({
-        url: lastPageLink,
+        url: new URL(lastPageLink, url).href,
         userData,
     });
 };

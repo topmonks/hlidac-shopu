@@ -11,8 +11,7 @@ export const handleProductOverview = async ({
     image.push(...smallImagesArr);
 
     await requestQueue.addRequest({
-        url: loadedUrl[loadedUrl.length - 1] === '/'
-            ? loadedUrl + CHARACTERISTICS_PATH : `${loadedUrl}/${CHARACTERISTICS_PATH}`,
+        url: new URL(CHARACTERISTICS_PATH, loadedUrl).href,
         userData: { image, label: LABELS.DETAIL },
     });
 };

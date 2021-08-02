@@ -19,24 +19,6 @@
         "description": "Max concurrency",
         "editor": "number"
     },
-    "maxRequestsPerCrawl": {
-        "title": "maxRequestsPerCrawl",
-        "type": "integer",
-        "description": "maxRequestsPerCrawl",
-        "editor": "number"
-    },
-    "maxCategories": {
-        "title": "maxCategories",
-        "type": "integer",
-        "description": "maxCategories",
-        "editor": "number"
-    },
-    "maxSubcategories": {
-        "title": "maxSubcategories",
-        "type": "integer",
-        "description": "maxSubcategories",
-        "editor": "number"
-    },
     "proxyCountryCode": {
         "title": "proxyCountryCode",
         "type": "string",

@@ -19,7 +19,7 @@ export const handlePagination = async (
         log.debug(`current product list page ${url} has next page ${nextPageLink}`);
 
         await requestQueue.addRequest({
-            url: nextPageLink,
+            url: new URL(nextPageLink, url).href,
             userData,
         });
     }

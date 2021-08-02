@@ -4,8 +4,9 @@ import { MAIN_DOMAIN, LABELS } from '../consts.js';
 const {
     utils: { log },
 } = Apify;
-const { CATEGORY } = LABELS;
+const { CATEGORY_OR_PRODUCTS } = LABELS;
 
+/** @type {Apify.CheerioHandlePage} */
 export const handleMainPage = async ({
     $,
     request: { loadedUrl },
@@ -21,8 +22,9 @@ export const handleMainPage = async ({
         pseudoUrls: [`[.*]${MAIN_DOMAIN}[(?:\\w|-)*]/c[.*]`, `https://bt.${MAIN_DOMAIN}[.*]`],
         transformRequestFunction: (req) => {
             req.userData = {
-                label: CATEGORY,
+                label: CATEGORY_OR_PRODUCTS,
             };
+
             return req;
         },
     });

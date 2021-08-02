@@ -1,9 +1,9 @@
 import Apify from 'apify';
 
-import { CURRENCY } from '../../consts.js';
+import { CURRENCY, PRODUCT_CELL_SELECTOR } from '../../consts.js';
 
 export async function scrapeProducts($, category) {
-    const products = $('.catalog-grid__cell');
+    const products = $(PRODUCT_CELL_SELECTOR);
     const datasetArr = [];
 
     for (let i = 0; i < products.length; i++) {

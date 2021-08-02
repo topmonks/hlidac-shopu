@@ -8,4 +8,4 @@ export const CSS_SELECTORS = {
     DETAIL_FIELDSET_LEGEND: 'dt',
 };
 
-export const CHARACTERISTICS_PATH = 'characteristics/';
+export const CHARACTERISTICS_PATH = '/characteristics/';

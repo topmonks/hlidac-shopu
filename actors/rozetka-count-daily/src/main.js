@@ -1,13 +1,10 @@
 import Apify from 'apify';
 import { migrationConfig, getOrIncStatsValue } from './tools.js';
-import { handleMainPage, handleCategory, handleProductList,
-    handleRestaurantCategory, handleRestaurantSubcategory,
-    handleClothesCategory } from './routes.js';
-import { LABELS, START_REQUESTS, ACTOR_TYPES } from './consts.js';
+import { handleMainPage, handleCategory, handleProductList } from './routes.js';
+import { LABELS, START_REQUESTS, ACTOR_TYPES,
+    CATEGORY_LIST_ITEM_SELECTOR, CATEGORY_CELL_SELECTOR } from './consts.js';
 
-const { MAIN_PAGE, CATEGORY, PRODUCT_LIST,
-    RESTAURANT_CATEGORY, RESTAURANT_SUBCATEGORY,
-    CLOTHES_CATEGORY } = LABELS;
+const { MAIN_PAGE, CATEGORY_OR_PRODUCTS } = LABELS;
 
 const { COUNT, DAILY } = ACTOR_TYPES;
 
@@ -39,6 +36,7 @@ Apify.main(async () => {
     }
 
     const crawler = new Apify.CheerioCrawler({
+        additionalMimeTypes: ['application/octet-stream'],
         requestList,
         requestQueue,
         proxyConfiguration,
@@ -52,33 +50,28 @@ Apify.main(async () => {
         },
         maxRequestsPerCrawl,
         handlePageFunction: async (context) => {
-            const { request } = context;
-            const { url, userData } = request;
+            const { request: { userData: { label } }, $ } = context;
 
-            const { label } = userData;
-            log.info('Page opened.', { label, url });
+            // log.info('Page opened.', { label, url });
             switch (label) {
                 case MAIN_PAGE:
                     await handleMainPage(context);
                     break;
-                case CATEGORY:
-                    await handleCategory(context);
-                    break;
-                case PRODUCT_LIST:
-                    await handleProductList({
-                        ...context,
-                        type,
-                    });
-                    break;
-                case RESTAURANT_CATEGORY:
-                    await handleRestaurantCategory(context);
-                    break;
-                case RESTAURANT_SUBCATEGORY:
-                    await handleRestaurantSubcategory(context);
-                    break;
-                case CLOTHES_CATEGORY:
-                    await handleClothesCategory(context);
-                    break;
+                case CATEGORY_OR_PRODUCTS: {
+                    if ($(CATEGORY_CELL_SELECTOR).length) {
+                        await handleCategory(context);
+                        break;
+                    } else if (!$(CATEGORY_LIST_ITEM_SELECTOR).length) {
+                        // If there is no category list at all then we skip the page
+                        break;
+                    } else {
+                        await handleProductList({
+                            ...context,
+                            type,
+                        });
+                        break;
+                    }
+                }
 
                 default:
                     break;

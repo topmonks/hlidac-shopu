@@ -1,27 +1,29 @@
 import Apify from 'apify';
-import { LABELS } from '../consts.js';
+import { LABELS, CATEGORY_CELL_SELECTOR } from '../consts.js';
 
 const {
     utils: { log },
 } = Apify;
-const { PRODUCT_LIST } = LABELS;
+const { CATEGORY_OR_PRODUCTS } = LABELS;
 
+/** @type {Apify.CheerioHandlePage} */
 export const handleCategory = async ({
     $,
     request: { loadedUrl },
     crawler: { requestQueue },
 }) => {
-    log.debug('Entered Category page.');
+    log.info(`Entered Category page: ${loadedUrl}`);
 
     await Apify.utils.enqueueLinks({
         $,
         requestQueue,
         baseUrl: loadedUrl,
-        selector: '.tile-cats__heading',
+        selector: CATEGORY_CELL_SELECTOR,
         transformRequestFunction: (req) => {
             req.userData = {
-                label: PRODUCT_LIST,
+                label: CATEGORY_OR_PRODUCTS,
             };
+
             return req;
         },
     });
