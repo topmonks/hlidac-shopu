@@ -1,7 +1,6 @@
 const { S3Client } = require("@aws-sdk/client-s3");
 const s3 = new S3Client({ region: "eu-central-1" });
 const {
-  invalidateCDN,
   toProduct,
   uploadToS3,
   s3FileName
@@ -43,14 +42,20 @@ exports.handleStart = async (
       }
     }
   });
-  log.info(`Found ${tabItems.length} START MENU`);
+  log.info(`Found ${tabItems.length} START MENU at page ${request.url}`);
   if (tabItems.length === 0) {
     stats.denied++;
     request.retryCount--;
     session.isBlocked();
     throw new Error("Access Denied");
   }
-  await enqueueRequests(requestQueue, tabItems, true);
+  for (const item of tabItems) {
+    if (item.url !== "https://www.alza.cz/") {
+      await requestQueue.addRequest(item, { forefront: true });
+    }
+  }
+
+  //await enqueueRequests(requestQueue, tabItems, true);
 
   await requestQueue.addRequest({
     url: `${domain.baseUrl}/_sitemap-categories.xml`,
@@ -60,7 +65,7 @@ exports.handleStart = async (
   });
 };
 
-exports.handleLeftMenu = async ({ $ }, domain, requestQueue) => {
+exports.handleLeftMenu = async ({ $, request }, domain, requestQueue) => {
   const menuItems = [];
   // add the left menu
   $("ul.fmenu>li").each(function () {
@@ -95,7 +100,7 @@ exports.handleLeftMenu = async ({ $ }, domain, requestQueue) => {
         }
       });
   });
-  log.info(`Found ${menuItems.length} LEFT MENU`);
+  log.info(`Found ${menuItems.length} LEFT MENU at page ${request.url}`);
   await enqueueRequests(requestQueue, menuItems);
 };
 
