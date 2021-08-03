@@ -49,13 +49,8 @@ exports.handleStart = async (
     session.isBlocked();
     throw new Error("Access Denied");
   }
-  for (const item of tabItems) {
-    if (item.url !== "https://www.alza.cz/") {
-      await requestQueue.addRequest(item, { forefront: true });
-    }
-  }
 
-  //await enqueueRequests(requestQueue, tabItems, true);
+  await enqueueRequests(requestQueue, tabItems, true);
 
   await requestQueue.addRequest({
     url: `${domain.baseUrl}/_sitemap-categories.xml`,
