@@ -109,12 +109,7 @@ exports.handlePage = async (
   currency
 ) => {
   // wait for pagination and dont enqueue pagination always
-  if (country.toLowerCase() === "cz") {
-    if (!request.url.includes("alza.cz/")) {
-      log.info(`Malformed url ignored: ${request.url}`);
-      return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
-    }
-  }
+
   if (
     request.url.match(/-p\d+\.htm/) === null &&
     request.url.match(/pg=\d+/) === null
