@@ -219,11 +219,13 @@ Apify.main(async () => {
       const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
-      if (country.toLowerCase() === "cz") {
-        if (!request.url.includes("alza.cz/")) {
-          log.info(`Malformed url ignored: ${request.url}`);
-          return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
-        }
+      if (
+        label !== "START" &&
+        country.toLowerCase() === "cz" &&
+        !request.url.includes("alza.cz/")
+      ) {
+        log.info(`Malformed url ignored: ${request.url}`);
+        return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
       }
       let response;
       try {
