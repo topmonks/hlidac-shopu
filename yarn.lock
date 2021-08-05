@@ -3620,7 +3620,7 @@ __metadata:
     "@aws-sdk/util-dynamodb": ^3.24.0
     "@hlidac-shopu/lib": ^1.0.9
     "@pulumi/aws": ^4.8.0
-    "@pulumi/awsx": ^0.30.0
+    "@pulumi/awsx": ^0.31.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
     date-fns: ^2.22.1
@@ -4605,17 +4605,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "@pulumi/awsx@npm:0.30.0"
+"@pulumi/awsx@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@pulumi/awsx@npm:0.31.0"
   dependencies:
     "@pulumi/docker": ^3.0.0
     "@types/aws-lambda": ^8.10.23
     mime: ^2.0.0
   peerDependencies:
-    "@pulumi/aws": ^4.0.0
+    "@pulumi/aws": ^4.6.0
     "@pulumi/pulumi": ^3.0.0
-  checksum: 3a97e8c9563fff953310f681ba871751c68ffe4382c4d605339b24b18ce93dbab8d35ffa643d895cd8e73f0c62ca2e09a519cdedf2387a1ccbd68ff828d05f0b
+  checksum: 6b3afddee6efe25be85ae60504149d1e16d8e6cf028f1c30ed9101d26ade3a11f3c02c572041e4547399373847eb67c112039d4d83542a9052245c83d7dd782e
   languageName: node
   linkType: hard
 
@@ -13088,7 +13088,7 @@ fsevents@^1.2.7:
     "@material/snackbar": ^11.0.0
     "@open-wc/testing": ^2.5.33
     "@pulumi/aws": ^4.8.0
-    "@pulumi/awsx": ^0.30.0
+    "@pulumi/awsx": ^0.31.0
     "@pulumi/pulumi": ^3.4.0
     "@rollup/plugin-alias": ^3.1.2
     "@rollup/plugin-node-resolve": ^13.0.0
