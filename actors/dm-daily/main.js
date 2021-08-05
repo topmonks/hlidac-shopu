@@ -159,7 +159,9 @@ function pageFunction(requestQueue, s3) {
             .pop(),
           inStock: !p.notAvailable,
           currentPrice: parseFloat(p.price),
-          originalPrice: p.isSellout ? parseFloat(p.selloutPrice) : null,
+          originalPrice: p.isSellout
+            ? parseFloat(p.selloutPriceLocalized)
+            : null,
           currency: p.priceCurrencyIso,
           category,
           discounted: p.isSellout
