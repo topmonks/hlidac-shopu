@@ -10,7 +10,7 @@
 	"peerDependencies": {
 		"@aws-sdk/client-cloudfront": "^3.11.0",
 		"@aws-sdk/client-s3": "^3.11.0",
-		"apify": "^1.1.1"
+		"apify": "^2.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^14.17.3",
