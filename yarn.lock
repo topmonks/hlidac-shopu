@@ -185,7 +185,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.24.0":
+"@aws-sdk/client-cloudfront@npm:^3.21.0, @aws-sdk/client-cloudfront@npm:^3.24.0":
   version: 3.24.0
   resolution: "@aws-sdk/client-cloudfront@npm:3.24.0"
   dependencies:
@@ -270,7 +270,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.24.0":
+"@aws-sdk/client-s3@npm:^3.21.0, @aws-sdk/client-s3@npm:^3.24.0":
   version: 3.24.0
   resolution: "@aws-sdk/client-s3@npm:3.24.0"
   dependencies:
@@ -15135,6 +15135,20 @@ fsevents@^1.2.7:
   checksum: 775861da38dcb7e5f1de5bea2a1c7ffaede6e9e8632cfbac76be145ecb295370f46bb41307613c283d66f1fee5d8cc448ca3323c4a02d0fb1e913b2f78de2abb
   languageName: node
   linkType: hard
+
+"lidl-daily@workspace:actors/lidl-daily":
+  version: 0.0.0-use.local
+  resolution: "lidl-daily@workspace:actors/lidl-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.21.0
+    "@aws-sdk/client-s3": ^3.21.0
+    "@hlidac-shopu/actors-common": ^1.1.2
+    "@types/node": ^14.17.3
+    apify: ^1.2.1
+    apify-cli: ^0.6.2
+    underscore: ^1.13.1
+  languageName: unknown
+  linkType: soft
 
 "lie@npm:~3.3.0":
   version: 3.3.0
