@@ -158,9 +158,12 @@ function pageFunction(requestQueue, s3) {
             .map(x => x.href)
             .pop(),
           inStock: !p.notAvailable,
-          currentPrice: parseFloat(p.price),
+          currentPrice: p.price,
           originalPrice: p.isSellout
-            ? parseFloat(p.selloutPriceLocalized)
+            ? p.selloutPriceLocalized
+                .trim()
+                .replace(/[^\d,]+/g, "")
+                .replace(",", ".")
             : null,
           currency: p.priceCurrencyIso,
           category,
