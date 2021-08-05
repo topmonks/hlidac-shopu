@@ -7,7 +7,7 @@
 		"@aws-sdk/client-s3": "^3.24.0",
 		"@hlidac-shopu/actors-common": "^1.1.2",
 		"@hlidac-shopu/lib": "^1.0.4",
-		"apify": "^1.2.1"
+		"apify": "^2.0.0"
 	},
 	"scripts": {
 		"start": "node main.js",
