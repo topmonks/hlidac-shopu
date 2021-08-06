@@ -192,6 +192,17 @@ Apify.main(async () => {
     }
   }
 
+  function isMalformedUrl(url, countryCode) {
+    //TODO temporary fix
+    if (countryCode == "cz" && !request.url.includes("alza.cz/")) {
+      return true;
+    }
+    if (countryCode == "sk" && !request.url.includes("alza.sk/")) {
+      return true;
+    }
+    return false;
+  }
+
   const persistState = async () => {
     log.info(stats);
     log.info(`Denied ratio: ${(stats.denied / stats.ok) * 100}`);
@@ -221,8 +232,7 @@ Apify.main(async () => {
       log.info(`Visiting: ${request.url}, ${label}`);
       if (
         label !== "START" &&
-        country.toLowerCase() === "cz" &&
-        !request.url.includes("alza.cz/")
+        isMalformedUrl(request.url, country.toLowerCase)
       ) {
         log.info(`Malformed url ignored: ${request.url}`);
         return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
