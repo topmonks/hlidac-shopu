@@ -32,9 +32,11 @@ const productCategoriesToken =
 
 function mkPrice(price) {
   if (price !== "") {
-    price = encodeURIComponent(price.substr(0, price.length - 2))
-      .replace(/%C2/g, "")
-      .replace(/%A0/g, "");
+    price = Number(
+      encodeURIComponent(price.substr(0, price.length - 2))
+        .replace(/%C2/g, "")
+        .replace(/%A0/g, "")
+    );
   } else {
     price = null;
   }
@@ -79,9 +81,9 @@ async function scrapeProductListPage($, crawlContext) {
       .find(productPriceOriginalToken)
       .text();
     productPriceOriginal = mkPrice(productPriceOriginal);
-    const productPrice = topElement
-      .find('strong[itemprop="price"]')
-      .attr("content");
+    const productPrice = parseFloat(
+      topElement.find('strong[itemprop="price"]').attr("content")
+    );
     if (isNaN(productPriceOriginal)) {
       productPriceOriginal =
         $(topElement).find(productPriceToken)[1].children[0].data;
@@ -110,7 +112,10 @@ async function scrapeProductListPage($, crawlContext) {
 
     // In case of this eshop, this could be done during data processing
     let discount = false;
-    if (productPriceOriginal !== -1 && productPriceOriginal !== productPrice) {
+    if (
+      (productPriceOriginal !== -1 || productPriceOriginal !== null) &&
+      productPriceOriginal > productPrice
+    ) {
       discount = true;
     }
 
