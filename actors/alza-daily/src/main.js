@@ -194,10 +194,10 @@ Apify.main(async () => {
 
   function isMalformedUrl(url, countryCode) {
     //TODO temporary fix
-    if (countryCode == "cz" && !request.url.includes("alza.cz/")) {
+    if (countryCode === "cz" && !request.url.includes("alza.cz/")) {
       return true;
     }
-    if (countryCode == "sk" && !request.url.includes("alza.sk/")) {
+    if (countryCode === "sk" && !request.url.includes("alza.sk/")) {
       return true;
     }
     return false;
