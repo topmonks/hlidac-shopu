@@ -63,6 +63,7 @@ function parseItem($, category) {
         img: "https:" + $el.find("img").attr("data-src"),
         currentPrice: $el.find("span.price").text(),
         originalPrice: null,
+        discounted: category.includes("akční nabídka"),
         currency: "CZK",
         inStock: $el
           .find("div.st_onstore")
@@ -152,7 +153,8 @@ Apify.main(async () => {
     await requestQueue.addRequest({
       url: `https://www.eva.cz/oddeleni/mraznicky-pultove/`,
       userData: {
-        label: "CATEGORY"
+        label: "CATEGORY",
+        first: 0
       }
     });
   }
@@ -213,7 +215,6 @@ Apify.main(async () => {
           .get()
           .filter(
             x =>
-              !x.includes("akce") &&
               !x.includes("novinky") &&
               !x.includes("rozbalene") &&
               !x.includes("vyprodej")
