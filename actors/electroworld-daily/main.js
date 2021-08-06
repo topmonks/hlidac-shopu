@@ -91,7 +91,7 @@ Apify.main(async () => {
   } else if (type === "TEST_FULL") {
     await requestQueue.addRequest({
       userData: { label: "nthPage", pageN: 0 },
-      url: "https://www.electroworld.cz/smart-televize"
+      url: "https://www.electroworld.cz/smart-televize?p5%5B43814%5D=hisense"
     });
   }
 
@@ -101,7 +101,7 @@ Apify.main(async () => {
     maxRequestRetries,
     maxConcurrency,
     handlePageFunction: async context => {
-      if (type === "FULL") {
+      if (type === "FULL" || type === "TEST_FULL") {
         await fetchPage(context, crawlContext);
       } else if (type === "DETAIL") {
         await fetchDetail(context.$, context.request, dataset);

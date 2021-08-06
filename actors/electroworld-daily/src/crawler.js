@@ -18,6 +18,7 @@ const pagingToken = ".paging__item.paging__item--link.ajax";
 const productRatingToken = ".product-box__rating-stars.rating-stars";
 const productNameToken = ".product-box__heading.complex-link__underline";
 const productPriceOriginalToken = ".product-box__original-price";
+const productPricesToken = ".product-box__prices";
 const productPriceToken = ".product-box__price";
 const productLinkToken = ".product-list__link.product-box__link";
 const productImgToken = ".img-box__img.js-lazy.js-only.jsOnly.compare-img";
@@ -50,6 +51,23 @@ async function scrapeProductListPage($, crawlContext) {
     p = $(p).find(".product-box__wrap");
 
     const topElement = $(p);
+
+    const productLink = `${urlBase}${topElement
+      .find(productLinkToken)
+      .attr("href")}`;
+
+    const isCashback = topElement.find(productPricesToken).text().trim();
+    if (isCashback.includes("Cena s")) {
+      //If product use cashback or sale coupon, there is missing possible sale price and need scrap detail of product
+      await crawlContext.requestQueue.addRequest(
+        {
+          url: productLink,
+          userData: { label: "detailPage" }
+        },
+        { forefront: true }
+      );
+      continue;
+    }
 
     const productName = topElement
       .find(productNameToken)
@@ -84,10 +102,6 @@ async function scrapeProductListPage($, crawlContext) {
     // String casting is according to the spec o.0
     // https://docs.google.com/document/d/1qIwqARBTDSnkUrFItE1ZJZF1svLIYj3lD8fr82HUMtk/edit#
     rating = String(rating);
-
-    const productLink = `${urlBase}${topElement
-      .find(productLinkToken)
-      .attr("href")}`;
 
     const productImg = topElement.find(productImgToken).attr("data-src");
 
@@ -193,6 +207,8 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     );
     await scrapeProductListPage($, crawlContext);
     crawlContext.stats.pages++;
+  } else if (request.userData.label === "detailPage") {
+    await scrapeProductListPageDetail($, crawlContext);
   } else {
     const productElements = $(productPageToken).find(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
@@ -213,6 +229,62 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     }
   }
 };
+
+/**
+ *  Daily scraping info from products on page detail
+ */
+
+async function scrapeProductListPageDetail($, crawlContext) {
+  const json = JSON.parse($("#snippet-productRichSnippet-richSnippet").html());
+
+  const productPrice = json["offers"]["price"];
+  const productPriceOriginal = parseFloat(
+    $(".product-top__price")
+      .find("del")
+      .first()
+      .text()
+      .trim()
+      .replace(/[^\d,]+/g, "")
+      .replace(",", ".")
+  );
+
+  let sale = null;
+  if (productPrice !== null && productPriceOriginal !== null) {
+    sale = 1 - productPrice / productPriceOriginal;
+  }
+
+  const rating = mkRating($);
+
+  const product = {
+    itemId: $("#product-main-img")[0].attribs["data-itemid"],
+    img: json["offers"]["image"],
+    itemUrl: json["offers"]["url"],
+    itemName: json["name"],
+    currentPrice: productPrice,
+    originalPrice: productPriceOriginal,
+    sale: sale,
+    rating: rating,
+    discounted: sale > 0,
+    category: json["offers"]["category"],
+    currency: json["offers"]["priceCurrency"],
+    inStock: json["offers"]["availability"].includes("InStock")
+  };
+
+  if (!crawlContext.processedIds.has(product.itemId)) {
+    crawlContext.processedIds.add(product.itemId);
+    await crawlContext.dataset.pushData(product);
+    await crawlContext.uploadToS3(
+      crawlContext.s3,
+      "electroworld.cz",
+      await crawlContext.s3FileName(product),
+      "jsonld",
+      crawlContext.toProduct(product, {})
+    );
+    crawlContext.stats.items++;
+  } else {
+    crawlContext.stats.itemsDuplicity++;
+  }
+}
 
 /**
  *  Product detail scraping
