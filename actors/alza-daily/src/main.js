@@ -232,7 +232,7 @@ Apify.main(async () => {
       log.info(`Visiting: ${request.url}, ${label}`);
       if (
         label !== "START" &&
-        isMalformedUrl(request.url, country.toLowerCase)
+        isMalformedUrl(request.url, country.toLowerCase())
       ) {
         log.info(`Malformed url ignored: ${request.url}`);
         return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
