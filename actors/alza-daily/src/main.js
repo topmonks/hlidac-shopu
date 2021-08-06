@@ -200,6 +200,18 @@ Apify.main(async () => {
     if (countryCode === "sk" && !url.includes("alza.sk/")) {
       return true;
     }
+    if (countryCode === "de" && !url.includes("alza.de/")) {
+      return true;
+    }
+    if (countryCode === "uk" && !url.includes("alza.uk/")) {
+      return true;
+    }
+    if (countryCode === "hu" && !url.includes("alza.hu/")) {
+      return true;
+    }
+    if (countryCode === "at" && !url.includes("alza.at/")) {
+      return true;
+    }
     return false;
   }
 
