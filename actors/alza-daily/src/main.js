@@ -194,6 +194,11 @@ Apify.main(async () => {
 
   function isMalformedUrl(url, countryCode) {
     //TODO temporary fix
+    if (!url.includes(`alza.${countryCode}/`)) {
+      return true;
+    }
+    return false;
+    /*
     if (countryCode === "cz" && !url.includes("alza.cz/")) {
       return true;
     }
@@ -213,17 +218,18 @@ Apify.main(async () => {
       return true;
     }
     return false;
+    */
   }
 
   const persistState = async () => {
-    log.info(stats);
+    log.info(`stats: ${JSON.stringify(stats)}`);
     log.info(`Denied ratio: ${(stats.denied / stats.ok) * 100}`);
     await Apify.setValue("STATS", stats);
   };
   Apify.events.on("persistState", persistState);
   // log more often
   setInterval(() => {
-    log.info(stats);
+    log.info(`stats: ${JSON.stringify(stats)}`);
   }, 20 * 1000);
 
   const crawler = new Apify.BasicCrawler({
@@ -254,7 +260,8 @@ Apify.main(async () => {
         response = await requestAsBrowser({
           url: request.url,
           proxyUrl: await proxyConfiguration.newUrl(session.id),
-          http2: true,
+          //http2: true,
+          useHttp2: false,
           headers: {
             "User-Agent": userAgentDb.getRandom(),
             "Accept-Language":
