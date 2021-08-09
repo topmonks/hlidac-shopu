@@ -2,43 +2,36 @@ const { LABELS, MAIN_URL } = require("./const");
 
 const createInitRequests = () => {
   const sources = [];
-  // sources.push({
-  //   url: "https://www.lidl.cz/aktualni-nabidka",
-  //   userData: {
-  //     label: LABELS.MAIN_NABIDKA
-  //   }
-  // });
-  // sources.push({
-  //   url: "https://www.lidl.cz/cerstve-produkty",
-  //   userData: {
-  //     label: LABELS.MAIN_NABIDKA
-  //   }
-  // });
-  // sources.push({
-  //   url: "https://www.lidl-shop.cz/c/kategorie/s10004543",
-  //   userData: {
-  //     label: LABELS.LIDL_SHOP
-  //   }
-  // });
   sources.push({
-    url: "https://www.lidl-shop.cz/h/moda/h10003545?path=10003545%2F10003533",
+    url: "https://www.lidl.cz/aktualni-nabidka",
     userData: {
-      label: LABELS.LIDL_SHOP_MAIN_CAT,
-      level: 1
+      label: LABELS.MAIN_NABIDKA
     }
   });
-  // sources.push({
-  //   url: "https://www.lidl-shop.cz/c/hity-tydne/a10004407",
-  //   userData: {
-  //     label: LABELS.LIDL_SHOP_CAT
-  //   }
-  // });
-  // sources.push({
-  //   url: "https://www.lidl-shop.cz/q/query/Slevy?pageId=20029807",
-  //   userData: {
-  //     label: LABELS.LIDL_SHOP_CAT
-  //   }
-  // });
+  sources.push({
+    url: "https://www.lidl.cz/cerstve-produkty",
+    userData: {
+      label: LABELS.MAIN_NABIDKA
+    }
+  });
+  sources.push({
+    url: "https://www.lidl-shop.cz/c/kategorie/s10004543",
+    userData: {
+      label: LABELS.LIDL_SHOP
+    }
+  });
+  sources.push({
+    url: "https://www.lidl-shop.cz/c/hity-tydne/a10004407",
+    userData: {
+      label: LABELS.LIDL_SHOP_CAT
+    }
+  });
+  sources.push({
+    url: "https://www.lidl-shop.cz/q/query/Slevy?pageId=20029807",
+    userData: {
+      label: LABELS.LIDL_SHOP_CAT
+    }
+  });
   return sources;
 };
 
