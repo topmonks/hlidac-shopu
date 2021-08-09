@@ -5,8 +5,8 @@
 	"license": "EPL-2.0",
 	"description": "This is the kasa actor",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.24.0",
-		"@aws-sdk/client-s3": "^3.24.0",
+		"@aws-sdk/client-cloudfront": "^3.25.0",
+		"@aws-sdk/client-s3": "^3.25.0",
 		"@hlidac-shopu/actors-common": "^1.1.2",
 		"apify": "^2.0.0"
 	},
