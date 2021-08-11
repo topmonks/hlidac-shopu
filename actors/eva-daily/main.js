@@ -61,7 +61,7 @@ function parseItem($, category) {
         itemName: itemUrl.text(),
         itemUrl: new URL(itemUrl.attr("href"), HOST).href,
         img: "https:" + $el.find("img").attr("data-src"),
-        currentPrice: $el.find("span.price").text(),
+        currentPrice: $el.find("span.price").text().replace(/\s/g, "").trim(),
         originalPrice: null,
         discounted: category.includes("akční nabídka"),
         currency: "CZK",
