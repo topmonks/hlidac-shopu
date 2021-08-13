@@ -96,18 +96,19 @@ const LIDL_SHOP = async ({ $, crawler }) => {
 
 const enqueueCategories = async ($, level, cats, crawler, catLevel) => {
   for (const c of cats) {
-    const name = $(c).find("> div > a");
+    const name = $(c).find("> div > a, > span");
     const namee = name.text().trim();
     const isSelected = name.hasClass("s-anchor--selected");
     const subCats = $(c).find("> ul > li").toArray();
     if (isSelected && subCats && subCats.length > 0) {
       await enqueueCategories($, level, subCats, crawler, catLevel + 1);
     } else if (!isSelected && subCats.length === 0 && catLevel > level) {
+      log.info(`enqueue category: ${namee}`);
       await crawler.requestQueue.addRequest({
         url: `https://www.lidl-shop.cz${$(c).find("a").attr("href")}`,
         userData: {
           label:
-            catLevel < 3 ? LABELS.LIDL_SHOP_MAIN_CAT : LABELS.LIDL_SHOP_CAT,
+            catLevel < 2 ? LABELS.LIDL_SHOP_MAIN_CAT : LABELS.LIDL_SHOP_CAT,
           level: catLevel
         }
       });
@@ -143,8 +144,8 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
     const title = product.find("h2").text().trim();
     const url = new URL(`https://www.lidl-shop.cz${a}`);
     const imageSource = product.find("img.product-grid-box__image");
-    const price = $(
-      ".product-grid-box__price .m-price__bottom .m-price__price"
+    const price = product.find(
+      "> .product-grid-box__price .m-price__bottom .m-price__price"
     );
     const stock = product.find(".product-grid-box__availabilities > .badge");
     const result = {
@@ -159,7 +160,9 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
       inStock: !!stock.hasClass("badge--available-online"),
       category: breadcrumbs.map(b => $(b).text().trim()).join(" > ")
     };
-    const strikePrice = $(".product-grid-box__price .m-price__top");
+    const strikePrice = product.find(
+      "> .product-grid-box__price .m-price__top"
+    );
     if (strikePrice && strikePrice.length > 0) {
       result.discounted = true;
       result.originalPrice = parseFloat(strikePrice.text().trim());
