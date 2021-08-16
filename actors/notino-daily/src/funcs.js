@@ -275,7 +275,7 @@ const handleProductInDetailPage = async (
     log.debug("Handled by windowObject");
     const dataStringFromScriptTag = await getScriptContent(
       $,
-      /window.__APOLLO_STATE__\s?=/g
+      /id="__APOLLO_STATE__"/g
     );
     // await Apify.setValue(`${Math.random()}_debug`, dataStringFromScriptTag, { contentType: 'text/html' });
     if (dataStringFromScriptTag === undefined) {
@@ -399,8 +399,7 @@ const handleProductInDetailPage = async (
       global.crawledProducts++;
     }
   }
-
-  if ($.html().includes("window.__APOLLO_STATE__")) {
+  if ($.html().includes('id="__APOLLO_STATE__"')) {
     await handleProductUsingWindowObject();
   } else if ($('a[href="#variants"]').exists()) {
     await handleProductUsingHTML();
