@@ -1,17 +1,25 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const retry = require("async-retry");
-const cheerio = require("cheerio");
 
-const { getCategoryRequests } = require("./utils");
-
-const { handleCategory, handleList, handleDetail } = require("./routes");
+const {
+  handleSitemap,
+  handleCategory,
+  handleList,
+  handleDetail
+} = require("./routes");
 
 const {
   utils: { log, requestAsBrowser }
 } = Apify;
 
 Apify.main(async () => {
+  rollbar.init();
   const { country } = await Apify.getInput();
+  global.country = country;
 
   // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
   let sitemap = "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml";
@@ -45,35 +53,21 @@ Apify.main(async () => {
       throw new Error(`The scraper does not support ${country} country`);
   }
 
+  global.s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: ["BUYPROXIES94952"]
   });
-  // Categories are quickly added to a RequestList
-  const categoryRequests = await retry(
-    async () => {
-      // if anything throws, we retry
-      const response = await requestAsBrowser({
-        url: sitemap,
-        proxyUrl: proxyConfiguration.newUrl()
-      });
-      const $ = cheerio.load(response.body);
-      const categories = getCategoryRequests($);
-      log.info(`[START]: found ${categories.length} categories --- ${sitemap}`);
-      return categories;
-    },
-    {
-      retries: 10
-    }
-  );
-
-  const requestList = await Apify.openRequestList(
-    "CATEGORY_REQUESTS",
-    categoryRequests
-  );
   const requestQueue = await Apify.openRequestQueue();
 
+  await requestQueue.addRequest({
+    url: sitemap,
+    userData: {
+      label: "SITEMAP"
+    }
+  });
+
   const crawler = new Apify.CheerioCrawler({
-    requestList,
     requestQueue,
     proxyConfiguration,
     maxConcurrency: 35,
@@ -86,10 +80,12 @@ Apify.main(async () => {
       } = context.request;
       log.info("Page opened.", { label, url });
       switch (label) {
+        case "SITEMAP":
+          return handleSitemap(context);
         case "CATEGORY":
-          return handleCategory(context, requestQueue, countryPath);
+          return handleCategory(context, countryPath);
         case "LIST":
-          return handleList(context, requestQueue);
+          return handleList(context);
         case "DETAIL":
           return handleDetail(context, productData);
         default:
@@ -101,4 +97,14 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
   log.info("Crawl finished.");
+
+  await invalidateCDN(
+    cloudfront,
+    "EQYSHWUECAQC9",
+    `ikea.${country.toLowerCase()}`
+  );
+  log.info("invalidated Data CDN");
+
+  await uploadToKeboola(`ikea_${country.toLowerCase()}`);
+  log.info("Finished.");
 });

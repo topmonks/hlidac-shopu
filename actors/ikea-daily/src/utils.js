@@ -15,6 +15,13 @@ exports.getCategoryRequests = $ => {
   });
   return categories;
 };
+exports.siteMapToLinks = data => {
+  const locs = data.replace(/\s+/g, "").match(/(<loc>)(.*?)(<\/loc>)/g);
+  if (locs) {
+    return locs.map(link => link.replace(/<loc>|<\/loc>/g, ""));
+  }
+  return [];
+};
 /**
  * Gets urls of subcategories on category labeled page, if any.
  * @param $

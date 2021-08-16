@@ -75,7 +75,7 @@ Apify.main(async () => {
   await invalidateCDN(
     cloudfront,
     "EQYSHWUECAQC9",
-    `dm.${country.toLowerCase()}`
+    `mountfield.${country.toLowerCase()}`
   );
   log.info("invalidated Data CDN");
 

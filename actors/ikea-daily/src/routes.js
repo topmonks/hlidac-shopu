@@ -1,7 +1,13 @@
 const Apify = require("apify");
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 
 const {
   getSubcategoriesUrls,
+  siteMapToLinks,
   fillProductData,
   tryGetRetailPrice,
   getReview,
@@ -14,7 +20,19 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleCategory = async ({ request, $ }, requestQueue, countryPath) => {
+exports.handleSitemap = async ({ body, crawler }) => {
+  const links = siteMapToLinks(body);
+  for (const url of links) {
+    await crawler.request.addRequest({
+      url,
+      userData: {
+        label: "CATEGORY"
+      }
+    });
+  }
+};
+
+exports.handleCategory = async ({ request, $, crawler }, countryPath) => {
   // If category contains subcategories then don't add it to requestQueue
   // subcategories were already added in request queue
   const subcategories = getSubcategoriesUrls($);
@@ -29,7 +47,7 @@ exports.handleCategory = async ({ request, $ }, requestQueue, countryPath) => {
       log.info(
         `[CATEGORY]: found ${dataCategory.totalCount} products --- ${request.url}`
       );
-      await requestQueue.addRequest({
+      await crawler.requestQueue.addRequest({
         url:
           `https://sik.search.blue.cdtapps.com/${countryPath}/product-list-page/more-products?category=${dataCategory.id}` +
           `&sort=RELEVANCE&start=0&end=${dataCategory.totalCount}&c=lf`,
@@ -45,7 +63,7 @@ exports.handleCategory = async ({ request, $ }, requestQueue, countryPath) => {
   }
 };
 
-exports.handleList = async ({ request, body }, requestQueue) => {
+exports.handleList = async ({ request, body, crawler }) => {
   let products = [];
   try {
     products = JSON.parse(body).moreProducts.productWindow;
@@ -63,7 +81,7 @@ exports.handleList = async ({ request, body }, requestQueue) => {
     const productVariants = product.gprDescription.variants;
     const productData = fillProductData(product, productVariants.length);
     // add product detail to request queue
-    await requestQueue.addRequest({
+    await crawler.requestQueue.addRequest({
       url: product.pipUrl,
       userData: {
         label: "DETAIL",
@@ -91,6 +109,7 @@ exports.handleList = async ({ request, body }, requestQueue) => {
 };
 
 exports.handleDetail = async ({ $ }, productData) => {
+  const { s3, country } = global;
   productData.currentPrice = getPrice($) || productData.currentPrice;
   productData.originalPrice = tryGetRetailPrice($) || null;
   if (
@@ -129,4 +148,17 @@ exports.handleDetail = async ({ $ }, productData) => {
   };
 
   await Apify.pushData(productData);
+  await uploadToS3(
+    s3,
+    `ikea.${country}`,
+    await s3FileName(productData),
+    "jsonld",
+    toProduct(
+      {
+        ...productData,
+        inStock: true
+      },
+      { priceCurrency: productData.currency }
+    )
+  );
 };
