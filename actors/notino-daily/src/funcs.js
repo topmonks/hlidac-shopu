@@ -100,7 +100,7 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
   }
   // eslint-disable-next-line no-underscore-dangle
   const mainMenu = window.__FRAGMENT_STATES__.find(
-    f => f.fragmentType === "main-menu"
+    f => f.appIdentifier === "main-menu"
   );
   const rootUrl = getRootUrl(input);
   let links = [];
