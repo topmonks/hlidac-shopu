@@ -23,7 +23,7 @@ const {
 exports.handleSitemap = async ({ body, crawler }) => {
   const links = siteMapToLinks(body);
   for (const url of links) {
-    await crawler.request.addRequest({
+    await crawler.requestQueue.addRequest({
       url,
       userData: {
         label: "CATEGORY"
