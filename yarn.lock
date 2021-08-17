@@ -3707,7 +3707,7 @@ __metadata:
     "@hlidac-shopu/lib": ^1.0.11
     "@types/node": ^14.17.3
     rollbar: ^2.22.0
-    schema-dts: ^0.10.0
+    schema-dts: ^0.11.0
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.11.0
     "@aws-sdk/client-s3": ^3.11.0
@@ -3876,7 +3876,7 @@ __metadata:
     csv-parse: ^4.16.0
     jsonwebtoken: ^8.5.1
     node-fetch: ^2.6.1
-    schema-dts: ^0.10.0
+    schema-dts: ^0.11.0
   languageName: unknown
   linkType: soft
 
@@ -13586,6 +13586,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"ikea-scraper@workspace:actors/ikea-daily":
+  version: 0.0.0-use.local
+  resolution: "ikea-scraper@workspace:actors/ikea-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.25.0
+    "@aws-sdk/client-s3": ^3.25.0
+    "@hlidac-shopu/actors-common": ^1.1.2
+    "@types/node": ^14.17.3
+    apify: ^2.0.1
+    apify-cli: ^0.6.2
+    node-fetch: ^2.6.1
+  languageName: unknown
+  linkType: soft
+
 "image-size@npm:0.9.7":
   version: 0.9.7
   resolution: "image-size@npm:0.9.7"
@@ -20207,12 +20221,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"schema-dts@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "schema-dts@npm:0.10.0"
+"schema-dts@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "schema-dts@npm:0.11.0"
   peerDependencies:
     typescript: ">=4.1.0"
-  checksum: bceb9f6e57a98975eb76cfb799880e21280ea5c3638fcb46c910a8b35b5c89a0e99839c84578d09fb9245d6ed9868aaf166a21fc9119f9fd471aa262dbd93d04
+  checksum: 052ba7addd1cd2f0960e6bf870f395f743d0cccc9bd24364c72e16a9206b6c03a0dffc1a92bf13f5c9c5ceb997b2fe8b61ea7f11ed9c159eee3ce2a12bdc26fb
   languageName: node
   linkType: hard
 
