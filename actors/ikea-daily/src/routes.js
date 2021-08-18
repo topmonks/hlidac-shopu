@@ -94,10 +94,10 @@ exports.handleList = async ({ request, body, crawler }) => {
       productData.itemUrl = variant.pipUrl;
       productData.variantName = variant.imageAlt.substr(
         variant.imageAlt.indexOf(productData.productTypeName) +
-          productData.productTypeName.length +
-          2
+        productData.productTypeName.length +
+        2
       );
-      await requestQueue.addRequest({
+      await crawler.requestQueue.addRequest({
         url: variant.pipUrl,
         userData: {
           label: "DETAIL",
@@ -120,7 +120,7 @@ exports.handleDetail = async ({ $ }, productData) => {
     productData.sale = Math.round(
       ((productData.originalPrice - productData.currentPrice) /
         productData.originalPrice) *
-        100
+      100
     );
   }
 
@@ -151,7 +151,7 @@ exports.handleDetail = async ({ $ }, productData) => {
   await uploadToS3(
     s3,
     `ikea.${country}`,
-    await s3FileName(productData),
+    productData.itemId,
     "jsonld",
     toProduct(
       {
