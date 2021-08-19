@@ -3857,7 +3857,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.9
-    lit-element: 3.0.0-rc.2
+    lit-element: 3.0.0-rc.3
     lit-html: 2.0.0-rc.3
   languageName: unknown
   linkType: soft
@@ -3988,7 +3988,7 @@ __metadata:
     "@lit/reactive-element": 1.0.0-rc.2
     chart.js: ^3.3.2
     chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.2
+    lit-element: 3.0.0-rc.3
   languageName: unknown
   linkType: soft
 
@@ -15275,13 +15275,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.2":
-  version: 3.0.0-rc.2
-  resolution: "lit-element@npm:3.0.0-rc.2"
+"lit-element@npm:3.0.0-rc.3":
+  version: 3.0.0-rc.3
+  resolution: "lit-element@npm:3.0.0-rc.3"
   dependencies:
     "@lit/reactive-element": ^1.0.0-rc.2
-    lit-html: ^2.0.0-rc.3
-  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
+    lit-html: ^2.0.0-rc.4
+  checksum: ad02be1c2e9b3df21bff287267cb3cd7cb879475db1c328fc2ee380316330d1c8faaac1ea302d931c1fbba2641cb10c3f95ca143be41b96390a4b158e0298bb7
   languageName: node
   linkType: hard
 
@@ -15294,7 +15294,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.0.0-rc.3, lit-html@npm:^2.0.0-rc.3":
+"lit-html@npm:2.0.0-rc.3":
   version: 2.0.0-rc.3
   resolution: "lit-html@npm:2.0.0-rc.3"
   dependencies:
@@ -15307,6 +15307,15 @@ fsevents@^1.2.7:
   version: 1.4.1
   resolution: "lit-html@npm:1.4.1"
   checksum: cf3dea0afa2cb014a258169b1b597272f868385ba7b5d7a55258500aa4f2fb3d79e903dd22aa2076ff1c801ba5fbcde3db2ca185707ae57ca3816c95e8bcc086
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.0.0-rc.4":
+  version: 2.0.0-rc.4
+  resolution: "lit-html@npm:2.0.0-rc.4"
+  dependencies:
+    "@types/trusted-types": ^1.0.1
+  checksum: 31c1965f6b06f2d98d9cdd88ee0d90ada5256ff4259966ada0ef8ac46c5a1d382d304e67681243b2b7dac36bf5226dc378484fc4131c3f3b179340535b1ace31
   languageName: node
   linkType: hard
 
