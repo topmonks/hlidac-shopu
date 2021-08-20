@@ -12,14 +12,23 @@ const { log } = Apify.utils;
 Apify.main(async () => {
   rollbar.init();
   global.userInput = await Apify.getInput();
-
+  const { country = 'cz' } = global.userInput;
   const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: "https://www.hornbach.cz/SitemapShop_category_cs_1.xml",
-    userData: {
-      label: LABELS.SITE
-    }
-  });
+  if (country === "cz") {
+    await requestQueue.addRequest({
+      url: "https://www.hornbach.cz/SitemapShop_category_cs_1.xml",
+      userData: {
+        label: LABELS.SITE
+      }
+    });
+  } else {
+    await requestQueue.addRequest({
+      url: "https://www.hornbach.sk/SitemapShop_category_sk_1.xml",
+      userData: {
+        label: LABELS.SITE
+      }
+    });
+  }
 
   global.s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
@@ -53,9 +62,9 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.cz`);
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.${country}`);
   log.info("invalidated Data CDN");
 
-  await uploadToKeboola("hornbach_cz");
+  await uploadToKeboola(`hornbach_${country}`);
   log.info("Finished.");
 });

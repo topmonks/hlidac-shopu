@@ -3,11 +3,13 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "test": {
-            "title": "Test",
+        "country": {
+            "title": "Country",
             "type": "string",
-            "description": "There is testing input field description.",
-            "editor": "textfield"
+            "description": "...",
+          "editor": "select",
+          "enum": ["cz","sk"],
+          "enumTitles": ["Česko","Slovensko"]
         }
     },
     "required": []

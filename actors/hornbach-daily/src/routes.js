@@ -22,13 +22,14 @@ const createRouter = globalContext => {
 };
 
 const SITE = async ({ body, crawler }) => {
+  const { country } = global.userInput;
   log.info("START with main page");
   const links = tools.siteMapToLinks(body);
   for (const link of links) {
     const id = tools.getCategoryId(link);
     await crawler.requestQueue.addRequest(
       {
-        url: API_URL(id),
+        url: API_URL(country, id),
         userData: {
           label: LABELS.CATEGORY,
           categoryId: id,
@@ -42,6 +43,7 @@ const SITE = async ({ body, crawler }) => {
 
 const CATEGORY = async ({ request, json, crawler }) => {
   const { s3 } = global;
+  const { country } = global.userInput;
   const { pageNumber, pageCount, articles } = json;
   if (pageNumber === 1) {
     const {
@@ -49,7 +51,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
     } = request;
     for (let i = 2; i <= pageCount; i++) {
       await crawler.requestQueue.addRequest({
-        url: API_URL(categoryId, i),
+        url: API_URL(country, categoryId, i),
         userData: {
           label: LABELS.CATEGORY,
           categoryId,
@@ -61,7 +63,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
   if (articles.length > 0) {
     const requests = [];
     const codes = articles.map(a => a.articleCode);
-    const { statusCode, body } = await requestAsBrowser({
+    const { body } = await requestAsBrowser({
       url: "https://www.hornbach.cz/mvc/article/displaystates-and-prices.json",
       method: "POST",
       json: true,
@@ -72,7 +74,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
     for (const article of articles) {
       const result = {
         itemId: article.articleCode,
-        itemUrl: `https://www.hornbach.cz${article.localizedExternalArticleLink}`,
+        itemUrl: `https://www.hornbach.${country}${article.localizedExternalArticleLink}`,
         itemName: article.title,
         currency: article.allPrices.displayPrice.currency,
         img: article.imageUrl,
@@ -95,7 +97,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
         Apify.pushData(result),
         uploadToS3(
           s3,
-          "hornbach.cz",
+          `hornbach.${country}`,
           await s3FileName(result),
           "jsonld",
           toProduct(
