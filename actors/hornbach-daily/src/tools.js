@@ -7,7 +7,7 @@ const siteMapToLinks = data => {
 };
 
 const getCategoryId = url => {
-  const match = url.match(/\/([A-Z]+\d+)\/seznam/);
+  const match = url.match(/\/([A-Z]+\d+)\/[se|zo]znam/);
   const [all, id] = match;
   return id;
 };
