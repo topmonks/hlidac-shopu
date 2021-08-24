@@ -3981,7 +3981,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@1.0.11, @hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.11, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.9, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.11, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.9, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -3991,6 +3991,18 @@ __metadata:
     lit-element: 3.0.0-rc.3
   languageName: unknown
   linkType: soft
+
+"@hlidac-shopu/lib@npm:1.0.11":
+  version: 1.0.11
+  resolution: "@hlidac-shopu/lib@npm:1.0.11"
+  dependencies:
+    "@lit/reactive-element": 1.0.0-rc.2
+    chart.js: ^3.3.2
+    chartjs-adapter-date-fns: 2.0.0
+    lit-element: 3.0.0-rc.2
+  checksum: b23d5ac59c54d3174267349f002f74d0136a38d6b93c3dc5338f40bbebe742a5d950db8cb16dd7eec373cc2233ecdace5e5bbe5c63646475af170a7472d29e50
+  languageName: node
+  linkType: hard
 
 "@hlidac-shopu/makro-daily@workspace:actors/makro-daily":
   version: 0.0.0-use.local
@@ -4112,7 +4124,7 @@ __metadata:
     "@types/node": ^14.17.3
     apify: ^2.0.1
     apify-cli: ^0.6.2
-    browser-pool: ^1.1.2
+    browser-pool: ^2.0.0
     got: ^11.8.2
     playwright: ^1.12.2
     proxy-agent: ^5.0.0
@@ -4190,17 +4202,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lit/reactive-element@npm:1.0.0-rc.2, @lit/reactive-element@npm:^1.0.0-rc.2":
+  version: 1.0.0-rc.2
+  resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
+  checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
+  languageName: node
+  linkType: hard
+
 "@lit/reactive-element@npm:1.0.0-rc.3":
   version: 1.0.0-rc.3
   resolution: "@lit/reactive-element@npm:1.0.0-rc.3"
   checksum: b86169dadde635e8d5b43543948f692036c88f3d07912d10f4812d6e5fea14d2c6f85f63031c135cfeb22eae3b0eba3489ebc0731ed9a882853fa33e5d3fb81a
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^1.0.0-rc.2":
-  version: 1.0.0-rc.2
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
-  checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
   languageName: node
   linkType: hard
 
@@ -7530,17 +7542,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-pool@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "browser-pool@npm:1.1.2"
+"browser-pool@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "browser-pool@npm:2.0.0"
   dependencies:
-    apify-shared: ^0.6.0
-    fs-extra: ^9.1.0
-    lodash: ^4.17.20
-    nanoid: ^3.1.16
-    ow: ^0.23.0
-    proxy-chain: ^1.0.0
-  checksum: f5c38a2f52ecb768352c647011007c22d530d0b416da739a4dbf7d1274882b975e3422d5edf265e56dd1cfb92780e4d34dd991e6e187e3550106774a601b7db4
+    "@apify/log": ^1.1.1
+    fs-extra: ^10.0.0
+    lodash.merge: ^4.6.2
+    nanoid: ^3.1.25
+    ow: ^0.27.0
+    proxy-chain: ^1.0.2
+    tiny-typed-emitter: ^2.1.0
+    tslib: ^2.3.1
+  checksum: 8aacc41afda2f8a3545761a2e88378d7b614904016072f3a730162dde688bad4505a1263a3ff8b0a5de8100cc1cb5907eec58bd271378da383bb8f55fb94a1f3
   languageName: node
   linkType: hard
 
@@ -15282,6 +15296,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lit-element@npm:3.0.0-rc.2":
+  version: 3.0.0-rc.2
+  resolution: "lit-element@npm:3.0.0-rc.2"
+  dependencies:
+    "@lit/reactive-element": ^1.0.0-rc.2
+    lit-html: ^2.0.0-rc.3
+  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
+  languageName: node
+  linkType: hard
+
 "lit-element@npm:3.0.0-rc.3":
   version: 3.0.0-rc.3
   resolution: "lit-element@npm:3.0.0-rc.3"
@@ -15301,7 +15325,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.0.0-rc.4, lit-html@npm:^2.0.0-rc.4":
+"lit-html@npm:2.0.0-rc.4, lit-html@npm:^2.0.0-rc.3, lit-html@npm:^2.0.0-rc.4":
   version: 2.0.0-rc.4
   resolution: "lit-html@npm:2.0.0-rc.4"
   dependencies:
@@ -16534,12 +16558,21 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.16, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23":
+"nanoid@npm:^3.1.22, nanoid@npm:^3.1.23":
   version: 3.1.23
   resolution: "nanoid@npm:3.1.23"
   bin:
     nanoid: bin/nanoid.cjs
   checksum: e6dea1da5a593ffdc8cf2676d1d02f0626f07a54a5947a7a1f5ff1fd07901b2f53044c285e98b87eb367f016fde285fd8785d54a2dceeab9c3721f4e618f8326
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^3.1.25":
+  version: 3.1.25
+  resolution: "nanoid@npm:3.1.25"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: caab76af9a899969f87fb2105e15ef192f9e7bbf4230c2dea5a87b752c94bfd1c13a3877c388fd464826a7752fb49db5a4ff39a44458a32b740e6a1ff072e55e
   languageName: node
   linkType: hard
 
@@ -18821,7 +18854,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"proxy-chain@npm:^1.0.0, proxy-chain@npm:^1.0.2":
+"proxy-chain@npm:^1.0.2":
   version: 1.0.2
   resolution: "proxy-chain@npm:1.0.2"
   dependencies:
@@ -22025,6 +22058,13 @@ fsevents@^1.2.7:
   version: 0.3.0
   resolution: "timsort@npm:0.3.0"
   checksum: d8300c3ecf1a3751413de82b04ad283b461ab6fb1041820c825d13b4ae74526e2101ab5fb84c57a0c6e1f4d7f67173b5d8754ed8bb7447c6a9ce1db8562eb82c
+  languageName: node
+  linkType: hard
+
+"tiny-typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "tiny-typed-emitter@npm:2.1.0"
+  checksum: 3b0c54ecef47dec4797456915e3b3ace4772afcdb314b51162d126460ed8711e87e40c690fb70cc1d3b45563716030dc719f79bcd82f0b100b9d901947ffea9f
   languageName: node
   linkType: hard
 
