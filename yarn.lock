@@ -3707,7 +3707,7 @@ __metadata:
     "@hlidac-shopu/lib": ^1.0.11
     "@types/node": ^14.17.3
     rollbar: ^2.22.0
-    schema-dts: ^0.11.0
+    schema-dts: ^1.0.0
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.11.0
     "@aws-sdk/client-s3": ^3.11.0
@@ -3876,7 +3876,7 @@ __metadata:
     csv-parse: ^4.16.0
     jsonwebtoken: ^8.5.1
     node-fetch: ^2.6.1
-    schema-dts: ^0.11.0
+    schema-dts: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -20274,12 +20274,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"schema-dts@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "schema-dts@npm:0.11.0"
+"schema-dts@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "schema-dts@npm:1.0.0"
   peerDependencies:
     typescript: ">=4.1.0"
-  checksum: 052ba7addd1cd2f0960e6bf870f395f743d0cccc9bd24364c72e16a9206b6c03a0dffc1a92bf13f5c9c5ceb997b2fe8b61ea7f11ed9c159eee3ce2a12bdc26fb
+  checksum: 7903ddf211ee2ce8a54d981b17721e86dc9e810a6951a5539d5ddc4d0c4cb09efa65cd7afbb949650ab33da343d089d19ca6f518947e37ffff99fe1eb1201cce
   languageName: node
   linkType: hard
 
