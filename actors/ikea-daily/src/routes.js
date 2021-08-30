@@ -94,8 +94,8 @@ exports.handleList = async ({ request, body, crawler }) => {
       productData.itemUrl = variant.pipUrl;
       productData.variantName = variant.imageAlt.substr(
         variant.imageAlt.indexOf(productData.productTypeName) +
-        productData.productTypeName.length +
-        2
+          productData.productTypeName.length +
+          2
       );
       await crawler.requestQueue.addRequest({
         url: variant.pipUrl,
@@ -120,7 +120,7 @@ exports.handleDetail = async ({ $ }, productData) => {
     productData.sale = Math.round(
       ((productData.originalPrice - productData.currentPrice) /
         productData.originalPrice) *
-      100
+        100
     );
   }
 

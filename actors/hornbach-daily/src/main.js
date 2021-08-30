@@ -12,7 +12,7 @@ const { log } = Apify.utils;
 Apify.main(async () => {
   rollbar.init();
   global.userInput = await Apify.getInput();
-  const { country = 'cz' } = global.userInput;
+  const { country = "cz" } = global.userInput;
   const requestQueue = await Apify.openRequestQueue();
   if (country === "cz") {
     await requestQueue.addRequest({
