@@ -3746,7 +3746,7 @@ __metadata:
     abort-controller: ^3.0.0
     crypto: ^1.0.1
     date-fns: ^2.22.1
-    node-fetch: ^2.6.1
+    node-fetch: ^3.0.0
     ramda: ^0.27.1
   languageName: unknown
   linkType: soft
@@ -3875,7 +3875,7 @@ __metadata:
     cheerio: ^1.0.0-rc.10
     csv-parse: ^4.16.0
     jsonwebtoken: ^8.5.1
-    node-fetch: ^2.6.1
+    node-fetch: ^3.0.0
     schema-dts: ^1.0.0
   languageName: unknown
   linkType: soft
@@ -9577,7 +9577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"data-uri-to-buffer@npm:3":
+"data-uri-to-buffer@npm:3, data-uri-to-buffer@npm:^3.0.1":
   version: 3.0.1
   resolution: "data-uri-to-buffer@npm:3.0.1"
   checksum: 9f28217ba76eaca400a75f4b1a1d0f55058082c8152a3d88ad5feeec5e54b8c7b6d8a7bb210206bfa552a927c1b942b6102ddbb2feaa557321ea94762c4f14e2
@@ -11496,6 +11496,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-blob@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "fetch-blob@npm:3.1.2"
+  dependencies:
+    web-streams-polyfill: ^3.0.3
+  checksum: cbaf7334d2b21f7d05fcaf84b6cf369d57c8b052c8eaf8a1d8014a9d114cbd58c82e9a7cb365a74d140eebaf053aa2f6edef5916fb21d86da926d6dc5b42bf03
+  languageName: node
+  linkType: hard
+
 "figures@npm:^3.0.0":
   version: 3.2.0
   resolution: "figures@npm:3.2.0"
@@ -13266,7 +13275,7 @@ fsevents@^1.2.7:
     gulp-esbuild: ^0.8.2
     gulp-mode: ^1.1.0
     linkedom: ^0.11.0
-    node-fetch: ^2.6.1
+    node-fetch: ^3.0.0
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
     prettier: ^2.3.1
@@ -13617,7 +13626,7 @@ fsevents@^1.2.7:
     "@types/node": ^14.17.3
     apify: ^2.0.1
     apify-cli: ^0.6.2
-    node-fetch: ^2.6.1
+    node-fetch: ^3.0.0
   languageName: unknown
   linkType: soft
 
@@ -16699,6 +16708,16 @@ fsevents@^1.2.7:
   version: 2.6.1
   resolution: "node-fetch@npm:2.6.1"
   checksum: cbb171635e538162b977eac5dfe7a1e07a9a02e991924377a6435502291e2f823d306b95aabc455caebf4a118ccf836868462bc70ccc3095af02bb9da61fda37
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "node-fetch@npm:3.0.0"
+  dependencies:
+    data-uri-to-buffer: ^3.0.1
+    fetch-blob: ^3.1.2
+  checksum: eb79c19a3047c99c121a5bcb826698fd6d8e6073cc0322dccdd1dbeb4237ca710c7d251ef166d37e244fa9d1dc91b752232733cd44f43a807148a2b4e07b569f
   languageName: node
   linkType: hard
 
@@ -23403,6 +23422,13 @@ typescript@~3.7.3:
   bin:
     web-ext: bin/web-ext
   checksum: bfe9cde6bdc1b7a160002bdbc1d75d7458430c3c1b9d6c7383128010785352d50c7d90b2984acb97df2fb5410ec7e93b2676b91ad52c8830e247c54604636cff
+  languageName: node
+  linkType: hard
+
+"web-streams-polyfill@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "web-streams-polyfill@npm:3.1.0"
+  checksum: 3178a38992e69aca1637eebaba85121ac3e2bf1543228cb4b26cf066b68a0b537a7b89ea6a40b5a4f9f44be67448ff01afbc4493c4a2c2dc48b8e1bca7c63419
   languageName: node
   linkType: hard
 
