@@ -1,0 +1,16 @@
+{
+    "title": "Input schema for the apify_project actor.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "country": {
+            "title": "Country",
+            "type": "string",
+            "description": "...",
+          "editor": "select",
+          "enum": ["cz", "sk", "de", "ch", "pl", "hu", "at", "com.tr"],
+          "enumTitles": ["Česko", "Slovensko", "Německo", "Švícarsko", "Polsko", "Maďarsko", "Rakousko", "Turecko"]
+        }
+    },
+    "required": []
+}

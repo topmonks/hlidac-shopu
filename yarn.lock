@@ -15315,6 +15315,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lit-element@npm:3.0.0-rc.2":
+  version: 3.0.0-rc.2
+  resolution: "lit-element@npm:3.0.0-rc.2"
+  dependencies:
+    "@lit/reactive-element": ^1.0.0-rc.2
+    lit-html: ^2.0.0-rc.3
+  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
+  languageName: node
+  linkType: hard
+
 "lit-element@npm:3.0.0-rc.3":
   version: 3.0.0-rc.3
   resolution: "lit-element@npm:3.0.0-rc.3"

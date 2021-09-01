@@ -1,0 +1,20 @@
+{
+	"name": "tchibo-daily",
+	"version": "0.0.1",
+	"description": "This is a boilerplate of an Apify actor.",
+	"dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.25.0",
+    "@aws-sdk/client-s3": "^3.25.0",
+    "@hlidac-shopu/actors-common": "^1.1.2",
+    "apify": "^2.0.1"
+	},
+	"devDependencies": {
+		"@types/node": "^14.17.3",
+		"apify-cli": "^0.6.2"
+	},
+	"scripts": {
+		"start": "node src/main.js"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}
