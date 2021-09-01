@@ -39,7 +39,7 @@ const NAVIGATION = async ({ json, crawler }) => {
           await crawler.requestQueue.addRequest({
             url: `https://www.tchibo.${country}/${href}`,
             userData: {
-              label: LABELS.COFFE_CATEGORY
+              label: LABELS.COFFEE_CATEGORY
             }
           });
         }

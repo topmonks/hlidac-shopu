@@ -3,15 +3,17 @@ const { LABELS } = require("./const");
 const createInitRequests = () => {
   const { country = "cz" } = global.userInput;
   global.currency = getCurrencyISO(country);
-  return [{
-    url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
-    userData: {
-      label: LABELS.NAVIGATION
+  return [
+    {
+      url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
+      userData: {
+        label: LABELS.NAVIGATION
+      }
     }
-  }];
+  ];
 };
 
-const getCurrencyISO = (country) => {
+const getCurrencyISO = country => {
   let currency;
   switch (country) {
     case "cz":
@@ -26,23 +28,23 @@ const getCurrencyISO = (country) => {
       currency = "CHF";
       break;
     case "pl":
-      currency = "PLN"
+      currency = "PLN";
       break;
     case "hu":
-      currency = "HUF"
+      currency = "HUF";
       break;
     case "com.tr":
-      currency = "TRY"
+      currency = "TRY";
       break;
     default:
       currency = null;
   }
   return currency;
-}
+};
 
-const parsePrice = (price) => {
+const parsePrice = price => {
   const { country = "cz" } = global.userInput;
-  price = price.replace(/\s/, "").replace(',','.');
+  price = price.replace(/\s/, "").replace(",", ".");
   price = price.match(/[\d+|.]+/)[0];
   price = parseFloat(price);
   if (country === "de") {
@@ -50,32 +52,32 @@ const parsePrice = (price) => {
   } else {
     return price;
   }
-}
+};
 
 const getCoffeeCategory = () => {
   const { country = "cz" } = global.userInput;
   switch (country) {
     case "cz":
-      return 'Káva';
+      return "Káva";
     case "sk":
-      return  'Káva';
+      return "Káva";
     case "de":
-      return  'Kaffee';
+      return "Kaffee";
     case "ch":
-      return  'Kaffee';
+      return "Kaffee";
     case "pl":
-      return  'Kawa';
+      return "Kawa";
     case "hu":
-      return  'Kávé';
+      return "Kávé";
     case "at":
-      return  'Kaffee';
+      return "Kaffee";
     case "com.tr":
-      return  'Kahve';
+      return "Kahve";
   }
-}
+};
 
 module.exports = {
   createInitRequests,
   parsePrice,
-  getCoffeeCategory,
+  getCoffeeCategory
 };
