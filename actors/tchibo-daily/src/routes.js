@@ -3,7 +3,7 @@ const {
   toProduct,
   uploadToS3,
   s3FileName
-} = require("../../../hlidac-shopu/actors/common/product.js");
+} = require("@hlidac-shopu/actors-common/product.js");
 const { URL } = require("url");
 const { LABELS, COFFEE_CATEGORIES, THROW_AWAY_CATEGORIES } = require("./const");
 const tools = require("./tools");
@@ -168,7 +168,7 @@ const LIST = async ({ request: { url, userData }, $, crawler }) => {
   }
 };
 
-const COFFEE_CATEGORY = async ({ request, $, crawler }) => {
+const COFFEE_CATEGORY = async ({ $, crawler }) => {
   const { s3, handledIdsSet, currency } = global;
   const { country = "cz" } = global.userInput;
   const products = $(".m-tp-productbox002").toArray();
