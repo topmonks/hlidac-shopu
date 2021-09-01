@@ -11,6 +11,7 @@ const { log } = Apify.utils;
 Apify.main(async () => {
   rollbar.init();
   global.userInput = await Apify.getInput();
+  const { country } = global.userInput;
 
   const requestQueue = await Apify.openRequestQueue();
   const sources = tools.createInitRequests();
@@ -59,6 +60,6 @@ Apify.main(async () => {
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`);
   log.info("invalidated Data CDN");
 
-  await uploadToKeboola(`tchibo_${country}`);
+  await uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`);
   log.info("Finished.");
 });

@@ -1,14 +1,13 @@
 const Apify = require("apify");
 const {
   toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3
 } = require("@hlidac-shopu/actors-common/product.js");
 const { URL } = require("url");
 const { LABELS, COFFEE_CATEGORIES, THROW_AWAY_CATEGORIES } = require("./const");
 const tools = require("./tools");
 const {
-  utils: { log, requestAsBrowser }
+  utils: { log }
 } = Apify;
 
 // Create router
@@ -234,7 +233,7 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
     await crawler.requestQueue.addRequest({
       url: $(sc).attr("href"),
       userData: {
-        label: LABELS.COFFE_CATEGORY
+        label: LABELS.COFFEE_CATEGORY
       }
     });
   }
