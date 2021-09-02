@@ -321,6 +321,7 @@ const handleProductInDetailPage = async (
         discounted: false,
         currentPrice: null,
         originalPrice: null,
+        currency: null,
         variantCount: variants.length
       };
       if (mainImage.length !== 0) {
@@ -338,7 +339,8 @@ const handleProductInDetailPage = async (
         originalPrice !== null ? currentPrice < originalPrice : false;
       product.currentPrice = currentPrice;
       product.originalPrice = product.discounted ? originalPrice : null;
-
+      product.currency =
+        variantGeneralData.price && variantGeneralData.price.currency;
       if (isDebugMode()) product["#debug"] = { productData };
       if (product.currentPrice === null) {
         product.currentPrice = "Price not defined.";
