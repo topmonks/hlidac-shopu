@@ -322,6 +322,7 @@ const handleProductInDetailPage = async (
         currentPrice: null,
         originalPrice: null,
         currency: null,
+        img: null,
         variantCount: variants.length
       };
       if (mainImage.length !== 0) {
