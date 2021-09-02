@@ -76,8 +76,16 @@ const getCoffeeCategory = () => {
   }
 };
 
+const getSlug = url => {
+  const urlArr = url.split("/");
+  let slug = urlArr[urlArr.length - 1];
+  slug = slug.replace(".html", "");
+  return slug;
+};
+
 module.exports = {
   createInitRequests,
   parsePrice,
-  getCoffeeCategory
+  getCoffeeCategory,
+  getSlug
 };
