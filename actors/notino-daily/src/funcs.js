@@ -87,21 +87,8 @@ const getRootUrl = input => {
 
 const handleHomePage = async (requestQueue, request, $, input, stats) => {
   log.debug("Home page");
-  const scripts = $("script").toArray();
-  const window = {
-    __FRAGMENT_STATES__: []
-  };
-  for (const scr of scripts) {
-    const text = $(scr).html();
-    if (text.includes("window.__FRAGMENT_STATES__")) {
-      // eslint-disable-next-line no-eval
-      eval(text);
-    }
-  }
-  // eslint-disable-next-line no-underscore-dangle
-  const mainMenu = window.__FRAGMENT_STATES__.find(
-    f => f.appIdentifier === "main-menu"
-  );
+  const jsonMainMenu = $('script[id="main-menu-state"]').html();
+  const mainMenu = JSON.parse(jsonMainMenu);
   const rootUrl = getRootUrl(input);
   let links = [];
   if (mainMenu) {
@@ -286,10 +273,14 @@ const handleProductInDetailPage = async (
     }
     const mainImage = $("#pd-image-main");
     const productData = JSON.parse(dataStringFromScriptTag.replace(/;/g, ""));
-    const productGeneralData = Object.entries(productData).find(
+    let productGeneralData = Object.entries(productData).find(
       entry =>
-        productData.hasOwnProperty(entry[0]) && /^Product:\d+$/.test(entry[0])
-    )[1];
+        productData.hasOwnProperty(entry[0]) &&
+        /^Product:\{"id":"\d+"\}$/.test(entry[0]) &&
+        entry[1] &&
+        entry[1].category
+    );
+    productGeneralData = (productGeneralData || ["", {}])[1];
 
     const variants = [];
     for (const key in productData) {
@@ -297,14 +288,17 @@ const handleProductInDetailPage = async (
         variants.push(Number.parseInt(key.replace("Variant:", ""), 10));
       }
     }
-    const category = [];
-    if (productGeneralData.categoryPath) {
-      const catSplit = productGeneralData.categoryPath.split(">");
-      for (const c in catSplit) {
-        category.push(catSplit[c].trim());
+    let category = [];
+    // if (productGeneralData.category && productGeneralData.subCategory) {
+    //   category = [...productGeneralData.category, ...productGeneralData.subCategory].join('/')
+    // }
+    ["category", "subCategory", "type"].forEach(key => {
+      if (productGeneralData.hasOwnProperty(key)) {
+        category.push(productGeneralData[key].join("/"));
       }
-    }
-    //    const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+    });
+    category = category.join("/");
+
     const rootUrl = getRootUrl(input);
 
     for (const variant of variants) {
@@ -335,10 +329,10 @@ const handleProductInDetailPage = async (
       if (category.length > 0) {
         product.category = category;
       }
-      const currentPrice = productData[variantGeneralData.price.id].value;
+      const currentPrice = variantGeneralData.price.value; //productData[variantGeneralData.price.id].value;
       const originalPrice =
         variantGeneralData.originalPrice !== null
-          ? productData[variantGeneralData.originalPrice.id].value
+          ? variantGeneralData.originalPrice.value // productData[variantGeneralData.originalPrice.id].value
           : null;
       product.discounted =
         originalPrice !== null ? currentPrice < originalPrice : false;
