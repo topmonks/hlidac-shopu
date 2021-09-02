@@ -15315,16 +15315,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.2":
-  version: 3.0.0-rc.2
-  resolution: "lit-element@npm:3.0.0-rc.2"
-  dependencies:
-    "@lit/reactive-element": ^1.0.0-rc.2
-    lit-html: ^2.0.0-rc.3
-  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
-  languageName: node
-  linkType: hard
-
 "lit-element@npm:3.0.0-rc.3":
   version: 3.0.0-rc.3
   resolution: "lit-element@npm:3.0.0-rc.3"
@@ -21917,6 +21907,19 @@ fsevents@^1.2.7:
   checksum: d1d988eceb1ad2ecfaaf6fc5ecfe0c46fa005d04fe4c283355ccc52d3ffb4b6bf459a62f9ac7e36fd35251ab020399bdf527ab48b968120e06b4f61906a87d62
   languageName: node
   linkType: hard
+
+"tchibo-daily@workspace:actors/tchibo-daily":
+  version: 0.0.0-use.local
+  resolution: "tchibo-daily@workspace:actors/tchibo-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.25.0
+    "@aws-sdk/client-s3": ^3.25.0
+    "@hlidac-shopu/actors-common": ^1.1.2
+    "@types/node": ^14.17.3
+    apify: ^2.0.1
+    apify-cli: ^0.6.2
+  languageName: unknown
+  linkType: soft
 
 "temp-dir@npm:^2.0.0":
   version: 2.0.0
