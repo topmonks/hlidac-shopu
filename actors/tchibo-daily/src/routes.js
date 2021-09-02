@@ -133,6 +133,7 @@ const LIST = async ({ request: { url, userData }, $, crawler }) => {
       const result = {
         itemId,
         itemUrl: url,
+        slug: tools.getSlug(url),
         itemName,
         img: `https://www.tchibo.${country}${img}`,
         discounted: false,
@@ -189,6 +190,7 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
     const result = {
       itemId,
       itemUrl,
+      slug: tools.getSlug(itemUrl),
       itemName: `${title ? `${title} - ` : ""}${name}${
         subName ? ` - ${subName}` : ""
       }`,
