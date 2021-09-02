@@ -41,10 +41,11 @@ export class Notino extends Shop {
     const apolloState = JSON.parse(
       document.getElementById("__APOLLO_STATE__").textContent
     );
-    const [, [masterRes]] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
+    const [key, ] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
       k.startsWith("productDetailByMasterId")
     );
-    const masterId = masterRes.id.replace("Product:", "");
+    // const masterId = masterRes.id.replace("Product:", "");
+    const masterId = key.match(/masterId":"(\d+)/)?.[1];
     console.log(`Found master id ${masterId}`); // eslint-disable-line no-console
     return masterId;
   }
