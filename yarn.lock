@@ -3857,7 +3857,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.9
-    lit-element: 3.0.0-rc.3
+    lit-element: 3.0.0-rc.4
     lit-html: 2.0.0-rc.4
   languageName: unknown
   linkType: soft
@@ -3988,7 +3988,7 @@ __metadata:
     "@lit/reactive-element": 1.0.0-rc.3
     chart.js: ^3.3.2
     chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.3
+    lit-element: 3.0.0-rc.4
   languageName: unknown
   linkType: soft
 
@@ -15315,13 +15315,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.3":
-  version: 3.0.0-rc.3
-  resolution: "lit-element@npm:3.0.0-rc.3"
+"lit-element@npm:3.0.0-rc.4":
+  version: 3.0.0-rc.4
+  resolution: "lit-element@npm:3.0.0-rc.4"
   dependencies:
     "@lit/reactive-element": ^1.0.0-rc.2
     lit-html: ^2.0.0-rc.4
-  checksum: ad02be1c2e9b3df21bff287267cb3cd7cb879475db1c328fc2ee380316330d1c8faaac1ea302d931c1fbba2641cb10c3f95ca143be41b96390a4b158e0298bb7
+  checksum: 61820b3739db8f8e3a9b6346ebff0246241389aba43ecaad82e493bb83edb61aac672d1ffde6c78f071a764611dd118cdcb3c1de0f2e0bc0e4b9f7462811ba66
   languageName: node
   linkType: hard
 
