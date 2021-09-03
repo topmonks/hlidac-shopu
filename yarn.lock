@@ -3858,7 +3858,7 @@ __metadata:
   dependencies:
     "@hlidac-shopu/lib": ^1.0.9
     lit-element: 3.0.0-rc.4
-    lit-html: 2.0.0-rc.4
+    lit-html: 2.0.0-rc.5
   languageName: unknown
   linkType: soft
 
@@ -4197,7 +4197,7 @@ __metadata:
     "@material/layout-grid": ^11.0.0
     "@material/top-app-bar": ^11.0.0
     "@thi.ng/atom": ^4.1.36
-    lit-html: 2.0.0-rc.4
+    lit-html: 2.0.0-rc.5
     workbox-window: ^6.1.5
   languageName: unknown
   linkType: soft
@@ -5701,6 +5701,13 @@ __metadata:
   version: 1.0.6
   resolution: "@types/trusted-types@npm:1.0.6"
   checksum: a2eb3e307d4fa212888285de782e96bd083dbabb991c3803aed124d50c9637529699299319ec8be301b3c5668067f6ea07785c3c6099f99d92783a3dab48de29
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/trusted-types@npm:2.0.2"
+  checksum: a3c67c20a9c7addd166508f166e3f908583fe4f53438b13608c4faae3fed84bff561f7aaa46a54aec2e3abb3fbaf22217ce35480c9822378cb08847ff3e29290
   languageName: node
   linkType: hard
 
@@ -15334,12 +15341,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.0.0-rc.4, lit-html@npm:^2.0.0-rc.3, lit-html@npm:^2.0.0-rc.4":
-  version: 2.0.0-rc.4
-  resolution: "lit-html@npm:2.0.0-rc.4"
+"lit-html@npm:2.0.0-rc.5":
+  version: 2.0.0-rc.5
+  resolution: "lit-html@npm:2.0.0-rc.5"
   dependencies:
-    "@types/trusted-types": ^1.0.1
-  checksum: 31c1965f6b06f2d98d9cdd88ee0d90ada5256ff4259966ada0ef8ac46c5a1d382d304e67681243b2b7dac36bf5226dc378484fc4131c3f3b179340535b1ace31
+    "@types/trusted-types": ^2.0.2
+  checksum: 6d24cce68f269e97d881fe07f589cac0cf73003df7117f119ed5cfc5d39b71983da98d1cd70485140c5b845050e2329dfeac76dabc4a816fb450877c6e634929
   languageName: node
   linkType: hard
 
@@ -15347,6 +15354,15 @@ fsevents@^1.2.7:
   version: 1.4.1
   resolution: "lit-html@npm:1.4.1"
   checksum: cf3dea0afa2cb014a258169b1b597272f868385ba7b5d7a55258500aa4f2fb3d79e903dd22aa2076ff1c801ba5fbcde3db2ca185707ae57ca3816c95e8bcc086
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.0.0-rc.3, lit-html@npm:^2.0.0-rc.4":
+  version: 2.0.0-rc.4
+  resolution: "lit-html@npm:2.0.0-rc.4"
+  dependencies:
+    "@types/trusted-types": ^1.0.1
+  checksum: 31c1965f6b06f2d98d9cdd88ee0d90ada5256ff4259966ada0ef8ac46c5a1d382d304e67681243b2b7dac36bf5226dc378484fc4131c3f3b179340535b1ace31
   languageName: node
   linkType: hard
 
