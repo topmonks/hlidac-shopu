@@ -3985,7 +3985,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
-    "@lit/reactive-element": 1.0.0-rc.3
+    "@lit/reactive-element": 1.0.0-rc.4
     chart.js: ^3.3.2
     chartjs-adapter-date-fns: 2.0.0
     lit-element: 3.0.0-rc.4
@@ -4209,10 +4209,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.0.0-rc.3":
-  version: 1.0.0-rc.3
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.3"
-  checksum: b86169dadde635e8d5b43543948f692036c88f3d07912d10f4812d6e5fea14d2c6f85f63031c135cfeb22eae3b0eba3489ebc0731ed9a882853fa33e5d3fb81a
+"@lit/reactive-element@npm:1.0.0-rc.4":
+  version: 1.0.0-rc.4
+  resolution: "@lit/reactive-element@npm:1.0.0-rc.4"
+  checksum: dc3159d5208cddd1488016bed5e0c4d48164defd827955bdf0da9570452365d1df9177b5d6e907def3db639f8721cd1ca034c32b99740096e0572066fb72cdce
   languageName: node
   linkType: hard
 
