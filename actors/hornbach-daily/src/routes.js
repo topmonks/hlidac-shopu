@@ -64,7 +64,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
     const requests = [];
     const codes = articles.map(a => a.articleCode);
     const { body } = await requestAsBrowser({
-      url: "https://www.hornbach.cz/mvc/article/displaystates-and-prices.json",
+      url: `https://www.hornbach.${country}/mvc/article/displaystates-and-prices.json`,
       method: "POST",
       json: true,
       useHttp2: true,
@@ -72,13 +72,14 @@ const CATEGORY = async ({ request, json, crawler }) => {
       payload: JSON.stringify(codes)
     });
     for (const article of articles) {
+      let currentPrice = article.allPrices.displayPrice.price.replace(",", ".");
       const result = {
         itemId: article.articleCode,
         itemUrl: `https://www.hornbach.${country}${article.localizedExternalArticleLink}`,
         itemName: article.title,
         currency: article.allPrices.displayPrice.currency,
         img: article.imageUrl,
-        currentPrice: parseFloat(article.allPrices.displayPrice.price),
+        currentPrice: parseFloat(currentPrice),
         originalPrice: null,
         discounted: false,
         category: tools.getCategories(article.categoryPath)
@@ -86,11 +87,13 @@ const CATEGORY = async ({ request, json, crawler }) => {
       const price = body.filter(p => p.articleCode === article.articleCode);
       if (price) {
         const { allPrices } = price[0];
-        const { displayPrice, guidingPrice } = allPrices;
+        let { displayPrice, guidingPrice } = allPrices;
         if (guidingPrice) {
-          result.currentPrice = parseFloat(displayPrice.price);
+          displayPrice = displayPrice.price.replace(",", ".");
+          guidingPrice = guidingPrice.price.replace(",", ".");
+          result.currentPrice = parseFloat(displayPrice);
           result.discounted = true;
-          result.originalPrice = parseFloat(guidingPrice.price);
+          result.originalPrice = parseFloat(guidingPrice);
         }
       }
       requests.push(
