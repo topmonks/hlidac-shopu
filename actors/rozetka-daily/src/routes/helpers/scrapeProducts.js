@@ -1,16 +1,44 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 const Apify = require("apify");
 
 const { CURRENCY, PRODUCT_CELL_SELECTOR } = require("../../consts.js");
 
-async function scrapeProducts($, category) {
+async function scrapeProducts($, category, stats, processedIds) {
   const products = $(PRODUCT_CELL_SELECTOR);
   const datasetArr = [];
 
-  for (let i = 0; i < products.length; i++) {
-    datasetArr.push(scrapeOneProduct(products.eq(i), category));
-  }
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
 
-  await Apify.pushData(datasetArr);
+  for (let i = 0; i < products.length; i++) {
+    const product = scrapeOneProduct(products.eq(i), category);
+    // Save data to dataset
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3(
+          s3,
+          "rozetka.com.ua",
+          await s3FileName(product),
+          "jsonld",
+          toProduct(product, {})
+        )
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
+  }
+  console.log(`Found ${requests.length / 2} unique products`);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 }
 
 function scrapeOneProduct(product, category) {

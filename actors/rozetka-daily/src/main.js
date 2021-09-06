@@ -1,3 +1,7 @@
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const { migrationConfig, getOrIncStatsValue } = require("./tools");
 const {
@@ -21,13 +25,29 @@ const {
   utils: { log }
 } = Apify;
 
+let stats = {};
+const processedIds = new Set();
+
 Apify.main(async () => {
+  rollbar.init();
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  stats = (await Apify.getValue("STATS")) || {
+    urls: 0,
+    pages: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+  const input = await Apify.getInput();
   const {
-    maxConcurrency = 100,
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    country = "UA",
     proxyCountryCode,
-    maxRequestsPerCrawl,
-    type
-  } = (await Apify.getInput()) || {};
+    type = "DAILY"
+  } = input ?? {};
 
   if (type !== COUNT && type !== DAILY) {
     log.error('type input value has to be either "COUNT" or "DAILY"');
@@ -49,15 +69,15 @@ Apify.main(async () => {
     requestList,
     requestQueue,
     proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    maxRequestRetries: 5,
     handlePageTimeoutSecs: 120,
     requestTimeoutSecs: 120,
     autoscaledPoolOptions: {
       maxConcurrency
     },
-    maxRequestsPerCrawl,
     handlePageFunction: async context => {
       const {
         request: {
@@ -81,7 +101,9 @@ Apify.main(async () => {
           } else {
             await handleProductList.handleProductList({
               ...context,
-              type
+              type,
+              stats,
+              processedIds
             });
             break;
           }
@@ -100,8 +122,21 @@ Apify.main(async () => {
   });
 
   log.info("Starting the crawl.");
+  // Run crawler
   await crawler.run();
-  log.info("Crawl finished.");
+  log.info("ACTOR - crawler end");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rozetka.com.ua");
+    log.info("invalidated Data CDN");
+    await uploadToKeboola("rozetka_ua");
+    log.info("upload to Keboola finished");
+  }
+
+  log.info("ACTOR - Finished");
 
   if (type === COUNT) {
     await Apify.pushData({ totalCount: await getOrIncStatsValue() });

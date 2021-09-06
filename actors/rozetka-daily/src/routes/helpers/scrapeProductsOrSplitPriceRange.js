@@ -9,7 +9,9 @@ const scrapeProductsOrSplitPriceRange = async (
   $,
   url,
   requestQueue,
-  userData
+  userData,
+  stats,
+  processedIds
 ) => {
   // take categories from userData in case of pagination pages
   let { category } = userData;
@@ -41,7 +43,7 @@ const scrapeProductsOrSplitPriceRange = async (
     parseInt($("li.pagination__item:last-child").text(), 10) < MAX_PAGE_COUNT ||
     minPrice === maxPrice
   ) {
-    await scrapeProducts($, category);
+    await scrapeProducts($, category, stats, processedIds);
     await handlePagination($, url, requestQueue, userData);
     return;
   }

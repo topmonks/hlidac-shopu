@@ -25,7 +25,9 @@ const handleProductList = async ({
   $,
   request: { userData, loadedUrl },
   crawler: { requestQueue },
-  type
+  type,
+  stats,
+  processedIds
 }) => {
   log.info(`Entered product list page: ${loadedUrl}`);
 
@@ -85,7 +87,14 @@ const handleProductList = async ({
   }
 
   if (type === DAILY) {
-    await scrapeProductsOrSplitPriceRange($, loadedUrl, requestQueue, userData);
+    await scrapeProductsOrSplitPriceRange(
+      $,
+      loadedUrl,
+      requestQueue,
+      userData,
+      stats,
+      processedIds
+    );
   } else {
     await countProductsOrSplitPriceRange($, loadedUrl, requestQueue, userData);
   }
