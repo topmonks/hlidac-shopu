@@ -1,7 +1,12 @@
 const Apify = require("apify");
+const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const cheerio = require("cheerio");
 const UserAgent = require("user-agents");
 const { handleStart, handlePage } = require("./routes");
+const {S3Client} = require("@aws-sdk/client-s3");
 
 const {
   utils: { log }
@@ -17,6 +22,8 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   await requestQueue.addRequest(source);
 
+  global.s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   let count = 0;
   const alreadyScrapedProducts =
     (await Apify.getValue("ALREADY-SCRAPED")) || [];
@@ -106,4 +113,10 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
   log.info("Crawl finished.");
+
+  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `megaknihy.cz`);
+  log.info("invalidated Data CDN");
+
+  await uploadToKeboola("megaknihy_cz");
+  log.info("Finished.");
 });

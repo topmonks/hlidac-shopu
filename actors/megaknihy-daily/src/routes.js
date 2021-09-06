@@ -1,4 +1,9 @@
 const Apify = require("apify");
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 const cheerio = require("cheerio");
 const {
   getAllSubcategories,
@@ -42,6 +47,7 @@ exports.handlePage = async (
   page,
   alreadyScrapedProducts
 ) => {
+  const { s3 } = global;
   // The subcategories on the page does not contain all the products, that the list does
   // They are more of a specific selection
   // Because I am not going into details, just listings, there would be a lot
@@ -61,8 +67,26 @@ exports.handlePage = async (
     await Apify.setValue("Products", body, { contentType: "text/html" });
     throw new Error("There is no product on the page, need request to retry");
   }
+  const promises = [];
 
-  await Apify.pushData(productsData);
+  for (const product of productsData) {
+    promises.push(
+      Apify.pushData(productsData),
+      uploadToS3(
+        s3,
+        "megaknihy.cz",
+        product.itemId,
+        "jsonld",
+        toProduct(
+          {
+            ...product,
+            inStock: true
+          },
+          { priceCurrency: product.currency }
+        )
+      )
+    );
+  }
   log.info(`[PAGE]: Scraped ${productsData.length} products --- ${url}`);
 
   if (outOfStockProductDiscovered) {

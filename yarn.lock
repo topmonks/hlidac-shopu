@@ -10044,6 +10044,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"devtools-protocol@npm:0.0.901419":
+  version: 0.0.901419
+  resolution: "devtools-protocol@npm:0.0.901419"
+  checksum: 6468cf02a102da702f0f414398bbeafe4466a7706a484e91e81dca781d535952ba8527a7b70c0333a2ed4743e407abbd76fcbfa5d10a2d60b5c818df9c524726
+  languageName: node
+  linkType: hard
+
 "dezalgo@npm:^1.0.0":
   version: 1.0.3
   resolution: "dezalgo@npm:1.0.3"
@@ -16042,6 +16049,22 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"megaknihy-daily-pup@workspace:actors/megaknihy-daily":
+  version: 0.0.0-use.local
+  resolution: "megaknihy-daily-pup@workspace:actors/megaknihy-daily"
+  dependencies:
+    "@aws-sdk/client-cloudfront": ^3.25.0
+    "@aws-sdk/client-s3": ^3.25.0
+    "@hlidac-shopu/actors-common": ^1.1.2
+    "@types/node": ^14.17.3
+    apify: ^2.0.6
+    apify-cli: ^0.6.2
+    cheerio: ^1.0.0-rc.10
+    puppeteer: "*"
+    user-agents: ^1.0.745
+  languageName: unknown
+  linkType: soft
+
 "mem@npm:^5.0.0":
   version: 5.1.1
   resolution: "mem@npm:5.1.1"
@@ -19024,6 +19047,26 @@ fsevents@^1.2.7:
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
   checksum: 318b4d19be3b4ccfd2b3a57643b5a08dd3abefed572d1a3bec6894e694021f80dc915d1d621fea762c274ffddc8c0fd00bad7a5785ee12974dc48eabc6250fc3
+  languageName: node
+  linkType: hard
+
+"puppeteer@npm:*":
+  version: 10.2.0
+  resolution: "puppeteer@npm:10.2.0"
+  dependencies:
+    debug: 4.3.1
+    devtools-protocol: 0.0.901419
+    extract-zip: 2.0.1
+    https-proxy-agent: 5.0.0
+    node-fetch: 2.6.1
+    pkg-dir: 4.2.0
+    progress: 2.0.1
+    proxy-from-env: 1.1.0
+    rimraf: 3.0.2
+    tar-fs: 2.0.0
+    unbzip2-stream: 1.3.3
+    ws: 7.4.6
+  checksum: 407ac7b014519bb94fa51d2687514c160344da9f4bda78a8dbf36eb9ff3dfcf36773ff989268a602f0d00a302278c0f375e368c43b32c38437aab9cf25adca7d
   languageName: node
   linkType: hard
 
@@ -23101,6 +23144,16 @@ typescript@~3.7.3:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
   checksum: f66c1fdfb1e5bb13515dfb6f5dd0e9709cea26a3defddec47c3342fb0732d1cbdb11a9822661ed015171d199765ac6ca010cbceb3bcd929b71af5fa8d77ba187
+  languageName: node
+  linkType: hard
+
+"user-agents@npm:^1.0.745":
+  version: 1.0.766
+  resolution: "user-agents@npm:1.0.766"
+  dependencies:
+    dot-json: ^1.2.2
+    lodash.clonedeep: ^4.5.0
+  checksum: 234bf93556dd1da0b6365c01c29dd9c7b5214fec4e5e7322d1d1e71abc9ca17c7f7ecac745ccd86fb62a234ed8851157d55627fddc43766febbc907bdfaa6058
   languageName: node
   linkType: hard
 
