@@ -3988,7 +3988,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.11, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.9, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@1.0.12, @hlidac-shopu/lib@^1.0.0, @hlidac-shopu/lib@^1.0.11, @hlidac-shopu/lib@^1.0.2, @hlidac-shopu/lib@^1.0.3, @hlidac-shopu/lib@^1.0.4, @hlidac-shopu/lib@^1.0.5, @hlidac-shopu/lib@^1.0.9, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -3998,18 +3998,6 @@ __metadata:
     lit-element: 3.0.0-rc.4
   languageName: unknown
   linkType: soft
-
-"@hlidac-shopu/lib@npm:1.0.11":
-  version: 1.0.11
-  resolution: "@hlidac-shopu/lib@npm:1.0.11"
-  dependencies:
-    "@lit/reactive-element": 1.0.0-rc.2
-    chart.js: ^3.3.2
-    chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.2
-  checksum: b23d5ac59c54d3174267349f002f74d0136a38d6b93c3dc5338f40bbebe742a5d950db8cb16dd7eec373cc2233ecdace5e5bbe5c63646475af170a7472d29e50
-  languageName: node
-  linkType: hard
 
 "@hlidac-shopu/makro-daily@workspace:actors/makro-daily":
   version: 0.0.0-use.local
@@ -4200,7 +4188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
-    "@hlidac-shopu/lib": 1.0.11
+    "@hlidac-shopu/lib": 1.0.12
     "@material/layout-grid": ^11.0.0
     "@material/top-app-bar": ^11.0.0
     "@thi.ng/atom": ^4.1.36
@@ -4209,17 +4197,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lit/reactive-element@npm:1.0.0-rc.2, @lit/reactive-element@npm:^1.0.0-rc.2":
-  version: 1.0.0-rc.2
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
-  checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
-  languageName: node
-  linkType: hard
-
 "@lit/reactive-element@npm:1.0.0-rc.4":
   version: 1.0.0-rc.4
   resolution: "@lit/reactive-element@npm:1.0.0-rc.4"
   checksum: dc3159d5208cddd1488016bed5e0c4d48164defd827955bdf0da9570452365d1df9177b5d6e907def3db639f8721cd1ca034c32b99740096e0572066fb72cdce
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^1.0.0-rc.2":
+  version: 1.0.0-rc.2
+  resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
+  checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
   languageName: node
   linkType: hard
 
@@ -15343,16 +15331,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.2":
-  version: 3.0.0-rc.2
-  resolution: "lit-element@npm:3.0.0-rc.2"
-  dependencies:
-    "@lit/reactive-element": ^1.0.0-rc.2
-    lit-html: ^2.0.0-rc.3
-  checksum: 983b1bcc2bdcafc2afbfe66fcbde49eddc379ec0e331b949b1676010eef4a9b06d1ef8b0d62077195f87d710996c257de4cbbd71f40501e81352c1f7da207bce
-  languageName: node
-  linkType: hard
-
 "lit-element@npm:3.0.0-rc.4":
   version: 3.0.0-rc.4
   resolution: "lit-element@npm:3.0.0-rc.4"
@@ -15388,7 +15366,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.0.0-rc.3, lit-html@npm:^2.0.0-rc.4":
+"lit-html@npm:^2.0.0-rc.4":
   version: 2.0.0-rc.4
   resolution: "lit-html@npm:2.0.0-rc.4"
   dependencies:
