@@ -5,7 +5,7 @@ FROM apify/actor-node:16
 
 # Second, copy just package.json and package-lock.json since it should be
 # the only file that affects "npm install" in the next step, to speed up the build
-COPY package*.json ./
+COPY package.json ./
 
 # Install NPM packages, skip optional and development dependencies to
 # keep the image small. Avoid logging too much and print the dependency
