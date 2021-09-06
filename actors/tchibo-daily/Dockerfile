@@ -1,4 +1,4 @@
-FROM apify/actor-node-puppeteer-chrome:16
+FROM apify/actor-node:16
 
 # Second, copy just package.json and package-lock.json since it should be
 # the only file that affects "npm install" in the next step, to speed up the build
@@ -9,6 +9,7 @@ COPY package.json ./
 # tree for debugging
 RUN npm --quiet set progress=false \
  && npm install --only=prod --no-optional \
+ && npm install aws-crt \
  && echo "Installed NPM packages:" \
  && (npm list || true) \
  && echo "Node.js version:" \
