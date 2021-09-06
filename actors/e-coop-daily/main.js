@@ -123,6 +123,7 @@ function pageFunction(requestQueue) {
         item = extractor.extractItem($, request);
         stats.items++;
         await processItem(item);
+        await Apify.utils.sleep(1000);
         break;
     }
     for (const r of requests) {
@@ -192,6 +193,14 @@ Apify.main(async () => {
     }
   });
 
+  /*
+  await requestQueue.addRequest({
+    url: "https://coophb.e-coop.cz/babice/030790.html",
+    userData: {
+      label: "DETAIL"
+    }
+  });
+ */
   log.info("ACTOR - setUp crawler");
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
@@ -204,6 +213,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
+    requestTimeoutSecs: 60,
     handlePageFunction: pageFunction(requestQueue),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
@@ -217,9 +227,9 @@ Apify.main(async () => {
   log.info("ACTOR - crawler end");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
+    //await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola("coop_cz");
+    //await uploadToKeboola("coop_cz");
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");
