@@ -207,7 +207,7 @@ async function handleDetail(context, country, dataset) {
       .get(0);
   }
   img = `https:${img}`;
-  const category = $("li.breadcrumb__dropdown__wrapper > a")
+  const category = $('a[class*="normal"][wt_name*="breadcrumb.level"]')
     .map(function () {
       return $(this).text();
     })
@@ -259,9 +259,9 @@ function getItemIdFromUrl(url) {
 
 async function handleVariant({ $, requestQueue, request }) {
   let crawledItemId = getItemIdFromUrl(request.url);
-  // log.debug(`[handleVariant] for ${crawledItemId}`);
   let productLinkList = $(
-    '.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"], .selectboxes .selectbox a[wt_name*="color_variant"]'
+    '.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"], ' +
+      '.selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]'
   )
     .map(function () {
       let productUrl = $(this).attr("href");
