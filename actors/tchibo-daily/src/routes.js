@@ -182,6 +182,7 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
     handledIdsSet.add(itemId);
     const title = titleObject.find("a").attr("title");
     const itemUrl = titleObject.find("a").attr("href");
+    const topLineText = $(p).find('.m-tp-productbox002-topline-text').text().trim();
     const name = titleObject.find("a > span").text().trim();
     const subName = $(p).find(".m-tp-productbox002-flavor").text().trim();
     const img = $(p).find(".m-tp-productbox002-image").attr("data-src");
@@ -191,7 +192,7 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
       itemId,
       itemUrl,
       slug: tools.getSlug(itemUrl),
-      itemName: `${title ? `${title} - ` : ""}${name}${
+      itemName: `${topLineText ? `${topLineText} - ` : ""}${title ? `${title} - ` : ""}${name}${
         subName ? ` - ${subName}` : ""
       }`,
       img: `https://www.tchibo.${country}/${img}`,
