@@ -177,7 +177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.25.0":
+"@aws-sdk/client-cloudfront@npm:3.25.0, @aws-sdk/client-cloudfront@npm:^3.25.0":
   version: 3.25.0
   resolution: "@aws-sdk/client-cloudfront@npm:3.25.0"
   dependencies:
@@ -262,7 +262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.25.0":
+"@aws-sdk/client-s3@npm:3.25.0, @aws-sdk/client-s3@npm:^3.25.0":
   version: 3.25.0
   resolution: "@aws-sdk/client-s3@npm:3.25.0"
   dependencies:
@@ -4073,8 +4073,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.25.0
-    "@aws-sdk/client-s3": ^3.25.0
+    "@aws-sdk/client-cloudfront": 3.25.0
+    "@aws-sdk/client-s3": 3.25.0
     "@hlidac-shopu/actors-common": ^1.1.2
     apify: ^2.0.6
   languageName: unknown

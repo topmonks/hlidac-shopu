@@ -12,6 +12,7 @@ export * from "./mall.mjs";
 export * from "./mironet.mjs";
 export * from "./mountfield.mjs";
 export * from "./notino.mjs";
+export * from "./obi.mjs";
 export * from "./okay.mjs";
 export * from "./pilulka.mjs";
 export * from "./prozdravi.mjs";

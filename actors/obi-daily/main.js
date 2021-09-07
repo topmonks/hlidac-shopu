@@ -12,6 +12,7 @@ const Apify = require("apify");
 const { log } = Apify.utils;
 
 const processedIds = new Set();
+const variantIds = new Set();
 let stats = {};
 let pushList = [];
 
@@ -158,11 +159,11 @@ async function handleList({ $, requestQueue, request }) {
   stats.urls += requestList.length;
 }
 
-async function handleDetail(request, $, country, dataset) {
+async function handleDetail(context, country, dataset) {
   // log.debug(
   //   `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
   // );
-
+  const { request, $ } = context;
   const itemName = $(".overview__description >.overview__heading")
     .text()
     .trim();
@@ -248,6 +249,56 @@ async function handleDetail(request, $, country, dataset) {
     await Promise.allSettled(pushList);
     pushList = [];
   }
+
+  await handleVariant(context);
+}
+
+function getItemIdFromUrl(url) {
+  return url.match(/p\/(\d+)(#\/)?$/)?.[1];
+}
+
+async function handleVariant({ $, requestQueue, request }) {
+  let crawledItemId = getItemIdFromUrl(request.url);
+  // log.debug(`[handleVariant] for ${crawledItemId}`);
+  let productLinkList = $(
+    '.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"], .selectboxes .selectbox a[wt_name*="color_variant"]'
+  )
+    .map(function () {
+      let productUrl = $(this).attr("href");
+      if (!productUrl) {
+        return;
+      }
+      let itemId = getItemIdFromUrl(productUrl);
+      if (
+        crawledItemId === itemId ||
+        variantIds.has(itemId) ||
+        processedIds.has(itemId)
+      ) {
+        return;
+      }
+      variantIds.add(itemId);
+      return productUrl;
+    })
+    .get();
+
+  if (!(productLinkList.length > 0)) {
+    return;
+  }
+
+  log.debug(
+    `[handleVariant] label: ${request.userData.label}, url: ${
+      request.url
+    }, productLinkList: ${JSON.stringify(productLinkList)}`
+  );
+
+  const requestList = productLinkList.map(url => {
+    return requestQueue.addRequest({
+      url: url,
+      userData: { label: "DETAIL" }
+    });
+  });
+  await Promise.all(requestList);
+  stats.urls += requestList.length;
 }
 
 function parsePrice(text) {
@@ -255,7 +306,6 @@ function parsePrice(text) {
     .trim()
     .replace(/\s|'/g, "")
     .replace(/,/, ".")
-    // .replace(/'/, "")
     .match(/(\d+(.\d+)?)/)[0];
   price = parseFloat(price);
   return price;
@@ -309,6 +359,13 @@ Apify.main(async () => {
     }
   });
 
+  // await requestQueue.addRequest({
+  //   url: ' https://www.obi.cz/vyrovnavaci-hmoty/het-sadra-1-kg-bila/p/3256682',
+  //   userData: {
+  //     label: "DETAIL"
+  //   }
+  // });
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
@@ -329,7 +386,7 @@ Apify.main(async () => {
       } else if (label === "LIST") {
         await handleList(context);
       } else if (label === "DETAIL") {
-        await handleDetail(context.request, context.$, country, dataset);
+        await handleDetail(context, country, dataset);
       }
     },
     handleFailedRequestFunction: async ({ request }) => {
@@ -348,10 +405,10 @@ Apify.main(async () => {
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", directoryName);
   log.info(`invalidated Data CDN ${directoryName}`);
 
-  // if (!development) {
-  const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
-  await uploadToKeboola(tableName);
-  log.info(`update to Keboola finished ${tableName}.`);
-  // }
+  if (!development) {
+    const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
+    await uploadToKeboola(tableName);
+    log.info(`update to Keboola finished ${tableName}.`);
+  }
   log.info("Actor Finished.");
 });
