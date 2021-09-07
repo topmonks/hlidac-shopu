@@ -6,13 +6,14 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const cheerio = require("cheerio");
 const UserAgent = require("user-agents");
 const { handleStart, handlePage } = require("./routes");
-const {S3Client} = require("@aws-sdk/client-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
 
 const {
   utils: { log }
 } = Apify;
 
 Apify.main(async () => {
+  rollbar.init();
   const source = {
     url: "https://www.megaknihy.cz/",
     userData: {
@@ -25,24 +26,17 @@ Apify.main(async () => {
   global.s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   let count = 0;
-  const alreadyScrapedProducts =
-    (await Apify.getValue("ALREADY-SCRAPED")) || [];
-
+  const ALREADY_SCRAPED = (await Apify.getValue("ALREADY-SCRAPED")) || [];
+  const alreadyScrapedProducts = new Set(ALREADY_SCRAPED);
   // Set state persistence
   const persistState = async () => {
-    await Apify.setValue("ALREADY-SCRAPED", alreadyScrapedProducts);
+    await Apify.setValue("ALREADY-SCRAPED", [...alreadyScrapedProducts]);
     log.info(
       `[PERSIST]: -- Product cache has ${alreadyScrapedProducts.length} unique products.`
     );
   };
 
   Apify.events.on("persistState", persistState);
-
-  // Persist unique product's ID on migrating
-  Apify.events.on("migrating", async () => {
-    log.info("migrating...");
-    await Apify.setValue("ALREADY-SCRAPED", alreadyScrapedProducts);
-  });
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: ["CZECH_LUMINATI"]
@@ -113,6 +107,7 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
   log.info("Crawl finished.");
+  await persistState();
 
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `megaknihy.cz`);
   log.info("invalidated Data CDN");

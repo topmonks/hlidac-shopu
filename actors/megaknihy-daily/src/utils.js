@@ -37,15 +37,22 @@ exports.getMaxPaginationNumber = $ =>
 const modelProductData = ($, product, categories) => {
   const title = $(product).find("h2 a");
   const bottomBox = $(product).find("div[class='product-bottom-box']");
-
-  const productData = {
+  const itemUrl = $(title).attr("href");
+  const slugMatch = itemUrl.match(/\/([0-9\-\w]*)\.html/);
+  let slug = "";
+  let all = "";
+  if (slugMatch) {
+    [all, slug] = slugMatch;
+  }
+  return {
     itemId: $(title)
       .attr("href")
       .match(/\/([0-9]){4}[0-9]*-/)[0]
       .match(/[0-9]+/)[0],
-    itemImg: $(product).find("img").eq(0).attr("src"),
-    itemUrl: $(title).attr("href"),
+    img: $(product).find("img").eq(0).attr("src"),
+    itemUrl,
     itemName: $(title).text(),
+    slug,
     currentPrice: parseInt(
       $(bottomBox)
         .find("span[class='price']")
@@ -58,14 +65,13 @@ const modelProductData = ($, product, categories) => {
     rating: $(bottomBox).find("span[class='rating']").eq(0).text().trim(),
     discounted: false,
     sale: $(product).find("div[class*='product-sale']").eq(0).text(),
-    category: categories,
+    category: categories.join(" > "),
     currency:
       $(bottomBox).find("span[class='price_currency']").eq(0).text() === "Kč"
         ? "CZK"
         : $(bottomBox).find("span[class='price_currency']").eq(0).text(),
     inStock: $(product).find("span[class='product-available']").length > 0
   };
-  return productData;
 };
 
 exports.getProductsData = ($, categories, alreadyScrapedProducts) => {
@@ -97,10 +103,10 @@ exports.getProductsData = ($, categories, alreadyScrapedProducts) => {
     productData.discounted = !!productData.originalPrice;
     // Push product data only if it wasn't already scraped - deduplication of products
     // (on the page there are same products in multiple categories)
-    if (!alreadyScrapedProducts.includes(productData.itemId)) {
+    if (!alreadyScrapedProducts.has(productData.itemId)) {
       if (productData.inStock) {
+        alreadyScrapedProducts.add(productData.itemId);
         productsData.push(productData);
-        alreadyScrapedProducts.push(productData.itemId);
       } else {
         outOfStockProductDiscovered = true;
       }
