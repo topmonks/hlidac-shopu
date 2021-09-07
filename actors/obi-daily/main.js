@@ -360,7 +360,7 @@ Apify.main(async () => {
   });
 
   // await requestQueue.addRequest({
-  //   url: ' https://www.obi.cz/vyrovnavaci-hmoty/het-sadra-1-kg-bila/p/3256682',
+  //   url: 'https://www.obi.de/leisten/endkappe-fuer-sockelleiste-ahorn-22-mm-x-40-mm/p/9124561#/',
   //   userData: {
   //     label: "DETAIL"
   //   }
