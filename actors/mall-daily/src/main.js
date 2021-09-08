@@ -22,16 +22,46 @@ const {
 const webCz = "https://www.mall.cz";
 const webSk = "https://www.mall.sk";
 
+let stats = {};
+const processedIds = new Set();
+
 Apify.main(async () => {
   // Get queue and enqueue first url.
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
-  const { country, type, test = false } = await Apify.getValue("INPUT");
-  const requestQueue = await Apify.openRequestQueue();
-  let web;
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    test = false,
+    sample = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    country = "CZ",
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
 
-  if (country === "CZ") {
-    web = webCz;
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsSkipped: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+
+  const requestQueue = await Apify.openRequestQueue();
+  let web = country === "CZ" ? webCz : webSk;
+  if (sample) {
+    // to test one page
+    await requestQueue.addRequest({
+      //url: "https://www.mall.cz/dozy-potraviny?pagination=2",
+      url: "https://www.mall.sk/potraviny-a-napoje?pagination=2",
+      userData: {
+        label: "PAGE"
+      }
+    });
+  } else if (country === "CZ") {
     if (type === "CZECHITAS") {
       await requestQueue.addRequest({
         url: "https://www.mall.cz/parfemy-kosmetika",
@@ -46,45 +76,45 @@ Apify.main(async () => {
           label: "MAP"
         }
       });
-      await requestQueue.addRequest({
+      /*await requestQueue.addRequest({
         url: "https://www.mall.cz/znacky",
         userData: {
           label: "BRAND"
         }
-      });
+      });*/
     }
   } else if (country === "SK") {
-    web = webSk;
     await requestQueue.addRequest({
       url: "https://www.mall.sk/mapa-stranok",
       userData: {
         label: "MAP"
       }
     });
-    await requestQueue.addRequest({
+    /*await requestQueue.addRequest({
       url: "https://www.mall.sk/znacky",
       userData: {
         label: "BRAND"
       }
-    });
+    });*/
   }
-  const proxyGroups = ["CZECH_LUMINATI"];
+
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
-  /* // to test one page
-  await requestQueue.addRequest({
-      url: 'https://www.mall.cz/damske-znackove-mikiny',
-      userData: {
-          label: 'PAGE',
-      },
-  }); */
+
   // Create crawler.
   const crawler = new Apify.BasicCrawler({
     requestQueue,
-    // proxyConfiguration,
-    // useApifyProxy: true,
-    maxConcurrency: 20,
+    //proxyConfiguration,
+    maxRequestRetries,
+    maxConcurrency,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 100,
@@ -250,50 +280,10 @@ Apify.main(async () => {
             });
           }
         } else if (request.userData.label === "PAGE") {
-          // left menu add sub categories, just do it once and dont do it on pagination
-          try {
-            let itemsMenu = [];
-            if ($("ul.nav-secondary li>a").length !== 0) {
-              $(
-                ".sdb-panel ul.nav-secondary--secondary li>a:not([class])"
-              ).each(function () {
-                const urlRaw = $(this).attr("href");
-                if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
-                  itemsMenu.push(urlRaw);
-                } else {
-                  itemsMenu.push(web + urlRaw);
-                }
-              });
-            }
-            if (itemsMenu.length !== 0) {
-              console.log(
-                `Found ${itemsMenu.length} submenu urls, going to enqueue them, for ${request.url}`
-              );
-
-              if (test) {
-                itemsMenu = itemsMenu.slice(0, 10);
-                log.info(
-                  `TEST is ${test}. Reduced itemsMenu size to ${itemsMenu.length}.`
-                );
-              }
-              for (const urls of itemsMenu) {
-                await requestQueue.addRequest({
-                  url: urls,
-                  userData: {
-                    label: "PAGE"
-                  }
-                });
-              }
-            }
-          } catch (e) {
-            console.log(e);
-          }
-
           // extract items from page
           try {
             const items = await extractItems($, web, country);
             if (items.length !== 0) {
-              console.log(`Found ${items.length} storing them, ${request.url}`);
               // This is for Katka czechitas team, should be one time, we can remove it later
               if (type === "CZECHITAS") {
                 for (const item of items) {
@@ -313,43 +303,112 @@ Apify.main(async () => {
                   );
                 }
               } else {
+                // we don't need to block pushes, we will await them all at the end
+                const requests = [];
                 for (const product of items) {
-                  await uploadToS3(
-                    s3,
-                    `mall.${country.toLowerCase()}`,
-                    await s3FileName(product),
-                    "jsonld",
-                    toProduct(
-                      {
-                        ...product,
-                        inStock: true
-                      },
-                      { priceCurrency: country === "CZ" ? "CZK" : "EUR" }
-                    )
-                  );
+                  if (!processedIds.has(product.itemId)) {
+                    processedIds.add(product.itemId);
+                    requests.push(
+                      Apify.pushData(product),
+                      uploadToS3(
+                        s3,
+                        `mall.${country.toLowerCase()}`,
+                        await s3FileName(product),
+                        "jsonld",
+                        toProduct(
+                          {
+                            ...product,
+                            inStock: true
+                          },
+                          { priceCurrency: country === "CZ" ? "CZK" : "EUR" }
+                        )
+                      )
+                    );
+                    stats.items++;
+                  } else {
+                    stats.itemsDuplicity++;
+                  }
                 }
-                await Apify.pushData(items);
+                console.log(
+                  `${request.url} Found ${requests.length / 2} unique products`
+                );
+                // await all requests, so we don't end before they end
+                await Promise.allSettled(requests);
               }
             }
           } catch (e) {
             // no items on the page check it out
             console.log(e.message);
-            throw new Error(
+            /*throw new Error(
               `Check this url, there are no items ${request.url}`
-            );
+            );*/
           }
 
-          if (type !== "FIRSTPAGE") {
-            // if it is a first pagination, we need to get total number of results and enqueue them and add a subcategories
-            if (request.url.indexOf("page=") === -1) {
-              await paginationParser(
-                $,
-                requestQueue,
-                request,
-                web,
-                proxyConfiguration.newUrl(session.id)
+          //Only from first pagination need obtain secondary menu links and pagination links and enqueue them.
+          if (request.url.indexOf("pagination=") === -1) {
+            // left menu add sub categories, just do it once and dont do it on pagination
+            try {
+              let itemsMenu = [];
+              // Old secondary menu type
+              if ($("ul.nav-secondary li>a").length !== 0) {
+                $(
+                  ".sdb-panel ul.nav-secondary--secondary li>a:not([class])"
+                ).each(function () {
+                  const urlRaw = $(this).attr("href");
+                  if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
+                    itemsMenu.push(urlRaw);
+                  } else {
+                    itemsMenu.push(`${web}${urlRaw}`);
+                  }
+                });
+              }
+              // new secondary menu type
+              const newSecondaryMenu = $(
+                "ul.navigation-menu li.navigation-menu__item--child>a"
               );
+              if (newSecondaryMenu.length !== 0) {
+                newSecondaryMenu.each(function () {
+                  const urlRaw = $(this).attr("href");
+                  if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
+                    itemsMenu.push(urlRaw);
+                  } else {
+                    itemsMenu.push(`${web}${urlRaw}`);
+                  }
+                });
+              }
+              if (itemsMenu.length !== 0) {
+                stats.categories += itemsMenu.length;
+                console.log(
+                  `${request.url} Found ${itemsMenu.length} submenu urls, going to enqueue them`
+                );
+
+                if (test) {
+                  itemsMenu = itemsMenu.slice(0, 10);
+                  log.info(
+                    `TEST is ${test}. Reduced itemsMenu size to ${itemsMenu.length}.`
+                  );
+                }
+                for (const urls of itemsMenu) {
+                  await requestQueue.addRequest({
+                    url: urls,
+                    userData: {
+                      label: "PAGE"
+                    }
+                  });
+                }
+              }
+            } catch (e) {
+              console.log(e);
             }
+
+            await paginationParser(
+              $,
+              requestQueue,
+              request,
+              web,
+              proxyConfiguration.newUrl(session.id),
+              stats
+            );
           }
         }
       }
@@ -363,6 +422,10 @@ Apify.main(async () => {
   // Run crawler.
   await crawler.run();
   console.log("Crawling finished.");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
   if (type !== "CZECHITAS") {
     const env = await Apify.getEnv();
     await invalidateCDN(

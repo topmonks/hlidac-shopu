@@ -1,10 +1,45 @@
 const { requestRetry, getHeaders } = require("./utils");
 
-async function paginationParser($, requestQueue, request, web, proxyUrl) {
+async function paginationParser(
+  $,
+  requestQueue,
+  request,
+  web,
+  proxyUrl,
+  stats
+) {
   // try to add pagination from the script
   try {
+    const paginationBlock = $("div.pagination");
+    const paginationActive = paginationBlock
+      .find("button.pagination__item--active")
+      .text()
+      .trim();
+    if (paginationActive === "1") {
+      // Get last pagination page
+      let paginationLast = 1;
+      paginationBlock.find("button.pagination__item").each(function () {
+        const paginationValue = parseInt($(this).text().trim());
+        if (paginationValue > paginationLast) {
+          paginationLast = paginationValue;
+        }
+      });
+      if (paginationLast > 1) {
+        for (let i = 2; i <= paginationLast; i++) {
+          const nextPaginationUrl = `${request.url}?pagination=${i}`;
+          await requestQueue.addRequest({
+            url: nextPaginationUrl,
+            userData: {
+              label: "PAGE"
+            }
+          });
+          stats.pages++;
+        }
+        console.log(`${request.url} Adding ${paginationLast - 1} paginations`);
+      }
+    }
     // fuck mall, they are changing it every day, will keep both of variants here
-    if ($('script:contains("var CONFIGURATION")').length !== 0) {
+    else if ($('script:contains("var CONFIGURATION")').length !== 0) {
       const scriptRaw = $('script:contains("var CONFIGURATION")').text();
       const pageData = JSON.parse(
         scriptRaw.split("var CONFIGURATION =")[1].split("var ")[0].trim()

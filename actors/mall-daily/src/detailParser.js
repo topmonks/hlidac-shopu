@@ -2,6 +2,51 @@ const parseCurrency = require("parsecurrency");
 
 async function extractItems($, web, country) {
   const results = [];
+  // New technic
+  const articles = $("article.product-box-category").toArray();
+  if (articles.length > 0) {
+    for (const article of articles) {
+      const itemId = $(article).find("div.add-to-cart").attr("product-id");
+      const title = $(article).find("h3").text().trim();
+      const itemImgUrl = $(article).find("img").attr("src");
+      const itemUrl = $(article)
+        .find("a.product-box-category__title-link")
+        .attr("href");
+      const currentPrice = parseCurrency(
+        $(article)
+          .find("span.product-price__price")
+          .text()
+          .replace(/\s+/g, "")
+          .replace(country === "CZ" ? "Kč" : "€", "")
+          .trim()
+      );
+      const originalPrice = parseCurrency(
+        $(article)
+          .find("del.product-price__price-old")
+          .text()
+          .replace(/\s+/g, "")
+          .replace(country === "CZ" ? "Kč" : "€", "")
+          .trim()
+      );
+
+      const result = {
+        itemId: itemId,
+        itemUrl: `${web}${itemUrl}`,
+        itemName: title,
+        currency: country === "CZ" ? "CZK" : "EUR",
+        img: itemImgUrl,
+        currentPrice: currentPrice !== null ? currentPrice.value : null,
+        originalPrice: originalPrice !== null ? originalPrice.value : null,
+        discounted:
+          originalPrice !== null
+            ? currentPrice.value < originalPrice.value
+            : false
+      };
+      results.push(result);
+    }
+  }
+
+  // Old technic
   if ($("div[ng-attr-data-main-id]").length !== 0) {
     $("div[ng-attr-data-main-id]").each(function () {
       const result = {};
