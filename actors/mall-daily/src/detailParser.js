@@ -41,6 +41,7 @@ async function extractItems($, web, country) {
 
       const result = {
         itemId: itemId,
+        productId: itemId,
         itemUrl: itemUrl,
         itemName: title,
         category: category,
