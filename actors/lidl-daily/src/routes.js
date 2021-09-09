@@ -164,8 +164,10 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
       "> .product-grid-box__price .m-price__top"
     );
     if (strikePrice && strikePrice.length > 0) {
+      let price = strikePrice.text().trim();
+      price = price.match(/(\d+)/)[1];
       result.discounted = true;
-      result.originalPrice = parseFloat(strikePrice.text().trim());
+      result.originalPrice = parseFloat(price);
     }
     requests.push(
       Apify.pushData(result),
