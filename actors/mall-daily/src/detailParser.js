@@ -1,3 +1,4 @@
+const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 const parseCurrency = require("parsecurrency");
 
 async function extractItems($, web, country) {
@@ -9,9 +10,9 @@ async function extractItems($, web, country) {
       const itemId = $(article).find("div.add-to-cart").attr("product-id");
       const title = $(article).find("h3").text().trim();
       const itemImgUrl = $(article).find("img").attr("src");
-      const itemUrl = $(article)
-        .find("a.product-box-category__title-link")
-        .attr("href");
+      const itemUrl =
+        web +
+        $(article).find("a.product-box-category__title-link").attr("href");
       const currentPrice = parseCurrency(
         $(article)
           .find("span.product-price__price")
@@ -29,10 +30,21 @@ async function extractItems($, web, country) {
           .trim()
       );
 
+      const category = [];
+      $(".breadcrumb-nav")
+        .find('span[itemprop="name"]')
+        .each(function () {
+          category.push($(this).text().trim());
+        });
+
+      const slug = await s3FileName({ itemUrl: itemUrl });
+
       const result = {
         itemId: itemId,
-        itemUrl: `${web}${itemUrl}`,
+        itemUrl: itemUrl,
         itemName: title,
+        category: category,
+        slug: slug,
         currency: country === "CZ" ? "CZK" : "EUR",
         img: itemImgUrl,
         currentPrice: currentPrice !== null ? currentPrice.value : null,
@@ -42,6 +54,7 @@ async function extractItems($, web, country) {
             ? currentPrice.value < originalPrice.value
             : false
       };
+
       results.push(result);
     }
   }
