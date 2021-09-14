@@ -55,8 +55,9 @@ async function extractItems($, web, country) {
             ? currentPrice.value < originalPrice.value
             : false
       };
-
-      results.push(result);
+      if (result.itemId) {
+        results.push(result);
+      }
     }
   }
 
