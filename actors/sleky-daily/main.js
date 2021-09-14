@@ -198,7 +198,9 @@ Apify.main(async () => {
           result.itemUrl = `${web}${itemUrl}`;
           result.itemName = $name;
           result.category = breadCrumbs;
-          itemsArray.push(result);
+          if (result.itemId) {
+            itemsArray.push(result);
+          }
         }
       }
     });
