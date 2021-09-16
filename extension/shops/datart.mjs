@@ -23,7 +23,6 @@ export class Datart extends Shop {
     const imageUrl = elem
       .querySelector("#lightgallery > .product-gallery-main div.item")
       .getAttribute("data-src");
-    console.log({ itemId, title, currentPrice, originalPrice, imageUrl });
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
