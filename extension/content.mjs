@@ -73,7 +73,10 @@ function handleDetail(shop) {
       const url = info.url ?? location.href;
       const res = await fetchData(url, info);
       if (res.error || res.metadata?.error) {
-        console.error("Hlídačshopů.cz - Error fetching data: ", res.error || res.metadata.error);
+        console.error(
+          "Hlídačshopů.cz - Error fetching data: ",
+          res.error || res.metadata.error
+        );
         return null;
       }
       if (!res.data || res.data.length === 0) {
@@ -86,10 +89,12 @@ function handleDetail(shop) {
       try {
         const { itemId } = info;
         console.log(`Hlídačshopů.cz - Chart loaded for ItemID: ${itemId}`);
-        console.log("Hlídačshopů.cz - Render:",{ info, metadata, dataset });
+        console.log("Hlídačshopů.cz - Render:", { info, metadata, dataset });
         renderHTML(repaint, shop, dataset, metadata);
         const params = new URLSearchParams({ url, itemId, debug: 1 });
-        console.log(`Hlídačshopů.cz - Debug URL: https://www.hlidacshopu.cz/app/?${params}`);
+        console.log(
+          `Hlídačshopů.cz - Debug URL: https://www.hlidacshopu.cz/app/?${params}`
+        );
         return true;
       } catch (e) {
         console.error(e);
@@ -105,7 +110,10 @@ function handleDetail(shop) {
 }
 
 async function main() {
-  console.log(`Hlídačshopů.cz - Version: %c${getVersion()}`, "font-weight: 700");
+  console.log(
+    `Hlídačshopů.cz - Version: %c${getVersion()}`,
+    "font-weight: 700"
+  );
   const shop = getShop(location.href);
   if (!shop) {
     console.log("Hlídačshopů.cz - No shop found");

@@ -3,19 +3,16 @@ import { Shop } from "./shop.mjs";
 
 export class Lekarna extends Shop {
   get injectionPoint() {
-    return [
-      "afterend",
-      `[itemprop=offers]`
-    ];
+    return ["afterend", `[itemprop=offers]`];
   }
 
   async scrape() {
-    const elem = document.querySelector("[itemtype='https://schema.org/Product']");
+    const elem = document.querySelector(
+      "[itemtype='https://schema.org/Product']"
+    );
     if (!elem) return null;
 
-    const itemId = elem
-      .querySelector("[itemprop=sku]")
-      ?.textContent.trim();
+    const itemId = elem.querySelector("[itemprop=sku]")?.textContent.trim();
     const title = elem.querySelector("[itemprop=name]")?.textContent.trim();
     const currentPrice = elem
       .querySelector("[itemprop=price]")

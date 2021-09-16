@@ -41,7 +41,7 @@ export class Notino extends Shop {
     const apolloState = JSON.parse(
       document.getElementById("__APOLLO_STATE__").textContent
     );
-    const [key, ] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
+    const [key] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
       k.startsWith("productDetailByMasterId")
     );
     // const masterId = masterRes.id.replace("Product:", "");

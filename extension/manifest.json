@@ -13,9 +13,7 @@
     }
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
+    "scripts": ["background.js"],
     "persistent": false
   },
   "icons": {
@@ -50,9 +48,7 @@
       }
     ]
   },
-  "permissions": [
-    "https://api2.hlidacshopu.cz/detail"
-  ],
+  "permissions": ["https://api2.hlidacshopu.cz/detail"],
   "content_scripts": [
     {
       "matches": [
@@ -66,6 +62,7 @@
         "https://www.czc.cz/*",
         "https://www.datart.cz/*",
         "https://www.datart.sk/*",
+        "https://www.eva.cz/*",
         "https://www.iglobus.cz/*",
         "https://www.kasa.cz/*",
         "https://www.kosik.cz/*",
@@ -90,9 +87,7 @@
         "https://potravinydomov.itesco.sk/*",
         "https://www.tsbohemia.cz/*"
       ],
-      "js": [
-        "content.js"
-      ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ]

@@ -1,4 +1,4 @@
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { shops as shops_lib, shopName } from "@hlidac-shopu/lib/shops.mjs";
 
 export function cleanPriceText(priceText) {
   priceText = priceText.replace(/\s+/g, "");
@@ -47,4 +47,9 @@ export function registerShop(shop, ...names) {
 
 export function getShop(url) {
   return shops.get(shopName(url));
+}
+
+export function getItemIdFromUrl(url) {
+  const shop = shops_lib.get(shopName(url));
+  return shop.parse(url).itemId;
 }
