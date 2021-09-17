@@ -23,21 +23,17 @@
     "date-fns": "^2.24.0",
     "node-fetch": "^3.0.0",
     "postcss-css-variables": "^0.18.0",
-    "ramda": "^0.27.1",
-    "sass": "^1.41.1"
+    "ramda": "^0.27.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@esm-bundle/chai": "^4.3.4-fix.0",
-    "@material/button": "^11.0.0",
-    "@material/icon-button": "^11.0.0",
-    "@material/snackbar": "^11.0.0",
     "@open-wc/testing": "^2.5.33",
     "@rollup/plugin-alias": "^3.1.5",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-replace": "^3.0.0",
-    "@topmonks/blendid": "topmonks/blendid",
+    "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=e26ca63ecd997fd68d92b2591f3ba734d2d2c878",
     "@types/firefox-webext-browser": "^82.0.1",
     "@types/node": "^16.9.2",
     "@types/node-fetch": "^3.0.3",

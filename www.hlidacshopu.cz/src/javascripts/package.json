@@ -4,7 +4,10 @@
   "description": "Website and PWA",
   "dependencies": {
     "@hlidac-shopu/lib": "^1.0.14",
+    "@material/button": "^11.0.0",
+    "@material/icon-button": "^11.0.0",
     "@material/layout-grid": "^11.0.0",
+    "@material/snackbar": "^11.0.0",
     "@material/top-app-bar": "^11.0.0",
     "@thi.ng/atom": "^4.1.42",
     "lit-html": "2.0.0-rc.5",
