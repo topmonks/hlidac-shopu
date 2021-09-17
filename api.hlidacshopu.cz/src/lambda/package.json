@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "Lambdas for handling API Gateway endpoints",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.25.0",
-    "@aws-sdk/client-s3": "^3.25.0",
-    "@aws-sdk/util-dynamodb": "^3.25.0",
+    "@aws-sdk/client-dynamodb": "^3.31.0",
+    "@aws-sdk/client-s3": "^3.31.0",
+    "@aws-sdk/util-dynamodb": "^3.31.0",
     "@hlidac-shopu/lib": "^1.0.14",
-    "@pulumi/aws": "^4.8.0",
+    "@pulumi/aws": "^4.20.0",
     "@pulumi/awsx": "^0.31.0",
     "abort-controller": "^3.0.0",
     "crypto": "^1.0.1",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.24.0",
     "node-fetch": "^3.0.0",
     "ramda": "^0.27.1"
   }
