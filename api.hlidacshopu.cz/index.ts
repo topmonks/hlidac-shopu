@@ -22,12 +22,6 @@ export function createDatabase() {
     name: "all_shops_metadata"
   });
   const allShopsStatsTable = aws.dynamodb.getTable({ name: "all_shops_stats" });
-  const topslevyRelativeTable = aws.dynamodb.getTable({
-    name: "topslevy_perc_discount_daily"
-  });
-  const topslevyAbsoluteTable = aws.dynamodb.getTable({
-    name: "topslevy_czk_discount_daily"
-  });
 
   const extensionParsedDataTable = new aws.dynamodb.Table(
     "extension_parsed_data",
@@ -61,9 +55,7 @@ export function createDatabase() {
     allShopsMetadataTable,
     allShopsStatsTable,
     blackFridayDataTable: blackFridayDataTable.name,
-    extensionParsingDataTable: extensionParsedDataTable.name,
-    topslevyAbsoluteTable,
-    topslevyRelativeTable
+    extensionParsingDataTable: extensionParsedDataTable.name
   });
 }
 
@@ -182,12 +174,6 @@ export async function createApi(domainName: string) {
         path: "/reviews-stats",
         fileName: "reviewStats/index.mjs",
         cache: { ttl: 3600 }
-      }),
-      createHandlerRoute("topslevy", {
-        httpMethod: "GET",
-        path: "/topslevy",
-        fileName: "topslevy/index.mjs",
-        requiredParameters: [{ in: "query", name: "discount" }]
       }),
       createHandlerRoute("og", {
         httpMethod: "GET",
