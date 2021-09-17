@@ -186,7 +186,8 @@ export async function createApi(domainName: string) {
       createHandlerRoute("topslevy", {
         httpMethod: "GET",
         path: "/topslevy",
-        fileName: "topslevy/index.mjs"
+        fileName: "topslevy/index.mjs",
+        requiredParameters: [{ in: "query", name: "discount" }]
       }),
       createHandlerRoute("og", {
         httpMethod: "GET",
