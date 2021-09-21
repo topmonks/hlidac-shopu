@@ -4812,7 +4812,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.14
-    lit-element: 3.0.0-rc.4
+    lit-element: 3.0.0
     lit-html: 2.0.0-rc.5
   languageName: unknown
   linkType: soft
@@ -4943,7 +4943,7 @@ __metadata:
     "@lit/reactive-element": 1.0.0
     chart.js: ^3.5.1
     chartjs-adapter-date-fns: 2.0.0
-    lit-element: 3.0.0-rc.4
+    lit-element: 3.0.0
   languageName: unknown
   linkType: soft
 
@@ -5173,10 +5173,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^1.0.0-rc.2":
-  version: 1.0.0-rc.2
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.2"
-  checksum: 89f9c912341a70d8b4318b5846ac5682f4aaa6b5135e6f8d69b37eb70d928cedfd1eca2df87bf3c37e735fd283374e1f978af6a152f60e6f0ef0e5607e30c208
+"@lit/reactive-element@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@lit/reactive-element@npm:1.0.0"
+  checksum: 5fc7659ca08635f7add65db82808baf201968e3c6f65862d1d4d20956c6ca79a479dfb420c1a4a092509f216d1c56d14a519917f0011ac052ee182b0d09187ae
   languageName: node
   linkType: hard
 
@@ -6665,13 +6665,6 @@ __metadata:
   version: 4.0.1
   resolution: "@types/tough-cookie@npm:4.0.1"
   checksum: 6029227c6871936c357a0d1e7e91b163b24bbfd5647465c9c4961a9db2d1dccbfb0d05c14b2583853a7432638d8a8ccd68df071a7e926400e0573c20d6ad936e
-  languageName: node
-  linkType: hard
-
-"@types/trusted-types@npm:^1.0.1":
-  version: 1.0.6
-  resolution: "@types/trusted-types@npm:1.0.6"
-  checksum: a2eb3e307d4fa212888285de782e96bd083dbabb991c3803aed124d50c9637529699299319ec8be301b3c5668067f6ea07785c3c6099f99d92783a3dab48de29
   languageName: node
   linkType: hard
 
@@ -16067,13 +16060,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.0-rc.4":
-  version: 3.0.0-rc.4
-  resolution: "lit-element@npm:3.0.0-rc.4"
+"lit-element@npm:3.0.0":
+  version: 3.0.0
+  resolution: "lit-element@npm:3.0.0"
   dependencies:
-    "@lit/reactive-element": ^1.0.0-rc.2
-    lit-html: ^2.0.0-rc.4
-  checksum: 61820b3739db8f8e3a9b6346ebff0246241389aba43ecaad82e493bb83edb61aac672d1ffde6c78f071a764611dd118cdcb3c1de0f2e0bc0e4b9f7462811ba66
+    "@lit/reactive-element": ^1.0.0
+    lit-html: ^2.0.0
+  checksum: d8fbb8ca84bf96185fda4383637e7317ad0d02b0f635e2afba4d15b3e05851661c6eccd19d1bb990715ef85b79ce8c523c6c27ccee45432bd7715bb21e21b318
   languageName: node
   linkType: hard
 
@@ -16102,12 +16095,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.0.0-rc.4":
-  version: 2.0.0-rc.4
-  resolution: "lit-html@npm:2.0.0-rc.4"
+"lit-html@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "lit-html@npm:2.0.0"
   dependencies:
-    "@types/trusted-types": ^1.0.1
-  checksum: 31c1965f6b06f2d98d9cdd88ee0d90ada5256ff4259966ada0ef8ac46c5a1d382d304e67681243b2b7dac36bf5226dc378484fc4131c3f3b179340535b1ace31
+    "@types/trusted-types": ^2.0.2
+  checksum: e59807f09f0befcd4b6f2a5aa74e366b077f7a88c60787697ef395b9f03b6aadb3fd2448c38203fefdeb2806c769462ee73189e2764befdafc583b65f9f9afc3
   languageName: node
   linkType: hard
 
