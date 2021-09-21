@@ -4,6 +4,8 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const retry = require("async-retry");
+const cheerio = require("cheerio");
 
 const {
   handleSitemap,
@@ -12,13 +14,25 @@ const {
   handleDetail
 } = require("./routes");
 
+const { getCategoryRequests } = require("./utils");
+
 const {
   utils: { log, requestAsBrowser }
 } = Apify;
 
+let productCount = 0;
+
 Apify.main(async () => {
   rollbar.init();
-  const { country } = await Apify.getInput();
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 35,
+    country = "cz",
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "DAILY"
+  } = input ?? {};
   global.country = country;
 
   // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
@@ -56,21 +70,63 @@ Apify.main(async () => {
   global.s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["BUYPROXIES94952"]
+    groups: proxyGroups
   });
+
   const requestQueue = await Apify.openRequestQueue();
 
-  await requestQueue.addRequest({
-    url: sitemap,
-    userData: {
-      label: "SITEMAP"
+  if (type === "DAILY") {
+    await requestQueue.addRequest({
+      url: sitemap,
+      userData: {
+        label: "SITEMAP"
+      }
+    });
+  } else if (type === "COUNT") {
+    productCount = (await Apify.getValue("COUNT")) || 0;
+    Apify.events.on("migrating", () => {
+      Apify.setValue("COUNT", productCount)
+        .then(() => log.info("[PRODUCT COUNT] Saved"))
+        .catch(error => {
+          log.error(`[ERROR]: ${error.message.toString()}`);
+        });
+    });
+
+    setInterval(async () => {
+      log.info(`[PRODUCT COUNT] ${productCount}`);
+      await Apify.setValue("COUNT", productCount);
+    }, 20 * 1000);
+
+    // Categories are added to requestQue
+    const categoryRequests = await retry(
+      async () => {
+        // if anything throws, we retry
+        const response = await requestAsBrowser({
+          url: sitemap,
+          proxyUrl: proxyConfiguration.newUrl()
+        });
+        const $ = cheerio.load(response.body);
+        const categories = getCategoryRequests($);
+        log.info(
+          `[START]: found ${categories.length} categories --- ${sitemap}`
+        );
+        return categories;
+      },
+      {
+        retries: 10
+      }
+    );
+
+    for (const item of categoryRequests) {
+      await requestQueue.addRequest(item);
     }
-  });
+  }
 
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    maxConcurrency: 35,
+    maxConcurrency,
+    maxRequestRetries,
     handlePageTimeoutSecs: 240,
     requestTimeoutSecs: 180,
     handlePageFunction: async context => {
@@ -83,7 +139,17 @@ Apify.main(async () => {
         case "SITEMAP":
           return handleSitemap(context);
         case "CATEGORY":
-          return handleCategory(context, countryPath);
+          const handleCategoryResult = await handleCategory(
+            context,
+            countryPath,
+            type
+          );
+          if (type === "DAILY") {
+            return handleCategoryResult;
+          } else if (type === "COUNT") {
+            productCount += handleCategoryResult;
+          }
+          return;
         case "LIST":
           return handleList(context);
         case "DETAIL":
@@ -98,13 +164,18 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `ikea.${country.toLowerCase()}`
-  );
-  log.info("invalidated Data CDN");
+  if (type === "DAILY") {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `ikea.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
 
-  await uploadToKeboola(`ikea_${country.toLowerCase()}`);
+    await uploadToKeboola(`ikea_${country.toLowerCase()}`);
+  } else if (type === "COUNT") {
+    await Apify.pushData({ numberOfProducts: productCount });
+  }
+
   log.info("Finished.");
 });

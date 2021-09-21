@@ -32,7 +32,7 @@ exports.handleSitemap = async ({ body, crawler }) => {
   }
 };
 
-exports.handleCategory = async ({ request, $, crawler }, countryPath) => {
+exports.handleCategory = async ({ request, $, crawler }, countryPath, type) => {
   // If category contains subcategories then don't add it to requestQueue
   // subcategories were already added in request queue
   const subcategories = getSubcategoriesUrls($);
@@ -47,19 +47,29 @@ exports.handleCategory = async ({ request, $, crawler }, countryPath) => {
       log.info(
         `[CATEGORY]: found ${dataCategory.totalCount} products --- ${request.url}`
       );
-      await crawler.requestQueue.addRequest({
-        url:
-          `https://sik.search.blue.cdtapps.com/${countryPath}/product-list-page/more-products?category=${dataCategory.id}` +
-          `&sort=RELEVANCE&start=0&end=${dataCategory.totalCount}&c=lf`,
-        userData: {
-          label: "LIST"
-        }
-      });
+      if (type === "DAILY") {
+        await crawler.requestQueue.addRequest({
+          url:
+            `https://sik.search.blue.cdtapps.com/${countryPath}/product-list-page/more-products?category=${dataCategory.id}` +
+            `&sort=RELEVANCE&start=0&end=${dataCategory.totalCount}&c=lf`,
+          userData: {
+            label: "LIST"
+          }
+        });
+      } else if (type === "COUNT") {
+        return parseInt(dataCategory.totalCount, 10);
+      }
     } catch (e) {
       log.info(
         `[CATEGORY]: Category does not contain any products --- ${request.url}`
       );
+      if (type === "COUNT") {
+        return 0;
+      }
     }
+  }
+  if (type === "COUNT") {
+    return 0;
   }
 };
 
