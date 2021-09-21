@@ -152,16 +152,18 @@ exports.handleDetail = async ({ $ }, productData) => {
   productData.numberOfReviews = review.numberOfReviews;
 
   const categories = getProductDetailCategories($);
+  const slug = await s3FileName(productData);
   productData = {
     ...productData,
-    category: categories
+    category: categories,
+    slug: slug
   };
 
   await Apify.pushData(productData);
   await uploadToS3(
     s3,
-    `ikea.${country}`,
-    productData.itemId,
+    `ikea.${country.toLowerCase()}`,
+    slug,
     "jsonld",
     toProduct(
       {
