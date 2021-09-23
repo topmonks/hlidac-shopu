@@ -99,26 +99,28 @@ Apify.main(async () => {
           break;
         case "DETAIL":
           const product = await handleDetail(context, stats, country);
-          stats.totalItems += 1;
-          if (!processedIds.has(product.itemId)) {
-            processedIds.add(product.itemId);
-            promiseList.push(
-              Apify.pushData(product),
-              uploadToS3(
-                s3,
-                `okay.${country.toLowerCase()}`,
-                s3FileNameSync(product),
-                "jsonld",
-                toProduct(product, {})
-              )
-            );
-            stats.items += 1;
-            if (promiseList.length >= 100) {
-              await Promise.all(promiseList);
-              promiseList = [];
+          if (product.itemId !== null && product.currentPrice !== null) {
+            stats.totalItems += 1;
+            if (!processedIds.has(product.itemId)) {
+              processedIds.add(product.itemId);
+              promiseList.push(
+                Apify.pushData(product),
+                uploadToS3(
+                  s3,
+                  `okay.${country.toLowerCase()}`,
+                  s3FileNameSync(product),
+                  "jsonld",
+                  toProduct(product, {})
+                )
+              );
+              stats.items += 1;
+              if (promiseList.length >= 100) {
+                await Promise.all(promiseList);
+                promiseList = [];
+              }
+            } else {
+              stats.itemsDuplicity += 1;
             }
-          } else {
-            stats.itemsDuplicity += 1;
           }
           break;
         case "BF":
