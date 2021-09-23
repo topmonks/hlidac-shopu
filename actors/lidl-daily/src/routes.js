@@ -24,6 +24,7 @@ const createRouter = globalContext => {
 const MAIN_NABIDKA = async ({ $, crawler }) => {
   log.info("Start MAIN_NABIDKA");
   const subMenu = $("a.theme__item").toArray();
+  log.debug(`Found ${subMenu.length} subcategories`);
   for (const m of subMenu) {
     await crawler.requestQueue.addRequest({
       url: `${MAIN_URL}${$(m).attr("href")}`,
@@ -65,7 +66,7 @@ const DETAIL = async ({ request, $ }) => {
     await uploadToS3(
       s3,
       "lidl.cz",
-      product.itemId,
+      await s3FileName(product),
       "jsonld",
       toProduct(
         {
@@ -85,7 +86,7 @@ const LIDL_SHOP = async ({ $, crawler }) => {
   for (let menu of mainMenu) {
     menu = $(menu).attr("href");
     await crawler.requestQueue.addRequest({
-      url: `https://www.lidl-shop.cz${menu}`,
+      url: `https://www.lidl.cz${menu}`,
       userData: {
         label: LABELS.LIDL_SHOP_MAIN_CAT,
         level: 1
@@ -105,7 +106,7 @@ const enqueueCategories = async ($, level, cats, crawler, catLevel) => {
     } else if (!isSelected && subCats.length === 0 && catLevel > level) {
       log.info(`enqueue category: ${namee}`);
       await crawler.requestQueue.addRequest({
-        url: `https://www.lidl-shop.cz${$(c).find("a").attr("href")}`,
+        url: `https://www.lidl.cz${$(c).find("a").attr("href")}`,
         userData: {
           label:
             catLevel < 2 ? LABELS.LIDL_SHOP_MAIN_CAT : LABELS.LIDL_SHOP_CAT,
@@ -123,12 +124,47 @@ const LIDL_SHOP_MAIN_CAT = async ({ $, request, crawler }) => {
   await enqueueCategories($, level, cats, crawler, 0);
 };
 
+const LIDL_SHOP_DETAIL = async ({ $, request, crawler }) => {
+  const detail = $("body").html();
+  console.log(detail);
+};
+
+const LIDL_SHOP_SECTION = async ({ $, request, crawler }) => {
+  const { level } = request.userData;
+  const sections = $(
+    "div.APageRoot__Sections li.ATheContentPageCardList__Item a.ATheContentPageCardList__Item--Linked"
+  ).toArray();
+  for (let section of sections) {
+    section = $(section);
+    const a = section.attr("href");
+    if (level === 1) {
+      await crawler.requestQueue.addRequest({
+        url: a,
+        userData: {
+          label: LABELS.LIDL_SHOP_SECTION,
+          level: 2
+        }
+      });
+    } else if (level === 2) {
+      await crawler.requestQueue.addRequest({
+        url: a,
+        userData: {
+          label: LABELS.LIDL_SHOP_CAT
+        }
+      });
+
+      global.stats.categories++;
+    }
+  }
+  log.info(`Found ${sections.length}x categories in ${request.url}`);
+};
+
 const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
-  const { s3 } = global;
+  const { s3, stats, processedIds } = global;
   const nextButton = $("a.s-load-more__button");
   if (nextButton && nextButton.length > 0) {
     await crawler.requestQueue.addRequest({
-      url: `https://www.lidl-shop.cz${nextButton.attr("href")}`,
+      url: `https://www.lidl.cz${nextButton.attr("href")}`,
       userData: {
         label: LABELS.LIDL_SHOP_CAT
       }
@@ -141,46 +177,57 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
   for (let product of products) {
     product = $(product);
     const a = product.attr("href");
-    const title = product.find("h2").text().trim();
-    const url = new URL(`https://www.lidl-shop.cz${a}`);
-    const imageSource = product.find("img.product-grid-box__image");
-    const price = product.find(
-      "> .product-grid-box__price .m-price__bottom .m-price__price"
-    );
-    const stock = product.find(".product-grid-box__availabilities > .badge");
-    const result = {
-      itemId: tools.getItemId(url.pathname),
-      itemUrl: `https://www.lidl-shop.cz${url.pathname}`,
-      itemName: title,
-      currency: "CZK",
-      currentPrice: parseFloat(price.text().trim()),
-      img: $(imageSource).attr("src"),
-      originalPrice: null,
-      discounted: false,
-      inStock: !!stock.hasClass("badge--available-online"),
-      category: breadcrumbs.map(b => $(b).text().trim()).join(" > ")
-    };
-    const strikePrice = product.find(
-      "> .product-grid-box__price .m-price__top"
-    );
-    if (strikePrice && strikePrice.length > 0) {
-      let price = strikePrice.text().trim();
-      price = price.match(/(\d+)/)[1];
-      result.discounted = true;
-      result.originalPrice = parseFloat(price);
+    const url = new URL(`https://www.lidl.cz${a}`);
+    const itemUrl = `https://www.lidl.cz${url.pathname}`;
+    const itemId = await s3FileName({ itemUrl });
+    stats.items++;
+    if (!processedIds.has(itemId)) {
+      processedIds.add(itemId);
+      const title = product.find("h2").text().trim();
+      const imageSource = product.find("img.product-grid-box__image");
+      const price = product.find(
+        "> .product-grid-box__price .m-price__bottom .m-price__price"
+      );
+      const stock = product.find(".product-grid-box__availabilities > .badge");
+      const result = {
+        itemId: itemId,
+        itemUrl,
+        itemName: title,
+        currency: "CZK",
+        currentPrice: parseFloat(price.text().trim()),
+        img: $(imageSource).attr("src"),
+        originalPrice: null,
+        discounted: false,
+        inStock: !!stock.hasClass("badge--available-online"),
+        category: breadcrumbs.map(b => $(b).text().trim()).join(" > "),
+        slug: itemId
+      };
+      const strikePrice = product.find(
+        "> .product-grid-box__price .m-price__top"
+      );
+      if (strikePrice && strikePrice.length > 0) {
+        let price = strikePrice.text().trim();
+        price = price.match(/(\d+)/)[1];
+        result.discounted = true;
+        result.originalPrice = parseFloat(price);
+      }
+      requests.push(
+        Apify.pushData(result),
+        uploadToS3(
+          s3,
+          "lidl.cz",
+          await s3FileName(result),
+          "jsonld",
+          toProduct(result, { priceCurrency: result.currency })
+        )
+      );
+      stats.itemsUnique++;
+    } else {
+      stats.itemsDuplicity++;
     }
-    requests.push(
-      Apify.pushData(result),
-      uploadToS3(
-        s3,
-        "lidl.cz",
-        result.itemId,
-        "jsonld",
-        toProduct(result, { priceCurrency: result.currency })
-      )
-    );
   }
-  await Promise.all(requests);
+  log.info(`Found ${requests.length / 2} unique products`);
+  await Promise.allSettled(requests);
 };
 
 module.exports = {
@@ -190,5 +237,7 @@ module.exports = {
   LIDL_SHOP,
   LIDL_SHOP_MAIN_CAT,
   LIDL_SHOP_CAT,
+  LIDL_SHOP_SECTION,
+  LIDL_SHOP_DETAIL,
   DETAIL
 };

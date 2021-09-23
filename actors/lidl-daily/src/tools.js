@@ -2,7 +2,7 @@ const { LABELS, MAIN_URL } = require("./const");
 
 const createInitRequests = () => {
   const sources = [];
-  sources.push({
+  /*sources.push({
     url: "https://www.lidl.cz/aktualni-nabidka",
     userData: {
       label: LABELS.MAIN_NABIDKA
@@ -15,21 +15,40 @@ const createInitRequests = () => {
     }
   });
   sources.push({
-    url: "https://www.lidl-shop.cz/c/kategorie/s10004543",
+    url: "https://www.lidl.cz/c/kategorie/s10004543",
     userData: {
       label: LABELS.LIDL_SHOP
     }
   });
   sources.push({
-    url: "https://www.lidl-shop.cz/c/hity-tydne/a10004407",
+    url: "https://www.lidl.cz/c/hity-tydne/a10004407",
     userData: {
       label: LABELS.LIDL_SHOP_CAT
     }
   });
   sources.push({
-    url: "https://www.lidl-shop.cz/q/query/Slevy?pageId=20029807",
+    url: "https://www.lidl.cz/q/query/Slevy?pageId=20029807",
     userData: {
       label: LABELS.LIDL_SHOP_CAT
+    }
+  });
+  sources.push({
+    url: "https://www.lidl.cz/p/hn8schlafsysteme-7zonova-tastickova-matrace-xxl-gelstar-t-1000/p100241432",
+    userData: {
+      label: LABELS.LIDL_SHOP_DETAIL
+    }
+  });*/
+  sources.push({
+    url: "https://www.lidl.cz/q/query/Slevy?offset=0&sort=Price-asc",
+    userData: {
+      label: LABELS.LIDL_SHOP_CAT
+    }
+  });
+  sources.push({
+    url: "https://www.lidl.cz/c/kategorie/s10004543",
+    userData: {
+      label: LABELS.LIDL_SHOP_SECTION,
+      level: 1
     }
   });
   return sources;
