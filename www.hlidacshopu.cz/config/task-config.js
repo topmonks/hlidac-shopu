@@ -78,8 +78,10 @@ const config = {
     extensions: ["js", "mjs"],
     watch: "../../../lib/**/*.mjs",
     options: {
+      analyze: true,
       bundle: true,
       splitting: true,
+      treeShaking: true,
       minify: mode.production(),
       sourcemap: true,
       format: "esm",
