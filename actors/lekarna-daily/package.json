@@ -5,13 +5,13 @@
 	"license": "EPL-2.0",
 	"description": "This is the lekarna.cz actor.",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.31.0",
-		"@aws-sdk/client-s3": "^3.31.0",
+		"@aws-sdk/client-cloudfront": "^3.33.0",
+		"@aws-sdk/client-s3": "^3.33.0",
 		"@hlidac-shopu/actors-common": "^1.1.2",
 		"apify": "^2.0.7"
 	},
 	"devDependencies": {
-		"@types/node": "^16.9.2",
+		"@types/node": "^16.9.6",
 		"apify-cli": "^0.6.2"
 	},
 	"scripts": {
