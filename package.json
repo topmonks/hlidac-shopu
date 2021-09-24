@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "dependencies": {
+    "@aws-sdk/signature-v4-crt": "^3.33.0",
     "@pulumi/aws": "^4.21.1",
     "@pulumi/awsx": "^0.31.0",
     "@pulumi/pulumi": "^3.13.0",
