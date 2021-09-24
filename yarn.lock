@@ -4258,11 +4258,11 @@ __metadata:
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
     "@hlidac-shopu/lib": ^1.0.17
-    "@material/button": ^12.0.0
-    "@material/icon-button": ^12.0.0
-    "@material/layout-grid": ^12.0.0
-    "@material/snackbar": ^12.0.0
-    "@material/top-app-bar": ^12.0.0
+    "@material/button": ^13.0.0
+    "@material/icon-button": ^13.0.0
+    "@material/layout-grid": ^13.0.0
+    "@material/snackbar": ^13.0.0
+    "@material/top-app-bar": ^13.0.0
     "@thi.ng/atom": ^4.1.42
     lit-html: 2.0.0
     workbox-window: ^6.3.0
@@ -4301,222 +4301,226 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/animation@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/animation@npm:12.0.0"
+"@material/animation@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/animation@npm:13.0.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: 00cbcb281ddca7ae239c7f135f19011bc141ba24ff78071d57dc7b8d8469a1c3283b8852d99c7643cab73ecaa9cc22f6fbb34dd9ad4a733ff2e273f7e729a28c
+  checksum: f006206de50b2dd6d1f719fd059b697a8424cc7da79f002ae90f62c94a1c323d5a3107335392a9e6efa5632ab0e372e5509e547ac09a7aa6e57f6c6d0842440d
   languageName: node
   linkType: hard
 
-"@material/base@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/base@npm:12.0.0"
+"@material/base@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/base@npm:13.0.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: 51c6dc4dd4ad0f4f0a583a85e2e4f09c1caaf12b7584d96a7de8b474b244dec4dc41a5622f55faa9f5fd386374b932708083b6769896043154af2c13261e152e
+  checksum: 65bd2d847ccfb94387a505ec70a00f5d1796e09e48cfd3b278736a72c892be2fb2cd4bea2978c358e3834b78b15a25e63b0f7ed05e6deba5ace09e842c4cdef3
   languageName: node
   linkType: hard
 
-"@material/button@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/button@npm:12.0.0"
+"@material/button@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/button@npm:13.0.0"
   dependencies:
-    "@material/density": ^12.0.0
-    "@material/dom": ^12.0.0
-    "@material/elevation": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
-    "@material/ripple": ^12.0.0
-    "@material/rtl": ^12.0.0
-    "@material/shape": ^12.0.0
-    "@material/theme": ^12.0.0
-    "@material/tokens": ^12.0.0
-    "@material/touch-target": ^12.0.0
-    "@material/typography": ^12.0.0
+    "@material/density": ^13.0.0
+    "@material/dom": ^13.0.0
+    "@material/elevation": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/ripple": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/shape": ^13.0.0
+    "@material/theme": ^13.0.0
+    "@material/tokens": ^13.0.0
+    "@material/touch-target": ^13.0.0
+    "@material/typography": ^13.0.0
     tslib: ^2.1.0
-  checksum: 0fca4287dcc3424d56776f2d0474acb54cc36c9487e7a0ec14ef5879b46144dcdf531ffc76f3a75875cf49e5d979e9c98b4bb4075a80bdac3c43211373d5da83
+  checksum: d0e49dd425083dcd06fde9ee63576f2dce5bc9012fb725e1556bfcbb629e66b290fc97dfe34ec5f9d60ce89d037e028c95de08e5803a73c8101f5a7b1fa627ad
   languageName: node
   linkType: hard
 
-"@material/density@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/density@npm:12.0.0"
+"@material/density@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/density@npm:13.0.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: 489ddebfb961c1561759623d3a580c66bd02f9fad834f77c4fad9b49f9cc34244c984dc7a203bab789bdbb1e0c31376bc3c5d797065f602fb0cc6f85610eb714
+  checksum: 52ff74692fcfec8dc774cb1dfcb35138730977245583cfeced25a4ce528c64abe47dec470d8cb2ca0d57fe685fe0fa48fd5e1dd0cdd17bf4e10298a4fd05f769
   languageName: node
   linkType: hard
 
-"@material/dom@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/dom@npm:12.0.0"
+"@material/dom@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/dom@npm:13.0.0"
   dependencies:
-    "@material/feature-targeting": ^12.0.0
+    "@material/feature-targeting": ^13.0.0
     tslib: ^2.1.0
-  checksum: 5d67a80d907af6a5530038c75912d9062e11f455726063feb1eede6a8d301f05b0f800056d633a7d45138b780a0f877eb3ca1be90f6d0fa1b0f14fdc024148f0
+  checksum: 304c6a739635ac2b7d5115572a64bbd2a8de512bdfe889ed8b40944e0d187ffc1bccbbc942f4d6caadf793be520f3ca0e2346c8a3ace5bf5220b8f08f7db6a13
   languageName: node
   linkType: hard
 
-"@material/elevation@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/elevation@npm:12.0.0"
+"@material/elevation@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/elevation@npm:13.0.0"
   dependencies:
-    "@material/animation": ^12.0.0
-    "@material/base": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
-    "@material/theme": ^12.0.0
+    "@material/animation": ^13.0.0
+    "@material/base": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/theme": ^13.0.0
     tslib: ^2.1.0
-  checksum: 8562fb8c4cfd562ef2a445134f8b72445d04270666705c3bdc50346ef955fc82ea5f1b2868df661de3a78a18f526b573048eeb5137885496c1002fda82acd66c
+  checksum: 7ba68f0f0528655cbf4d473a6c154a8d9f076219736d93267322a3c90c06150475cb46ffcd3ac45c66b5bfc94eb7d79ef7b7f863c5159b22b59e288d944f15c2
   languageName: node
   linkType: hard
 
-"@material/feature-targeting@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/feature-targeting@npm:12.0.0"
+"@material/feature-targeting@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/feature-targeting@npm:13.0.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: 6c833fe667f861ce89be0ea845fb1ed6927116bf0052b225ad9e52dc9191591820508c74fcfc26246cf4ede1205fe59167c54ac6439bd0e10a0abb36ed4e9cb6
+  checksum: 23ee1b4248e1a0e8c5c777d4e880fc067d343c1fe83b2e3a542837b86d4f12e79f354d2ed8013d2ce05af20015f8be4294110d25f2db1e4c93e69d1236a33c69
   languageName: node
   linkType: hard
 
-"@material/icon-button@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/icon-button@npm:12.0.0"
+"@material/icon-button@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/icon-button@npm:13.0.0"
   dependencies:
-    "@material/base": ^12.0.0
-    "@material/density": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
-    "@material/ripple": ^12.0.0
-    "@material/rtl": ^12.0.0
-    "@material/theme": ^12.0.0
-    "@material/touch-target": ^12.0.0
+    "@material/base": ^13.0.0
+    "@material/density": ^13.0.0
+    "@material/elevation": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/ripple": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/theme": ^13.0.0
+    "@material/touch-target": ^13.0.0
     tslib: ^2.1.0
-  checksum: 7a7cb6c9dc754664159977481f9a5bdfbb3d73fa596e30f6573a39443309b0e85eeed1408c1b50de742f5d04635ccfcc404cd8020947b04b4d8247ad92f54d0e
+  checksum: f0dcb8cecdc193a58645bf64dcd567531411d6b98d736079b3bb498665617bd445f5539f57a525354dc97d30727c7db75244d0b0bdf217bfe7be66187f2f0889
   languageName: node
   linkType: hard
 
-"@material/layout-grid@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/layout-grid@npm:12.0.0"
+"@material/layout-grid@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/layout-grid@npm:13.0.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: bcc32d08d7f10c884e15b1fc5006d0378a134a38c7cc2814297d650ac4c90e203950ff6d4129ffd1b3b1ea02f77c7b5f87364b1c81f31aedf8d38c4f68014026
+  checksum: 6f318a050748e7944d77954f743f1b8a4180153513fa75311e0e6fa415bd92267c7dbdd24f5bc03c35eac3c0f43ee900a83798218f4e6aa865aaeecf8975cee1
   languageName: node
   linkType: hard
 
-"@material/ripple@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/ripple@npm:12.0.0"
+"@material/ripple@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/ripple@npm:13.0.0"
   dependencies:
-    "@material/animation": ^12.0.0
-    "@material/base": ^12.0.0
-    "@material/dom": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
-    "@material/theme": ^12.0.0
+    "@material/animation": ^13.0.0
+    "@material/base": ^13.0.0
+    "@material/dom": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/theme": ^13.0.0
     tslib: ^2.1.0
-  checksum: 659fb1968303a111faa7a0c2f06aa672ecd37d8696574c76bfed081c63b0dc25f6bfe31aebfc5a52ee0e23569e7d4b196c3c0e7f2998973251afd3463dfc2c86
+  checksum: b472281dbd10cb49eec147936a03b7e953177066bd1e8abecaba7b3fca41bd09ea71b055fce2ecb1f5e07e1fda24cc342641ac7dbdbaad0475a48eaafec504d3
   languageName: node
   linkType: hard
 
-"@material/rtl@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/rtl@npm:12.0.0"
+"@material/rtl@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/rtl@npm:13.0.0"
   dependencies:
-    "@material/theme": ^12.0.0
+    "@material/theme": ^13.0.0
     tslib: ^2.1.0
-  checksum: 9cdaca2e9be0ab0698b5a6ab68ab05ef843b514094e6b76149a5fa5cda36569ed22dfe4e48485e342efdddbb68eb2a69a33a72f4dabacf588f9985b9cb6e2f5d
+  checksum: f40de1ae678278417e3d299b4c208c3a3247462c99cf5415250f45d20d2704d27d09517cf46981975ea12f3b0cffe4015b8d44d4cc12eedcf55070525d072768
   languageName: node
   linkType: hard
 
-"@material/shape@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/shape@npm:12.0.0"
+"@material/shape@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/shape@npm:13.0.0"
   dependencies:
-    "@material/feature-targeting": ^12.0.0
-    "@material/rtl": ^12.0.0
-    "@material/theme": ^12.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/theme": ^13.0.0
     tslib: ^2.1.0
-  checksum: b11b95a88f8d02e74875cc907f975e92f7bd38732e436dac27940fabad01ad7c4f8a5f9c16e24a1135dfdc70b228dab2705b1523685a398d52eedb1cf1a679d7
+  checksum: 898d6a5cb22eb94191ded56ace333f19916a73dba8b8a49d8a6adc7e7f8714739fad9c23f911b671f952a6e3f3e8157759803b03cff35daa8d7e7dd2b985de28
   languageName: node
   linkType: hard
 
-"@material/snackbar@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/snackbar@npm:12.0.0"
+"@material/snackbar@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/snackbar@npm:13.0.0"
   dependencies:
-    "@material/animation": ^12.0.0
-    "@material/base": ^12.0.0
-    "@material/button": ^12.0.0
-    "@material/dom": ^12.0.0
-    "@material/elevation": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
-    "@material/icon-button": ^12.0.0
-    "@material/ripple": ^12.0.0
-    "@material/rtl": ^12.0.0
-    "@material/shape": ^12.0.0
-    "@material/theme": ^12.0.0
-    "@material/typography": ^12.0.0
+    "@material/animation": ^13.0.0
+    "@material/base": ^13.0.0
+    "@material/button": ^13.0.0
+    "@material/dom": ^13.0.0
+    "@material/elevation": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/icon-button": ^13.0.0
+    "@material/ripple": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/shape": ^13.0.0
+    "@material/theme": ^13.0.0
+    "@material/typography": ^13.0.0
     tslib: ^2.1.0
-  checksum: fab5ab9926e32fb065700a5221ab5856d5bd0a63468c6dd56819dfb7c4e3e62351088d0bae71cf7942f9d4205f12a03bb161236cf3a6c5e96b9c8e4740428b14
+  checksum: 0e2507feec54c9b38480d5d049fcab3ddaec45dc043d19d027e6601d8b769a9d54f3de0a24816b348112dcb44d08728e7f69b742411ead3bad3273dbef1ba345
   languageName: node
   linkType: hard
 
-"@material/theme@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/theme@npm:12.0.0"
+"@material/theme@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/theme@npm:13.0.0"
   dependencies:
-    "@material/feature-targeting": ^12.0.0
+    "@material/feature-targeting": ^13.0.0
     tslib: ^2.1.0
-  checksum: 894f91fedb9b96bbeedc9f721479be58c9891c6d95fff1e965af6eb67caa7cc3371e0bda3a268ed6c0e83079e8814fbe2087aa18589774665d51118f263d124d
+  checksum: 6d132d7dbdb48652c51892a575af712900a406e9203f9070c740277875443d3985cdc40c1dceac054362ff9f891221131226a15e96610fd28c6853da3f9c4604
   languageName: node
   linkType: hard
 
-"@material/tokens@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/tokens@npm:12.0.0"
+"@material/tokens@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/tokens@npm:13.0.0"
   dependencies:
-    "@material/elevation": ^12.0.0
-  checksum: da4b9724ee00c1f8865a94b5e16bb4016eae3c0447bfeba915c4a3a805dc4430534d31d15a8f8e94823f489955b20600c9447a5542f28c4e57a76530dd252f7c
+    "@material/elevation": ^13.0.0
+  checksum: bdbfc0e5722f95029c6386df70587651c7d7d370a936298ab04cdec97ca442b654036764ef86aa4d1d7693531d6f0a71af9d3125f0ba04acb4534ae2dd98448a
   languageName: node
   linkType: hard
 
-"@material/top-app-bar@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/top-app-bar@npm:12.0.0"
+"@material/top-app-bar@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/top-app-bar@npm:13.0.0"
   dependencies:
-    "@material/animation": ^12.0.0
-    "@material/base": ^12.0.0
-    "@material/elevation": ^12.0.0
-    "@material/ripple": ^12.0.0
-    "@material/rtl": ^12.0.0
-    "@material/shape": ^12.0.0
-    "@material/theme": ^12.0.0
-    "@material/typography": ^12.0.0
+    "@material/animation": ^13.0.0
+    "@material/base": ^13.0.0
+    "@material/elevation": ^13.0.0
+    "@material/ripple": ^13.0.0
+    "@material/rtl": ^13.0.0
+    "@material/shape": ^13.0.0
+    "@material/theme": ^13.0.0
+    "@material/typography": ^13.0.0
     tslib: ^2.1.0
-  checksum: 42d8b21e0e3749e68593bc95cb059a701c2d9b8c97770f5d0c0e83f2c0ff4decacc06639e741b8e6c83c10e845fc46c002ea7e1c1b0281671bbf68ef6481394e
+  checksum: 75cfe13f767d2820140f87d54d599ba02b42377588ee4dc4ab2d06fff8595b149242403672435b6ebb1889180b33da395fab00aa8c027898f5d2245c175f7789
   languageName: node
   linkType: hard
 
-"@material/touch-target@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/touch-target@npm:12.0.0"
+"@material/touch-target@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/touch-target@npm:13.0.0"
   dependencies:
-    "@material/base": ^12.0.0
-    "@material/feature-targeting": ^12.0.0
+    "@material/base": ^13.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/rtl": ^13.0.0
     tslib: ^2.1.0
-  checksum: f62e7ea5e4593e47b580759e70e59e4bcefe2101c94afa7cdea0aab37922b0f4fa3275a0b51af233b41d6849cecb43e3a2891799332fe88d0b79fea0d0f5b192
+  checksum: 41708d4e4a7f0a728cb5bd0d0c0239ab2cf4641f0a427762258f19d096b4601b6ddcb8ed5f3fbd43aff7e70d6075603adae41f624ad9f171eeb8d5ef45b81f92
   languageName: node
   linkType: hard
 
-"@material/typography@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@material/typography@npm:12.0.0"
+"@material/typography@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@material/typography@npm:13.0.0"
   dependencies:
-    "@material/feature-targeting": ^12.0.0
-    "@material/theme": ^12.0.0
+    "@material/feature-targeting": ^13.0.0
+    "@material/theme": ^13.0.0
     tslib: ^2.1.0
-  checksum: 44bec9013d75d93401cd36fc759b047d08b22000ae62be277eb9cd91c1e9c1ded6deb7fb9c36fe355928400618a780c4eedd494adb32180e6f6c96c131217b06
+  checksum: 9909918d0ccca2bcb8c21d60940a6fa580d0d8bc6d19a565411f22c9be96d4973b759dc43eee73f6c7bd4a94a9e6df0c59beed528bc09cb0c10a1d692041f1c6
   languageName: node
   linkType: hard
 
