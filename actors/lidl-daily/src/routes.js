@@ -172,8 +172,9 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
   }
   const products = $("#s-results .s-grid__item > a").toArray();
   const requests = [];
-  let breadcrumbs = $(".s-breadcrumb .s-breadcrumb__item").toArray();
+  let breadcrumbs = $(".s-breadcrumb a.s-breadcrumb__link").toArray();
   breadcrumbs = breadcrumbs.slice(1, breadcrumbs.length);
+  const heading = $(".s-page-heading").find("h1").text().trim();
   for (let product of products) {
     product = $(product);
     const a = product.attr("href");
@@ -199,7 +200,10 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
         originalPrice: null,
         discounted: false,
         inStock: !!stock.hasClass("badge--available-online"),
-        category: breadcrumbs.map(b => $(b).text().trim()).join(" > "),
+        category:
+          breadcrumbs.length === 0
+            ? heading
+            : breadcrumbs.map(b => $(b).text().trim()).join(" > "),
         slug: itemId
       };
       const strikePrice = product.find(
