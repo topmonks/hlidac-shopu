@@ -3,6 +3,7 @@ const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
   toProduct,
+  s3FileName,
   uploadToS3,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
@@ -56,11 +57,19 @@ function parseItem($, category) {
     const initialPrice = $el.find(".sx-item-price-initial");
     const itemUrl = new URL($el.find(".sx-item-title").attr("href"), HOST).href;
     const currentPrice =
-      parseInt((actionPrice.length ? actionPrice : initialPrice).text(), 10) /
-      100;
+      parseInt(
+        (actionPrice.length ? actionPrice : initialPrice)
+          .text()
+          .replace(/\s+/g, ""),
+        10
+      ) / 100;
     const originalPrice =
-      parseInt((actionPrice.length ? initialPrice : $("<div/>")).text(), 10) /
-      100;
+      parseInt(
+        (actionPrice.length ? initialPrice : $("<div/>"))
+          .text()
+          .replace(/\s+/g, ""),
+        10
+      ) / 100;
     return {
       itemId: $el.find(".j-product").data("skuid"),
       itemName: $el.find(".sx-item-title").text(),
@@ -68,6 +77,7 @@ function parseItem($, category) {
       itemUrl,
       currentPrice,
       originalPrice: isNaN(originalPrice) ? null : originalPrice,
+      discounted: !isNaN(originalPrice),
       inStock: true,
       category
     };
@@ -83,18 +93,13 @@ function parseItems($) {
   return $(".j-products .j-item").get().map(parseItem($, category));
 }
 
-function s3FileName(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.replace("/eshop/katalog/", "");
-}
-
 /**
  * Creates Page Function for scraping
  * @param {RequestQueue} requestQueue
  * @param {S3Client} s3
  * @returns {CheerioHandlePage}
  */
-function pageFunction(requestQueue, s3) {
+async function pageFunction(requestQueue, s3) {
   const processedIds = new Set();
 
   /**
@@ -151,12 +156,13 @@ function pageFunction(requestQueue, s3) {
         x => !processedIds.has(x.itemId)
       );
       for (const detail of unprocessedProducts) {
+        const slug = await s3FileName(detail);
         requests.push(
-          Apify.pushData(detail),
+          Apify.pushData({ ...detail, slug }),
           uploadToS3(
             s3,
             "tetadrogerie.cz",
-            s3FileName(detail),
+            slug,
             "jsonld",
             toProduct(detail, { priceCurrency: "CZK" })
           )
@@ -166,7 +172,7 @@ function pageFunction(requestQueue, s3) {
         processedIds.add(detail.itemId);
       }
       // await all requests, so we don't end before they end
-      await Promise.all(requests);
+      await Promise.allSettled(requests);
     }
   }
 
@@ -181,16 +187,26 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
 
-  const { maxConcurrency = 10 } = input ?? {};
+  const {
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10
+  } = input ?? {};
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: makeListingUrl("/eshop", 1, 20),
-    userData: {
-      step: "START"
-    }
-  });
+  if (development) {
+    await requestQueue.addRequest({
+      url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/uklidove-pomucky/smetaky-kostata-a-rejzaky"
+    });
+  } else {
+    await requestQueue.addRequest({
+      url: makeListingUrl("/eshop", 1, 20),
+      userData: {
+        step: "START"
+      }
+    });
+  }
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     useApifyProxy: false
@@ -200,6 +216,7 @@ Apify.main(async () => {
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
+    maxRequestRetries,
     navigationTimeoutSecs: 120,
     launchContext: {
       useChrome: true,
@@ -207,7 +224,7 @@ Apify.main(async () => {
         headless: true
       }
     },
-    handlePageFunction: pageFunction(requestQueue, s3),
+    handlePageFunction: await pageFunction(requestQueue, s3),
 
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
@@ -217,9 +234,11 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz");
-  log.info("invalidated Data CDN");
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz");
+    log.info("invalidated Data CDN");
 
-  await uploadToKeboola("teta_cz");
+    await uploadToKeboola("teta_cz");
+  }
   log.info("Finished.");
 });
