@@ -42,8 +42,14 @@ const makeListingUrl = (
     }
   )}`;
 
-const createProductUrl = (country, url) =>
-  new URL(url, `https://dm.${country.toLowerCase()}`).href;
+const createProductUrl = (country, url) => {
+  switch (country.toUpperCase()) {
+    case COUNTRY.SK:
+      return new URL(url, "https://mojadm.sk").href;
+    default:
+      return new URL(url, `https://dm.${country.toLowerCase()}`).href;
+  }
+};
 
 function* traverseCategories(categories, names = []) {
   for (const category of categories) {
