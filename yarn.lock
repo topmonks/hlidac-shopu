@@ -3871,6 +3871,7 @@ __metadata:
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
+    got-scraping: ^3.2.4
   languageName: unknown
   linkType: soft
 
@@ -12719,6 +12720,20 @@ fsevents@^1.2.7:
     quick-lru: ^5.1.1
     tslib: ^2.3.1
   checksum: 8e0768826525e183406ffa1204105c2a1ca2a6aa341a30e1bb93ac840c8241f2a7b6c5608acdc50c7a41fcfbe61fa0246956afd10aa836b9a683f4622d427328
+  languageName: node
+  linkType: hard
+
+"got-scraping@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "got-scraping@npm:3.2.4"
+  dependencies:
+    got-cjs: 12.0.0-beta.4
+    header-generator: ^1.1.1
+    http2-wrapper: ^2.1.4
+    ow: ^0.23.0
+    quick-lru: ^5.1.1
+    tslib: ^2.3.1
+  checksum: ba76d206ae301b5f37303051e6558f887ce46c731ea198801ad568aefe9d0aa3b7a77fdfafc65fde0c39c871f5c6b311d4f0f6db9a704bdfcc9faa959c1ecd8e
   languageName: node
   linkType: hard
 

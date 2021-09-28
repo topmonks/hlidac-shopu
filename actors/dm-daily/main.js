@@ -3,18 +3,15 @@ const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
   toProduct,
+  s3FileName,
   uploadToS3,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const { URL, URLSearchParams } = require("url");
-
-/** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
-/** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
-/** @typedef { import("apify").RequestQueue } RequestQueue */
-
 const { log } = Apify.utils;
+const { URL, URLSearchParams } = require("url");
+const { gotScraping } = require("got-scraping");
 
 const COUNTRY = {
   CZ: "CZ",
@@ -24,6 +21,9 @@ const COUNTRY = {
   DE: "DE",
   AT: "AT"
 };
+
+let stats = {};
+const processedIds = new Set();
 
 const makeListingUrl = (
   countryCode,
@@ -73,114 +73,6 @@ function* paginateResults(category) {
   }
 }
 
-function s3FileName(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.match(/-p(\d+)\.html$/)?.[1];
-}
-
-/**
- * Creates Page Function for scraping
- * @param {RequestQueue} requestQueue
- * @param {S3Client} s3
- * @returns {CheerioHandlePage}
- */
-function pageFunction(requestQueue, s3) {
-  const processedIds = new Set();
-
-  /**
-   *  @param {CheerioHandlePageInputs} context
-   *  @returns {Promise<void>}
-   */
-  async function handler(context) {
-    const { body, contentType, request, response, json } = context;
-    const { country, step, category } = request.userData;
-    if (response.statusCode !== 200) {
-      return log.info(body.toString(contentType.encoding));
-    }
-
-    const { pagination, products, categories } = json;
-
-    if (step === "START") {
-      log.info("Pagination info", pagination);
-      // we are traversing recursively from leaves to trunk
-      for (const category of traverseCategories(categories)) {
-        for (const page of paginateResults(category)) {
-          // we need to await here to prevent higher categories
-          // to be enqueued sooner than sub-categories
-          await requestQueue.addRequest({
-            url: makeListingUrl(country, category.productQuery, page),
-            userData: {
-              country,
-              category: category.breadcrumbs
-            }
-          });
-        }
-      }
-    } else {
-      // we don't need to block pushes, we will await them all at the end
-      const requests = [];
-      // push only unique items
-      const unprocessedProducts = products.filter(
-        p => !processedIds.has(p.gtin)
-      );
-
-      for (const item of unprocessedProducts) {
-        const detail = parseItem(item);
-        requests.push(
-          // push data to dataset to be ready for upload to Keboola
-          Apify.pushData(detail),
-          // upload JSON+LD data to CDN
-          uploadToS3(
-            s3,
-            `dm.${country.toLowerCase()}`,
-            s3FileName(detail),
-            "jsonld",
-            toProduct(detail, {
-              brand: item.brandName,
-              name: item.name,
-              gtin: item.gtin
-            })
-          )
-        );
-        processedIds.add(detail.itemId);
-      }
-
-      // await all requests, so we don't end before they end
-      await Promise.all(requests);
-
-      function parseItem(p) {
-        return {
-          itemId: p.gtin,
-          itemName: `${p.brandName} ${p.name}`,
-          itemUrl: createProductUrl(
-            country,
-            p.links
-              .filter(x => x.rel === "self")
-              .map(x => x.href)
-              .pop()
-          ),
-          img: p.links
-            .filter(x => x.rel.startsWith("productimage"))
-            .map(x => x.href)
-            .pop(),
-          inStock: !p.notAvailable,
-          currentPrice: p.price,
-          originalPrice: p.isSellout
-            ? p.selloutPriceLocalized
-                .trim()
-                .replace(/[^\d,]+/g, "")
-                .replace(",", ".")
-            : null,
-          currency: p.priceCurrencyIso,
-          category,
-          discounted: p.isSellout
-        };
-      }
-    }
-  }
-  return handler;
-}
-
 function getTableName(country) {
   return `dm_${country.toLowerCase()}`;
 }
@@ -192,8 +84,23 @@ Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
+  const {
+    development = false,
+    debug = false,
+    country = COUNTRY.CZ,
+    productQuery = ":allCategories"
+  } = input ?? {};
 
-  const { country = COUNTRY.CZ, productQuery = ":allCategories" } = input ?? {};
+  if (debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    items: 0,
+    itemsUnique: 0,
+    itemsDuplicity: 0
+  };
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
@@ -206,16 +113,106 @@ Apify.main(async () => {
     }
   });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    useApifyProxy: false
-  });
-
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.BasicCrawler({
     requestQueue,
-    proxyConfiguration,
     maxConcurrency: 10,
-    additionalMimeTypes: ["application/json", "text/plain"],
-    handlePageFunction: pageFunction(requestQueue, s3),
+    maxRequestRetries: 1,
+    handleRequestFunction: async context => {
+      const { request } = context;
+      const {
+        url,
+        userData: { country, step, category }
+      } = request;
+
+      const response = await gotScraping({
+        responseType: "json",
+        url
+      });
+      const { statusCode, body } = response;
+      if (statusCode !== 200) {
+        return log.info(body.toString());
+      }
+
+      const { pagination, products, categories } = body;
+      if (step === "START") {
+        log.info("Pagination info", pagination);
+        // we are traversing recursively from leaves to trunk
+        for (const category of traverseCategories(categories)) {
+          log.debug(`Found category ${category.name}`);
+          stats.categories++;
+          for (const page of paginateResults(category)) {
+            // we need to await here to prevent higher categories
+            // to be enqueued sooner than sub-categories
+            await requestQueue.addRequest({
+              url: makeListingUrl(country, category.productQuery, page),
+              userData: {
+                country,
+                category: category.breadcrumbs
+              }
+            });
+          }
+        }
+      } else {
+        // we don't need to block pushes, we will await them all at the end
+        const requests = [];
+        stats.items += products.length;
+        for (const item of products) {
+          if (!processedIds.has(item.gtin)) {
+            processedIds.add(item.gtin);
+            stats.itemsUnique++;
+            const detail = parseItem(item);
+            const slug = await s3FileName(detail);
+            requests.push(
+              // push data to dataset to be ready for upload to Keboola
+              Apify.pushData({ ...detail, slug }),
+              // upload JSON+LD data to CDN
+              uploadToS3(
+                s3,
+                `dm.${country.toLowerCase()}`,
+                slug,
+                "jsonld",
+                toProduct(detail, {
+                  brand: item.brandName,
+                  name: item.name,
+                  gtin: item.gtin
+                })
+              )
+            );
+          } else {
+            stats.itemsDuplicity++;
+          }
+        }
+        log.debug(
+          `Found ${requests.length / 2} unique products at ${request.url}`
+        );
+
+        // await all requests, so we don't end before they end
+        await Promise.allSettled(requests);
+
+        function parseItem(p) {
+          return {
+            itemId: p.gtin,
+            itemName: `${p.brandName} ${p.name}`,
+            itemUrl: createProductUrl(country, p.relativeProductUrl),
+            img: p.links
+              .filter(x => x.rel.startsWith("productimage"))
+              .map(x => x.href)
+              .pop(),
+            inStock: !p.notAvailable,
+            currentPrice: p.price,
+            originalPrice: p.isSellout
+              ? p.selloutPriceLocalized
+                  .trim()
+                  .replace(/[^\d,]+/g, "")
+                  .replace(",", ".")
+              : null,
+            currency: p.priceCurrencyIso,
+            category,
+            discounted: p.isSellout
+          };
+        }
+      }
+    },
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
@@ -224,13 +221,19 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `dm.${country.toLowerCase()}`
-  );
-  log.info("invalidated Data CDN");
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
 
-  await uploadToKeboola(getTableName(country));
+  if (!development) {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `dm.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
+
+    await uploadToKeboola(getTableName(country));
+  }
+
   log.info("Finished.");
 });
