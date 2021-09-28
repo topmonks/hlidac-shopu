@@ -3765,7 +3765,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     rollbar: ^2.24.0
     schema-dts: ^1.0.0
@@ -3783,7 +3783,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -3801,7 +3801,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@aws-sdk/util-dynamodb": ^3.34.0
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@pulumi/aws": ^4.21.2
     "@pulumi/awsx": ^0.31.0
     abort-controller: ^3.0.0
@@ -3816,7 +3816,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
   languageName: unknown
   linkType: soft
 
@@ -3827,7 +3827,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -3917,7 +3917,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     lit-element: 3.0.0
     lit-html: 2.0.0
   languageName: unknown
@@ -4042,7 +4042,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.0.17, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@^1.0.18, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -4060,7 +4060,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
   linkType: soft
@@ -4072,7 +4072,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4118,7 +4118,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
   linkType: soft
@@ -4155,7 +4155,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4188,7 +4188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/root-edge-lambda@workspace:www.hlidacshopu.cz/root-edge-lambda"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
   languageName: unknown
   linkType: soft
 
@@ -4242,7 +4242,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     "@material/button": ^13.0.0
     "@material/icon-button": ^13.0.0
     "@material/layout-grid": ^13.0.0
@@ -17252,7 +17252,7 @@ fsevents@^1.2.7:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
     "@hlidac-shopu/actors-common": ^1.1.2
-    "@hlidac-shopu/lib": ^1.0.17
+    "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
   linkType: soft
