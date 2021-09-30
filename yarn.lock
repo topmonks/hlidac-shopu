@@ -3803,7 +3803,7 @@ __metadata:
     "@aws-sdk/util-dynamodb": ^3.34.0
     "@hlidac-shopu/lib": ^1.0.18
     "@pulumi/aws": ^4.21.2
-    "@pulumi/awsx": ^0.31.0
+    "@pulumi/awsx": ^0.32.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
     date-fns: ^2.24.0
@@ -4821,9 +4821,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "@pulumi/awsx@npm:0.31.0"
+"@pulumi/awsx@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "@pulumi/awsx@npm:0.32.0"
   dependencies:
     "@pulumi/docker": ^3.0.0
     "@types/aws-lambda": ^8.10.23
@@ -4831,7 +4831,7 @@ __metadata:
   peerDependencies:
     "@pulumi/aws": ^4.6.0
     "@pulumi/pulumi": ^3.0.0
-  checksum: 6b3afddee6efe25be85ae60504149d1e16d8e6cf028f1c30ed9101d26ade3a11f3c02c572041e4547399373847eb67c112039d4d83542a9052245c83d7dd782e
+  checksum: 532ce816b7bd6fb4d90d3161fb90e2ac9f8b24c0979e273632af960de6f0a35d33713a5395c2fca6c5d3b2665ab3d45bbee0ddafb94149aa814dbe99a5f9fc86
   languageName: node
   linkType: hard
 
@@ -13402,7 +13402,7 @@ fsevents@^1.2.7:
     "@esm-bundle/chai": ^4.3.4-fix.0
     "@open-wc/testing": ^2.5.33
     "@pulumi/aws": ^4.21.2
-    "@pulumi/awsx": ^0.31.0
+    "@pulumi/awsx": ^0.32.0
     "@pulumi/pulumi": ^3.13.0
     "@rollup/plugin-alias": ^3.1.5
     "@rollup/plugin-node-resolve": ^13.0.5
