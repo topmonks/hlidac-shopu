@@ -4107,7 +4107,7 @@ __metadata:
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
-    axios: ^0.21.4
+    axios: ^0.22.0
     proxy-agent: ^5.0.0
   languageName: unknown
   linkType: soft
@@ -7341,12 +7341,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.4":
-  version: 0.21.4
-  resolution: "axios@npm:0.21.4"
+"axios@npm:^0.22.0":
+  version: 0.22.0
+  resolution: "axios@npm:0.22.0"
   dependencies:
-    follow-redirects: ^1.14.0
-  checksum: e6d42b269b599d36eb13be0671c237781f32e6ae72be824297c55a3e1ce63b22ba4f46bad5ab28da7d3bae50a72637d55c792cf803be1cf9de6a8bcd6d0dcc1a
+    follow-redirects: ^1.14.4
+  checksum: 8238c34fe3cec0ac3a09b00c1c6b355f99d37f9d3950dc570803ef4b4a6dd4971462ec94ecd2b3a89f4b13cda2568d8ac6d96abffb71ae2f0e9962bf5806b2e0
   languageName: node
   linkType: hard
 
@@ -12007,7 +12007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0":
+"follow-redirects@npm:^1.14.4":
   version: 1.14.4
   resolution: "follow-redirects@npm:1.14.4"
   peerDependenciesMeta:
