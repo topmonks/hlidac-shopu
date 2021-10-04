@@ -70,6 +70,11 @@ Apify.main(async () => {
       url: bfUrl,
       userData: { label: "BF" }
     });
+  } else if (development) {
+    await requestQueue.addRequest({
+      url: "https://www.okay.sk/moderne-koberce/",
+      userData: { label: "LIST" }
+    });
   } else {
     const rootUrl = country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK;
     await requestQueue.addRequest({ url: rootUrl });
@@ -143,14 +148,14 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats);
   log.info(JSON.stringify(stats));
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `okay.${country.toLowerCase()}`
-  );
-  log.info(`invalidated Data CDN: okay.${country.toLowerCase()}`);
-
   if (!development) {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `okay.${country.toLowerCase()}`
+    );
+    log.info(`invalidated Data CDN: okay.${country.toLowerCase()}`);
+
     const tableName = `okay_${country.toLowerCase()}${
       type === "BF" ? "_bf" : ""
     }`;

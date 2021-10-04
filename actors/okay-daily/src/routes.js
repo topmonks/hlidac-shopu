@@ -17,10 +17,10 @@ const handleStart = async ({ $, requestQueue }, stats, development = false) => {
       return $(this).attr("href");
     })
     .get();
-  if (development) {
+  /*  if (development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, adding only 1 list to requestQueue");
-  }
+  }*/
   for (const link of links) {
     // request is an object, setting url to link and in userdata, setting new dictionary label: LIST
     // it is me who is setting the label value, just using it for making the crawler fcn more clear
@@ -42,10 +42,10 @@ const handleList = async ({ $, requestQueue }, stats, development) => {
       return $(this).attr("href");
     })
     .get();
-  if (development) {
+  /*  if (development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, crawl 1 product");
-  }
+  }*/
   for (const link of links) {
     await requestQueue.addRequest({
       url: link,
@@ -77,10 +77,10 @@ const handleBFListing = async (
       return $(this).attr("href");
     })
     .get();
-  if (development) {
+  /*if (development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, adding only 1 list to requestQueue");
-  }
+  }*/
   for (const link of links) {
     await requestQueue.addRequest({
       url: link,
@@ -101,16 +101,26 @@ const handleDetail = async ({ request, $ }, stats, country) => {
   result.itemUrl = request.url;
   result.itemId = productDescription.id;
   result.itemName = $(".product-title.js-productTitle").text().trim();
-  result.currentPrice = parseFloat(
-    $("#product_price_wv").text().replace(/\s/g, "").replace(/,/, ".").trim()
-  );
-  result.originalPrice = parseFloat(
-    $("#product_price_recomended")
-      .text()
-      .replace(/\s/g, "")
-      .replace(/,/, ".")
-      .trim()
-  );
+  result.currentPrice =
+    $("#product_price_wv").length > 0
+      ? parseFloat(
+          $("#product_price_wv")
+            .text()
+            .replace(/\s/g, "")
+            .replace(/,/, ".")
+            .trim()
+        )
+      : null;
+  result.originalPrice =
+    $("#product_price_recomended").length > 0
+      ? parseFloat(
+          $("#product_price_recomended")
+            .text()
+            .replace(/\s/g, "")
+            .replace(/,/, ".")
+            .trim()
+        )
+      : null;
   const discountText = country === COUNTRY.CZ ? "SLEVA" : "ZĽAVA";
   let additionalDiscount = productDescription.labels.find(x =>
     x.includes(discountText)
