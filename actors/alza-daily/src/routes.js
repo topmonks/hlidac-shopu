@@ -20,46 +20,6 @@ async function enqueueRequests(requestQueue, items, foreFront = false) {
   }
 }
 
-exports.handleStart = async (
-  { request, $, session },
-  domain,
-  requestQueue,
-  stats
-) => {
-  const tabItems = [];
-  $("ul.tabs li a").each(function () {
-    const link = $(this).attr("href");
-    if (!link.match(/https/)) {
-      const finalLink = `${domain.baseUrl}${link}`;
-      if (!finalLink.includes("black-friday")) {
-        tabItems.push({
-          url: finalLink,
-          userData: {
-            label: "LEFTMENU"
-          },
-          uniqueKey: Math.random().toString()
-        });
-      }
-    }
-  });
-  log.info(`Found ${tabItems.length} START MENU at page ${request.url}`);
-  if (tabItems.length === 0) {
-    stats.denied++;
-    request.retryCount--;
-    session.isBlocked();
-    throw new Error("Access Denied");
-  }
-
-  await enqueueRequests(requestQueue, tabItems, true);
-
-  await requestQueue.addRequest({
-    url: `${domain.baseUrl}/_sitemap-categories.xml`,
-    userData: {
-      label: "XML"
-    }
-  });
-};
-
 exports.handleLeftMenu = async ({ $, request }, domain, requestQueue) => {
   const menuItems = [];
   // add the left menu
@@ -178,25 +138,29 @@ exports.handlePage = async (
 
   try {
     const items = await extractItems($, request, country, domain, requestQueue);
-    // log.info(`Found ${items.length} storing them, ${request.url}`);
+    log.info(`Found ${items.length} storing them, ${request.url}`);
     if (items !== true) {
       for (const product of items) {
+        const slug = await s3FileName(product);
         await uploadToS3(
           s3,
           `alza.${country.toLowerCase()}`,
-          await s3FileName(product),
+          slug,
           "jsonld",
           toProduct(
             {
               ...product,
+              slug,
               inStock: true
             },
             { priceCurrency: currency }
           )
         );
+        await Apify.pushData({
+          ...product,
+          slug
+        });
       }
-
-      await Apify.pushData(items);
     }
     if (items.length === 0 && items !== true) {
       await Apify.utils.sleep(2000);

@@ -4,6 +4,7 @@ const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
+const { gotScraping } = require("got-scraping");
 // const httpRequest = require("@apify/http-request");
 const cheerio = require("cheerio");
 const {
@@ -136,7 +137,14 @@ async function callKeboolaUpload(country, type) {
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
-  const { country, type, test = false } = await Apify.getInput();
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    country = "CZ",
+    type = "FULL",
+    maxConcurrency = 30,
+    maxRequestRetries = 5
+  } = input ?? {};
 
   if (!country) {
     throw new Error(
@@ -165,9 +173,16 @@ Apify.main(async () => {
     stats = loadedStats;
   } else if (type === "FULL") {
     await requestQueue.addRequest({
-      url: domain.baseUrl,
+      url: `${domain.baseUrl}/`,
       userData: {
-        label: "START"
+        label: "LEFTMENU"
+      },
+      uniqueKey: Math.random().toString()
+    });
+    await requestQueue.addRequest({
+      url: `${domain.baseUrl}/_sitemap-categories.xml`,
+      userData: {
+        label: "XML"
       }
     });
   } else if (type === "TRHAK") {
@@ -241,8 +256,8 @@ Apify.main(async () => {
       persistStateKeyValueStoreId: "alza-sessions"
     },
     // persistCookiesPerSession: true,
-    maxConcurrency: 30,
-    maxRequestRetries: 5,
+    maxConcurrency: development ? 1 : maxConcurrency,
+    maxRequestRetries,
     handleRequestFunction: async context => {
       const { request, session } = context;
       const { label } = request.userData;
@@ -257,11 +272,20 @@ Apify.main(async () => {
       }
       let response;
       try {
-        response = await requestAsBrowser({
+        response = await gotScraping.post({
+          headerGeneratorOptions: {
+            browsers: [
+              {
+                name: "chrome",
+                minVersion: 89
+              }
+            ],
+            devices: ["desktop"],
+            locales: ["cs-CZ"],
+            operatingSystems: ["windows"]
+          },
           url: request.url,
           proxyUrl: await proxyConfiguration.newUrl(session.id),
-          //http2: true,
-          useHttp2: false,
           headers: {
             "User-Agent": userAgentDb.getRandom(),
             "Accept-Language":
@@ -271,6 +295,7 @@ Apify.main(async () => {
           }
         });
       } catch (e) {
+        log.error(e);
         await Apify.utils.sleep(5000);
         stats.denied++;
         request.retryCount--;
@@ -350,14 +375,14 @@ Apify.main(async () => {
 
   log.info("Crawler finished, calling upload.");
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `alza.${country.toLowerCase()}`
-  );
-  log.info("invalidated Data CDN");
+  if (!development) {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `alza.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
 
-  if (!test) {
     // calling the keboola upload
     await callKeboolaUpload(country, type);
   }
