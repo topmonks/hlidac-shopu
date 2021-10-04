@@ -11,55 +11,48 @@ async function extractItems($, $products, userData, rootUrl) {
   const { s3 } = global;
   const { country = COUNTRY.CZ } = global.userInput;
   const category = [];
-  $(".breadcrumbs > a.CMSBreadCrumbsLink").each(function () {
+  $(".box-breadcrumb__item").each(function () {
     category.push($(this).text().trim());
   });
-  category.push($(".CMSBreadCrumbsCurrentItem").text().trim());
   const requests = [];
   log.info(`*********** FOUND ${$products.length} items *****************`);
   for (const product of $products.toArray()) {
     const result = {};
     const $item = $(product);
-    const id = $item.data("key");
-    const itemUrl = $item.find("h3 a").attr("href");
+    const itemUrl = $item.find(" > a").attr("href");
     const splitUrl = itemUrl.split("-");
     const itemCode = splitUrl[splitUrl.length - 1];
-    const name = $item.find("h3 a").text();
-    const $basicPriceSpan = $item.find("span.basicPrice");
-    if ($basicPriceSpan.length > 0) {
-      $basicPriceSpan.find("span").remove();
-      const retailPrice = $basicPriceSpan.text().replace(/\s/g, "").trim();
+    const name = $item.find("h2").text()?.trim();
 
-      result.currentPrice = parseFloat(retailPrice);
-      result.originalPrice = null;
-      result.discounted = false;
-    } else {
-      const $actionPriceSpan = $item.find("span.actionPrice");
-      $actionPriceSpan.find("span").remove();
-      const actionPrice = $actionPriceSpan.text().replace(/\s/g, "").trim();
-      const $retailPriceSpan = $item.find("span.retailPrice");
-      $retailPriceSpan.find("span").remove();
-      const retailPrice = $retailPriceSpan.text().replace(/\s/g, "").trim();
+    const $actionPriceSpan = $item.find(
+      ".list-products__item__info__price__item--main"
+    );
+    $actionPriceSpan.find("span").remove();
+    const actionPrice = $actionPriceSpan.text().replace(/\s/g, "").trim();
+    const $retailPriceSpan = $item.find(
+      ".list-products__item__info__price__item--old"
+    );
+    $retailPriceSpan.find("span").remove();
+    const retailPrice = $retailPriceSpan.text().replace(/\s/g, "").trim();
 
-      result.currentPrice = parseFloat(actionPrice);
-      result.originalPrice = parseFloat(retailPrice);
-      result.discounted = true;
-    }
+    result.currentPrice = parseFloat(actionPrice);
+    result.originalPrice = parseFloat(retailPrice);
+    result.discounted = true;
 
-    result.id = id;
+    result.id = itemCode;
     result.itemUrl = `${rootUrl}${itemUrl}`;
     result.itemId = itemCode;
     result.itemName = name;
     result.category = category.join(" > ");
     result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
-    if ($item.find(".image span").length !== 0) {
-      result.img = $item.find(".image span").data("image");
+    if ($item.find("img").length !== 0) {
+      result.img = $item.find("img").data("src");
     }
     requests.push(
       Apify.pushData(result),
       uploadToS3(
         s3,
-        "mountfield.cz",
+        `mountfield.${country}`,
         await s3FileName(result),
         "jsonld",
         toProduct(
@@ -82,7 +75,7 @@ async function extractItems($, $products, userData, rootUrl) {
  * @returns {Promise<*[]>}
  */
 async function scrapProducts($, request, rootUrl) {
-  const $products = $("ul.productList li");
+  const $products = $(".list-products__item__in");
   if ($products.length > 0) {
     await extractItems($, $products, request.userData, rootUrl);
   }

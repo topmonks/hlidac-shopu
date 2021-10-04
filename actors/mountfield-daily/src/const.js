@@ -1,12 +1,12 @@
-const WEB = "https://www.mountfield.cz";
-const WEB_SK = "https://www.mountfield.sk";
+const WEB = "https://www.mountfield.cz/predvypis";
+const WEB_SK = "https://www.mountfield.sk/predvypis";
 const COUNTRY = {
   CZ: "CZ",
   SK: "SK"
 };
 const LABELS = {
   START: "START",
-  MAIN_CATEGORY: "MAIN_CATEGORY",
+  CATEGORY: "CATEGORY",
   SUB_CATEGORY: "SUB_CATEGORY"
 };
 const BF = "BF";

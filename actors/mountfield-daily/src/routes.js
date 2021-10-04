@@ -17,86 +17,43 @@ const createRouter = globalContext => {
 };
 
 const START = async ({ $, crawler }) => {
-  log.info("START with main page");
-  const mainCategories = [];
-  $("section.main-menu nav > ul")
-    .children()
-    .each(function () {
-      const link = $(this).find(" > a");
-      mainCategories.push({
-        url: `${tools.getRootUrl()}${link.attr("href")}`,
-        userData: {
-          label: LABELS.MAIN_CATEGORY,
-          mainCategory: link.text()
-        }
-      });
-    });
-  log.info(`Found ${mainCategories.length} main categories`);
-  for (const mc of mainCategories) {
-    await crawler.requestQueue.addRequest(mc);
-  }
-};
-
-const MAIN_CATEGORY = async ({ $, request, crawler }) => {
-  log.info(`START main categories ${request.url}`);
-  const subcategories = [];
-  $("nav.subcategory > ul")
-    .children()
-    .each(function () {
-      const link = $(this).find(" > a");
-      subcategories.push({
-        url: `${tools.getRootUrl()}${link.attr("href")}`,
-        userData: {
-          label: LABELS.SUB_CATEGORY,
-          mainCategory: request.userData.mainCategory,
-          category: link.text(),
-          level: 0
-        }
-      });
-    });
-  log.info(`Found ${subcategories.length} sub categories`);
-  for (const mc of subcategories) {
-    await crawler.requestQueue.addRequest(mc);
-  }
-};
-
-const SUB_CATEGORY = async ({ $, crawler, request }) => {
-  log.info(`Start sub categories ${request.url}`);
-  const categories = [];
-  const $highlightedCategories = $("li.Highlighted");
-  if ($highlightedCategories.length > 0) {
-    const subCategory = $highlightedCategories[request.userData.level];
-    if ($(subCategory).find("ul").length !== 0) {
-      $(subCategory)
-        .find("ul > li")
-        .each(function () {
-          const link = $(this).find(" > a");
-          const { level } = request.userData;
-          categories.push({
-            url: `${tools.getRootUrl()}${link.attr("href")}`,
-            userData: {
-              label: LABELS.SUB_CATEGORY,
-              mainCategory: request.userData.mainCategory,
-              category: `${request.userData.category} > ${link.text()}`,
-              level: level + 1
-            }
-          });
-        });
-      log.info(`Found ${categories.length} categories`);
-      for (const mc of categories) {
-        await crawler.requestQueue.addRequest(mc);
+  const categoryItems = $(".list-categories__item__block").toArray();
+  for (const cat of categoryItems) {
+    const url = $(cat).attr("href");
+    await crawler.requestQueue.addRequest({
+      url,
+      userData: {
+        label: LABELS.CATEGORY,
+        mainCategory: $(cat).find("h3").text()?.trim()
       }
-    } else {
-      await tools.scrapProducts($, request, tools.getRootUrl());
-    }
-  } else {
+    });
+  }
+};
+
+const CATEGORY = async ({ $, request, crawler }) => {
+  let categories = $(".list-categories__item__block").toArray();
+  if (categories.length === 0) {
+    categories = $(".list-categories-with-article__box").toArray();
+  }
+  if (categories.length === 0) {
     await tools.scrapProducts($, request, tools.getRootUrl());
+  } else {
+    const { mainCategory } = request.userData;
+    for (const cat of categories) {
+      const url = $(cat).attr("href");
+      await crawler.requestQueue.addRequest({
+        url,
+        userData: {
+          label: LABELS.CATEGORY,
+          mainCategory
+        }
+      });
+    }
   }
 };
 
 module.exports = {
   createRouter,
   START,
-  MAIN_CATEGORY,
-  SUB_CATEGORY
+  CATEGORY
 };

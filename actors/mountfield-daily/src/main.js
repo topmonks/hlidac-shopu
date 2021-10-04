@@ -4,9 +4,6 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const axios = require("axios");
-const ProxyAgent = require("proxy-agent");
-const { load } = require("cheerio");
 const { createRouter } = require("./routes");
 const { LABELS, COUNTRY, BF } = require("./const");
 const tools = require("./tools");
@@ -44,22 +41,18 @@ Apify.main(async () => {
   const router = createRouter();
 
   // Set up the crawler, passing a single options object as an argument.
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxConcurrency: 20,
     useSessionPool: true,
-    handleRequestFunction: async context => {
-      const { request, session } = context;
+    proxyConfiguration,
+    handlePageFunction: async context => {
+      const { request } = context;
       const {
         url,
         userData: { label }
       } = request;
-
-      const r = await axios.get(url, {
-        agent: new ProxyAgent(proxyConfiguration.newUrl(session.id))
-      });
-
-      context.$ = await load(r.data);
+      log.info(`Scraping [${label}] - ${url}`);
 
       await router(label, context);
     },
