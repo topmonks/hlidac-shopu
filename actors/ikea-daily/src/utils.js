@@ -57,7 +57,7 @@ exports.fillProductData = (product, numberOfVariants) => {
     // if the product is a variant, use variantId else use productId
     itemId: numberOfVariants !== 0 ? product.id : product.itemNoGlobal,
     // description: '',
-    itemImg: product.mainImageUrl,
+    img: product.mainImageUrl,
     sale: 0
   };
 };
