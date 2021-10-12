@@ -14447,7 +14447,7 @@ fsevents@^1.2.7:
     sass: ^1.42.1
     source-map-explorer: ^2.5.2
     stylelint: ^13.13.1
-    stylelint-config-prettier: ^8.0.2
+    stylelint-config-prettier: ^9.0.0
     web-ext: ^6.4.0
     web-ext-submit: ^6.4.0
   languageName: unknown
@@ -22484,15 +22484,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"stylelint-config-prettier@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "stylelint-config-prettier@npm:8.0.2"
+"stylelint-config-prettier@npm:^9.0.0":
+  version: 9.0.2
+  resolution: "stylelint-config-prettier@npm:9.0.2"
   peerDependencies:
     stylelint: ">=11.0.0"
   bin:
     stylelint-config-prettier: bin/check.js
     stylelint-config-prettier-check: bin/check.js
-  checksum: dd7b09ed02d2a932d9c2de4a1532298c559d590683dcb6c9974592e4e0a74e1d4b0962c9770a0499798dfef9341d4a0dac6a57877b23edc3d1e97e7f99cfd077
+  checksum: 32f1552557ec834f5f9201f027cab7b644690479e2c750ab48516241182a467216096c118f10370002c4e9340ed93293fadbe1a480ad19dd238b25e7679eb543
   languageName: node
   linkType: hard
 
