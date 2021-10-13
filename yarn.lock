@@ -219,15 +219,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.36.0"
+"@aws-sdk/client-cloudfront@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/client-cloudfront@npm:3.36.1"
   dependencies:
     "@aws-crypto/sha256-browser": ^1.0.0
     "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/client-sts": 3.36.0
+    "@aws-sdk/client-sts": 3.36.1
     "@aws-sdk/config-resolver": 3.36.0
-    "@aws-sdk/credential-provider-node": 3.36.0
+    "@aws-sdk/credential-provider-node": 3.36.1
     "@aws-sdk/fetch-http-handler": 3.36.0
     "@aws-sdk/hash-node": 3.36.0
     "@aws-sdk/invalid-dependency": 3.36.0
@@ -258,7 +258,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: abc8bd65d24c871c88d9a6dc894a295b0cd239f22c1089499faf5d0a05066f9d87fd3f3b5d96289561aea8056955a007cf0e6e70e312b3724c67b9560805cf88
+  checksum: bcb0f350e1e0a318792528319a5aa3aa80529cbbb68caff98b22a3821e1f2193359c037290998d91ed9478be5318c683c9b66f2db7e8f91b7aaf8550d7e8ddb7
   languageName: node
   linkType: hard
 
@@ -347,15 +347,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/client-s3@npm:3.36.0"
+"@aws-sdk/client-s3@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/client-s3@npm:3.36.1"
   dependencies:
     "@aws-crypto/sha256-browser": ^1.0.0
     "@aws-crypto/sha256-js": ^1.0.0
-    "@aws-sdk/client-sts": 3.36.0
+    "@aws-sdk/client-sts": 3.36.1
     "@aws-sdk/config-resolver": 3.36.0
-    "@aws-sdk/credential-provider-node": 3.36.0
+    "@aws-sdk/credential-provider-node": 3.36.1
     "@aws-sdk/eventstream-serde-browser": 3.36.0
     "@aws-sdk/eventstream-serde-config-resolver": 3.36.0
     "@aws-sdk/eventstream-serde-node": 3.36.0
@@ -398,7 +398,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: 79773c492dcf99e73f8c9bf2c5f21a81d8589096fffd85b2064c713e76a260d5a263289b2113f157f9c87a5907276865d3d106260a4c4993d038bc630cf59758
+  checksum: c7efee70c9a2cabd77297327e84df1c52c295ef27dd547a78fbd83faeb376acbc9fbc72c748b5e8f7dec6c757385c451d1f3e4ee03f169802a82855aff53af68
   languageName: node
   linkType: hard
 
@@ -493,9 +493,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/client-sso@npm:3.36.0"
+"@aws-sdk/client-sso@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/client-sso@npm:3.36.1"
   dependencies:
     "@aws-crypto/sha256-browser": ^1.0.0
     "@aws-crypto/sha256-js": ^1.0.0
@@ -525,7 +525,7 @@ __metadata:
     "@aws-sdk/util-utf8-browser": 3.36.0
     "@aws-sdk/util-utf8-node": 3.36.0
     tslib: ^2.3.0
-  checksum: 47798fe6feb9b30486a80d3840accc219ba0a7d83c517949caa3909fa88fc0746ac5a150f694732f4ec6209bffe718acc4947c7f2a3d904b691e116eadb8ab5b
+  checksum: 48f2a11cc653264e6f743682ca3bbb288176417703bba50f551c20de34e932d5a1a2bcc20944a8f358881d009e6a0d1e89455313eea2c0772969f8a4bd4a62ad
   languageName: node
   linkType: hard
 
@@ -570,14 +570,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/client-sts@npm:3.36.0"
+"@aws-sdk/client-sts@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/client-sts@npm:3.36.1"
   dependencies:
     "@aws-crypto/sha256-browser": ^1.0.0
     "@aws-crypto/sha256-js": ^1.0.0
     "@aws-sdk/config-resolver": 3.36.0
-    "@aws-sdk/credential-provider-node": 3.36.0
+    "@aws-sdk/credential-provider-node": 3.36.1
     "@aws-sdk/fetch-http-handler": 3.36.0
     "@aws-sdk/hash-node": 3.36.0
     "@aws-sdk/invalid-dependency": 3.36.0
@@ -607,7 +607,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: c7347d14327f450f0987ebb10209807ca29f5f9f5f28c158b5ba3b5ad20cc22494f343c7538abb54ffd483cfdd3d9af757d323add8316aec260207d0e25aaadb
+  checksum: b9a416f0eea4ec0db5871cee4e58d6459c5b798f5a185ba2118ff6bcf8044ae534258bc0c4430a65cc923d74a033c678a075e371b4cd6d117295da30b11c378c
   languageName: node
   linkType: hard
 
@@ -698,20 +698,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-ini@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/credential-provider-ini@npm:3.36.0"
+"@aws-sdk/credential-provider-ini@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.36.1"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.36.0
     "@aws-sdk/credential-provider-imds": 3.36.0
-    "@aws-sdk/credential-provider-sso": 3.36.0
+    "@aws-sdk/credential-provider-sso": 3.36.1
     "@aws-sdk/credential-provider-web-identity": 3.36.0
     "@aws-sdk/property-provider": 3.36.0
     "@aws-sdk/shared-ini-file-loader": 3.36.0
     "@aws-sdk/types": 3.36.0
     "@aws-sdk/util-credentials": 3.36.0
     tslib: ^2.3.0
-  checksum: 7a2a5b885bcefa1f18cea7d4b5b215d82b959c2757ed455d13530c3cf4447c5cafac424b537d1eed9f878e665df3daf047e9d9aa93780db104420c6d53da36e5
+  checksum: 5c28ed427a201f53fe61c21e70d770253c66fefbf5797c40e10d53b7197dfd9070a1a6b7cea91430fecc3646c27ab1e858a0aeb3f161d961ec4a1ff248253e76
   languageName: node
   linkType: hard
 
@@ -734,22 +734,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/credential-provider-node@npm:3.36.0"
+"@aws-sdk/credential-provider-node@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/credential-provider-node@npm:3.36.1"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.36.0
     "@aws-sdk/credential-provider-imds": 3.36.0
-    "@aws-sdk/credential-provider-ini": 3.36.0
+    "@aws-sdk/credential-provider-ini": 3.36.1
     "@aws-sdk/credential-provider-process": 3.36.0
-    "@aws-sdk/credential-provider-sso": 3.36.0
+    "@aws-sdk/credential-provider-sso": 3.36.1
     "@aws-sdk/credential-provider-web-identity": 3.36.0
     "@aws-sdk/property-provider": 3.36.0
     "@aws-sdk/shared-ini-file-loader": 3.36.0
     "@aws-sdk/types": 3.36.0
     "@aws-sdk/util-credentials": 3.36.0
     tslib: ^2.3.0
-  checksum: 023ba27875395b9ba13885b908f6178aadb5a9c11b8910e1b62eb0a6e0116697cb5cded50c72a33a1da51441da56813e19df6bf339c05dc1e90fbe8f3645de45
+  checksum: 3dfe29d598d3bdca1935ca65951d3040831465e09f786a0e6a4fab37fe48063a4ed36858550c4f806f8874015ca6e4ea209d5c5d9e76596a6b83b650156e793f
   languageName: node
   linkType: hard
 
@@ -793,17 +793,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-sso@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@aws-sdk/credential-provider-sso@npm:3.36.0"
+"@aws-sdk/credential-provider-sso@npm:3.36.1":
+  version: 3.36.1
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.36.1"
   dependencies:
-    "@aws-sdk/client-sso": 3.36.0
+    "@aws-sdk/client-sso": 3.36.1
     "@aws-sdk/property-provider": 3.36.0
     "@aws-sdk/shared-ini-file-loader": 3.36.0
     "@aws-sdk/types": 3.36.0
     "@aws-sdk/util-credentials": 3.36.0
     tslib: ^2.3.0
-  checksum: 46ac97a4824b425b2dd5041e705aca5b636a173b1ebd468972d539ec4694cf704553d64048f4f6b06a81793622ef6879243ec038cbfb39b448306b9c32b0e4c6
+  checksum: 8024a4b94efa5b0b247426da3df7c85ef9a4dd818bbcf9fac985a46616572d02cc3eddc45597d8d09913b9e25d1e338705456c79ca983e0b6825915613b9f76d
   languageName: node
   linkType: hard
 
@@ -5044,8 +5044,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": 3.36.0
-    "@aws-sdk/client-s3": 3.36.0
+    "@aws-sdk/client-cloudfront": 3.36.1
+    "@aws-sdk/client-s3": 3.36.1
     "@hlidac-shopu/actors-common": ^1.1.2
     apify: ^2.0.7
   languageName: unknown
@@ -16365,8 +16365,8 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "lidl-daily@workspace:actors/lidl-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": 3.36.0
-    "@aws-sdk/client-s3": 3.36.0
+    "@aws-sdk/client-cloudfront": 3.36.1
+    "@aws-sdk/client-s3": 3.36.1
     "@hlidac-shopu/actors-common": ^1.1.2
     "@types/node": ^16.10.1
     apify: ^2.0.7
