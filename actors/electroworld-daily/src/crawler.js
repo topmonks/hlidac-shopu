@@ -9,22 +9,20 @@ const urlBase = "https://www.electroworld.cz";
 
 const mainBodyToken = "#snippet--pdbox";
 
-const productPageToken = ".product-list.product-list--tiles";
-const productItemToken =
-  ".product-list__item.product-box.product-box--tile.ajax-wrap";
-const categoryToken = ".category-crossroad__item";
-const pagingToken = ".paging__item.paging__item--link.ajax";
+const productItemToken = "div.product-list section.product-box";
+const categoryToken = ".subcategories section";
+const pagingToken = ".pagination .page-item";
 
-const productRatingToken = ".product-box__rating-stars.rating-stars";
-const productNameToken = ".product-box__heading.complex-link__underline";
-const productPriceOriginalToken = ".product-box__original-price";
-const productPricesToken = ".product-box__prices";
-const productPriceToken = ".product-box__price";
-const productLinkToken = ".product-list__link.product-box__link";
-const productImgToken = ".img-box__img.js-lazy.js-only.jsOnly.compare-img";
-const productAvailability = ".product-box__availability";
-const productCategoriesToken =
-  ".breadcrumb__list.l-in-box.u-maw-1310px.ol--reset";
+const productRatingToken = "p.product-box__rating span.sr-only";
+const productNameToken = ".product-box__link";
+const productPricesToken = ".product-box__price-bundle";
+const productPriceOriginalToken = ".product-box__price-bundle del";
+const productPriceToken = ".product-box__price-bundle strong";
+const productLinkToken = "a.product-box__link";
+const productImgToken = ".product-box__img-box img";
+const productAvailability =
+  ".product-box__availability a span.complex-link__underline";
+const productCategoriesToken = ".breadcrumb";
 
 /**
  *  Daily scraping info from products on page
@@ -45,19 +43,16 @@ function mkPrice(price) {
 
 async function scrapeProductListPage($, crawlContext) {
   const products = $(productItemToken);
+
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
   for (let i = 0; i < products.length; i++) {
     // This is WTF, without it, topElement.parent() sometimes returns 'undefined'
-    let p = products[i];
-    p = $(p).find(".product-box__wrap");
-
-    const topElement = $(p);
+    const topElement = $(products[i]);
 
     const productLink = `${urlBase}${topElement
       .find(productLinkToken)
       .attr("href")}`;
-
     const isCashback = topElement.find(productPricesToken).text().trim();
     if (isCashback.includes("Cena s")) {
       //If product use cashback or sale coupon, there is missing possible sale price and need scrap detail of product
@@ -81,34 +76,27 @@ async function scrapeProductListPage($, crawlContext) {
       .find(productPriceOriginalToken)
       .text();
     productPriceOriginal = mkPrice(productPriceOriginal);
-    const productPrice = parseFloat(
-      topElement.find('strong[itemprop="price"]').attr("content")
-    );
-    if (isNaN(productPriceOriginal)) {
-      productPriceOriginal =
-        $(topElement).find(productPriceToken)[1].children[0].data;
-      productPriceOriginal = productPriceOriginal
-        .replace(/\t/g, "")
-        .replace(/\n/g, "")
-        .trim();
-      productPriceOriginal = mkPrice(productPriceOriginal);
-    }
+    const productPrice = mkPrice(topElement.find(productPriceToken).text());
+
     // Everything is CZK only so why not ?
     const currency = "CZK";
 
-    const ratingStr = topElement.find(productRatingToken).text().trim();
+    let ratingStr = topElement.find(productRatingToken).text().trim();
     let rating = null;
-    if (ratingStr !== "") {
-      rating = Number(ratingStr.substr(0, ratingStr.length - 1)) / 100;
+    ratingStr = ratingStr
+      .replace("Hodnocení: ", "")
+      .replace(", počet hodnocení:", "");
+    ratingStr = ratingStr.split(" z ");
+    if (ratingStr.length === 2) {
+      rating = (parseFloat(ratingStr[0]) / parseFloat(ratingStr[1])) * 100;
     }
     // String casting is according to the spec o.0
     // https://docs.google.com/document/d/1qIwqARBTDSnkUrFItE1ZJZF1svLIYj3lD8fr82HUMtk/edit#
     rating = String(rating);
 
-    const productImg = topElement.find(productImgToken).attr("data-src");
+    const productImg = topElement.find(productImgToken).attr("src");
 
-    let productID = topElement.parent().attr("id").split("-");
-    productID = productID[productID.length - 2];
+    let productID = topElement.find("h3").attr("product-id");
 
     // In case of this eshop, this could be done during data processing
     let discount = false;
@@ -119,23 +107,24 @@ async function scrapeProductListPage($, crawlContext) {
       discount = true;
     }
 
-    const availabilityTop = topElement.find(productAvailability).find("a");
-    const avail1 = $(availabilityTop[0])
-      .attr("class")
-      .includes("availability--available");
-    const avail2 =
-      $(availabilityTop[1]).find("span").attr("class") ===
-      "availability--available";
-    const available = avail1 || avail2;
+    const available = topElement
+      .find(productAvailability)
+      .first()
+      .text()
+      .includes("Skladem");
 
     const categories = [];
-    let categoriesArr = $(productCategoriesToken).children();
-    categoriesArr.each((i, e) => {
-      if (i > 0) {
-        categories.push($(categoriesArr[i]).find("a > span").text());
-      }
-    });
 
+    const categoryScriptElement = $('script[type="application/ld+json"]');
+    const jsonCategoriesData =
+      categoryScriptElement.length !== 0
+        ? JSON.parse(categoryScriptElement.html())
+        : null;
+    if (jsonCategoriesData !== null) {
+      jsonCategoriesData.itemListElement.forEach(function (obj) {
+        obj.position > 1 ? categories.push(obj.name) : null;
+      });
+    }
     let sale = null;
     if (productPrice !== null && productPriceOriginal !== null) {
       sale = 1 - productPrice / productPriceOriginal;
@@ -154,14 +143,19 @@ async function scrapeProductListPage($, crawlContext) {
       currency: currency,
       inStock: available
     };
+
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
+      const slug = await crawlContext.s3FileName(product);
       requests.push(
-        crawlContext.dataset.pushData(product),
+        crawlContext.dataset.pushData({
+          ...product,
+          slug
+        }),
         crawlContext.uploadToS3(
           crawlContext.s3,
           "electroworld.cz",
-          await crawlContext.s3FileName(product),
+          slug,
           "jsonld",
           crawlContext.toProduct(product, {})
         )
@@ -171,7 +165,7 @@ async function scrapeProductListPage($, crawlContext) {
       crawlContext.stats.itemsDuplicity++;
     }
   }
-
+  console.log(`Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
 }
@@ -193,7 +187,7 @@ async function handleSubCategoryPage($, crawlContext) {
 
 async function addProductListPagesToQueue($, crawlContext, firstPageURL) {
   const pages = $(pagingToken);
-  const maxPages = Number($(pages[pages.length - 1]).text()) + 1;
+  const maxPages = Number($(pages[pages.length - 2]).text()) + 1;
   for (let i = 2; i < maxPages; i++) {
     const url = `${firstPageURL}?page=${i}`;
     console.info(`Adding page ${url} to queue.`);
@@ -215,7 +209,7 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
   } else if (request.userData.label === "detailPage") {
     await scrapeProductListPageDetail($, crawlContext);
   } else {
-    const productElements = $(productPageToken).find(productItemToken);
+    const productElements = $(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
 
     if (isSubCategoryPage) {
@@ -240,8 +234,8 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
  */
 
 async function scrapeProductListPageDetail($, crawlContext) {
-  const json = JSON.parse($("#snippet-productRichSnippet-richSnippet").html());
-
+  const productScriptElement = $('script[type="application/ld+json"]');
+  const json = JSON.parse(productScriptElement.html());
   const productPrice = json["offers"]["price"];
   const productPriceOriginal = parseFloat(
     $(".product-top__price")
