@@ -101,7 +101,7 @@
     "build:chrome:rename": "node scripts/rename.mjs dist/*.zip 'hl_da_shop_(.*)' 'chrome-extension%1'",
     "build:chrome": "run-s build:chrome:build build:chrome:rename",
     "start:chrome": "web-ext run --target=chromium",
-    "publish:chrome": "webstore upload --auto-publish --extension-id=plmlonggbfebcjelncogcnclagkmkikk --source=dist/chrome-extension-$(PRINT=manifest ./version.sh).zip",
+    "publish:chrome": "chrome-webstore-upload upload --auto-publish --extension-id=plmlonggbfebcjelncogcnclagkmkikk --source=dist/chrome-extension-$(PRINT=manifest ./version.sh).zip",
     "open:osx": "open './apple/osx/hlidac shopu/hlidac shopu.xcodeproj'",
     "start:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid",
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build --production",
