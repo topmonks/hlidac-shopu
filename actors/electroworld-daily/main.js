@@ -6,7 +6,8 @@ const {
   invalidateCDN,
   toProduct,
   uploadToS3,
-  s3FileName
+  s3FileName,
+  shopName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
@@ -73,6 +74,7 @@ Apify.main(async () => {
     stats,
     processedIds,
     s3,
+    shopName: await shopName(startUrls[0]),
     toProduct,
     uploadToS3,
     s3FileName

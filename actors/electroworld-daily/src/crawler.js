@@ -1,5 +1,6 @@
 const Apify = require("apify");
 const cheerio = require("cheerio");
+const { gotScraping } = require("got-scraping");
 
 const {
   utils: { log, requestAsBrowser }
@@ -46,40 +47,66 @@ async function scrapeProductListPage($, crawlContext) {
 
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
-  for (let i = 0; i < products.length; i++) {
+  const categories = [];
+  const categoryScriptElement = $('script[type="application/ld+json"]');
+  const jsonCategoriesData =
+    categoryScriptElement.length !== 0
+      ? JSON.parse(categoryScriptElement.html())
+      : null;
+  if (jsonCategoriesData !== null) {
+    jsonCategoriesData.itemListElement.forEach(function (obj) {
+      obj.position > 1 ? categories.push(obj.name) : null;
+    });
+  }
+  for await (const productElement of products) {
     // This is WTF, without it, topElement.parent() sometimes returns 'undefined'
-    const topElement = $(products[i]);
+    const topElement = $(productElement);
+    const product = {};
 
-    const productLink = `${urlBase}${topElement
-      .find(productLinkToken)
-      .attr("href")}`;
-    const isCashback = topElement.find(productPricesToken).text().trim();
-    if (isCashback.includes("Cena s")) {
-      //If product use cashback or sale coupon, there is missing possible sale price and need scrap detail of product
-      await crawlContext.requestQueue.addRequest(
-        {
-          url: productLink,
-          userData: { label: "detailPage" }
-        },
-        { forefront: true }
-      );
-      continue;
-    }
+    product.itemId = topElement.find("h3").attr("product-id");
 
-    const productName = topElement
+    product.itemName = topElement
       .find(productNameToken)
       .text()
       .trim()
       .replace(new RegExp(String.fromCharCode(160), ""), "");
 
-    let productPriceOriginal = topElement
-      .find(productPriceOriginalToken)
-      .text();
-    productPriceOriginal = mkPrice(productPriceOriginal);
-    const productPrice = mkPrice(topElement.find(productPriceToken).text());
+    product.itemUrl = `${urlBase}${topElement
+      .find(productLinkToken)
+      .attr("href")}`;
+
+    product.img = topElement.find(productImgToken).attr("src");
+
+    product.currentPrice = mkPrice(
+      topElement.find(productPriceToken).first().text()
+    );
+
+    const isCashback = topElement.find(productPricesToken).text().trim();
+    if (isCashback.includes("Cena s")) {
+      //If product use cashback or sale coupon, there is missing possible sale price and need scrap detail of product via api
+      const response = await gotScraping({
+        responseType: "json",
+        url: `https://www.electroworld.cz/api/eshop/product-boxes?id[]=${product.itemId}`
+      });
+      const { statusCode, body } = response;
+      if (statusCode !== 200) {
+        return log.info(body.toString());
+      } else {
+        const oldPrice = body.productBoxes[0].priceBundle.oldPrice;
+        product.originalPrice =
+          oldPrice === null ? null : parseFloat(oldPrice.amount);
+      }
+    } else {
+      let productPriceOriginal = topElement
+        .find(productPriceOriginalToken)
+        .text();
+      product.originalPrice = mkPrice(productPriceOriginal);
+    }
 
     // Everything is CZK only so why not ?
-    const currency = "CZK";
+    product.currency = "CZK";
+
+    product.categories = categories;
 
     let ratingStr = topElement.find(productRatingToken).text().trim();
     let rating = null;
@@ -92,64 +119,34 @@ async function scrapeProductListPage($, crawlContext) {
     }
     // String casting is according to the spec o.0
     // https://docs.google.com/document/d/1qIwqARBTDSnkUrFItE1ZJZF1svLIYj3lD8fr82HUMtk/edit#
-    rating = String(rating);
-
-    const productImg = topElement.find(productImgToken).attr("src");
-
-    let productID = topElement.find("h3").attr("product-id");
+    product.rating = String(rating);
 
     // In case of this eshop, this could be done during data processing
-    let discount = false;
+    product.discounted = false;
     if (
-      (productPriceOriginal !== -1 || productPriceOriginal !== null) &&
-      productPriceOriginal > productPrice
+      (product.originalPrice !== -1 || product.originalPrice !== null) &&
+      product.originalPrice > product.currentPrice
     ) {
-      discount = true;
+      product.discounted = true;
     }
 
-    const available = topElement
+    product.available = topElement
       .find(productAvailability)
       .first()
       .text()
       .includes("Skladem");
 
-    const categories = [];
-
-    const categoryScriptElement = $('script[type="application/ld+json"]');
-    const jsonCategoriesData =
-      categoryScriptElement.length !== 0
-        ? JSON.parse(categoryScriptElement.html())
-        : null;
-    if (jsonCategoriesData !== null) {
-      jsonCategoriesData.itemListElement.forEach(function (obj) {
-        obj.position > 1 ? categories.push(obj.name) : null;
-      });
+    product.sale = null;
+    if (product.currentPrice !== null && product.originalPrice !== null) {
+      product.sale = 1 - product.currentPrice / product.originalPrice;
     }
-    let sale = null;
-    if (productPrice !== null && productPriceOriginal !== null) {
-      sale = 1 - productPrice / productPriceOriginal;
-    }
-    const product = {
-      itemId: productID,
-      img: productImg,
-      itemUrl: productLink,
-      itemName: productName,
-      currentPrice: productPrice,
-      originalPrice: productPriceOriginal,
-      sale: sale,
-      rating: rating,
-      discounted: discount,
-      category: categories,
-      currency: currency,
-      inStock: available
-    };
-
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
       const slug = await crawlContext.s3FileName(product);
       requests.push(
         crawlContext.dataset.pushData({
           ...product,
+          shop: crawlContext.shopName,
           slug
         }),
         crawlContext.uploadToS3(
@@ -157,7 +154,7 @@ async function scrapeProductListPage($, crawlContext) {
           "electroworld.cz",
           slug,
           "jsonld",
-          crawlContext.toProduct(product, {})
+          crawlContext.toProduct({ ...product, inStock: product.available }, {})
         )
       );
       crawlContext.stats.items++;
@@ -206,8 +203,6 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     );
     await scrapeProductListPage($, crawlContext);
     crawlContext.stats.pages++;
-  } else if (request.userData.label === "detailPage") {
-    await scrapeProductListPageDetail($, crawlContext);
   } else {
     const productElements = $(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
@@ -228,62 +223,6 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     }
   }
 };
-
-/**
- *  Daily scraping info from products on page detail
- */
-
-async function scrapeProductListPageDetail($, crawlContext) {
-  const productScriptElement = $('script[type="application/ld+json"]');
-  const json = JSON.parse(productScriptElement.html());
-  const productPrice = json["offers"]["price"];
-  const productPriceOriginal = parseFloat(
-    $(".product-top__price")
-      .find("del")
-      .first()
-      .text()
-      .trim()
-      .replace(/[^\d,]+/g, "")
-      .replace(",", ".")
-  );
-
-  let sale = null;
-  if (productPrice !== null && productPriceOriginal !== null) {
-    sale = 1 - productPrice / productPriceOriginal;
-  }
-
-  const rating = mkRating($);
-
-  const product = {
-    itemId: $("#product-main-img")[0].attribs["data-itemid"],
-    img: json["offers"]["image"],
-    itemUrl: json["offers"]["url"],
-    itemName: json["name"],
-    currentPrice: productPrice,
-    originalPrice: productPriceOriginal,
-    sale: sale,
-    rating: rating,
-    discounted: sale > 0,
-    category: json["offers"]["category"],
-    currency: json["offers"]["priceCurrency"],
-    inStock: json["offers"]["availability"].includes("InStock")
-  };
-
-  if (!crawlContext.processedIds.has(product.itemId)) {
-    crawlContext.processedIds.add(product.itemId);
-    await crawlContext.dataset.pushData(product);
-    await crawlContext.uploadToS3(
-      crawlContext.s3,
-      "electroworld.cz",
-      await crawlContext.s3FileName(product),
-      "jsonld",
-      crawlContext.toProduct(product, {})
-    );
-    crawlContext.stats.items++;
-  } else {
-    crawlContext.stats.itemsDuplicity++;
-  }
-}
 
 /**
  *  Product detail scraping
