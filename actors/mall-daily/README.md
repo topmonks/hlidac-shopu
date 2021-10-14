@@ -1,7 +1,26 @@
-The actor will scrape all products from Mall.cz, it is going through the whole categories and pagination and get the data visible there. It is not visiting the details.
+# mall actor
 
-Example item:
+## Actors INPUT
+<sup>~ apify_storage/key_value_stores/default/INPUT.json</sup>
+
+```json
+{
+  "development": false,
+  "debug": false,
+  "test": false,
+  "sample": false,
+  "maxRequestRetries": 3,
+  "maxConcurrency": 10,
+  "type": "FULL",
+  "country": "CZ"
+}
 ```
+```text
+"type": "FULL" || "BF" || "CZECHITAS"
+"country": "CZ" || "SK"
+```
+## Actors item example OUTPUT
+```json
 {
     "itemId": "42545210",
     "img": "https://www.mall.cz/i/42545210/1000/1000",

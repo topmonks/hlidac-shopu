@@ -1,4 +1,7 @@
-const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
+const {
+  s3FileName,
+  shopName
+} = require("@hlidac-shopu/actors-common/product.js");
 const parseCurrency = require("parsecurrency");
 
 async function extractItems($, web, country) {
@@ -159,4 +162,42 @@ async function extractItems($, web, country) {
   return results;
 }
 
-module.exports = extractItems;
+async function extractBfItems(products, country) {
+  const results = [];
+  for await (const item of products) {
+    const product = item.mainVariant;
+    if (product) {
+      const promotionPrice = product.price;
+      /* if (product.promotionPrice !== product.price) {
+          console.log(item);
+          results.push(item);
+      } */
+      // priceRrp recommended retail price
+      const originalPrice = product.priceRrp ? product.priceRrp : 0;
+      const itemUrl = `https://www.mall.${country}/${item.mainCategoryUrlKey}/${product.variantUrl}`;
+      const slug = await s3FileName({ itemUrl });
+      const shop = await shopName(itemUrl);
+      results.push({
+        itemId: product.variantId,
+        itemName: item.title,
+        currentPrice: promotionPrice,
+        originalPrice,
+        discounted: promotionPrice < originalPrice,
+        itemUrl,
+        // mediaIdList: product.mediaIdList,
+        img:
+          product.mediaIdList && product.mediaIdList.length !== 0
+            ? `https://www.mall.${country}/i/${product.mediaIdList[0]}/1000/1000`
+            : null,
+        thirdPartySeller:
+          product.availabilityKey &&
+          product.availabilityKey !== "avail_stock-mall",
+        shop,
+        slug
+      });
+    }
+  }
+  return results;
+}
+
+module.exports = { extractItems, extractBfItems };

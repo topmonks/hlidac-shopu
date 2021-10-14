@@ -12,12 +12,13 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
 const cheerio = require("cheerio");
-const extractItems = require("./detailParser");
+const { extractItems, extractBfItems } = require("./detailParser");
 const paginationParser = require("./paginationParser");
 
 const {
-  utils: { log, requestAsBrowser }
+  utils: { log }
 } = Apify;
+const { gotScraping } = require("got-scraping");
 
 const webCz = "https://www.mall.cz";
 const webSk = "https://www.mall.sk";
@@ -59,6 +60,13 @@ Apify.main(async () => {
       url: "https://www.mall.sk/potraviny-a-napoje?pagination=2",
       userData: {
         label: "PAGE"
+      }
+    });
+  } else if (type === "BF") {
+    await requestQueue.addRequest({
+      url: `https://www.mall.${country}/api/campaign/data?pathName=/kampan/black-friday&page=1&o=campaign,sort_2&menuSorting=sort_4&promotionPrice=true&labels[]=BFLV&sortingLabels[]=BF01`,
+      userData: {
+        label: "START"
       }
     });
   } else if (country === "CZ") {
@@ -128,7 +136,6 @@ Apify.main(async () => {
 
       const requestOptions = {
         url: request.url,
-        ignoreSslErrors: true,
         proxyUrl: proxyConfiguration.newUrl(session.id),
         throwHttpErrors: false,
         headers: {
@@ -138,7 +145,7 @@ Apify.main(async () => {
         }
       };
 
-      const response = await requestAsBrowser(requestOptions);
+      const response = await gotScraping(requestOptions);
       log.info(
         `${request.url}, ${request.userData.label} took: ${
           (Date.now() - start) / 1000
@@ -193,7 +200,36 @@ Apify.main(async () => {
       }
 
       let $;
-      if (request.userData.label !== "REVIEW") {
+      if (type === "BF") {
+        const responseData = JSON.parse(response.body);
+        if (request.userData.label === "START") {
+          if (responseData.total > 60) {
+            const max = Math.ceil(responseData.total / 60);
+            for (let i = 2; i <= max; i++) {
+              await requestQueue.addRequest({
+                url: `https://www.mall.${country}/api/campaign/data?pathName=/kampan/black-friday&page=${i}&o=campaign,sort_2&menuSorting=sort_4&promotionPrice=true&labels[]=BFLV&sortingLabels[]=BF01`,
+                userData: {
+                  label: "PAGE"
+                }
+              });
+            }
+          }
+
+          const storeItems = await extractBfItems(
+            responseData.products,
+            country
+          );
+          log.info(`Storing ${storeItems.length} items`);
+          await Apify.pushData(storeItems);
+        } else if (request.userData.label === "PAGE") {
+          const storeItems = await extractBfItems(
+            responseData.products,
+            country
+          );
+          log.info(`Storing ${storeItems.length} items`);
+          await Apify.pushData(storeItems);
+        }
+      } else if (request.userData.label !== "REVIEW") {
         $ = cheerio.load(response.body);
         if ($(".cbm-error--404").length !== 0) {
           log.info(`404 ${request.url}`);
@@ -427,7 +463,6 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   if (type !== "CZECHITAS") {
-    const env = await Apify.getEnv();
     await invalidateCDN(
       cloudfront,
       "EQYSHWUECAQC9",
