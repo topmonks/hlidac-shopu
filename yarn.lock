@@ -4671,14 +4671,14 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/actors-common@^1.1.2, @hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@^1.1.4, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -4699,7 +4699,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
@@ -4744,7 +4744,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
@@ -4759,7 +4759,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4772,7 +4772,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4785,7 +4785,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4799,7 +4799,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4812,7 +4812,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4825,7 +4825,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4866,7 +4866,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4879,7 +4879,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4891,7 +4891,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kasa-count@workspace:actors/kasa-count"
   dependencies:
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4904,7 +4904,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4915,7 +4915,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-count@workspace:actors/knihydobrovsky-count"
   dependencies:
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4928,7 +4928,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4941,7 +4941,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4954,7 +4954,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -4978,7 +4978,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
@@ -4990,7 +4990,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
@@ -5008,7 +5008,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5021,7 +5021,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5034,7 +5034,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
@@ -5046,7 +5046,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.36.1
     "@aws-sdk/client-s3": 3.36.1
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     apify: ^2.0.7
   languageName: unknown
   linkType: soft
@@ -5057,7 +5057,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5071,7 +5071,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
     apify: ^2.0.7
@@ -5086,7 +5086,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5115,7 +5115,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5128,7 +5128,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -5142,7 +5142,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -14469,7 +14469,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -14790,7 +14790,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -16367,7 +16367,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.36.1
     "@aws-sdk/client-s3": 3.36.1
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -17097,7 +17097,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -18296,7 +18296,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     apify: ^2.0.7
   languageName: unknown
@@ -21096,7 +21096,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
@@ -22786,7 +22786,7 @@ fsevents@^1.2.7:
   dependencies:
     "@aws-sdk/client-cloudfront": ^3.34.0
     "@aws-sdk/client-s3": ^3.34.0
-    "@hlidac-shopu/actors-common": ^1.1.2
+    "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
