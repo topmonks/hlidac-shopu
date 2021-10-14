@@ -298,19 +298,31 @@ async function fetchProductDetail($, requestQueue, request, country) {
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   const input = await Apify.getInput();
-  const { test = false, country = COUNTRY.CZ, debugLog = false, type } = input;
+  const {
+    test = false,
+    country = COUNTRY.CZ,
+    debugLog = false,
+    maxRequestRetries = 4,
+    maxConcurrency = 20,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL",
+    bfUrls = ["https://www.pilulka.cz/black-friday-2021"]
+  } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
   if (type === "BF") {
-    await requestQueue.addRequest({
-      url: `${ROOT_WEB_URL(country)}/black-friday`,
-      headers: { userAgent: randomUA.generate() },
-      userData: { label: LABEL.CATEGORY_PAGE }
-    });
+    for (let i = 0; i < bfUrls.length; i++) {
+      await requestQueue.addRequest({
+        url: bfUrls[i],
+        headers: { userAgent: randomUA.generate() },
+        userData: { label: LABEL.CATEGORY_PAGE }
+      });
+    }
   } else {
     await requestQueue.addRequest({
       url: ROOT_WEB_URL(country),
@@ -320,14 +332,14 @@ Apify.main(async () => {
   }
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
+    groups: proxyGroups
   });
 
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 20,
-    maxRequestRetries: 4,
+    maxConcurrency,
+    maxRequestRetries,
     proxyConfiguration,
     handlePageFunction: async ({ $, request }) => {
       if (request.userData.label === LABEL.START) {
