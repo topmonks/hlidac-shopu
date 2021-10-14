@@ -78,6 +78,11 @@ async function s3FileName(detail) {
   return shop.parse(url).itemUrl;
 }
 
+async function shopName(url) {
+  const { shopName } = await import("@hlidac-shopu/lib/shops.mjs");
+  return shopName(new URL(url));
+}
+
 function currencyToISO4217(currency) {
   return currency.toLowerCase() === "kč" ? "CZK" : currency;
 }
@@ -86,5 +91,6 @@ module.exports = {
   toProduct,
   uploadToS3,
   s3FileName,
+  shopName,
   invalidateCDN
 };
