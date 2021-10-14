@@ -106,7 +106,7 @@ async function scrapeProductListPage($, crawlContext) {
     // Everything is CZK only so why not ?
     product.currency = "CZK";
 
-    product.categories = categories;
+    product.category = categories;
 
     let ratingStr = topElement.find(productRatingToken).text().trim();
     let rating = null;
