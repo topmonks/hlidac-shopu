@@ -6,7 +6,8 @@ const {
   invalidateCDN,
   toProduct,
   uploadToS3,
-  s3FileName
+  s3FileName,
+  shopName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
@@ -146,6 +147,9 @@ async function fetchProductBase($, requestQueue, request, country, type) {
           .find(".js-trigger-availability-modal")
           .data("product-price")
           .replace(/\s/g, "")
+          .replace(country === "CZ" ? "Kč" : "€", "")
+          .replace(",", ".")
+          .trim()
       );
 
       if (!Number.isNaN(currentPrice) && currentPrice > 0 && id != undefined) {
@@ -155,10 +159,19 @@ async function fetchProductBase($, requestQueue, request, country, type) {
               .find(".top-product__add-to-cart--container a s.text-gray")
               .text()
               .replace(/\s/g, "")
+              .replace(country === "CZ" ? "Kč" : "€", "")
+              .replace(",", ".")
+              .trim()
           );
         } else {
           originalPrice = parseFloat(
-            item.find(".product-prev__price-discount").text().replace(/\s/g, "")
+            item
+              .find(".product-prev__price-discount")
+              .text()
+              .replace(/\s/g, "")
+              .replace(country === "CZ" ? "Kč" : "€", "")
+              .replace(",", ".")
+              .trim()
           );
         }
         if (!Number.isNaN(originalPrice) && originalPrice > 0) {
@@ -178,7 +191,6 @@ async function fetchProductBase($, requestQueue, request, country, type) {
         result.shortDesc = shortDesc;
         result.availability = availability;
         result.category = request.userData.category;
-
         products.push(result);
       } else {
         log.info(`Skip non price product [${name}]`);
@@ -187,21 +199,35 @@ async function fetchProductBase($, requestQueue, request, country, type) {
       log.error(`Products extraction failed on url: ${request.url}`);
     }
   });
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
   for (const product of products) {
-    await uploadToS3(
-      s3,
-      `pilulka.${country.toLowerCase()}`,
-      await s3FileName(product),
-      "jsonld",
-      toProduct(
-        {
-          ...product,
-          inStock: true
-        },
-        { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
+    const slug = await s3FileName(product);
+    const shop = await shopName(product.itemUrl);
+    requests.push(
+      Apify.pushData({
+        ...product,
+        shop,
+        slug
+      }),
+      uploadToS3(
+        s3,
+        `pilulka.${country.toLowerCase()}`,
+        slug,
+        "jsonld",
+        toProduct(
+          {
+            ...product,
+            inStock: true
+          },
+          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
+        )
       )
     );
   }
+  console.log(`Found ${requests.length / 2} products`);
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 
   await Apify.pushData(products);
 }
