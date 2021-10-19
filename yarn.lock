@@ -5092,7 +5092,7 @@ __metadata:
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
-    browser-pool: ^2.0.2
+    browser-pool: ^3.0.0
     got: ^11.8.2
     playwright: ^1.15.0
     proxy-agent: ^5.0.0
@@ -8682,6 +8682,21 @@ __metadata:
     tiny-typed-emitter: ^2.1.0
     tslib: ^2.3.1
   checksum: afaeaada89cfa040f9933e5447f24db30e85292f2e2330834bea2b3f4e4d209bc688df6fe191dbed4a44e2301b4429fca548e2eb847864d193ff8988caee8e4b
+  languageName: node
+  linkType: hard
+
+"browser-pool@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "browser-pool@npm:3.0.0"
+  dependencies:
+    "@apify/log": ^1.1.1
+    lodash.merge: ^4.6.2
+    nanoid: ^3.1.25
+    ow: ^0.27.0
+    p-limit: ^3.1.0
+    tiny-typed-emitter: ^2.1.0
+    tslib: ^2.3.1
+  checksum: 8b498f2f883e316c6e5aa71ae7f75064aa369d1768afa8379580a5686e4ccc37bca47581896edbd57d01ab029241b8e05a04fc31f3c3a27b70ee20e6eb2e81f7
   languageName: node
   linkType: hard
 
