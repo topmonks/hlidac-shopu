@@ -118,7 +118,14 @@ async function generateCategoryPages($, requestQueue, request) {
 }
 
 // fetch product base info from category page
-async function fetchProductBase($, requestQueue, request, country, type) {
+async function fetchProductBase(
+  crawlContext,
+  $,
+  requestQueue,
+  request,
+  country,
+  type
+) {
   const products = [];
   let productsCards = $(".product-cards, .top-product-cards").find(
     ".product-prev__content"
@@ -210,19 +217,21 @@ async function fetchProductBase($, requestQueue, request, country, type) {
         shop,
         slug
       }),
-      uploadToS3(
-        s3,
-        `pilulka.${country.toLowerCase()}`,
-        slug,
-        "jsonld",
-        toProduct(
-          {
-            ...product,
-            inStock: true
-          },
-          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-        )
-      )
+      !crawlContext.development
+        ? uploadToS3(
+            s3,
+            `pilulka.${country.toLowerCase()}`,
+            slug,
+            "jsonld",
+            toProduct(
+              {
+                ...product,
+                inStock: true
+              },
+              { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
+            )
+          )
+        : {}
     );
   }
   console.log(`Found ${requests.length / 2} products`);
@@ -327,9 +336,10 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
+    development = false,
+    debugLog = false,
     test = false,
     country = COUNTRY.CZ,
-    debugLog = false,
     maxRequestRetries = 4,
     maxConcurrency = 20,
     proxyGroups = ["CZECH_LUMINATI"],
@@ -338,6 +348,11 @@ Apify.main(async () => {
   } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
+
+  const crawlContext = {
+    development
+  };
+
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
@@ -382,16 +397,36 @@ Apify.main(async () => {
         if (input.parseDetails) {
           await fetchProductUrl($, requestQueue, request);
         } else {
-          await fetchProductBase($, requestQueue, request, country, type);
+          await fetchProductBase(
+            crawlContext,
+            $,
+            requestQueue,
+            request,
+            country,
+            type
+          );
         }
       } else if (request.userData.label === LABEL.CATEGORY_PAGE) {
         if (input.parseDetails) {
           await fetchProductUrl($, requestQueue, request);
         } else {
-          await fetchProductBase($, requestQueue, request, country, type);
+          await fetchProductBase(
+            crawlContext,
+            $,
+            requestQueue,
+            request,
+            country,
+            type
+          );
         }
       } else if (request.userData.label === LABEL.PRODUCT_DETAIL) {
-        await fetchProductDetail($, requestQueue, request, country);
+        await fetchProductDetail(
+          crawlContext,
+          $,
+          requestQueue,
+          request,
+          country
+        );
       }
     },
     // If request failed 10 times then this function is executed.
@@ -403,13 +438,14 @@ Apify.main(async () => {
   // Run crawler
   await crawler.run();
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `pilulka.${country.toLowerCase()}`
-  );
-  log.info("invalidated Data CDN");
-  if (!test) {
+  if (!development) {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `pilulka.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
+
     let tableName = country === COUNTRY.CZ ? "pilulka_cz" : "pilulka_sk";
     if (type === "BF") {
       tableName = `${tableName}_bf`;
