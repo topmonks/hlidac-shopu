@@ -5,6 +5,7 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const {
   toProduct,
   uploadToS3,
+  shopName,
   s3FileName,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
@@ -87,6 +88,8 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
+  const shop = await shopName(WEB);
+
   if (development || debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
@@ -281,8 +284,13 @@ Apify.main(async () => {
             // Save data to dataset
             if (!processedIds.has(dataItem.itemId)) {
               processedIds.add(dataItem.itemId);
+              const slug = await s3FileName(dataItem);
               requests.push(
-                Apify.pushData(dataItem),
+                Apify.pushData({
+                  ...dataItem,
+                  shop,
+                  slug
+                }),
                 uploadToS3(
                   s3,
                   "mironet.cz",
