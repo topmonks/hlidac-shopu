@@ -307,7 +307,7 @@ async function fetchProductDetail($, requestQueue, request, country) {
   }
 }
 
-async function parseProducts(
+function parseProducts(
   $,
   requestQueue,
   request,
@@ -317,17 +317,16 @@ async function parseProducts(
   parseDetails
 ) {
   if (parseDetails) {
-    await fetchProductUrl($, requestQueue, request);
-  } else {
-    await fetchProductBase(
-      crawlContext,
-      $,
-      requestQueue,
-      request,
-      country,
-      type
-    );
+    return fetchProductUrl($, requestQueue, request);
   }
+  return fetchProductBase(
+    crawlContext,
+    $,
+    requestQueue,
+    request,
+    country,
+    type
+  );
 }
 
 Apify.main(async () => {
@@ -357,9 +356,9 @@ Apify.main(async () => {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
   if (type === "BF") {
-    for (let i = 0; i < bfUrls.length; i++) {
+    for (const url of bfUrls) {
       await requestQueue.addRequest({
-        url: bfUrls[i],
+        url,
         headers: { userAgent: randomUA.generate() },
         userData: { label: LABEL.CATEGORY_PAGE }
       });
