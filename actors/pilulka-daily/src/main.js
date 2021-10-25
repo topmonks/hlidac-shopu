@@ -307,6 +307,29 @@ async function fetchProductDetail($, requestQueue, request, country) {
   }
 }
 
+async function parseProducts(
+  $,
+  requestQueue,
+  request,
+  crawlContext,
+  country,
+  type,
+  parseDetails
+) {
+  if (parseDetails) {
+    await fetchProductUrl($, requestQueue, request);
+  } else {
+    await fetchProductBase(
+      crawlContext,
+      $,
+      requestQueue,
+      request,
+      country,
+      type
+    );
+  }
+}
+
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
@@ -360,50 +383,50 @@ Apify.main(async () => {
     maxRequestRetries,
     proxyConfiguration,
     handlePageFunction: async ({ $, request }) => {
-      if (request.userData.label === LABEL.START) {
-        log.info(
-          `START scraping pilulka.${country.toLowerCase()} type=${type} test=${test}`
-        );
-        await fetchCategories($, requestQueue, country, test);
-      } else if (request.userData.label === LABEL.SUB_CATEGORY) {
-        log.info(`START with sub_category ${request.url}`);
-        await fetchSubCategories($, requestQueue, request, country);
-      } else if (request.userData.label === LABEL.CATEGORY) {
-        log.info(`START with category ${request.url}`);
-        await generateCategoryPages($, requestQueue, request);
-        if (input.parseDetails) {
-          await fetchProductUrl($, requestQueue, request);
-        } else {
-          await fetchProductBase(
+      switch (request.userData.label) {
+        case LABEL.START:
+          log.info(
+            `START scraping pilulka.${country.toLowerCase()} type=${type} test=${test}`
+          );
+          await fetchCategories($, requestQueue, country, test);
+          break;
+        case LABEL.SUB_CATEGORY:
+          log.info(`START with sub_category ${request.url}`);
+          await fetchSubCategories($, requestQueue, request, country);
+          break;
+        case LABEL.CATEGORY:
+          log.info(`START with category ${request.url}`);
+          await generateCategoryPages($, requestQueue, request);
+          await parseProducts(
+            $,
+            requestQueue,
+            request,
+            crawlContext,
+            country,
+            type,
+            input.parseDetails
+          );
+          break;
+        case LABEL.CATEGORY_PAGE:
+          await parseProducts(
+            $,
+            requestQueue,
+            request,
+            crawlContext,
+            country,
+            type,
+            input.parseDetails
+          );
+          break;
+        case LABEL.PRODUCT_DETAIL:
+          await fetchProductDetail(
             crawlContext,
             $,
             requestQueue,
             request,
-            country,
-            type
+            country
           );
-        }
-      } else if (request.userData.label === LABEL.CATEGORY_PAGE) {
-        if (input.parseDetails) {
-          await fetchProductUrl($, requestQueue, request);
-        } else {
-          await fetchProductBase(
-            crawlContext,
-            $,
-            requestQueue,
-            request,
-            country,
-            type
-          );
-        }
-      } else if (request.userData.label === LABEL.PRODUCT_DETAIL) {
-        await fetchProductDetail(
-          crawlContext,
-          $,
-          requestQueue,
-          request,
-          country
-        );
+          break;
       }
     },
     // If request failed 10 times then this function is executed.
