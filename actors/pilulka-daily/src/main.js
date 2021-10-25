@@ -117,6 +117,24 @@ async function generateCategoryPages($, requestQueue, request) {
   await enqueuRequests(requestQueue, pages, false);
 }
 
+function parsePrice(text) {
+  return parseFloat(
+    text
+      .replace(/\s/g, "")
+      .replace(country === "CZ" ? "Kč" : "€", "")
+      .replace(",", ".")
+      .trim()
+  );
+}
+
+function getOriginalPrice(item, country) {
+  const selector =
+    item.data("event") === "ProductTopCategory"
+      ? ".top-product__add-to-cart--container a s.text-gray"
+      : ".product-prev__price-discount";
+  return parsePrice(item.find(selector).text());
+}
+
 // fetch product base info from category page
 async function fetchProductBase(
   crawlContext,
@@ -126,17 +144,13 @@ async function fetchProductBase(
   country,
   type
 ) {
-  const products = [];
-  let productsCards = $(".product-cards, .top-product-cards").find(
-    ".product-prev__content"
-  );
-  if (type === "BF") {
-    productsCards = $(".product-prev__content");
-  }
+  const productsCards =
+    type === "BF"
+      ? $(".product-prev__content")
+      : $(".product-cards, .top-product-cards").find(".product-prev__content");
 
-  productsCards.each(function () {
+  const products = productsCards.map(async function () {
     try {
-      const result = {};
       const item = $(this);
       const name = item.find("picture img").attr("alt");
       const id = item.find('form input[name="productId"]').val();
@@ -148,97 +162,60 @@ async function fetchProductBase(
         .first()
         .text()
         .trim();
-      let originalPrice = null;
-      const currentPrice = parseFloat(
-        item
-          .find(".js-trigger-availability-modal")
-          .data("product-price")
-          .replace(/\s/g, "")
-          .replace(country === "CZ" ? "Kč" : "€", "")
-          .replace(",", ".")
-          .trim()
+      const currentPrice = parsePrice(
+        item.find(".js-trigger-availability-modal").data("product-price")
       );
 
-      if (!Number.isNaN(currentPrice) && currentPrice > 0 && id != undefined) {
-        if (item.data("event") === "ProductTopCategory") {
-          originalPrice = parseFloat(
-            item
-              .find(".top-product__add-to-cart--container a s.text-gray")
-              .text()
-              .replace(/\s/g, "")
-              .replace(country === "CZ" ? "Kč" : "€", "")
-              .replace(",", ".")
-              .trim()
-          );
-        } else {
-          originalPrice = parseFloat(
-            item
-              .find(".product-prev__price-discount")
-              .text()
-              .replace(/\s/g, "")
-              .replace(country === "CZ" ? "Kč" : "€", "")
-              .replace(",", ".")
-              .trim()
-          );
-        }
-        if (!Number.isNaN(originalPrice) && originalPrice > 0) {
-          result.originalPrice = originalPrice;
-          result.currentPrice = currentPrice;
-          result.discounted = true;
-        } else {
-          result.originalPrice = null;
-          result.currentPrice = currentPrice;
-          result.discounted = false;
-        }
-
-        result.img = tools.buildUrl(ROOT_WEB_URL(country), imgLink);
-        result.itemId = id;
-        result.itemUrl = tools.buildUrl(ROOT_WEB_URL(country), link);
-        result.itemName = name;
-        result.shortDesc = shortDesc;
-        result.availability = availability;
-        result.category = request.userData.category;
-        products.push(result);
+      if (Number.isNaN(currentPrice) || currentPrice <= 0 || id === undefined) {
+        log.info(`Skip product without price [${name}]`);
       } else {
-        log.info(`Skip non price product [${name}]`);
+        let originalPrice = getOriginalPrice(item, country);
+
+        const itemUrl = tools.buildUrl(ROOT_WEB_URL(country), link);
+        const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
+        return {
+          itemId: id,
+          itemName: name,
+          itemUrl: itemUrl,
+          shop: await shopName(itemUrl),
+          slug: await s3FileName({ itemUrl }),
+          img: tools.buildUrl(ROOT_WEB_URL(country), imgLink),
+          shortDesc,
+          availability,
+          category: request.userData.category,
+          originalPrice: isDiscounted ? originalPrice : null,
+          currentPrice,
+          discounted: isDiscounted
+        };
       }
     } catch (e) {
       log.error(`Products extraction failed on url: ${request.url}`);
     }
   });
   // we don't need to block pushes, we will await them all at the end
-  const requests = [];
-  for (const product of products) {
-    const slug = await s3FileName(product);
-    const shop = await shopName(product.itemUrl);
-    requests.push(
-      Apify.pushData({
-        ...product,
-        shop,
-        slug
-      }),
-      !crawlContext.development
-        ? uploadToS3(
-            s3,
-            `pilulka.${country.toLowerCase()}`,
-            slug,
-            "jsonld",
-            toProduct(
-              {
-                ...product,
-                inStock: true
-              },
-              { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-            )
+  const requests = [Apify.pushData(products)];
+  if (!crawlContext.development) {
+    for (const product of products) {
+      requests.push(
+        uploadToS3(
+          s3,
+          `pilulka.${country.toLowerCase()}`,
+          slug,
+          "jsonld",
+          toProduct(
+            {
+              ...product,
+              inStock: true
+            },
+            { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
           )
-        : {}
-    );
+        )
+      );
+    }
   }
-  console.log(`Found ${requests.length / 2} products`);
+  console.log(`Found ${products.length} products`);
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
-
-  await Apify.pushData(products);
 }
 
 // fetch product details URLs
