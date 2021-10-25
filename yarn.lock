@@ -6858,13 +6858,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ungap/event-target@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@ungap/event-target@npm:0.2.3"
-  checksum: f94493ffe3f67846bccae2f89d03dd92c92d7ff2184e0b7da1f95eebeeef1009e25fbc249604c1eb1a3cb69256deb23e2e79d98554a75e0ddfaf22a0755ff38f
-  languageName: node
-  linkType: hard
-
 "@web/browser-logs@npm:^0.2.1, @web/browser-logs@npm:^0.2.2":
   version: 0.2.3
   resolution: "@web/browser-logs@npm:0.2.3"
@@ -14239,7 +14232,7 @@ fsevents@^1.2.7:
     gulp-babel: ^8.0.0
     gulp-esbuild: ^0.9.0
     gulp-mode: ^1.1.0
-    linkedom: ^0.12.1
+    linkedom: ^0.13.0
     node-fetch: ^3.0.0
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
@@ -16169,17 +16162,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.12.1":
-  version: 0.12.1
-  resolution: "linkedom@npm:0.12.1"
+"linkedom@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "linkedom@npm:0.13.0"
   dependencies:
-    "@ungap/event-target": ^0.2.3
     css-select: ^4.1.3
     cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^7.1.2
     uhyphen: ^0.1.0
-  checksum: 0e70a10f1ab792ff0ed02416a890470c25b8916f6cdbb114b907a2ae7a9f9225e83b63dd28e281a15b017395d1e0d82cb2d3fbab32216add39864bc680029b84
+  checksum: d1a8a79d61bd9a7b1b1e1f17e881cfc1cc1b9c1a388d882020782fc48b50855654a853b6a9ef32913b78738fa8a1c0fa2ca1aa2e23c16ffc5974ecb2cbe22e37
   languageName: node
   linkType: hard
 
