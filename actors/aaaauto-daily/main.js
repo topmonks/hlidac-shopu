@@ -6,7 +6,8 @@ const {
   invalidateCDN,
   toProduct,
   uploadToS3,
-  s3FileName
+  s3FileName,
+  shopName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
@@ -31,6 +32,7 @@ Apify.main(async () => {
     country = COUNTRY_TYPE.CZ
   } = input ?? {};
   const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
+  const shop = await shopName(rootUrl);
   const requestQueue = await Apify.openRequestQueue();
 
   if (development || debug) {
@@ -80,61 +82,74 @@ Apify.main(async () => {
           });
         });
       } else if (request.userData.label === "PAGE") {
-        const offers = $(".card").toArray();
+        const offers = $(".card");
+        const products = await Promise.allSettled(
+          offers.map(async function () {
+            try {
+              const item = $(this);
+              const link = item.find("a.fullSizeLink").attr("href");
+              const figure = item.find("figure");
+              const url = new URL(link, rootUrl);
+              const itemId = url.searchParams.get("id");
+              const itemName = item.find("h2 a").text().trim();
+              const arr = itemName.split(",");
+
+              const currentPrice = item
+                .find("span[id*=garageHeart]")
+                .attr("data-price");
+              const actionPrice = tools.extractPrice(
+                item.find(".carPrice h3.error:not(.hide)").text()
+              );
+              let originalPrice = item
+                .find(".carPrice .darkGreyAlt")
+                .find(".hix")
+                .remove();
+              originalPrice = tools.extractPrice(
+                item.find(".carFeatures p").text()
+              );
+
+              const description = item.find(".carFeatures p").text().trim();
+              const carFeatures = item
+                .find(".carFeaturesList li")
+                .toArray()
+                .map(feature => {
+                  return $(feature).text();
+                });
+
+              const [km, transmission, fuelType, engine] = carFeatures;
+              return {
+                itemUrl: link,
+                itemId,
+                description,
+                img: figure.length > 0 ? figure.find("img").attr("src") : null,
+                itemName: arr[0],
+                currentPrice,
+                originalPrice,
+                currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
+                actionPrice,
+                discounted: !!originalPrice,
+                year: arr[1] ? arr[1] : undefined,
+                km,
+                transmission,
+                fuelType,
+                engine,
+                shop,
+                slug: await s3FileName({ itemUrl: link })
+              };
+            } catch (e) {
+              log.error(e.message);
+              log.error(`Products extraction failed on url: ${request.url}`);
+            }
+          })
+        );
         // we don't need to block pushes, we will await them all at the end
-        const requests = [];
+        const allFulfilledProducts = products
+          .filter(p => p.status === "fulfilled")
+          .map(p => p.value);
+        const requests = [Apify.pushData(allFulfilledProducts)];
         let sleepTotal = 0;
-        for (const offer of offers) {
-          const $offer = $(offer);
-          const link = $offer.find("a.fullSizeLink").attr("href");
-          const figure = $offer.find("figure");
-          const url = new URL(link, rootUrl);
-          const itemId = url.searchParams.get("id");
-          const itemName = $offer.find("h2 a").text().trim();
-          const arr = itemName.split(",");
-
-          const currentPrice = $offer
-            .find("span[id*=garageHeart]")
-            .attr("data-price");
-          const actionPrice = tools.extractPrice(
-            $offer.find(".carPrice h3.error:not(.hide)").text()
-          );
-          let originalPrice = $offer
-            .find(".carPrice .darkGreyAlt")
-            .find(".hix")
-            .remove();
-          originalPrice = tools.extractPrice(
-            $offer.find(".carFeatures p").text()
-          );
-
-          const description = $offer.find(".carFeatures p").text().trim();
-          const carFeatures = $offer
-            .find(".carFeaturesList li")
-            .toArray()
-            .map(feature => {
-              return $(feature).text();
-            });
-
-          const [km, transmission, fuelType, engine] = carFeatures;
-          const product = {
-            itemUrl: link,
-            itemId,
-            description,
-            img: figure.length > 0 ? figure.find("img").attr("src") : null,
-            itemName: arr[0],
-            currentPrice,
-            originalPrice,
-            currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
-            actionPrice,
-            discounted: !!originalPrice,
-            year: arr[1] ? arr[1] : undefined,
-            km,
-            transmission,
-            fuelType,
-            engine
-          };
+        for (const product of allFulfilledProducts) {
           requests.push(
-            Apify.pushData(product),
             uploadToS3(
               s3,
               "aaaauto.cz",
@@ -150,9 +165,9 @@ Apify.main(async () => {
               )
             )
           );
-          sleepTotal += tools.getHumanDelayMillis(250, 950);
         }
-        log.debug(`Found ${requests.length / 2} cars, ${request.url}`);
+        sleepTotal += tools.getHumanDelayMillis(250, 950);
+        log.debug(`Found ${allFulfilledProducts.length} cars, ${request.url}`);
         // await all requests, so we don't end before they end
         await Promise.allSettled(requests);
         await Apify.utils.sleep(sleepTotal);
