@@ -207,7 +207,7 @@ async function fetchProductBase(
     .map(p => p.value);
   const requests = [Apify.pushData(allFulfilledProducts)];
   if (!crawlContext.development) {
-    for (const product of products) {
+    for (const product of allFulfilledProducts) {
       requests.push(
         uploadToS3(
           s3,
