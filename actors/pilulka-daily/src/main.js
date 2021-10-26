@@ -117,7 +117,7 @@ async function generateCategoryPages($, requestQueue, request) {
   await enqueuRequests(requestQueue, pages, false);
 }
 
-function parsePrice(text) {
+function parsePrice(text, country) {
   return parseFloat(
     text
       .replace(/\s/g, "")
@@ -132,7 +132,7 @@ function getOriginalPrice(item, country) {
     item.data("event") === "ProductTopCategory"
       ? ".top-product__add-to-cart--container a s.text-gray"
       : ".product-prev__price-discount";
-  return parsePrice(item.find(selector).text());
+  return parsePrice(item.find(selector).text(), country);
 }
 
 // fetch product base info from category page
@@ -149,58 +149,70 @@ async function fetchProductBase(
       ? $(".product-prev__content")
       : $(".product-cards, .top-product-cards").find(".product-prev__content");
 
-  const products = productsCards.map(async function () {
-    try {
-      const item = $(this);
-      const name = item.find("picture img").attr("alt");
-      const id = item.find('form input[name="productId"]').val();
-      const link = item.find("a.product-prev__title").attr("href");
-      const imgLink = item.find("picture img").data("src");
-      const shortDesc = item.find(".product-prev__description").text().trim();
-      const availability = item
-        .find(".js-trigger-availability-modal span")
-        .first()
-        .text()
-        .trim();
-      const currentPrice = parsePrice(
-        item.find(".js-trigger-availability-modal").data("product-price")
-      );
+  const products = await Promise.allSettled(
+    productsCards.map(async function () {
+      try {
+        const item = $(this);
+        const name = item.find("picture img").attr("alt");
+        const id = item.find('form input[name="productId"]').val();
+        const link = item.find("a.product-prev__title").attr("href");
+        const imgLink = item.find("picture img").data("src");
+        const shortDesc = item.find(".product-prev__description").text().trim();
+        const availability = item
+          .find(".js-trigger-availability-modal span")
+          .first()
+          .text()
+          .trim();
+        const currentPrice = parsePrice(
+          item.find(".js-trigger-availability-modal").data("product-price")
+        );
 
-      if (Number.isNaN(currentPrice) || currentPrice <= 0 || id === undefined) {
-        log.info(`Skip product without price [${name}]`);
-      } else {
-        let originalPrice = getOriginalPrice(item, country);
+        if (
+          Number.isNaN(currentPrice) ||
+          currentPrice <= 0 ||
+          id === undefined
+        ) {
+          log.info(`Skip product without price [${name}]`);
+        } else {
+          let originalPrice = getOriginalPrice(item, country);
 
-        const itemUrl = tools.buildUrl(ROOT_WEB_URL(country), link);
-        const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
-        return {
-          itemId: id,
-          itemName: name,
-          itemUrl: itemUrl,
-          shop: await shopName(itemUrl),
-          slug: await s3FileName({ itemUrl }),
-          img: tools.buildUrl(ROOT_WEB_URL(country), imgLink),
-          shortDesc,
-          availability,
-          category: request.userData.category,
-          originalPrice: isDiscounted ? originalPrice : null,
-          currentPrice,
-          discounted: isDiscounted
-        };
+          const itemUrl = tools.buildUrl(ROOT_WEB_URL(country), link);
+          const isDiscounted =
+            !Number.isNaN(originalPrice) && originalPrice > 0;
+
+          return {
+            itemId: id,
+            itemName: name,
+            itemUrl: itemUrl,
+            shop: await shopName(itemUrl),
+            slug: await s3FileName({ itemUrl }),
+            img: tools.buildUrl(ROOT_WEB_URL(country), imgLink),
+            shortDesc,
+            availability,
+            category: request.userData.category,
+            originalPrice: isDiscounted ? originalPrice : null,
+            currentPrice,
+            discounted: isDiscounted
+          };
+        }
+      } catch (e) {
+        log.error(`Products extraction failed on url: ${request.url}`);
+        log.error(e.message);
       }
-    } catch (e) {
-      log.error(`Products extraction failed on url: ${request.url}`);
-    }
-  });
+    })
+  );
   // we don't need to block pushes, we will await them all at the end
-  const requests = [Apify.pushData(products)];
+  const allFulfilledProducts = products
+    .filter(p => p.status === "fulfilled")
+    .map(p => p.value);
+  const requests = [Apify.pushData(allFulfilledProducts)];
   if (!crawlContext.development) {
     for (const product of products) {
       requests.push(
         uploadToS3(
           s3,
           `pilulka.${country.toLowerCase()}`,
-          slug,
+          await s3FileName(product),
           "jsonld",
           toProduct(
             {
@@ -213,7 +225,7 @@ async function fetchProductBase(
       );
     }
   }
-  console.log(`Found ${products.length} products`);
+  console.log(`Found ${allFulfilledProducts.length} products`);
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
 }
