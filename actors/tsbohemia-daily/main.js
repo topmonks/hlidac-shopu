@@ -1,7 +1,13 @@
 const Apify = require("apify");
+const {
+  BrowserPool,
+  PlaywrightPlugin,
+  PuppeteerPlugin
+} = require("browser-pool");
+const FingerprintGenerator = require("fingerprint-generator");
+const { FingerprintInjector } = require("fingerprint-injector");
 const playwright = require("playwright");
 const cheerio = require("cheerio");
-const { getResponse } = require("./src/requestRetry");
 const utils = require("./src/utils");
 const { LABELS, BASE_URL } = require("./src/const");
 
@@ -17,6 +23,7 @@ async function streamToBuffer(stream) {
     stream.on("end", () => resolve(Buffer.concat(chunks)));
   });
 }
+
 async function enqueueAllCategories() {
   const stream = await requestAsBrowser({
     url: SITEMAP_URL,
@@ -73,7 +80,6 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
@@ -87,23 +93,6 @@ Apify.main(async () => {
       userData: { label: LABELS.BF },
       url: "https://www.tsbohemia.cz/black-friday_c41438.html"
     });
-  } else if (type === "playwright") {
-    const browser = await playwright.chromium.launch({
-      headless: false,
-      proxy: {
-        server: "http://proxy.apify.com:8000",
-        username: "groups-CZECH_LUMINATI,country-CZ",
-        password: "8Wqsv97L7NTcEpJaqn7Q5SEGu" + ""
-      }
-    });
-    // Open a new page / tab in the browser.
-    const page = await browser.newPage();
-    // Tell the tab to navigate to the JavaScript topic page.
-    await page.goto("https://www.tsbohemia.cz/acer_c75.html");
-    // Pause for 10 seconds, to see what's going on.
-    await page.waitForTimeout(360000);
-    // Turn off the browser to clean up after ourselves.
-    await browser.close();
   } else if (type === "test") {
     await requestQueue.addRequest({
       url: "https://www.tsbohemia.cz/acer_c75.html",
@@ -117,135 +106,257 @@ Apify.main(async () => {
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
 
-  const handlePageFunction = async ({ page, request }) => {
-    await page.waitForTimeout(180000);
-    // This is the start page
-    if (request.userData.label === LABELS.START) {
-      const categoryIds = [];
+  const handleRequestFunction = async ({ request }) => {
+    log.info(
+      `Handling page ${request.url} with label ${request.userData.label}`
+    );
+    // An asynchronous IIFE (immediately invoked function expression)
+    // allows us to use the 'await' keyword.
+    await (async () => {
+      const pluginOptions = {
+        //proxyUrl: proxyConfiguration.newUrl(),
+        launchOptions: {
+          headless: false,
+          channel: "chrome"
+        }
+      };
 
-      $("a[data-strid]").each(function () {
-        categoryIds.push({
-          id: $(this).attr("data-strid"),
-          name: $(this).text()
-        });
+      const playwrightPlugin = new PlaywrightPlugin(
+        playwright.chromium,
+        pluginOptions
+      );
+      const fingerprintGenerator = new FingerprintGenerator({
+        devices: ["desktop"],
+        browsers: [{ name: "chrome", minVersion: 90 }],
+        operatingSystems: ["linux"]
       });
 
-      for (const category of categoryIds) {
-        const response = await getResponse(
-          `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
-        );
-        const responseCheerio = cheerio.load(response, {
-          decodeEntities: false
+      const { fingerprint } = fingerprintGenerator.getFingerprint();
+      const fingerprintInjector = new FingerprintInjector({ fingerprint });
+
+      const browserPool = new BrowserPool({
+        browserPlugins: [playwrightPlugin],
+        preLaunchHooks: [
+          (pageId, launchContext) => {
+            const { useIncognitoPages, launchOptions } = launchContext;
+
+            if (useIncognitoPages) {
+              return;
+            }
+
+            launchContext.launchOptions = {
+              ...launchOptions,
+              userAgent: fingerprint.userAgent,
+              viewport: {
+                width: fingerprint.screen.width,
+                height: fingerprint.screen.height
+              }
+            };
+          }
+        ],
+        prePageCreateHooks: [
+          (pageId, browserController, pageOptions) => {
+            const { launchContext } = browserController;
+
+            if (launchContext.useIncognitoPages && pageOptions) {
+              pageOptions.userAgent = fingerprint.userAgent;
+              pageOptions.viewport = {
+                width: fingerprint.screen.width,
+                height: fingerprint.screen.height
+              };
+            }
+          }
+        ],
+        postPageCreateHooks: [
+          async (page, browserController) => {
+            const { browserPlugin, launchContext } = browserController;
+
+            if (browserPlugin instanceof PlaywrightPlugin) {
+              const { useIncognitoPages, isFingerprintInjected } =
+                launchContext;
+
+              if (isFingerprintInjected) {
+                // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
+                return;
+              }
+              console.log("Injecting fingerprint to playwright");
+
+              const context = page.context();
+              context.setDefaultTimeout(0);
+              await fingerprintInjector.attachFingerprintToPlaywright(
+                context,
+                fingerprint
+              );
+
+              if (!useIncognitoPages) {
+                // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
+                launchContext.extend({ isFingerprintInjected: true });
+              }
+            } else if (browserPlugin instanceof PuppeteerPlugin) {
+              console.log("Injecting fingerprint to puppeteer");
+              await fingerprintInjector.attachFingerprintToPuppeteer(
+                page,
+                fingerprint
+              );
+            }
+          }
+        ]
+      });
+
+      const page = await browserPool.newPage();
+      await page.goto(request.url);
+      //Wait to solve reCaptcha manualy
+      await page.waitForTimeout(30000);
+      // will return all the repository cards we're looking for.
+      //console.log(await page.content());
+      const products = await page.$$eval(".prodbox", repoCards => {
+        return repoCards.map(card => {
+          const itemName = card.querySelector("h2");
+
+          const toText = element => element && element.innerText.trim();
+
+          return {
+            itemName: toText(itemName)
+          };
         });
-        responseCheerio(".level6 > li > a").each(async function () {
-          const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
-          await requestQueue.addRequest({
-            url:
-              subCatUrl.indexOf("https") === -1
-                ? `https://www.tsbohemia.cz/${subCatUrl}`
-                : subCatUrl,
-            userData: { label: LABELS.PAGE, categoryName: category.name }
-          });
-        });
-      }
+      });
+      // Print the results. Nice!
+      console.log(`We extracted ${products.length} products.`);
+      await Apify.pushData(products);
+      //console.log("Loaded image: " + (await element.getAttribute("src")));
+      // Turn off the browser to clean up after ourselves.
+      // When you're done, close the page.
+      await page.close();
+      // When everything's finished, tear down the pool.
+      await browserPool.destroy();
+    })();
+    // This is the start page
+    if (request.userData.label === LABELS.START) {
+      /*      const categoryIds = [];
+
+            $("a[data-strid]").each(function () {
+              categoryIds.push({
+                id: $(this).attr("data-strid"),
+                name: $(this).text()
+              });
+            });
+
+            for (const category of categoryIds) {
+              const response = await getResponse(
+                `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
+              );
+              const responseCheerio = cheerio.load(response, {
+                decodeEntities: false
+              });
+              responseCheerio(".level6 > li > a").each(async function () {
+                const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
+                await requestQueue.addRequest({
+                  url:
+                    subCatUrl.indexOf("https") === -1
+                      ? `https://www.tsbohemia.cz/${subCatUrl}`
+                      : subCatUrl,
+                  userData: { label: LABELS.PAGE, categoryName: category.name }
+                });
+              });
+            }*/
     } else if (request.userData.label === LABELS.BF) {
       log.info("START BLACK FRIDAY");
-      const categories = [];
-      const tcs = $("ul.level9 a");
-      for (let i = 0; i < tcs.length; i++) {
-        const link = tcs[i];
-        categories.push($(link).attr("href"));
-      }
+      /* const categories = [];
+            const tcs = $("ul.level9 a");
+            for (let i = 0; i < tcs.length; i++) {
+              const link = tcs[i];
+              categories.push($(link).attr("href"));
+            }
 
-      // Enqueue category links
-      for (const cat of categories) {
-        log.info(`Adding to the queue ${cat}`);
-        await requestQueue.addRequest({
-          url:
-            cat.indexOf("https") === -1
-              ? `https://www.tsbohemia.cz${cat}`
-              : cat,
-          userData: {
-            label: LABELS.PAGE,
-            name: "BF"
-          }
-        });
-      }
+            // Enqueue category links
+            for (const cat of categories) {
+              log.info(`Adding to the queue ${cat}`);
+              await requestQueue.addRequest({
+                url:
+                  cat.indexOf("https") === -1
+                    ? `https://www.tsbohemia.cz${cat}`
+                    : cat,
+                userData: {
+                  label: LABELS.PAGE,
+                  name: "BF"
+                }
+              });
+            }*/
     }
 
     // This is the category page
     else if (request.userData.label === LABELS.PAGE) {
-      // Enqueue pagination pages
-      if (request.url.indexOf("page=") === -1 && $("p.reccount").length !== 0) {
-        try {
-          const paginationCount = Math.ceil(
-            parseInt($("p.reccount").eq(0).text()) / 26
-          );
-          for (let i = 2; i <= paginationCount; i++) {
-            await requestQueue.addRequest({
-              url: `${request.url}?page=${i}`,
-              userData: {
-                label: LABELS.PAGE,
-                name: request.userData.name
+      /*      // Enqueue pagination pages
+            if (request.url.indexOf("page=") === -1 && $("p.reccount").length !== 0) {
+              try {
+                const paginationCount = Math.ceil(
+                  parseInt($("p.reccount").eq(0).text()) / 26
+                );
+                for (let i = 2; i <= paginationCount; i++) {
+                  await requestQueue.addRequest({
+                    url: `${request.url}?page=${i}`,
+                    userData: {
+                      label: LABELS.PAGE,
+                      name: request.userData.name
+                    }
+                  });
+                }
+                log.info(
+                  `Adding to the queue ${paginationCount} paginations for url ${request.url}`
+                );
+              } catch (e) {
+                log.error(e.message);
+              }
+            }
+
+            const items = [];
+            const toNumber = p => p.replace(/\s/g, "").match(/\d+/)[0];
+            const navbar = $(".navbar ul > li");
+            const category = [];
+            if (navbar.length !== 0) {
+              navbar.each(function () {
+                const bs = $(this);
+                if (!bs.hasClass("hp")) {
+                  category.push(bs.text().trim());
+                }
+              });
+            }
+            $(".prodbox").each(function () {
+              try {
+                const itemId = $(this).attr("data-stiid");
+                const oPriceElem = $(this).find(".price .mc");
+                const img = $(this).find(".img img").eq(0).attr("data-src");
+                const link = `https://www.tsbohemia.cz/${$(this)
+                  .find("h2 a")
+                  .eq(0)
+                  .attr("href")}`;
+                const name = $(this).find("h2 a").eq(0).text().trim();
+                const price = $(this).find(".price .wvat").eq(0).text().trim();
+                const dataItem = {
+                  img,
+                  itemId,
+                  itemUrl: link,
+                  itemName: name,
+                  discounted: false,
+                  currentPrice: price ? parseFloat(toNumber(price)) : null,
+                  category,
+                  menuCat: request.userData.name
+                };
+                if (oPriceElem.length !== 0) {
+                  const oPrice = oPriceElem.text().trim();
+                  dataItem.originalPrice = parseFloat(toNumber(oPrice));
+                  dataItem.discounted = true;
+                }
+
+                // Save data to dataset
+                items.push(dataItem);
+              } catch (e) {
+                log.error(e);
               }
             });
-          }
-          log.info(
-            `Adding to the queue ${paginationCount} paginations for url ${request.url}`
-          );
-        } catch (e) {
-          log.error(e.message);
-        }
-      }
-
-      const items = [];
-      const toNumber = p => p.replace(/\s/g, "").match(/\d+/)[0];
-      const navbar = $(".navbar ul > li");
-      const category = [];
-      if (navbar.length !== 0) {
-        navbar.each(function () {
-          const bs = $(this);
-          if (!bs.hasClass("hp")) {
-            category.push(bs.text().trim());
-          }
-        });
-      }
-      $(".prodbox").each(function () {
-        try {
-          const itemId = $(this).attr("data-stiid");
-          const oPriceElem = $(this).find(".price .mc");
-          const img = $(this).find(".img img").eq(0).attr("data-src");
-          const link = `https://www.tsbohemia.cz/${$(this)
-            .find("h2 a")
-            .eq(0)
-            .attr("href")}`;
-          const name = $(this).find("h2 a").eq(0).text().trim();
-          const price = $(this).find(".price .wvat").eq(0).text().trim();
-          const dataItem = {
-            img,
-            itemId,
-            itemUrl: link,
-            itemName: name,
-            discounted: false,
-            currentPrice: price ? parseFloat(toNumber(price)) : null,
-            category,
-            menuCat: request.userData.name
-          };
-          if (oPriceElem.length !== 0) {
-            const oPrice = oPriceElem.text().trim();
-            dataItem.originalPrice = parseFloat(toNumber(oPrice));
-            dataItem.discounted = true;
-          }
-
-          // Save data to dataset
-          items.push(dataItem);
-        } catch (e) {
-          log.error(e);
-        }
-      });
-      // Iterate all products and extract data
-      log.info(`Storing ${items.length} for url ${request.url}`);
-      await Apify.pushData(items);
+            // Iterate all products and extract data
+            log.info(`Storing ${items.length} for url ${request.url}`);
+            await Apify.pushData(items);*/
     }
     await Apify.utils.sleep(5000);
   };
@@ -254,49 +365,20 @@ Apify.main(async () => {
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: false
+    useApifyProxy: true
   });
 
   // Create crawler
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
-    proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    useSessionPool: true,
-    persistCookiesPerSession: true,
-    handlePageFunction,
-
+    handleRequestTimeoutSecs: 360,
+    handleRequestFunction,
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
-      const browser = await playwright.chromium.launch({
-        headless: false
-        /*,proxy: {
-          server: "http://proxy.apify.com:8000",
-          username: "groups-CZECH_LUMINATI,country-CZ",
-          password: "8Wqsv97L7NTcEpJaqn7Q5SEGu" + ""
-        }*/
-      });
-      // Open a new page / tab in the browser.
-      const page = await browser.newPage();
-      // Tell the tab to navigate to the JavaScript topic page.
-      await page.goto(request.url);
-      const element = await page.waitForSelector("div#bodyout", {
-        state: "attached",
-        timeout: 0
-      });
-
-      await requestQueue.addRequest({
-        url: request.url,
-        userData: {
-          label: LABELS.PAGE
-        }
-      });
-
-      // Turn off the browser to clean up after ourselves.
-      await browser.close();
     }
   });
 

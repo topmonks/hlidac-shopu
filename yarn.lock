@@ -41,6 +41,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apify/consts@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@apify/consts@npm:1.4.0"
+  checksum: 6da5231169a2420d34b11284f17fd0867716b673d8198c12dbfcc0c73c343998137d9ff65e255dfb64bdd1dafa22b31bfe4edd04520d2e336b065788a00f52eb
+  languageName: node
+  linkType: hard
+
 "@apify/datastructures@npm:^1.0.1":
   version: 1.0.1
   resolution: "@apify/datastructures@npm:1.0.1"
@@ -68,6 +75,16 @@ __metadata:
     "@apify/consts": ^1.1.3
     ansi-colors: ^4.1.1
   checksum: 0445c3acba96d138c0edc8a64114bc4fbe15591c61bbe828021f3b64dea1bd31cd7acda7a4b66cfa47fac74ba6b1e188d89ff6b2a6674e075d94665c0d8e752b
+  languageName: node
+  linkType: hard
+
+"@apify/log@npm:^1.0.5":
+  version: 1.1.4
+  resolution: "@apify/log@npm:1.1.4"
+  dependencies:
+    "@apify/consts": ^1.4.0
+    ansi-colors: ^4.1.1
+  checksum: 92ca60190602ff1fc7d29d673a1ecdb666fb5002e026c56e56f045c41c82057a6fe55f0334aad9032723c0b50003283c17d1cdec6b8ebd36244548e575fd894c
   languageName: node
   linkType: hard
 
@@ -5148,7 +5165,8 @@ __metadata:
     "@types/node": ^16.10.1
     apify: ^2.0.7
     apify-cli: ^0.6.2
-    got: ^11.8.2
+    fingerprint-generator: ^1.0.0
+    fingerprint-injector: ^0.7.1
     playwright: ^1.15.0
     proxy-agent: ^5.0.0
     random-mua: ^0.5.0
@@ -10429,7 +10447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^4.16.3":
+"csv-parse@npm:^4.15.3, csv-parse@npm:^4.16.3":
   version: 4.16.3
   resolution: "csv-parse@npm:4.16.3"
   checksum: ba740ff2dbeb78c847d6c1d9a00ae9d071a353beea4852307bc2a3df1c422ae7e134a24e0cca524068701c40ed59f545de8f876c3f5705ef6a5f340777a9083e
@@ -12754,6 +12772,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fingerprint-generator@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fingerprint-generator@npm:1.0.0"
+  dependencies:
+    csv-parse: ^4.15.3
+    generative-bayesian-network: 0.1.0-beta.1
+    header-generator: ^1.1.3
+    ow: ^0.24.1
+  checksum: b8fadb3838d143ef972688ee3d851aae83e2b3085b2aee4f4a43e4268e528e4cd565efda995843c7d0503b8d434c01339f50577ef058668223cd03a12190d59b
+  languageName: node
+  linkType: hard
+
+"fingerprint-injector@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "fingerprint-injector@npm:0.7.1"
+  dependencies:
+    "@apify/log": ^1.0.5
+    tslib: ^2.3.1
+    useragent: ^2.3.0
+  checksum: 98e3c67f116be3b72d838e7c536bef4f97a1a58a453eb38ac287d7d4b3dd05233d2612f957304476f88b120180b414c4e31f77b2f64047740985c65add8a2178
+  languageName: node
+  linkType: hard
+
 "firefox-profile@npm:4.2.0":
   version: 4.2.0
   resolution: "firefox-profile@npm:4.2.0"
@@ -14186,6 +14227,16 @@ fsevents@^1.2.7:
     generative-bayesian-network: 0.1.0-beta.1
     ow: ^0.23.0
   checksum: db4b74d9c56bd77d0c6af6753a235de02086313323a0c816ba4659105b1683d992af1707c6ff18d38e5dc71fe3f361c6faaedb60f22860dfc19c5136579a2e21
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "header-generator@npm:1.1.3"
+  dependencies:
+    generative-bayesian-network: 0.1.0-beta.1
+    ow: ^0.23.0
+  checksum: 85bb08ccd7c5dfe5563e9006032a1d8869d67a096b38a45bc0c321006e26c07652fba01b99115a46597ab1a1c620ec1697acd69d5cfd354d78ff2f2faaf86d45
   languageName: node
   linkType: hard
 
@@ -16516,7 +16567,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^4.0.1":
+"lru-cache@npm:4.1.x, lru-cache@npm:^4.0.1":
   version: 4.1.5
   resolution: "lru-cache@npm:4.1.5"
   dependencies:
@@ -18070,6 +18121,20 @@ fsevents@^1.2.7:
     type-fest: ^0.20.2
     vali-date: ^1.0.0
   checksum: 04df72cbcdeab7e3696b4f061d4c4cc69f07b46cde3f4a099d6661730579ef9054da5dd80d9b09baa368fd975183c4ad39bce5cc014ef599c9aa497ce543eb59
+  languageName: node
+  linkType: hard
+
+"ow@npm:^0.24.1":
+  version: 0.24.1
+  resolution: "ow@npm:0.24.1"
+  dependencies:
+    "@sindresorhus/is": ^4.0.0
+    callsites: ^3.1.0
+    dot-prop: ^6.0.1
+    lodash.isequal: ^4.5.0
+    type-fest: ^1.2.0
+    vali-date: ^1.0.0
+  checksum: 5528c7d7066f8613f9267e8c2b746fc5e1c0d161c0afe59cfa89584fd9350607a19cf5a93fe5ec569d0f401c39a3270657007410261db69abbf00d1128b99414
   languageName: node
   linkType: hard
 
@@ -20725,6 +20790,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"semver@npm:5.5.x":
+  version: 5.5.1
+  resolution: "semver@npm:5.5.1"
+  bin:
+    semver: ./bin/semver
+  checksum: a23c07ab2747c6e0fa5a606fc82b735d96d906f9640b33eaa0f90dac4d9e772ef3a507d2606d85f74821ec703dfd8e7d3ac4547364150c2d8d960ccdc43d804c
+  languageName: node
+  linkType: hard
+
 "semver@npm:7.0.0":
   version: 7.0.0
   resolution: "semver@npm:7.0.0"
@@ -22464,21 +22538,21 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"tmp@npm:0.0.x, tmp@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "tmp@npm:0.0.33"
+  dependencies:
+    os-tmpdir: ~1.0.2
+  checksum: 77666ca424a78fcfcc27a6576f24f01aa1300b10d22e4f1808809e560777672dd2d4a112604ab2ad86ec7cafd24472b9ccc41373c2b5b83797f27e6aff06cbe5
+  languageName: node
+  linkType: hard
+
 "tmp@npm:0.2.1":
   version: 0.2.1
   resolution: "tmp@npm:0.2.1"
   dependencies:
     rimraf: ^3.0.0
   checksum: 13973825ff1c7aed3359bba97c146c860ebb5b1cbdca88387a2ff8bae704d2478b701cc3adc29b1461be292fed1e4ae56b378b6a0386bbab471ef32860e0a711
-  languageName: node
-  linkType: hard
-
-"tmp@npm:^0.0.33":
-  version: 0.0.33
-  resolution: "tmp@npm:0.0.33"
-  dependencies:
-    os-tmpdir: ~1.0.2
-  checksum: 77666ca424a78fcfcc27a6576f24f01aa1300b10d22e4f1808809e560777672dd2d4a112604ab2ad86ec7cafd24472b9ccc41373c2b5b83797f27e6aff06cbe5
   languageName: node
   linkType: hard
 
@@ -22813,7 +22887,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^1.0.1, type-fest@npm:^1.2.2":
+"type-fest@npm:^1.0.1, type-fest@npm:^1.2.0, type-fest@npm:^1.2.2":
   version: 1.4.0
   resolution: "type-fest@npm:1.4.0"
   checksum: 04a911900eb917ce782b13ec53e18951de067cb24512696c7123b5ec6ae1abc5da38fc06d24f34ceb92d031a4f2c20696bd777de4e813726e774a350e9d35f5f
@@ -23276,6 +23350,16 @@ typescript@~3.7.3:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
   checksum: 557e940a62ea632e3c60cb122f2f424e684b8508696711b059f34aaef8c3d36a5e352a2f14487b7b78a2356369a0d7585f39f2ccf2c91a18f17dcb3e7b22e06d
+  languageName: node
+  linkType: hard
+
+"useragent@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "useragent@npm:2.3.0"
+  dependencies:
+    lru-cache: 4.1.x
+    tmp: 0.0.x
+  checksum: 3d4843ff0638331d8f9e14f33def1a6f68ce029482dd98971d17e3ce7bd446f1283281dde3a824b943b57238677e23d9a0a8dbc1b64544c9b6e07070967cec96
   languageName: node
   linkType: hard
 
@@ -24174,6 +24258,13 @@ typescript@~3.7.3:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: 8d72062ea3dbfd8fae3d6ddd5b741c2aeb5835a31b0719bf14fac71dd84adde0829763d6fbac46387309da00af1440194c796da5efc349b0baf9de39d82ae69e
+  languageName: node
+  linkType: hard
+
+"yamlparser@npm:0.0.x":
+  version: 0.0.2
+  resolution: "yamlparser@npm:0.0.2"
+  checksum: a78930d28579f2f03537223e34ebd6a0d503d7aef14fc0c188116bba1b08e3ba7d006887913364757c79d28f80bf9c91bb2c897db6baf872dd9ae6e72b223cf6
   languageName: node
   linkType: hard
 
