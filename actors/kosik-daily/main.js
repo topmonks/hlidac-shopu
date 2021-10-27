@@ -5,6 +5,7 @@ const {
   toProduct,
   uploadToS3,
   s3FileName,
+  shopName,
   invalidateCDN
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
@@ -16,9 +17,15 @@ const Apify = require("apify");
 
 const { log } = Apify.utils;
 
+const baseUrl = "https://www.kosik.cz/";
+
 const slug = url => url.substring(1);
 const listingUrl = ({ url }) =>
-  `https://www.kosik.cz/api/web/page/products?slug=${slug(url)}&limit=60`;
+  `${baseUrl}api/web/page/products?slug=${slug(url)}&limit=60`;
+
+const slugBF = url => new URL(url).pathname.substring(1);
+const listingBFUrl = url =>
+  `${baseUrl}api/web/page/products?slug=${slugBF(url)}&limit=10`;
 
 function* categoriesTree(root) {
   for (const category of root) {
@@ -59,7 +66,7 @@ async function enqueuePagination(requestQueue, { products }) {
 
 const parseItem = (item, breadcrumbs) => ({
   itemId: item.id,
-  itemUrl: new URL(item.url, "https://www.kosik.cz/").href,
+  itemUrl: new URL(item.url, baseUrl).href,
   itemName: item.name,
   discounted: item.percentageDiscount > 0,
   discountedName:
@@ -101,12 +108,14 @@ function pageFunction(requestQueue, s3) {
       for (const item of json.products.items) {
         if (processedIds.has(item.id)) continue;
         const detail = parseItem(item, breadcrumbs);
+        const shop = await shopName(baseUrl);
+        const slug = await s3FileName(detail);
         await Promise.all([
-          Apify.pushData(detail),
+          Apify.pushData({ ...detail, shop, slug }),
           uploadToS3(
             s3,
             "kosik.cz",
-            await s3FileName(detail),
+            slug,
             "jsonld",
             toProduct(detail, { priceCurrency: "CZK" })
           )
@@ -132,13 +141,13 @@ Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
-
   const {
     country = "cz",
     development,
     maxConcurrency = 4,
     proxyGroups = ["CZECH_LUMINATI"],
-    type
+    type,
+    bfUrls = ["https://www.kosik.cz/listy/bf-nanecisto-2021"]
   } = input ?? {};
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
@@ -148,13 +157,23 @@ Apify.main(async () => {
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  // TODO: if (type === "BF")
-  await requestQueue.addRequest({
-    url: "https://www.kosik.cz/api/web/menu/main",
-    userData: {
-      step: "CATEGORIES"
+  if (type === "BF") {
+    for (const url of bfUrls) {
+      await requestQueue.addRequest({
+        url: listingBFUrl(url),
+        userData: {
+          step: "DETAIL"
+        }
+      });
     }
-  });
+  } else {
+    await requestQueue.addRequest({
+      url: "https://www.kosik.cz/api/web/menu/main",
+      userData: {
+        step: "CATEGORIES"
+      }
+    });
+  }
 
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
@@ -172,14 +191,20 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kosik.cz");
-  log.info("invalidated Data CDN");
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kosik.cz");
+    log.info("invalidated Data CDN");
 
-  try {
-    await uploadToKeboola(getTableName(country));
-    log.info("upload to Keboola finished");
-  } catch (err) {
-    log.warning("upload to Keboola failed");
-    log.error(err);
+    try {
+      let tableName = getTableName(country);
+      if (type === "BF") {
+        tableName = `${tableName}_bf`;
+      }
+      await uploadToKeboola(tableName);
+      log.info("upload to Keboola finished");
+    } catch (err) {
+      log.warning("upload to Keboola failed");
+      log.error(err);
+    }
   }
 });
