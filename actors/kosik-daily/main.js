@@ -25,7 +25,7 @@ const listingUrl = ({ url }) =>
 
 const slugBF = url => new URL(url).pathname.substring(1);
 const listingBFUrl = url =>
-  `${baseUrl}api/web/page/products?slug=${slugBF(url)}&limit=10`;
+  `${baseUrl}api/web/page/products?slug=${slugBF(url)}&limit=60`;
 
 function* categoriesTree(root) {
   for (const category of root) {
