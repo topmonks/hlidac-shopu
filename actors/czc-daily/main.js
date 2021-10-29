@@ -63,7 +63,7 @@ Apify.main(async () => {
         }); */
   } else if (type === "BF") {
     await requestQueue.addRequest({
-      url: "https://www.czc.cz/black-friday/produkty",
+      url: "https://www.czc.cz/blackfriday/produkty",
       userData: {
         label: "BF"
       }
