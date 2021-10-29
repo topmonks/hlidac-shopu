@@ -141,7 +141,7 @@ Apify.main(async () => {
           const paginationCount = Math.ceil(max / 27) * 27;
           // https://www.czc.cz/black-friday-2019/produkty?q-first=99
           for (let i = 27; i < paginationCount; i += 27) {
-            const paginationUrl = `https://www.czc.cz/black-friday/produkty?q-first=${i}`;
+            const paginationUrl = `https://www.czc.cz/blackfriday/produkty?q-first=${i}`;
             await requestQueue.addRequest({
               url: paginationUrl,
               userData: {
