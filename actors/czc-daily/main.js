@@ -271,7 +271,7 @@ Apify.main(async () => {
     try {
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "czc.cz");
       log.info("invalidated Data CDN");
-      await uploadToKeboola(type !== "FULL" ? "czc_bf" : "czc");
+      await uploadToKeboola(type === "BF" ? "czc_bf" : "czc");
       log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);
