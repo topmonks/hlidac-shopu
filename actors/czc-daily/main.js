@@ -29,7 +29,8 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = "FULL",
+    bfURL = "https://www.czc.cz/blackfriday/produkty"
   } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {
@@ -63,7 +64,7 @@ Apify.main(async () => {
         }); */
   } else if (type === "BF") {
     await requestQueue.addRequest({
-      url: "https://www.czc.cz/blackfriday/produkty",
+      url: bfURL,
       userData: {
         label: "BF"
       }
@@ -141,7 +142,7 @@ Apify.main(async () => {
           const paginationCount = Math.ceil(max / 27) * 27;
           // https://www.czc.cz/black-friday-2019/produkty?q-first=99
           for (let i = 27; i < paginationCount; i += 27) {
-            const paginationUrl = `https://www.czc.cz/blackfriday/produkty?q-first=${i}`;
+            const paginationUrl = `${bfURL}?q-first=${i}`;
             await requestQueue.addRequest({
               url: paginationUrl,
               userData: {
