@@ -8122,6 +8122,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-csv@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "async-csv@npm:2.1.3"
+  dependencies:
+    csv: ^5.1.3
+  checksum: 8c55a41f0008fffaf24dc1aa5dcce21814ed73212e2f9a8281153a06b9e8533d3de26a72c71c84b67380d7a9544d097623d18aa493dfedb4fa6f5c128093b605
+  languageName: node
+  linkType: hard
+
 "async-done@npm:^1.2.0, async-done@npm:^1.2.2":
   version: 1.3.2
   resolution: "async-done@npm:1.3.2"
@@ -8582,7 +8591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.7.2":
+"bluebird@npm:^3.5.0, bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 4f2288662f3d4eadbb82d4daa4a7d7976a28fa3c7eb4102c9b4033b03e5be4574ba123ac52a7c103cde4cb7b2d2afc1dbe41817ca15a29ff21ecd258d0286047
@@ -8977,6 +8986,13 @@ __metadata:
   bin:
     bunyan: bin/bunyan
   checksum: 73c30ffb8c1a6b8dfe9dc3bca325bba85cb706442aa78cc44fdc93cf16b929b0b7c1884b92110fac9f287342a94f2ae8ebe8c83664b09c7f6743ffe1621c204c
+  languageName: node
+  linkType: hard
+
+"byte-size@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "byte-size@npm:5.0.1"
+  checksum: 915e1367eb6918fc7d0763da47abeab5399b925cbbe534a3ea98ff0e96edfca1941ee0e83617a155e89779a4fa505e323c2c29b54f10778f326272f1a4877395
   languageName: node
   linkType: hard
 
@@ -10514,10 +10530,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-generate@npm:^3.4.3":
+  version: 3.4.3
+  resolution: "csv-generate@npm:3.4.3"
+  checksum: 970831a55ea7232e12170abff4e904649019dfa7b2563bdf3d5f070001e04f29f929ff3cd9e293fb68294ee17c0b99ee93d1af64d59096d69af3b3401a5e942f
+  languageName: node
+  linkType: hard
+
 "csv-parse@npm:^4.15.3, csv-parse@npm:^4.16.3":
   version: 4.16.3
   resolution: "csv-parse@npm:4.16.3"
   checksum: ba740ff2dbeb78c847d6c1d9a00ae9d071a353beea4852307bc2a3df1c422ae7e134a24e0cca524068701c40ed59f545de8f876c3f5705ef6a5f340777a9083e
+  languageName: node
+  linkType: hard
+
+"csv-stringify@npm:^5.6.5":
+  version: 5.6.5
+  resolution: "csv-stringify@npm:5.6.5"
+  checksum: a2757da3f64de5a59b814244f893bec302d4dc49290e49059ddd8eefea94934d9c8a8be391fab2c9f5739a95a66d43446bd0ebaabd18c02f57489f807f9919e1
+  languageName: node
+  linkType: hard
+
+"csv@npm:^5.1.3":
+  version: 5.5.3
+  resolution: "csv@npm:5.5.3"
+  dependencies:
+    csv-generate: ^3.4.3
+    csv-parse: ^4.16.3
+    csv-stringify: ^5.6.5
+    stream-transform: ^2.1.3
+  checksum: f6159fdd05cdaa9b6d67dd9d6b571ed4b843b40a6c8e482b3b388cdd295705e85324a8fcffd8cd0fdf5df55c8d7d5db91f682dbad46c7317e9e4fc1d3f066396
   languageName: node
   linkType: hard
 
@@ -17234,6 +17276,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"mixme@npm:^0.5.1":
+  version: 0.5.4
+  resolution: "mixme@npm:0.5.4"
+  checksum: 4c7c2b76f3b1c40307566a10066928af5d8c9bc019cf3bd8305e3f472228750c1dc4adcea104d51deeaa8ca698d423e3cb8aace62f5b95e93df960f6ad34ee6e
+  languageName: node
+  linkType: hard
+
 "mkdirp-classic@npm:^0.5.2, mkdirp-classic@npm:^0.5.3":
   version: 0.5.3
   resolution: "mkdirp-classic@npm:0.5.3"
@@ -17284,7 +17333,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.19.3, moment@npm:^2.29.1":
+"moment@npm:^2.19.3, moment@npm:^2.24.0, moment@npm:^2.29.1":
   version: 2.29.1
   resolution: "moment@npm:2.29.1"
   checksum: 86729013febf7160de5b93da69273dd304d674b0224f9544b3abd09a87671ddd2cdd57598261ce57588910d63747ffd5590965e83c790d8bf327083c0e0a06e0
@@ -17561,6 +17610,13 @@ fsevents@^1.2.7:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 604a48ca1ee0277a960f4d71a05cea2e9a20007a4cdf7953caec78d26acc4bba765d3a97c649953a2de505de67a1b26f0c8c7c81124c591c81de5659f359adce
+  languageName: node
+  linkType: hard
+
+"node-gzip@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "node-gzip@npm:1.1.2"
+  checksum: 161fb530c6ece426fa2d3d84964eb257885b17b70555838c34a707148757f05110fb6726cc8e201c4ed32318d897c3dfd9dafc5bdfcb534123f05b35dc36fdc5
   languageName: node
   linkType: hard
 
@@ -17978,6 +18034,15 @@ fsevents@^1.2.7:
     es-abstract: ^1.18.0-next.2
     has: ^1.0.3
   checksum: 31111fe8b8dfe7c3326ae8729eae542dc32d5705339b9b63d89d4a2f766641bfe8989744bd4771c65a7ca0dff281800e99640262c2e82daa97079143a86b3e0b
+  languageName: node
+  linkType: hard
+
+"objects-to-csv@npm:^1.3.4":
+  version: 1.3.6
+  resolution: "objects-to-csv@npm:1.3.6"
+  dependencies:
+    async-csv: ^2.1.3
+  checksum: d610c5eb21f6c86e64cfb3bf91ab0377d0fa54577e5d9ea2da3602734496663627e03c3d234b899e4bfe57687bfcca5b8e40def3cde1eff0d95374cf056b02b3
   languageName: node
   linkType: hard
 
@@ -20329,6 +20394,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"request-promise@npm:^4.2.4":
+  version: 4.2.6
+  resolution: "request-promise@npm:4.2.6"
+  dependencies:
+    bluebird: ^3.5.0
+    request-promise-core: 1.1.4
+    stealthy-require: ^1.1.1
+    tough-cookie: ^2.3.3
+  peerDependencies:
+    request: ^2.34
+  checksum: 6a715e7817dd11a77ac2a1eaa334a3fb5616436be1a2ffe07f605711a1cd6bf87149aa6173dfda8897f81e399b86f98ed088c594fa1a726958777fcb4a26a991
+  languageName: node
+  linkType: hard
+
 "request@npm:2.88.2, request@npm:^2.88.0, request@npm:~2.88.0":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
@@ -21801,6 +21880,15 @@ fsevents@^1.2.7:
     end-of-stream: ~1.4.1
     stream-to-array: ~2.3.0
   checksum: 3bc40a196a91f26ccc781c0d2d137f8c916231c4cbfbce9cb632e08d5282e6d2f87b927583d60ace358aa3bb38bc345b081cd58aeab4bd9b7c1e085f791d5371
+  languageName: node
+  linkType: hard
+
+"stream-transform@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "stream-transform@npm:2.1.3"
+  dependencies:
+    mixme: ^0.5.1
+  checksum: 290ea2373bd7c1c6cd7584cb11e7dec5595c08ef8d4f3dae1953d044d9d6201d8cf064d5904174bad3f3efb0771faf67f5a9be9eedbfd2120e281dc23d51b249
   languageName: node
   linkType: hard
 
@@ -23350,6 +23438,20 @@ typescript@~3.7.3:
   checksum: 4011718b76c59fc389f37ae2ece769cd001e9733fbe5c3123453b2b9dea5b31e06319b9f7d72857c1aa16bc817f2434c0adbb22f10e758cb66a098b439136068
   languageName: node
   linkType: hard
+
+"uploader@workspace:actors/uploader":
+  version: 0.0.0-use.local
+  resolution: "uploader@workspace:actors/uploader"
+  dependencies:
+    "@hlidac-shopu/lib": ^1.0.18
+    apify: ^2.0.7
+    byte-size: ^5.0.1
+    moment: ^2.24.0
+    node-gzip: ^1.1.2
+    objects-to-csv: ^1.3.4
+    request-promise: ^4.2.4
+  languageName: unknown
+  linkType: soft
 
 "upper-case@npm:^1.1.1":
   version: 1.1.3
