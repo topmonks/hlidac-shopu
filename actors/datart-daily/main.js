@@ -190,7 +190,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
     await requestQueue.addRequest({
-      url: `${rootUrl}/black_friday/index.html`,
+      url: `${rootUrl}/black-friday`,
       userData: {
         label: LABELS.BF
       }
@@ -389,7 +389,7 @@ Apify.main(async () => {
       if (request.userData.label === LABELS.BF) {
         log.info(`START BF ${request.url}`);
         const categories = [];
-        $(".category-box").each(function () {
+        $(".ms-category-box").each(function () {
           categories.push({
             url: `${rootUrl}${$(this).attr("href")}`,
             userData: {
