@@ -126,14 +126,16 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
-  log.info("invalidated Data CDN");
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
+    log.info("invalidated Data CDN");
 
-  try {
-    await uploadToKeboola("knihydobrovsky_cz");
-    log.info("upload to Keboola finished");
-  } catch (err) {
-    log.warning("upload to Keboola failed");
-    log.error(err);
+    try {
+      await uploadToKeboola("knihydobrovsky_cz");
+      log.info("upload to Keboola finished");
+    } catch (err) {
+      log.warning("upload to Keboola failed");
+      log.error(err);
+    }
   }
 });
