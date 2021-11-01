@@ -131,7 +131,9 @@ Apify.main(async () => {
     log.info("invalidated Data CDN");
 
     try {
-      await uploadToKeboola("knihydobrovsky_cz");
+      await uploadToKeboola(
+        type === "BF" ? "knihydobrovsky_cz_bf" : "knihydobrovsky_cz"
+      );
       log.info("upload to Keboola finished");
     } catch (err) {
       log.warning("upload to Keboola failed");
