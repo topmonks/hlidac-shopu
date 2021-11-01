@@ -22,7 +22,8 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = "FULL",
+    bfUrls = []
   } = input ?? {};
 
   const arrayHandledIds = await Apify.getValue("handledIds");
@@ -62,37 +63,19 @@ Apify.main(async () => {
         }
       });
     }
-  } 
-  else if (type === "BF") {
+  } else if (type === "BF") {
     //await requestQueue.addRequest({
     //  url: "https://www.knihydobrovsky.cz/akce-a-slevy/detail/black-friday-prave-dnes"
     //});
-    const requestList = [
-      "https://www.knihydobrovsky.cz/akce/black-friday-napeti",
-      "https://www.knihydobrovsky.cz/akce/black-friday-erotika",
-      "https://www.knihydobrovsky.cz/akce/black-friday-svetovka",
-      "https://www.knihydobrovsky.cz/akce/black-friday-romany-pro-zeny",
-      "https://www.knihydobrovsky.cz/akce/black-friday-young-adult",
-      "https://www.knihydobrovsky.cz/akce/black-friday-fantastika",
-      "https://www.knihydobrovsky.cz/akce/black-friday-verne",
-      "https://www.knihydobrovsky.cz/akce/black-friday-historie",
-      "https://www.knihydobrovsky.cz/akce/black-friday-pro-deti",
-      "https://www.knihydobrovsky.cz/akce/black-friday-rozvoj",
-      "https://www.knihydobrovsky.cz/akce/black-black-kucharky",
-      "https://www.knihydobrovsky.cz/akce/black-friday-e-knihy",
-      "https://www.knihydobrovsky.cz/akce/black-friday-deskovky",
-      "https://www.knihydobrovsky.cz/akce/black-friday-darkove-knihy"
-    ];
-    for (const list of requestList) {
+    for (const url of bfUrls) {
       await requestQueue.addRequest({
-        url: list,
+        url,
         userData: {
           label: "SUBLIST"
         }
       });
     }
-  }
-  else if (type === "TEST") {
+  } else if (type === "TEST") {
     // Navigate to https://www.example.com in Playwright with a POST request
     await requestQueue.addRequest({
       url: "https://www.knihydobrovsky.cz/detektivky-thrillery-a-horor?sort=2&currentPage=130",
