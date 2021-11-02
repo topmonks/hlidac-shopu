@@ -5160,7 +5160,7 @@ __metadata:
     "@hlidac-shopu/actors-common": ^1.1.4
     "@hlidac-shopu/lib": ^1.0.18
     "@types/node": ^16.10.1
-    apify: ^2.0.7
+    apify: ^2.1.0
     apify-cli: ^0.6.2
     modern-random-ua: ^1.0.3
   languageName: unknown
@@ -6041,6 +6041,13 @@ __metadata:
   version: 4.0.1
   resolution: "@sindresorhus/is@npm:4.0.1"
   checksum: 16908ae19a1ca54173594bfdc8f33c6b2203fc0592cd54d551999e5b7c937815b6127fbd131360fc2dd1b1e7fb6a6afcd3d0f977a630ee17d3c7afbe8e739c02
+  languageName: node
+  linkType: hard
+
+"@sindresorhus/is@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "@sindresorhus/is@npm:4.2.0"
+  checksum: 162aa2e4135f329264939cf844e35ef63b71e73c4fd02361b3d9f7cf9321fa071cd6dc84277f3d78df59d5819363fe6207c8027fc2c250649c64a4eb0ce26ef3
   languageName: node
   linkType: hard
 
@@ -7383,7 +7390,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agentkeepalive@npm:^4.1.2, agentkeepalive@npm:^4.1.3":
+"agentkeepalive@npm:^4.1.2, agentkeepalive@npm:^4.1.3, agentkeepalive@npm:^4.1.4":
   version: 4.1.4
   resolution: "agentkeepalive@npm:4.1.4"
   dependencies:
@@ -7699,6 +7706,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"apify-client@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "apify-client@npm:2.0.2"
+  dependencies:
+    "@apify/consts": ^1.4.0
+    "@apify/log": ^1.1.1
+    agentkeepalive: ^4.1.4
+    async-retry: ^1.3.1
+    axios: ^0.21.1
+    content-type: ^1.0.4
+    ow: ^0.27.0
+  checksum: 3f0563db464c0c03d7167dcd5350c0a13871692dee073552d9a84f9d70fa4d8026acb0b5b15cfe810325cafea277c3f994c8dc98c92172729bdabe8304618827
+  languageName: node
+  linkType: hard
+
 "apify-shared@npm:^0.1.45":
   version: 0.1.72
   resolution: "apify-shared@npm:0.1.72"
@@ -7777,6 +7799,44 @@ __metadata:
     puppeteer:
       optional: true
   checksum: fbc36b857c6a1d35df7ca65955f40e3817dbd3dbd60cd5029b27a0f2d1fd14b06ffaf9111176cde98f5991cab060df3f2e0a461660e651f1071d936583968677
+  languageName: node
+  linkType: hard
+
+"apify@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "apify@npm:2.1.0"
+  dependencies:
+    "@apify/consts": ^1.3.0
+    "@apify/datastructures": ^1.0.1
+    "@apify/log": ^1.1.1
+    "@apify/ps-tree": ^1.1.4
+    "@apify/storage-local": ^2.0.1
+    "@apify/utilities": ^1.1.2
+    apify-client: ^2.0.2
+    browser-pool: ^2.0.2
+    cheerio: 1.0.0-rc.10
+    content-type: ^1.0.4
+    got-scraping: ^3.2.3
+    htmlparser2: ^7.0.0
+    iconv-lite: ^0.6.3
+    jquery: ^3.6.0
+    mime-types: ^2.1.31
+    ow: ^0.28.0
+    rimraf: ^3.0.2
+    semver: ^7.3.5
+    stream-json: ^1.7.2
+    tough-cookie: ^4.0.0
+    underscore: ^1.13.0
+    ws: ^7.5.3
+  peerDependencies:
+    playwright: ^1.11.0
+    puppeteer: ^9.0.0||^10.0.0
+  peerDependenciesMeta:
+    playwright:
+      optional: true
+    puppeteer:
+      optional: true
+  checksum: c15f7824c0a7b7a81779c7cb33ee09830a067a30910204fd1c9da6edeacaa52fce9f7444980625eff4c9021f30a95bba66d75f3f4fadb82fc088fb258bf72931
   languageName: node
   linkType: hard
 
@@ -14497,7 +14557,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"htmlparser2@npm:^7.1.2":
+"htmlparser2@npm:^7.0.0, htmlparser2@npm:^7.1.2":
   version: 7.1.2
   resolution: "htmlparser2@npm:7.1.2"
   dependencies:
@@ -18281,6 +18341,20 @@ fsevents@^1.2.7:
     type-fest: ^1.2.1
     vali-date: ^1.0.0
   checksum: d09dddb7bd9b7a26d6efa9422a71142b8d5c50cb3f7bcc332850ffd53e77710cc0f6f748fa3e2175b2f631c62e942f6cd3d9191bcf856533d8f84127e23b8882
+  languageName: node
+  linkType: hard
+
+"ow@npm:^0.28.0":
+  version: 0.28.1
+  resolution: "ow@npm:0.28.1"
+  dependencies:
+    "@sindresorhus/is": ^4.2.0
+    callsites: ^3.1.0
+    dot-prop: ^6.0.1
+    lodash.isequal: ^4.5.0
+    type-fest: ^2.3.4
+    vali-date: ^1.0.0
+  checksum: c8a816a9abd1647a0f664f8066c234790f6c156ec2f8ee8f28b4acdbbee6bd13f52b133e69bf12fe040acf587e5cee66556e726f2e5f9228829262e6b8cc434b
   languageName: node
   linkType: hard
 
@@ -23053,6 +23127,13 @@ fsevents@^1.2.7:
   version: 1.3.0
   resolution: "type-fest@npm:1.3.0"
   checksum: 6a8d3e5ac9a18f95324c082d16531971a9984aa398ba16d8efd562e9d94f98bc8fb18ac147a9c1ab3990e5c88aa22bcf5dc11044ad241113c0e8581ad7e4f055
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^2.3.4":
+  version: 2.5.2
+  resolution: "type-fest@npm:2.5.2"
+  checksum: 8a444e9439ff59aed42f28cdabe0009dd5a7795dde741616a7905f8d9b0b5891621c7221689965f5ed2d9f021fb8ff7a29ae593b34fb0a5d7584c018c515ba81
   languageName: node
   linkType: hard
 
