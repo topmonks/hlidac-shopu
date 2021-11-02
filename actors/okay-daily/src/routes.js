@@ -7,7 +7,7 @@ const {
 const { COUNTRY } = require("./consts");
 
 // at this point, the main page is already loaded in $
-const handleStart = async ({ $, requestQueue }, stats, development = false) => {
+const handleStart = async ({ $, requestQueue }, crawlContext) => {
   // const requestQueue = await Apify.openRequestQueue();
   // start page, add all categories links to requestQueue
   let links = $("ul.box-menu__line")
@@ -17,7 +17,7 @@ const handleStart = async ({ $, requestQueue }, stats, development = false) => {
       return $(this).attr("href");
     })
     .get();
-  /*  if (development) {
+  /*  if (crawlContext.development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, adding only 1 list to requestQueue");
   }*/
@@ -28,11 +28,40 @@ const handleStart = async ({ $, requestQueue }, stats, development = false) => {
       url: link,
       userData: { label: "LIST" }
     });
-    stats.urls += 1;
+    crawlContext.stats.urls += 1;
+  }
+  log.debug(`Found ${links.length}x categories => added to queue`);
+};
+
+// at this point, the main page is already loaded in $
+const handleStartSK = async ({ $, requestQueue }, crawlContext) => {
+  // const requestQueue = await Apify.openRequestQueue();
+  // start page, add all categories links to requestQueue
+  console.log(
+    $("nav.nav-nested").find("li.nav-nested__link--first > a").length
+  );
+  let links = $("nav.nav-nested")
+    .find("li.nav-nested__link--first > a")
+    .map(function () {
+      return $(this).attr("href");
+    })
+    .get();
+  /*  if (crawlContext.development) {
+    links = links.slice(0, 1);
+    log.debug("Develoment mode, adding only 1 list to requestQueue");
+  }*/
+  for (const link of links) {
+    // request is an object, setting url to link and in userdata, setting new dictionary label: LIST
+    // it is me who is setting the label value, just using it for making the crawler fcn more clear
+    await requestQueue.addRequest({
+      url: `${crawlContext.baseUrl}${link}`,
+      userData: { label: "LIST" }
+    });
+    crawlContext.stats.urls += 1;
   }
 };
 
-const handleList = async ({ $, requestQueue }, stats, development) => {
+const handleList = async ({ $, requestQueue }, crawlContext) => {
   // const requestQueue = await Apify.openRequestQueue();
   // add detail pages of all products on the page to requestQueue
   let links = $("li.js-gtm-product-wrapper")
@@ -42,7 +71,7 @@ const handleList = async ({ $, requestQueue }, stats, development) => {
       return $(this).attr("href");
     })
     .get();
-  /*  if (development) {
+  /*  if (crawlContext.development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, crawl 1 product");
   }*/
@@ -51,7 +80,44 @@ const handleList = async ({ $, requestQueue }, stats, development) => {
       url: link,
       userData: { label: "DETAIL" }
     });
-    stats.urls += 1;
+    crawlContext.stats.urls += 1;
+  }
+  log.debug(`Found ${links.length}x items => added to queue`);
+
+  // add next page to requestQueue, if exists
+  const nextLink = $("a.next").attr("href");
+  if (nextLink) {
+    await requestQueue.addRequest({
+      url: nextLink,
+      userData: { label: "LIST" }
+    });
+    log.debug(`Found pagination page ${nextLink} => added to queue`);
+    crawlContext.stats.urls += 1;
+  }
+};
+
+const handleListSK = async ({ $, requestQueue }, crawlContext) => {
+  // const requestQueue = await Apify.openRequestQueue();
+  // add detail pages of all products on the page to requestQueue
+  console.log($("div.collection-matrix__wrapper").html());
+  let links = $("div.collection-matrix__wrapper")
+    .find(".product__grid-item")
+    .find(".product__imageContainer > a")
+    .map(function () {
+      return $(this).attr("href");
+    })
+    .get();
+  console.log(links);
+  /*  if (crawlContext.development) {
+    links = links.slice(0, 1);
+    log.debug("Develoment mode, crawl 1 product");
+  }*/
+  for (const link of links) {
+    await requestQueue.addRequest({
+      url: link,
+      userData: { label: "DETAIL" }
+    });
+    crawlContext.stats.urls += 1;
   }
 
   // add next page to requestQueue, if exists
@@ -61,36 +127,11 @@ const handleList = async ({ $, requestQueue }, stats, development) => {
       url: nextLink,
       userData: { label: "LIST" }
     });
-    stats.urls += 1;
+    crawlContext.stats.urls += 1;
   }
 };
 
-const handleBFListing = async (
-  { $, requestQueue },
-  stats,
-  development = false
-) => {
-  // const requestQueue = await Apify.openRequestQueue();
-  // add detail pages of all products on the page to requestQueue
-  let links = $("div.crossroad-categories li a")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .get();
-  /*if (development) {
-    links = links.slice(0, 1);
-    log.debug("Develoment mode, adding only 1 list to requestQueue");
-  }*/
-  for (const link of links) {
-    await requestQueue.addRequest({
-      url: link,
-      userData: { label: "LIST" }
-    });
-    stats.urls += 1;
-  }
-};
-
-const handleDetail = async ({ request, $ }, stats, country) => {
+const handleDetail = async ({ request, $ }, crawlContext, country) => {
   // parse detail page
 
   const productDescription = JSON.parse(
@@ -158,7 +199,8 @@ const handleDetail = async ({ request, $ }, stats, country) => {
 
 module.exports = {
   handleStart,
+  handleStartSK,
   handleList,
-  handleBFListing,
+  handleListSK,
   handleDetail
 };

@@ -14,16 +14,12 @@ const {
   handleStart,
   handleList,
   handleDetail,
-  handleBFListing
+  handleStartSK,
+  handleListSK
 } = require("./src/routes");
 
-const {
-  COUNTRY,
-  BASE_URL_CZ,
-  BASE_URL_SK,
-  BASE_URL_CZ_BF,
-  BASE_URL_SK_BF
-} = require("./src/consts");
+const { COUNTRY, BASE_URL_CZ, BASE_URL_SK } = require("./src/consts");
+const { URL } = require("url");
 
 const {
   utils: { log }
@@ -50,7 +46,8 @@ Apify.main(async () => {
     debug = false,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
-    maxConcurrency = 5
+    maxConcurrency = 5,
+    bfUrls = []
   } = input ?? {};
   if (development || debug) {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
@@ -63,14 +60,23 @@ Apify.main(async () => {
     totalItems: 0
   };
 
+  const crawlContext = {
+    baseUrl: country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK,
+    development,
+    stats,
+    country
+  };
+
   const requestQueue = await Apify.openRequestQueue();
   if (type === "BF") {
-    const bfUrl = country === COUNTRY.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF;
-    await requestQueue.addRequest({
-      url: bfUrl,
-      userData: { label: "BF" }
-    });
-  } else if (development) {
+    for (const url of bfUrls) {
+      await requestQueue.addRequest({
+        url,
+        userData: { label: "LIST" }
+      });
+      crawlContext.stats.urls += 1;
+    }
+  } else if (development && crawlContext.country === COUNTRY.SK) {
     await requestQueue.addRequest({
       url: "https://www.okay.sk/moderne-koberce/",
       userData: { label: "LIST" }
@@ -100,12 +106,18 @@ Apify.main(async () => {
       context.requestQueue = requestQueue;
       switch (label) {
         case "LIST":
-          await handleList(context, stats, development);
+          switch (country.toUpperCase()) {
+            case COUNTRY.SK:
+              await handleListSK(context, crawlContext);
+              break;
+            default:
+              await handleList(context, crawlContext);
+          }
           break;
         case "DETAIL":
-          const product = await handleDetail(context, stats, country);
+          const product = await handleDetail(context, crawlContext, country);
           if (product.itemId !== null && product.currentPrice !== null) {
-            stats.totalItems += 1;
+            crawlContext.stats.totalItems += 1;
             if (!processedIds.has(product.itemId)) {
               processedIds.add(product.itemId);
               promiseList.push(
@@ -118,21 +130,24 @@ Apify.main(async () => {
                   toProduct(product, {})
                 )
               );
-              stats.items += 1;
+              crawlContext.stats.items += 1;
               if (promiseList.length >= 100) {
                 await Promise.all(promiseList);
                 promiseList = [];
               }
             } else {
-              stats.itemsDuplicity += 1;
+              crawlContext.stats.itemsDuplicity += 1;
             }
           }
           break;
-        case "BF":
-          await handleBFListing(context, stats, development);
-          break;
         default:
-          await handleStart(context, stats, development);
+          switch (country.toUpperCase()) {
+            case COUNTRY.SK:
+              await handleStartSK(context, crawlContext);
+              break;
+            default:
+              await handleStart(context, crawlContext);
+          }
       }
     }
   });
@@ -145,8 +160,8 @@ Apify.main(async () => {
   }
   log.info("Crawl finished.");
 
-  await Apify.setValue("STATS", stats);
-  log.info(JSON.stringify(stats));
+  await Apify.setValue("STATS", crawlContext.stats);
+  log.info(JSON.stringify(crawlContext.stats));
 
   if (!development) {
     await invalidateCDN(
