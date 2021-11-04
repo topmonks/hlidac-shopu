@@ -2,8 +2,9 @@ import { html, render } from "lit-html";
 import { Workbox } from "workbox-window";
 import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
 import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";
-import { logoTemplate, resultsEmbed } from "@hlidac-shopu/lib/templates.mjs";
+import { logoTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
+import { resultsEmbed } from "./templates";
 
 rollbar.init();
 
