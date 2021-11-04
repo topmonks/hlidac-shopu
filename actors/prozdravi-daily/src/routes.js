@@ -105,8 +105,7 @@ const PRODUCTS = async ({ $ }) => {
       originalPrice,
       currency: item.price.withVat.currency,
       currentPrice,
-      category,
-      sections: item.sections
+      category
     };
     await uploadToS3(
       s3,
