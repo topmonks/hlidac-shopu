@@ -43,12 +43,27 @@ const getProductJSON = async $ => {
     return resultJson;
   }
 };
+
+const getCategory = sections => {
+  // create category from the first top down path from the tree
+  let result = [];
+  let prevParent = "initial";
+  for (const section in sections) {
+    const item = sections[section];
+    if (prevParent === item.parentId || prevParent === "initial") {
+      prevParent = item.id;
+      result.push(item);
+    }
+  }
+  return result.map(p => p.name.trim()).join(" > ");
+};
+
 const START = async ({ $, crawler }) => {
   log.info("Processing START");
   const resultJson = await getProductJSON($);
   const json = JSON.parse(resultJson);
   const totalItems = json.products.listingData.totalItems;
-  let totalPages = Math.floor(totalItems / PRODUCTS_PER_PAGE); // - 3;
+  let totalPages = Math.floor(totalItems / PRODUCTS_PER_PAGE);
   if (global.test) {
     totalPages = 3;
     log.info(`TEST mode. Data are taken only from ${totalPages} pages.`);
@@ -76,9 +91,10 @@ const PRODUCTS = async ({ $ }) => {
 
   for (const item of products) {
     const detailImage = item?.images[0]?.detail;
-    const originalPrice = item?.price?.baseWithVat?.decimal;
-    const currentPrice = item.price.withVat.decimal;
+    const originalPrice = parseInt(item?.price?.baseWithVat?.decimal);
+    const currentPrice = parseInt(item.price.withVat.decimal);
     const discounted = originalPrice !== currentPrice;
+    const category = getCategory(item.sections);
     const result = {
       itemId: item.id.toString().trim(),
       itemCode: item.code,
@@ -88,8 +104,9 @@ const PRODUCTS = async ({ $ }) => {
       discounted,
       originalPrice,
       currency: item.price.withVat.currency,
-      currentPrice
-      //category: item.sections.map(p => p.name.trim()).join(" > ")
+      currentPrice,
+      category,
+      sections: item.sections
     };
     await uploadToS3(
       s3,
