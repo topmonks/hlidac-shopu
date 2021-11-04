@@ -5233,7 +5233,7 @@ __metadata:
     apify: ^2.0.7
     apify-cli: ^0.6.2
     fingerprint-generator: ^1.0.0
-    fingerprint-injector: ^0.7.1
+    fingerprint-injector: ^1.0.0
     playwright: ^1.15.0
     proxy-agent: ^5.0.0
     random-mua: ^0.5.0
@@ -12953,14 +12953,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-injector@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "fingerprint-injector@npm:0.7.1"
+"fingerprint-injector@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fingerprint-injector@npm:1.0.0"
   dependencies:
     "@apify/log": ^1.0.5
     tslib: ^2.3.1
     useragent: ^2.3.0
-  checksum: 98e3c67f116be3b72d838e7c536bef4f97a1a58a453eb38ac287d7d4b3dd05233d2612f957304476f88b120180b414c4e31f77b2f64047740985c65add8a2178
+  checksum: 2263452da3ffc39b0da86dade9a4f7529384079a69dfc58e2c38eaa98c98b2cf44d0f5d10f580ededb5acad0779f98328113be3e1c97aa109eb75614140e5d82
   languageName: node
   linkType: hard
 
