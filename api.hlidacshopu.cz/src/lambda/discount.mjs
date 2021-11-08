@@ -141,7 +141,7 @@ export function getRealDiscount(data) {
   const isInLast30Days = date =>
     isWithinInterval(date, { start: subDays(new Date(), 30), end: new Date() });
   if (
-    isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast90Days)
+    isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast30Days)
   )
     return euDiscount(lastDiscountDate, lastIncreaseDate, series);
   return commonPriceDifference(
