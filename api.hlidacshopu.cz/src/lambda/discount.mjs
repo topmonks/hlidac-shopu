@@ -112,12 +112,15 @@ function isEuDiscountApplicable(
   return false;
 }
 
+const commonPriceInterval = 60;
+const saleActionInterval = 30;
+
 /**
  * Searches for Sale Action in last 30 days. When there is any, it returns
  * real sale according to EU legislation - Minimum price in 30 days before
  * sale action. Sale action is simply last drop of price without any increase.
  * In other cases it counts discount against common price - most used price
- * in 30 days interval.
+ * in 60 days interval.
  * @param {DataRow[]} data Time series of prices
  * @returns {EUDiscount | CommonPriceDifference}
  */
@@ -138,17 +141,25 @@ export function getRealDiscount(data) {
   const lastIncreaseDate = last(
     changes.filter(([δ]) => δ > 0).map(([, date]) => date)
   );
-  const isInLast30Days = date =>
-    isWithinInterval(date, { start: subDays(new Date(), 30), end: new Date() });
+  const isInLastDays = days => date =>
+    isWithinInterval(date, {
+      start: subDays(new Date(), days),
+      end: new Date()
+    });
   if (
-    isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast30Days)
-  )
+    isEuDiscountApplicable(
+      lastIncreaseDate,
+      lastDiscountDate,
+      isInLastDays(saleActionInterval)
+    )
+  ) {
     return euDiscount(lastDiscountDate, lastIncreaseDate, series);
+  }
   return commonPriceDifference(
     lastDiscountDate,
     lastIncreaseDate,
     series,
-    isInLast30Days
+    isInLastDays(commonPriceInterval)
   );
 }
 
