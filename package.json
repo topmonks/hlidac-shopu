@@ -83,6 +83,7 @@
     "start": "run-p 'start:*'",
     "test": "run-p 'test:*'",
     "test:lib": "wtr lib/**/*.test.mjs --coverage",
+    "test:api": "wtr api.hlidacshopu.cz/src/lambda/*.test.mjs --coverage",
     "lint": "run-p 'lint:*'",
     "lint:actors": "eslint ./actors",
     "lint:website": "eslint ./www.hlidacshopu.cz",
