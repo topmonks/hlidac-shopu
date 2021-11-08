@@ -27,6 +27,8 @@ We are using `package.json` `scripts` (run `yarn run` for a list) for project au
 
 ### Prerequisites
 
+*If you only want to build the Firefox extension, it is enough to install Docker and follow the guide in the next step.*
+
 You will need:
 
 * Node.js 16 (we use `nvm` for Node.js version management)
@@ -42,17 +44,15 @@ We have install scripts for Debian and macOS. See `scripts` folder for install s
 On debian run `bash ./scripts/install-debian-tools.sh` - this will use apt-get to install `jq`.
 On macOS run `bash ./scripts/install-macos-tools.sh` - this will use homebrew to install `jq`, `nvm` and `pulumi`.
 
-## Step by step build of extension for reviewers
+## Step by step build of Firefox extension for reviewers
 
-Make sure your system meets [all prerequisites](#prerequisites). **See previous section.**
+Install Docker for your OS (all OSes are supported) and then execute the following command from the root of the project:
 
 ```
-nvm install $(< .nvmrc)
-nvm use
-yarn install
-yarn build:extension
-yarn build:firefox
+./scripts/build-firefox-extension-dockerized.sh
 ```
+
+Execution of this command might take a while. Built extension will be placed in the `dist` folder.
 
 ## Building extensions
 
