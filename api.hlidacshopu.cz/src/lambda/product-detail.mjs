@@ -1,8 +1,8 @@
-import { GetItemCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/GetItemCommand.js";
-import { QueryCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/QueryCommand.js";
-import { PutItemCommand } from "@aws-sdk/client-dynamodb/dist/es/commands/PutItemCommand.js";
-import { marshall } from "@aws-sdk/util-dynamodb/dist/es/marshall.js";
-import { unmarshall } from "@aws-sdk/util-dynamodb/dist/es/unmarshall.js";
+import { GetItemCommand } from "@aws-sdk/client-dynamodb/dist-es/commands/GetItemCommand.js";
+import { QueryCommand } from "@aws-sdk/client-dynamodb/dist-es/commands/QueryCommand.js";
+import { PutItemCommand } from "@aws-sdk/client-dynamodb/dist-es/commands/PutItemCommand.js";
+import { marshall } from "@aws-sdk/util-dynamodb/dist-es/marshall.js";
+import { unmarshall } from "@aws-sdk/util-dynamodb/dist-es/unmarshall.js";
 import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { createHash } from "crypto";
 import addDays from "date-fns/esm/addDays/index.js";
