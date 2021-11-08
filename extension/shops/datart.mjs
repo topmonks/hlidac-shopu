@@ -6,8 +6,8 @@ export class Datart extends Shop {
     const elem = document.querySelector(".product-detail");
     if (!elem) return;
     const itemIdTarget = elem
-      .getElementsByClassName("btn btn-cart ajax")[0]
-      .getAttribute("data-target");
+      .getElementsByClassName("btn btn-link btn-compare")[0]
+      .getAttribute("data-target-add");
     if (!itemIdTarget.length > 1) return;
 
     const searchParams = new URLSearchParams(itemIdTarget);
