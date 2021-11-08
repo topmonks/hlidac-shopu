@@ -1,6 +1,6 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
-import { S3Client } from "@aws-sdk/client-s3/dist/es/S3Client.js";
-import { GetObjectCommand } from "@aws-sdk/client-s3/dist/es/commands/GetObjectCommand.js";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist-es/DynamoDBClient.js";
+import { S3Client } from "@aws-sdk/client-s3/dist-es/S3Client.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3/dist-es/commands/GetObjectCommand.js";
 import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {

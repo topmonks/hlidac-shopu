@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist/es/DynamoDBClient.js";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist-es/DynamoDBClient.js";
 import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
