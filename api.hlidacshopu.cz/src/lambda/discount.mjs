@@ -74,7 +74,7 @@ function commonPriceDifference(
   series,
   isInInterval
 ) {
-  // find most frequent price in 90 days interval before sale action
+  // find most frequent price in 30 days interval before sale action
   const byPrice = groupBy(([, price]) => price);
   const frequencies = Object.entries(
     byPrice(
@@ -113,11 +113,11 @@ function isEuDiscountApplicable(
 }
 
 /**
- * Searches for Sale Action in last 90 days. When there is any, it returns
+ * Searches for Sale Action in last 30 days. When there is any, it returns
  * real sale according to EU legislation - Minimum price in 30 days before
  * sale action. Sale action is simply last drop of price without any increase.
  * In other cases it counts discount against common price - most used price
- * in 90 days interval.
+ * in 30 days interval.
  * @param {DataRow[]} data Time series of prices
  * @returns {EUDiscount | CommonPriceDifference}
  */
@@ -138,8 +138,8 @@ export function getRealDiscount(data) {
   const lastIncreaseDate = last(
     changes.filter(([δ]) => δ > 0).map(([, date]) => date)
   );
-  const isInLast90Days = date =>
-    isWithinInterval(date, { start: subDays(new Date(), 90), end: new Date() });
+  const isInLast30Days = date =>
+    isWithinInterval(date, { start: subDays(new Date(), 30), end: new Date() });
   if (
     isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLast90Days)
   )
@@ -148,7 +148,7 @@ export function getRealDiscount(data) {
     lastDiscountDate,
     lastIncreaseDate,
     series,
-    isInLast90Days
+    isInLast30Days
   );
 }
 
