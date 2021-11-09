@@ -1,12 +1,8 @@
 const Apify = require("apify");
-const { Session } = require("apify/build/session_pool/session")
-const {
-  PlaywrightPlugin,
-  PuppeteerPlugin
-} = require("browser-pool");
+const { Session } = require("apify/build/session_pool/session");
+const { PlaywrightPlugin, PuppeteerPlugin } = require("browser-pool");
 const FingerprintGenerator = require("fingerprint-generator");
 const { FingerprintInjector } = require("fingerprint-injector");
-
 
 const playwright = require("playwright");
 const cheerio = require("cheerio");
@@ -249,9 +245,9 @@ Apify.main(async () => {
   });
 
   const fingerprintGenerator = new FingerprintGenerator({
-    devices: ['desktop'],
-    browsers: [{ name: 'firefox', minVersion: 88 }],
-    operatingSystems: ['windows'],
+    devices: ["desktop"],
+    browsers: [{ name: "firefox", minVersion: 88 }],
+    operatingSystems: ["windows"]
   });
 
   const fingerprintInjector = new FingerprintInjector();
@@ -265,9 +261,9 @@ Apify.main(async () => {
     handleRequestTimeoutSecs: 360,
     launchContext: {
       launchOptions: {
-        headless: true,
+        headless: true
       },
-      launcher: playwright.firefox,
+      launcher: playwright.firefox
     },
     sessionPoolOptions: {
       maxPoolSize: 50
@@ -279,63 +275,64 @@ Apify.main(async () => {
         const { browserController, session, request, page } = context;
         const cookies = session.getPuppeteerCookies(request.url);
         const validCookies = cookies.filter(cookie => cookie.name);
-        await browserController.setCookies(page, validCookies)
+        await browserController.setCookies(page, validCookies);
 
         await page.route("**/*", (route, request) => {
-          const blockedResources = ["image", "media", "stylesheet", "font"]
+          const blockedResources = ["image", "media", "stylesheet", "font"];
 
           if (blockedResources.includes(request.resourceType())) {
-            return route.abort().catch(() => { })
+            return route.abort().catch(() => {});
           }
 
-          return route.continue().catch(() => { })
-        })
-
+          return route.continue().catch(() => {});
+        });
       }
     ],
     postNavigationHooks: [
-      async (crawlingContext) => {
+      async crawlingContext => {
         const { response, session } = crawlingContext;
-        const isCaptcha = response.status() === 403
+        const isCaptcha = response.status() === 403;
         if (!isCaptcha) {
-          log.info("No captcha")
-          session.setCookiesFromResponse(response)
-          return
+          log.info("No captcha");
+          session.setCookiesFromResponse(response);
+          return;
         } else {
-          log.warning("Captcha found")
+          log.warning("Captcha found");
           // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
         }
-      },
+      }
     ],
     sessionPoolOptions: {
-      createSessionFunction: async (sessionPool) => {
+      createSessionFunction: async sessionPool => {
         const session = new Session({ sessionPool });
-        session.userData.fingerprint = fingerprintGenerator.getFingerprint().fingerprint;
+        session.userData.fingerprint =
+          fingerprintGenerator.getFingerprint().fingerprint;
         return session;
       }
     },
     // we need custom cookie persistance because of malformed cookie format.
     persistCookiesPerSession: false,
     browserPoolOptions: {
-      preLaunchHooks: [(pageId, launchContext) => {
-        const { useIncognitoPages, launchOptions, session } = launchContext;
-        const { fingerprint } = session.userData;
-        launchContext.useIncognitoPages = true;
+      preLaunchHooks: [
+        (pageId, launchContext) => {
+          const { useIncognitoPages, launchOptions, session } = launchContext;
+          const { fingerprint } = session.userData;
+          launchContext.useIncognitoPages = true;
 
-        if (useIncognitoPages) {
-          return;
+          if (useIncognitoPages) {
+            return;
+          }
+
+          launchContext.launchOptions = {
+            ...launchOptions,
+            userAgent: fingerprint.userAgent,
+            viewport: {
+              width: fingerprint.screen.width,
+              height: fingerprint.screen.height
+            }
+          };
         }
-
-        launchContext.launchOptions = {
-          ...launchOptions,
-          userAgent: fingerprint.userAgent,
-          viewport: {
-            width: fingerprint.screen.width,
-            height: fingerprint.screen.height,
-          },
-
-        };
-      }],
+      ],
       prePageCreateHooks: [
         (pageId, browserController, pageOptions) => {
           const { launchContext } = browserController;
@@ -345,10 +342,10 @@ Apify.main(async () => {
             pageOptions.userAgent = fingerprint.userAgent;
             pageOptions.viewport = {
               width: fingerprint.screen.width,
-              height: fingerprint.screen.height,
+              height: fingerprint.screen.height
             };
           }
-        },
+        }
       ],
       postPageCreateHooks: [
         async (page, browserController) => {
@@ -363,17 +360,23 @@ Apify.main(async () => {
               return;
             }
             const context = page.context();
-            await fingerprintInjector.attachFingerprintToPlaywright(context, fingerprint);
+            await fingerprintInjector.attachFingerprintToPlaywright(
+              context,
+              fingerprint
+            );
 
             if (!useIncognitoPages) {
               // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
               launchContext.extend({ isFingerprintInjected: true });
             }
           } else if (browserPlugin instanceof PuppeteerPlugin) {
-            await fingerprintInjector.attachFingerprintToPuppeteer(page, fingerprint);
+            await fingerprintInjector.attachFingerprintToPuppeteer(
+              page,
+              fingerprint
+            );
           }
-        },
-      ],
+        }
+      ]
     },
     handlePageFunction,
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
