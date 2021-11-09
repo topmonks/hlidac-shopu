@@ -252,7 +252,7 @@ Apify.main(async () => {
   const fingerprintGenerator = new FingerprintGenerator({
     devices: ['desktop'],
     browsers: [{ name: 'firefox', minVersion: 88 }],
-    operatingSystems: ['macos'],
+    operatingSystems: ['windows'],
   });
 
   const fingerprintInjector = new FingerprintInjector();
@@ -268,7 +268,7 @@ Apify.main(async () => {
       launchOptions: {
         headless: false,
       },
-      launcher: require("playwright").firefox,
+      launcher: playwright.firefox,
     },
     sessionPoolOptions: {
       maxPoolSize: 2
@@ -286,7 +286,6 @@ Apify.main(async () => {
       async (crawlingContext) => {
         const { response, session } = crawlingContext;
         const isCaptcha = response.status() === 403
-        
         if (!isCaptcha) {
           log.info("No captcha")
           return
@@ -294,7 +293,6 @@ Apify.main(async () => {
           log.info("Captcha found")
           // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
         }
-
       },
     ],
     sessionPoolOptions: {
