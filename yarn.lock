@@ -306,7 +306,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.40.0, @aws-sdk/client-s3@npm:^3.40.0":
+"@aws-sdk/client-s3@npm:3.40.1":
+  version: 3.40.1
+  resolution: "@aws-sdk/client-s3@npm:3.40.1"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/client-sts": 3.40.0
+    "@aws-sdk/config-resolver": 3.40.0
+    "@aws-sdk/credential-provider-node": 3.40.0
+    "@aws-sdk/eventstream-serde-browser": 3.40.0
+    "@aws-sdk/eventstream-serde-config-resolver": 3.40.0
+    "@aws-sdk/eventstream-serde-node": 3.40.0
+    "@aws-sdk/fetch-http-handler": 3.40.0
+    "@aws-sdk/hash-blob-browser": 3.40.0
+    "@aws-sdk/hash-node": 3.40.0
+    "@aws-sdk/hash-stream-node": 3.40.0
+    "@aws-sdk/invalid-dependency": 3.40.0
+    "@aws-sdk/md5-js": 3.40.0
+    "@aws-sdk/middleware-apply-body-checksum": 3.40.0
+    "@aws-sdk/middleware-bucket-endpoint": 3.40.1
+    "@aws-sdk/middleware-content-length": 3.40.0
+    "@aws-sdk/middleware-expect-continue": 3.40.0
+    "@aws-sdk/middleware-host-header": 3.40.0
+    "@aws-sdk/middleware-location-constraint": 3.40.0
+    "@aws-sdk/middleware-logger": 3.40.0
+    "@aws-sdk/middleware-retry": 3.40.0
+    "@aws-sdk/middleware-sdk-s3": 3.40.0
+    "@aws-sdk/middleware-serde": 3.40.0
+    "@aws-sdk/middleware-signing": 3.40.0
+    "@aws-sdk/middleware-ssec": 3.40.0
+    "@aws-sdk/middleware-stack": 3.40.0
+    "@aws-sdk/middleware-user-agent": 3.40.0
+    "@aws-sdk/node-config-provider": 3.40.0
+    "@aws-sdk/node-http-handler": 3.40.0
+    "@aws-sdk/protocol-http": 3.40.0
+    "@aws-sdk/smithy-client": 3.40.0
+    "@aws-sdk/types": 3.40.0
+    "@aws-sdk/url-parser": 3.40.0
+    "@aws-sdk/util-base64-browser": 3.37.0
+    "@aws-sdk/util-base64-node": 3.37.0
+    "@aws-sdk/util-body-length-browser": 3.37.0
+    "@aws-sdk/util-body-length-node": 3.37.0
+    "@aws-sdk/util-user-agent-browser": 3.40.0
+    "@aws-sdk/util-user-agent-node": 3.40.0
+    "@aws-sdk/util-utf8-browser": 3.37.0
+    "@aws-sdk/util-utf8-node": 3.37.0
+    "@aws-sdk/util-waiter": 3.40.0
+    "@aws-sdk/xml-builder": 3.37.0
+    entities: 2.2.0
+    fast-xml-parser: 3.19.0
+    tslib: ^2.3.0
+  checksum: e33d4e7fcf30f888d15792283f1e96c3afb945ca07640e6003e6762e4309e0cfb469e45b4d45975c6957c92f23b0dac33aa42981bb9e3af43d26453c6f584ee9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-s3@npm:^3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/client-s3@npm:3.40.0"
   dependencies:
@@ -714,6 +769,19 @@ __metadata:
     "@aws-sdk/util-config-provider": 3.40.0
     tslib: ^2.3.0
   checksum: 50c075f80ee1dac3400784a6f91865209b1d48963f3729115d3a5908c28cdc186fe012e399ca395a5a9966f7d2f576a2d97aa22dbf7e04f401297a02064b32ea
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-bucket-endpoint@npm:3.40.1":
+  version: 3.40.1
+  resolution: "@aws-sdk/middleware-bucket-endpoint@npm:3.40.1"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.40.0
+    "@aws-sdk/types": 3.40.0
+    "@aws-sdk/util-arn-parser": 3.37.0
+    "@aws-sdk/util-config-provider": 3.40.0
+    tslib: ^2.3.0
+  checksum: abb7caf5cc974828b5c618560ea9203584b2a7594e9a697e0d4abcfc66d48ea4ff03185b2380e9f6bcc01bbd59469eaf03d2b4b345c9270305f7c543fbc36089
   languageName: node
   linkType: hard
 
@@ -4001,7 +4069,7 @@ __metadata:
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
     "@aws-sdk/client-cloudfront": 3.40.0
-    "@aws-sdk/client-s3": 3.40.0
+    "@aws-sdk/client-s3": 3.40.1
     "@hlidac-shopu/actors-common": ^1.1.4
     apify: ^2.1.0
   languageName: unknown
@@ -14980,7 +15048,7 @@ fsevents@^1.2.7:
   resolution: "lidl-daily@workspace:actors/lidl-daily"
   dependencies:
     "@aws-sdk/client-cloudfront": 3.40.0
-    "@aws-sdk/client-s3": 3.40.0
+    "@aws-sdk/client-s3": 3.40.1
     "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.11.6
     apify: ^2.1.0
