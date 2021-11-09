@@ -1,11 +1,9 @@
 const Apify = require("apify");
-const {
-  BrowserPool,
-  PlaywrightPlugin,
-  PuppeteerPlugin
-} = require("browser-pool");
+const { Session } = require("apify/build/session_pool/session");
+const { PlaywrightPlugin, PuppeteerPlugin } = require("browser-pool");
 const FingerprintGenerator = require("fingerprint-generator");
 const { FingerprintInjector } = require("fingerprint-injector");
+
 const playwright = require("playwright");
 const cheerio = require("cheerio");
 const utils = require("./src/utils");
@@ -79,8 +77,8 @@ Apify.main(async () => {
     development = false,
     debug = false,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"],
+    maxConcurrency = 2,
+    proxyGroups = ["RESIDENTIAL"],
     type = "FULL"
   } = input ?? {};
   log.info(`ACTOR - input: ${JSON.stringify(input)}`);
@@ -105,131 +103,10 @@ Apify.main(async () => {
   }
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
-
-  const handleRequestFunction = async ({ request }) => {
+  const handlePageFunction = async ({ request }) => {
     log.info(
       `Handling page ${request.url} with label ${request.userData.label}`
     );
-    // An asynchronous IIFE (immediately invoked function expression)
-    // allows us to use the 'await' keyword.
-    await (async () => {
-      const pluginOptions = {
-        //proxyUrl: proxyConfiguration.newUrl(),
-        launchOptions: {
-          headless: false,
-          channel: "chrome"
-        }
-      };
-
-      const playwrightPlugin = new PlaywrightPlugin(
-        playwright.chromium,
-        pluginOptions
-      );
-      const fingerprintGenerator = new FingerprintGenerator({
-        devices: ["desktop"],
-        browsers: [{ name: "chrome", minVersion: 90 }],
-        operatingSystems: ["linux"]
-      });
-
-      const { fingerprint } = fingerprintGenerator.getFingerprint();
-      const fingerprintInjector = new FingerprintInjector({ fingerprint });
-
-      const browserPool = new BrowserPool({
-        browserPlugins: [playwrightPlugin],
-        preLaunchHooks: [
-          (pageId, launchContext) => {
-            const { useIncognitoPages, launchOptions } = launchContext;
-
-            if (useIncognitoPages) {
-              return;
-            }
-
-            launchContext.launchOptions = {
-              ...launchOptions,
-              userAgent: fingerprint.userAgent,
-              viewport: {
-                width: fingerprint.screen.width,
-                height: fingerprint.screen.height
-              }
-            };
-          }
-        ],
-        prePageCreateHooks: [
-          (pageId, browserController, pageOptions) => {
-            const { launchContext } = browserController;
-
-            if (launchContext.useIncognitoPages && pageOptions) {
-              pageOptions.userAgent = fingerprint.userAgent;
-              pageOptions.viewport = {
-                width: fingerprint.screen.width,
-                height: fingerprint.screen.height
-              };
-            }
-          }
-        ],
-        postPageCreateHooks: [
-          async (page, browserController) => {
-            const { browserPlugin, launchContext } = browserController;
-
-            if (browserPlugin instanceof PlaywrightPlugin) {
-              const { useIncognitoPages, isFingerprintInjected } =
-                launchContext;
-
-              if (isFingerprintInjected) {
-                // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
-                return;
-              }
-              console.log("Injecting fingerprint to playwright");
-
-              const context = page.context();
-              context.setDefaultTimeout(0);
-              await fingerprintInjector.attachFingerprintToPlaywright(
-                context,
-                fingerprint
-              );
-
-              if (!useIncognitoPages) {
-                // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
-                launchContext.extend({ isFingerprintInjected: true });
-              }
-            } else if (browserPlugin instanceof PuppeteerPlugin) {
-              console.log("Injecting fingerprint to puppeteer");
-              await fingerprintInjector.attachFingerprintToPuppeteer(
-                page,
-                fingerprint
-              );
-            }
-          }
-        ]
-      });
-
-      const page = await browserPool.newPage();
-      await page.goto(request.url);
-      //Wait to solve reCaptcha manualy
-      await page.waitForTimeout(30000);
-      // will return all the repository cards we're looking for.
-      //console.log(await page.content());
-      const products = await page.$$eval(".prodbox", repoCards => {
-        return repoCards.map(card => {
-          const itemName = card.querySelector("h2");
-
-          const toText = element => element && element.innerText.trim();
-
-          return {
-            itemName: toText(itemName)
-          };
-        });
-      });
-      // Print the results. Nice!
-      console.log(`We extracted ${products.length} products.`);
-      await Apify.pushData(products);
-      //console.log("Loaded image: " + (await element.getAttribute("src")));
-      // Turn off the browser to clean up after ourselves.
-      // When you're done, close the page.
-      await page.close();
-      // When everything's finished, tear down the pool.
-      await browserPool.destroy();
-    })();
     // This is the start page
     if (request.userData.label === LABELS.START) {
       /*      const categoryIds = [];
@@ -358,24 +235,150 @@ Apify.main(async () => {
             log.info(`Storing ${items.length} for url ${request.url}`);
             await Apify.pushData(items);*/
     }
-    await Apify.utils.sleep(5000);
   };
 
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: true
+    countryCode: "CZ"
   });
 
+  const fingerprintGenerator = new FingerprintGenerator({
+    devices: ["desktop"],
+    browsers: [{ name: "firefox", minVersion: 88 }],
+    operatingSystems: ["windows"]
+  });
+
+  const fingerprintInjector = new FingerprintInjector();
   // Create crawler
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new Apify.PlaywrightCrawler({
     requestList,
     requestQueue,
     maxRequestRetries,
+    proxyConfiguration,
     maxConcurrency,
     handleRequestTimeoutSecs: 360,
-    handleRequestFunction,
+    launchContext: {
+      launchOptions: {
+        headless: true
+      },
+      launcher: playwright.firefox
+    },
+    sessionPoolOptions: {
+      maxPoolSize: 50
+    },
+    preNavigationHooks: [
+      async (context, gotoOptions) => {
+        gotoOptions.waitUntil = "domcontentloaded";
+
+        const { browserController, session, request, page } = context;
+        const cookies = session.getPuppeteerCookies(request.url);
+        const validCookies = cookies.filter(cookie => cookie.name);
+        await browserController.setCookies(page, validCookies);
+
+        await page.route("**/*", (route, request) => {
+          const blockedResources = ["image", "media", "stylesheet", "font"];
+
+          if (blockedResources.includes(request.resourceType())) {
+            return route.abort().catch(() => {});
+          }
+
+          return route.continue().catch(() => {});
+        });
+      }
+    ],
+    postNavigationHooks: [
+      async crawlingContext => {
+        const { response, session } = crawlingContext;
+        const isCaptcha = response.status() === 403;
+        if (!isCaptcha) {
+          log.info("No captcha");
+          session.setCookiesFromResponse(response);
+          return;
+        } else {
+          log.warning("Captcha found");
+          // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
+        }
+      }
+    ],
+    sessionPoolOptions: {
+      createSessionFunction: async sessionPool => {
+        const session = new Session({ sessionPool });
+        session.userData.fingerprint =
+          fingerprintGenerator.getFingerprint().fingerprint;
+        return session;
+      }
+    },
+    // we need custom cookie persistance because of malformed cookie format.
+    persistCookiesPerSession: false,
+    browserPoolOptions: {
+      preLaunchHooks: [
+        (pageId, launchContext) => {
+          const { useIncognitoPages, launchOptions, session } = launchContext;
+          const { fingerprint } = session.userData;
+          launchContext.useIncognitoPages = true;
+
+          if (useIncognitoPages) {
+            return;
+          }
+
+          launchContext.launchOptions = {
+            ...launchOptions,
+            userAgent: fingerprint.userAgent,
+            viewport: {
+              width: fingerprint.screen.width,
+              height: fingerprint.screen.height
+            }
+          };
+        }
+      ],
+      prePageCreateHooks: [
+        (pageId, browserController, pageOptions) => {
+          const { launchContext } = browserController;
+          const { fingerprint } = launchContext.session.userData;
+
+          if (launchContext.useIncognitoPages && pageOptions) {
+            pageOptions.userAgent = fingerprint.userAgent;
+            pageOptions.viewport = {
+              width: fingerprint.screen.width,
+              height: fingerprint.screen.height
+            };
+          }
+        }
+      ],
+      postPageCreateHooks: [
+        async (page, browserController) => {
+          const { browserPlugin, launchContext } = browserController;
+          const { fingerprint } = launchContext.session.userData;
+
+          if (browserPlugin instanceof PlaywrightPlugin) {
+            const { useIncognitoPages, isFingerprintInjected } = launchContext;
+
+            if (isFingerprintInjected) {
+              // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
+              return;
+            }
+            const context = page.context();
+            await fingerprintInjector.attachFingerprintToPlaywright(
+              context,
+              fingerprint
+            );
+
+            if (!useIncognitoPages) {
+              // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
+              launchContext.extend({ isFingerprintInjected: true });
+            }
+          } else if (browserPlugin instanceof PuppeteerPlugin) {
+            await fingerprintInjector.attachFingerprintToPuppeteer(
+              page,
+              fingerprint
+            );
+          }
+        }
+      ]
+    },
+    handlePageFunction,
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
