@@ -239,7 +239,6 @@ Apify.main(async () => {
             log.info(`Storing ${items.length} for url ${request.url}`);
             await Apify.pushData(items);*/
     }
-    await Apify.utils.sleep(5000);
   };
 
   log.info("ACTOR - setUp crawler");
@@ -266,19 +265,32 @@ Apify.main(async () => {
     handleRequestTimeoutSecs: 360,
     launchContext: {
       launchOptions: {
-        headless: false,
+        headless: true,
       },
       launcher: playwright.firefox,
     },
     sessionPoolOptions: {
-      maxPoolSize: 2
+      maxPoolSize: 50
     },
     preNavigationHooks: [
-      async (context) => {
+      async (context, gotoOptions) => {
+        gotoOptions.waitUntil = "domcontentloaded";
+
         const { browserController, session, request, page } = context;
         const cookies = session.getPuppeteerCookies(request.url);
+        console.log(cookies)
         const validCookies = cookies.filter(cookie => cookie.name);
         await browserController.setCookies(page, validCookies)
+
+        await page.route("**/*", (route, request) => {
+          const blockedResources = ["image", "media", "stylesheet", "font"]
+
+          if (blockedResources.includes(request.resourceType())) {
+            return route.abort().catch(() => { })
+          }
+
+          return route.continue().catch(() => { })
+        })
 
       }
     ],
@@ -288,9 +300,10 @@ Apify.main(async () => {
         const isCaptcha = response.status() === 403
         if (!isCaptcha) {
           log.info("No captcha")
+          session.setCookiesFromResponse(response)
           return
-        }else{
-          log.info("Captcha found")
+        } else {
+          log.warning("Captcha found")
           // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
         }
       },
@@ -302,6 +315,7 @@ Apify.main(async () => {
         return session;
       }
     },
+    // we need custom cookie persistance because of malformed cookie format.
     persistCookiesPerSession: false,
     browserPoolOptions: {
       preLaunchHooks: [(pageId, launchContext) => {
