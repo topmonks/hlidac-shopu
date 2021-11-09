@@ -278,7 +278,6 @@ Apify.main(async () => {
 
         const { browserController, session, request, page } = context;
         const cookies = session.getPuppeteerCookies(request.url);
-        console.log(cookies)
         const validCookies = cookies.filter(cookie => cookie.name);
         await browserController.setCookies(page, validCookies)
 
