@@ -8,9 +8,19 @@ const playwright = require("playwright");
 const cheerio = require("cheerio");
 const utils = require("./src/utils");
 const { LABELS, BASE_URL } = require("./src/const");
+const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 
 const { log, requestAsBrowser } = Apify.utils;
-
+let stats = {
+  categories: 0,
+  pages: 0,
+  pagination: 0,
+  items: 0,
+  itemsSkipped: 0,
+  itemsDuplicity: 0,
+  failed: 0
+};
+const processedIds = new Set();
 const SITEMAP_URL = "https://www.tsbohemia.cz/sitemap_index.xml";
 
 async function streamToBuffer(stream) {
@@ -61,6 +71,7 @@ async function enqueueAllCategories() {
     );
   }
   log.info(`Found ${requestListSources.length} categories from sitemap`);
+  stats.categories = requestListSources.length;
   return requestListSources;
 }
 
@@ -77,10 +88,11 @@ Apify.main(async () => {
     development = false,
     debug = false,
     maxRequestRetries = 3,
-    maxConcurrency = 2,
+    maxConcurrency = 1,
     proxyGroups = ["RESIDENTIAL"],
     type = "FULL"
   } = input ?? {};
+
   log.info(`ACTOR - input: ${JSON.stringify(input)}`);
   log.info("ACTOR - SetUp crawler");
   const requestQueue = await Apify.openRequestQueue();
@@ -89,7 +101,7 @@ Apify.main(async () => {
   if (type === LABELS.BF) {
     await requestQueue.addRequest({
       userData: { label: LABELS.BF },
-      url: "https://www.tsbohemia.cz/black-friday_c41438.html"
+      url: "https://www.tsbohemia.cz/-black-friday_c41438.html"
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
@@ -103,10 +115,12 @@ Apify.main(async () => {
   }
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
-  const handlePageFunction = async ({ request }) => {
+  const handlePageFunction = async ({ page, request }) => {
     log.info(
       `Handling page ${request.url} with label ${request.userData.label}`
     );
+    const content = await page.content();
+    const $ = cheerio.load(content);
     // This is the start page
     if (request.userData.label === LABELS.START) {
       /*      const categoryIds = [];
@@ -138,102 +152,117 @@ Apify.main(async () => {
             }*/
     } else if (request.userData.label === LABELS.BF) {
       log.info("START BLACK FRIDAY");
-      /* const categories = [];
-            const tcs = $("ul.level9 a");
-            for (let i = 0; i < tcs.length; i++) {
-              const link = tcs[i];
-              categories.push($(link).attr("href"));
-            }
-
-            // Enqueue category links
-            for (const cat of categories) {
-              log.info(`Adding to the queue ${cat}`);
-              await requestQueue.addRequest({
-                url:
-                  cat.indexOf("https") === -1
-                    ? `https://www.tsbohemia.cz${cat}`
-                    : cat,
-                userData: {
-                  label: LABELS.PAGE,
-                  name: "BF"
-                }
-              });
-            }*/
+      const categories = [];
+      const tcs = $("ul.level9 a");
+      for (let i = 0; i < tcs.length; i++) {
+        const link = tcs[i];
+        categories.push($(link).attr("href"));
+      }
+      stats.categories += categories.length;
+      // Enqueue category links
+      for (const cat of categories) {
+        log.info(`Adding to the queue ${cat}`);
+        await requestQueue.addRequest({
+          url:
+            cat.indexOf("https") === -1
+              ? `https://www.tsbohemia.cz${cat}`
+              : cat,
+          userData: {
+            label: LABELS.PAGE,
+            name: "BF"
+          }
+        });
+      }
     }
 
     // This is the category page
     else if (request.userData.label === LABELS.PAGE) {
-      /*      // Enqueue pagination pages
-            if (request.url.indexOf("page=") === -1 && $("p.reccount").length !== 0) {
-              try {
-                const paginationCount = Math.ceil(
-                  parseInt($("p.reccount").eq(0).text()) / 26
-                );
-                for (let i = 2; i <= paginationCount; i++) {
-                  await requestQueue.addRequest({
-                    url: `${request.url}?page=${i}`,
-                    userData: {
-                      label: LABELS.PAGE,
-                      name: request.userData.name
-                    }
-                  });
-                }
-                log.info(
-                  `Adding to the queue ${paginationCount} paginations for url ${request.url}`
-                );
-              } catch (e) {
-                log.error(e.message);
-              }
-            }
-
-            const items = [];
-            const toNumber = p => p.replace(/\s/g, "").match(/\d+/)[0];
-            const navbar = $(".navbar ul > li");
-            const category = [];
-            if (navbar.length !== 0) {
-              navbar.each(function () {
-                const bs = $(this);
-                if (!bs.hasClass("hp")) {
-                  category.push(bs.text().trim());
-                }
-              });
-            }
-            $(".prodbox").each(function () {
-              try {
-                const itemId = $(this).attr("data-stiid");
-                const oPriceElem = $(this).find(".price .mc");
-                const img = $(this).find(".img img").eq(0).attr("data-src");
-                const link = `https://www.tsbohemia.cz/${$(this)
-                  .find("h2 a")
-                  .eq(0)
-                  .attr("href")}`;
-                const name = $(this).find("h2 a").eq(0).text().trim();
-                const price = $(this).find(".price .wvat").eq(0).text().trim();
-                const dataItem = {
-                  img,
-                  itemId,
-                  itemUrl: link,
-                  itemName: name,
-                  discounted: false,
-                  currentPrice: price ? parseFloat(toNumber(price)) : null,
-                  category,
-                  menuCat: request.userData.name
-                };
-                if (oPriceElem.length !== 0) {
-                  const oPrice = oPriceElem.text().trim();
-                  dataItem.originalPrice = parseFloat(toNumber(oPrice));
-                  dataItem.discounted = true;
-                }
-
-                // Save data to dataset
-                items.push(dataItem);
-              } catch (e) {
-                log.error(e);
+      // Enqueue pagination pages
+      if (request.url.indexOf("page=") === -1 && $("p.reccount").length !== 0) {
+        try {
+          const paginationCount = Math.ceil(
+            parseInt($("p.reccount").eq(0).text()) / 24
+          );
+          for (let i = 2; i <= paginationCount; i++) {
+            await requestQueue.addRequest({
+              url: `${request.url}?page=${i}`,
+              userData: {
+                label: LABELS.PAGE,
+                name: request.userData.name
               }
             });
-            // Iterate all products and extract data
-            log.info(`Storing ${items.length} for url ${request.url}`);
-            await Apify.pushData(items);*/
+          }
+          log.info(`Adding to the queue ${paginationCount} pagination`);
+          stats.pagination += paginationCount;
+        } catch (e) {
+          log.error(e.message);
+        }
+      }
+
+      const products = [];
+      const toNumber = p => p.replace(/\s/g, "").match(/\d+/)[0];
+      const navbar = $(".navbar ul > li");
+      const category = [];
+      if (navbar.length !== 0) {
+        navbar.each(function () {
+          const bs = $(this);
+          if (!bs.hasClass("hp")) {
+            category.push(bs.text().trim());
+          }
+        });
+      }
+      $(".prodbox").each(function () {
+        try {
+          const itemId = $(this).attr("data-stiid");
+          const oPriceElem = $(this).find(".price .mc");
+          const img = $(this).find(".img img").eq(0).attr("data-src");
+          const link = `https://www.tsbohemia.cz/${$(this)
+            .find("h2 a")
+            .eq(0)
+            .attr("href")}`;
+          const name = $(this).find("h2 a").eq(0).text().trim();
+          const price = $(this).find(".price .wvat").eq(0).text().trim();
+          const dataItem = {
+            img,
+            itemId,
+            itemUrl: link,
+            itemName: name,
+            discounted: false,
+            currentPrice: price ? parseFloat(toNumber(price)) : null,
+            category,
+            menuCat: request.userData.name
+          };
+          if (oPriceElem.length !== 0) {
+            const oPrice = oPriceElem.text().trim();
+            dataItem.originalPrice = parseFloat(toNumber(oPrice));
+            dataItem.discounted = true;
+          }
+
+          // Save data to dataset
+          products.push(dataItem);
+        } catch (e) {
+          log.error(e);
+        }
+      });
+
+      // we don't need to block pushes, we will await them all at the end
+      const requests = [];
+      for (const product of products) {
+        // Save data to dataset
+        if (!processedIds.has(product.itemId)) {
+          processedIds.add(product.itemId);
+          requests.push(Apify.pushData(product));
+          stats.items++;
+        } else {
+          stats.itemsDuplicity++;
+        }
+      }
+      log.info(`Found ${requests.length} unique products`);
+
+      // await all requests, so we don't end before they end
+      await Promise.allSettled(requests);
+      // Iterate all products and extract data
+      await Apify.utils.sleep(utils.getRandomInt(250, 950));
     }
   };
 
@@ -294,10 +323,12 @@ Apify.main(async () => {
         const isCaptcha = response.status() === 403;
         if (!isCaptcha) {
           log.info("No captcha");
+          stats.pages++;
           session.setCookiesFromResponse(response);
           return;
         } else {
           log.warning("Captcha found");
+          stats.failed++;
           // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
         }
       }
@@ -390,45 +421,12 @@ Apify.main(async () => {
   await crawler.run();
   log.info("ACTOR - End crawler");
 
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
   if (!development) {
     // calling the keboola upload
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.call(
-        "blackfriday/uploader",
-        {
-          datasetId: env.defaultDatasetId,
-          upload: true,
-          actRunId: env.actorRunId,
-          blackFriday: type !== "FULL",
-          tableName: type !== "FULL" ? "tsbohemia_bf" : "tsbohemia"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      log.info(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
-
-    // stats page
-    try {
-      const env = await Apify.getEnv();
-      const run = await Apify.callTask(
-        "blackfriday/status-page-store",
-        {
-          datasetId: env.defaultDatasetId,
-          name: type !== "FULL" ? "tsbohemia-black-friday" : "tsbohemia-scraper"
-        },
-        {
-          waitSecs: 25
-        }
-      );
-      log.info(`Keboola upload called: ${run.id}`);
-    } catch (e) {
-      console.log(e);
-    }
+    await uploadToKeboola(type === "BF" ? "tsbohemia_bf" : "tsbohemia");
   }
 
   log.info("ACTOR - Finished");
