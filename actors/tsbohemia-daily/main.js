@@ -94,7 +94,6 @@ Apify.main(async () => {
   } = input ?? {};
 
   log.info(`ACTOR - input: ${JSON.stringify(input)}`);
-  log.info("ACTOR - SetUp crawler");
   const requestQueue = await Apify.openRequestQueue();
 
   let requestListSources = [];
@@ -266,6 +265,12 @@ Apify.main(async () => {
     }
   };
 
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
@@ -294,8 +299,9 @@ Apify.main(async () => {
       },
       launcher: playwright.firefox
     },
+    useSessionPool: true,
     sessionPoolOptions: {
-      maxPoolSize: 50
+      maxPoolSize: 200
     },
     preNavigationHooks: [
       async (context, gotoOptions) => {
@@ -329,6 +335,7 @@ Apify.main(async () => {
         } else {
           log.warning("Captcha found");
           stats.failed++;
+          session.retire();
           // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
         }
       }
