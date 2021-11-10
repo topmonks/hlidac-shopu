@@ -12,21 +12,38 @@ const { log } = Apify.utils;
 Apify.main(async () => {
   rollbar.init();
   global.userInput = await Apify.getInput();
-  const { type, country = COUNTRY.CZ } = global.userInput;
+  const {
+    development = false,
+    debugLog = false,
+    country = COUNTRY.CZ,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL",
+    bfUrl = "https://www.mountfield.cz/black-friday"
+  } = global.userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
-  if (type === BF) {
+  if (type === "FULL") {
     await requestQueue.addRequest({
-      url: "https://www.mountfield.cz/black-friday",
+      url: tools.getRootUrl(),
+      userData: {
+        label: LABELS.START
+      }
+    });
+  } else if (type === BF) {
+    await requestQueue.addRequest({
+      url: bfUrl,
       userData: {
         label: LABELS.MAIN_CATEGORY,
         mainCategory: "Black Friday"
       }
     });
-  } else {
+  } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: tools.getRootUrl(),
+      url: "https://www.mountfield.sk/pily-prislusenstvo-retaze",
       userData: {
-        label: LABELS.START
+        label: LABELS.CATEGORY,
+        mainCategory: "TEST"
       }
     });
   }
@@ -34,7 +51,7 @@ Apify.main(async () => {
   global.s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
+    groups: proxyGroups
   });
 
   // Create route
@@ -43,7 +60,8 @@ Apify.main(async () => {
   // Set up the crawler, passing a single options object as an argument.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 20,
+    maxConcurrency,
+    maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
     handlePageFunction: async context => {
@@ -65,13 +83,15 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `mountfield.${country.toLowerCase()}`
-  );
-  log.info("invalidated Data CDN");
+  if (!development) {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `mountfield.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
 
-  await uploadToKeboola(tools.getTableName());
+    await uploadToKeboola(tools.getTableName());
+  }
   log.info("Finished.");
 });

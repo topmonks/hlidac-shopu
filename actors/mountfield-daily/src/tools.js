@@ -7,7 +7,18 @@ const {
 const { COUNTRY, WEB, WEB_SK, BF } = require("./const");
 const { log } = Apify.utils;
 
-async function extractItems($, $products, userData, rootUrl) {
+function parsePrice(text) {
+  return parseFloat(
+    text
+      .replace(/\s/g, "")
+      .replace("Kč", "")
+      .replace("€", "")
+      .replace(",", ".")
+      .trim()
+  );
+}
+
+async function extractItems($, $products, userData) {
   const { s3 } = global;
   const { country = COUNTRY.CZ } = global.userInput;
   const category = [];
@@ -28,19 +39,26 @@ async function extractItems($, $products, userData, rootUrl) {
       ".list-products__item__info__price__item--main"
     );
     $actionPriceSpan.find("span").remove();
-    const actionPrice = $actionPriceSpan.text().replace(/\s/g, "").trim();
+    const actionPrice = $actionPriceSpan.text();
     const $retailPriceSpan = $item.find(
       ".list-products__item__info__price__item--old"
     );
     $retailPriceSpan.find("span").remove();
-    const retailPrice = $retailPriceSpan.text().replace(/\s/g, "").trim();
+    const retailPrice = $retailPriceSpan.text();
 
-    result.currentPrice = parseFloat(actionPrice);
-    result.originalPrice = parseFloat(retailPrice);
-    result.discounted = true;
+    result.currentPrice = parsePrice(actionPrice);
+    result.originalPrice = parsePrice(retailPrice);
+
+    result.discounted = false;
+    if (
+      (result.originalPrice !== -1 || result.originalPrice !== null) &&
+      result.originalPrice > result.currentPrice
+    ) {
+      result.discounted = true;
+    }
 
     result.id = itemCode;
-    result.itemUrl = `${rootUrl}${itemUrl}`;
+    result.itemUrl = itemUrl;
     result.itemId = itemCode;
     result.itemName = name;
     result.category = category.join(" > ");
@@ -50,22 +68,24 @@ async function extractItems($, $products, userData, rootUrl) {
     }
     requests.push(
       Apify.pushData(result),
-      uploadToS3(
-        s3,
-        `mountfield.${country}`,
-        await s3FileName(result),
-        "jsonld",
-        toProduct(
-          {
-            ...result,
-            inStock: true
-          },
-          { priceCurrency: result.currency }
-        )
-      )
+      !global.userInput.development
+        ? uploadToS3(
+            s3,
+            `mountfield.${country}`,
+            await s3FileName(result),
+            "jsonld",
+            toProduct(
+              {
+                ...result,
+                inStock: true
+              },
+              { priceCurrency: result.currency }
+            )
+          )
+        : null
     );
   }
-  await Promise.all(requests);
+  await Promise.allSettled(requests);
 }
 
 /**
@@ -74,10 +94,10 @@ async function extractItems($, $products, userData, rootUrl) {
  * @param {string} rootUrl
  * @returns {Promise<*[]>}
  */
-async function scrapProducts($, request, rootUrl) {
+async function scrapProducts($, request) {
   const $products = $(".list-products__item__in");
   if ($products.length > 0) {
-    await extractItems($, $products, request.userData, rootUrl);
+    await extractItems($, $products, request.userData);
   }
 }
 
@@ -97,10 +117,9 @@ const getRootUrl = () => {
 const getTableName = () => {
   const { type, country = COUNTRY.CZ } = global.userInput;
   let tableName = `mountfield_${country.toLowerCase()}`;
-  if (country === "CZ" && type === BF) {
-    tableName = "mountfield_bf";
+  if (type === BF) {
+    tableName = `${tableName}_bf`;
   }
-
   return tableName;
 };
 

@@ -31,14 +31,28 @@ const START = async ({ $, crawler }) => {
 };
 
 const CATEGORY = async ({ $, request, crawler }) => {
+  const { mainCategory } = request.userData;
   let categories = $(".list-categories__item__block").toArray();
   if (categories.length === 0) {
     categories = $(".list-categories-with-article__box").toArray();
   }
   if (categories.length === 0) {
-    await tools.scrapProducts($, request, tools.getRootUrl());
+    await tools.scrapProducts($, request);
+    const nextPagination = $("a.in-paging__control__item--arrow-next");
+    if (nextPagination.length > 0) {
+      const paginationUrl = `https://mountfield.${global.userInput.country.toLocaleLowerCase()}${nextPagination.attr(
+        "href"
+      )}`;
+      await crawler.requestQueue.addRequest({
+        url: paginationUrl,
+        userData: {
+          label: LABELS.CATEGORY,
+          mainCategory
+        }
+      });
+      log.info(`Found pagination page ${paginationUrl}`);
+    }
   } else {
-    const { mainCategory } = request.userData;
     for (const cat of categories) {
       const url = $(cat).attr("href");
       await crawler.requestQueue.addRequest({
@@ -49,6 +63,7 @@ const CATEGORY = async ({ $, request, crawler }) => {
         }
       });
     }
+    log.info(`Found categories ${categories.length}`);
   }
 };
 
