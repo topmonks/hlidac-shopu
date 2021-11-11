@@ -3861,7 +3861,7 @@ __metadata:
   dependencies:
     "@hlidac-shopu/lib": ^1.0.19
     lit-element: 3.0.2
-    lit-html: 2.0.1
+    lit-html: 2.0.2
   languageName: unknown
   linkType: soft
 
@@ -4191,7 +4191,7 @@ __metadata:
     "@material/snackbar": ^13.0.0
     "@material/top-app-bar": ^13.0.0
     "@thi.ng/atom": ^5.0.7
-    lit-html: 2.0.1
+    lit-html: 2.0.2
     workbox-window: ^6.4.0
   languageName: unknown
   linkType: soft
@@ -15163,12 +15163,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.0.1":
-  version: 2.0.1
-  resolution: "lit-html@npm:2.0.1"
+"lit-html@npm:2.0.2":
+  version: 2.0.2
+  resolution: "lit-html@npm:2.0.2"
   dependencies:
     "@types/trusted-types": ^2.0.2
-  checksum: a4e398016fb841ca0ce5306015de88f6c3aa04ba5afd413484e72326efd1add13d502abaed7d3e9ed579fc35cb92f82d1e2baf1839cec5052fc02210736efad4
+  checksum: 5c5066b4c903470ad6bd7b783e2efcf0c4ca8146e4647ea503b9851b0c93c65e698f294ee1706e100442cb08e2869fec50a7bf817b8c0851d62c70fd445584ec
   languageName: node
   linkType: hard
 
