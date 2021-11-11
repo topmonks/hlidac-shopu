@@ -57,7 +57,11 @@ addEventListener("DOMContentLoaded", async e => {
 
 function tableTemplate(data) {
   return data
-    .map(addExtraData(2020))
+    .map(addExtraData(2021))
+    .map(x => {
+      if (typeof x.startDate === "string") x.startDate = new Date(x.startDate);
+      return x;
+    })
     .sort((a, b) => a.sortKey - b.sortKey)
     .filter(x => x.allProducts)
     .map(shopTemplate);
