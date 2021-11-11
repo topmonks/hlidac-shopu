@@ -37,7 +37,8 @@ const extraData = new Map([
       ["prozdravi", { startDate: new Date("2020-11-23") }],
       ["tsbohemia", { startDate: new Date("2020-10-31") }]
     ])
-  ]
+  ],
+  [2021, new Map()]
 ]);
 
 function addExtraData(year) {
