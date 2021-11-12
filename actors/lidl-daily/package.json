@@ -3,8 +3,8 @@
 	"version": "0.0.1",
 	"description": "This is a boilerplate of an Apify actor.",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "3.40.0",
-		"@aws-sdk/client-s3": "3.40.1",
+		"@aws-sdk/client-cloudfront": "3.41.0",
+		"@aws-sdk/client-s3": "3.41.0",
 		"@hlidac-shopu/actors-common": "^1.1.4",
 		"apify": "^2.1.0",
 		"underscore": "^1.13.1"
