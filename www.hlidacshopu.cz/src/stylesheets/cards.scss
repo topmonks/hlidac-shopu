@@ -1,0 +1,27 @@
+.hs-card {
+  background-color: #fff;
+  border-radius: 6px;
+  padding-bottom: 1px;
+  box-shadow: 0 40px 20px rgba(92, 98, 205, 0.1);
+  width: 100%;
+  transition: transform 200ms ease-in-out;
+
+  &:hover {
+    transform: scale(1.07);
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+
+  h3 {
+    margin: 16px 20px;
+    color: var(--mdc-theme-text-primary-on-light);
+    font-weight: bold;
+  }
+  p {
+    margin: 16px 20px;
+  }
+}

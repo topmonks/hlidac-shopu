@@ -96,6 +96,9 @@
               Poznámka: <em>Reálná sleva</em> se počítá podle <a href="/metodika/#nova">naší nové metodiky</a>.
             </p>
           </div>
+          <div id="analyzy" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <h2>Naše analýzy</h2>
+          </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be"
                title="Přečtě si výsledky Analýzy Black Friday 2020">
@@ -127,6 +130,67 @@
               </picture>
             </a>
           </div>
+
+          <link rel="stylesheet" href="/assets/css/cards.css" />
+          <div class="mdc-layout-grid__cell">
+            <div class="hs-card">
+              <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
+                {% set analyza2019 = images["analyza-2019.png"]["public_id"] %}
+                <img alt="Analýza 2019"
+                  width="340"
+                  height="170"
+                  class="responsive"
+                  src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                  srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                          {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                          {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                  loading="lazy"
+                  role="presentation">
+                <h3>BLACK FRIDAY ANALÝZA 2019</h3>
+                <p>V letošním Black Friday bylo na největších českých eshopech dvakrát více produktů&hellip;</p>
+              </a>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell">
+            <div class="hs-card">
+              <a href="https://jakubbalada.medium.com/black-friday-po%C4%8Desku-kouzla-se-slevami-po-roce-cf48de109ba">
+                {% set analyza2018 = images["analyza-2018.png"]["public_id"] %}
+                <img alt="Analýza 2018"
+                  width="340"
+                  height="170"
+                  class="responsive"
+                  src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                  srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                          {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                          {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                  loading="lazy"
+                  role="presentation">
+                <h3>BLACK FRIDAY ANALÝZA 2018</h3>
+                <p>Letošní analýzu jsme nedělali sami v Apify, ale v rámci hackathonu na Data fesťáku&hellip;</p>
+              </a>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell">
+            <div class="hs-card">
+              <a href="https://blog.apify.com/black-friday-po-%C4%8Desku-kouzla-se-slevami-c7c0d2e7eeaa">
+                {% set analyza2017 = images["analyza-2017.png"]["public_id"] %}
+                <img alt="Analýza 2017"
+                  width="340"
+                  height="170"
+                  class="responsive"
+                  src="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                  srcset="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                          {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                          {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                  loading="lazy"
+                  role="presentation">
+                <h3>BLACK FRIDAY ANALÝZA 2017</h3>
+                <p>Máte český e-shop a jdete se svézt na vlně Black Friday? Vezměte dvě procenta produktů&hellip;</p>
+              </a>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12" style="height: 48px"></div>
+
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <h2>Otevřená data <small>beta</small></h2>
             <p>
