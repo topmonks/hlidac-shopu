@@ -286,7 +286,7 @@ Apify.main(async () => {
   });
 
   const fingerprintInjector = new FingerprintInjector();
-  const captchaSolver = new CaptchaSolver()
+  const captchaSolver = new CaptchaSolver();
   // Create crawler
   const crawler = new Apify.PlaywrightCrawler({
     requestList,
@@ -316,10 +316,10 @@ Apify.main(async () => {
           const blockedResources = ["image", "media", "stylesheet", "font"];
 
           if (blockedResources.includes(request.resourceType())) {
-            return route.abort().catch(() => { });
+            return route.abort().catch(() => {});
           }
 
-          return route.continue().catch(() => { });
+          return route.continue().catch(() => {});
         });
       }
     ],
@@ -335,24 +335,30 @@ Apify.main(async () => {
         } else {
           log.warning("Captcha found");
           // solve using captcha solver .
-          const [mainFrame, recaptchaFrame] = await page.frames()
-          await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", { state: "attached" })
+          const [mainFrame, recaptchaFrame] = await page.frames();
+          await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
+            state: "attached"
+          });
           const findSiteKey = () => {
             const bframe = document.querySelector("iframe[src*='/bframe']");
             const url = new URL(bframe.src);
-            return url.searchParams.get('k');
+            return url.searchParams.get("k");
           };
 
-          const solution = await captchaSolver.getSolution(recaptchaFrame, session.userData.fingerprint.userAgent, findSiteKey)
-          await recaptchaFrame.evaluate((solution) => {
-            grecaptcha.getResponse = () => solution
-            window.captchaCallback()
-          }, solution)
+          const solution = await captchaSolver.getSolution(
+            recaptchaFrame,
+            session.userData.fingerprint.userAgent,
+            findSiteKey
+          );
+          await recaptchaFrame.evaluate(solution => {
+            grecaptcha.getResponse = () => solution;
+            window.captchaCallback();
+          }, solution);
           // DO not start the robotic logic right after solving
-          await Apify.utils.sleep(10000)
+          await Apify.utils.sleep(10000);
           // Force the crawler to process the the response by saying it is alright
-          response.status = () => 200
-          log.info("Captcha solved!")
+          response.status = () => 200;
+          log.info("Captcha solved!");
         }
       }
     ],
