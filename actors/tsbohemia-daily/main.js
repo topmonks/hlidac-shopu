@@ -9,6 +9,7 @@ const cheerio = require("cheerio");
 const utils = require("./src/utils");
 const { LABELS, BASE_URL } = require("./src/const");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { CaptchaSolver } = require("./src/captcha-solver");
 
 const { log, requestAsBrowser } = Apify.utils;
 let stats = {
@@ -88,8 +89,8 @@ Apify.main(async () => {
     development = false,
     debug = false,
     maxRequestRetries = 3,
-    maxConcurrency = 1,
-    proxyGroups = ["RESIDENTIAL"],
+    maxConcurrency = 6,
+    proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
 
@@ -281,10 +282,11 @@ Apify.main(async () => {
   const fingerprintGenerator = new FingerprintGenerator({
     devices: ["desktop"],
     browsers: [{ name: "firefox", minVersion: 88 }],
-    operatingSystems: ["windows"]
+    operatingSystems: ["linux"]
   });
 
   const fingerprintInjector = new FingerprintInjector();
+  const captchaSolver = new CaptchaSolver();
   // Create crawler
   const crawler = new Apify.PlaywrightCrawler({
     requestList,
@@ -295,18 +297,16 @@ Apify.main(async () => {
     handleRequestTimeoutSecs: 360,
     launchContext: {
       launchOptions: {
-        headless: true
+        headless: false
       },
       launcher: playwright.firefox
     },
     useSessionPool: true,
     sessionPoolOptions: {
-      maxPoolSize: 200
+      maxPoolSize: 12
     },
     preNavigationHooks: [
       async (context, gotoOptions) => {
-        gotoOptions.waitUntil = "domcontentloaded";
-
         const { browserController, session, request, page } = context;
         const cookies = session.getPuppeteerCookies(request.url);
         const validCookies = cookies.filter(cookie => cookie.name);
@@ -325,7 +325,7 @@ Apify.main(async () => {
     ],
     postNavigationHooks: [
       async crawlingContext => {
-        const { response, session } = crawlingContext;
+        const { response, session, page } = crawlingContext;
         const isCaptcha = response.status() === 403;
         if (!isCaptcha) {
           log.info("No captcha");
@@ -334,9 +334,31 @@ Apify.main(async () => {
           return;
         } else {
           log.warning("Captcha found");
-          stats.failed++;
-          session.retire();
-          // solve using captcha solver and save cookies after redirect ot ts bohemia product pages.
+          // solve using captcha solver .
+          const [mainFrame, recaptchaFrame] = await page.frames();
+          await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
+            state: "attached"
+          });
+          const findSiteKey = () => {
+            const bframe = document.querySelector("iframe[src*='/bframe']");
+            const url = new URL(bframe.src);
+            return url.searchParams.get("k");
+          };
+
+          const solution = await captchaSolver.getSolution(
+            recaptchaFrame,
+            session.userData.fingerprint.userAgent,
+            findSiteKey
+          );
+          await recaptchaFrame.evaluate(solution => {
+            grecaptcha.getResponse = () => solution;
+            window.captchaCallback();
+          }, solution);
+          // DO not start the robotic logic right after solving
+          await Apify.utils.sleep(10000);
+          // Force the crawler to process the the response by saying it is alright
+          response.status = () => 200;
+          log.info("Captcha solved!");
         }
       }
     ],
@@ -351,6 +373,7 @@ Apify.main(async () => {
     // we need custom cookie persistance because of malformed cookie format.
     persistCookiesPerSession: false,
     browserPoolOptions: {
+      maxOpenPagesPerBrowser: 2,
       preLaunchHooks: [
         (pageId, launchContext) => {
           const { useIncognitoPages, launchOptions, session } = launchContext;
