@@ -5,13 +5,14 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
 const { gotScraping } = require("got-scraping");
-// const httpRequest = require("@apify/http-request");
+const httpRequest = require("@apify/http-request");
 const cheerio = require("cheerio");
 const {
   handleDetail,
   handleStart,
   handleLeftMenu,
   handlePage,
+  handleBF,
   handleTrhak,
   handleTrhakDetail
 } = require("./routes");
@@ -75,60 +76,14 @@ async function getXmlLinks(
 
 async function callKeboolaUpload(country, type) {
   const countryLower = country.toLowerCase();
-
-  // resolve graphName for statistic dashboard
-  let graphName;
-  let tableName;
-  if (countryLower !== "cz") {
-    graphName = `alza_${countryLower}`;
-    tableName = `alza_${countryLower}`;
-  } else if (type === "FULL") {
-    graphName = "alza";
-    tableName = "alza";
+  let tableName = "alza";
+  if (type === "FULL" && countryLower !== "cz") {
+    tableName = `${tableName}_${countryLower}`;
   } else if (type === "BF") {
-    graphName = "alza_cz_blackFriday";
-    tableName = "alza_bf";
-  } else if (type === "TRHAK") {
-    graphName = "alza_cz_trhak";
-    tableName = "alza";
+    tableName = `${tableName}_${countryLower}_bf`;
   }
-  const env = await Apify.getEnv();
   try {
     await uploadToKeboola(tableName);
-
-    /*
-    const run = await Apify.call(
-      "blackfriday/uploader",
-      {
-        datasetId: env.defaultDatasetId,
-        upload: true,
-        actRunId: env.actorRunId,
-        blackFriday: type !== "FULL",
-        tableName
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
-    */
-  } catch (e) {
-    log.error(e);
-  }
-
-  // stats page
-  try {
-    const run = await Apify.callTask(
-      "blackfriday/status-page-store",
-      {
-        datasetId: env.defaultDatasetId,
-        name: graphName
-      },
-      {
-        waitSecs: 25
-      }
-    );
-    log.info(`Keboola upload called: ${run.id}`);
   } catch (e) {
     log.error(e);
   }
@@ -205,6 +160,20 @@ Apify.main(async () => {
         }
       });
     }
+  } else if (type === "BF") {
+    await requestQueue.addRequest({
+      url: `https://www.alza.${country.toLowerCase()}/black-friday`,
+      userData: {
+        label: "BF"
+      }
+    });
+  } else if (type === "TEST") {
+    await requestQueue.addRequest({
+      url: "https://www.alza.cz/media/zpravodajske-casopisy/18860095.htm",
+      userData: {
+        label: "PAGE"
+      }
+    });
   }
 
   function isMalformedUrl(url, countryCode) {
@@ -260,86 +229,162 @@ Apify.main(async () => {
     maxRequestRetries,
     handleRequestFunction: async context => {
       const { request, session } = context;
-      const { label } = request.userData;
+      const { label, payload } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
       if (
-        label !== "START" &&
+        (label !== "START" || label !== "BF") &&
         isMalformedUrl(request.url, country.toLowerCase())
       ) {
         log.info(`Malformed url ignored: ${request.url}`);
         return; // do not process malformed url eg https://www.alza.czvlacky/18857232.htm
       }
-      let response;
-      try {
-        response = await gotScraping.post({
-          headerGeneratorOptions: {
-            browsers: [
-              {
-                name: "chrome",
-                minVersion: 89
-              }
-            ],
-            devices: ["desktop"],
-            locales: ["cs-CZ"],
-            operatingSystems: ["windows"]
-          },
-          url: request.url,
-          proxyUrl: await proxyConfiguration.newUrl(session.id),
-          headers: {
-            "User-Agent": userAgentDb.getRandom(),
-            "Accept-Language":
-              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Upgrade-Insecure-Requests": 1,
-            Referer: "https://www.google.com/"
-          }
-        });
-      } catch (e) {
-        log.error(e);
-        await Apify.utils.sleep(5000);
-        stats.denied++;
-        request.retryCount--;
-        session.isBlocked();
-        throw new Error("Proxy blocked");
-      }
-      const { body } = response;
 
-      // for this we don't need to parse the response in cheerio
-      if (request.userData.label === "XML") {
-        const categoryUrls = body.match(domain.regex);
-        if (categoryUrls !== null) {
-          log.info(`Adding to the queue ${categoryUrls.length} from XML`);
-          for (const url of categoryUrls) {
-            await requestQueue.addRequest({
-              url,
-              userData: {
-                label: "PAGE",
-                baseUrl: url
-              }
-            });
+      let response, parsedResponse, cheerioContext;
+      if (type === "BF" && label === "PAGE") {
+        try {
+          const data = JSON.stringify(payload);
+          const response = await httpRequest({
+            url: request.url,
+            method: "POST",
+            proxyUrl: await proxyConfiguration.newUrl(session.id),
+            payload: data,
+            headers: {
+              "User-Agent": userAgentDb.getRandom(),
+              accept: "application/json, text/javascript, */*; q=0.01",
+              "Content-type": "application/json",
+              Referer: `https://www.alza.${country.toLowerCase()}/black-friday`,
+              origin: `https://www.alza.${country.toLowerCase()}`,
+              "Content-Length": data.length,
+              Host: `www.alza.${country.toLowerCase()}`
+            }
+          });
+
+          // Status code check
+          if (![200, 404].includes(response.statusCode)) {
+            session.retire();
+            await Apify.setValue(`big${request.userData.log}`, response.body);
+            request.retryCount--;
+            throw new Error(
+              `We got blocked by target on ${request.url}, ${response.statusCode}`
+            );
           }
+
+          try {
+            parsedResponse = JSON.parse(response.body);
+          } catch (e) {
+            log.error(
+              `ERROR page:${request.userData.log}, ${response.statusCode}`
+            );
+            await Apify.setValue(`big${request.userData.log}`, response.body);
+            throw new Error(e.message);
+          }
+          const $ = cheerio.load(parsedResponse.d.Boxes);
+          context.$ = $;
+          /*response = await gotScraping.post({
+            headerGeneratorOptions: {
+              browsers: [
+                {
+                  name: "chrome",
+                  minVersion: 89
+                }
+              ],
+              devices: ["desktop"],
+              locales: ["cs-CZ"],
+              operatingSystems: ["windows"]
+            },
+            url: request.url,
+            proxyUrl: await proxyConfiguration.newUrl(session.id),
+            body: data,
+            headers: {
+              "User-Agent": userAgentDb.getRandom(),
+              Accept: "application/json, *!/!*",
+              "Content-Type": "application/json",
+              Referer: `https://www.alza.${country.toLowerCase()}/black-friday`,
+              origin: `https://www.alza.${country.toLowerCase()}`,
+              "Content-Length": data.length,
+              Host: `www.alza.${country.toLowerCase()}`
+            }
+          });*/
+        } catch (e) {
+          log.error(e.message);
+          log.error(
+            `ERROR page:${request.userData.log}, ${response.statusCode}`
+          );
+          await Apify.setValue(`big${request.userData.log}`, response.body);
+          throw new Error(e.message);
         }
-        return;
-      }
-      const $ = cheerio.load(body);
-      context.$ = $;
-      if ($(".captcha-mid").length !== 0) {
-        stats.captchas++;
-        request.retryCount--;
-        session.retire();
-        throw new Error("Captcha Encountered");
-      }
+      } else {
+        try {
+          response = await gotScraping.post({
+            headerGeneratorOptions: {
+              browsers: [
+                {
+                  name: "chrome",
+                  minVersion: 89
+                }
+              ],
+              devices: ["desktop"],
+              locales: ["cs-CZ"],
+              operatingSystems: ["windows"]
+            },
+            url: request.url,
+            proxyUrl: await proxyConfiguration.newUrl(session.id),
+            headers: {
+              "User-Agent": userAgentDb.getRandom(),
+              "Accept-Language":
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+              "Upgrade-Insecure-Requests": 1,
+              Referer: "https://www.google.com/"
+            }
+          });
+        } catch (e) {
+          log.error(e);
+          await Apify.utils.sleep(5000);
+          stats.denied++;
+          request.retryCount--;
+          session.isBlocked();
+          throw new Error("Proxy blocked");
+        }
+        const { body } = response;
 
-      if ($("h1").eq(0).text() === "403 Forbidden") {
-        await Apify.utils.sleep(5000);
-        stats.denied++;
-        request.retryCount--;
-        session.retire();
-        throw new Error("Access Denied");
-      }
+        // for this we don't need to parse the response in cheerio
+        if (request.userData.label === "XML") {
+          const categoryUrls = body.match(domain.regex);
+          if (categoryUrls !== null) {
+            log.info(`Adding to the queue ${categoryUrls.length} from XML`);
+            for (const url of categoryUrls) {
+              await requestQueue.addRequest({
+                url,
+                userData: {
+                  label: "PAGE",
+                  baseUrl: url
+                }
+              });
+            }
+          }
+          return;
+        }
+        const $ = cheerio.load(body);
+        context.$ = $;
+        if ($(".captcha-mid").length !== 0) {
+          stats.captchas++;
+          request.retryCount--;
+          session.retire();
+          throw new Error("Captcha Encountered");
+        }
 
-      stats.ok++;
-      session.setCookiesFromResponse(response);
+        if ($("h1").eq(0).text() === "403 Forbidden") {
+          await Apify.utils.sleep(5000);
+          stats.denied++;
+          request.retryCount--;
+          session.retire();
+          throw new Error("Access Denied");
+        }
+
+        stats.ok++;
+        session.setCookiesFromResponse(response);
+      }
 
       switch (label) {
         case "LEFTMENU":
@@ -352,14 +397,23 @@ Apify.main(async () => {
             domain,
             requestQueue,
             stats,
-            currency
+            currency,
+            development
           );
         case "DETAIL":
-          return handleDetail(context, country, currency);
+          return handleDetail(context, country, currency, development);
+        case "BF":
+          return handleBF(context, domain, requestQueue, country, session);
         case "TRHAK":
           return handleTrhak(context, domain, requestQueue);
         case "TRHAK_DETAIL":
-          return handleTrhakDetail(context, domain, country, currency);
+          return handleTrhakDetail(
+            context,
+            domain,
+            country,
+            currency,
+            development
+          );
         default:
           return handleStart(context, domain, requestQueue, stats);
       }

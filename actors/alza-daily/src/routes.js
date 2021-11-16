@@ -9,6 +9,7 @@ const {
 const Apify = require("apify");
 const { extractItems, parseDetail } = require("./detailParser");
 const { parseTrhakDetail } = require("./trhakDetailParser");
+const cheerio = require("cheerio");
 
 const {
   utils: { log }
@@ -66,7 +67,8 @@ exports.handlePage = async (
   domain,
   requestQueue,
   stats,
-  currency
+  currency,
+  development
 ) => {
   // wait for pagination and dont enqueue pagination always
 
@@ -137,30 +139,41 @@ exports.handlePage = async (
   }
 
   try {
-    const items = await extractItems($, request, country, domain, requestQueue);
-    log.info(`Found ${items.length} storing them, ${request.url}`);
+    const items = await extractItems(
+      $,
+      log,
+      request,
+      country,
+      domain,
+      requestQueue
+    );
     if (items !== true) {
+      log.info(`Found ${items.length} storing them, ${request.url}`);
       for (const product of items) {
         const slug = await s3FileName(product);
-        await uploadToS3(
-          s3,
-          `alza.${country.toLowerCase()}`,
-          slug,
-          "jsonld",
-          toProduct(
-            {
-              ...product,
-              slug,
-              inStock: true
-            },
-            { priceCurrency: currency }
-          )
-        );
+        if (!development) {
+          await uploadToS3(
+            s3,
+            `alza.${country.toLowerCase()}`,
+            slug,
+            "jsonld",
+            toProduct(
+              {
+                ...product,
+                slug,
+                inStock: true
+              },
+              { priceCurrency: currency }
+            )
+          );
+        }
         await Apify.pushData({
           ...product,
           slug
         });
       }
+    } else {
+      log.info(`No complete items found, ${request.url}`);
     }
     if (items.length === 0 && items !== true) {
       await Apify.utils.sleep(2000);
@@ -184,22 +197,97 @@ exports.handlePage = async (
   }
 };
 
-exports.handleDetail = async ({ request, $ }, country, currency) => {
+exports.handleDetail = async (
+  { request, $ },
+  country,
+  currency,
+  development
+) => {
   const detailItem = await parseDetail($, request);
-  await uploadToS3(
-    s3,
-    `alza.${country.toLowerCase()}`,
-    await s3FileName(detailItem),
-    "jsonld",
-    toProduct(
-      {
-        ...detailItem,
-        inStock: true
-      },
-      { priceCurrency: currency }
-    )
-  );
+  if (!development) {
+    await uploadToS3(
+      s3,
+      `alza.${country.toLowerCase()}`,
+      await s3FileName(detailItem),
+      "jsonld",
+      toProduct(
+        {
+          ...detailItem,
+          inStock: true
+        },
+        { priceCurrency: currency }
+      )
+    );
+  }
   await Apify.pushData(detailItem);
+};
+
+exports.handleBF = async (
+  { request, $ },
+  domain,
+  requestQueue,
+  country,
+  session
+) => {
+  const lblNumberItem = $("span#lblNumberItem");
+  if (
+    lblNumberItem.length !== 0 &&
+    lblNumberItem.text().replace(/\s/g, "").match(/\d+/) !== null
+  ) {
+    const max = Math.ceil(
+      parseInt(lblNumberItem.text().replace(/\s/g, "").match(/\d+/)[0]) / 24
+    );
+    if (typeof max !== "number") {
+      request.retryCount--;
+      session.retire();
+      throw new Error("Bad start.");
+    }
+    for (let i = 1; i <= max; i++) {
+      await requestQueue.addRequest({
+        url: `https://www.alza.${country.toLowerCase()}/Services/EShopService.svc/Filter`,
+        uniqueKey: i.toString(),
+        userData: {
+          label: "PAGE",
+          log: i,
+          payload: {
+            idCategory: 1,
+            producers: "",
+            parameters: [],
+            idPrefix: 0,
+            prefixType: 4,
+            page: i,
+            pageTo: i,
+            inStock: false,
+            newsOnly: false,
+            commodityStatusType: 1,
+            upperDescriptionStatus: 0,
+            branchId: -2,
+            sort: 0,
+            categoryType: 29,
+            searchTerm: "",
+            sendProducers: false,
+            layout: 1,
+            append: false,
+            leasingCatId: null,
+            yearFrom: null,
+            yearTo: null,
+            artistId: null,
+            minPrice: -1,
+            maxPrice: -1,
+            shouldDisplayVirtooal: false,
+            callFromParametrizationDialog: false,
+            commodityWearType: null,
+            hash: `#f&cst=1&cud=0&pg=${i}-${i}&prod=`,
+            counter: 1
+          }
+        }
+      });
+    }
+  } else {
+    request.retryCount--;
+    session.retire();
+    throw new Error("Bad start.");
+  }
 };
 
 exports.handleTrhak = async ({ request, $ }, domain, requestQueue) => {
@@ -232,21 +320,24 @@ exports.handleTrhakDetail = async (
   { request, $ },
   domain,
   country,
-  currency
+  currency,
+  development
 ) => {
   const detailItem = await parseTrhakDetail($, domain, request);
-  await uploadToS3(
-    s3,
-    `alza.${country.toLowerCase()}`,
-    await s3FileName(detailItem),
-    "jsonld",
-    toProduct(
-      {
-        ...detailItem,
-        inStock: true
-      },
-      { priceCurrency: currency }
-    )
-  );
+  if (!development) {
+    await uploadToS3(
+      s3,
+      `alza.${country.toLowerCase()}`,
+      await s3FileName(detailItem),
+      "jsonld",
+      toProduct(
+        {
+          ...detailItem,
+          inStock: true
+        },
+        { priceCurrency: currency }
+      )
+    );
+  }
   await Apify.pushData(detailItem);
 };

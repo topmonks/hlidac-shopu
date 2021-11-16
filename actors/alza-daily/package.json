@@ -5,6 +5,7 @@
   "author": "Topmonks.com",
   "license": "EPL-2.0",
   "dependencies": {
+    "@apify/http-request": "^2.1.0",
     "@aws-sdk/client-cloudfront": "^3.40.0",
     "@aws-sdk/client-s3": "^3.40.0",
     "@hlidac-shopu/actors-common": "^1.1.4",

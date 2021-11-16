@@ -1,6 +1,6 @@
 const parseCurrency = require("parsecurrency");
 
-async function extractItems($, request, country, domain, requestQueue) {
+async function extractItems($, log, request, country, domain, requestQueue) {
   const itemsArray = [];
   const visitDetails = [];
   // products
@@ -120,7 +120,9 @@ async function extractItems($, request, country, domain, requestQueue) {
         $(this).find('span.dynamicPromo:contains("Sdílej a ušetři")').length !==
           0 ||
         $(this).find('span.dynamicPromo:contains("Zdieľaj a ušetri")')
-          .length !== 0
+          .length !== 0 ||
+        ($(this).find("div.price .c2").length !== 0 &&
+          $(this).find('div.price .c2:contains("od")'))
       ) {
         visitDetails.push({
           url: result.itemUrl,
@@ -135,8 +137,11 @@ async function extractItems($, request, country, domain, requestQueue) {
     });
   }
   if (visitDetails.length !== 0) {
+    log.info(
+      `Added ${visitDetails.length}x detail pages to queue, ${request.url}`
+    );
     for (const item of visitDetails) {
-      await requestQueue.addRequest(item);
+      await requestQueue.addRequest(item, { forefront: true });
     }
   }
 
@@ -177,6 +182,14 @@ async function parseDetail($, request) {
   if ($("span.crossPrice").length !== 0) {
     const originalPriceText = parseCurrency($("span.crossPrice").text().trim());
     result.originalPrice = originalPriceText.value;
+  }
+
+  if ($("tr.mediaMagazinesPrice").length !== 0) {
+    const currentPriceText = parseCurrency(
+      $("tr.mediaMagazinesPrice").first().find("span.price").text().trim()
+    );
+    result.currentPrice = currentPriceText.value;
+    result.originalPrice = null;
   }
 
   return result;
