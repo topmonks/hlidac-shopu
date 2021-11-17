@@ -8290,10 +8290,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001251, caniuse-lite@npm:^1.0.30001252, caniuse-lite@npm:^1.0.30001254":
+"caniuse-lite@npm:^1.0.30001252, caniuse-lite@npm:^1.0.30001254":
   version: 1.0.30001258
   resolution: "caniuse-lite@npm:1.0.30001258"
   checksum: ef97b5eb31cf99b4a8e895da133c918d4dc606acf55dec6d9bbde4f94e9b2b18bcfc3b105c2d59c68ea0f51dd11fd83ef7b42cb28489c48f486cc49b4dcb7bfb
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001267":
+  version: 1.0.30001280
+  resolution: "caniuse-lite@npm:1.0.30001280"
+  checksum: 555d516257758e3a1b5af625458283aa248a839ff540b1ecd834f6afac1b70d0e340b2980d7a8bff564b38324ac74d6efd572bf03ef57809f4b149f8b911a329
   languageName: node
   linkType: hard
 
@@ -11001,21 +11008,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-compat@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "eslint-plugin-compat@npm:3.13.0"
+"eslint-plugin-compat@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "eslint-plugin-compat@npm:4.0.0"
   dependencies:
     "@mdn/browser-compat-data": ^3.3.14
     ast-metadata-inferer: ^0.7.0
     browserslist: ^4.16.8
-    caniuse-lite: ^1.0.30001251
+    caniuse-lite: ^1.0.30001267
     core-js: ^3.16.2
     find-up: ^5.0.0
     lodash.memoize: 4.1.2
     semver: 7.3.5
   peerDependencies:
-    eslint: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
-  checksum: b06fedbfa7983b8e79d521857aa55ba51427dcfeb9f5b74a0477253ea7ce743bc6811efd96384e5072ad3e784d13247c60c69318106919bb3337f89be63177fc
+    eslint: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: c287335457e242241626f5806a22ba0b4fd5d55de6fd5c1e7a41b1cce370191d34e756658c157f03f557f51ba99c53acc028870fe3d838344a5a4ad111fb90fc
   languageName: node
   linkType: hard
 
@@ -13409,7 +13416,7 @@ fsevents@^1.2.7:
     esbuild: ^0.13.12
     eslint: ^8.2.0
     eslint-config-prettier: ^8.3.0
-    eslint-plugin-compat: ^3.13.0
+    eslint-plugin-compat: ^4.0.0
     eslint-plugin-es: ^4.1.0
     eslint-plugin-lit: ^1.6.1
     eslint-plugin-prettier: ^4.0.0
