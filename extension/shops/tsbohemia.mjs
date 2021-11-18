@@ -12,15 +12,14 @@ export class TSBohemia extends Shop {
     const itemId = document.querySelector(".sti_detail_head").dataset.stiid;
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = document
-      .querySelector(".prc.wvat .price")
+      .querySelector(".price .wvat")
       .textContent.split("Kč")[0]
       .replace(",-", "")
       .replace(/\s/g, "");
     const originalPrice = cleanPrice(
-      ".prc.endprc .price, .prc.endprc .line_through"
+      ".price .mc"
     );
     const imageUrl = document.querySelector("#sti_bigimg img").src;
-
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
