@@ -7,7 +7,7 @@ const COUNTRY_TYPE = {
   SK: "SK"
 };
 const BASE_URL = (country = COUNTRY_TYPE.CZ, page = 1) =>
-  `https://www.aaaauto.${country.toLowerCase()}/black-friday/?category=92&page=${page}`;
+  `https://www.aaaauto.${country.toLowerCase()}/black-friday/?category=92&limit=50&page=${page}`;
 
 const HEADER = {
   Connection: "keep-alive",
