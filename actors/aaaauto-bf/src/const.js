@@ -7,9 +7,7 @@ const COUNTRY_TYPE = {
   SK: "SK"
 };
 const BASE_URL = (country = COUNTRY_TYPE.CZ, page = 1) =>
-  `https://www.aaaauto.${country.toLowerCase()}/${country.toLowerCase()}/cars.php?carlist=1&limit=50&page=${page}&modern-request&origListURL=%2F${
-    country === COUNTRY_TYPE.CZ ? "ojete-vozy" : "ojazdene-vozidla"
-  }%2F`;
+  `https://www.aaaauto.${country.toLowerCase()}/${country.toLowerCase()}/black-friday/?category=92&page=${page}`;
 
 const HEADER = {
   Connection: "keep-alive",
