@@ -6,13 +6,18 @@ const {
   invalidateCDN,
   toProduct,
   uploadToS3,
-  s3FileName,
-  shopName
+  s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const tools = require("./src/tools");
-const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
+const {
+  LABELS,
+  COUNTRY_TYPE,
+  HEADER,
+  BASE_URL,
+  BASE_URL_BF
+} = require("./src/const");
 
 const { log, requestAsBrowser } = Apify.utils;
 
@@ -28,11 +33,13 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
+    type = "FULL",
     proxyGroups = ["CZECH_LUMINATI"],
     country = COUNTRY_TYPE.CZ
   } = input ?? {};
   const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
-  const shop = await shopName(rootUrl);
+  const rootUrlBf = `https://www.aaaauto.${country.toLocaleLowerCase()}/black-friday/?category=92&limit=50`;
+
   const requestQueue = await Apify.openRequestQueue();
 
   if (development || debug) {
@@ -40,7 +47,7 @@ Apify.main(async () => {
   }
 
   await requestQueue.addRequest({
-    url: rootUrl,
+    url: type === "FULL" ? rootUrl : rootUrlBf,
     userData: {
       label: LABELS.START
     }
@@ -77,7 +84,10 @@ Apify.main(async () => {
           (_value, index) => index + 1
         ).map(async pageNumber => {
           await requestQueue.addRequest({
-            url: BASE_URL(country, pageNumber),
+            url:
+              type === "FULL"
+                ? BASE_URL(country, pageNumber)
+                : BASE_URL_BF(country, pageNumber),
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
@@ -89,7 +99,7 @@ Apify.main(async () => {
               const item = $(this);
               const link = item.find("a.fullSizeLink").attr("href");
               const figure = item.find("figure");
-              const url = new URL(link, rootUrl);
+              const url = new URL(link);
               const itemId = url.searchParams.get("id");
               const itemName = item.find("h2 a").text().trim();
               const arr = itemName.split(",");
@@ -133,7 +143,6 @@ Apify.main(async () => {
                 transmission,
                 fuelType,
                 engine,
-                shop,
                 slug: await s3FileName({ itemUrl: link })
               };
             } catch (e) {
@@ -188,7 +197,11 @@ Apify.main(async () => {
     try {
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "aaaauto.cz");
       log.info("invalidated Data CDN");
-      await uploadToKeboola(country !== "CZ" ? "aaaauto_sk" : "aaaauto_cz");
+      let tableName = `aaaauto_${country.toLocaleLowerCase()}`;
+      if (type === "BF") {
+        tableName = `${tableName}_bf`;
+      }
+      await uploadToKeboola(tableName);
       log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);
