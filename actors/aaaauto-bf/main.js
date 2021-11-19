@@ -16,8 +16,8 @@ const { LABELS, COUNTRY_TYPE, HEADER, BASE_URL } = require("./src/const");
 
 const { log, requestAsBrowser } = Apify.utils;
 
-const ROOT_URL = "https://www.aaaauto.cz/black-friday/";
-const ROOT_URL_SK = "https://www.aaaauto.sk/black-friday/";
+const ROOT_URL = "https://www.aaaauto.cz/black-friday/?category=92";
+const ROOT_URL_SK = "https://www.aaaauto.sk/black-friday/?category=92";
 
 Apify.main(async () => {
   rollbar.init();
