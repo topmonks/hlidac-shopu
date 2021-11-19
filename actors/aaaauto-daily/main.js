@@ -21,8 +21,10 @@ const {
 
 const { log, requestAsBrowser } = Apify.utils;
 
-const ROOT_URL = "https://aaaauto.cz/ojete-vozy";
-const ROOT_URL_SK = "https://www.aaaauto.sk/ojazdene-vozidla/";
+const ROOT_URL =
+  "https://www.aaaauto.cz/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy";
+const ROOT_URL_SK =
+  "https://www.aaaauto.sk/sk/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojazdene-vozidla";
 
 Apify.main(async () => {
   rollbar.init();
