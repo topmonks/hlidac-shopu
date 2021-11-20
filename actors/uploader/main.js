@@ -108,8 +108,6 @@ async function processItems({
         item = rohlikDetailValidator(item);
         break;
       case "tsbohemia":
-        item = tsbohemiaValidator(item);
-        break;
       case "tsbohemia_bf":
         item = tsbohemiaValidator(item);
         break;
@@ -250,6 +248,7 @@ async function processItems({
         item = dmValidator(item);
         break;
       case "teta_cz":
+      case "teta_cz_bf":
         item = tetaValidator(item);
         break;
       case "knihydobrovsky_cz":
@@ -285,6 +284,8 @@ async function processItems({
         break;
       case "aaaauto_cz":
       case "aaaauto_sk":
+      case "aaaauto_cz_bf":
+      case "aaaauto_sk_bf":
         item = aaaautoValidator(item);
         break;
       case "obi_cz":
