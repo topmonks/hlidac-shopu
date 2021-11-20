@@ -17,14 +17,28 @@ const { URL, URLSearchParams } = require("url");
 /** @typedef { import("apify").RequestQueue } RequestQueue */
 
 const { log } = Apify.utils;
+let stats = {};
+const processedIds = new Set();
 
 const HOST = "https://www.tetadrogerie.cz";
 
-const makeListingUrl = (baseUrl, currentPage = 1, pageSize = 100) =>
+const makeListingBfUrl = function (baseUrl, currentPage = 1, pageSize = 60) {
+  const url = new URL(baseUrl);
+  let params = new URLSearchParams(url.search);
+  //Add/Update parameters.
+  params.set("stranka", currentPage);
+  params.set("pocet", pageSize);
+  // change the search property of the main url
+  url.search = params.toString();
+  return url.toString();
+};
+
+const makeListingUrl = (baseUrl, currentPage = 1, pageSize = 60) =>
   new URL(
     `${baseUrl}?${new URLSearchParams({
       stranka: currentPage,
-      pocet: pageSize
+      pocet: pageSize,
+      razeni: "price"
     })}`,
     HOST
   ).href;
@@ -44,7 +58,7 @@ function* traverseCategories($, $menu) {
 }
 
 function* paginateResults(count) {
-  const length = Math.ceil(count / 100);
+  const length = Math.ceil(count / 60);
   for (let i = 1; i <= length; i++) {
     yield i;
   }
@@ -85,12 +99,16 @@ function parseItem($, category) {
 }
 
 function parseItems($) {
-  const category = $(".sx-breadcrumbs.sx-breadcrumbs-middle a")
+  let category = $(".CMSBreadCrumbsLink")
     .get()
-    .map(x => $(x).text())
-    .join(" > ")
-    .replace("Úvod > Eshop > ", "");
-  return $(".j-products .j-item").get().map(parseItem($, category));
+    .map(x => $(x).text());
+  const currentCategory = $(".CMSBreadCrumbsCurrentItem")
+    .get()
+    .map(x => $(x).text());
+  category.push(currentCategory);
+  return $(".j-products .j-item")
+    .get()
+    .map(parseItem($, category.join(" > ")));
 }
 
 /**
@@ -100,8 +118,6 @@ function parseItems($) {
  * @returns {CheerioHandlePage}
  */
 async function pageFunction(requestQueue, s3) {
-  const processedIds = new Set();
-
   /**
    *  @param {CheerioHandlePageInputs} context
    *  @returns {Promise<void>}
@@ -130,19 +146,55 @@ async function pageFunction(requestQueue, s3) {
             currentPage: 1
           }
         });
+        stats.categories++;
+      }
+    } else if (step === "BF") {
+      log.info("Pagination info", { itemsCount, currentPage });
+      if (!currentPage) {
+        // push pages of sub categories to the front of the queue
+        // so they are processed before higher categories
+        const paginateResultsData = paginateResults(itemsCount);
+        let lastPage = 1;
+        //Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
+        for (const page of paginateResultsData) {
+          lastPage = page;
+        }
+        if (lastPage !== 1) {
+          log.info(
+            "Add last pagination to queue: " +
+              makeListingBfUrl(request.url, lastPage)
+          );
+          await requestQueue.addRequest({
+            url: makeListingBfUrl(request.url, lastPage),
+            userData: {
+              currentPage: page,
+              category: "BF"
+            }
+          });
+        }
       }
     } else {
       log.info("Pagination info", { category, itemsCount, currentPage });
-      if (currentPage === 1 && itemsCount > 100) {
+      if (currentPage === 1 && itemsCount > 60 && category !== "BF") {
         // push pages of sub categories to the front of the queue
         // so they are processed before higher categories
-        for (const page of paginateResults(itemsCount)) {
+        const paginateResultsData = paginateResults(itemsCount);
+        let lastPage = 1;
+        //Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
+        for (const page of paginateResultsData) {
+          lastPage = page;
+        }
+        if (lastPage !== 1) {
+          log.info(
+            "Add last pagination to queue: " +
+              makeListingUrl(category, lastPage)
+          );
           await requestQueue.addRequest(
             {
-              url: makeListingUrl(category, page),
+              url: makeListingUrl(category, lastPage),
               userData: {
                 category,
-                currentPage: page
+                currentPage: lastPage
               }
             },
             { forefront: true }
@@ -152,17 +204,27 @@ async function pageFunction(requestQueue, s3) {
       // we don't need to block pushes, we will await them all at the end
       const requests = [];
       // push only unique items
-      const unprocessedProducts = parseItems($).filter(
+      const parsedItems = parseItems($);
+      stats.totalItems += parsedItems.length;
+      const unprocessedProducts = parsedItems.filter(
         x => !processedIds.has(x.itemId)
       );
+      const duplicityItemsCount =
+        parsedItems.length - unprocessedProducts.length;
+      if (duplicityItemsCount > 0) {
+        log.debug(
+          `Found ${duplicityItemsCount}x duplicity items, ${request.url}`
+        );
+      }
+      stats.itemsDuplicity += duplicityItemsCount;
+
       for (const detail of unprocessedProducts) {
-        const slug = await s3FileName(detail);
         requests.push(
-          Apify.pushData({ ...detail, slug }),
+          Apify.pushData(detail),
           uploadToS3(
             s3,
             "tetadrogerie.cz",
-            slug,
+            await s3FileName(detail),
             "jsonld",
             toProduct(detail, { priceCurrency: "CZK" })
           )
@@ -171,6 +233,10 @@ async function pageFunction(requestQueue, s3) {
         // remember processed product IDs
         processedIds.add(detail.itemId);
       }
+      stats.items += unprocessedProducts.length;
+      log.debug(
+        `Found ${unprocessedProducts.length}x unique items, ${request.url}`
+      );
       // await all requests, so we don't end before they end
       await Promise.allSettled(requests);
     }
@@ -186,18 +252,45 @@ Apify.main(async () => {
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
-
   const {
     development = false,
+    debug = false,
+    test = false,
     maxRequestRetries = 3,
-    maxConcurrency = 10
+    maxConcurrency = 10,
+    type = "FULL"
   } = input ?? {};
+
+  if (development || debug) {
+    log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    totalItems: 0,
+    failed: 0
+  };
+
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  if (development) {
+  if (development && test) {
     await requestQueue.addRequest({
       url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/uklidove-pomucky/smetaky-kostata-a-rejzaky"
+    });
+  } else if (type === "BF") {
+    await requestQueue.addRequest({
+      url: "https://www.tetadrogerie.cz/eshop/produkty?offerID=BF20210001&pocet=60&razeni=price",
+      userData: {
+        step: "BF"
+      }
     });
   } else {
     await requestQueue.addRequest({
@@ -227,6 +320,7 @@ Apify.main(async () => {
     handlePageFunction: await pageFunction(requestQueue, s3),
 
     handleFailedRequestFunction: async ({ request }) => {
+      stats.failed++;
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
@@ -234,11 +328,17 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
+  await Apify.setValue("STATS", stats);
+  log.info(JSON.stringify(stats));
+
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz");
     log.info("invalidated Data CDN");
-
-    await uploadToKeboola("teta_cz");
+    let tableName = "teta_cz";
+    if (type === "BF") {
+      tableName = `${tableName}_bf`;
+    }
+    await uploadToKeboola(tableName);
   }
   log.info("Finished.");
 });
