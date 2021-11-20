@@ -221,13 +221,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.41.0"
+"@aws-sdk/client-cloudfront@npm:3.42.0":
+  version: 3.42.0
+  resolution: "@aws-sdk/client-cloudfront@npm:3.42.0"
   dependencies:
     "@aws-crypto/sha256-browser": 2.0.0
     "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/client-sts": 3.41.0
+    "@aws-sdk/client-sts": 3.42.0
     "@aws-sdk/config-resolver": 3.40.0
     "@aws-sdk/credential-provider-node": 3.41.0
     "@aws-sdk/fetch-http-handler": 3.40.0
@@ -260,7 +260,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: 39c98548b447a3e57d6a1c3c8d6dccd72607e5e9fd8fcff9ae46efd0bf6a6fe2c3dacc9e2c0d794b237781f238b10499afd37ae9566f9baa882645dc31cf1d51
+  checksum: b082ced2eee099922bffb375e0c54b999f591b067280b19bb66bd351cad7c08d69d12dfe02e3005514df0ad3644064b20328232919871ed38e654340906592a9
   languageName: node
   linkType: hard
 
@@ -349,13 +349,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@aws-sdk/client-s3@npm:3.41.0"
+"@aws-sdk/client-s3@npm:3.42.0":
+  version: 3.42.0
+  resolution: "@aws-sdk/client-s3@npm:3.42.0"
   dependencies:
     "@aws-crypto/sha256-browser": 2.0.0
     "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/client-sts": 3.41.0
+    "@aws-sdk/client-sts": 3.42.0
     "@aws-sdk/config-resolver": 3.40.0
     "@aws-sdk/credential-provider-node": 3.41.0
     "@aws-sdk/eventstream-serde-browser": 3.40.0
@@ -400,7 +400,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: 77407f2f4a84650bfe87a61d91bb2dc46ffbd6d87938890f66ef44db05851d736e8ba423cd8597a80c59c2fb100d054fd832465dcd1962a3c2459f44b87051b1
+  checksum: 2bbebdea7f7e2695a0cb81b1768dbe05975f667670e74016159df680531e005de65a8487fd23d9354ee836b5845d2faf138e4cd010ce8bf593bd5e53543fa9f8
   languageName: node
   linkType: hard
 
@@ -572,9 +572,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@aws-sdk/client-sts@npm:3.41.0"
+"@aws-sdk/client-sts@npm:3.42.0":
+  version: 3.42.0
+  resolution: "@aws-sdk/client-sts@npm:3.42.0"
   dependencies:
     "@aws-crypto/sha256-browser": 2.0.0
     "@aws-crypto/sha256-js": 2.0.0
@@ -609,7 +609,7 @@ __metadata:
     entities: 2.2.0
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
-  checksum: 7d91661255a264f3ee1a2a47580a650c3ee75a020307a879babeb436c8a9f98056b36ae5e896a8ca693eac542d5b6cdcdd9a1b1d5f260c486429afa301bb739d
+  checksum: f8bfbb970f3c22482bd0eaa7da4c41fd084ab9509c61b9cc70b1367684b326538032b25ec4bee89a9cf45e0a30666ff18ad9390dd6ec4e5d8b99f435b6163f62
   languageName: node
   linkType: hard
 
@@ -4276,8 +4276,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": 3.41.0
-    "@aws-sdk/client-s3": 3.41.0
+    "@aws-sdk/client-cloudfront": 3.42.0
+    "@aws-sdk/client-s3": 3.42.0
     "@hlidac-shopu/actors-common": ^1.1.4
     apify: ^2.1.0
   languageName: unknown
@@ -15269,8 +15269,8 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "lidl-daily@workspace:actors/lidl-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": 3.41.0
-    "@aws-sdk/client-s3": 3.41.0
+    "@aws-sdk/client-cloudfront": 3.42.0
+    "@aws-sdk/client-s3": 3.42.0
     "@hlidac-shopu/actors-common": ^1.1.4
     "@types/node": ^16.11.6
     apify: ^2.1.0
