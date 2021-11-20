@@ -112,14 +112,9 @@ Apify.main(async () => {
               const actionPrice = tools.extractPrice(
                 item.find(".carPrice h3.error:not(.hide)").text()
               );
-              let originalPrice = item
-                .find(".carPrice .darkGreyAlt")
-                .find(".hix")
-                .remove();
-              originalPrice = tools.extractPrice(
-                item.find(".carFeatures p").text()
+              let originalPrice = tools.extractPrice(
+                item.find(".carPrice .darkGreyAlt").text()
               );
-
               const description = item.find(".carFeatures p").text().trim();
               const carFeatures = item
                 .find(".carFeaturesList li")
@@ -144,8 +139,7 @@ Apify.main(async () => {
                 km,
                 transmission,
                 fuelType,
-                engine,
-                slug: await s3FileName({ itemUrl: link })
+                engine
               };
             } catch (e) {
               log.error(e.message);
