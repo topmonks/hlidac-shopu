@@ -86,7 +86,8 @@ Apify.main(async () => {
     maxConcurrency = 10,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = "FULL",
+    bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
   } = input ?? {};
   const shop = await shopName(WEB);
 
@@ -97,7 +98,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
     await requestQueue.addRequest({
-      url: "https://www.mironet.cz/vyprodej/?v=black-friday",
+      url: bfUrl,
       userData: {
         label: "category_vyprodej"
       }
