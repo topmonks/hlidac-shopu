@@ -212,7 +212,7 @@ async function pageFunction(requestQueue, s3) {
       const duplicityItemsCount =
         parsedItems.length - unprocessedProducts.length;
       if (duplicityItemsCount > 0) {
-        log.debug(
+        log.info(
           `Found ${duplicityItemsCount}x duplicity items, ${request.url}`
         );
       }
@@ -234,7 +234,7 @@ async function pageFunction(requestQueue, s3) {
         processedIds.add(detail.itemId);
       }
       stats.items += unprocessedProducts.length;
-      log.debug(
+      log.info(
         `Found ${unprocessedProducts.length}x unique items, ${request.url}`
       );
       // await all requests, so we don't end before they end
