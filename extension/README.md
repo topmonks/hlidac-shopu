@@ -15,6 +15,7 @@ Returns of object with .
 First param is `renderMarkup` function that returns html element, you can add styles to the root element of the wrapper
 by passing string to it.
 
+### Create new file `alza.mjs` in folder `shops`:
 Example:
 
 ```javascript
@@ -46,7 +47,13 @@ class Alza extends Shop {
 }
 ```
 
-Then add new shop to file `manifest.json` under `matches`:
+### Add new shop to file `shops/index.mjs`:
+
+```javascript
+export * from "./alza.mjs";
+```
+
+### Add new shop to file `manifest.json` under `matches`:
 
 ```javascript
 "content_scripts": [
