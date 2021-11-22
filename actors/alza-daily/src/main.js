@@ -24,9 +24,11 @@ const {
 } = Apify;
 
 let stats = {
+  categories: 0,
   details: 0,
   duplicates: 0,
   pages: 0,
+  items: 0,
   target: 0,
   targetPages: 0,
   denied: 0,
@@ -168,10 +170,12 @@ Apify.main(async () => {
       }
     });
   } else if (type === "TEST") {
+    const testUrl = "https://www.alza.cz/kuchynske-roboty/18850372.htm";
     await requestQueue.addRequest({
-      url: "https://www.alza.cz/media/zpravodajske-casopisy/18860095.htm",
+      url: testUrl,
       userData: {
-        label: "PAGE"
+        label: "PAGE",
+        baseUrl: testUrl
       }
     });
   }
@@ -353,6 +357,7 @@ Apify.main(async () => {
           const categoryUrls = body.match(domain.regex);
           if (categoryUrls !== null) {
             log.info(`Adding to the queue ${categoryUrls.length} from XML`);
+            stats.categories += categoryUrls.length;
             for (const url of categoryUrls) {
               await requestQueue.addRequest({
                 url,
@@ -388,7 +393,7 @@ Apify.main(async () => {
 
       switch (label) {
         case "LEFTMENU":
-          return handleLeftMenu(context, domain, requestQueue);
+          return handleLeftMenu(context, domain, requestQueue, stats);
         case "PAGE":
           return handlePage(
             context,
@@ -401,7 +406,7 @@ Apify.main(async () => {
             development
           );
         case "DETAIL":
-          return handleDetail(context, country, currency, development);
+          return handleDetail(context, country, currency, stats, development);
         case "BF":
           return handleBF(context, domain, requestQueue, country, session);
         case "TRHAK":
@@ -428,6 +433,9 @@ Apify.main(async () => {
   await crawler.run();
 
   log.info("Crawler finished, calling upload.");
+
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
 
   if (!development) {
     await invalidateCDN(

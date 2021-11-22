@@ -21,7 +21,12 @@ async function enqueueRequests(requestQueue, items, foreFront = false) {
   }
 }
 
-exports.handleLeftMenu = async ({ $, request }, domain, requestQueue) => {
+exports.handleLeftMenu = async (
+  { $, request },
+  domain,
+  requestQueue,
+  stats
+) => {
   const menuItems = [];
   // add the left menu
   $("ul.fmenu>li").each(function () {
@@ -57,6 +62,7 @@ exports.handleLeftMenu = async ({ $, request }, domain, requestQueue) => {
       });
   });
   log.info(`Found ${menuItems.length} LEFT MENU at page ${request.url}`);
+  stats.categories += menuItems.length;
   await enqueueRequests(requestQueue, menuItems);
 };
 
@@ -90,7 +96,6 @@ exports.handlePage = async (
           }
         });
       }
-
       if (
         $("span#lblNumberItem").length !== 0 &&
         $("span#lblNumberItem").text().replace(/\s/g, "").match(/\d+/) !== null
@@ -101,21 +106,26 @@ exports.handlePage = async (
             10
           ) / 24
         );
+        log.info(`Adding ${max - 1}x pagination pages `);
+        stats.pages += max;
         for (let i = 2; i <= max; i++) {
           const url = `${request.userData.baseUrl.replace(
             /\.htm/,
             `-p${i}.htm`
           )}`;
-          await requestQueue.addRequest({
-            url,
-            userData: {
-              label: "PAGE",
-              category: request.userData.category
-                ? request.userData.category
-                : null,
-              baseUrl: request.userData.baseUrl
-            }
-          });
+          await requestQueue.addRequest(
+            {
+              url,
+              userData: {
+                label: "PAGE",
+                category: request.userData.category
+                  ? request.userData.category
+                  : null,
+                baseUrl: request.userData.baseUrl
+              }
+            },
+            { forefront: true }
+          );
         }
       }
 
@@ -134,7 +144,7 @@ exports.handlePage = async (
       }
     } catch (e) {
       log.error(`Error on page ${request.url}`);
-      log.error(e);
+      log.error(e.message);
     }
   }
 
@@ -149,6 +159,7 @@ exports.handlePage = async (
     );
     if (items !== true) {
       log.info(`Found ${items.length} storing them, ${request.url}`);
+      stats.items += items.length;
       for (const product of items) {
         const slug = await s3FileName(product);
         if (!development) {
@@ -201,9 +212,11 @@ exports.handleDetail = async (
   { request, $ },
   country,
   currency,
+  stats,
   development
 ) => {
   const detailItem = await parseDetail($, request);
+  stats.details++;
   if (!development) {
     await uploadToS3(
       s3,

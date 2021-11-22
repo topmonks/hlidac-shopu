@@ -122,7 +122,7 @@ async function extractItems($, log, request, country, domain, requestQueue) {
         $(this).find('span.dynamicPromo:contains("Zdieľaj a ušetri")')
           .length !== 0 ||
         ($(this).find("div.price .c2").length !== 0 &&
-          $(this).find('div.price .c2:contains("od")'))
+          $(this).find('div.price .c2:contains("od")').length !== 0)
       ) {
         visitDetails.push({
           url: result.itemUrl,
