@@ -156,6 +156,45 @@ async function extractItems($, $products, breadCrumbs) {
   return itemsArray;
 }
 
+async function extractBfItems($, $products, breadCrumbs) {
+  const itemsArray = [];
+  $products.each(async function () {
+    const result = {};
+    const $item = $(this);
+    const itemHeader = $item.find("h2 a");
+    const itemOriginalPrice = $item.find("p.items-center span.line-through");
+    const originalPrice = itemOriginalPrice
+      ? parseFloat(
+          itemOriginalPrice.text().replace("Kč", "").replace(/\s/g, "").trim()
+        )
+      : null;
+    const itemJsonObject = JSON.parse(itemHeader.attr("data-datalayer"));
+    const itemJson = itemJsonObject.ecommerce.products[0];
+    const currentPrice = parseFloat(itemJson.price);
+    const itemUrl = itemHeader.attr("href");
+
+    const itemImgUrl = $item.find("picture img").attr("src");
+
+    if (parseFloat(itemJson.price) > 0) {
+      result.itemId = itemJson.id;
+      result.itemName = itemJson.name;
+      result.itemUrl = `https://lekarna.cz/${itemUrl}`;
+      result.img = itemImgUrl;
+      result.category = itemJson.categories;
+      result.currentPrice = currentPrice;
+      result.originalPrice = originalPrice;
+      result.discount = originalPrice > currentPrice;
+      result.currency = "CZK";
+      result.inStock = itemJson.availability === "InStock";
+      itemsArray.push(result);
+    } else {
+      log.info(`Skipp non price product [${name}]`);
+      stats.itemsSkipped++;
+    }
+  });
+  return itemsArray;
+}
+
 async function handleSubCategory($, requestQueue, request) {
   const getSubcategories = $("#snippet--subcategories").find("a");
   if (getSubcategories.length === 0) {
@@ -172,9 +211,13 @@ async function handleSubCategory($, requestQueue, request) {
   //Continue, if this isn't last subcategory
 }
 
-async function handleProducts($, request, requestQueue) {
-  const itemListElements = $('[itemprop="itemListElement"]');
-
+async function handleProducts($, request, requestQueue, type) {
+  const itemListElements =
+    type === "FULL"
+      ? $('[itemprop="itemListElement"]')
+      : $(
+          "#snippet--itemListing div.flex.flex-col.flex-wrap.items-stretch.w-full"
+        );
   if (itemListElements.length > 0) {
     let breadCrumbs = [];
     try {
@@ -193,7 +236,11 @@ async function handleProducts($, request, requestQueue) {
       } else {
         breadCrumbs = "";
       }
-      const products = await extractItems($, itemListElements, breadCrumbs);
+
+      const products =
+        type === "FULL"
+          ? await extractItems($, itemListElements, breadCrumbs)
+          : await extractBfItems($, itemListElements, breadCrumbs);
       // we don't need to block pushes, we will await them all at the end
       const requests = [];
       for (const product of products) {
@@ -258,10 +305,12 @@ Apify.main(async () => {
   }
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
+    const bfUrl = "https://www.lekarna.cz/blackfriday/";
     await requestQueue.addRequest({
-      url: "https://www.lekarna.cz/blackfriday",
+      url: bfUrl,
       userData: {
-        label: "PAGE"
+        label: "PAGE",
+        category: bfUrl
       }
     });
   } else if (type === "COUNT") {
@@ -304,17 +353,21 @@ Apify.main(async () => {
         console.log(`START with page ${request.url}`);
         //Check for pagination pages
         let maxPage = 0;
-        $("#snippet--productListing ul.flex.flex-wrap.items-stretch li").each(
-          function () {
+        const snippetListing =
+          type === "FULL"
+            ? $("#snippet--productListing")
+            : $("#snippet--itemListing");
+        snippetListing
+          .find("ul.flex.flex-wrap.items-stretch li")
+          .each(function () {
             //Try parse Number value from paginator
             const liValue = Number($(this).text().trim());
             //Save highest page value
             if (liValue > maxPage) {
               maxPage = liValue;
             }
-          }
-        );
-        await handleProducts($, request, requestQueue);
+          });
+        await handleProducts($, request, requestQueue, type);
         //Handle pagination pages
         if (maxPage !== 0) {
           const paginationPage = [];
