@@ -178,6 +178,7 @@ async function processItems({
         item = mountfieldValidator(item);
         break;
       case "lekarna_cz":
+      case "lekarna_bf":
         item = lekarnaValidator(item);
         break;
       case "lekarna_bf":

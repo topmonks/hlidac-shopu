@@ -183,7 +183,7 @@ async function extractBfItems($, $products, breadCrumbs) {
       result.category = itemJson.categories;
       result.currentPrice = currentPrice;
       result.originalPrice = originalPrice;
-      result.discount = originalPrice > currentPrice;
+      result.discounted = originalPrice > currentPrice;
       result.currency = "CZK";
       result.inStock = itemJson.availability === "InStock";
       itemsArray.push(result);
