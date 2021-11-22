@@ -68,30 +68,21 @@ function parseItem($, category) {
   return el => {
     const $el = $(el);
     const actionPrice = $el.find(".sx-item-price-action");
-    const initialPrice = $el.find(".sx-item-price-initial");
+    const initialPrice = $el.find(".sx-item-price-initial").first();
     const itemUrl = new URL($el.find(".sx-item-title").attr("href"), HOST).href;
     const currentPrice =
-      parseInt(
-        (actionPrice.length ? actionPrice : initialPrice)
-          .text()
-          .replace(/\s+/g, ""),
-        10
-      ) / 100;
+      parseFloat(actionPrice.text().replace(/\s+/g, "")) / 100;
     const originalPrice =
-      parseInt(
-        (actionPrice.length ? initialPrice : $("<div/>"))
-          .text()
-          .replace(/\s+/g, ""),
-        10
-      ) / 100;
+      parseFloat(initialPrice.text().replace(/\s+/g, "")) / 100;
+
     return {
       itemId: $el.find(".j-product").data("skuid"),
       itemName: $el.find(".sx-item-title").text(),
       img: $el.find("img").attr("src"),
       itemUrl,
       currentPrice,
-      originalPrice: isNaN(originalPrice) ? null : originalPrice,
-      discounted: !isNaN(originalPrice),
+      originalPrice: originalPrice > currentPrice ? originalPrice : null,
+      discounted: originalPrice > currentPrice,
       inStock: true,
       category
     };
@@ -283,7 +274,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   if (development && test) {
     await requestQueue.addRequest({
-      url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/uklidove-pomucky/smetaky-kostata-a-rejzaky"
+      url: "https://www.tetadrogerie.cz/eshop/produkty/pansky-svet/holeni/holici-strojky-a-hlavice"
     });
   } else if (type === "BF") {
     await requestQueue.addRequest({
