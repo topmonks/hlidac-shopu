@@ -9,8 +9,10 @@ const LABELS = {
   LIDL_SHOP_SECTION: "LIDL_SHOP_SECTION"
 };
 const MAIN_URL = "https://www.lidl.cz";
+const BF = "BF";
 
 module.exports = {
   LABELS,
-  MAIN_URL
+  MAIN_URL,
+  BF
 };

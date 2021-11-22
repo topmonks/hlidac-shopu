@@ -6,7 +6,7 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const tools = require("./tools");
 const { createRouter } = require("./routes");
-const { LABELS, MAIN_URL } = require("./const");
+const { LABELS, BF } = require("./const");
 const { log } = Apify.utils;
 
 global.processedIds = new Set();
@@ -19,8 +19,9 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 5,
-    proxyGroups = ["CZECH_LUMINATI"]
-  } = input ?? {};
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = global.input ?? {};
   if (debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
@@ -33,7 +34,18 @@ Apify.main(async () => {
   };
 
   const requestQueue = await Apify.openRequestQueue();
-  const sources = tools.createInitRequests();
+  let sources = [];
+  if (type !== BF) {
+    sources = tools.createInitRequests();
+  } else {
+    sources.push({
+      url: "https://www.lidl.cz/c/black-friday/a10010065",
+      userData: {
+        label: LABELS.LIDL_SHOP_CAT,
+        level: 1
+      }
+    });
+  }
   const requestList = await Apify.openRequestList("start-categories", sources);
 
   global.s3 = new S3Client({ region: "eu-central-1" });
@@ -79,7 +91,7 @@ Apify.main(async () => {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `lidl.cz`);
     log.info("invalidated Data CDN");
 
-    await uploadToKeboola("lidl_cz");
+    await uploadToKeboola(type !== BF ? "lidl_cz" : "lidl_cz_bf");
   }
 
   log.info("Finished.");

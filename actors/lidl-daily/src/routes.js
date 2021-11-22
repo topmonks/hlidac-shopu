@@ -5,10 +5,10 @@ const {
   s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 const { URL } = require("url");
-const { LABELS, MAIN_URL } = require("./const");
+const { LABELS, MAIN_URL, BF } = require("./const");
 const tools = require("./tools");
 const {
-  utils: { log, requestAsBrowser }
+  utils: { log }
 } = Apify;
 
 // Create router
@@ -159,8 +159,9 @@ const LIDL_SHOP_SECTION = async ({ $, request, crawler }) => {
   log.info(`Found ${sections.length}x categories in ${request.url}`);
 };
 
-const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
-  const { s3, stats, processedIds } = global;
+const LIDL_SHOP_CAT = async ({ $, crawler }) => {
+  const { s3, stats, processedIds, input } = global;
+  const { type = "FULL" } = input;
   const nextButton = $("a.s-load-more__button");
   if (nextButton && nextButton.length > 0) {
     await crawler.requestQueue.addRequest({
@@ -170,7 +171,10 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
       }
     });
   }
-  const products = $("#s-results .s-grid__item > a").toArray();
+  let products = $("#s-results .s-grid__item > a").toArray();
+  if (type === BF) {
+    products = $(".product-grid-box").toArray();
+  }
   const requests = [];
   let breadcrumbs = $(".s-breadcrumb a.s-breadcrumb__link").toArray();
   breadcrumbs = breadcrumbs.slice(1, breadcrumbs.length);
@@ -214,6 +218,9 @@ const LIDL_SHOP_CAT = async ({ $, crawler, request }) => {
         price = price.match(/(\d+)/)[1];
         result.discounted = true;
         result.originalPrice = parseFloat(price);
+      }
+      if (type === BF) {
+        result.category = "Black Friday";
       }
       requests.push(
         Apify.pushData(result),
