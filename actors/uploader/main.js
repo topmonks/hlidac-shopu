@@ -145,21 +145,13 @@ async function processItems({
         item = kosikDetailValidator(item);
         break;
       case "alza":
-        item = alzaValidator(item);
-        break;
       case "alza_sk":
-        item = alzaValidator(item);
-        break;
       case "alza_de":
-        item = alzaValidator(item);
-        break;
       case "alza_hu":
-        item = alzaValidator(item);
-        break;
       case "alza_uk":
-        item = alzaValidator(item);
-        break;
       case "alza_at":
+      case "alza_cz_bf":
+      case "alza_sk_bf":
         item = alzaValidator(item);
         break;
       case "czc":
@@ -192,9 +184,6 @@ async function processItems({
         break;
       case "mall_sk":
         item = mallValidator(item);
-        break;
-      case "alza_bf":
-        item = alzaValidator(item);
         break;
       case "kasacz":
         item = kasaczValidator(item);
