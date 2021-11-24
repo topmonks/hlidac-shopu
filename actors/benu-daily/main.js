@@ -67,22 +67,26 @@ async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
       parseScriptJson($, $("#snippet-productRichSnippet-richSnippet"))
     );
     const { offers } = $jsonData;
+    const currentPrice = offers.price;
+    const originalPrice = parseFloat(
+      $("#product-detail .buy-box__price-head del")
+        .text()
+        .replace("Kč", "")
+        .trim()
+    );
     const result = {
       itemId: $jsonData.identifier,
       itemName: $jsonData.name,
       itemUrl: $jsonData.url,
       img: $jsonData.image,
-      currentPrice: offers.price,
+      currentPrice,
       identifierSUKL: $('th:contains("Kód SÚKL:")').siblings().text(),
-      originalPrice: $("#product-detail .buy-box__price-head del")
-        .text()
-        .replace("Kč", "")
-        .trim(),
+      originalPrice: originalPrice ? originalPrice : null,
       url: $jsonData.url,
       category: Array.from(
         $("ol#breadcrumb > li > a").map((i, el) => $(el).text())
       ),
-      discounted: offers.itemCondition === "Akce"
+      discounted: originalPrice ? currentPrice < originalPrice : false
     };
     if (!processedIds.has(result.itemId)) {
       await uploadToS3(
