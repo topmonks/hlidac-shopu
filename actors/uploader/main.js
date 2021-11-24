@@ -130,9 +130,9 @@ async function processItems({
         item = datartValidatorBf(item);
         break;
       case "itesco":
-        item = itescoValidator(item);
-        break;
+      case "itesco_bf":
       case "itesco_sk":
+      case "itesco_sk_bf":
         item = itescoValidator(item);
         break;
       case "itesco_cz_details":
