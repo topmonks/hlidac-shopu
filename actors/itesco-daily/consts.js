@@ -5,7 +5,8 @@ const COUNTRY = {
 const LABELS = {
   START: "START",
   PAGINATION: "PAGINATION",
-  PAGE: "PAGE"
+  PAGE: "PAGE",
+  PAGE_BF: "PAGE_BF"
 };
 
 const STARTURLS = {

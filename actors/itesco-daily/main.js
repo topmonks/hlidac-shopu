@@ -6,6 +6,7 @@ const Apify = require("apify");
 const _ = require("underscore");
 const { COUNTRY, LABELS, STARTURLS } = require("./consts");
 const { ExtractItems, findArraysUrl } = require("./tools");
+const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 
 const stats = {
   offers: 0
@@ -15,38 +16,51 @@ const uniqueItems = new Set();
 
 const { log } = Apify.utils;
 
-function getTableName(country) {
-  return country === COUNTRY.CZ ? "itesco" : "itesco_sk";
+function getTableName(country, type) {
+  let tableName = country === COUNTRY.CZ ? "itesco" : "itesco_sk";
+  if (type === "BF") {
+    tableName = `${tableName}_bf`;
+  }
+  return tableName;
 }
 
 Apify.main(async () => {
   rollbar.init();
 
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
+  const input = await Apify.getInput();
   const {
     development = false,
-    country = COUNTRY.CZ,
     debugLog = false,
-    test
-  } = await Apify.getInput();
+    maxConcurrency = 10,
+    maxRequestRetries = 5,
+    country = COUNTRY.CZ,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL",
+    bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/"
+  } = input ?? {};
+
   const requestQueue = await Apify.openRequestQueue();
   const url = country === COUNTRY.CZ ? STARTURLS.CZ : STARTURLS.SK;
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
-  await requestQueue.addRequest({
-    url,
-    userData: {
-      label: LABELS.START
-    }
-  });
-
-  /*    await requestQueue.addRequest({
-        url: 'https://nakup.itesco.cz/groceries/cs-CZ/shop/ovoce-a-zelenina/ovoce/all',
-        userData: {
-            label: 'PAGINATION',
-        },
-    }); */
+  if (type === "FULL") {
+    await requestQueue.addRequest({
+      url,
+      userData: {
+        label: LABELS.START
+      }
+    });
+  } else if (type === "BF") {
+    await requestQueue.addRequest({
+      url: bfUrl,
+      userData: {
+        label: LABELS.PAGE_BF
+      }
+    });
+  }
 
   const persistState = async () => {
     console.log(stats);
@@ -54,12 +68,12 @@ Apify.main(async () => {
   Apify.events.on("persistState", persistState);
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    useApifyProxy: !development
+    groups: proxyGroups
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 10,
-    maxRequestRetries: 5,
+    maxConcurrency,
+    maxRequestRetries,
     proxyConfiguration,
     handlePageTimeoutSecs: 60,
 
@@ -116,6 +130,81 @@ Apify.main(async () => {
             url: request.url
           });
         }
+      } else if (request.userData.label === LABELS.PAGE_BF) {
+        try {
+          const paginationBlock = $(".ddl_plp_pagination .page");
+          if (paginationBlock) {
+            const lastPage = paginationBlock.find("a").last().text().trim();
+            const parsedLastPage = parseInt(lastPage);
+            if (parsedLastPage > 1 && request.url.indexOf("?page=") === -1) {
+              const pagesArr = _.range(2, parsedLastPage + 1);
+              for (const page of pagesArr) {
+                const nextPageUrl = `${request.url}?page=${page}`;
+                console.log(`Added ${nextPageUrl} to queue`);
+                await requestQueue.addRequest({
+                  url: nextPageUrl,
+                  userData: {
+                    label: LABELS.PAGE_BF
+                  }
+                });
+              }
+            }
+          }
+          const productBlock = $(".a-productListing__productsGrid__element");
+          if (productBlock) {
+            productBlock.each(async function () {
+              const itemUrl = $(this).find("a.ghs-link").first().attr("href");
+              if (itemUrl) {
+                const itemId = await s3FileName({ itemUrl });
+                const itemName = $(this).find(".product__name").text();
+                const originalPrice =
+                  parseFloat(
+                    $(this)
+                      .find(".product__old-price")
+                      .text()
+                      .trim()
+                      .replace(",", "")
+                      .replace(/\s+/g, "")
+                  ) / 100;
+                const currentPrice =
+                  parseFloat(
+                    $(this)
+                      .find(".product__price ")
+                      .text()
+                      .trim()
+                      .replace(/\s+/g, "")
+                  ) / 100;
+                const img =
+                  `https://itesco.${country.toLowerCase()}` +
+                  $(this).find(".product__img-wrapper img").attr("data-src");
+                log.info(`Found  ${itemUrl}`);
+                await Apify.pushData({
+                  itemId,
+                  itemUrl,
+                  itemName,
+                  img,
+                  originalPrice,
+                  currentPrice,
+                  discounted: originalPrice
+                    ? originalPrice > currentPrice
+                    : false,
+                  category:
+                    country.toLowerCase() === "cz"
+                      ? ["Akční nabídky"]
+                      : ["Špeciálne ponuky"],
+                  currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+                });
+              }
+            });
+          }
+        } catch (e) {
+          // no items on the page check it out
+          log.debug(`Check this url, there are no items ${request.url}`);
+          await Apify.pushData({
+            status: "Check this url, there are no items",
+            url: request.url
+          });
+        }
       } else if (request.userData.label === LABELS.PAGINATION) {
         try {
           const items = await ExtractItems(
@@ -151,7 +240,7 @@ Apify.main(async () => {
       `itesco.${country.toLowerCase()}`
     );
     log.info("invalidated Data CDN");
-    await uploadToKeboola(getTableName(country));
+    await uploadToKeboola(getTableName(country, type));
     log.info("upload to Keboola finished");
   }
 });
