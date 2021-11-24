@@ -144,11 +144,7 @@ async function scrapeProductListPage($, crawlContext) {
       crawlContext.processedIds.add(product.itemId);
       const slug = await crawlContext.s3FileName(product);
       requests.push(
-        crawlContext.dataset.pushData({
-          ...product,
-          shop: crawlContext.shopName,
-          slug
-        }),
+        crawlContext.dataset.pushData(product),
         crawlContext.uploadToS3(
           crawlContext.s3,
           "electroworld.cz",
@@ -207,7 +203,7 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
     const productElements = $(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
 
-    if (isSubCategoryPage) {
+    if (isSubCategoryPage && crawlContext.type !== "BF") {
       log.info(
         `Found new subcategory page: ${request.url}, ${crawlContext.stats.categories}`
       );

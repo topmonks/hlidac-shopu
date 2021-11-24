@@ -6,11 +6,11 @@ const {
   invalidateCDN,
   toProduct,
   uploadToS3,
-  s3FileName,
-  shopName
+  s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
+const cheerio = require("cheerio");
 const { fetchPage, fetchDetail, countProducts } = require("./src/crawler");
 const {
   utils: { log }
@@ -25,7 +25,6 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     development = false,
-    debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
@@ -42,7 +41,8 @@ Apify.main(async () => {
       "https://www.electroworld.cz/apple-macbook-air-13-m1-256gb-2020-mgn63cz-a-vesmirne-sedy",
       "https://www.electroworld.cz/nine-eagles-galaxy-visitor-3",
       "https://www.electroworld.cz/samsung-galaxy-a52-128-gb-cerna"
-    ]
+    ],
+    bfUrls = ["https://www.electroworld.cz/blackfriday-2021/sort-by_cheapest"]
   } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {
@@ -74,7 +74,7 @@ Apify.main(async () => {
     stats,
     processedIds,
     s3,
-    shopName: await shopName(startUrls[0]),
+    type,
     toProduct,
     uploadToS3,
     s3FileName
@@ -95,21 +95,54 @@ Apify.main(async () => {
       userData: { label: "nthPage", pageN: 0 },
       url: "https://www.electroworld.cz/smart-televize?p5%5B43814%5D=hisense"
     });
+  } else if (type === "BF") {
+    for (let i = 0; i < bfUrls.length; i++) {
+      await requestQueue.addRequest({ url: bfUrls[i] });
+    }
   }
 
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue: requestQueue,
-    proxyConfiguration: proxyConfiguration,
-    maxRequestRetries,
-    maxConcurrency,
-    handlePageFunction: async context => {
-      if (type === "FULL" || type === "TEST_FULL") {
-        await fetchPage(context, crawlContext);
-      } else if (type === "DETAIL") {
-        await fetchDetail(context.$, context.request, dataset);
+  let crawler;
+  if (type === "BF") {
+    crawler = new Apify.PlaywrightCrawler({
+      requestQueue,
+      proxyConfiguration,
+      maxConcurrency,
+      maxRequestRetries,
+      navigationTimeoutSecs: 120,
+      launchContext: {
+        useChrome: true,
+        launchOptions: {
+          headless: true
+        }
+      },
+      handlePageFunction: async context => {
+        const { request, response, page } = context;
+        await page.waitForSelector(".product-box__price-bundle");
+        await page.waitForSelector("ul.pagination");
+        const text = await page.content();
+        const $ = cheerio.load(text);
+        await fetchPage({ request, $ }, crawlContext);
+      },
+      handleFailedRequestFunction: async ({ request }) => {
+        stats.failed++;
+        log.error(`Request ${request.url} failed multiple times`, request);
       }
-    }
-  });
+    });
+  } else {
+    crawler = new Apify.CheerioCrawler({
+      requestQueue: requestQueue,
+      proxyConfiguration: proxyConfiguration,
+      maxRequestRetries,
+      maxConcurrency,
+      handlePageFunction: async context => {
+        if (type === "FULL" || type === "TEST_FULL") {
+          await fetchPage(context, crawlContext);
+        } else if (type === "DETAIL") {
+          await fetchDetail(context.$, context.request, dataset);
+        }
+      }
+    });
+  }
 
   log.info("Starting the crawl.");
 
