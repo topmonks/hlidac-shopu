@@ -204,6 +204,7 @@ async function processItems({
         item = pilulkaczValidator(item);
         break;
       case "benu_cz":
+      case "benu_cz_bf":
         item = benuczValidator(item);
         break;
       case "prozdravi_cz":
