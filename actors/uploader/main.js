@@ -252,6 +252,7 @@ async function processItems({
         item = hornbachValidator(item);
         break;
       case "electroworld_cz":
+      case "electroworld_cz_bf":
         item = electroworldValidator(item);
         break;
       case "lidl_cz":
