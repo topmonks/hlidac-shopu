@@ -23,11 +23,14 @@ const LABELS = {
   PAGI_PAGE: "PAGI_PAGE"
 };
 
+let stats = {};
+const processedIds = new Set();
+
 const web = "https://www.benu.cz";
 
-async function enqueuRequests(requestQueue, items) {
+async function enqueuRequests(requestQueue, items, forefront) {
   for (const item of items) {
-    await requestQueue.addRequest(item);
+    await requestQueue.addRequest(item, { forefront });
   }
 }
 
@@ -46,7 +49,7 @@ async function extractItems($, $products, breadCrumbs, requestQueue) {
       }
     });
   });
-  await enqueuRequests(requestQueue, productsOnPage, true);
+  await enqueuRequests(requestQueue, productsOnPage, false);
   return productsOnPage;
 }
 
@@ -58,7 +61,7 @@ function parseScriptJson($, element) {
     .trim();
 }
 
-async function handleSingleDetailOfProduct($, request) {
+async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
   try {
     const $jsonData = JSON.parse(
       parseScriptJson($, $("#snippet-productRichSnippet-richSnippet"))
@@ -81,22 +84,25 @@ async function handleSingleDetailOfProduct($, request) {
       ),
       discounted: offers.itemCondition === "Akce"
     };
-
-    await uploadToS3(
-      s3,
-      "benu.cz",
-      await s3FileName(result),
-      "jsonld",
-      toProduct(
-        {
-          ...result,
-          inStock: true
-        },
-        { priceCurrency: "CZK" }
-      )
-    );
-
-    await Apify.pushData(result);
+    if (!processedIds.has(result.itemId)) {
+      await uploadToS3(
+        s3,
+        "benu.cz",
+        await s3FileName(result),
+        "jsonld",
+        toProduct(
+          {
+            ...result,
+            inStock: true
+          },
+          { priceCurrency: "CZK" }
+        )
+      );
+      await Apify.pushData(result);
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
   } catch (e) {
     throw new Error(
       `Failed extraction of item details ${request.url} - ${e.message}`
@@ -140,7 +146,22 @@ Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
-  const { type } = input;
+  const {
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
+
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    failed: 0
+  };
+
   const requestQueue = await Apify.openRequestQueue();
   if (type === "BF") {
     await requestQueue.addRequest({
@@ -149,6 +170,7 @@ Apify.main(async () => {
         label: LABELS.PAGE
       }
     });
+    stats.categories++;
   } else {
     await requestQueue.addRequest({
       url: web,
@@ -161,12 +183,21 @@ Apify.main(async () => {
     });
   }
 
-  const proxyConfiguration = await Apify.createProxyConfiguration();
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups
+  });
 
   // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 10,
+    maxRequestRetries,
+    maxConcurrency,
     proxyConfiguration,
     handlePageFunction: async ({ $, request }) => {
       if (request.userData.label === LABELS.START) {
@@ -196,6 +227,7 @@ Apify.main(async () => {
           });
         });
         log.info(`Found ${allCategories.size} allCategories.`);
+        stats.categories += allCategories.size;
         await enqueuRequests(requestQueue, allCategories, false);
       } else if (request.userData.label === LABELS.PAGE) {
         log.info(`START with page ${request.url}`);
@@ -222,14 +254,15 @@ Apify.main(async () => {
             });
           }
           log.info(`Found ${paginationPage.length} pages in category.`);
-          await enqueuRequests(requestQueue, paginationPage, false);
+          stats.pages += paginationPage.length;
+          await enqueuRequests(requestQueue, paginationPage, true);
         }
       } else if (request.userData.label === LABELS.PAGI_PAGE) {
         log.info(`START with page ${request.url}`);
         await handleProducts($, request, requestQueue);
       } else if (request.userData.label === LABELS.DETAIL) {
         log.info(`START with product ${request.url}`);
-        await handleSingleDetailOfProduct($, request, requestQueue);
+        await handleSingleDetailOfProduct($, request, requestQueue, stats);
         log.info(`END with product ${request.url}`);
       }
     },
@@ -239,15 +272,19 @@ Apify.main(async () => {
       log.info(`Request ${request.url} failed 10 times`);
     }
   });
+
   // Run crawler.
   await crawler.run();
+  log.info("crawler finished");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz");
-  log.info("invalidated Data CDN");
-  if (type !== "TEST") {
-    await uploadToKeboola("benu_cz");
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz");
+    log.info("invalidated Data CDN");
+
+    await uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz");
     log.info("upload to Keboola finished");
   }
-
-  log.info("crawler finished");
 });
