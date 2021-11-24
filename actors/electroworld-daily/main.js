@@ -161,7 +161,9 @@ Apify.main(async () => {
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "electroworld.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola("electroworld_cz");
+    await uploadToKeboola(
+      type === "BF" ? "electroworld_cz_bf" : "electroworld_cz"
+    );
     log.info("upload to Keboola finished");
   }
 });
