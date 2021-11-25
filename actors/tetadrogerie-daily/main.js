@@ -251,7 +251,8 @@ Apify.main(async () => {
     test = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    type = "FULL"
+    type = "FULL",
+    bfUrl = "https://www.tetadrogerie.cz/eshop/produkty?offerID=ESH210007"
   } = input ?? {};
 
   if (development || debug) {
@@ -280,7 +281,7 @@ Apify.main(async () => {
     });
   } else if (type === "BF") {
     await requestQueue.addRequest({
-      url: "https://www.tetadrogerie.cz/eshop/produkty?offerID=BF20210001&pocet=60&razeni=price",
+      url: `${bfUrl}&pocet=60&razeni=price`,
       userData: {
         step: "BF"
       }
