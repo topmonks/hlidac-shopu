@@ -19,7 +19,7 @@ export class Okay extends Shop {
         .filter(x => x.indexOf("SLEVA") > -1)
         .map(x => parseFloat(x.match(/SLEVA\s(\d+)/)[1]) / 100)
         .pop() || 0.0;
-    const currentPrice = Math.ceil(
+    const currentPrice = Math.round(
       data.priceWithTax - sale * data.priceWithTax
     );
     const originalPrice = cleanPrice("#product_price_recomended");
