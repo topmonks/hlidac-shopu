@@ -76,9 +76,9 @@ Apify.main(async () => {
       });
       crawlContext.stats.urls += 1;
     }
-  } else if (development && crawlContext.country === COUNTRY.SK) {
+  } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: "https://www.okay.sk/moderne-koberce/",
+      url: "https://www.okay.cz/tv-s-uhloprickou-do-31-79-cm/",
       userData: { label: "LIST" }
     });
   } else {

@@ -182,10 +182,10 @@ const handleDetail = async ({ request, $ }, crawlContext, country) => {
             result.currentPrice * ((100 - additionalDiscount) / 100) * 100
           ) / 100;
       }
+      if (!result.originalPrice) result.originalPrice = result.currentPrice;
       result.currentPrice = price;
     }
   }
-  if (!result.originalPrice) result.originalPrice = result.currentPrice;
   result.discounted = result.currentPrice < result.originalPrice;
   result.breadcrumb = $("p#menu-breadcrumb").text().trim().split("OKAY »")[1];
   result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
