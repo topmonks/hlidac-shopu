@@ -67,14 +67,15 @@ function* paginateResults(count) {
 function parseItem($, category) {
   return el => {
     const $el = $(el);
-    const actionPrice = $el.find(".sx-item-price-action");
-    const initialPrice = $el.find(".sx-item-price-initial").first();
+    const actionPrice = parseFloat(
+      $el.find(".sx-item-price-action").text().replace(/\s+/g, "")
+    );
+    const initialPrice = parseFloat(
+      $el.find(".sx-item-price-initial").first().text().replace(/\s+/g, "")
+    );
+    const originalPrice = actionPrice ? initialPrice / 100 : null;
+    const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
     const itemUrl = new URL($el.find(".sx-item-title").attr("href"), HOST).href;
-    const currentPrice =
-      parseFloat(actionPrice.text().replace(/\s+/g, "")) / 100;
-    const originalPrice =
-      parseFloat(initialPrice.text().replace(/\s+/g, "")) / 100;
-
     return {
       itemId: $el.find(".j-product").data("skuid"),
       itemName: $el.find(".sx-item-title").text(),
@@ -116,6 +117,7 @@ async function pageFunction(requestQueue, s3) {
   async function handler(context) {
     const { request, response, page } = context;
     const { step, category, currentPage } = request.userData;
+    await page.waitForSelector(".sx-item-price-group");
     const text = await page.content();
     const $ = cheerio.load(text);
     if (response.status() !== 200) {
@@ -274,7 +276,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   if (development && test) {
     await requestQueue.addRequest({
-      url: "https://www.tetadrogerie.cz/eshop/produkty/pansky-svet/holeni/holici-strojky-a-hlavice"
+      url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/myti-nadobi/doplnky-do-mycky?pocet=40&razeni=price"
     });
   } else if (type === "BF") {
     await requestQueue.addRequest({
