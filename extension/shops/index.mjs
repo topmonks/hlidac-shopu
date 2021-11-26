@@ -20,3 +20,4 @@ export * from "./prozdravi.mjs";
 export * from "./rohlik.mjs";
 export * from "./sleky.mjs";
 export * from "./tsbohemia.mjs";
+export * from "./lidl.mjs";
