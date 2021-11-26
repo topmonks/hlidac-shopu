@@ -167,23 +167,29 @@ const handleDetail = async ({ request, $ }, crawlContext, country) => {
     x.includes(discountText)
   );
   if (additionalDiscount) {
-    additionalDiscount = parseFloat(
-      additionalDiscount.replace(discountText, "").replace(/,/, ".").trim()
-    );
-    if (additionalDiscount) {
-      let price;
-      if (country === COUNTRY.CZ) {
-        price = Math.trunc(
-          result.currentPrice * ((100 - additionalDiscount) / 100)
-        );
-      } else {
-        price =
-          Math.round(
-            result.currentPrice * ((100 - additionalDiscount) / 100) * 100
-          ) / 100;
-      }
+    if (additionalDiscount.includes("DPH")) {
+      additionalDiscount = 21;
       if (!result.originalPrice) result.originalPrice = result.currentPrice;
-      result.currentPrice = price;
+      result.currentPrice = Math.floor(result.currentPrice / 1.21);
+    } else {
+      additionalDiscount = parseFloat(
+        additionalDiscount.replace(discountText, "").replace(/,/, ".").trim()
+      );
+      if (additionalDiscount) {
+        let price;
+        if (country === COUNTRY.CZ) {
+          price = Math.trunc(
+            result.currentPrice * ((100 - additionalDiscount) / 100)
+          );
+        } else {
+          price =
+            Math.round(
+              result.currentPrice * ((100 - additionalDiscount) / 100) * 100
+            ) / 100;
+        }
+        if (!result.originalPrice) result.originalPrice = result.currentPrice;
+        result.currentPrice = price;
+      }
     }
   }
   result.discounted = result.currentPrice < result.originalPrice;

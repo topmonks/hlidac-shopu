@@ -47,7 +47,8 @@ Apify.main(async () => {
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 5,
-    bfUrls = []
+    bfUrls = [],
+    customTableName = null
   } = input ?? {};
   if (development || debug) {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
@@ -78,7 +79,7 @@ Apify.main(async () => {
     }
   } else if (type === "TEST") {
     await requestQueue.addRequest({
-      url: "https://www.okay.cz/tv-s-uhloprickou-do-31-79-cm/",
+      url: "https://www.okay.cz/tv-s-uhloprickou-55-139-cm/",
       userData: { label: "LIST" }
     });
   } else {
@@ -174,7 +175,7 @@ Apify.main(async () => {
     const tableName = `okay_${country.toLowerCase()}${
       type === "BF" ? "_bf" : ""
     }`;
-    await uploadToKeboola(tableName);
+    await uploadToKeboola(customTableName ? customTableName : tableName);
     log.info(`upload to Keboola finished: ${tableName}`);
   }
 
