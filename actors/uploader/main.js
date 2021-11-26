@@ -2,7 +2,10 @@ const Apify = require("apify");
 const byteSize = require("byte-size");
 const { gzip } = require("node-gzip");
 const ObjectsToCsv = require("objects-to-csv");
-const moment = require("moment");
+const addMinutes = require("date-fns/addMinutes");
+const format = require("date-fns/format");
+const parse = require("date-fns/parse");
+const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 
 const { keboolaUploader } = require("./src/uploader");
 const { retry } = require("./src/utils");
@@ -493,10 +496,10 @@ Apify.main(async () => {
   const { createdAt } = await retry(async () => {
     return Apify.openDataset(datasetId);
   });
-  const crawledDate = await moment(createdAt)
-    .utc()
-    .add(1, "minute")
-    .format("YYYY-MM-DD HH:mm:ss");
+  const crawledDate = format(
+    addMinutes(zonedTimeToUtc(parse(createdAt)), 1),
+    "YYYY-MM-DD HH:mm:ss"
+  );
 
   await loadItems({
     datasetId,

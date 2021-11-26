@@ -5,12 +5,12 @@
   "license": "EPL-2.0",
   "description": "This is the rohlik.cz actor.",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.40.0",
-    "@aws-sdk/client-s3": "^3.40.0",
+    "@aws-sdk/client-cloudfront": "^3.42.0",
+    "@aws-sdk/client-s3": "^3.42.0",
     "@hlidac-shopu/actors-common": "^1.1.4",
     "apify": "^2.1.0",
-    "browser-pool": "^3.0.3",
-    "got": "^11.8.2",
+    "browser-pool": "^3.0.4",
+    "got": "^11.8.3",
     "playwright": "^1.16.3",
     "proxy-agent": "^5.0.0",
     "puppeteer": "^11.0.0",
@@ -19,8 +19,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/node": "^16.11.6",
-    "apify-cli": "^0.6.3"
+    "@types/node": "^16.11.10",
+    "apify-cli": "^0.6.4"
   },
   "scripts": {
     "start": "node main.js"

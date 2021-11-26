@@ -6,19 +6,19 @@
   "license": "EPL-2.0",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.40.0",
-    "@aws-sdk/client-s3": "^3.40.0",
+    "@aws-sdk/client-cloudfront": "^3.42.0",
+    "@aws-sdk/client-s3": "^3.42.0",
     "@types/cheerio": "^0.22.30",
-    "@types/node": "^16.11.6",
+    "@types/node": "^16.11.10",
     "apify": "^2.1.0",
     "cheerio": "^1.0.0-rc.10",
-    "csv-parse": "^5.0.0",
+    "csv-parse": "^5.0.3",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.1.0",
     "schema-dts": "^1.0.0"
   },
   "devDependencies": {
-    "apify-cli": "^0.6.3"
+    "apify-cli": "^0.6.4"
   },
   "scripts": {
     "start": "node main.js"
