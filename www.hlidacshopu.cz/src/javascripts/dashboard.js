@@ -99,11 +99,11 @@ function shopTemplate({
 
 function logoTemplate({ logo, name, url, viewBox }) {
   const image = svg`
-      <svg viewBox="${viewBox ?? ""}">
-        <title>${name}</title>
-        <use href="#${logo}"/>
-      </svg>
-    `;
+    <svg viewBox="${viewBox ?? ""}">
+      <title>${name}</title>
+      <use href="#${logo}"/>
+    </svg>
+  `;
   return html`
     <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
   `;
