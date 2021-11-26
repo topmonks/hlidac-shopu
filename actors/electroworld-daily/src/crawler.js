@@ -96,6 +96,15 @@ async function scrapeProductListPage($, crawlContext) {
         product.originalPrice =
           oldPrice === null ? null : parseFloat(oldPrice.amount);
       }
+    } else if (isCashback.includes("Ušetříte")) {
+      const salePrice = mkPrice(
+        topElement
+          .find(".product-box__price-bundle .typo-complex-16")
+          .last()
+          .text()
+          .trim()
+      );
+      product.originalPrice = product.currentPrice + salePrice;
     } else {
       let productPriceOriginal = topElement
         .find(productPriceOriginalToken)
