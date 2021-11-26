@@ -53,6 +53,12 @@
       border-bottom-right-radius: 6px;
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/reviews.css">
+  <style>
+    .review__rating {
+      padding-right: 0;
+    }
+  </style>
 {% endblock %}
 
 {% block main %}
@@ -76,6 +82,8 @@
                 <th scope="col">Průměrná uváděná sleva</th>
                 <th scope="col">Průměrná reálná sleva</th>
                 <th scope="col">Začátek akce</th>
+                <th scope="col">Konec akce</th>
+                <th scope="col">Rating</th>
               </tr>
               </thead>
               <tbody id="table-root">
@@ -203,6 +211,15 @@
               se zadanými platebními údaji. BigQuery má dostatečně velkorysé volné
               kredity na to, abyste nemuseli za analýzu našich dat platit.
             </p>
+            <h3>Implementace nad našimi daty</h3>
+            <ul>
+              <li>
+                <a
+                  href="https://public.tableau.com/app/profile/alena.me.ov./viz/All_shops_example/TOPslevyprodnenden?publish=yes"
+                  target="tableau"
+                >TOP Slevy (Czechitas)</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

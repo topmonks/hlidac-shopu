@@ -1,8 +1,8 @@
-import { html, render } from "lit-html";
 import { formatDate } from "@hlidac-shopu/lib/format.mjs";
-import * as rollbar from "./rollbar.js";
-import { when } from "@hlidac-shopu/lib/templates.mjs";
 import { fetchReviews } from "@hlidac-shopu/lib/remoting.mjs";
+import { rating, when } from "@hlidac-shopu/lib/templates.mjs";
+import { html, render } from "lit-html";
+import * as rollbar from "./rollbar.js";
 
 rollbar.init();
 
@@ -36,9 +36,6 @@ function avatarTemplate({ name, image }) {
 
 function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
   const style = reviewBody.length > 260 ? "grid-row: span 2;" : "";
-  const oneStarWidth = 25.2;
-  const ratingStyle = `font-size:${oneStarWidth}px;line-height:16px`;
-  const starsStyle = `width:${reviewRating.ratingValue}em`;
   const date = new Date(datePublished);
   return html`
     <div
@@ -61,27 +58,10 @@ function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
           property="datePublished"
           class="review__date text--light-grey"
           datetime="${date.toISOString()}"
-          >${formatDate(date)}</time
-        ><br />
-        <i
-          property="reviewRating"
-          typeof="Rating"
-          class="review__rating"
-          data-rating="${reviewRating.ratingValue}"
-          style="${ratingStyle}"
-          aria-label="Obdržené hodnocení ${reviewRating.ratingValue} hvězdiček z 5."
-          title="Hodnocení ${reviewRating.ratingValue} ⭑"
-        >
-          <data
-            role="meter"
-            property="ratingValue"
-            value="${reviewRating.ratingValue}"
-            aria-valuemin="1"
-            aria-valuemax="5"
-            class="review__rating-value"
-            style="${starsStyle}"
-          ></data>
-        </i>
+          >${formatDate(date)}
+        </time>
+        <br />
+        ${rating(reviewRating)}
       </div>
       <div class="review__content" property="reviewBody">
         <p>${reviewBody}</p>

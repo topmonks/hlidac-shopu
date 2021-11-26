@@ -5,6 +5,7 @@ import {
   formatShortDate
 } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.mjs";
+import { rating } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
 rollbar.init();
@@ -61,6 +62,7 @@ function tableTemplate(data) {
     .map(addExtraData(2021))
     .map(x => {
       if (typeof x.startDate === "string") x.startDate = new Date(x.startDate);
+      if (typeof x.endDate === "string") x.endDate = new Date(x.endDate);
       return x;
     })
     .sort((a, b) => a.sortKey - b.sortKey)
@@ -77,16 +79,20 @@ function shopTemplate({
   bfProducts,
   avgClaimedDiscount,
   avgRealDiscount,
-  startDate
+  startDate,
+  endDate,
+  rating: ratingValue
 }) {
   return html`
     <tr class="dashboard-row">
       <th scope="row">${logoTemplate({ name, url, logo, viewBox })}</th>
       <td>${formatNumber(allProducts)}</td>
-      <td>${formatNumber(bfProducts) || "-"}</td>
-      <td>${formatPercents(avgClaimedDiscount) || "-"}</td>
-      <td>${formatPercents(avgRealDiscount) || "-"}</td>
-      <td>${formatShortDate(startDate) || "-"}</td>
+      <td>${formatNumber(bfProducts) ?? "-"}</td>
+      <td>${formatPercents(avgClaimedDiscount) ?? "-"}</td>
+      <td>${formatPercents(avgRealDiscount) ?? "-"}</td>
+      <td>${formatShortDate(startDate) ?? "-"}</td>
+      <td>${formatShortDate(endDate) ?? "-"}</td>
+      <td>${rating(ratingValue, { maxValue: 3 }) ?? "-"}</td>
     </tr>
   `;
 }
