@@ -3,7 +3,11 @@ import { Shop } from "./shop.mjs";
 
 export class Lidl extends Shop {
   get injectionPoint() {
-    return ["afterend", ".keyfacts"];
+    if (this.isMobileDetailPage()) {
+      return ["beforebegin", ".buybox__bottom"];
+    } else {
+      return ["afterend", ".keyfacts"];
+    }
   }
 
   async scrape() {
@@ -16,6 +20,12 @@ export class Lidl extends Shop {
     const imageUrl = document.querySelector(".gallery-image__img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
+  }
+
+  isMobileDetailPage() {
+    const elem = document.querySelector("article.detail");
+    const style = window.getComputedStyle(elem);
+    return style.margin === "8px 0px 0px";
   }
 }
 registerShop(new Lidl(), "lidl_cz");
