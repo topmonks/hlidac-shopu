@@ -6,7 +6,7 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import cheerio from "cheerio";
-import csv from "csv-parse/sync";
+import * as csv from "csv-parse/sync";
 import jwt from "jsonwebtoken";
 import { fetch } from "fetch-h2";
 import { URLSearchParams } from "url";
