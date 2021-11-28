@@ -1,17 +1,17 @@
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const {
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
   CloudFrontClient,
   CreateInvalidationCommand
-} = require("@aws-sdk/client-cloudfront");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const cheerio = require("cheerio");
-const csv = require("csv-parse/sync");
-const jwt = require("jsonwebtoken");
-const fetch = require("node-fetch");
-const { URLSearchParams } = require("url");
-const { promisify } = require("util");
-const zlib = require("zlib");
+} from "@aws-sdk/client-cloudfront";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import cheerio from "cheerio";
+import csv from "csv-parse/sync";
+import jwt from "jsonwebtoken";
+import { fetch } from "fetch-h2";
+import { URLSearchParams } from "url";
+import { promisify } from "util";
+import zlib from "zlib";
 
 /** @typedef { import("apify").RequestQueue } RequestQueue */
 /** @typedef { import("apify").RequestList } RequestList */
