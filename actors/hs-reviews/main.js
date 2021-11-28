@@ -6,7 +6,7 @@ const {
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const cheerio = require("cheerio");
-const csv = require("csv-parse/lib/sync");
+const csv = require("csv-parse/sync");
 const jwt = require("jsonwebtoken");
 const fetch = require("node-fetch");
 const { URLSearchParams } = require("url");
