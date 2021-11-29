@@ -459,7 +459,7 @@ function createHandlePageFunction(requestQueue, token) {
     log.info(`Handling page ${request.url}`);
     switch (request.userData.label) {
       case APPLE: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const $ = cheerio.load(response.body);
         const result = appleStats(request, $);
         await Apify.pushData(result);
@@ -479,7 +479,7 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case APPLE_REVIEWS: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const $ = cheerio.load(response.body);
         const result = appleReviews(request, $);
         await Apify.pushData(result);
@@ -487,7 +487,7 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case GOOGLE: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const $ = cheerio.load(response.body);
         const result = googleStats(request, $);
         await Apify.pushData(result);
@@ -495,7 +495,7 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case GOOGLE_REVIEWS: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const $ = cheerio.load(response.body);
         const result = googleReviews(request, $);
         await Apify.pushData(result);
@@ -503,7 +503,7 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case FIREFOX: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const $ = cheerio.load(response.body);
         const result = firefoxStats(request, $);
         await Apify.pushData(result);
@@ -511,7 +511,7 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case FIREFOX_REVIEWS: {
-        const response = await requestAsBrowser(request);
+        const response = await requestAsBrowser({ url: request.url });
         const result = await firefoxReviews(
           request,
           JSON.parse(response.body),
