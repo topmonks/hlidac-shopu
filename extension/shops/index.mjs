@@ -7,6 +7,7 @@ export * from "./eva.mjs";
 export * from "./globus.mjs";
 export * from "./itesco.mjs";
 export * from "./kasa.mjs";
+export * from "./knihydobrovsky.mjs";
 export * from "./kosik.mjs";
 export * from "./lekarna.mjs";
 export * from "./mall.mjs";
