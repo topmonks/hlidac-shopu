@@ -5,6 +5,7 @@ export * from "./czc.mjs";
 export * from "./datart.mjs";
 export * from "./eva.mjs";
 export * from "./globus.mjs";
+export * from "./ikea.mjs";
 export * from "./itesco.mjs";
 export * from "./kasa.mjs";
 export * from "./knihydobrovsky.mjs";
