@@ -14,7 +14,7 @@ export class Lidl extends Shop {
     const elem = document.querySelector(".buybox");
     if (!elem) return;
     const itemId = document.querySelector(".buybox__erp-number").textContent;
-    const title = document.querySelector(".keyfacts__title").textContent;
+    const title = document.querySelector(".keyfacts__title").textContent.trim();
     const currentPrice = cleanPrice(".m-price__price");
     const originalPrice = cleanPrice(".m-price__rrp");
     const imageUrl = document.querySelector(".gallery-image__img").src;
