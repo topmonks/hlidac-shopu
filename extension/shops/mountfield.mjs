@@ -5,27 +5,18 @@ export class Mountfield extends Shop {
   get injectionPoint() {
     return [
       "beforebegin",
-      ".productCompare",
-      {
-        clear: "right",
-        float: "right",
-        width: "374px"
-      }
+      ".box-detail-info__links"
     ];
   }
 
   async scrape() {
-    const elem = document.querySelector(".productDetail");
+    const elem = document.querySelector(".box-detail");
     if (!elem) return;
-    const itemId = document
-      .querySelector(".j-barcode-text")
-      .textContent.trim()
-      .toLowerCase();
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".actionPrice.val");
-    const originalPrice = cleanPrice(".retailPrice.val");
-    const imageUrl = document.querySelector(".mainImage img").src;
-
+    const itemId = elem.querySelector("meta[itemprop=sku]").content.trim().toLowerCase();
+    const title = elem.querySelector("h1.box-detail__heading").textContent.trim();
+    const currentPrice = elem.querySelector("meta[itemprop=price]").content.trim();
+    const originalPrice = cleanPrice(".box-detail-add__prices__item__text__price");
+    const imageUrl = elem.querySelector("img[itemprop=image]").src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
