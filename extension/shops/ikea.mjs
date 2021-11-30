@@ -37,4 +37,4 @@ export class Ikea extends Shop {
   }
 }
 
-registerShop(new Ikea(), "ikea_cz", "ikea_sk", "ikea_at", "ikea_de", "ikea_hu", "ikea_pl");
+registerShop(new Ikea(), "ikea_cz", "ikea_sk");
