@@ -25,3 +25,4 @@ export * from "./sleky.mjs";
 export * from "./tetadrogerie.mjs";
 export * from "./tsbohemia.mjs";
 export * from "./lidl.mjs";
+export * from "./tchibo.mjs";
