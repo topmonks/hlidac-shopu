@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import formatISO from "date-fns/formatISO/index.js";
-import fetch from "node-fetch/lib/index.mjs";
+import { fetch } from "fetch-h2";
 import { parseHTML } from "linkedom/cached";
 import fs from "fs";
 import path from "path";
@@ -62,56 +62,70 @@ function readLinkedData(document) {
   }
 }
 
-for (let url of urls) {
-  const resp = await fetch(url, {});
-  const { document } = parseHTML(await resp.text());
-  const ld = readLinkedData(document);
-  const title = (
-    ld.headline ??
-    document.querySelector("[property='og:title']")?.getAttribute("content") ??
-    document.querySelector("h1, .post-title, [itemprop=name]")?.textContent
-  )?.trim();
-  const imageUrl = document
-    .querySelector("meta[property='og:image'], meta[property='og:image:url']")
-    ?.getAttribute("content");
-  let imageResp = fetch(imageUrl);
-  const time = new Date(
-    ld.datePublished ??
+async function main() {
+  for (let url of urls) {
+    console.log(url);
+    const resp = await fetch(url, {});
+    const { document } = parseHTML(await resp.text());
+    const ld = readLinkedData(document);
+    const title = (
+      ld.headline ??
       document
-        .querySelector("meta[property='og:updated_time']")
+        .querySelector("[property='og:title']")
+        ?.getAttribute("content") ??
+      document.querySelector("h1, .post-title, [itemprop=name]")?.textContent
+    )?.trim();
+    const imageUrl = document
+      .querySelector("meta[property='og:image'], meta[property='og:image:url']")
+      ?.getAttribute("content");
+    let imageResp = imageUrl
+      ? fetch(imageUrl, {
+          headers: { "Accept": "image/avif,image/webp,image/*" }
+        })
+      : console.error("Image not found");
+    const time = new Date(
+      ld.datePublished ??
+        document
+          .querySelector("meta[property='og:updated_time']")
+          ?.getAttribute("content") ??
+        document
+          .querySelector("meta[property='article:published_time']")
+          ?.getAttribute("content") ??
+        document.querySelector("time")?.getAttribute("datetime") ??
+        document
+          .querySelector("[itemprop=datePublished]")
+          ?.getAttribute("content") ??
+        Date.now()
+    );
+    const perex = (
+      document
+        .querySelector("meta[property='og:description']")
         ?.getAttribute("content") ??
       document
-        .querySelector("meta[property='article:published_time']")
-        ?.getAttribute("content") ??
-      document.querySelector("time")?.getAttribute("datetime") ??
-      document
-        .querySelector("[itemprop=datePublished]")
-        ?.getAttribute("content") ??
-      Date.now()
-  );
-  const perex = (
-    document
-      .querySelector("meta[property='og:description']")
-      ?.getAttribute("content") ??
-    document.querySelector("meta[name='description']").getAttribute("content")
-  )?.trim();
-  const parts = new URL(url).host.split(".");
-  parts.pop();
-  const siteName = parts.pop();
+        .querySelector("meta[name='description']")
+        ?.getAttribute("content")
+    )?.trim();
+    const parts = new URL(url).host.split(".");
+    parts.pop();
+    const siteName = parts.pop();
 
-  const date = formatISO(time, { representation: "date" });
-  const filename = `${date}-${siteName}`;
-  imageResp = await imageResp;
-  const imageExt = imageResp.headers.get("content-type").split("/").pop();
+    const date = formatISO(time, { representation: "date" });
+    const filename = `${date}-${siteName}`;
+    if (imageResp) imageResp = await imageResp;
+    const imageExt = imageResp?.headers?.get("content-type")?.split("/")?.pop();
 
-  if (test) {
-    console.log({ filename, url, title, date, perex, imageExt });
-  } else {
-    await Promise.all([
-      writeMdFile(filename, url, title, date, perex, imageExt),
-      imageResp
-        .arrayBuffer()
-        .then(imageData => writeImgFile(filename, imageExt, imageData))
-    ]);
+    if (test) {
+      console.log({ filename, url, title, date, perex, imageExt });
+    } else {
+      await Promise.all([
+        writeMdFile(filename, url, title, date, perex, imageExt),
+        imageResp
+          ?.arrayBuffer()
+          ?.then(imageData => writeImgFile(filename, imageExt, imageData))
+      ]);
+    }
   }
 }
+
+await main();
+process.exit(0);
