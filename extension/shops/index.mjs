@@ -26,3 +26,4 @@ export * from "./tetadrogerie.mjs";
 export * from "./tsbohemia.mjs";
 export * from "./lidl.mjs";
 export * from "./tchibo.mjs";
+export * from "./hornbach.mjs";
