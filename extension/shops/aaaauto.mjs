@@ -1,4 +1,4 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import {cleanPrice, cleanPriceText, registerShop} from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class AAAAuto extends Shop {
@@ -28,18 +28,28 @@ export class AAAAuto extends Shop {
       return { itemId, title, currentPrice, originalPrice, imageUrl };
     }
     const title = document.querySelector("#carCardHead h1").innerText;
-    const price = document.querySelector(`
-      .sidebar ul.infoBoxNav li:not([style]):not([class]) span.notranslate,
-      .sidebar ul.infoBoxNav .fixedBarScrollHide span.notranslate,
-      .sidebar ul.infoBoxNav .infoBoxNavTitle span.notranslate
+    const price = document.querySelectorAll(`
+      .sidebar ul.infoBoxNav li:not([style]):not([class]),
+      .sidebar ul.infoBoxNav .fixedBarScrollHide,
+      .sidebar ul.infoBoxNav .infoBoxNavTitle
     `);
-    const originalPrice =
-      price && price.hasChildNodes() ? cleanPrice(price.firstChild) : null;
-    const currentPrice =
-      price && price.hasChildNodes()
-        ? cleanPrice(price.lastChild)
-        : cleanPrice(price);
+    let originalPrice = null;
+    let currentPrice = null;
+    for (const p of price) {
+      if (p.textContent.includes('Cena')) {
+        let strikePrice = p.querySelector('span.notranslate s');
+        if (strikePrice) {
+          strikePrice = p.querySelector('span.notranslate');
+          originalPrice = cleanPriceText(strikePrice.childNodes[0].textContent);
+          currentPrice = cleanPriceText(strikePrice.childNodes[1].textContent);
+        } else {
+          currentPrice = cleanPriceText(p.textContent);
+        }
+      }
+    }
 
+    console.log(originalPrice);
+    console.log(`currentPrice ${currentPrice}`)
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
