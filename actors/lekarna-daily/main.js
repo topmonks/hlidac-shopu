@@ -104,7 +104,7 @@ async function extractItems($, $products, breadCrumbs) {
     const result = {};
     const $item = $(this);
     const itemUrl = $item.find("meta[itemprop=url]").attr("content");
-    const name = $item.find("meta[itemprop=name]").last().attr("content");
+    const name = $item.find("h2").text().trim();
     const cartBut = $item.find('input[name="productSkuId"]');
     let id;
     if (cartBut.length !== 0) {
@@ -134,7 +134,7 @@ async function extractItems($, $products, breadCrumbs) {
       result.itemUrl = itemUrl;
       result.img = itemImgUrl;
       result.category = breadCrumbs;
-      result.currentPrice = $actualPriceSpan.attr("content");
+      result.currentPrice = parseFloat($actualPriceSpan.attr("content"));
       result.currency = $item
         .find("span[itemprop=priceCurrency]")
         .attr("content");
@@ -284,6 +284,7 @@ Apify.main(async () => {
   const {
     development = false,
     debug = false,
+    test = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
     country = "cz",
@@ -311,6 +312,13 @@ Apify.main(async () => {
       userData: {
         label: "PAGE",
         category: bfUrl
+      }
+    });
+  } else if (type === "FULL" && test) {
+    await requestQueue.addRequest({
+      url: "https://www.lekarna.cz/masazni-gely-roztoky/",
+      userData: {
+        label: "SUB_CATEGORY"
       }
     });
   } else if (type === "COUNT") {
