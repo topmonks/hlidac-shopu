@@ -184,9 +184,9 @@ For more details see [Cloudinary JS SDK](https://cloudinary.com/documentation/im
     npm login
     npm publish --access public --tag latest
 ```
-1. Update version @hlidac-shopu/lib in yarn.lock 
+1. Update version @hlidac-shopu/lib across the project
 ```   
-yarn upgrade-interactive
+yarn up @hlidac-shopu/lib -i
 ```
 
 © 2018-2021 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
