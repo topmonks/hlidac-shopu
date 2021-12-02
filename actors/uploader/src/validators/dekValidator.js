@@ -8,8 +8,7 @@ function dekValidator(item) {
     "itemName",
     "itemUrl",
     "originalPrice",
-    "url",
-    "slug"
+    "url"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
