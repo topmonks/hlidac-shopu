@@ -60,6 +60,7 @@ const { evaValidator } = require("./src/validators/evaValidator");
 const { tchiboValidator } = require("./src/validators/tchiboValidator");
 const { megaknihyValidator } = require("./src/validators/megaknihyValidator");
 const { ikeaValidator } = require("./src/validators/ikeaValidator");
+const { dekValidator } = require("./src/validators/dekValidator");
 /* Consts */
 let stats = {
   downloaded: 0,
@@ -176,9 +177,6 @@ async function processItems({
       case "lekarna_bf":
         item = lekarnaValidator(item);
         break;
-      case "lekarna_bf":
-        item = lekarnaValidator(item);
-        break;
       case "czc_bf":
         item = czcValidator(item);
         break;
@@ -212,6 +210,7 @@ async function processItems({
         break;
       case "prozdravi_cz":
         item = prozdraviczValidator(item);
+        break;
       case "okay_cz_bf":
         item = okayValidator(item);
         break;
@@ -285,7 +284,6 @@ async function processItems({
         break;
       case "obi_cz":
       case "obi_sk":
-      case "obi_de":
       case "obi_pl":
       case "obi_hu":
       case "obi_at":
@@ -302,6 +300,10 @@ async function processItems({
       case "ikea_at":
       case "ikea_de":
         item = ikeaValidator(item);
+        break;
+      case "dek_cz":
+      case "dek_sk":
+        item = dekValidator(item);
         break;
     }
 
