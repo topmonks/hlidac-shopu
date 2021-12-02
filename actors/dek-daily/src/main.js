@@ -33,7 +33,7 @@ Apify.main(async () => {
     await requestQueue.addRequest({
       url: "https://www.dek.cz/produkty/vypis/13321-kamna-a-krby",
       userData: {
-        label: LABELS.CATEGORY,
+        label: LABELS.CATEGORY
       }
     });
   }

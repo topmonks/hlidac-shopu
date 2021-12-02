@@ -11,5 +11,5 @@ const BF = "BF";
 module.exports = {
   COUNTRY,
   LABELS,
-  BF,
+  BF
 };
