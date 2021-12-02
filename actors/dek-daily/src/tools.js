@@ -38,7 +38,7 @@ function getRootUrl() {
  */
 function getTableName() {
   const { type, country = COUNTRY.CZ } = global.userInput;
-  let tableName = `dek${country.toLowerCase()}`;
+  let tableName = `dek_${country.toLowerCase()}`;
   if (type === BF) {
     tableName = `${tableName}_bf`;
   }

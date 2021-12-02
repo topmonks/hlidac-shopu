@@ -109,7 +109,6 @@ const CATEGORY = async ({ $, request, crawler }) => {
     const inStock = $(product).find(
       ".com-add-to-cart-eshop__availability--green"
     );
-    const slugArr = url.split("/");
 
     const result = {
       itemId: url.match(/\/(\d+)-/)?.[1],
@@ -121,8 +120,7 @@ const CATEGORY = async ({ $, request, crawler }) => {
       originalPrice,
       discounted: !!originalPrice,
       img,
-      inStock: !!(inStock && inStock.length > 0),
-      slug: slugArr[slugArr.length - 1]
+      inStock: !!(inStock && inStock.length > 0)
     };
     requests.push(
       Apify.pushData(result),
