@@ -6,6 +6,7 @@ const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
 const {
   HOME_PAGE,
+  CATEGORY_PAGE,
   BASE_URL,
   BF,
   BASE_URL_SK_BF,
@@ -56,6 +57,12 @@ Apify.main(async () => {
       userData: {
         label: BF
       }
+    });
+  } else if (type === "TEST") {
+    const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+    await requestQueue.addRequest({
+      url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
+      userData: { label: CATEGORY_PAGE }
     });
   } else {
     const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;

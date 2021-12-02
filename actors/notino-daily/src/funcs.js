@@ -103,30 +103,36 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
         for (const column of category.columns) {
           for (const subCat of column.subCategories) {
             if (subCat.isLink) {
-              links.push({
-                url: `${rootUrl}${subCat.link}`,
-                userData: {
-                  label: CATEGORY_PAGE
-                }
-              });
+              if (!subCat.link.includes("https")) {
+                links.push({
+                  url: `${rootUrl}${subCat.link}`,
+                  userData: {
+                    label: CATEGORY_PAGE
+                  }
+                });
+              }
             }
             for (const pt of subCat.productTypes) {
-              links.push({
-                url: `${rootUrl}${pt.link}`,
-                userData: {
-                  label: CATEGORY_PAGE
-                }
-              });
+              if (!pt.link.includes("https")) {
+                links.push({
+                  url: `${rootUrl}${pt.link}`,
+                  userData: {
+                    label: CATEGORY_PAGE
+                  }
+                });
+              }
             }
           }
         }
       } else {
-        links.push({
-          url: `${rootUrl}${category.link}`,
-          userData: {
-            label: CATEGORY_PAGE
-          }
-        });
+        if (!category.link.includes("https")) {
+          links.push({
+            url: `${rootUrl}${category.link}`,
+            userData: {
+              label: CATEGORY_PAGE
+            }
+          });
+        }
       }
     }
   }
@@ -281,9 +287,12 @@ const handleProductInDetailPage = async (
         entry[1].category
     );
     productGeneralData = (productGeneralData || ["", {}])[1];
-
     const variants = [];
+    let itemBrand = "";
     for (const key in productData) {
+      if (key.includes("Brand:")) {
+        itemBrand = productData[key].name;
+      }
       if (productData.hasOwnProperty(key) && /^Variant:\d+$/.test(key)) {
         variants.push(Number.parseInt(key.replace("Variant:", ""), 10));
       }
@@ -305,7 +314,7 @@ const handleProductInDetailPage = async (
       const variantGeneralData = productData[`Variant:${variant}`];
       /* eslint no-continue: off */
       if (!variantGeneralData.canBuy) continue;
-      const productName = `${productGeneralData.brand} ${
+      const productName = `${itemBrand} ${
         variantGeneralData.name ? variantGeneralData.name : ""
       } ${
         variantGeneralData.variantName ? variantGeneralData.variantName : ""
