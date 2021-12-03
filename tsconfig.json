@@ -3,7 +3,7 @@
     "strict": true,
     "outDir": "bin",
     "target": "ES2019",
-    "lib": ["ES2019", "WebWorker"],
+    "lib": ["ES2019", "WebWorker", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,

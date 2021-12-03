@@ -3,8 +3,8 @@
 	"version": "1.0.0",
 	"description": "This is a makro actor.",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.42.0",
-		"@aws-sdk/client-s3": "^3.42.0",
+		"@aws-sdk/client-cloudfront": "^3.43.0",
+		"@aws-sdk/client-s3": "^3.44.0",
 		"@hlidac-shopu/actors-common": "^1.1.4",
 		"@hlidac-shopu/lib": "^1.0.27",
 		"apify": "^2.1.0"

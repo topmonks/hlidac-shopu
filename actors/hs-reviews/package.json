@@ -7,11 +7,11 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.42.0",
-    "@aws-sdk/client-s3": "^3.42.0",
+    "@aws-sdk/client-cloudfront": "^3.43.0",
+    "@aws-sdk/client-s3": "^3.44.0",
     "@hlidac-shopu/actors-common": "^1.1.4",
     "@types/cheerio": "^0.22.30",
-    "@types/node": "^16.11.10",
+    "@types/node": "^16.11.11",
     "apify": "^2.1.0",
     "cheerio": "^1.0.0-rc.10",
     "csv-parse": "^5.0.3",
@@ -20,7 +20,7 @@
     "schema-dts": "^1.0.0"
   },
   "devDependencies": {
-    "apify-cli": "^0.6.4"
+    "apify-cli": "^0.6.5"
   },
   "scripts": {
     "start": "node main.js"

@@ -71,7 +71,8 @@ const config = {
   browserSync: {
     server: {
       baseDir: pathConfig.dest
-    }
+    },
+    browser: ["google chrome canary"]
   },
 
   esbuild: {
