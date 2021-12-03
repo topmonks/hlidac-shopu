@@ -1,12 +1,11 @@
 const Apify = require("apify");
 const byteSize = require("byte-size");
 const { gzip } = require("node-gzip");
-const ObjectsToCsv = require("objects-to-csv");
+const { writeToBuffer } = require("@fast-csv/format");
 const addMinutes = require("date-fns/addMinutes");
 const format = require("date-fns/format");
 
 const { keboolaUploader } = require("./src/uploader");
-const { retry } = require("./src/utils");
 const { mironetValidator } = require("./src/validators/mironetValidator");
 const { rohlikValidator } = require("./src/validators/rohlikValidator");
 const {
@@ -59,6 +58,7 @@ const { tchiboValidator } = require("./src/validators/tchiboValidator");
 const { megaknihyValidator } = require("./src/validators/megaknihyValidator");
 const { ikeaValidator } = require("./src/validators/ikeaValidator");
 const { dekValidator } = require("./src/validators/dekValidator");
+
 /* Consts */
 let stats = {
   downloaded: 0,
@@ -324,37 +324,25 @@ async function processItems({
 
     item.date = crawledDate;
     item.actRunId = actRunId;
-    item.category = blackFriday === true ? 1 : 0;
+    item.category = blackFriday ? 1 : 0;
 
     validItems.push(item);
   }
-  const elapsed = Date.now() - start;
-  console.log(`Processed ${items.length} in ${elapsed / 1000}s`);
+  const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+  console.log(`Processed ${items.length} in ${elapsed}s`);
 
   // just to be sure that we are not sending empty CSV, it will be visible in Keboola as failed import
-  if (validItems.length !== 0) {
-    if (upload === true) {
+  if (validItems.length) {
+    if (upload) {
       // create a CSV from the JSONs
-      const buffer = await new ObjectsToCsv(validItems).toString();
-      const fileName = `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`;
-      // upload them to Keboola
-      const bucketName = "in.c-black-friday";
-      const compressedBuffer = await gzip(buffer);
-      const promises = [];
-      const callUploads = async table => {
-        await keboolaUploader(
-          bucketName,
-          table,
-          compressedBuffer,
-          fileName,
-          true
-        );
-      };
-
-      const promise = callUploads(tableName);
-      promises.push(promise);
-
-      await Promise.all(promises);
+      // upload it to Keboola
+      await keboolaUploader(
+        "in.c-black-friday",
+        tableName,
+        await writeToBuffer(validItems).then(gzip),
+        `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`,
+        true
+      );
     } else {
       await Apify.pushData(validItems);
     }
@@ -374,7 +362,8 @@ async function processItems({
 }
 
 async function loadDatasetItems(datasetId, offset, pageLimit, test) {
-  return retry(async () => {
+  const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
+  return retry(4, async () => {
     const start = Date.now();
     const currentLimit = test ? 10 : pageLimit;
     // Open a named dataset
@@ -493,7 +482,8 @@ Apify.main(async () => {
     console.log("-------------------------------------");
   }, 30000);
 
-  const dataset = await retry(() => Apify.openDataset(datasetId));
+  const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
+  const dataset = await retry(4, () => Apify.openDataset(datasetId));
   const { createdAt } = await dataset.getInfo();
   const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
 
