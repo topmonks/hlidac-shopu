@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch";
+import { fetch } from "fetch-h2";
 import FormData from "form-data";
 import url from "url";
 

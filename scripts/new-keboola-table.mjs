@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import { fetch } from "fetch-h2";
 import { program } from "commander/esm.mjs";
 
 const tableTypes = new Map([

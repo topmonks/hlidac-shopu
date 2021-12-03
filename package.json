@@ -21,7 +21,7 @@
     "@topmonks/pulumi-aws": "^1.10.1",
     "abort-controller": "^3.0.0",
     "date-fns": "^2.27.0",
-    "node-fetch": "^3.1.0",
+    "fetch-h2": "^3.0.1",
     "postcss-css-variables": "^0.18.0",
     "ramda": "^0.27.1"
   },
@@ -36,7 +36,6 @@
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=e26ca63ecd997fd68d92b2591f3ba734d2d2c878",
     "@types/firefox-webext-browser": "^94.0.0",
     "@types/node": "^16.11.11",
-    "@types/node-fetch": "^3.0.3",
     "@types/ramda": "^0.27.58",
     "@types/whatwg-url": "^8.2.1",
     "@typescript-eslint/eslint-plugin": "^5.5.0",

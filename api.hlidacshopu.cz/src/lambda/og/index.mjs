@@ -1,5 +1,5 @@
 import AbortController from "abort-controller";
-import fetch from "node-fetch";
+import { fetch } from "fetch-h2";
 import { withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
