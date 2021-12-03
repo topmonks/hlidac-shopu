@@ -1,7 +1,9 @@
 {
-  "name": "hornbach-daily",
-  "version": "0.0.1",
-  "description": "This is a boilerplate of an Apify actor.",
+  "name": "@hlidac-shopu/hornbach-daily",
+  "version": "1.0.0",
+  "description": "",
+  "author": "TopMonks s.r.o. & contributors",
+  "license": "EPL-2.0",
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.43.0",
     "@aws-sdk/client-s3": "^3.44.0",
@@ -17,7 +19,5 @@
     "lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
     "lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
     "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
-  },
-  "author": "TopMonks s.r.o. & contributors",
-  "license": "EPL-2.0"
+  }
 }
