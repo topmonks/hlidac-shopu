@@ -495,10 +495,10 @@ Apify.main(async () => {
     console.log("-------------------------------------");
   }, 30000);
 
-  const { createdAt } = await retry(async () => {
+  const dataset = await retry(async () => {
     return Apify.openDataset(datasetId);
   });
-  console.log(createdAt);
+  console.log(dataset);
   const crawledDate = format(
     addMinutes(zonedTimeToUtc(parse(createdAt)), 1),
     "YYYY-MM-DD HH:mm:ss"
