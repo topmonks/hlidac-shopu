@@ -495,7 +495,6 @@ Apify.main(async () => {
 
   const dataset = await retry(() => Apify.openDataset(datasetId));
   const { createdAt } = await dataset.getInfo();
-  console.log(createdAt);
   const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
 
   await loadItems({
