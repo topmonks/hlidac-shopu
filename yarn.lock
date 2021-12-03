@@ -240,49 +240,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.42.0":
-  version: 3.42.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.42.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 2.0.0
-    "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/client-sts": 3.42.0
-    "@aws-sdk/config-resolver": 3.40.0
-    "@aws-sdk/credential-provider-node": 3.41.0
-    "@aws-sdk/fetch-http-handler": 3.40.0
-    "@aws-sdk/hash-node": 3.40.0
-    "@aws-sdk/invalid-dependency": 3.40.0
-    "@aws-sdk/middleware-content-length": 3.40.0
-    "@aws-sdk/middleware-host-header": 3.40.0
-    "@aws-sdk/middleware-logger": 3.40.0
-    "@aws-sdk/middleware-retry": 3.40.0
-    "@aws-sdk/middleware-serde": 3.40.0
-    "@aws-sdk/middleware-signing": 3.40.0
-    "@aws-sdk/middleware-stack": 3.40.0
-    "@aws-sdk/middleware-user-agent": 3.40.0
-    "@aws-sdk/node-config-provider": 3.40.0
-    "@aws-sdk/node-http-handler": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/smithy-client": 3.41.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/url-parser": 3.40.0
-    "@aws-sdk/util-base64-browser": 3.37.0
-    "@aws-sdk/util-base64-node": 3.37.0
-    "@aws-sdk/util-body-length-browser": 3.37.0
-    "@aws-sdk/util-body-length-node": 3.37.0
-    "@aws-sdk/util-user-agent-browser": 3.40.0
-    "@aws-sdk/util-user-agent-node": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    "@aws-sdk/util-waiter": 3.40.0
-    "@aws-sdk/xml-builder": 3.37.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.3.0
-  checksum: c73a45a95bd9b968bbf508b8fce6507ca490fb9bf0734a92d77edffd80d9686f8030057fe4aad758efaac8e70fb1f1dc4847c8bb25a983fa1240cc105efbe5cd
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/client-dynamodb@npm:^3.44.0":
   version: 3.44.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.44.0"
@@ -380,61 +337,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.42.0":
-  version: 3.42.0
-  resolution: "@aws-sdk/client-s3@npm:3.42.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 2.0.0
-    "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/client-sts": 3.42.0
-    "@aws-sdk/config-resolver": 3.40.0
-    "@aws-sdk/credential-provider-node": 3.41.0
-    "@aws-sdk/eventstream-serde-browser": 3.40.0
-    "@aws-sdk/eventstream-serde-config-resolver": 3.40.0
-    "@aws-sdk/eventstream-serde-node": 3.40.0
-    "@aws-sdk/fetch-http-handler": 3.40.0
-    "@aws-sdk/hash-blob-browser": 3.40.0
-    "@aws-sdk/hash-node": 3.40.0
-    "@aws-sdk/hash-stream-node": 3.40.0
-    "@aws-sdk/invalid-dependency": 3.40.0
-    "@aws-sdk/md5-js": 3.40.0
-    "@aws-sdk/middleware-apply-body-checksum": 3.40.0
-    "@aws-sdk/middleware-bucket-endpoint": 3.41.0
-    "@aws-sdk/middleware-content-length": 3.40.0
-    "@aws-sdk/middleware-expect-continue": 3.40.0
-    "@aws-sdk/middleware-host-header": 3.40.0
-    "@aws-sdk/middleware-location-constraint": 3.40.0
-    "@aws-sdk/middleware-logger": 3.40.0
-    "@aws-sdk/middleware-retry": 3.40.0
-    "@aws-sdk/middleware-sdk-s3": 3.41.0
-    "@aws-sdk/middleware-serde": 3.40.0
-    "@aws-sdk/middleware-signing": 3.40.0
-    "@aws-sdk/middleware-ssec": 3.40.0
-    "@aws-sdk/middleware-stack": 3.40.0
-    "@aws-sdk/middleware-user-agent": 3.40.0
-    "@aws-sdk/node-config-provider": 3.40.0
-    "@aws-sdk/node-http-handler": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/smithy-client": 3.41.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/url-parser": 3.40.0
-    "@aws-sdk/util-base64-browser": 3.37.0
-    "@aws-sdk/util-base64-node": 3.37.0
-    "@aws-sdk/util-body-length-browser": 3.37.0
-    "@aws-sdk/util-body-length-node": 3.37.0
-    "@aws-sdk/util-user-agent-browser": 3.40.0
-    "@aws-sdk/util-user-agent-node": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    "@aws-sdk/util-waiter": 3.40.0
-    "@aws-sdk/xml-builder": 3.37.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.3.0
-  checksum: 3c376c73d1bfd53212855718fccb9711165e03302708fb98f6806ec1de1d566bfc1517aecc87581eb70f7b5bb57a05d2e3fbdeb498e84f6541a1011352ab370c
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/client-sso@npm:3.41.0":
   version: 3.41.0
   resolution: "@aws-sdk/client-sso@npm:3.41.0"
@@ -468,47 +370,6 @@ __metadata:
     "@aws-sdk/util-utf8-node": 3.37.0
     tslib: ^2.3.0
   checksum: 1cb2146ecf797e7f1a881ac088df2887e0a75b0bee7d2f1565b65ef3141c01ffe5bf995cb424102fdad1edc38dd4a6837566ea9cb9043a00bd03e9378bd018f1
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-sts@npm:3.42.0":
-  version: 3.42.0
-  resolution: "@aws-sdk/client-sts@npm:3.42.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 2.0.0
-    "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/config-resolver": 3.40.0
-    "@aws-sdk/credential-provider-node": 3.41.0
-    "@aws-sdk/fetch-http-handler": 3.40.0
-    "@aws-sdk/hash-node": 3.40.0
-    "@aws-sdk/invalid-dependency": 3.40.0
-    "@aws-sdk/middleware-content-length": 3.40.0
-    "@aws-sdk/middleware-host-header": 3.40.0
-    "@aws-sdk/middleware-logger": 3.40.0
-    "@aws-sdk/middleware-retry": 3.40.0
-    "@aws-sdk/middleware-sdk-sts": 3.40.0
-    "@aws-sdk/middleware-serde": 3.40.0
-    "@aws-sdk/middleware-signing": 3.40.0
-    "@aws-sdk/middleware-stack": 3.40.0
-    "@aws-sdk/middleware-user-agent": 3.40.0
-    "@aws-sdk/node-config-provider": 3.40.0
-    "@aws-sdk/node-http-handler": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/smithy-client": 3.41.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/url-parser": 3.40.0
-    "@aws-sdk/util-base64-browser": 3.37.0
-    "@aws-sdk/util-base64-node": 3.37.0
-    "@aws-sdk/util-body-length-browser": 3.37.0
-    "@aws-sdk/util-body-length-node": 3.37.0
-    "@aws-sdk/util-user-agent-browser": 3.40.0
-    "@aws-sdk/util-user-agent-node": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.3.0
-  checksum: f36e216b2bd5f43fc0fd81c4b2dc4d65fdc227b3a6a5760ac99d9cbb8ffae30097ab2d2c49b760786ca67aaa5229750cb21e56e0265ee459a2cb8d0cd3915bd3
   languageName: node
   linkType: hard
 
@@ -2581,6 +2442,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fast-csv/format@npm:^4.3.5":
+  version: 4.3.5
+  resolution: "@fast-csv/format@npm:4.3.5"
+  dependencies:
+    "@types/node": ^14.0.1
+    lodash.escaperegexp: ^4.1.2
+    lodash.isboolean: ^3.0.3
+    lodash.isequal: ^4.5.0
+    lodash.isfunction: ^3.0.9
+    lodash.isnil: ^4.0.0
+  checksum: 36d5fb76c26179bd1718dffd49fc88f4ab62675464d7ec44c5f1de55b8c454ecdf3faf84fe291df934832233f531d24c810a71cc0c390c7c4df09685d614c65b
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.0.1":
   version: 1.1.2
   resolution: "@gar/promisify@npm:1.1.2"
@@ -2637,7 +2512,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@types/node": ^16.11.11
     rollbar: ^2.24.0
     schema-dts: ^1.0.0
@@ -2656,7 +2531,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@types/node": ^16.11.11
     apify: ^2.1.0
     apify-cli: ^0.6.5
@@ -2675,13 +2550,13 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.44.0
     "@aws-sdk/client-s3": ^3.44.0
     "@aws-sdk/util-dynamodb": ^3.44.0
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@pulumi/aws": ^4.30.0
     "@pulumi/awsx": ^0.32.0
     abort-controller: ^3.0.0
     crypto: ^1.0.1
     date-fns: ^2.27.0
-    node-fetch: ^3.1.0
+    fetch-h2: ^3.0.1
     ramda: ^0.27.1
   languageName: unknown
   linkType: soft
@@ -2690,7 +2565,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -2701,7 +2576,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@types/node": ^16.11.11
     apify: ^2.1.0
     apify-cli: ^0.6.5
@@ -2739,12 +2614,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dek-daily@workspace:actors/dek-daily"
   dependencies:
-    "@aws-sdk/client-cloudfront": ^3.42.0
-    "@aws-sdk/client-s3": ^3.42.0
+    "@aws-sdk/client-cloudfront": ^3.43.0
+    "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@types/node": ^16.11.10
+    "@types/node": ^16.11.11
     apify: ^2.1.0
-    apify-cli: ^0.6.4
+    apify-cli: ^0.6.5
   languageName: unknown
   linkType: soft
 
@@ -2807,7 +2682,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     lit-element: 3.0.2
     lit-html: 2.0.2
   languageName: unknown
@@ -2933,7 +2808,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.0.27, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@^1.1.0, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -2951,7 +2826,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     apify: ^2.1.0
   languageName: unknown
   linkType: soft
@@ -2963,7 +2838,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@types/node": ^16.11.11
     apify: ^2.1.0
     apify-cli: ^0.6.5
@@ -3008,7 +2883,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     apify: ^2.1.0
   languageName: unknown
   linkType: soft
@@ -3045,7 +2920,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@types/node": ^16.11.11
     apify: ^2.1.0
     apify-cli: ^0.6.5
@@ -3078,7 +2953,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/root-edge-lambda@workspace:www.hlidacshopu.cz/root-edge-lambda"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -3129,11 +3004,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/uploader@workspace:actors/uploader":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
+  dependencies:
+    "@fast-csv/format": ^4.3.5
+    "@hlidac-shopu/lib": ^1.1.0
+    apify: ^2.1.0
+    byte-size: ^8.1.0
+    date-fns: ^2.27.0
+    fetch-h2: ^3.0.1
+    node-gzip: ^1.1.2
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz/src/javascripts"
   dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     "@material/button": ^13.0.0
     "@material/icon-button": ^13.0.0
     "@material/layout-grid": ^13.0.0
@@ -3528,7 +3417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oclif/errors@npm:^1.2.2, @oclif/errors@npm:^1.3.3, @oclif/errors@npm:^1.3.4, @oclif/errors@npm:^1.3.5":
+"@oclif/errors@npm:^1.2.2, @oclif/errors@npm:^1.3.3, @oclif/errors@npm:^1.3.5":
   version: 1.3.5
   resolution: "@oclif/errors@npm:1.3.5"
   dependencies:
@@ -3590,7 +3479,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oclif/plugin-help@npm:^3.2.2, @oclif/plugin-help@npm:^3.2.6":
+"@oclif/plugin-help@npm:^3.2.6":
   version: 3.2.7
   resolution: "@oclif/plugin-help@npm:3.2.7"
   dependencies:
@@ -4468,19 +4357,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@types/node-fetch@npm:3.0.3"
-  dependencies:
-    node-fetch: "*"
-  checksum: 1d46abfda354d7d423f5873f6bd07550f170c869ca33740b0e170265d3b65f76f9cac5f83fa0c4aa7afee66a6e1b14d4c4edd0297133fd186fef21fb53727413
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^16.11.10":
+"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
   version: 16.11.10
   resolution: "@types/node@npm:16.11.10"
   checksum: 9c79419c5c3d92d5825bffa30f3668533f598d8b63a73ea7fc24e47f162bdbed92b0f8e4f4261cc3314b39cee050e303366d2aa154abc95c63a572a110b8c160
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^14.0.1":
+  version: 14.18.0
+  resolution: "@types/node@npm:14.18.0"
+  checksum: b120c26fe5f30bc358e861db8d7e401e419d14bd9dd25c022f3c2ea8b0b429d4c9efd77ad5d6d2a8bde61702a6786fb74d409f1b2cbb61c79133e2a65aab4fb1
   languageName: node
   linkType: hard
 
@@ -5355,41 +5242,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-cli@npm:^0.6.4":
-  version: 0.6.4
-  resolution: "apify-cli@npm:0.6.4"
-  dependencies:
-    "@apify/actor-templates": ^0.1.1
-    "@apify/http-request": ^2.1.2
-    "@oclif/command": ^1.8.0
-    "@oclif/config": ^1.17.0
-    "@oclif/errors": ^1.3.4
-    "@oclif/plugin-commands": ^1.3.0
-    "@oclif/plugin-help": ^3.2.2
-    ajv: ^6.12.6
-    apify-client: ^0.6.0
-    apify-shared: ^0.6.0
-    archiver-promise: ^1.0.0
-    chalk: ^4.1.0
-    child-process-promise: ^2.2.1
-    extract-zip: ^2.0.1
-    globby: ^11.0.2
-    inquirer: ^7.3.3
-    is-online: ^9.0.0
-    load-json-file: ^6.2.0
-    mime: ^2.5.2
-    minimist: ^1.2.5
-    rimraf: ^3.0.2
-    semver: ^7.3.4
-    underscore: ^1.12.0
-    unzipper: ^0.10.11
-    write-json-file: ^4.3.0
-  bin:
-    apify: src/bin/run
-  checksum: 8c59db0cd7faaf9d812a27d08a0f09c463c9664abfdac0fe4bd9658b69d6721faec8a5f78cc257b77fd05eea7f08df90fe001a17178bc1d8a87a2f72ab51e3f7
-  languageName: node
-  linkType: hard
-
 "apify-cli@npm:^0.6.5":
   version: 0.6.5
   resolution: "apify-cli@npm:0.6.5"
@@ -5860,15 +5712,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-csv@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "async-csv@npm:2.1.3"
-  dependencies:
-    csv: ^5.1.3
-  checksum: ea38b6c49792aaed4c1d04e766a8f699bb1bab3fe83793b7b7aba51965a962ad4d08413ee76d44862554ca3fa092c8190d0e2fe1d0ac179e818ea1afb434d24e
-  languageName: node
-  linkType: hard
-
 "async-done@npm:^1.2.0, async-done@npm:^1.2.2":
   version: 1.3.2
   resolution: "async-done@npm:1.3.2"
@@ -6293,7 +6136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.5.0, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -8086,14 +7929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-generate@npm:^3.4.3":
-  version: 3.4.3
-  resolution: "csv-generate@npm:3.4.3"
-  checksum: 868dc630e8bcabf42d3d1ef22c09fb783de72d7e5929854aad0323f44059b1747edf8a2724e32fdc5008396e2ea38d5c45df0b0e3a1b506e3ab34f76f3e2fb3a
-  languageName: node
-  linkType: hard
-
-"csv-parse@npm:^4.15.3, csv-parse@npm:^4.16.3":
+"csv-parse@npm:^4.15.3":
   version: 4.16.3
   resolution: "csv-parse@npm:4.16.3"
   checksum: 5ad7790fc31c32ca1623bad1a54906134ba44fa109e8dd2dfda440bf7e9fd93610d9076a78f45c872701bfafdf7f93c9b75500c09d7efd6611d863f1d45ec69f
@@ -8104,25 +7940,6 @@ __metadata:
   version: 5.0.3
   resolution: "csv-parse@npm:5.0.3"
   checksum: 44b45bcffeb575fecf77e5b5229e40be0f380ff9175795370c5405ae36b2e7a647ba1015be8926631690de31383938ab4c81aada0c696a9fec56ff3d3716104e
-  languageName: node
-  linkType: hard
-
-"csv-stringify@npm:^5.6.5":
-  version: 5.6.5
-  resolution: "csv-stringify@npm:5.6.5"
-  checksum: f93e1444857416081de3d86765b62e4c4f7c110974ad6bbcb0031d7db39b6624847ac9ee5705726e7011346f32f3696f27299b74b23a6c2b083adff0dd2755fe
-  languageName: node
-  linkType: hard
-
-"csv@npm:^5.1.3":
-  version: 5.5.3
-  resolution: "csv@npm:5.5.3"
-  dependencies:
-    csv-generate: ^3.4.3
-    csv-parse: ^4.16.3
-    csv-stringify: ^5.6.5
-    stream-transform: ^2.1.3
-  checksum: 0decc2d0d7a0abf127f4556d6f3cef5a54015b78d348608b5e8f42256c2bd0a021f34f1efc9723b2cd162680917de4c0b3967bfb65a07305eca0827654ca727e
   languageName: node
   linkType: hard
 
@@ -8149,13 +7966,6 @@ __metadata:
   version: 3.0.1
   resolution: "data-uri-to-buffer@npm:3.0.1"
   checksum: c59c3009686a78c071806b72f4810856ec28222f0f4e252aa495ec027ed9732298ceea99c50328cf59b151dd34cbc3ad6150bbb43e41fc56fa19f48c99e9fc30
-  languageName: node
-  linkType: hard
-
-"data-uri-to-buffer@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "data-uri-to-buffer@npm:4.0.0"
-  checksum: a010653869abe8bb51259432894ac62c52bf79ad761d418d94396f48c346f2ae739c46b254e8bb5987bded8a653d467db1968db3a69bab1d33aa5567baa5cfc7
   languageName: node
   linkType: hard
 
@@ -10224,15 +10034,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fetch-blob@npm:^3.1.2":
-  version: 3.1.3
-  resolution: "fetch-blob@npm:3.1.3"
-  dependencies:
-    web-streams-polyfill: ^3.0.3
-  checksum: 7be20e9c9a936601c280ef3cfed1968dbcfb35e31564b9bdc807b48de73587cd358b7c3965a3f03483f5268dc373ae8526608947750f22eb214e20c94efab9c1
-  languageName: node
-  linkType: hard
-
 "fetch-h2@npm:^3.0.1":
   version: 3.0.1
   resolution: "fetch-h2@npm:3.0.1"
@@ -10571,15 +10372,6 @@ __metadata:
     combined-stream: ^1.0.6
     mime-types: ^2.1.12
   checksum: 10c1780fa13dbe1ff3100114c2ce1f9307f8be10b14bf16e103815356ff567b6be39d70fc4a40f8990b9660012dc24b0f5e1dde1b6426166eb23a445ba068ca3
-  languageName: node
-  linkType: hard
-
-"formdata-polyfill@npm:^4.0.10":
-  version: 4.0.10
-  resolution: "formdata-polyfill@npm:4.0.10"
-  dependencies:
-    fetch-blob: ^3.1.2
-  checksum: 82a34df292afadd82b43d4a740ce387bc08541e0a534358425193017bf9fb3567875dc5f69564984b1da979979b70703aa73dee715a17b6c229752ae736dd9db
   languageName: node
   linkType: hard
 
@@ -11145,7 +10937,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^11.0.1, globby@npm:^11.0.2, globby@npm:^11.0.4":
+"globby@npm:^11.0.1, globby@npm:^11.0.4":
   version: 11.0.4
   resolution: "globby@npm:11.0.4"
   dependencies:
@@ -11892,7 +11684,6 @@ __metadata:
     "@topmonks/pulumi-aws": ^1.10.1
     "@types/firefox-webext-browser": ^94.0.0
     "@types/node": ^16.11.11
-    "@types/node-fetch": ^3.0.3
     "@types/ramda": ^0.27.58
     "@types/whatwg-url": ^8.2.1
     "@typescript-eslint/eslint-plugin": ^5.5.0
@@ -11913,12 +11704,12 @@ __metadata:
     eslint-plugin-lit: ^1.6.1
     eslint-plugin-prettier: ^4.0.0
     eslint-plugin-promise: ^5.2.0
+    fetch-h2: ^3.0.1
     form-data: ^4.0.0
     gulp-babel: ^8.0.0
     gulp-esbuild: ^0.9.2
     gulp-mode: ^1.1.0
     linkedom: ^0.13.0
-    node-fetch: ^3.1.0
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
     prettier: ^2.5.0
@@ -12225,7 +12016,6 @@ __metadata:
     "@types/node": ^16.11.11
     apify: ^2.1.0
     apify-cli: ^0.6.5
-    node-fetch: ^3.1.0
   languageName: unknown
   linkType: soft
 
@@ -12850,7 +12640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-online@npm:^9.0.0, is-online@npm:^9.0.1":
+"is-online@npm:^9.0.1":
   version: 9.0.1
   resolution: "is-online@npm:9.0.1"
   dependencies:
@@ -13981,6 +13771,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.escaperegexp@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "lodash.escaperegexp@npm:4.1.2"
+  checksum: 6d99452b1cfd6073175a9b741a9b09ece159eac463f86f02ea3bee2e2092923fce812c8d2bf446309cc52d1d61bf9af51c8118b0d7421388e6cead7bd3798f0f
+  languageName: node
+  linkType: hard
+
 "lodash.includes@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.includes@npm:4.3.0"
@@ -14009,10 +13806,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isfunction@npm:^3.0.9":
+  version: 3.0.9
+  resolution: "lodash.isfunction@npm:3.0.9"
+  checksum: 99e54c34b1e8a9ba75c034deb39cedbd2aca7af685815e67a2a8ec4f73ec9748cda6ebee5a07d7de4b938e90d421fd280e9c385cc190f903ac217ac8aff30314
+  languageName: node
+  linkType: hard
+
 "lodash.isinteger@npm:^4.0.4":
   version: 4.0.4
   resolution: "lodash.isinteger@npm:4.0.4"
   checksum: 6034821b3fc61a2ffc34e7d5644bb50c5fd8f1c0121c554c21ac271911ee0c0502274852845005f8651d51e199ee2e0cfebfe40aaa49c7fe617f603a8a0b1691
+  languageName: node
+  linkType: hard
+
+"lodash.isnil@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "lodash.isnil@npm:4.0.0"
+  checksum: ebf8df69879badd6ad99c4f64c54c470248df5cf92b208ca730861b1d8ac058da7b632ac811d18b0929d93cbac8d8fc866e781ee816b0142c56952e85edc682f
   languageName: node
   linkType: hard
 
@@ -14544,7 +14355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:^2.0.0, mime@npm:^2.4.6, mime@npm:^2.5.2, mime@npm:^2.6.0":
+"mime@npm:^2.0.0, mime@npm:^2.4.6, mime@npm:^2.6.0":
   version: 2.6.0
   resolution: "mime@npm:2.6.0"
   bin:
@@ -14712,13 +14523,6 @@ __metadata:
     for-in: ^1.0.2
     is-extendable: ^1.0.1
   checksum: 820d5a51fcb7479f2926b97f2c3bb223546bc915e6b3a3eb5d906dda871bba569863595424a76682f2b15718252954644f3891437cb7e3f220949bed54b1750d
-  languageName: node
-  linkType: hard
-
-"mixme@npm:^0.5.1":
-  version: 0.5.4
-  resolution: "mixme@npm:0.5.4"
-  checksum: cec5f6127c92455bc86d592f0a0628e188c7ccf3909bd106703a1d939f0e2f451ddaac6da0d77c5f14d53dd2d58f64f5b2f8ff55a68ec68be95a73d290e4d430
   languageName: node
   linkType: hard
 
@@ -14973,17 +14777,6 @@ __metadata:
   dependencies:
     semver: ^5.4.1
   checksum: 3f4b0c912ce4befcd7ceab4493ba90b51d60dfcc90f567c93f731d897ef8691add601cb64c181683b800f21d479d68f9a6e15d8ab8acd16a5706333b9e30a881
-  languageName: node
-  linkType: hard
-
-"node-fetch@npm:*, node-fetch@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "node-fetch@npm:3.1.0"
-  dependencies:
-    data-uri-to-buffer: ^4.0.0
-    fetch-blob: ^3.1.2
-    formdata-polyfill: ^4.0.10
-  checksum: 23b5977554d21b72d7d99145d00bcf06e463fa621bf0afc276ad121a79509a133f38c7e470b34aad45d4032d3315bf5584ff6a1cb83e8f01be7a44cc7ac72693
   languageName: node
   linkType: hard
 
@@ -15425,15 +15218,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"objects-to-csv@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "objects-to-csv@npm:1.3.6"
-  dependencies:
-    async-csv: ^2.1.3
-  checksum: 2843333277b8d3974ccaeb4f14763ec66345fbaf7fe6eb4ebb1e8fd50efbe67df7786313f3e0e1b641ede3cbbb38b98cdcd6783de962312359558a13c27d8afe
-  languageName: node
-  linkType: hard
-
 "obliterator@npm:^1.6.1":
   version: 1.6.1
   resolution: "obliterator@npm:1.6.1"
@@ -15448,7 +15232,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": ^3.43.0
     "@aws-sdk/client-s3": ^3.44.0
     "@hlidac-shopu/actors-common": ^1.1.4
-    "@hlidac-shopu/lib": ^1.0.27
+    "@hlidac-shopu/lib": ^1.1.0
     apify: ^2.1.0
   languageName: unknown
   linkType: soft
@@ -17761,20 +17545,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"request-promise@npm:^4.2.6":
-  version: 4.2.6
-  resolution: "request-promise@npm:4.2.6"
-  dependencies:
-    bluebird: ^3.5.0
-    request-promise-core: 1.1.4
-    stealthy-require: ^1.1.1
-    tough-cookie: ^2.3.3
-  peerDependencies:
-    request: ^2.34
-  checksum: 1856c718cb4b888db8b6a206537ecac47390ea4fbdaef00da9a6169a03dd66a95c38493713f927f78a19bfeb28dcb28f5d20f6ab927d644d9e0626847d808f9f
-  languageName: node
-  linkType: hard
-
 "request@npm:2.88.2, request@npm:^2.88.0":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
@@ -19182,15 +18952,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stream-transform@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "stream-transform@npm:2.1.3"
-  dependencies:
-    mixme: ^0.5.1
-  checksum: 26ce872a6812d5c784fa1f042bfd403644bc1c019f64627b5012c4544830a5570bef98b47225b38120c5878b326f3d1a213cd999a2285c98b536e5e202ca5bdf
-  languageName: node
-  linkType: hard
-
 "strict-uri-encode@npm:^2.0.0":
   version: 2.0.0
   resolution: "strict-uri-encode@npm:2.0.0"
@@ -20487,7 +20248,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:*, underscore@npm:^1.11.0, underscore@npm:^1.12.0, underscore@npm:^1.13.0, underscore@npm:^1.13.1, underscore@npm:^1.9.1":
+"underscore@npm:*, underscore@npm:^1.11.0, underscore@npm:^1.13.0, underscore@npm:^1.13.1, underscore@npm:^1.9.1":
   version: 1.13.1
   resolution: "underscore@npm:1.13.1"
   checksum: 69bb4e6dd92c387ad322dd5b105f496fa64896d92ff1eea987610920d452667a12bca0938def4c4d60acd12da62410540fd268e7ca4f2480d89324498382fcac
@@ -20707,20 +20468,6 @@ __metadata:
   checksum: 461e5e5b002419296d3868ee2abe0f9ab3e1846d9db642936d0c46f838872ec56069eddfe662c45ce1af0a8d6d5026353728de2e0a95ab2e3546a22ea077caf1
   languageName: node
   linkType: hard
-
-"uploader@workspace:actors/uploader":
-  version: 0.0.0-use.local
-  resolution: "uploader@workspace:actors/uploader"
-  dependencies:
-    "@hlidac-shopu/lib": ^1.0.27
-    apify: ^2.1.0
-    byte-size: ^8.1.0
-    date-fns: ^2.27.0
-    node-gzip: ^1.1.2
-    objects-to-csv: ^1.3.6
-    request-promise: ^4.2.6
-  languageName: unknown
-  linkType: soft
 
 "upper-case@npm:^1.1.1":
   version: 1.1.3
@@ -21107,13 +20854,6 @@ __metadata:
   bin:
     web-ext: bin/web-ext
   checksum: b0a3382a60520da2e9d2dc875865d792d5416bb76b4bc32d6358d453242cdf8f8ffa07bba0cf8f28ae6293b7aafe3ce6e298092555c71239741a83945ec088e5
-  languageName: node
-  linkType: hard
-
-"web-streams-polyfill@npm:^3.0.3":
-  version: 3.2.0
-  resolution: "web-streams-polyfill@npm:3.2.0"
-  checksum: e23ad0649392fa0159dbfc6bb27474c308c3f332d9078cfef3c06c154165bef18732c5814126147c6c712f604216ddc950c171c854e3821f020e0d2d721a5958
   languageName: node
   linkType: hard
 
