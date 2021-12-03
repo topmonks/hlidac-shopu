@@ -4,7 +4,6 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const retry = require("async-retry");
 const cheerio = require("cheerio");
 
 const {
@@ -97,25 +96,19 @@ Apify.main(async () => {
       await Apify.setValue("COUNT", productCount);
     }, 20 * 1000);
 
-    // Categories are added to requestQue
-    const categoryRequests = await retry(
-      async () => {
-        // if anything throws, we retry
-        const response = await requestAsBrowser({
-          url: sitemap,
-          proxyUrl: proxyConfiguration.newUrl()
-        });
-        const $ = cheerio.load(response.body);
-        const categories = getCategoryRequests($);
-        log.info(
-          `[START]: found ${categories.length} categories --- ${sitemap}`
-        );
-        return categories;
-      },
-      {
-        retries: 10
-      }
-    );
+    // Categories are added to requestQueue
+    const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
+    const categoryRequests = await retry(10, async () => {
+      // if anything throws, we retry
+      const response = await requestAsBrowser({
+        url: sitemap,
+        proxyUrl: proxyConfiguration.newUrl()
+      });
+      const $ = cheerio.load(response.body);
+      const categories = getCategoryRequests($);
+      log.info(`[START]: found ${categories.length} categories --- ${sitemap}`);
+      return categories;
+    });
 
     for (const item of categoryRequests) {
       await requestQueue.addRequest(item);
