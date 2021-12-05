@@ -59,14 +59,8 @@ const { megaknihyValidator } = require("./src/validators/megaknihyValidator");
 const { ikeaValidator } = require("./src/validators/ikeaValidator");
 const { dekValidator } = require("./src/validators/dekValidator");
 
-/* Consts */
-let stats = {
-  downloaded: 0,
-  uploaded: 0
-};
-
+const { KEBOOLA_BUCKET } = process.env;
 let stateValues = 0;
-let limit = 10000;
 
 async function getItemSlug(itemUrl) {
   const { shops, shopName } = await import("@hlidac-shopu/lib/shops.mjs");
@@ -80,16 +74,19 @@ async function getShopName(url) {
   return shopName(new URL(url));
 }
 
-async function processItems({
-  items,
-  upload,
-  offset,
-  datasetId,
-  crawledDate,
-  actRunId,
-  blackFriday,
-  tableName
-}) {
+async function processItems(
+  {
+    items,
+    upload,
+    offset,
+    datasetId,
+    crawledDate,
+    actRunId,
+    blackFriday,
+    tableName
+  },
+  stats
+) {
   const validItems = [];
   // update the objects to be properly flatten and remove failed items
   const start = Date.now();
@@ -337,9 +334,9 @@ async function processItems({
       // create a CSV from the JSONs
       // upload it to Keboola
       await keboolaUploader(
-        "in.c-black-friday",
+        KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
-        await writeToBuffer(validItems).then(gzip),
+        await writeToBuffer(validItems).then(x => gzip(x)),
         `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`,
         true
       );
@@ -372,24 +369,26 @@ async function loadDatasetItems(datasetId, offset, pageLimit, test) {
       offset,
       limit: currentLimit
     });
-    const elapsed = Date.now() - start;
-    console.log(
-      `Download of ${currentLimit} items elapsed: ${elapsed / 1000}s`
-    );
+    const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+    console.log(`Download of ${currentLimit} items elapsed: ${elapsed}s`);
     return result.items;
   });
 }
 
-async function loadItems({
-  datasetId,
-  offset,
-  test,
-  upload,
-  actRunId,
-  crawledDate,
-  blackFriday,
-  tableName
-}) {
+async function loadItems(
+  {
+    datasetId,
+    offset,
+    limit,
+    test,
+    upload,
+    actRunId,
+    crawledDate,
+    blackFriday,
+    tableName
+  },
+  stats
+) {
   console.log(`Downloading with offset ${offset} and limit ${limit}`);
   let tries = 20;
 
@@ -409,16 +408,19 @@ async function loadItems({
       }
 
       // process items and load more
-      await processItems({
-        items: newItems,
-        upload,
-        offset,
-        datasetId,
-        crawledDate,
-        actRunId,
-        blackFriday,
-        tableName
-      });
+      await processItems(
+        {
+          items: newItems,
+          upload,
+          offset,
+          datasetId,
+          crawledDate,
+          actRunId,
+          blackFriday,
+          tableName
+        },
+        stats
+      );
       stats.downloaded += newItems ? newItems.length : 0;
       stateValues = offset + limit;
       offset += limit;
@@ -428,7 +430,7 @@ async function loadItems({
       console.log(
         `Some problem with loading, lets give it a try. Still have ${tries}`
       );
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await Apify.utils.sleep(300);
       if (limit > 5000) {
         limit = Math.floor(limit / 2);
         console.log(`Lowered limit to ${limit}`);
@@ -450,20 +452,19 @@ Apify.main(async () => {
     tableName
   } = input;
 
-  const state = await Apify.getValue("STATE");
-  const loadedStats = await Apify.getValue("STATS");
-  if (loadedStats) {
-    stats = loadedStats;
-  }
+  const limit = manualLimit ?? 10000;
 
-  if (manualLimit) {
-    limit = manualLimit;
-  }
+  const loadedStats = await Apify.getValue("STATS");
+  const stats = loadedStats ?? {
+    downloaded: 0,
+    uploaded: 0
+  };
 
   // set the offset based on the state
-  let offset = 0;
+  const state = await Apify.getValue("STATE");
+  let offset;
   if (state === null) {
-    offset = offsetManual || 0;
+    offset = offsetManual ?? 0;
   } else {
     console.log(`Loaded offset from the state: ${state}`);
     offset = state;
@@ -478,25 +479,31 @@ Apify.main(async () => {
     console.log(`Downloaded ${stats.downloaded}`);
     console.log(`Uploaded ${stats.uploaded}`);
     console.log(`Memory used: ${usedMemory.value} ${usedMemory.unit}`);
-    // console.log("STATE " + JSON.stringify(stateValues));
     console.log("-------------------------------------");
   }, 30000);
 
-  const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
-  const dataset = await retry(4, () => Apify.openDataset(datasetId));
-  const { createdAt } = await dataset.getInfo();
-  const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
+  try {
+    const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
+    const dataset = await retry(4, () => Apify.openDataset(datasetId));
+    const { createdAt } = await dataset.getInfo();
+    const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
+    console.log("Crawled", crawledDate);
 
-  await loadItems({
-    datasetId,
-    offset,
-    test,
-    upload,
-    actRunId,
-    crawledDate,
-    blackFriday,
-    tableName
-  });
-
-  clearInterval(progressInterval);
+    await loadItems(
+      {
+        datasetId,
+        offset,
+        limit,
+        test,
+        upload,
+        actRunId,
+        crawledDate,
+        blackFriday,
+        tableName
+      },
+      stats
+    );
+  } finally {
+    clearInterval(progressInterval);
+  }
 });
