@@ -13,7 +13,11 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
       const size = Buffer.byteLength(data);
       await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: { "X-StorageApi-Token": KEBOOLA_KEY },
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-StorageApi-Token": KEBOOLA_KEY
+        },
         body: JSON.stringify({
           tableId,
           incremental: 1,
