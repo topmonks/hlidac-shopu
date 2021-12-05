@@ -22,11 +22,7 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: Object.assign(
-          {},
-          { "X-StorageApi-Token": KEBOOLA_KEY },
-          formData.getHeaders()
-        ),
+        headers: formData.getHeaders({ "X-StorageApi-Token": KEBOOLA_KEY }),
         body: formData
       });
       console.log(`HTTP ${resp.status}: ${resp.statusText}`);
