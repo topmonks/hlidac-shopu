@@ -1,6 +1,7 @@
 const Apify = require("apify");
 const { fetch } = require("fetch-h2");
 const byteSize = require("byte-size");
+const FormData = require("form-data");
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
@@ -11,22 +12,24 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
       const start = Date.now();
       const tableId = `${bucket}.${table}`;
       const size = Buffer.byteLength(data);
+      const formData = new FormData();
+      formData.append("tableId", tableId);
+      formData.append("data", data, {
+        filename: isGzipped ? `${fileName}.gz` : fileName,
+        contentType: isGzipped ? undefined : "text/csv"
+      });
+      formData.append("incremental", 1);
+
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: { "X-StorageApi-Token": KEBOOLA_KEY },
-        json: {
-          tableId,
-          incremental: 1,
-          data: {
-            value: data,
-            options: {
-              filename: isGzipped ? `${fileName}.gz` : fileName,
-              contentType: isGzipped ? undefined : "text/csv"
-            }
-          }
-        }
+        headers: Object.assign(
+          {},
+          { "X-StorageApi-Token": KEBOOLA_KEY },
+          formData.getHeaders()
+        ),
+        body: formData
       });
-      console.log(resp.status, resp.statusText);
+      console.log(`HTTP ${resp.status}: ${resp.statusText}`);
       console.log(await resp.text());
       const elapsed = ((Date.now() - start) / 1000).toFixed(2);
       const { value, unit } = byteSize(size);
