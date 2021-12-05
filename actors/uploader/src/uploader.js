@@ -11,14 +11,10 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
       const start = Date.now();
       const tableId = `${bucket}.${table}`;
       const size = Buffer.byteLength(data);
-      await fetch(KEBOOLA_URI, {
+      const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "X-StorageApi-Token": KEBOOLA_KEY
-        },
-        body: JSON.stringify({
+        headers: { "X-StorageApi-Token": KEBOOLA_KEY },
+        json: {
           tableId,
           incremental: 1,
           data: {
@@ -28,8 +24,9 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
               contentType: isGzipped ? undefined : "text/csv"
             }
           }
-        })
+        }
       });
+      console.log(resp.status, resp.statusText);
       const elapsed = ((Date.now() - start) / 1000).toFixed(2);
       const { value, unit } = byteSize(size);
       console.log(`Uploaded ${value}${unit} to ${tableId} in ${elapsed}s.`);
