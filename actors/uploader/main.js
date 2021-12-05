@@ -1,7 +1,7 @@
 const Apify = require("apify");
 const byteSize = require("byte-size");
 const { gzip } = require("node-gzip");
-const { writeToBuffer } = require("@fast-csv/format");
+const { writeToBuffer, writeToString } = require("@fast-csv/format");
 const addMinutes = require("date-fns/addMinutes");
 const format = require("date-fns/format");
 
@@ -333,6 +333,7 @@ async function processItems(
     if (upload) {
       // create a CSV from the JSONs
       // upload it to Keboola
+      console.log(writeToString(validItems));
       await keboolaUploader(
         KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
