@@ -333,7 +333,7 @@ async function processItems(
     if (upload) {
       // create a CSV from the JSONs
       // upload it to Keboola
-      console.log(writeToString(validItems));
+      console.log(await writeToString(validItems));
       await keboolaUploader(
         KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
