@@ -6,7 +6,7 @@ orbs:
   browser-tools: circleci/browser-tools@1.2.3
   codecov: codecov/codecov@3.2.2
   github: topmonks/github@1.1.0
-  node: circleci/node@4.8.1
+  node: circleci/node@4.9.0
   pulumi: pulumi/pulumi@2.0.0
   rollbar: rollbar/deploy@1.0.1
   slack: circleci/slack@4.5.0
