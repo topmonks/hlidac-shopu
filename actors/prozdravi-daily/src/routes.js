@@ -1,12 +1,14 @@
 const Apify = require("apify");
 const {
   toProduct,
-  uploadToS3
+  uploadToS3,
+  s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 const {
   LABELS,
   SCRIPT_WITH_JSON,
   PRODUCTS_PER_PAGE,
+  PRODUCTS_BASE_URL,
   PRODUCTS_URLS
 } = require("./const");
 
@@ -16,11 +18,11 @@ const {
 
 // Create router
 const createRouter = globalContext => {
-  return async function (routeName, requestContext) {
+  return async function (routeName, requestContext, requestUrl, crawlContext) {
     const route = module.exports[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
-    return route(requestContext, globalContext);
+    return route(requestUrl, crawlContext, requestContext, globalContext);
   };
 };
 
@@ -58,7 +60,7 @@ const getCategory = sections => {
   return result.map(p => p.name.trim()).join(" > ");
 };
 
-const START = async ({ $, crawler }) => {
+const START = async (requestUrl, crawlContext, { $, crawler }) => {
   log.info("Processing START");
   const resultJson = await getProductJSON($);
   const json = JSON.parse(resultJson);
@@ -70,13 +72,10 @@ const START = async ({ $, crawler }) => {
   }
   log.info(`Pocet produktu:${totalItems}`);
   log.info(`Pocet stranek produktu:${totalPages}`);
-  let baseUrl = PRODUCTS_URLS.PRODUCTS_PAGE;
-  if (global.type === LABELS.BF) {
-    baseUrl = PRODUCTS_URLS.BF_PRODUCTS_PAGE;
-  }
+  crawlContext.stats.urls += totalPages;
   for (let i = 1; i <= totalPages; i++) {
     await crawler.requestQueue.addRequest({
-      url: `${baseUrl}?page=${i}`,
+      url: `${requestUrl}?page=${i}`,
       userData: {
         label: LABELS.PRODUCTS
       }
@@ -84,11 +83,14 @@ const START = async ({ $, crawler }) => {
   }
 };
 
-const PRODUCTS = async ({ $ }) => {
+const PRODUCTS = async (requestUrl, crawlContext, { $ }) => {
   const resultJson = await getProductJSON($);
   const json = JSON.parse(resultJson);
   const products = json.products.listingData.items;
 
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
+  crawlContext.stats.totalItems += products.length;
   for (const item of products) {
     const detailImage = item?.images[0]?.detail;
     const originalPrice = parseInt(item?.price?.baseWithVat?.decimal);
@@ -98,30 +100,39 @@ const PRODUCTS = async ({ $ }) => {
     const result = {
       itemId: item.id.toString().trim(),
       itemCode: item.code,
-      itemUrl: `${PRODUCTS_URLS.ITEM_PREFIX}${item.urlRelative}`,
+      itemUrl: `${PRODUCTS_BASE_URL}${item.urlRelative}`,
       itemName: item.name,
       img: detailImage,
       discounted,
-      originalPrice,
+      originalPrice: discounted ? originalPrice : null,
       currency: item.price.withVat.currency,
       currentPrice,
-      category
+      category,
+      inStock: !!item.availability,
+      blackFriday: item.blackFriday
     };
-    await uploadToS3(
-      s3,
-      "prozdravi.cz",
-      result.itemId,
-      "jsonld",
-      toProduct(
-        {
-          ...result,
-          inStock: true
-        },
-        { priceCurrency: result.currency }
-      )
-    );
-    await Apify.pushData(result);
+    // Save data to dataset
+    if (!crawlContext.processedIds.has(result.itemId)) {
+      crawlContext.processedIds.add(result.itemId);
+      requests.push(
+        !crawlContext.development
+          ? uploadToS3(
+              s3,
+              "prozdravi.cz",
+              await s3FileName(result),
+              "jsonld",
+              toProduct(result, { priceCurrency: "CZK" })
+            )
+          : [],
+        Apify.pushData(result)
+      );
+      crawlContext.stats.items++;
+    } else {
+      crawlContext.stats.itemsDuplicity++;
+    }
   }
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 };
 
 module.exports = {

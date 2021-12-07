@@ -10,18 +10,50 @@ const randomUA = require("modern-random-ua");
 
 const { log } = Apify.utils;
 
+let stats = {};
+const processedIds = new Set();
+
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   global.s3 = new S3Client({ region: "eu-central-1" });
   const input = await Apify.getInput();
-  const { test = false, debugLog = false, type } = input;
+  const {
+    development = false,
+    debugLog = false,
+    test = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 10,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
+  } = input ?? {};
   global.test = test;
   global.type = type;
   const requestQueue = await Apify.openRequestQueue();
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
+
+  stats = (await Apify.getValue("STATS")) || {
+    urls: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    totalItems: 0
+  };
+
+  const crawlContext = {
+    development,
+    processedIds,
+    stats
+  };
+
+  const persistState = async () => {
+    await Apify.setValue("STATS", crawlContext.stats).then(() =>
+      log.debug("STATS saved!")
+    );
+    log.info(JSON.stringify(crawlContext.stats));
+  };
+  Apify.events.on("persistState", persistState);
 
   if (type === LABELS.BF) {
     await requestQueue.addRequest({
@@ -34,19 +66,21 @@ Apify.main(async () => {
       }
     });
   } else {
-    await requestQueue.addRequest({
-      url: PRODUCTS_URLS.PRODUCTS_PAGE,
-      headers: {
-        userAgent: randomUA.generate()
-      },
-      userData: {
-        label: LABELS.START
-      }
-    });
+    for (const categoryUrl of PRODUCTS_URLS.PRODUCTS_PAGE) {
+      await requestQueue.addRequest({
+        url: categoryUrl,
+        headers: {
+          userAgent: randomUA.generate()
+        },
+        userData: {
+          label: LABELS.START
+        }
+      });
+    }
   }
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
+    groups: proxyGroups
   });
 
   // Create route
@@ -55,7 +89,8 @@ Apify.main(async () => {
   // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency: 10,
+    maxConcurrency,
+    maxRequestRetries,
     proxyConfiguration,
     useSessionPool: true,
     handlePageFunction: async context => {
@@ -64,7 +99,7 @@ Apify.main(async () => {
         userData: { label }
       } = request;
       log.info(`Processing: [${label}] - [${request.url}]`);
-      await router(label, context);
+      await router(label, context, request.url, crawlContext);
     },
 
     // If request failed 4 times then this function is executed.
@@ -75,9 +110,15 @@ Apify.main(async () => {
   // Run crawler.
   await crawler.run();
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "prozdravi.cz");
-  log.info("invalidated Data CDN");
-  if (!test) {
+  log.info("Crawl finished.");
+
+  await Apify.setValue("STATS", crawlContext.stats);
+  log.info(JSON.stringify(crawlContext.stats));
+
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "prozdravi.cz");
+    log.info("invalidated Data CDN");
+
     let tableName = "prozdravi_cz";
     if (type === "BF") {
       tableName = `${tableName}_bf`;
