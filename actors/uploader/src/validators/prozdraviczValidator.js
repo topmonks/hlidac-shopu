@@ -8,7 +8,9 @@ function prozdraviczValidator(item) {
     "itemId",
     "itemName",
     "itemUrl",
-    "originalPrice"
+    "originalPrice",
+    "blackFriday",
+    "inStock"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
