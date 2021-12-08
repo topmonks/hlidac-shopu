@@ -10,6 +10,14 @@ const didRenderDetail = mutations =>
     )
   );
 
+const didMutate = mutations =>
+  mutations.find(x =>
+    Array.from(x.removedNodes).find(
+      y =>
+        y.id === "dm-view"
+    )
+  );
+
 export class Dm extends StatefulShop {
 
   get injectionPoint() {
@@ -28,7 +36,7 @@ export class Dm extends StatefulShop {
   }
 
   shouldCleanup(mutations) {
-    return false;
+    return didMutate(mutations);
   }
 
   async scrape() {
