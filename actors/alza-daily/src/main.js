@@ -447,7 +447,12 @@ Apify.main(async () => {
         case "FEED":
           log.info(`Items count: ${response.body.items[0].length}`);
           stats.pages++;
-          return handleFeed(response.body.items[0], "", stats, { development });
+          return handleFeed(response.body.items[0], "", stats, {
+            uploadBatchSize: development ? 5000 : 200,
+            uploadSleepMs: 1000,
+            country,
+            development
+          });
         default:
           return handleStart(context, domain, requestQueue, stats);
       }
