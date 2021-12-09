@@ -14,7 +14,8 @@ const {
   handlePage,
   handleBF,
   handleTrhak,
-  handleTrhakDetail
+  handleTrhakDetail,
+  handleFeed
 } = require("./routes");
 const getCountry = require("./countryProvider");
 const UserAgentDb = require("./user-agent-db");
@@ -100,7 +101,8 @@ Apify.main(async () => {
     country = "CZ",
     type = "FULL",
     maxConcurrency = 30,
-    maxRequestRetries = 5
+    maxRequestRetries = 5,
+    feedUrls = []
   } = input ?? {};
 
   if (!country) {
@@ -159,6 +161,15 @@ Apify.main(async () => {
         url: urlsList[i],
         userData: {
           label: "TRHAK"
+        }
+      });
+    }
+  } else if (type === "FEED") {
+    for (const feedUrl of feedUrls) {
+      await requestQueue.addRequest({
+        url: feedUrl,
+        userData: {
+          label: "FEED"
         }
       });
     }
@@ -245,7 +256,21 @@ Apify.main(async () => {
       }
 
       let response, parsedResponse, cheerioContext;
-      if (type === "BF" && label === "PAGE") {
+      if (label === "FEED") {
+        response = await gotScraping({
+          responseType: "json",
+          url: request.url
+        });
+        // Status code check
+        if (![200, 404].includes(response.statusCode)) {
+          session.retire();
+          await Apify.setValue(`big${request.userData.log}`, response.body);
+          request.retryCount--;
+          throw new Error(
+            `We got blocked by target on ${request.url}, ${response.statusCode}`
+          );
+        }
+      } else if (type === "BF" && label === "PAGE") {
         try {
           const data = JSON.stringify(payload);
           const response = await httpRequest({
@@ -419,6 +444,10 @@ Apify.main(async () => {
             currency,
             development
           );
+        case "FEED":
+          log.info(`Items count: ${response.body.items[0].length}`);
+          stats.pages++;
+          return handleFeed(response.body.items[0], "", stats, { development });
         default:
           return handleStart(context, domain, requestQueue, stats);
       }

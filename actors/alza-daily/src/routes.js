@@ -354,3 +354,74 @@ exports.handleTrhakDetail = async (
   }
   await Apify.pushData(detailItem);
 };
+
+exports.handleFeed = async (
+  items,
+  outputDatasetIdOrName,
+  stats,
+  options = {}
+) => {
+  const {
+    uploadBatchSize = 5000,
+    uploadSleepMs = 1000,
+    country = "CZ",
+    development = false
+  } = options;
+  let isMigrating = false;
+  Apify.events.on("migrating", () => {
+    isMigrating = true;
+  });
+
+  let pushedItemsCount =
+    (await Apify.getValue(`STATE-PUSHED-COUNT-${outputDatasetIdOrName}`)) || 0;
+  const dataset = await Apify.openDataset(outputDatasetIdOrName);
+
+  for (let i = pushedItemsCount; i < items.length; i += uploadBatchSize) {
+    if (isMigrating) {
+      log.info("Forever sleeping until migration");
+      // Do nothing
+      await new Promise(() => {});
+    }
+    const start = i;
+    const end = i + uploadBatchSize;
+    const itemsToPush = items.slice(start, end);
+
+    log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
+
+    let requests = [];
+    for (const item of itemsToPush) {
+      const detailItem = {
+        "itemId": item.itemId,
+        "itemName": item.itemName,
+        "itemUrl": item.itemUrl,
+        "img": item.img,
+        "inStock": true,
+        "currentPrice": item.currentPrice,
+        "originalPrice": item.originalPrice,
+        "currency": item.currency,
+        "category": item.Category.join(" > "),
+        "discounted": item.discounted === "true",
+        "itemCode": item.itemCode,
+        "rating": item.rating
+      };
+      requests.push(
+        dataset.pushData(detailItem),
+        !development
+          ? uploadToS3(
+              s3,
+              `alza.${country.toLowerCase()}`,
+              await s3FileName(detailItem),
+              "jsonld",
+              toProduct(detailItem, {})
+            )
+          : null
+      );
+      requests.push(detailItem);
+    }
+
+    // await all requests, so we don't end before they end
+    await Promise.allSettled(requests);
+    stats.items += itemsToPush.length;
+    await Apify.utils.sleep(uploadSleepMs);
+  }
+};
