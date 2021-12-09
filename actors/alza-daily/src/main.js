@@ -102,6 +102,9 @@ Apify.main(async () => {
     type = "FULL",
     maxConcurrency = 30,
     maxRequestRetries = 5,
+    handleRequestTimeoutSecs = 60000,
+    uploadBatchSize = development ? 5000 : 200,
+    uploadSleepMs = development ? 100 : 1500,
     feedUrls = []
   } = input ?? {};
 
@@ -242,6 +245,7 @@ Apify.main(async () => {
     // persistCookiesPerSession: true,
     maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
+    handleRequestTimeoutSecs,
     handleRequestFunction: async context => {
       const { request, session } = context;
       const { label, payload } = request.userData;
@@ -259,6 +263,10 @@ Apify.main(async () => {
       if (label === "FEED") {
         response = await gotScraping({
           responseType: "json",
+          timeout: {
+            response: handleRequestTimeoutSecs,
+            request: handleRequestTimeoutSecs
+          },
           url: request.url
         });
         // Status code check
@@ -448,8 +456,8 @@ Apify.main(async () => {
           log.info(`Items count: ${response.body.items[0].length}`);
           stats.pages++;
           return handleFeed(response.body.items[0], "", stats, {
-            uploadBatchSize: development ? 5000 : 200,
-            uploadSleepMs: 1000,
+            uploadBatchSize,
+            uploadSleepMs,
             country,
             development
           });
