@@ -3,6 +3,7 @@ const s3 = new S3Client({ region: "eu-central-1" });
 const {
   toProduct,
   uploadToS3,
+  uploadToS3v2,
   s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 
@@ -178,10 +179,7 @@ exports.handlePage = async (
             )
           );
         }
-        await Apify.pushData({
-          ...product,
-          slug
-        });
+        await Apify.pushData(product);
       }
     } else {
       log.info(`No complete items found, ${request.url}`);
@@ -372,9 +370,7 @@ exports.handleFeed = async (
     isMigrating = true;
   });
 
-  let pushedItemsCount =
-    (await Apify.getValue(`STATE-PUSHED-COUNT-${outputDatasetIdOrName}`)) || 0;
-  const dataset = await Apify.openDataset(outputDatasetIdOrName);
+  let pushedItemsCount = 0;
 
   for (let i = pushedItemsCount; i < items.length; i += uploadBatchSize) {
     if (isMigrating) {
@@ -388,7 +384,8 @@ exports.handleFeed = async (
 
     log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
 
-    let requests = [];
+    let formattedItems = [];
+    let s3Requests = [];
     for (const item of itemsToPush) {
       const detailItem = {
         "itemId": item.itemId,
@@ -404,24 +401,16 @@ exports.handleFeed = async (
         "itemCode": item.itemCode,
         "rating": item.rating
       };
-      requests.push(
-        dataset.pushData(detailItem),
-        !development
-          ? uploadToS3(
-              s3,
-              `alza.${country.toLowerCase()}`,
-              await s3FileName(detailItem),
-              "jsonld",
-              toProduct(detailItem, {})
-            )
-          : null
-      );
-      requests.push(detailItem);
+      formattedItems.push(detailItem);
+      if (!development) {
+        s3Requests.push(uploadToS3v2(detailItem, {}));
+      }
     }
 
     // await all requests, so we don't end before they end
-    await Promise.allSettled(requests);
-    stats.items += itemsToPush.length;
+    await Apify.pushData(formattedItems);
+    await Promise.allSettled(s3Requests);
+    stats.items += formattedItems.length;
     await Apify.utils.sleep(uploadSleepMs);
   }
 };

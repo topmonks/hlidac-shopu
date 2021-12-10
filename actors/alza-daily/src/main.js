@@ -102,8 +102,8 @@ Apify.main(async () => {
     type = "FULL",
     maxConcurrency = 30,
     maxRequestRetries = 5,
-    handleRequestTimeoutSecs = 60000,
-    uploadBatchSize = development ? 5000 : 200,
+    handleRequestTimeoutSecs = 60,
+    uploadBatchSize = 5000,
     uploadSleepMs = development ? 100 : 1500,
     feedUrls = []
   } = input ?? {};
@@ -245,7 +245,7 @@ Apify.main(async () => {
     // persistCookiesPerSession: true,
     maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
-    handleRequestTimeoutSecs,
+    handleRequestTimeoutSecs: handleRequestTimeoutSecs * 1000,
     handleRequestFunction: async context => {
       const { request, session } = context;
       const { label, payload } = request.userData;
@@ -264,8 +264,8 @@ Apify.main(async () => {
         response = await gotScraping({
           responseType: "json",
           timeout: {
-            response: handleRequestTimeoutSecs,
-            request: handleRequestTimeoutSecs
+            response: handleRequestTimeoutSecs * 1000,
+            request: handleRequestTimeoutSecs * 1000
           },
           url: request.url
         });
