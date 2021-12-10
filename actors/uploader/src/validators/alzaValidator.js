@@ -11,7 +11,7 @@ function alzaValidator(item) {
     "currency",
     "rating",
     "img",
-    "slug"
+    "inStock"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
