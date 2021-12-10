@@ -245,7 +245,7 @@ Apify.main(async () => {
     // persistCookiesPerSession: true,
     maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
-    handleRequestTimeoutSecs: handleRequestTimeoutSecs * 1000,
+    handleRequestTimeoutSecs,
     handleRequestFunction: async context => {
       const { request, session } = context;
       const { label, payload } = request.userData;
