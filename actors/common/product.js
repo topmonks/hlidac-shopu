@@ -1,6 +1,6 @@
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
-
+const s3 = new S3Client({ region: "eu-central-1" });
 /** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 /** @typedef { import("@aws-sdk/client-cloudfront").CloudFrontClient } CloudFrontClient */
 /** @typedef { import("schema-dts").Product} Product */
@@ -52,6 +52,27 @@ async function uploadToS3(s3, shop, fileName, ext, data) {
   );
 }
 
+async function uploadToS3v2(item, { priceCurrency, ...additionalData }) {
+  if (item["itemUrl"] === undefined || item["itemUrl"] === null) {
+    throw new Error("Item missing attribute itemUrl");
+  }
+  let shop = await shopName(item.itemUrl);
+  if (!shop.includes("_")) {
+    shop = await shopName(item.itemUrl, { getFullKey: true });
+  }
+  const fileName = await s3FileName(item);
+  const ext = "jsonld";
+  const data = toProduct(item, { priceCurrency, ...additionalData });
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: "data.hlidacshopu.cz",
+      Key: `products/${shop.replace("_", ".")}/${fileName}.${ext}`,
+      ContentType: `application/${ext}`,
+      Body: JSON.stringify(data)
+    })
+  );
+}
+
 /**
  *
  * @param {CloudFrontClient} cloudfront
@@ -78,9 +99,9 @@ async function s3FileName(detail) {
   return shop.parse(url).itemUrl;
 }
 
-async function shopName(url) {
+async function shopName(url, options = {}) {
   const { shopName } = await import("@hlidac-shopu/lib/shops.mjs");
-  return shopName(new URL(url));
+  return shopName(new URL(url), options);
 }
 
 function currencyToISO4217(currency) {
@@ -90,6 +111,7 @@ function currencyToISO4217(currency) {
 module.exports = {
   toProduct,
   uploadToS3,
+  uploadToS3v2,
   s3FileName,
   shopName,
   invalidateCDN
