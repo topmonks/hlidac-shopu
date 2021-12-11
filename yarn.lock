@@ -2901,7 +2901,7 @@ __metadata:
     apify: ^2.1.0
     apify-cli: ^0.6.5
     cheerio: ^1.0.0-rc.10
-    puppeteer: ^12.0.1
+    puppeteer: ^13.0.0
     user-agents: ^1.0.854
   languageName: unknown
   linkType: soft
@@ -3010,7 +3010,7 @@ __metadata:
     got: ^12.0.0
     playwright: ^1.17.1
     proxy-agent: ^5.0.0
-    puppeteer: ^12.0.1
+    puppeteer: ^13.0.0
     random-mua: ^0.5.0
     tough-cookie: ^4.0.0
     uuid: ^8.3.2
@@ -11845,7 +11845,7 @@ __metadata:
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
     prettier: ^2.5.0
-    puppeteer: ^12.0.1
+    puppeteer: ^13.0.0
     ramda: ^0.27.1
     rollbar: ^2.24.0
     sass: ^1.44.0
@@ -16937,9 +16937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^12.0.1":
-  version: 12.0.1
-  resolution: "puppeteer@npm:12.0.1"
+"puppeteer@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "puppeteer@npm:13.0.0"
   dependencies:
     debug: 4.3.2
     devtools-protocol: 0.0.937139
@@ -16953,7 +16953,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.2.3
-  checksum: 022b5b7f3eda41f1d54f9b978cb52c38113aa0e6f1240898fd089f27d6756faff1cfaccbfefb9990c77494d1d1f694a1fde446f29bd0f27f3d19b5696b1214ec
+  checksum: fc6432ae3f13a0b5300ef9b62d58ad0050e80263f8bf6b0c8ee8dec4277210bf4da08c59be9cf10408c830420ebe43b9a517c2d0c3733ec0629ec1ff7510172c
   languageName: node
   linkType: hard
 
