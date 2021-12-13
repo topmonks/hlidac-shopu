@@ -84,6 +84,8 @@ async function callKeboolaUpload(country, type) {
     tableName = `${tableName}_${countryLower}`;
   } else if (type === "BF") {
     tableName = `${tableName}_${countryLower}_bf`;
+  } else if (type === "FEED") {
+    tableName = `${tableName}_${countryLower}_feed`;
   }
   try {
     await uploadToKeboola(tableName);
