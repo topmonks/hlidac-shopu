@@ -500,9 +500,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(3px);
   transform: scale(1) translate(0);
   transform-origin: left;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, backdrop-filter 0.3s ease;
 
   &.modal--hidden {
     transform: scale(0) translateX(-100vw);
