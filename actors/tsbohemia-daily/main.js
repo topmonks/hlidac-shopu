@@ -106,7 +106,7 @@ Apify.main(async () => {
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622",
+      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622&setstiordercook=sipprice",
       userData: {
         categoryUrl: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         label: LABELS.PAGE,
@@ -158,7 +158,7 @@ Apify.main(async () => {
               : subCatUrl;
           const subCategoryId = finalUrl.match("_c(.*).html")[1];
           await requestQueue.addRequest({
-            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}`,
+            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}&setstiordercook=sipprice`,
             userData: {
               categoryUrl: finalUrl,
               label: LABELS.PAGE,
@@ -209,14 +209,17 @@ Apify.main(async () => {
           );
           request.userData.firstTime = false;
           for (let i = 2; i <= paginationCount; i++) {
-            await requestQueue.addRequest({
-              url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}`,
-              userData: {
-                label: LABELS.PAGE,
-                name: request.userData.name
+            await requestQueue.addRequest(
+              {
+                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=sipprice`,
+                userData: {
+                  label: LABELS.PAGE,
+                  name: request.userData.name
+                },
+                uniqueKey: Math.random().toString()
               },
-              uniqueKey: Math.random().toString()
-            });
+              { forefront: true }
+            );
           }
           log.info(`Adding to the queue ${paginationCount - 1} pagination`);
           stats.pagination += paginationCount;
@@ -360,6 +363,7 @@ Apify.main(async () => {
           session.setCookiesFromResponse(response);
           if (request.userData.label === LABELS.PAGE) {
             await page.waitForSelector(".price > .wvat");
+            await page.waitForLoadState("networkidle");
           }
           return;
         } else {
