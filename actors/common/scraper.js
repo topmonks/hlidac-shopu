@@ -71,10 +71,7 @@ async function init() {
 }
 
 async function doScraping(request, proxyConfiguration, headers = null) {
-  const {
-    url,
-    userData: { label }
-  } = request;
+  const { url } = request;
   let gotOptions = {
     headerGeneratorOptions: {
       browsers: [
@@ -109,9 +106,7 @@ async function doScraping(request, proxyConfiguration, headers = null) {
 
 async function getCheerioObject(request, proxyConfiguration) {
   const body = await doScraping(request, proxyConfiguration);
-  if (body) {
-    return cheerio.load(body);
-  }
+  return cheerio.load(body);
 }
 
 async function getJSONObject(request, proxyConfiguration) {
