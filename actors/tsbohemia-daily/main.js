@@ -110,7 +110,8 @@ Apify.main(async () => {
       userData: {
         categoryUrl: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         label: LABELS.PAGE,
-        strid: 5622
+        strid: 5622,
+        firstTime: true
       }
     });
   } else {
@@ -155,13 +156,15 @@ Apify.main(async () => {
             subCatUrl.indexOf("https") === -1
               ? `https://www.tsbohemia.cz/${subCatUrl}`
               : subCatUrl;
+          const subCategoryId = finalUrl.match("_c(.*).html")[1];
           await requestQueue.addRequest({
-            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${category.id}&setstiordercook=sipprice`,
+            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}&setstiordercook=sipprice`,
             userData: {
               categoryUrl: finalUrl,
               label: LABELS.PAGE,
               categoryName: category.name,
-              strid: category.id
+              strid: subCategoryId,
+              firstTime: true
             },
             uniqueKey: Math.random().toString()
           });
@@ -195,22 +198,30 @@ Apify.main(async () => {
     // This is the category page
     else if (request.userData.label === LABELS.PAGE) {
       // Enqueue pagination pages
-      if (request.url.includes("page=1&") && $("p.reccount").length !== 0) {
+      if (
+        request.url.includes("page=1&") &&
+        request.userData.firstTime &&
+        $("p.reccount").length !== 0
+      ) {
         try {
           const paginationCount = Math.ceil(
             parseInt($("p.reccount").eq(0).text()) / 24
           );
+          request.userData.firstTime = false;
           for (let i = 2; i <= paginationCount; i++) {
-            await requestQueue.addRequest({
-              url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=sipprice`,
-              userData: {
-                label: LABELS.PAGE,
-                name: request.userData.name
+            await requestQueue.addRequest(
+              {
+                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=sipprice`,
+                userData: {
+                  label: LABELS.PAGE,
+                  name: request.userData.name
+                },
+                uniqueKey: Math.random().toString()
               },
-              uniqueKey: Math.random().toString()
-            });
+              { forefront: true }
+            );
           }
-          log.info(`Adding to the queue ${paginationCount} pagination`);
+          log.info(`Adding to the queue ${paginationCount - 1} pagination`);
           stats.pagination += paginationCount;
         } catch (e) {
           log.error(e.message);
@@ -311,7 +322,8 @@ Apify.main(async () => {
     maxRequestRetries,
     proxyConfiguration,
     maxConcurrency,
-    handleRequestTimeoutSecs: 360,
+    handleRequestTimeoutSecs: 300,
+    handlePageTimeoutSecs: 300,
     navigationTimeoutSecs: 300,
     launchContext: {
       launchOptions: {
@@ -343,13 +355,15 @@ Apify.main(async () => {
     ],
     postNavigationHooks: [
       async crawlingContext => {
-        const { response, session, page } = crawlingContext;
+        const { response, session, request, page } = crawlingContext;
         const isCaptcha = response.status() === 403;
         if (!isCaptcha) {
           log.info("No captcha");
           stats.pages++;
           session.setCookiesFromResponse(response);
-          await page.waitForSelector(".price > .wvat");
+          if (request.userData.label === LABELS.PAGE) {
+            await page.waitForSelector(".price > .wvat");
+          }
           return;
         } else {
           log.warning("Captcha found");
