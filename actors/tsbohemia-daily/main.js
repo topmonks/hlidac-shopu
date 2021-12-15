@@ -106,7 +106,7 @@ Apify.main(async () => {
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&strid=5622&setstiordercook=sipprice&page=1",
+      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622&setstiordercook=sipprice",
       userData: {
         categoryUrl: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         label: LABELS.PAGE,
@@ -128,7 +128,6 @@ Apify.main(async () => {
     log.info(
       `Handling page ${request.url} with label ${request.userData.label}`
     );
-    await page.waitForSelector(".price > .wvat");
     const content = await page.content();
     const $ = cheerio.load(content);
     // This is the start page
@@ -157,7 +156,7 @@ Apify.main(async () => {
               ? `https://www.tsbohemia.cz/${subCatUrl}`
               : subCatUrl;
           await requestQueue.addRequest({
-            url: `${finalUrl}?#cls=spresenttrees&strid=${category.id}&setstiordercook=sipprice&page=1`,
+            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${category.id}&setstiordercook=sipprice`,
             userData: {
               categoryUrl: finalUrl,
               label: LABELS.PAGE,
@@ -196,14 +195,14 @@ Apify.main(async () => {
     // This is the category page
     else if (request.userData.label === LABELS.PAGE) {
       // Enqueue pagination pages
-      if (request.url.includes("page=1") && $("p.reccount").length !== 0) {
+      if (request.url.includes("page=1&") && $("p.reccount").length !== 0) {
         try {
           const paginationCount = Math.ceil(
             parseInt($("p.reccount").eq(0).text()) / 24
           );
           for (let i = 2; i <= paginationCount; i++) {
             await requestQueue.addRequest({
-              url: `${request.userData.categoryUrl}?#cls=spresenttrees&strid=${request.userData.strid}&setstiordercook=sipprice&page=${i}`,
+              url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=sipprice`,
               userData: {
                 label: LABELS.PAGE,
                 name: request.userData.name
@@ -350,6 +349,7 @@ Apify.main(async () => {
           log.info("No captcha");
           stats.pages++;
           session.setCookiesFromResponse(response);
+          await page.waitForSelector(".price > .wvat");
           return;
         } else {
           log.warning("Captcha found");
