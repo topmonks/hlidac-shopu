@@ -106,7 +106,7 @@ Apify.main(async () => {
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622&setstiordercook=sipprice",
+      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622",
       userData: {
         categoryUrl: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         label: LABELS.PAGE,
@@ -158,7 +158,7 @@ Apify.main(async () => {
               : subCatUrl;
           const subCategoryId = finalUrl.match("_c(.*).html")[1];
           await requestQueue.addRequest({
-            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}&setstiordercook=sipprice`,
+            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}`,
             userData: {
               categoryUrl: finalUrl,
               label: LABELS.PAGE,
@@ -211,7 +211,7 @@ Apify.main(async () => {
           for (let i = 2; i <= paginationCount; i++) {
             await requestQueue.addRequest(
               {
-                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=sipprice`,
+                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}`,
                 userData: {
                   label: LABELS.PAGE,
                   name: request.userData.name
