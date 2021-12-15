@@ -363,7 +363,7 @@ Apify.main(async () => {
           session.setCookiesFromResponse(response);
           if (request.userData.label === LABELS.PAGE) {
             await page.waitForSelector(".price > .wvat");
-            await page.waitForLoadState("networkidle");
+            await page.waitForLoadState("networkidle", { timeout: 0 });
           }
           return;
         } else {
