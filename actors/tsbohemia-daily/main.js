@@ -209,17 +209,14 @@ Apify.main(async () => {
           );
           request.userData.firstTime = false;
           for (let i = 2; i <= paginationCount; i++) {
-            await requestQueue.addRequest(
-              {
-                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}`,
-                userData: {
-                  label: LABELS.PAGE,
-                  name: request.userData.name
-                },
-                uniqueKey: Math.random().toString()
+            await requestQueue.addRequest({
+              url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}`,
+              userData: {
+                label: LABELS.PAGE,
+                name: request.userData.name
               },
-              { forefront: true }
-            );
+              uniqueKey: Math.random().toString()
+            });
           }
           log.info(`Adding to the queue ${paginationCount - 1} pagination`);
           stats.pagination += paginationCount;
