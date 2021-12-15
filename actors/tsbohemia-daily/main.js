@@ -9,6 +9,7 @@ const cheerio = require("cheerio");
 const utils = require("./src/utils");
 const { LABELS, BASE_URL } = require("./src/const");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
+const { getCheerioObject } = require("@hlidac-shopu/actors-common/scraper.js");
 const { CaptchaSolver } = require("./src/captcha-solver");
 
 const { log, requestAsBrowser } = Apify.utils;
@@ -105,13 +106,20 @@ Apify.main(async () => {
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/acer_c75.html",
+      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
       userData: {
-        label: LABELS.PAGE
+        label: LABELS.PAGE,
+        strid: 5622
       }
     });
   } else {
-    requestListSources = await enqueueAllCategories();
+    //requestListSources = await enqueueAllCategories();
+    await requestQueue.addRequest({
+      url: "https://www.tsbohemia.cz/",
+      userData: {
+        label: LABELS.START
+      }
+    });
   }
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
@@ -123,33 +131,38 @@ Apify.main(async () => {
     const $ = cheerio.load(content);
     // This is the start page
     if (request.userData.label === LABELS.START) {
-      /*      const categoryIds = [];
+      const categoryIds = [];
 
-            $("a[data-strid]").each(function () {
-              categoryIds.push({
-                id: $(this).attr("data-strid"),
-                name: $(this).text()
-              });
-            });
+      $("a[data-strid]").each(function () {
+        categoryIds.push({
+          id: $(this).attr("data-strid"),
+          name: $(this).text()
+        });
+      });
 
-            for (const category of categoryIds) {
-              const response = await getResponse(
-                `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
-              );
-              const responseCheerio = cheerio.load(response, {
-                decodeEntities: false
-              });
-              responseCheerio(".level6 > li > a").each(async function () {
-                const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
-                await requestQueue.addRequest({
-                  url:
-                    subCatUrl.indexOf("https") === -1
-                      ? `https://www.tsbohemia.cz/${subCatUrl}`
-                      : subCatUrl,
-                  userData: { label: LABELS.PAGE, categoryName: category.name }
-                });
-              });
-            }*/
+      for (const category of categoryIds) {
+        const responseCheerio = await getCheerioObject(
+          {
+            url: `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
+          },
+          proxyConfiguration
+        );
+        responseCheerio(".level6 > li > a").each(async function () {
+          stats.categories++;
+          const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
+          await requestQueue.addRequest({
+            url:
+              subCatUrl.indexOf("https") === -1
+                ? `https://www.tsbohemia.cz/${subCatUrl}`
+                : subCatUrl,
+            userData: {
+              label: LABELS.PAGE,
+              categoryName: category.name,
+              strid: category.id
+            }
+          });
+        });
+      }
     } else if (request.userData.label === LABELS.BF) {
       log.info("START BLACK FRIDAY");
       const categories = [];
@@ -185,11 +198,12 @@ Apify.main(async () => {
           );
           for (let i = 2; i <= paginationCount; i++) {
             await requestQueue.addRequest({
-              url: `${request.url}?page=${i}`,
+              url: `${request.url}?#cls=spresenttrees&strid=${request.userData.strid}&setstiordercook=sipprice&page=${i}`,
               userData: {
                 label: LABELS.PAGE,
                 name: request.userData.name
-              }
+              },
+              uniqueKey: Math.random().toString()
             });
           }
           log.info(`Adding to the queue ${paginationCount} pagination`);
@@ -275,8 +289,7 @@ Apify.main(async () => {
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    countryCode: "CZ"
+    groups: proxyGroups
   });
 
   const fingerprintGenerator = new FingerprintGenerator({
