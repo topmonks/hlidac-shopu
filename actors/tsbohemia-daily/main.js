@@ -364,7 +364,6 @@ Apify.main(async () => {
           if (request.userData.label === LABELS.PAGE) {
             await page.waitForSelector(".price > .wvat");
             await page.waitForLoadState("networkidle", { timeout: 0 });
-            await page.waitForTimeout(30000);
           }
           return;
         } else {
