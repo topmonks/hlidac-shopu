@@ -106,12 +106,10 @@ Apify.main(async () => {
     });
   } else if (type === "test") {
     await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html?#cls=spresenttrees&page=1&strid=5622&setstiordercook=stiplname",
+      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
       userData: {
-        categoryUrl: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         label: LABELS.PAGE,
-        strid: 5622,
-        firstTime: true
+        strid: 5622
       }
     });
   } else {
@@ -158,13 +156,11 @@ Apify.main(async () => {
               : subCatUrl;
           const subCategoryId = finalUrl.match("_c(.*).html")[1];
           await requestQueue.addRequest({
-            url: `${finalUrl}?#cls=spresenttrees&page=1&strid=${subCategoryId}&setstiordercook=stiplname`,
+            url: `${finalUrl}`,
             userData: {
-              categoryUrl: finalUrl,
               label: LABELS.PAGE,
               categoryName: category.name,
-              strid: subCategoryId,
-              firstTime: true
+              strid: subCategoryId
             },
             uniqueKey: Math.random().toString()
           });
@@ -197,21 +193,33 @@ Apify.main(async () => {
 
     // This is the category page
     else if (request.userData.label === LABELS.PAGE) {
-      // Enqueue pagination pages
-      if (
-        request.url.includes("page=1&") &&
-        request.userData.firstTime &&
+      // Check for subcategories
+      const subcategories = $("div.strcont > div.subcats").find("a");
+      if (subcategories.length > 0) {
+        for (const subcat of subcategories) {
+          const link = $(subcat).attr("href");
+          console.log(`${BASE_URL}${link}`);
+          await requestQueue.addRequest({
+            url: `${BASE_URL}${link}`,
+            userData: {
+              label: LABELS.PAGE
+            }
+          });
+        }
+        log.info(`Adding to the queue ${subcategories.length} subcategories`);
+      } else if (
+        !request.url.includes("page") &&
         $("p.reccount").length !== 0
       ) {
+        // Enqueue pagination pages
         try {
           const paginationCount = Math.ceil(
             parseInt($("p.reccount").eq(0).text()) / 24
           );
-          request.userData.firstTime = false;
           for (let i = 2; i <= paginationCount; i++) {
             await requestQueue.addRequest(
               {
-                url: `${request.userData.categoryUrl}?#cls=spresenttrees&page=${i}&strid=${request.userData.strid}&setstiordercook=stiplname`,
+                url: `${request.url}?page=${i}#prodlistanchor`,
                 userData: {
                   label: LABELS.PAGE,
                   name: request.userData.name
@@ -362,7 +370,6 @@ Apify.main(async () => {
           stats.pages++;
           session.setCookiesFromResponse(response);
           if (request.userData.label === LABELS.PAGE) {
-            await page.waitForSelector(".price > .wvat");
             await page.waitForLoadState("networkidle", { timeout: 0 });
           }
           return;
