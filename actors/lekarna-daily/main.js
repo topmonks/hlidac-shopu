@@ -88,7 +88,7 @@ async function enqueueAllCategories(requestQueue) {
     categoryUrls.push({
       url,
       userData: {
-        label: "SUB_CATEGORY",
+        label: "PAGE",
         baseUrl: url
       }
     });
@@ -149,7 +149,7 @@ async function extractItems($, $products, breadCrumbs) {
       }
       itemsArray.push(result);
     } else {
-      log.info(`Skipp non price product [${name}]`);
+      //Skipped itemprop="itemListElement" that's note product
       stats.itemsSkipped++;
     }
   });
@@ -196,19 +196,51 @@ async function extractBfItems($, $products, breadCrumbs) {
 }
 
 async function handleSubCategory($, requestQueue, request) {
-  const getSubcategories = $("#snippet--subcategories").find("a");
-  if (getSubcategories.length === 0) {
-    //This is final category, add as page for page/item scraping
+  const getSubcategories = $("#snippet--subcategories a");
+  for (const subCat of getSubcategories) {
+    const url = $(subCat).attr("href");
     await requestQueue.addRequest({
-      url: `${request.url}?visualPaginator-firstPage=1`,
+      url: `${web}${url}`,
       userData: {
-        label: "PAGE",
-        category: request.url
+        label: "PAGE"
       }
     });
     stats.pages++;
   }
-  //Continue, if this isn't last subcategory
+  log.info(`Enqueued ${getSubcategories.length} subcategories`);
+}
+
+async function handlePagination($, type, requestQueue, request) {
+  let maxPage = 0;
+  const snippetListing =
+    type === "FULL"
+      ? $("#snippet--productListing")
+      : $("#snippet--itemListing");
+  snippetListing.find("ul.flex.flex-wrap.items-stretch li").each(function () {
+    //Try parse Number value from paginator
+    const liValue = Number($(this).text().trim());
+    //Save highest page value
+    if (liValue > maxPage) {
+      maxPage = liValue;
+    }
+  });
+  //Handle pagination pages
+  if (maxPage > 0) {
+    for (let i = 2; i <= maxPage; i++) {
+      await requestQueue.addRequest(
+        {
+          url: `${request.url}?strana=${i}`,
+          userData: {
+            label: "PAGI_PAGE",
+            category: request.userData.category
+          }
+        },
+        { forefront: true }
+      );
+      stats.pages++;
+    }
+    log.info(`Found ${maxPage - 1} pagination pages.`);
+  }
 }
 
 async function handleProducts($, request, requestQueue, type) {
@@ -268,11 +300,11 @@ async function handleProducts($, request, requestQueue, type) {
         }
       }
       stats.items += requests.length;
-      console.log(`Found ${requests.length} unique products`);
+      log.info(`Found ${requests.length / 2} unique products`);
       // await all requests, so we don't end before they end
       await Promise.all(requests);
     } catch (e) {
-      console.log(`Failed extraction of items. ${request.url}`);
+      log.error(`Failed extraction of items. ${request.url}`);
     }
   }
 }
@@ -355,52 +387,25 @@ Apify.main(async () => {
     maxConcurrency,
     handlePageFunction: async ({ $, request }) => {
       if (request.userData.label === "SUB_CATEGORY") {
-        console.log(`START with sub category ${request.url}`);
+        log.info(`START with sub category ${request.url}`);
         await handleSubCategory($, requestQueue, request);
       } else if (request.userData.label === "PAGE") {
-        console.log(`START with page ${request.url}`);
+        log.info(`START with page ${request.url}`);
+        //Check for subcategory links
+        await handleSubCategory($, requestQueue, request);
         //Check for pagination pages
-        let maxPage = 0;
-        const snippetListing =
-          type === "FULL"
-            ? $("#snippet--productListing")
-            : $("#snippet--itemListing");
-        snippetListing
-          .find("ul.flex.flex-wrap.items-stretch li")
-          .each(function () {
-            //Try parse Number value from paginator
-            const liValue = Number($(this).text().trim());
-            //Save highest page value
-            if (liValue > maxPage) {
-              maxPage = liValue;
-            }
-          });
+        await handlePagination($, type, requestQueue, request);
+        //Handle product on page
         await handleProducts($, request, requestQueue, type);
-        //Handle pagination pages
-        if (maxPage !== 0) {
-          const paginationPage = [];
-          for (let i = 2; i <= maxPage; i++) {
-            paginationPage.push({
-              url: `${request.userData.category}?strana=${i}`,
-              userData: {
-                label: "PAGI_PAGE",
-                category: request.userData.category
-              }
-            });
-            stats.pages++;
-          }
-          console.log(`Found ${paginationPage.length} pages.`);
-          await enqueueRequests(requestQueue, paginationPage);
-        }
       } else if (request.userData.label === "PAGI_PAGE") {
-        console.log(`START with page ${request.url}`);
-        await handleProducts($, request, requestQueue);
+        log.info(`START with page ${request.url}`);
+        await handleProducts($, request, requestQueue, type);
       }
     },
 
     // If request failed 4 times then this function is executed.
     handleFailedRequestFunction: async ({ request }) => {
-      console.log(`Request ${request.url} failed 10 times`);
+      log.error(`Request ${request.url} failed 10 times`);
     }
   });
   // Run crawler.
