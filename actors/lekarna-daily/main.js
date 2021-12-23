@@ -195,22 +195,45 @@ async function extractBfItems($, $products, breadCrumbs) {
   return itemsArray;
 }
 
-async function handleSubCategory($, requestQueue, request) {
-  const getSubcategories = $("#snippet--subcategories a");
-  for (const subCat of getSubcategories) {
-    const url = $(subCat).attr("href");
+async function handleStart($, requestQueue) {
+  const getCategories = $("nav.items-center > ul > li > span > a");
+  for (const cat of getCategories) {
+    const url = $(cat).attr("href");
+    console.log(url);
     await requestQueue.addRequest({
-      url: `${web}${url}`,
+      url,
       userData: {
         label: "PAGE"
       }
     });
     stats.pages++;
   }
-  log.info(`Enqueued ${getSubcategories.length} subcategories`);
+  log.info(`Enqueued ${getCategories.length} categories`);
 }
 
-async function handlePagination($, type, requestQueue, request) {
+async function handleSubCategory($, requestQueue, request) {
+  const getSubcategories = $("#snippet--subcategories a");
+  let subCatCount = 0;
+  for (const subCat of getSubcategories) {
+    const url = $(subCat).attr("href");
+    if (!url.includes("?")) {
+      subCatCount++;
+      await requestQueue.addRequest(
+        {
+          url: url.includes("https") ? url : `${web}${url}`,
+          userData: {
+            label: "PAGE"
+          }
+        },
+        { forefront: true }
+      );
+      stats.pages++;
+    }
+  }
+  log.info(`Enqueued ${subCatCount} subcategories`);
+}
+
+async function handlePagination($, requestQueue, request, type) {
   let maxPage = 0;
   const snippetListing =
     type === "FULL"
@@ -243,7 +266,7 @@ async function handlePagination($, type, requestQueue, request) {
   }
 }
 
-async function handleProducts($, request, requestQueue, type) {
+async function handleProducts($, requestQueue, request, type) {
   const itemListElements =
     type === "FULL"
       ? $('[itemprop="itemListElement"]')
@@ -253,16 +276,23 @@ async function handleProducts($, request, requestQueue, type) {
   if (itemListElements.length > 0) {
     let breadCrumbs = [];
     try {
-      $("div.cat")
-        .find("a")
-        .each(function () {
-          if (
-            !$(this).attr("href").includes("#") &&
-            $(this).text().trim() !== ""
-          ) {
-            breadCrumbs.push($(this).text().trim());
-          }
-        });
+      $(
+        "ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']"
+      ).each(function () {
+        const attrContent = $(this).attr("content");
+        if (
+          attrContent !== undefined &&
+          attrContent.trim() !== "" &&
+          attrContent.trim() !== "Úvodní strana"
+        ) {
+          breadCrumbs.push(attrContent);
+        }
+
+        const text = $(this).text();
+        if (text !== undefined && text.trim() !== "") {
+          breadCrumbs.push(text.trim());
+        }
+      });
       if (breadCrumbs.length > 0) {
         breadCrumbs = breadCrumbs.join(" > ");
       } else {
@@ -299,11 +329,12 @@ async function handleProducts($, request, requestQueue, type) {
           stats.itemsDuplicity++;
         }
       }
-      stats.items += requests.length;
+      stats.items += requests.length / 2;
       log.info(`Found ${requests.length / 2} unique products`);
       // await all requests, so we don't end before they end
       await Promise.all(requests);
     } catch (e) {
+      log.error(e.message);
       log.error(`Failed extraction of items. ${request.url}`);
     }
   }
@@ -356,14 +387,13 @@ Apify.main(async () => {
   } else if (type === "COUNT") {
     await countAllProducts();
   } else {
-    await enqueueAllCategories(requestQueue);
-    // to test one item/category
-    /*await requestQueue.addRequest({
-      url: "https://www.lekarna.cz/masazni-gely-roztoky/",
+    await requestQueue.addRequest({
+      url: web,
       userData: {
-        label: "SUB_CATEGORY"
+        label: "START"
       }
-    });*/
+    });
+    //await enqueueAllCategories(requestQueue);
   }
 
   const persistState = async () => {
@@ -394,12 +424,14 @@ Apify.main(async () => {
         //Check for subcategory links
         await handleSubCategory($, requestQueue, request);
         //Check for pagination pages
-        await handlePagination($, type, requestQueue, request);
+        await handlePagination($, requestQueue, request, type);
         //Handle product on page
-        await handleProducts($, request, requestQueue, type);
+        await handleProducts($, requestQueue, request, type);
       } else if (request.userData.label === "PAGI_PAGE") {
         log.info(`START with page ${request.url}`);
         await handleProducts($, request, requestQueue, type);
+      } else if (request.userData.label === "START") {
+        await handleStart($, requestQueue);
       }
     },
 
