@@ -6,7 +6,7 @@ orbs:
   browser-tools: circleci/browser-tools@1.2.3
   codecov: codecov/codecov@3.2.2
   github: topmonks/github@1.1.0
-  node: circleci/node@4.9.0
+  node: circleci/node@5.0.0
   pulumi: pulumi/pulumi@2.0.0
   rollbar: rollbar/deploy@1.0.1
   slack: circleci/slack@4.5.2
@@ -14,9 +14,12 @@ orbs:
 commands:
   install_packages:
     steps:
+      - node/install:
+          install-yarn: true
+          node-version: '16.13'
       - node/install-packages:
           pkg-manager: yarn-berry
-          cache-version: v2
+          cache-version: v3
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
@@ -110,9 +113,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   build-website:
-    executor:
-      name: node/default
-      tag: "16.0"
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     environment:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
@@ -146,9 +149,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   build-web-extension:
-    executor:
-      name: node/default
-      tag: "16.0"
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     steps:
       - checkout
       - install_packages
@@ -180,12 +183,13 @@ jobs:
 
   test-web-extension:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - run: nvm install 15
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Make screenshots
@@ -197,9 +201,9 @@ jobs:
     parameters:
       browser:
         type: string
-    executor:
-      name: node/default
-      tag: "16.0"
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     steps:
       - checkout
       - attach_workspace:
@@ -275,9 +279,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   provision:
-    executor:
-      name: node/default
-      tag: "16.0"
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -298,9 +302,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   preview-provision:
-    executor:
-      name: node/default
-      tag: "16.0"
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: arm.medium
     steps:
       - checkout
       - pulumi/login:
