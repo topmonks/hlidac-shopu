@@ -17,7 +17,8 @@ commands:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v3
-          check-cache: detect
+          check-cache: always
+          with-cache: false
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
