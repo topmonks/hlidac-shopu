@@ -14,9 +14,6 @@ orbs:
 commands:
   install_packages:
     steps:
-      - node/install:
-          install-yarn: true
-          node-version: '16.13'
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v3
@@ -82,6 +79,7 @@ jobs:
       tag: "14.16"
     steps:
       - checkout
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint actors
@@ -120,6 +118,7 @@ jobs:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
       - checkout
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint website
@@ -154,6 +153,7 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Build extension bundle
@@ -208,6 +208,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Publish extension
@@ -288,6 +289,7 @@ jobs:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint API
@@ -309,6 +311,7 @@ jobs:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run: pulumi stack select hlidac-shopu-prod
       - pulumi/preview:
