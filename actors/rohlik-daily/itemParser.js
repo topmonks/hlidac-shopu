@@ -24,7 +24,8 @@ function getItems(items, jsonCategories) {
           ? item.pricePerUnit.full
           : null,
       currency: item.price.currency ? item.price.currency : null,
-      inStock: item.inStock ? "true" : "false"
+      inStock: item.inStock,
+      useUnitPrice: item.textualAmount.includes("cca")
     };
     if (item.sales.length !== 0) {
       for (const sale of item.sales) {
