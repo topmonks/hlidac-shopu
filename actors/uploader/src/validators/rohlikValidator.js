@@ -10,7 +10,8 @@ function rohlikValidator(item) {
     "itemUrl",
     "originalPrice",
     "originalUnitPrice",
-    "inStock"
+    "inStock",
+    "useUnitPrice"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
