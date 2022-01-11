@@ -78,7 +78,7 @@ jobs:
   test-actors:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - run: nvm install $(< .nvmrc)
@@ -94,7 +94,7 @@ jobs:
   test-lib:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - run: nvm install $(< .nvmrc)
@@ -116,7 +116,7 @@ jobs:
   build-website:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     environment:
       ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
     steps:
@@ -153,7 +153,7 @@ jobs:
   build-web-extension:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - run: nvm install $(< .nvmrc)
@@ -187,7 +187,7 @@ jobs:
   test-web-extension:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - attach_workspace:
@@ -206,7 +206,7 @@ jobs:
         type: string
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - attach_workspace:
@@ -285,7 +285,7 @@ jobs:
   provision:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -309,7 +309,7 @@ jobs:
   preview-provision:
     machine:
       image: ubuntu-2004:202111-02
-    resource_class: arm.medium
+    # resource_class: arm.medium
     steps:
       - checkout
       - pulumi/login:
