@@ -72,6 +72,7 @@ async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
       $("#product-detail .buy-box__price-head del")
         .text()
         .replace("Kč", "")
+        .replace(/\s/g, "")
         .trim()
     );
     const result = {
@@ -175,6 +176,16 @@ Apify.main(async () => {
       }
     });
     stats.categories++;
+  } else if (type === "TEST") {
+    await requestQueue.addRequest({
+      url: "https://www.benu.cz/alavis-maxima-triple-blend-extra-silny-700-g",
+      headers: {
+        userAgent: randomUA.generate()
+      },
+      userData: {
+        label: LABELS.DETAIL
+      }
+    });
   } else {
     await requestQueue.addRequest({
       url: web,
