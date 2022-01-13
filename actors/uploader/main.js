@@ -308,26 +308,28 @@ async function processItems(
         break;
     }
 
-    // original category in data are breadcrumbs
-    if (item.category) {
-      item.breadCrumbs = Array.isArray(item.category)
-        ? item.category.toString()
-        : item.category;
-    }
+    if (item["PriceFeedOnly"] === undefined) {
+      // original category in data are breadcrumbs
+      if (item.category) {
+        item.breadCrumbs = Array.isArray(item.category)
+          ? item.category.toString()
+          : item.category;
+      }
 
-    if (item["shop"] === undefined || item["shop"] === null) {
-      item["shop"] =
-        item.itemUrl !== null ? await getShopName(item.itemUrl) : null;
-    }
+      if (item["shop"] === undefined || item["shop"] === null) {
+        item["shop"] =
+          item.itemUrl !== null ? await getShopName(item.itemUrl) : null;
+      }
 
-    if (item["slug"] === undefined || item["slug"] === null) {
-      item["slug"] =
-        item.itemUrl !== null ? await getItemSlug(item.itemUrl) : null;
+      if (item["slug"] === undefined || item["slug"] === null) {
+        item["slug"] =
+          item.itemUrl !== null ? await getItemSlug(item.itemUrl) : null;
+      }
+      item.category = blackFriday ? 1 : 0;
     }
 
     item.date = crawledDate;
     item.actRunId = actRunId;
-    item.category = blackFriday ? 1 : 0;
 
     validItems.push(item);
   }
