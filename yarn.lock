@@ -3601,7 +3601,7 @@ __metadata:
     modern-random-ua: ^1.0.3
     parsecurrency: ^1.0.1
     request-fixed-tunnel-agent: ^2.88.3
-    user-agents: ^1.0.893
+    user-agents: ^1.0.895
   languageName: unknown
   linkType: soft
 
@@ -3900,7 +3900,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
-    "@lit/reactive-element": 1.1.1
+    "@lit/reactive-element": 1.1.2
     chart.js: ^3.7.0
     chartjs-adapter-date-fns: 2.0.0
     lit-element: 3.1.1
@@ -3948,7 +3948,7 @@ __metadata:
     modern-random-ua: ^1.0.3
     parsecurrency: ^1.0.1
     request-fixed-tunnel-agent: ^2.88.3
-    user-agents: ^1.0.893
+    user-agents: ^1.0.895
   languageName: unknown
   linkType: soft
 
@@ -3964,7 +3964,7 @@ __metadata:
     apify-cli: ^0.6.5
     cheerio: ^1.0.0-rc.10
     puppeteer: ^13.0.1
-    user-agents: ^1.0.893
+    user-agents: ^1.0.895
   languageName: unknown
   linkType: soft
 
@@ -4239,10 +4239,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.1.1":
-  version: 1.1.1
-  resolution: "@lit/reactive-element@npm:1.1.1"
-  checksum: 2cbb8a2b3d4861eb9b70ba6cfde9fd52cb42fb393900aba890af4531b2f8a6d82f8ca8ba9c0be093439f713985d796612fd7e7250fed1566fd524aade5d6b998
+"@lit/reactive-element@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@lit/reactive-element@npm:1.1.2"
+  checksum: 83a0659dcd54fc61dfec444643183d1a0d48d01dda38325b32da976338a828bf1f89b1f66e20605b01b9fa3d9400c3e33159aeb57bdb1e0e4cf5858e5f2e3b98
   languageName: node
   linkType: hard
 
@@ -4903,9 +4903,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.21.1":
-  version: 3.21.1
-  resolution: "@pulumi/pulumi@npm:3.21.1"
+"@pulumi/pulumi@npm:^3.22.0":
+  version: 3.22.0
+  resolution: "@pulumi/pulumi@npm:3.22.0"
   dependencies:
     "@grpc/grpc-js": ~1.3.8
     "@logdna/tail-file": ^2.0.6
@@ -4922,7 +4922,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: cda84658febe87a2810b66b05f8c934f25caa3ca6251c647e01064d7dfa32cad75c033d6de694694de595803c523f6d53c434675da8204a1a9bfc3f1a29e8002
+  checksum: e0aad3aeefae47923e5bb8d1b248784b58f1daaed466c311af8ebbb76f560b7e20f62326851251ccc24abc50d40c3997b58236eb60e0782f73c749f124376851
   languageName: node
   linkType: hard
 
@@ -5609,12 +5609,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:^0.27.62":
-  version: 0.27.62
-  resolution: "@types/ramda@npm:0.27.62"
+"@types/ramda@npm:^0.27.63":
+  version: 0.27.63
+  resolution: "@types/ramda@npm:0.27.63"
   dependencies:
     ts-toolbelt: ^6.15.1
-  checksum: fb42398becc45ce94fae3b27c358960172b16a92f7395eba5d66eaf63d0ad962762a9fa956b1a5e3ff3f2403f5538e12efe205377b956497a7a397d71355d51d
+  checksum: d5a1fd9b1bcdbba3dae04d2f726a1d63b82a104a6c563f8459907823ca7422b5ea903a1178a71b7c7b4c1e6058833acd042613c45efd9e801f3c205ba83a2def
   languageName: node
   linkType: hard
 
@@ -6013,6 +6013,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-core@npm:^0.10.23":
+  version: 0.10.23
+  resolution: "@web/test-runner-core@npm:0.10.23"
+  dependencies:
+    "@babel/code-frame": ^7.12.11
+    "@types/babel__code-frame": ^7.0.2
+    "@types/co-body": ^6.1.0
+    "@types/convert-source-map": ^1.5.1
+    "@types/debounce": ^1.2.0
+    "@types/istanbul-lib-coverage": ^2.0.3
+    "@types/istanbul-reports": ^3.0.0
+    "@web/browser-logs": ^0.2.1
+    "@web/dev-server-core": ^0.3.16
+    chokidar: ^3.4.3
+    cli-cursor: ^3.1.0
+    co-body: ^6.1.0
+    convert-source-map: ^1.7.0
+    debounce: ^1.2.0
+    dependency-graph: ^0.11.0
+    globby: ^11.0.1
+    ip: ^1.1.5
+    istanbul-lib-coverage: ^3.0.0
+    istanbul-lib-report: ^3.0.0
+    istanbul-reports: ^3.0.2
+    log-update: ^4.0.0
+    nanocolors: ^0.2.1
+    nanoid: ^3.1.25
+    open: ^8.0.2
+    picomatch: ^2.2.2
+    source-map: ^0.7.3
+  checksum: 274fde4eeaaa776f64112203e45815c2d6dad2f4450fad13c1ac12fa86213ff46a8f7bc2706f857cf2e1b19d3169d76c5cd2a4405c761fafecf125c142df5313
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-coverage-v8@npm:^0.4.8":
   version: 0.4.8
   resolution: "@web/test-runner-coverage-v8@npm:0.4.8"
@@ -6025,15 +6059,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:^0.4.9":
-  version: 0.4.9
-  resolution: "@web/test-runner-junit-reporter@npm:0.4.9"
+"@web/test-runner-junit-reporter@npm:^0.4.10":
+  version: 0.4.10
+  resolution: "@web/test-runner-junit-reporter@npm:0.4.10"
   dependencies:
     "@web/test-runner-chrome": ^0.10.5
-    "@web/test-runner-core": ^0.10.20
+    "@web/test-runner-core": ^0.10.23
     array-flat-polyfill: ^1.0.1
     xml: ^1.0.1
-  checksum: a2fe07b3c410de74808b381cca2e0b71286d7dd966f1f05091ce0968e5e8ace2438579400f487e66ad6804396eb2af3d6d071f0492099f0fa5cba51217ff0c65
+  checksum: e35484a98bf58367c2edf934f4f1c401c793c69f4bd950d87e4cbd35e19ce280a439e182ee6cc7b0fe8b9aac8b59fb54980b4f6e2e50c024e4a62afdeba1fdf7
   languageName: node
   linkType: hard
 
@@ -13018,7 +13052,7 @@ __metadata:
     "@open-wc/testing": ^3.0.3
     "@pulumi/aws": ^4.34.0
     "@pulumi/awsx": ^0.32.0
-    "@pulumi/pulumi": ^3.21.1
+    "@pulumi/pulumi": ^3.22.0
     "@rollup/plugin-alias": ^3.1.9
     "@rollup/plugin-node-resolve": ^13.1.3
     "@rollup/plugin-replace": ^3.0.1
@@ -13026,12 +13060,12 @@ __metadata:
     "@topmonks/pulumi-aws": ^1.10.1
     "@types/firefox-webext-browser": ^94.0.1
     "@types/node": ^16.11.19
-    "@types/ramda": ^0.27.62
+    "@types/ramda": ^0.27.63
     "@types/whatwg-url": ^8.2.1
     "@typescript-eslint/eslint-plugin": ^5.9.1
     "@typescript-eslint/parser": ^5.9.1
     "@web/test-runner": ^0.13.25
-    "@web/test-runner-junit-reporter": ^0.4.9
+    "@web/test-runner-junit-reporter": ^0.4.10
     abort-controller: ^3.0.0
     chokidar: ^3.5.2
     chrome-webstore-upload-cli: ^2.0.1
@@ -13058,7 +13092,7 @@ __metadata:
     puppeteer: ^13.0.1
     ramda: ^0.27.2
     rollbar: ^2.24.0
-    sass: ^1.47.0
+    sass: ^1.48.0
     source-map-explorer: ^2.5.2
     stylelint: ^14.2.0
     stylelint-config-prettier: ^9.0.3
@@ -19311,16 +19345,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:sass@1.47.0":
-  version: 1.47.0
-  resolution: "sass@npm:1.47.0"
+"sass@npm:sass@1.48.0":
+  version: 1.48.0
+  resolution: "sass@npm:1.48.0"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: e725a37eb7360ad5f96e6e6209d81beeb22ecec70c6f01a1acdf237dbbb6e05e50cc0a0851b16ee1dbc63fbdd7a90405cbbd9911f56b2dba3d5f934f7e291f10
+  checksum: 0fa57d17a9ac9eff914719a3c9cf986cb81c6714cc09214ace65e9f1af0bd47f750793dfc39bbd1b199c9b8c12b1e4aba669ba08dfbd649cfb581c55d20a839f
   languageName: node
   linkType: hard
 
@@ -21800,13 +21834,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"user-agents@npm:^1.0.893":
-  version: 1.0.893
-  resolution: "user-agents@npm:1.0.893"
+"user-agents@npm:^1.0.895":
+  version: 1.0.895
+  resolution: "user-agents@npm:1.0.895"
   dependencies:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
-  checksum: 93907cafc385fea192fab886e1e9c0a9e95efabb2614edf2966f30e579bccb6844ecb70d5bca2a068b661f8e32fcd9f5db35fbc07a719ba1eed96e61411cc63d
+  checksum: 1ff1e358ab81d6d8b589aafe87fc2be9209e4ee5309462c7e97210e3112652c5dcc5df121a3defec084c43a25215ffaff715ba9f8f679ac8fdd7f6e332537026
   languageName: node
   linkType: hard
 

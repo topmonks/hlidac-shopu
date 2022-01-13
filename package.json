@@ -18,7 +18,7 @@
   "dependencies": {
     "@pulumi/aws": "^4.34.0",
     "@pulumi/awsx": "^0.32.0",
-    "@pulumi/pulumi": "^3.21.1",
+    "@pulumi/pulumi": "^3.22.0",
     "@topmonks/pulumi-aws": "^1.10.1",
     "abort-controller": "^3.0.0",
     "date-fns": "^2.28.0",
@@ -37,12 +37,12 @@
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=f23f81f563f2a0bfb21e36f1beeeda19b3209b10",
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/node": "^16.11.19",
-    "@types/ramda": "^0.27.62",
+    "@types/ramda": "^0.27.63",
     "@types/whatwg-url": "^8.2.1",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "@web/test-runner": "^0.13.25",
-    "@web/test-runner-junit-reporter": "^0.4.9",
+    "@web/test-runner-junit-reporter": "^0.4.10",
     "chokidar": "^3.5.2",
     "chrome-webstore-upload-cli": "^2.0.1",
     "commander": "^8.3.0",
@@ -64,7 +64,7 @@
     "prettier": "^2.5.1",
     "puppeteer": "^13.0.1",
     "rollbar": "^2.24.0",
-    "sass": "^1.47.0",
+    "sass": "^1.48.0",
     "source-map-explorer": "^2.5.2",
     "stylelint": "^14.2.0",
     "stylelint-config-prettier": "^9.0.3",
@@ -75,7 +75,7 @@
     "lodash": "npm:lodash@4.17.21",
     "object-path": "npm:object-path@0.11.8",
     "tslib": "npm:tslib@2.3.1",
-    "sass": "npm:sass@1.47.0"
+    "sass": "npm:sass@1.48.0"
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
