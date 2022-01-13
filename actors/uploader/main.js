@@ -12,6 +12,9 @@ const {
   rohlikDetailValidator
 } = require("./src/validators/rohlikDetailValidator");
 const { tsbohemiaValidator } = require("./src/validators/tsbohemiaValidator");
+const {
+  tsbohemiaPriceValidator
+} = require("./src/validators/tsbohemiaPriceValidator");
 const { notinoValidator } = require("./src/validators/notinoValidator");
 const { datartValidator } = require("./src/validators/datartValidator");
 const { itescoValidator } = require("./src/validators/itescoValidator");
@@ -110,6 +113,8 @@ async function processItems(
       case "tsbohemia_bf":
         item = tsbohemiaValidator(item);
         break;
+      case "tsbohemia_cz_price":
+        item = tsbohemiaPriceValidator(item);
       case "notino":
         item = notinoValidator(item);
         break;
