@@ -95,7 +95,7 @@ async function processItems(
   const start = Date.now();
   for (let item of items) {
     // we can do some transformation here
-
+    let priceFeedOnly = false;
     switch (tableName) {
       case "mironet":
         item = mironetValidator(item);
@@ -114,6 +114,7 @@ async function processItems(
         item = tsbohemiaValidator(item);
         break;
       case "tsbohemia_cz_price":
+        priceFeedOnly = true;
         item = tsbohemiaPriceValidator(item);
         break;
       case "notino":
@@ -308,7 +309,7 @@ async function processItems(
         break;
     }
 
-    if (item["PriceFeedOnly"] === undefined) {
+    if (!priceFeedOnly) {
       // original category in data are breadcrumbs
       if (item.category) {
         item.breadCrumbs = Array.isArray(item.category)
