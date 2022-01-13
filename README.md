@@ -130,7 +130,7 @@ and copy the `Environment variable` with credentials. Insert copied credentials 
 Or use this command (copy it to console before you copy Cloudinary credentials, or simply write it):
 
 ```
-# in topmonks-webs
+# on macOS in ./hlidac-shopu
 pbpaste > .env
 ```
 
