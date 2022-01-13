@@ -115,6 +115,7 @@ async function processItems(
         break;
       case "tsbohemia_cz_price":
         item = tsbohemiaPriceValidator(item);
+        break;
       case "notino":
         item = notinoValidator(item);
         break;
