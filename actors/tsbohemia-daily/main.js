@@ -11,6 +11,7 @@ const { LABELS, BASE_URL } = require("./src/const");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { getCheerioObject } = require("@hlidac-shopu/actors-common/scraper.js");
 const { CaptchaSolver } = require("./src/captcha-solver");
+const { gotScraping } = require("got-scraping");
 
 const { log, requestAsBrowser } = Apify.utils;
 let stats = {
@@ -92,7 +93,8 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 6,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = "FULL",
+    feedUrl = ""
   } = input ?? {};
 
   log.info(`ACTOR - input: ${JSON.stringify(input)}`);
@@ -104,6 +106,35 @@ Apify.main(async () => {
       userData: { label: LABELS.BF },
       url: "https://www.tsbohemia.cz/-black-friday_c41438.html"
     });
+  } else if (type === LABELS.PRICE) {
+    const response = await gotScraping({
+      url: feedUrl
+    });
+    const { statusCode, body } = response;
+    if (statusCode !== 200) {
+      log.info(body.toString());
+      throw new Error("Session blocked, retiring.");
+    }
+    const ids = body.toString().split("\n").slice(1);
+
+    const uploadBatchSize = 250;
+    let pushedItemsCount = 0;
+
+    for (let i = pushedItemsCount; i < ids.length; i += uploadBatchSize) {
+      const start = i;
+      const end = i + uploadBatchSize;
+      const itemsToPush = ids.slice(start, end);
+
+      await requestQueue.addRequest({
+        url: "https://www.tsbohemia.cz/TsbStoitemPriceList_jx.asp",
+        userData: {
+          label: LABELS.PRICE,
+          ids: itemsToPush
+        },
+        uniqueKey: Math.random().toString()
+      });
+      log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
+    }
   } else if (type === "test") {
     await requestQueue.addRequest({
       url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
@@ -487,9 +518,87 @@ Apify.main(async () => {
     }
   });
 
+  const crawlerBasic = new Apify.BasicCrawler({
+    requestQueue,
+    maxConcurrency,
+    maxRequestRetries,
+    handleRequestFunction: async context => {
+      const { request } = context;
+      const {
+        url,
+        userData: { ids, label }
+      } = request;
+      const response = await gotScraping.post({
+        headerGeneratorOptions: {
+          browsers: [
+            {
+              name: "chrome",
+              minVersion: 89
+            }
+          ],
+          devices: ["desktop"],
+          locales: ["cs-CZ"],
+          operatingSystems: ["windows"]
+        },
+        responseType: "json",
+        url,
+        body: `stiidlist=${ids.join(",")}`,
+        proxyUrl: await proxyConfiguration.newUrl(),
+        headers: {
+          "Accept": "*/*",
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.9,cs;q=0.8,cs-CZ;q=0.7",
+          "Origin": "https://www.tsbohemia.cz",
+          "Referer": "https://www.tsbohemia.cz/"
+        }
+      });
+      const { statusCode, body } = response;
+      if (statusCode !== 200) {
+        log.info(body.toString());
+        throw new Error("Session blocked, retiring.");
+      }
+      const priceList = body.StoitemPriceList;
+      const prices = [];
+      if (priceList.length > 0) {
+        for (const price of priceList) {
+          const item = {};
+          item.itemId = price.StiId;
+          item.currentPrice = Math.round(
+            (price.StiPrice + price.PriceRef + price.PriceRef2) *
+              (1 + price.TaxRate / 100)
+          );
+          if (price.StiPrice === price.SipPrice0) {
+            item.originalPrice = null;
+            item.discounted = false;
+          } else {
+            item.originalPrice = Math.round(
+              (price.SipPrice0 + price.PriceRef + price.PriceRef2) *
+                (1 + price.TaxRate / 100)
+            );
+            item.discounted = true;
+          }
+          prices.push(item);
+        }
+        await Apify.pushData(prices);
+        log.info(`Found ${prices.length}x items price`);
+        stats.items += prices.length;
+      }
+    },
+    handleFailedRequestFunction: async ({ request }) => {
+      log.error(`Request ${request.url} failed multiple times`, request);
+    }
+  });
+
   // Run crawler
   log.info("ACTOR - Run crawler");
-  await crawler.run();
+  if (type === LABELS.PRICE) {
+    await crawlerBasic.run();
+  } else {
+    await crawler.run();
+  }
+
   log.info("ACTOR - End crawler");
 
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
@@ -497,7 +606,13 @@ Apify.main(async () => {
 
   if (!development) {
     // calling the keboola upload
-    await uploadToKeboola(type === "BF" ? "tsbohemia_bf" : "tsbohemia");
+    let tableName = "tsbohemia";
+    if (type === LABELS.PRICE) {
+      tableName = `${tableName}_cz_price`;
+    } else if (type === "BF") {
+      tableName = `${tableName}_bf`;
+    }
+    await uploadToKeboola(tableName);
   }
 
   log.info("ACTOR - Finished");
