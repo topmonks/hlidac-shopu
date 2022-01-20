@@ -105,7 +105,14 @@ async function shopName(url, options = {}) {
 }
 
 function currencyToISO4217(currency) {
-  return currency.toLowerCase() === "kč" ? "CZK" : currency;
+  switch (currency.toLowerCase()) {
+    case "kč":
+      return "CZK";
+    case "€":
+      return "EUR";
+    default:
+      return currency;
+  }
 }
 
 module.exports = {
@@ -114,5 +121,6 @@ module.exports = {
   uploadToS3v2,
   s3FileName,
   shopName,
-  invalidateCDN
+  invalidateCDN,
+  currencyToISO4217
 };
