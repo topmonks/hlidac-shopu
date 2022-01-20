@@ -5,7 +5,8 @@ const {
   toProduct,
   s3FileName,
   uploadToS3,
-  invalidateCDN
+  invalidateCDN,
+  currencyToISO4217
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
@@ -25,20 +26,47 @@ const COUNTRY = {
 let stats = {};
 const processedIds = new Set();
 
+const getCountrySlug = country => {
+  switch (country.toUpperCase()) {
+    case COUNTRY.CZ:
+      return "cs-cz";
+    case COUNTRY.SK:
+      return "sk-sk";
+    case COUNTRY.HU:
+      return "hu-hu";
+    case COUNTRY.DE:
+      return "de-de";
+    case COUNTRY.AT:
+      return "de-at";
+  }
+};
+
+const getCategoryUrlSlug = country => {
+  return `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+    country
+  )}/?view=navigation&json`;
+};
+
+const getCategoryId = (country, categorySlug) => {
+  return `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+    country
+  )}${categorySlug}/?json`;
+};
+
 const makeListingUrl = (
   countryCode,
   productQuery,
   currentPage,
   pageSize = 100
 ) =>
-  `https://products.dm.de/product/${countryCode.toLowerCase()}/search?${new URLSearchParams(
+  `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams(
     {
-      productQuery,
-      currentPage,
+      ...productQuery,
       pageSize,
-      purchasableOnly: false,
-      hideFacets: false,
-      hideSorts: true
+      currentPage,
+      sort: "price_asc",
+      purchasable: true,
+      type: "search-static"
     }
   )}`;
 
@@ -53,23 +81,13 @@ const createProductUrl = (country, url) => {
 
 function* traverseCategories(categories, names = []) {
   for (const category of categories) {
-    if (category.subcategories) {
-      yield* traverseCategories(category.subcategories, [
-        ...names,
-        category.name
-      ]);
+    if (category.children) {
+      yield* traverseCategories(category.children, [...names, category.title]);
     } else {
-      names = [...names, category.name];
+      names = [...names, category.title];
     }
     category.breadcrumbs = names.filter(x => x !== "null").join(" > ");
     yield category;
-  }
-}
-
-function* paginateResults(category) {
-  const length = Math.ceil(category.count / 100);
-  for (let i = 1; i <= length; i++) {
-    yield i;
   }
 }
 
@@ -88,7 +106,7 @@ Apify.main(async () => {
     development = false,
     debug = false,
     country = COUNTRY.CZ,
-    productQuery = ":allCategories"
+    type = "FULL"
   } = input ?? {};
 
   if (debug) {
@@ -104,14 +122,28 @@ Apify.main(async () => {
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest({
-    url: makeListingUrl(country, productQuery, 1, 1),
-    userData: {
-      country,
-      productQuery,
-      step: "START"
-    }
-  });
+
+  if (type === "FULL") {
+    await requestQueue.addRequest({
+      url: getCategoryUrlSlug(country),
+      userData: {
+        country,
+        productQuery: "",
+        step: "START"
+      }
+    });
+  } else if (type === "TEST") {
+    //const productQuery = { "allCategories.id": "020800" };
+    const productQuery = { "brandName": "SEINZ." };
+    await requestQueue.addRequest({
+      url: makeListingUrl(country, productQuery, 0),
+      userData: {
+        country,
+        category: "test > test",
+        categoryId: "020800"
+      }
+    });
+  }
 
   const crawler = new Apify.BasicCrawler({
     requestQueue,
@@ -121,9 +153,8 @@ Apify.main(async () => {
       const { request } = context;
       const {
         url,
-        userData: { country, step, category }
+        userData: { country, step, category, productQuery }
       } = request;
-
       const response = await gotScraping({
         responseType: "json",
         url
@@ -133,83 +164,132 @@ Apify.main(async () => {
         return log.info(body.toString());
       }
 
-      const { pagination, products, categories } = body;
+      const { type, navigation } = body;
       if (step === "START") {
-        log.info("Pagination info", pagination);
+        log.info("Pagination info", type);
+        const { children } = navigation;
         // we are traversing recursively from leaves to trunk
-        for (const category of traverseCategories(categories)) {
-          log.debug(`Found category ${category.name}`);
+        for (const category of traverseCategories(children)) {
+          log.debug(
+            `Found category ${category.title} at link: ${category.link}`
+          );
           stats.categories++;
-          for (const page of paginateResults(category)) {
-            // we need to await here to prevent higher categories
-            // to be enqueued sooner than sub-categories
-            await requestQueue.addRequest({
-              url: makeListingUrl(country, category.productQuery, page),
-              userData: {
-                country,
-                category: category.breadcrumbs
-              }
-            });
+          // we need to await here to prevent higher categories
+          // to be enqueued sooner than sub-categories
+          await requestQueue.addRequest({
+            url: getCategoryId(country, category.link),
+            userData: {
+              country,
+              category: category.breadcrumbs.toString(),
+              step: "CATEGORY"
+            }
+          });
+        }
+      } else if (step === "CATEGORY") {
+        const { mainData } = body;
+        const result = mainData
+          .filter(x => x.query)
+          .map(x => x.query.query)
+          .shift();
+
+        if (result) {
+          let tempProductQuery = {};
+          const resultValue = result.split(":")[3];
+          if (result.includes(":allCategories") && resultValue) {
+            tempProductQuery = { "allCategories.id": resultValue };
+          } else if (result.includes(":brand") && resultValue) {
+            const brand = resultValue.split("|")[0];
+            tempProductQuery = { "brandName": brand };
           }
+          await requestQueue.addRequest({
+            url: makeListingUrl(country, tempProductQuery, 0),
+            userData: {
+              country,
+              category,
+              productQuery: tempProductQuery
+            }
+          });
         }
       } else {
+        const { products, count, currentPage, totalPages } = body;
         // we don't need to block pushes, we will await them all at the end
         const requests = [];
         stats.items += products.length;
-        for (const item of products) {
-          if (!processedIds.has(item.gtin)) {
-            processedIds.add(item.gtin);
-            stats.itemsUnique++;
-            const detail = parseItem(item);
-            const slug = await s3FileName(detail);
-            requests.push(
-              // push data to dataset to be ready for upload to Keboola
-              Apify.pushData({ ...detail, slug }),
-              // upload JSON+LD data to CDN
-              uploadToS3(
-                s3,
-                `dm.${country.toLowerCase()}`,
-                slug,
-                "jsonld",
-                toProduct(detail, {
-                  brand: item.brandName,
-                  name: item.name,
-                  gtin: item.gtin
-                })
-              )
-            );
-          } else {
-            stats.itemsDuplicity++;
+        if (products.length > 0) {
+          if (currentPage === 0 && totalPages > 1) {
+            for (let i = 1; i < totalPages; i++) {
+              // we need to await here to prevent higher categories
+              // to be enqueued sooner than sub-categories
+              await requestQueue.addRequest(
+                {
+                  url: makeListingUrl(country, productQuery, i),
+                  userData: {
+                    country,
+                    category
+                  }
+                },
+                { forefront: true }
+              );
+            }
           }
-        }
-        log.debug(
-          `Found ${requests.length / 2} unique products at ${request.url}`
-        );
+          for (const item of products) {
+            if (!processedIds.has(item.gtin)) {
+              processedIds.add(item.gtin);
+              stats.itemsUnique++;
+              const detail = parseItem(item);
+              const slug = await s3FileName(detail);
+              requests.push(
+                // push data to dataset to be ready for upload to Keboola
+                Apify.pushData(detail),
+                // upload JSON+LD data to CDN
+                uploadToS3(
+                  s3,
+                  `dm.${country.toLowerCase()}`,
+                  slug,
+                  "jsonld",
+                  toProduct(detail, {
+                    brand: item.brandName,
+                    name: item.name,
+                    gtin: item.gtin
+                  })
+                )
+              );
+            } else {
+              stats.itemsDuplicity++;
+            }
+          }
+          log.debug(
+            `Found ${requests.length / 2} unique products at ${request.url}`
+          );
 
-        // await all requests, so we don't end before they end
-        await Promise.allSettled(requests);
+          // await all requests, so we don't end before they end
+          await Promise.allSettled(requests);
 
-        function parseItem(p) {
-          return {
-            itemId: p.gtin,
-            itemName: `${p.brandName} ${p.name}`,
-            itemUrl: createProductUrl(country, p.relativeProductUrl),
-            img: p.links
-              .filter(x => x.rel.startsWith("productimage"))
-              .map(x => x.href)
-              .pop(),
-            inStock: !p.notAvailable,
-            currentPrice: p.price,
-            originalPrice: p.isSellout
-              ? p.selloutPriceLocalized
-                  .trim()
-                  .replace(/[^\d,]+/g, "")
-                  .replace(",", ".")
-              : null,
-            currency: p.priceCurrencyIso,
-            category,
-            discounted: p.isSellout
-          };
+          function parseItem(p) {
+            //console.log(p);
+            return {
+              itemId: p.gtin,
+              itemName: `${p.brandName} ${p.name}`,
+              itemUrl: createProductUrl(country, p.relativeProductUrl),
+              img: p.imageUrlTemplates[0].replace(
+                "{transformations}",
+                "f_auto,q_auto,c_fit,w_260,h_270"
+              ),
+              inStock: p.purchasable,
+              currentPrice: p.price.value,
+              originalPrice: p.isSellout
+                ? parseFloat(
+                    p.selloutPrice.formattedValue
+                      .trim()
+                      .replace(/[^\d,]+/g, "")
+                      .replace(",", ".")
+                  )
+                : null,
+              currency: currencyToISO4217(p.price.currencySymbol),
+              category,
+              discounted: p.isSellout
+            };
+          }
         }
       }
     },
