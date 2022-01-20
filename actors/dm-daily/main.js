@@ -65,7 +65,6 @@ const makeListingUrl = (
       pageSize,
       currentPage,
       sort: "price_asc",
-      purchasable: true,
       type: "search-static"
     }
   )}`;
