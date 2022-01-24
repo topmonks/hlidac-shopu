@@ -22,9 +22,6 @@ const config = {
   stylesheets: {
     postcss: {
       plugins: [cssvariables({ preserve: true })]
-    },
-    sass: {
-      includePaths: ["./node_modules"]
     }
   },
 

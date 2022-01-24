@@ -6,8 +6,8 @@
   "license": "EPL-2.0",
   "dependencies": {
     "@apify/http-request": "^2.1.2",
-    "@aws-sdk/client-cloudfront": "^3.46.0",
-    "@aws-sdk/client-s3": "^3.46.0",
+    "@aws-sdk/client-cloudfront": "^3.48.0",
+    "@aws-sdk/client-s3": "^3.48.0",
     "@hlidac-shopu/actors-common": "^1.1.8",
     "@hlidac-shopu/lib": "^1.1.2",
     "apify": "^2.2.1",
@@ -15,10 +15,10 @@
     "modern-random-ua": "^1.0.3",
     "parsecurrency": "^1.0.1",
     "request-fixed-tunnel-agent": "^2.88.3",
-    "user-agents": "^1.0.895"
+    "user-agents": "^1.0.906"
   },
   "devDependencies": {
-    "@types/node": "^16.11.19",
+    "@types/node": "^16.11.21",
     "apify-cli": "^0.6.5"
   },
   "scripts": {
