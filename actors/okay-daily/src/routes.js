@@ -7,25 +7,24 @@ const {
 const { COUNTRY } = require("./consts");
 
 // at this point, the main page is already loaded in $
-const handleStart = async ({ $, requestQueue }, crawlContext) => {
+const handleStart = async ($, crawlContext) => {
   // const requestQueue = await Apify.openRequestQueue();
   // start page, add all categories links to requestQueue
-  let links = $("ul.box-menu__line")
-    .find("li.box-menu__item:not(.box-menu__item--title)")
-    .find("a.box-menu__item__link")
+  let links = $("nav > ul")
+    .find("li.nav-nested__link-parent > a")
     .map(function () {
       return $(this).attr("href");
     })
     .get();
-  /*  if (crawlContext.development) {
+  if (crawlContext.development) {
     links = links.slice(0, 1);
     log.debug("Develoment mode, adding only 1 list to requestQueue");
-  }*/
+  }
   for (const link of links) {
     // request is an object, setting url to link and in userdata, setting new dictionary label: LIST
     // it is me who is setting the label value, just using it for making the crawler fcn more clear
-    await requestQueue.addRequest({
-      url: link,
+    await crawlContext.requestQueue.addRequest({
+      url: `${crawlContext.baseUrl}${link}?sort=price-ascending`,
       userData: { label: "LIST" }
     });
     crawlContext.stats.urls += 1;
@@ -33,61 +32,35 @@ const handleStart = async ({ $, requestQueue }, crawlContext) => {
   log.debug(`Found ${links.length}x categories => added to queue`);
 };
 
-// at this point, the main page is already loaded in $
-const handleStartSK = async ({ $, requestQueue }, crawlContext) => {
-  // const requestQueue = await Apify.openRequestQueue();
-  // start page, add all categories links to requestQueue
-  console.log(
-    $("nav.nav-nested").find("li.nav-nested__link--first > a").length
-  );
-  let links = $("nav.nav-nested")
-    .find("li.nav-nested__link--first > a")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .get();
-  /*  if (crawlContext.development) {
-    links = links.slice(0, 1);
-    log.debug("Develoment mode, adding only 1 list to requestQueue");
-  }*/
-  for (const link of links) {
-    // request is an object, setting url to link and in userdata, setting new dictionary label: LIST
-    // it is me who is setting the label value, just using it for making the crawler fcn more clear
-    await requestQueue.addRequest({
-      url: `${crawlContext.baseUrl}${link}`,
-      userData: { label: "LIST" }
-    });
-    crawlContext.stats.urls += 1;
-  }
-};
-
-const handleList = async ({ $, requestQueue }, crawlContext) => {
+const handleList = async ($, crawlContext) => {
+  //https://help.boostcommerce.net/article/458-filter-search-api
   // const requestQueue = await Apify.openRequestQueue();
   // add detail pages of all products on the page to requestQueue
-  let links = $("li.js-gtm-product-wrapper")
-    .find(".title")
-    .find("a.js-gtm-product-link")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .get();
-  /*  if (crawlContext.development) {
-    links = links.slice(0, 1);
-    log.debug("Develoment mode, crawl 1 product");
-  }*/
-  for (const link of links) {
-    await requestQueue.addRequest({
-      url: link,
-      userData: { label: "DETAIL" }
-    });
-    crawlContext.stats.urls += 1;
-  }
-  log.debug(`Found ${links.length}x items => added to queue`);
+  /*  let links = $("li.js-gtm-product-wrapper")
+      .find(".title")
+      .find("a.js-gtm-product-link")
+      .map(function () {
+        return $(this).attr("href");
+      })
+      .get();
+    /!*  if (crawlContext.development) {
+      links = links.slice(0, 1);
+      log.debug("Develoment mode, crawl 1 product");
+    }*!/
+    for (const link of links) {
+      await requestQueue.addRequest({
+        url: link,
+        userData: { label: "DETAIL" }
+      });
+      crawlContext.stats.urls += 1;
+    }
+    log.debug(`Found ${links.length}x items => added to queue`);*/
 
   // add next page to requestQueue, if exists
-  const nextLink = $("a.next").attr("href");
+  const nextLink = $("a.pagination-next").attr("href");
+  console.log(nextLink);
   if (nextLink) {
-    await requestQueue.addRequest({
+    await crawlContext.requestQueue.addRequest({
       url: nextLink,
       userData: { label: "LIST" }
     });
@@ -205,8 +178,6 @@ const handleDetail = async ({ request, $ }, crawlContext, country) => {
 
 module.exports = {
   handleStart,
-  handleStartSK,
   handleList,
-  handleListSK,
   handleDetail
 };

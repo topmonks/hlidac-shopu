@@ -10,16 +10,11 @@ const {
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
-const {
-  handleStart,
-  handleList,
-  handleDetail,
-  handleStartSK,
-  handleListSK
-} = require("./src/routes");
+const { handleStart, handleList, handleDetail } = require("./src/routes");
 
 const { COUNTRY, BASE_URL_CZ, BASE_URL_SK } = require("./src/consts");
 const { URL } = require("url");
+const cheerio = require("cheerio");
 
 const {
   utils: { log }
@@ -47,6 +42,7 @@ Apify.main(async () => {
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 5,
+    maxRequestRetries = 3,
     bfUrls = [],
     customTableName = null
   } = input ?? {};
@@ -61,14 +57,15 @@ Apify.main(async () => {
     totalItems: 0
   };
 
+  const requestQueue = await Apify.openRequestQueue();
   const crawlContext = {
+    requestQueue,
     baseUrl: country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK,
     development,
     stats,
     country
   };
 
-  const requestQueue = await Apify.openRequestQueue();
   if (type === "BF") {
     for (const url of bfUrls) {
       await requestQueue.addRequest({
@@ -84,39 +81,52 @@ Apify.main(async () => {
     });
   } else {
     const rootUrl = country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK;
-    await requestQueue.addRequest({ url: rootUrl });
+    await requestQueue.addRequest({
+      url: rootUrl,
+      userData: { label: "START" }
+    });
   }
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
   let promiseList = [];
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.PlaywrightCrawler({
     requestQueue,
     proxyConfiguration,
+    maxConcurrency: development ? 1 : maxConcurrency,
+    maxRequestRetries,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    maxConcurrency,
+    navigationTimeoutSecs: 120,
     handlePageTimeoutSecs: 600,
+    launchContext: {
+      useChrome: true,
+      launchOptions: {
+        headless: !development
+      }
+    },
     handlePageFunction: async context => {
+      const { request, response, page } = context;
       const {
         url,
         userData: { label }
-      } = context.request;
-      log.debug("Page opened.", { label, url });
-      context.requestQueue = requestQueue;
+      } = request;
+      if (label === "START") {
+        await page.waitForSelector("li.nav-nested__link-parent");
+      } else {
+        await page.waitForLoadState("networkidle", { timeout: 0 });
+      }
+      //await page.waitForSelector(".product-box__price-bundle");
+      //await page.waitForSelector("ul.pagination");
+      const body = await page.content();
+      const $ = cheerio.load(body);
       switch (label) {
         case "LIST":
-          switch (country.toUpperCase()) {
-            case COUNTRY.SK:
-              await handleListSK(context, crawlContext);
-              break;
-            default:
-              await handleList(context, crawlContext);
-          }
+          await handleList($, crawlContext);
           break;
         case "DETAIL":
-          const product = await handleDetail(context, crawlContext, country);
+          const product = await handleDetail($, crawlContext, country);
           if (product.itemId !== null && product.currentPrice !== null) {
             crawlContext.stats.totalItems += 1;
             if (!processedIds.has(product.itemId)) {
@@ -142,16 +152,30 @@ Apify.main(async () => {
           }
           break;
         default:
-          switch (country.toUpperCase()) {
-            case COUNTRY.SK:
-              await handleStartSK(context, crawlContext);
-              break;
-            default:
-              await handleStart(context, crawlContext);
-          }
+          await handleStart($, crawlContext);
       }
+    },
+    handleFailedRequestFunction: async ({ request }) => {
+      stats.failed++;
+      log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
+  /*  const crawler = new Apify.CheerioCrawler({
+      requestQueue,
+      proxyConfiguration,
+      useSessionPool: true,
+      persistCookiesPerSession: true,
+      maxConcurrency,
+      handlePageTimeoutSecs: 600,
+      handlePageFunction: async context => {
+        const {
+          url,
+          userData: { label }
+        } = context.request;
+        log.debug("Page opened.", { label, url });
+        context.requestQueue = requestQueue;
+      }
+    });*/
 
   log.info("Starting the crawl.");
   await crawler.run();
