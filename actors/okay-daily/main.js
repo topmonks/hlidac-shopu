@@ -11,10 +11,9 @@ const {
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
 const Apify = require("apify");
-const { handleStart, handleList, handleDetail } = require("./src/routes");
 
 const { COUNTRY, BASE_URL_CZ, BASE_URL_SK } = require("./src/consts");
-const { URL, URLSearchParams } = require("url");
+const { URLSearchParams } = require("url");
 const { gotScraping } = require("got-scraping");
 
 const {
@@ -86,14 +85,16 @@ Apify.main(async () => {
       userData: { label: "LIST" }
     });
   } else {
+    const params = {
+      page: 1
+    };
+    const url = `${rootUrl}/collections?${new URLSearchParams(params)}`;
     await requestQueue.addRequest({
       url: `${rootUrl}/collections`,
-      uniqueKey: Math.random().toString(),
       userData: {
         label: "COLLECTIONS",
-        params: {
-          page: 1
-        }
+        defaultUrl: `${rootUrl}/collections`,
+        params
       }
     });
   }
@@ -101,7 +102,6 @@ Apify.main(async () => {
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
-  let promiseList = [];
 
   const crawler = new Apify.BasicCrawler({
     requestQueue,
@@ -110,18 +110,11 @@ Apify.main(async () => {
     useSessionPool: true,
     handleRequestFunction: async context => {
       const { request, session } = context;
-      const { label, title, params } = request.userData;
+      const { defaultUrl, label, title, params } = request.userData;
 
-      log.info(
-        `Processing ${request.url}, ${request.userData.label}, ${JSON.stringify(
-          params
-        )}`
-      );
-      const url = params
-        ? `${request.url}?${new URLSearchParams(params)}`
-        : request.url;
+      log.info(`Processing ${label}: ${request.url}`);
       const requestOptions = {
-        url,
+        url: request.url,
         proxyUrl: proxyConfiguration.newUrl(session.id),
         throwHttpErrors: false,
         headers: {
@@ -133,7 +126,6 @@ Apify.main(async () => {
         }
       };
 
-      log.info(`gotScraping: ${url}`);
       const response = await gotScraping(requestOptions);
 
       // Status code check
@@ -153,40 +145,42 @@ Apify.main(async () => {
                 ? "okay-elektro-cz.myshopify.com"
                 : "okay-dev-sk.myshopify.com";
             for (const collection of responseData.collections) {
+              const newParams = {
+                shop,
+                page: 1,
+                limit: 50,
+                sort: "price-ascending",
+                collection_scope: collection.id,
+                product_available: false,
+                variant_available: false,
+                check_cache: false,
+                sort_first: "available"
+              };
+              const url = `https://services.mybcapps.com/bc-sf-filter/filter?${new URLSearchParams(
+                newParams
+              )}`;
               await requestQueue.addRequest({
-                url: "https://services.mybcapps.com/bc-sf-filter/filter",
-                uniqueKey: Math.random().toString(),
+                url,
                 userData: {
                   label: "COLLECTION",
                   title: collection.title,
-                  params: {
-                    shop,
-                    page: 1,
-                    limit: 50,
-                    sort: "price-ascending",
-                    collection_scope: collection.id,
-                    product_available: false,
-                    variant_available: false,
-                    check_cache: false,
-                    sort_first: "available"
-                  }
+                  params: newParams
                 }
               });
             }
             log.info(`Found ${responseData.collections.length}x collections`);
             //Check for another collections on next page
+            params.page = params.page + 1;
             await requestQueue.addRequest(
               {
-                url: request.url,
-                uniqueKey: Math.random().toString(),
+                url: `${defaultUrl}?${new URLSearchParams(params)}`,
                 userData: {
                   label: "COLLECTIONS",
-                  params: {
-                    page: params.page + 1
-                  }
+                  defaultUrl,
+                  params
                 }
               },
-              { forefront: true }
+              { forefront: false }
             );
           }
           break;
@@ -244,10 +238,12 @@ Apify.main(async () => {
             log.info(`Adding ${paginationCount - 1}x pagination pages `);
             for (let i = 2; i <= paginationCount; i++) {
               params.page = i;
+              const url = `https://services.mybcapps.com/bc-sf-filter/filter?${new URLSearchParams(
+                params
+              )}`;
               await requestQueue.addRequest(
                 {
-                  url: "https://services.mybcapps.com/bc-sf-filter/filter",
-                  uniqueKey: Math.random().toString(),
+                  url,
                   userData: {
                     label: "COLLECTION",
                     title,
@@ -353,10 +349,7 @@ Apify.main(async () => {
 
   log.info("Starting the crawl.");
   await crawler.run();
-  if (promiseList.length > 0) {
-    await Promise.all(promiseList);
-    promiseList = [];
-  }
+
   log.info("Crawl finished.");
 
   await Apify.setValue("STATS", crawlContext.stats);
@@ -370,10 +363,11 @@ Apify.main(async () => {
     );
     log.info(`invalidated Data CDN: okay.${country.toLowerCase()}`);
 
-    const tableName = `okay_${country.toLowerCase()}${
+    let tableName = `okay_${country.toLowerCase()}${
       type === "BF" ? "_bf" : ""
     }`;
-    await uploadToKeboola(customTableName ? customTableName : tableName);
+    tableName = customTableName ? customTableName : tableName;
+    await uploadToKeboola(tableName);
     log.info(`upload to Keboola finished: ${tableName}`);
   }
 
