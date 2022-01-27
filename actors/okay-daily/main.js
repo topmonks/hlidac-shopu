@@ -148,6 +148,10 @@ Apify.main(async () => {
       switch (label) {
         case "COLLECTIONS":
           if (responseData.collections.length > 0) {
+            const shop =
+              country.toLowerCase() === "cz"
+                ? "okay-elektro-cz.myshopify.com"
+                : "okay-dev-sk.myshopify.com";
             for (const collection of responseData.collections) {
               await requestQueue.addRequest({
                 url: "https://services.mybcapps.com/bc-sf-filter/filter",
@@ -156,7 +160,7 @@ Apify.main(async () => {
                   label: "COLLECTION",
                   title: collection.title,
                   params: {
-                    shop: "okay-elektro-cz.myshopify.com",
+                    shop,
                     page: 1,
                     limit: 50,
                     sort: "price-ascending",
