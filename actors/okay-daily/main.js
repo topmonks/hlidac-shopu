@@ -5,7 +5,8 @@ const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const {
   invalidateCDN,
   toProduct,
-  uploadToS3
+  uploadToS3,
+  s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 
@@ -13,8 +14,8 @@ const Apify = require("apify");
 const { handleStart, handleList, handleDetail } = require("./src/routes");
 
 const { COUNTRY, BASE_URL_CZ, BASE_URL_SK } = require("./src/consts");
-const { URL } = require("url");
-const cheerio = require("cheerio");
+const { URL, URLSearchParams } = require("url");
+const { gotScraping } = require("got-scraping");
 
 const {
   utils: { log }
@@ -22,11 +23,6 @@ const {
 
 let stats = {};
 const processedIds = new Set();
-
-function s3FileNameSync(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.match(/\/([^/]+)/)?.[1];
-}
 
 Apify.main(async () => {
   log.info("ACTOR - start");
@@ -66,6 +62,16 @@ Apify.main(async () => {
     country
   };
 
+  const persistState = async () => {
+    await Apify.setValue("STATS", crawlContext.stats).then(() =>
+      log.debug("STATS saved!")
+    );
+    log.info(JSON.stringify(crawlContext.stats));
+  };
+  Apify.events.on("persistState", persistState);
+
+  const rootUrl = country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK;
+
   if (type === "BF") {
     for (const url of bfUrls) {
       await requestQueue.addRequest({
@@ -80,10 +86,15 @@ Apify.main(async () => {
       userData: { label: "LIST" }
     });
   } else {
-    const rootUrl = country === COUNTRY.CZ ? BASE_URL_CZ : BASE_URL_SK;
     await requestQueue.addRequest({
-      url: rootUrl,
-      userData: { label: "START" }
+      url: `${rootUrl}/collections`,
+      uniqueKey: Math.random().toString(),
+      userData: {
+        label: "COLLECTIONS",
+        params: {
+          page: 1
+        }
+      }
     });
   }
 
@@ -91,75 +102,234 @@ Apify.main(async () => {
     groups: proxyGroups
   });
   let promiseList = [];
-  const crawler = new Apify.PlaywrightCrawler({
+
+  const crawler = new Apify.BasicCrawler({
     requestQueue,
-    proxyConfiguration,
     maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
-    persistCookiesPerSession: true,
-    navigationTimeoutSecs: 120,
-    handlePageTimeoutSecs: 600,
-    launchContext: {
-      useChrome: true,
-      launchOptions: {
-        headless: !development
-      }
-    },
-    handlePageFunction: async context => {
-      const { request, response, page } = context;
-      const {
+    handleRequestFunction: async context => {
+      const { request, session } = context;
+      const { label, title, params } = request.userData;
+
+      log.info(
+        `Processing ${request.url}, ${request.userData.label}, ${JSON.stringify(
+          params
+        )}`
+      );
+      const url = params
+        ? `${request.url}?${new URLSearchParams(params)}`
+        : request.url;
+      const requestOptions = {
         url,
-        userData: { label }
-      } = request;
-      if (label === "START") {
-        await page.waitForSelector("li.nav-nested__link-parent");
-      } else {
-        await page.waitForLoadState("networkidle", { timeout: 0 });
+        proxyUrl: proxyConfiguration.newUrl(session.id),
+        throwHttpErrors: false,
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          // If you want to use the cookieJar.
+          // This way you get the Cookie headers string from session.
+          Cookie: session.getCookieString()
+        }
+      };
+
+      log.info(`gotScraping: ${url}`);
+      const response = await gotScraping(requestOptions);
+
+      // Status code check
+      if (![200, 404].includes(response.statusCode)) {
+        session.retire();
+        request.retryCount--;
+        throw new Error(`We got blocked by target on ${request.url}`);
       }
-      //await page.waitForSelector(".product-box__price-bundle");
-      //await page.waitForSelector("ul.pagination");
-      const body = await page.content();
-      const $ = cheerio.load(body);
+
+      const responseData = JSON.parse(response.body);
+
       switch (label) {
-        case "LIST":
-          await handleList($, crawlContext);
+        case "COLLECTIONS":
+          if (responseData.collections.length > 0) {
+            for (const collection of responseData.collections) {
+              await requestQueue.addRequest({
+                url: "https://services.mybcapps.com/bc-sf-filter/filter",
+                uniqueKey: Math.random().toString(),
+                userData: {
+                  label: "COLLECTION",
+                  title: collection.title,
+                  params: {
+                    shop: "okay-elektro-cz.myshopify.com",
+                    page: 1,
+                    limit: 50,
+                    sort: "price-ascending",
+                    collection_scope: collection.id,
+                    product_available: false,
+                    variant_available: false,
+                    check_cache: false,
+                    sort_first: "available"
+                  }
+                }
+              });
+            }
+            log.info(`Found ${responseData.collections.length}x collections`);
+            //Check for another collections on next page
+            await requestQueue.addRequest(
+              {
+                url: request.url,
+                uniqueKey: Math.random().toString(),
+                userData: {
+                  label: "COLLECTIONS",
+                  params: {
+                    page: params.page + 1
+                  }
+                }
+              },
+              { forefront: true }
+            );
+          }
           break;
-        case "DETAIL":
-          const product = await handleDetail($, crawlContext, country);
-          if (product.itemId !== null && product.currentPrice !== null) {
-            crawlContext.stats.totalItems += 1;
-            if (!processedIds.has(product.itemId)) {
-              processedIds.add(product.itemId);
-              promiseList.push(
-                Apify.pushData(product),
-                uploadToS3(
-                  s3,
-                  `okay.${country.toLowerCase()}`,
-                  s3FileNameSync(product),
-                  "jsonld",
-                  toProduct(product, {})
-                )
-              );
-              crawlContext.stats.items += 1;
-              if (promiseList.length >= 100) {
-                await Promise.all(promiseList);
-                promiseList = [];
+        case "COLLECTION":
+          const paginationCount = Math.ceil(
+            responseData.total_product / params.limit
+          );
+          log.info(`Found ${responseData.products.length}x products`);
+          // we don't need to block pushes, we will await them all at the end
+          const requests = [];
+          for (const product of responseData.products) {
+            const item = {};
+            item.itemId = product.id;
+            item.itemIdOld = product.original_tags
+              .find(v => v.includes("SSID"))
+              .split("-")[1];
+            item.itemUrl = `${rootUrl}/products/${product.handle}`;
+            item.img = product.images["1"];
+            item.itemName = product.title;
+            item.originalPrice =
+              product.compare_at_price_max === 0
+                ? product.price_max
+                : product.compare_at_price_max;
+            item.currentPrice = product.price_max;
+            item.discounted = product.compare_at_price_max > product.price_max;
+            item.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
+            item.category = product.product_type;
+            item.inStock = product.available;
+
+            if (item.itemId !== null && item.currentPrice !== null) {
+              crawlContext.stats.totalItems += 1;
+              if (!processedIds.has(item.itemId)) {
+                processedIds.add(item.itemId);
+                requests.push(
+                  Apify.pushData(item),
+                  uploadToS3(
+                    s3,
+                    `okay.${country.toLowerCase()}`,
+                    await s3FileName(item),
+                    "jsonld",
+                    toProduct(item, {})
+                  )
+                );
+                crawlContext.stats.items += 1;
+              } else {
+                crawlContext.stats.itemsDuplicity += 1;
               }
-            } else {
-              crawlContext.stats.itemsDuplicity += 1;
+            }
+          }
+          log.info(`Found ${requests.length / 2} unique products`);
+          // await all requests, so we don't end before they end
+          await Promise.allSettled(requests);
+
+          if (paginationCount > 1 && params.page === 1) {
+            log.info(`Adding ${paginationCount - 1}x pagination pages `);
+            for (let i = 2; i <= paginationCount; i++) {
+              params.page = i;
+              await requestQueue.addRequest(
+                {
+                  url: "https://services.mybcapps.com/bc-sf-filter/filter",
+                  uniqueKey: Math.random().toString(),
+                  userData: {
+                    label: "COLLECTION",
+                    title,
+                    params
+                  }
+                },
+                { forefront: true }
+              );
             }
           }
           break;
-        default:
-          await handleStart($, crawlContext);
       }
     },
-    handleFailedRequestFunction: async ({ request }) => {
-      stats.failed++;
+    async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
+  /*  const crawler = new Apify.PlaywrightCrawler({
+      requestQueue,
+      proxyConfiguration,
+      maxConcurrency: development ? 1 : maxConcurrency,
+      maxRequestRetries,
+      useSessionPool: true,
+      persistCookiesPerSession: true,
+      navigationTimeoutSecs: 120,
+      handlePageTimeoutSecs: 600,
+      launchContext: {
+        useChrome: true,
+        launchOptions: {
+          headless: !development
+        }
+      },
+      handlePageFunction: async context => {
+        const { request, response, page } = context;
+        const {
+          url,
+          userData: { label }
+        } = request;
+        if (label === "START") {
+          await page.waitForSelector("li.nav-nested__link-parent");
+        } else {
+          await page.waitForLoadState("networkidle", { timeout: 0 });
+        }
+        //await page.waitForSelector(".product-box__price-bundle");
+        //await page.waitForSelector("ul.pagination");
+        const body = await page.content();
+        const $ = cheerio.load(body);
+        switch (label) {
+          case "LIST":
+            await handleList($, crawlContext);
+            break;
+          case "DETAIL":
+            const product = await handleDetail($, crawlContext, country);
+            if (product.itemId !== null && product.currentPrice !== null) {
+              crawlContext.stats.totalItems += 1;
+              if (!processedIds.has(product.itemId)) {
+                processedIds.add(product.itemId);
+                promiseList.push(
+                  Apify.pushData(product),
+                  uploadToS3(
+                    s3,
+                    `okay.${country.toLowerCase()}`,
+                    s3FileNameSync(product),
+                    "jsonld",
+                    toProduct(product, {})
+                  )
+                );
+                crawlContext.stats.items += 1;
+                if (promiseList.length >= 100) {
+                  await Promise.all(promiseList);
+                  promiseList = [];
+                }
+              } else {
+                crawlContext.stats.itemsDuplicity += 1;
+              }
+            }
+            break;
+          default:
+            await handleStart($, crawlContext);
+        }
+      },
+      handleFailedRequestFunction: async ({ request }) => {
+        stats.failed++;
+        log.error(`Request ${request.url} failed multiple times`, request);
+      }
+    });*/
   /*  const crawler = new Apify.CheerioCrawler({
       requestQueue,
       proxyConfiguration,
