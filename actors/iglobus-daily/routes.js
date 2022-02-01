@@ -67,8 +67,8 @@ exports.handleDetail = async ({ request, $ }) => {
   const result = {};
   result.itemId = $("#detail-container").attr("data-stock-item-code");
   result.itemName = $("h1").eq(0).text();
-  result.itemImgUrl = $("#detail-container").find("img").attr("src");
-  result.itemCategoryPage = $(".breadcrumb li")
+  result.img = $("#detail-container").find("img").attr("src");
+  result.category = $(".breadcrumb li")
     .map(function () {
       return $(this).text().trim();
     })
@@ -95,27 +95,16 @@ exports.handleDetail = async ({ request, $ }) => {
   result.discounted = result.currentPrice < result.originalPrice;
   result.currency = "CZK";
   //Check if item is available
-  const itemAvailability = $(".product-buy").attr("data-availability");
-
-  //Format item detail for function toProduct()
-  const detail = {};
-  detail.itemId = result.itemId;
-  detail.itemName = result.itemName;
-  detail.itemUrl = result.itemUrl;
-  detail.img = result.itemImgUrl;
-  detail.category = result.itemCategoryPage;
-  detail.inStock = itemAvailability === "skladem";
-  detail.currentPrice = result.currentPrice;
-  detail.currency = result.currency;
+  result.instStock = $(".product-buy").attr("data-availability") === "skladem";
 
   await Promise.all([
     Apify.pushData(result),
     uploadToS3(
       s3,
       "iglobus.cz",
-      await s3FileName(detail),
+      await s3FileName(result),
       "jsonld",
-      toProduct(detail, { priceCurrency: "CZK" })
+      toProduct(result, { priceCurrency: "CZK" })
     )
   ]);
 };
