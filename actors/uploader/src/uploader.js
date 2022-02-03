@@ -27,7 +27,10 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
         body
       });
       console.log(`HTTP ${resp.status}`);
-      if (!resp.ok) console.log(await resp.json());
+      if (!resp.ok) {
+        const {message} = await resp.json();
+        throw new Error(message);
+      }
       const elapsed = ((Date.now() - start) / 1000).toFixed(2);
       const { value, unit } = byteSize(size);
       console.log(`Uploaded ${value}${unit} to ${tableId} in ${elapsed}s.`);
