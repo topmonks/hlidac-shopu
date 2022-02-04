@@ -141,24 +141,24 @@
 
           <link rel="stylesheet" href="/assets/css/cards.css" />
           <div class="mdc-layout-grid__cell">
-                      <div class="hs-card">
-                        <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
-                          {% set analyza2020 = images["analyza-2020.png"]["public_id"] %}
-                          <img alt="Analýza 2020"
-                            width="340"
-                            height="170"
-                            class="responsive"
-                            src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                            srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
-                                    {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
-                                    {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                            loading="lazy"
-                            role="presentation">
-                          <h3>BLACK FRIDAY ANALÝZA 2020</h3>
-                          <p>Letošní Black Friday byl na největších českých e-shopech co do počtu nabízených produktů a velikosti&hellip;</p>
-                        </a>
-                      </div>
-                    </div>
+            <div class="hs-card">
+              <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
+                {% set analyza2020 = images["analyza-2020.png"]["public_id"] %}
+                <img alt="Analýza 2020"
+                  width="340"
+                  height="170"
+                  class="responsive"
+                  src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                  srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                          {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                          {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                  loading="lazy"
+                  role="presentation">
+                <h3>BLACK FRIDAY ANALÝZA 2020</h3>
+                <p>Letošní Black Friday byl na největších českých e-shopech co do počtu nabízených produktů a velikosti&hellip;</p>
+              </a>
+            </div>
+          </div>
           <div class="mdc-layout-grid__cell">
             <div class="hs-card">
               <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
@@ -234,7 +234,7 @@
             <ul>
               <li>
                 <a
-                  href="https://public.tableau.com/app/profile/alena.me.ov./viz/TOPSLEVY/Dashboard1"
+                  href="https://public.tableau.com/app/profile/alena.me.ov./viz/TOP_SLEVY/Dashboard1"
                   target="tableau"
                 >TOP Slevy (Czechitas)</a>
               </li>
