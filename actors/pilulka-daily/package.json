@@ -5,15 +5,15 @@
   "author": "TopMonks s.r.o. & contributors",
   "license": "EPL-2.0",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.48.0",
-    "@aws-sdk/client-s3": "^3.48.0",
+    "@aws-sdk/client-cloudfront": "^3.49.0",
+    "@aws-sdk/client-s3": "^3.49.0",
     "@hlidac-shopu/actors-common": "^1.1.8",
     "apify": "^2.2.1",
     "modern-random-ua": "^1.0.3"
   },
   "devDependencies": {
-    "@types/node": "^16.11.21",
-    "apify-cli": "^0.6.5"
+    "@types/node": "^16.11.22",
+    "apify-cli": "^0.6.7"
   },
   "scripts": {
     "start": "node src/main.js"
