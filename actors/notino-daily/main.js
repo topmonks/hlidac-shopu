@@ -80,12 +80,18 @@ Apify.main(async () => {
     itemsDuplicity: 0
   };
 
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
-    maxConcurrency,
+    maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     sessionPoolOptions: {

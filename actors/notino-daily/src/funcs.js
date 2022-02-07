@@ -21,6 +21,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 
 const processedIds = new Set();
+
 async function pushProducts(products, country, stats) {
   const requests = [];
   let count = 0;
@@ -62,6 +63,7 @@ function extendCheerio($) {
   };
   return $;
 }
+
 /**
  *
  * @param {Cheerio} $
@@ -137,11 +139,12 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
     }
   }
   log.info(`Found categories ${links.length}`);
+
   if (links.length === 0) {
     await Apify.setValue("empty-categories", $("body").html());
     throw "empty categories";
   }
-  if (input && input.development) {
+  if (input && input.development && input.debug) {
     links = links.slice(0, 1);
     log.info("Development mode, find products only in 1 category.");
   }
@@ -200,13 +203,27 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
   if (categoryPages.currentPage === 1) {
     log.debug(`total pages number: ${categoryPages.nextPages.length + 1}`);
     for (const nextPage of categoryPages.nextPages) {
-      await requestQueue.addRequest({
-        url: nextPage.url,
-        userData: { label: CATEGORY_PAGE }
-      });
+      await requestQueue.addRequest(
+        {
+          url: nextPage.url,
+          userData: { label: CATEGORY_PAGE }
+        },
+        { forefront: true }
+      );
       stats.pages += 1;
     }
   }
+
+  const actionsUrls = $("div#productListWrapper div")
+    .map(function () {
+      if ($(this).attr("data-product")) {
+        return $(this).find("a").attr("href");
+      }
+    })
+    .get();
+  log.debug(
+    `${actionsUrls.length} action products found on page number ${categoryPages.currentPage}`
+  );
   const productsUrls = $("#productsList li a")
     .map((i, el) => $(el).attr("href"))
     .get();
@@ -216,10 +233,10 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
   // if ((await inputPromise).testMode) {
   //     return;
   // }
-
   //  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+  const mergedUrls = actionsUrls.concat(productsUrls);
   const rootUrl = getRootUrl(input);
-  for (let productUrl of productsUrls) {
+  for (let productUrl of mergedUrls) {
     productUrl =
       productUrl.search(/notino\.[cz|sk]/) < 0
         ? `${rootUrl}${productUrl}`
@@ -264,6 +281,7 @@ const handleProductInDetailPage = async (
   stats
 ) => {
   const results = [];
+
   async function handleProductUsingWindowObject() {
     log.debug("Handled by windowObject");
     const dataStringFromScriptTag = await getScriptContent(
@@ -359,6 +377,7 @@ const handleProductInDetailPage = async (
       global.crawledProducts++;
     }
   }
+
   async function handleProductUsingHTML() {
     log.debug("Handled by HTML");
     if (!$('a[href="#variants"]').exists()) {
@@ -405,6 +424,7 @@ const handleProductInDetailPage = async (
       global.crawledProducts++;
     }
   }
+
   if ($.html().includes('id="__APOLLO_STATE__"')) {
     await handleProductUsingWindowObject();
   } else if ($('a[href="#variants"]').exists()) {
@@ -466,6 +486,7 @@ const handlePageFunction = async (
   stats
 ) => {
   //  log.info(`Page url ${request.url}, stats ${JSON.stringify(stats)}`);
+  log.info(`Processing ${request.url}, ${request.userData.label}`);
   const { statusCode } = response;
   if (![404, 200].includes(statusCode)) {
     session.retire();
