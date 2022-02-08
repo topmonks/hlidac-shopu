@@ -40,7 +40,7 @@ Apify.main(async () => {
     maxConcurrency = 10,
     maxRequestRetries = 3
   } = input ?? {};
-  if (development || debug) {
+  if (debug) {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
   log.debug(
@@ -95,7 +95,7 @@ Apify.main(async () => {
     maxRequestRetries,
     useSessionPool: true,
     sessionPoolOptions: {
-      maxPoolSize: 20
+      maxPoolSize: 1000
     },
     ignoreSslErrors: true,
     persistCookiesPerSession: true,

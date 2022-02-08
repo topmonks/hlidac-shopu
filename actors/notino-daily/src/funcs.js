@@ -215,37 +215,88 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
     }
   }
   if (page) {
+    const rootUrl = getRootUrl(input);
     const productsUrls = $("li.item");
-    const productsBlocks = [];
+    const requests = [];
+    const products = [];
+    const productsDetail = [];
     productsUrls.each(function () {
       const id = $(this).attr("data-product-code");
-      const url = $(this).find("a").attr("href");
       if (!queueIds.has(id)) {
         queueIds.add(id);
-        productsBlocks.push(url);
+        const url = $(this).find("a").attr("href");
+
+        if ($(this).find("a").attr("data-datalayer")) {
+          const jsonData = JSON.parse($(this).find("a").attr("data-datalayer"));
+          if (!jsonData.ecommerce.click.products[0].inAction) {
+            //Product is not in action, we have all information what we need
+            const item = {};
+            item.itemId = id;
+            item.itemUrl =
+              url.search(/notino\.[cz|sk]/) < 0 ? `${rootUrl}${url}` : url;
+            item.itemName = jsonData.ecommerce.click.products[0].name;
+            item.img = $(this).find("img").attr("data-src");
+            item.originalPrice = jsonData.ecommerce.click.products[0].fullPrice;
+            item.currentPrice = jsonData.ecommerce.click.products[0].fullPrice;
+            item.currency = jsonData.ecommerce.currencyCode;
+            item.discounted = false;
+            item.inStock = true;
+            item.category = jsonData.ecommerce.click.products[0].type;
+            stats.items++;
+            products.push(item);
+          } else {
+            //Product missing jsonData, we need scrape detail
+            productsDetail.push(url);
+          }
+        } else {
+          //Product is in action, we need scrape detail for original price
+          productsDetail.push(url);
+        }
+      } else {
+        stats.itemsDuplicity++;
       }
     });
     // if ((await inputPromise).testMode) {
     //     return;
     // }
     //  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
-    log.debug(
-      `${productsBlocks.length}/${productsUrls.length} unique products found on page number ${page}`
-    );
-    const rootUrl = getRootUrl(input);
-    for (let productBlock of productsBlocks) {
-      const productUrl =
-        productBlock.search(/notino\.[cz|sk]/) < 0
-          ? `${rootUrl}${productBlock}`
-          : productBlock;
-      //    stats.items++;
-      stats.pages++;
-      await requestQueue.addRequest(
-        {
-          url: productUrl,
-          userData: { label: DETAIL_PAGE }
-        },
-        { forefront: false }
+    if (productsDetail.length > 0) {
+      log.debug(
+        `${productsDetail.length}/${productsUrls.length} unique products requested for detail on page number ${page}`
+      );
+      for (let productDetail of productsDetail) {
+        const productUrl =
+          productDetail.search(/notino\.[cz|sk]/) < 0
+            ? `${rootUrl}${productDetail}`
+            : productDetail;
+        //    stats.items++;
+        stats.pages++;
+        await requestQueue.addRequest(
+          {
+            url: productUrl,
+            userData: { label: DETAIL_PAGE }
+          },
+          { forefront: false }
+        );
+      }
+    }
+    if (products.length > 0) {
+      for (const product of products) {
+        requests.push(
+          Apify.pushData(product),
+          uploadToS3(
+            s3,
+            `okay.${input.country.toLowerCase()}`,
+            await s3FileName(product),
+            "jsonld",
+            toProduct(product, {})
+          )
+        );
+      }
+      // await all requests, so we don't end before they end
+      await Promise.allSettled(requests);
+      log.debug(
+        `${products.length}/${productsUrls.length} unique products parsed on page number ${page}`
       );
     }
     stats.categoriesDone++;
@@ -483,7 +534,6 @@ const handlePageFunction = async (
   proxyConfiguration,
   stats
 ) => {
-  //  log.info(`Page url ${request.url}, stats ${JSON.stringify(stats)}`);
   log.info(`Processing ${request.url}, ${request.userData.label}`);
   const { statusCode } = response;
   if (![404, 200].includes(statusCode)) {
