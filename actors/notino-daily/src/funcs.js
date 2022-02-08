@@ -21,6 +21,7 @@ const {
 } = require("@hlidac-shopu/actors-common/product.js");
 
 const processedIds = new Set();
+const queueIds = new Set();
 
 async function pushProducts(products, country, stats) {
   const requests = [];
@@ -181,10 +182,10 @@ const getCategoryPages = $ => {
       log.debug(
         `a lot of pages in this category: ${first} => ${last}; ${urlExample}`
       );
-    for (let i = first; i < last; i++) {
+    for (let i = first - 1; i <= last; i++) {
       pages.nextPages.push({
         id: i,
-        url: urlExample.replace(/\?f=(\d*)-/g, `?f=${i}-`)
+        url: `${urlExample.replace(/\?f=(\d*)-(\d*)/g, `?f=${i}-${3}`)}&ac=${i}`
       });
     }
   } else {
@@ -197,61 +198,58 @@ const getCategoryPages = $ => {
 };
 
 const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
-  log.debug("Processing products in category page");
+  const { page } = request.userData;
   const categoryPages = getCategoryPages($);
-  log.debug(`current page: ${categoryPages.currentPage}`);
   if (categoryPages.currentPage === 1) {
-    log.debug(`total pages number: ${categoryPages.nextPages.length + 1}`);
+    log.debug("Processing pagination in category page");
+    log.debug(`Total pages number: ${categoryPages.nextPages.length + 1}`);
     for (const nextPage of categoryPages.nextPages) {
       await requestQueue.addRequest(
         {
           url: nextPage.url,
-          userData: { label: CATEGORY_PAGE }
+          userData: { label: CATEGORY_PAGE, page: nextPage.id }
         },
         { forefront: true }
       );
       stats.pages += 1;
     }
   }
-
-  const actionsUrls = $("div#productListWrapper div")
-    .map(function () {
-      if ($(this).attr("data-product")) {
-        return $(this).find("a").attr("href");
+  if (page) {
+    const productsUrls = $("li.item");
+    const productsBlocks = [];
+    productsUrls.each(function () {
+      const id = $(this).attr("data-product-code");
+      const url = $(this).find("a").attr("href");
+      if (!queueIds.has(id)) {
+        queueIds.add(id);
+        productsBlocks.push(url);
       }
-    })
-    .get();
-  log.debug(
-    `${actionsUrls.length} action products found on page number ${categoryPages.currentPage}`
-  );
-  const productsUrls = $("#productsList li a")
-    .map((i, el) => $(el).attr("href"))
-    .get();
-  log.debug(
-    `${productsUrls.length} products found on page number ${categoryPages.currentPage}`
-  );
-  // if ((await inputPromise).testMode) {
-  //     return;
-  // }
-  //  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
-  const mergedUrls = actionsUrls.concat(productsUrls);
-  const rootUrl = getRootUrl(input);
-  for (let productUrl of mergedUrls) {
-    productUrl =
-      productUrl.search(/notino\.[cz|sk]/) < 0
-        ? `${rootUrl}${productUrl}`
-        : productUrl;
-    //    stats.items++;
-    stats.pages++;
-    await requestQueue.addRequest(
-      {
-        url: productUrl,
-        userData: { label: DETAIL_PAGE }
-      },
-      { forefront: true }
+    });
+    // if ((await inputPromise).testMode) {
+    //     return;
+    // }
+    //  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+    log.debug(
+      `${productsBlocks.length}/${productsUrls.length} unique products found on page number ${page}`
     );
+    const rootUrl = getRootUrl(input);
+    for (let productBlock of productsBlocks) {
+      const productUrl =
+        productBlock.search(/notino\.[cz|sk]/) < 0
+          ? `${rootUrl}${productBlock}`
+          : productBlock;
+      //    stats.items++;
+      stats.pages++;
+      await requestQueue.addRequest(
+        {
+          url: productUrl,
+          userData: { label: DETAIL_PAGE }
+        },
+        { forefront: false }
+      );
+    }
+    stats.categoriesDone++;
   }
-  stats.categoriesDone++;
 };
 
 /**
