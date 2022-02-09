@@ -421,6 +421,7 @@ const handleProductInDetailPage = async (
       if (product.currentPrice === null) {
         product.currentPrice = "Price not defined.";
       }
+      product.inStock = true;
       results.push(product);
       global.crawledProducts++;
     }
@@ -467,6 +468,7 @@ const handleProductInDetailPage = async (
       if (product.currentPrice === null) {
         product.currentPrice = "Price not defined.";
       }
+      product.inStock = true;
       results.push(product);
       global.crawledProducts++;
     }
