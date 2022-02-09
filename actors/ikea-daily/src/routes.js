@@ -22,6 +22,7 @@ const {
 
 exports.handleSitemap = async ({ body, crawler }) => {
   const links = siteMapToLinks(body);
+  global.stats.categories += links.length;
   for (const url of links) {
     await crawler.requestQueue.addRequest({
       url,
@@ -100,7 +101,7 @@ exports.handleList = async ({ request, body, crawler }) => {
     });
     // handle product variants
     for (const variant of productVariants) {
-      productData.itemId = variant.id;
+      productData.itemId = variant.itemNoGlobal;
       productData.itemUrl = variant.pipUrl;
       productData.variantName = variant.imageAlt.substr(
         variant.imageAlt.indexOf(productData.productTypeName) +
@@ -158,7 +159,7 @@ exports.handleDetail = async ({ $ }, productData) => {
     category: categories,
     slug: slug
   };
-
+  global.stats.items++;
   await Apify.pushData(productData);
   await uploadToS3(
     s3,

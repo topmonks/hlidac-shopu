@@ -26,13 +26,19 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     development = false,
+    test = false,
     maxRequestRetries = 3,
-    maxConcurrency = 35,
+    maxConcurrency = 100,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
     type = "DAILY"
   } = input ?? {};
   global.country = country;
+
+  global.stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    items: 0
+  };
 
   // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
   let sitemap = "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml";
@@ -74,7 +80,14 @@ Apify.main(async () => {
 
   const requestQueue = await Apify.openRequestQueue();
 
-  if (type === "DAILY") {
+  if (development && test) {
+    await requestQueue.addRequest({
+      url: "https://www.ikea.com/cz/cs/cat/rozkladaci-sedaci-soupravy-20874/",
+      userData: {
+        label: "CATEGORY"
+      }
+    });
+  } else if (type === "DAILY") {
     await requestQueue.addRequest({
       url: sitemap,
       userData: {
@@ -157,17 +170,22 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
 
-  if (type === "DAILY") {
-    await invalidateCDN(
-      cloudfront,
-      "EQYSHWUECAQC9",
-      `ikea.${country.toLowerCase()}`
-    );
-    log.info("invalidated Data CDN");
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
 
-    await uploadToKeboola(`ikea_${country.toLowerCase()}`);
-  } else if (type === "COUNT") {
-    await Apify.pushData({ numberOfProducts: productCount });
+  if (!development) {
+    if (type === "DAILY") {
+      await invalidateCDN(
+        cloudfront,
+        "EQYSHWUECAQC9",
+        `ikea.${country.toLowerCase()}`
+      );
+      log.info("invalidated Data CDN");
+
+      await uploadToKeboola(`ikea_${country.toLowerCase()}`);
+    } else if (type === "COUNT") {
+      await Apify.pushData({ numberOfProducts: productCount });
+    }
   }
 
   log.info("Finished.");

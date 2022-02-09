@@ -55,7 +55,10 @@ exports.fillProductData = (product, numberOfVariants) => {
     // for individual shopping places
     inStock: true,
     // if the product is a variant, use variantId else use productId
-    itemId: numberOfVariants !== 0 ? product.id : product.itemNoGlobal,
+    itemId:
+      numberOfVariants !== 0
+        ? product.id.replace("s", "")
+        : product.itemNoGlobal,
     // description: '',
     img: product.mainImageUrl,
     sale: 0
