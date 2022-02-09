@@ -398,8 +398,7 @@ const handleProductInDetailPage = async (
         currentPrice: null,
         originalPrice: null,
         currency: null,
-        img: null,
-        variantCount: variants.length
+        img: null
       };
       if (mainImage.length !== 0) {
         product.img = mainImage.attr("src");
@@ -446,8 +445,7 @@ const handleProductInDetailPage = async (
         itemName: `${$(variant).find('input[name="NameItem"]').attr("value")}`,
         discounted: false,
         currentPrice: 0,
-        originalPrice: null,
-        variantCount: variants.length
+        originalPrice: null
       };
 
       if (mainImage.length !== 0) {
