@@ -14096,7 +14096,7 @@ __metadata:
     gulp-babel: ^8.0.0
     gulp-esbuild: ^0.10.0
     gulp-mode: ^1.1.0
-    linkedom: ^0.13.2
+    linkedom: ^0.14.0
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
     prettier: ^2.5.1
@@ -15946,16 +15946,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "linkedom@npm:0.13.2"
+"linkedom@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "linkedom@npm:0.14.0"
   dependencies:
     css-select: ^4.2.1
     cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^7.2.0
     uhyphen: ^0.1.0
-  checksum: 59a613b829b607fac57e326a37287469f53d5c99d31c0a3f3cfb02b3f7f945448afcabaad5e2e7b1950105a01fb1feed0090bf9307dee489106f3429c7cd9748
+  checksum: ef1bdcd27a1bf7713d2418c58e42d4ebbf9489059c7edc2abb985a0e5bcf976605d17f42b8f1543245d44dffe2fb4aa15c3c603b9b5b397723e09236f63e830f
   languageName: node
   linkType: hard
 
