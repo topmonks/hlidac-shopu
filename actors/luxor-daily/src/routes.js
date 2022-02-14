@@ -1,46 +1,53 @@
-const Apify = require('apify');
-const { URL } = require('url');
+const Apify = require("apify");
+const { URL } = require("url");
 
 // const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 
 const {
-    utils: { log }
+  utils: { log }
 } = Apify;
 
 const WEB_URL = `https://luxor.cz`;
 
 exports.handleStart = async ({ request, $, requestQueue }) => {
+  const { body } = await Apify.utils.requestAsBrowser({
+    url: "https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1"
+  });
 
-    const { body } = await Apify.utils.requestAsBrowser({ url: 'https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1' });
+  let categories = JSON.parse(body).data;
 
-    let categories = JSON.parse(body).data;
+  for (const category in categories) {
+    console.log(categories[category].slug);
 
-    for(const category in categories) {
-        console.log(categories[category].slug);
+    const slug = categories[category].slug;
 
-        const slug = categories[category].slug;
+    const { body } = await Apify.utils.requestAsBrowser({
+      url:
+        "https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=" +
+        slug
+    });
 
-        const { body } = await Apify.utils.requestAsBrowser({
-            url: 'https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=' + slug
-        });
+    const products = JSON.parse(body).data;
 
-        const products = JSON.parse(body).data;
+    console.log(products);
 
-        console.log(products);
+    for (const product in products) {
+      console.log(
+        products[product].author,
+        products[product].title,
+        products[product].publisher,
+        products[product].slug
+      );
+      //console.log(products[product].sum_price[0]);
+      console.log(products[product].current_variant_price_group);
 
-        for(const product in products) {
-            console.log(products[product].author, products[product].title, products[product].publisher, products[product].slug)
-            //console.log(products[product].sum_price[0]);
-            console.log(products[product].current_variant_price_group);
+      const prices = products[product].current_variant_price_group;
+      for (const price in prices) {
+        console.log(prices[price]);
+      }
+    }
 
-            const prices = products[product].current_variant_price_group;
-            for(const price in prices) {
-                console.log(prices[price]);
-            }
-        }
-
-
-        /*
+    /*
         requestQueue.addRequest({
             url: `https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=` + slug,
             userData: {
@@ -50,10 +57,10 @@ exports.handleStart = async ({ request, $, requestQueue }) => {
         });
         */
 
-        break;
-    }
+    break;
+  }
 
-    /*
+  /*
     const categories = $('.fqo5ryo .fowumum');
 
     for (const category of categories) {
@@ -93,14 +100,14 @@ exports.handleStart = async ({ request, $, requestQueue }) => {
 };
 
 exports.handleList = async ({ request, $, requestQueue }) => {
-    // Handle pagination
+  // Handle pagination
 
-    //const subcategories = $('body').text();
+  //const subcategories = $('body').text();
 
-    console.log(request);
-    console.log($);
+  console.log(request);
+  console.log($);
 
-    /*
+  /*
     const subcategories = $('.f1xplvo1');
 
     for (const subcategories of subcategory) {
@@ -124,5 +131,5 @@ exports.handleList = async ({ request, $, requestQueue }) => {
 };
 
 exports.handleDetail = async ({ request, $ }, requestQueue) => {
-    // Handle details
+  // Handle details
 };
