@@ -198,7 +198,7 @@ Apify.main(async () => {
 
   function isMalformedUrl(url, countryCode) {
     //TODO temporary fix
-    const countryDomain = countryCode == 'uk' ? 'co.uk' : countryCode;
+    const countryDomain = countryCode == "uk" ? "co.uk" : countryCode;
     if (!url.includes(`alza.${countryDomain}/`)) {
       return true;
     }
