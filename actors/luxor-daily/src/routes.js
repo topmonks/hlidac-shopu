@@ -8,6 +8,7 @@ const {
 } = Apify;
 
 const WEB_URL = `https://luxor.cz`;
+const PER_PAGE = 24;
 
 exports.handleStart = async ({ request, $, requestQueue }) => {
   const { body } = await Apify.utils.requestAsBrowser({
@@ -15,37 +16,49 @@ exports.handleStart = async ({ request, $, requestQueue }) => {
   });
 
   let categories = JSON.parse(body).data;
+  let totalCount = 0;
 
   for (const category in categories) {
     console.log(categories[category].slug);
 
     const slug = categories[category].slug;
 
-    const { body } = await Apify.utils.requestAsBrowser({
-      url:
-        "https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=" +
-        slug
-    });
+    let page = 1;
+    do {
+      console.log("Processing page", page);
 
-    const products = JSON.parse(body).data;
+      const { body } = await Apify.utils.requestAsBrowser({
+        url: `https://mw.luxor.cz/api/v1/products?page=${page}&size=${PER_PAGE}&sort=revenue%3Adesc&filter%5Bcategory%5D=${slug}`
+      });
+      const products = JSON.parse(body).data;
+      totalCount = JSON.parse(body).total_count;
 
-    console.log(products);
+      for (const product in products) {
+        console.log(
+          products[product].author,
+          products[product].title,
+          products[product].publisher,
+          products[product].slug
+        );
+        //console.log(products[product].sum_price[0]);
+        console.log(products[product].current_variant_price_group);
 
-    for (const product in products) {
-      console.log(
-        products[product].author,
-        products[product].title,
-        products[product].publisher,
-        products[product].slug
-      );
-      //console.log(products[product].sum_price[0]);
-      console.log(products[product].current_variant_price_group);
-
-      const prices = products[product].current_variant_price_group;
-      for (const price in prices) {
-        console.log(prices[price]);
+        const prices = products[product].current_variant_price_group;
+        for (const price in prices) {
+          console.log(prices[price]);
+        }
       }
-    }
+
+      console.log(products);
+      console.log("totalCount", totalCount);
+
+      page++;
+
+      if (page > 2) {
+        console.log("DEBUG BREAK / 2 pages only");
+        break;
+      }
+    } while (page * PER_PAGE < totalCount);
 
     /*
         requestQueue.addRequest({
@@ -57,6 +70,7 @@ exports.handleStart = async ({ request, $, requestQueue }) => {
         });
         */
 
+    console.log("DEBUG BREAK / category");
     break;
   }
 
