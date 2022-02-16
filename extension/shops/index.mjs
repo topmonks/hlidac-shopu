@@ -14,6 +14,7 @@ export * from "./knihydobrovsky.mjs";
 export * from "./kosik.mjs";
 export * from "./lekarna.mjs";
 export * from "./mall.mjs";
+export * from "./megapixel.mjs";
 export * from "./mironet.mjs";
 export * from "./mountfield.mjs";
 export * from "./notino.mjs";
