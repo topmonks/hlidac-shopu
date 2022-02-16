@@ -51,6 +51,7 @@
     ]
   },
   "permissions": [
+    "https://api.hlidacshopu.cz/v1/detail",
     "https://api2.hlidacshopu.cz/detail"
   ],
   "content_scripts": [
