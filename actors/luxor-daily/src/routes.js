@@ -1,5 +1,34 @@
+/*
+// Kategorie produktu
+// https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1
+// .data
+// obsahuje id (806), title (Knihy), slug (knihy), parent (
+
+// Produkty na stránce
+// https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=knihy
+// .data[0]
+// id(393858), author(Karel Gott), in_stock (true), description, title(Má cesta za štěstím),
+// current_variant_price_group[0]{with_vat(1399), without_vat(1271.8181), currency(CZK), type(RECOMMENDED, SALE)}
+
+// Subkategorie knih
+// https://mw.luxor.cz/api/v1/categories/slug/knihy
+// .data.children
+// obsahuje id (224), title (Beletrie), slug (knihy-beletrie)
+*/
+
 const Apify = require("apify");
 const { URL } = require("url");
+const { gotScraping } = require("got-scraping");
+//const tools = require("./tools");
+
+const {
+  URL_TEMPLATE_PRODUCT_LIST,
+  URL_TEMPLATE_CATEGORY,
+  URL_TEMPLATE_PRODUCT,
+  URL_TEMPLATE_PAGE_URL,
+  URL_IMAGE_BASE,
+  PRODUCTS_PER_PAGE
+} = require("./const");
 
 // const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 
@@ -7,143 +36,209 @@ const {
   utils: { log }
 } = Apify;
 
-const WEB_URL = `https://luxor.cz`;
-const PER_PAGE = 24;
+exports.handleStart = async ({ request, requestQueue }) => {
+  console.log("---\nhandleStart");
 
-exports.handleStart = async ({ request, $, requestQueue }) => {
-  const { body } = await Apify.utils.requestAsBrowser({
-    url: "https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1"
+  const { body } = await gotScraping({
+    responseType: "json",
+    url: URL_TEMPLATE_CATEGORY
   });
 
-  let categories = JSON.parse(body).data;
-  let totalCount = 0;
+  //console.log(body.data);
+
+  const categories = body.data;
+
+  // First page for all categories
+  const PAGE = 1;
 
   for (const category in categories) {
-    console.log(categories[category].slug);
-
     const slug = categories[category].slug;
 
-    let page = 1;
-    do {
-      console.log("Processing page", page);
+    log.debug(slug);
 
-      const { body } = await Apify.utils.requestAsBrowser({
-        url: `https://mw.luxor.cz/api/v1/products?page=${page}&size=${PER_PAGE}&sort=revenue%3Adesc&filter%5Bcategory%5D=${slug}`
-      });
-      const products = JSON.parse(body).data;
-      totalCount = JSON.parse(body).total_count;
+    let url = URL_TEMPLATE_PRODUCT_LIST;
+    url = url
+      .replace(/{PAGE}/g, PAGE)
+      .replace(/{PRODUCTS_PER_PAGE}/g, PRODUCTS_PER_PAGE)
+      .replace(/{SLUG}/g, slug);
 
-      for (const product in products) {
-        console.log(
-          products[product].author,
-          products[product].title,
-          products[product].publisher,
-          products[product].slug
-        );
-        //console.log(products[product].sum_price[0]);
-        console.log(products[product].current_variant_price_group);
-
-        const prices = products[product].current_variant_price_group;
-        for (const price in prices) {
-          console.log(prices[price]);
-        }
+    const req = {
+      url,
+      userData: {
+        label: "LIST",
+        slug: slug,
+        page: 1
       }
+    };
+    console.log("addRequest LIST / first page", req);
 
-      console.log(products);
-      console.log("totalCount", totalCount);
+    requestQueue.addRequest(req);
 
-      page++;
+    //log.debug("DEBUG BREAK / 1 category only");
+    //break;
+  }
+};
 
-      if (page > 2) {
-        console.log("DEBUG BREAK / 2 pages only");
-        break;
+exports.handleList = async ({ request, requestQueue }) => {
+  console.log("---\nhandleList", request);
+
+  const { body } = await gotScraping({
+    responseType: "json",
+    url: request.url
+  });
+
+  const products = body.data;
+  const productTotalCount = body.total_count;
+
+  for (const productIx in products) {
+    const { id, title, author, publisher, current_variant_price_group } =
+      products[productIx];
+
+    //console.log(products[productIx]);
+
+    const imgPath = products[productIx].hasOwnProperty("images")
+      ? products[productIx].images.length
+        ? products[productIx].images[0].url
+        : ""
+      : "";
+
+    let originalPrice = null;
+    let currentPrice = null;
+    let currency = "CZK";
+
+    const priceList = products[productIx].current_variant_price_group;
+    for (const priceIx in priceList) {
+      switch (priceList[priceIx].type) {
+        case "RECOMMENDED":
+          originalPrice = priceList[priceIx].with_vat;
+          currency = priceList[priceIx].currency;
+          break;
+
+        case "SALE":
+          currentPrice = priceList[priceIx].with_vat;
+          currency = priceList[priceIx].currency;
+          break;
       }
-    } while (page * PER_PAGE < totalCount);
+    }
 
-    /*
-        requestQueue.addRequest({
-            url: `https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=` + slug,
-            userData: {
-                label: 'LIST',
-                product: products[product]
-            }
-        });
-        */
+    const product = {
+      itemId: products[productIx].id,
+      itemUrl: URL_TEMPLATE_PRODUCT.replace(/{SLUG}/, products[productIx].slug),
+      itemName: products[productIx].title,
 
-    console.log("DEBUG BREAK / category");
-    break;
+      currency,
+      currentPrice,
+      originalPrice,
+
+      img: `${URL_IMAGE_BASE}${imgPath}`,
+      inStock: products[productIx].in_stock,
+      category: request.userData.slug,
+      slug: request.userData.slug,
+
+      author: products[productIx].author,
+      publisher: products[productIx].publisher,
+      prices: products[productIx].current_variant_price_group,
+      page: request.userData.page,
+      pageUrl: request.url
+
+      /*
+      itemId
+      itemCode
+      itemUrl
+      itemName
+      img
+      discounted,
+      originalPrice
+      currency
+      currentPrice
+      category
+      inStock
+      blackFriday
+      */
+    };
+
+    await Apify.pushData(product);
   }
 
   /*
-    const categories = $('.fqo5ryo .fowumum');
-
-    for (const category of categories) {
-        const categoryLink = $(category).attr('href');
-        console.log(categoryLink);
-
-        const url = new URL(WEB_URL + categoryLink);
-
-        console.log('URL', url);
-
-        // Kategorie produktu
-        // https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1
-        // .data
-        // obsahuje id (806), title (Knihy), slug (knihy), parent (
-
-        // Produkty na stránce
-        // https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=knihy
-        // .data[0]
-        // id(393858), author(Karel Gott), in_stock (true), description, title(Má cesta za štěstím),
-        // current_variant_price_group[0]{with_vat(1399), without_vat(1271.8181), currency(CZK), type(RECOMMENDED, SALE)}
-
-        // Subkategorie knih
-        // https://mw.luxor.cz/api/v1/categories/slug/knihy
-        // .data.children
-        // obsahuje id (224), title (Beletrie), slug (knihy-beletrie)
-
-        if(url.pathname.indexOf('products') > -1) {
-            await requestQueue.addRequest({
-                url: url.toString(),
-                userData: {
-                    label: 'LIST'
-                },
-            });
-        }
+  How to request detail if will be needed
+  const requestDetail = {
+    url,
+    userData: {
+      label: "DETAIL",
+      product
+      //slug: request.userData.slug
     }
-    */
+  };
+
+  console.log("addRequest DETAIL", requestDetail);
+
+  requestQueue.addRequest(requestDetail);
+  */
+
+  // Do next page request
+
+  const pageCount = Math.ceil(productTotalCount / PRODUCTS_PER_PAGE);
+
+  log.info(
+    "Current product page: " +
+      request.userData.page +
+      "/" +
+      pageCount +
+      " on slug " +
+      request.userData.slug
+  );
+
+  // (page * PRODUCTS_PER_PAGE < productTotalCount)
+  if (request.userData.page > 5) {
+    log.debug("DEBUG BREAK / 5 pages only from " + pageCount);
+    return;
+  }
+
+  const pageNext = request.userData.page + 1;
+
+  let url = URL_TEMPLATE_PRODUCT_LIST;
+  url = url
+    .replace(/{PAGE}/g, pageNext)
+    .replace(/{PRODUCTS_PER_PAGE}/g, PRODUCTS_PER_PAGE.toString())
+    .replace(/{SLUG}/g, request.userData.slug);
+
+  const pageUrl = URL_TEMPLATE_PAGE_URL.replace(/{PAGE}/g, pageNext);
+
+  const req = {
+    url: url,
+    userData: {
+      label: "LIST",
+      page: pageNext,
+      pageCount,
+      slug: request.userData.slug,
+      pageUrl,
+      note: "NextPage"
+    }
+  };
+
+  console.log("addRequest LIST", req);
+
+  requestQueue.addRequest(req);
+
+  //console.log("DEBUG BREAK / Lists only");
+  //return;
 };
 
-exports.handleList = async ({ request, $, requestQueue }) => {
-  // Handle pagination
+exports.handleDetail = async ({ request, requestQueue }) => {
+  console.log("---\nhandleDetail");
 
-  //const subcategories = $('body').text();
+  console.log("PRODUCT", request.product);
+  //request.product.author,
+  //request.product.title,
+  //request.product.publisher,
+  //request.product.slug
 
-  console.log(request);
-  console.log($);
+  //console.log(products[product].sum_price[0]);
+  console.log(request.userData.product.prices);
 
-  /*
-    const subcategories = $('.f1xplvo1');
-
-    for (const subcategories of subcategory) {
-        const categoryLink = $(subcategory).attr('href');
-        console.log(categoryLink);
-
-        const url = new URL(WEB_URL + categoryLink);
-
-        console.log('URL', url);
-
-        if (url.pathname.indexOf('products') > -1) {
-            await requestQueue.addRequest({
-                url: url.toString(),
-                userData: {
-                    label: 'LIST'
-                },
-            });
-        }
-    }
-    */
-};
-
-exports.handleDetail = async ({ request, $ }, requestQueue) => {
-  // Handle details
+  const prices = request.userData.product.prices;
+  for (const price in prices) {
+    console.log(prices[price]);
+  }
 };

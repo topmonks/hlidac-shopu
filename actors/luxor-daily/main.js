@@ -1,30 +1,62 @@
-/**
- * This template is a production ready boilerplate for developing with `CheerioCrawler`.
- * Use this to bootstrap your projects using the most up-to-date code.
- * If you're looking for examples or want to learn more, see README.
- */
-
 const Apify = require("apify");
-const { handleStart, handleList, handleDetail } = require("./src/routes");
+//const { S3Client } = require("@aws-sdk/client-s3");
+//const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
+
+/*
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
+*/
+
+//const { URL } = require("url");
 
 const {
-  utils: { log }
-} = Apify;
+  handleStart,
+  handleCategory,
+  handleList,
+  handleDetail
+} = require("./src/routes");
+
+const { URL_MAIN } = require("./src/const");
+
+const { log } = Apify.utils;
 
 Apify.main(async () => {
-  const { startUrls } = await Apify.getInput();
+  const input = await Apify.getInput();
 
-  const requestList = await Apify.openRequestList("start-urls", startUrls);
+  const {
+    development = true,
+    maxConcurrency = 1,
+    maxRequestRetries = 1
+  } = input ?? {};
+  let sources = [];
+  sources.push({
+    url: URL_MAIN,
+    userData: {
+      label: "START"
+    }
+  });
+
+  if (development) {
+    log.setLevel(log.LEVELS.DEBUG);
+  }
+
   const requestQueue = await Apify.openRequestQueue();
+  const requestList = await Apify.openRequestList("start-url", sources);
+
   //const proxyConfiguration = await Apify.createProxyConfiguration();
 
-  const crawler = new Apify.CheerioCrawler({
+  //const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
     //proxyConfiguration,
-    maxConcurrency: 1,
-    maxRequestRetries: 1,
-    handlePageFunction: async context => {
+    maxRequestRetries,
+    maxConcurrency: development ? 1 : maxConcurrency,
+    //handlePageFunction: async context => {
+    handleRequestFunction: async context => {
       const {
         url,
         userData: { label }
@@ -32,6 +64,8 @@ Apify.main(async () => {
       context.requestQueue = requestQueue;
       log.info("Page opened.", { label, url });
       switch (label) {
+        //case "CATEGORY":
+        //  return handleCategory(context);
         case "LIST":
           return handleList(context);
         case "DETAIL":
@@ -39,6 +73,10 @@ Apify.main(async () => {
         default:
           return handleStart(context);
       }
+    },
+    // If request failed 4 times then this function is executed
+    handleFailedRequestFunction: async ({ request }) => {
+      log.info(`Request ${request.url} failed ${maxRequestRetries} times`);
     }
   });
 
