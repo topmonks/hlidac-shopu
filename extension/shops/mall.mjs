@@ -39,7 +39,7 @@ export class Mall extends Shop {
       )
       .innerText.trim()
       .replace("a", "");
-    const title = document.querySelector("h1[itemprop=name]").innerText.trim();
+    const title = document.querySelector("h1.detail__title").innerText.trim();
     const currentPrice = cleanPrice(
       `[itemprop=price],
        .price__wrap__box__final`
