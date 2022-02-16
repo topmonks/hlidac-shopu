@@ -20,32 +20,14 @@
 
         <p>Na Hlídači shopů se snažíme pomoci lidem pochopit co se na e-shopech
           děje s&nbsp;cenami zboží. Dlouhodobě bojujeme proti zneužívání
-          přeškrtnuté (původní) ceny, kde vzniká nejvíce prostoru pro kreativní
+          přeškrtnuté (původní / referenční) ceny, kde vzniká nejvíce prostoru pro kreativní
           slevotvorbu.</p>
 
         <p>Naším cílem je, aby slevy na e-shopech byly férové a neklamaly
-          zákazníky. Proto jsme pro sezónu 2020&nbsp;připravili novou metodiku výpočtu
-          reálné&nbsp;slevy.</p>
-
-        <section id="puvodni">
-          <h3>Původní metodika</h3>
-
-          <p>Doposud jsme reálnou slevu počítali vůči <i>nejvyšší ceně, za kterou
-              se zboží prodávalo za posledních 90&nbsp;dní</i>. Je to často velký posun
-            oproti přeškrtnuté ceně udávané prodejcem, ale má i&nbsp;své slabiny.
-            Například se v&nbsp;ní ztratí skokové zdražování zboží před slevovou
-            akcí. Výsledná sleva pak pořád vypadá o&nbsp;dost zajímavěji než je
-            realita.</p>
-        </section>
-
-        <section id="nova">
-          <h3>Nová metodika</h3>
-
-          <p>O&nbsp;slabině původní metodiky jsme věděli už před rokem a dost
-            intenzivně jsme řešili co s&nbsp;tím. Ale nechali jsme tomu čas a <a
-              href="https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L2161&amp;qid=1604070938840&amp;from=EN">EU
-              v&nbsp;listopadu 2019&nbsp;přišla se směrnicí</a>,
-            jak chránit spotřebitele (The New Deal for Consumers).</p>
+          zákazníky. A s tím nám přišla v listopadu 2019 na pomoc <a
+              href="https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L2161&amp;qid=1604070938840&amp;from=EN">
+              EU se směrnicí</a>, 
+          jak chránit spotřebitele (The New Deal for Consumers).</p>
 
           <p>Pro nás <a
               href="https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L2161&amp;qid=1604070938840&amp;from=EN#d1e779-7-1">klíčová
@@ -64,29 +46,57 @@
               </li>
             </ol>
           </blockquote>
+          
+          <p>Členské státy mají implementovat tuto směrnici do svých zákonů do 22. května 2022. 
+            Znění novely českého zákona o ochraně spotřebitele, které šlo do připomínkového řízení, 
+            zní následovně:</p>
+          
+          <blockquote>
+            <p>§ 12a</p>
+            <ol>
+              <li>
+                Informace o slevě z ceny výrobku obsahuje informaci o nejnižší ceně výrobku uplatňované 
+                prodávajícím po dobu 30 dnů před poskytnutím slevy.
+              <li>
+                Je-li výrobek na trhu po dobu kratší než 30 dnů, obsahuje informace o slevě z ceny výrobku 
+                informaci o jeho nejnižší ceně uplatňované od uvedení výrobku na trh.
+              </li>
+              <li>
+                Zvyšuje-li se sleva z ceny postupně, obsahuje informace o slevě z ceny výrobku informaci o jeho 
+                ceně uplatňované prodávajícím před první poskytnutou slevou.
+              </li>
+            </ol>
+          </blockquote>
 
-          <p>Ačkoliv ještě tato směrnice nebyla implementována českou legislativou
-            (členské státy na to mají dva roky), věříme že vede k&nbsp;větší
-            férovosti, a tak jsme se ji rozhodli nasadit již nyní. Současně tím rádi
-            pomůžeme českým e-shopům se na novou směrnici připravit
-            v&nbsp;předstihu.</p>
+          <p>Ačkoliv ještě neznáme finální znění české novely, věříme že nová pravidla vedou k větší férovosti, 
+            a tak jsme se je rozhodli nasadit již nyní. Současně tím rádi pomůžeme českým e-shopům se na novou 
+            směrnici připravit v předstihu.</p>
 
-          <p>Jak už to tak u&nbsp;právních předpisů bývá, nejsou vždy neprůstřelné,
-            nebo řeší jen část problému. Při implementaci EU směrnice jsme zjitili,
-            že se vztahuje pouze na slevové akce. Ty mají svá specifika a musejí mít
-            jasně definovaný konec. To je informace, kterou v&nbsp;našich datech nemáme,
-            proto jsme implementovali následující&nbsp;model:</p>
+          <p>Jak už to tak u právních předpisů bývá, nejsou vždy neprůstřelné, nebo řeší jen část problému. 
+            Tušíme, že speciální případy bude každý e-shop řešit po svém. Nicméně základní pravidlo o výpočtu 
+            slevy v okamžiku zlevnění by mělo mít jednotný výklad. Na Hlídači shopů jsme prozatím implementovali 
+            následující model:</p>
 
-          <p>Pokud bylo zboží zlevněno, považujeme to za <b>slevovou akci</b> do doby,
+          <p>Pokud bylo zboží zlevněno, považujeme to za slevovou akci do doby,
             dokud nedojde ke zdražení, nebo pokud není sleva starší 30&nbsp;dní. Pak slevu
-            počítáme podle EU směrnice vůči <i>nejnižší ceně, za kterou se zboží
+            počítáme vůči <i>nejnižší ceně, za kterou se zboží
               prodávalo během 30&nbsp;dní před začátkem slevové akce</i>.</p>
 
           <p>Pokud je sleva starší 30&nbsp;dní nebo se s&nbsp;cenou hýbalo nahoru, považujeme
             slevu za tržní korekci cen. V&nbsp;takovém případě počítáme reálnou slevu
-            vůči běžné ceně. Za <b>běžnou cenu</b> považujeme <i>cenu takovou, za
+            vůči běžné ceně. Za běžnou cenu považujeme <i>cenu takovou, za
               kterou se zboží prodávalo nejčastěji za posledních 60&nbsp;dní</i>.</p>
-        </section>
+          
+          <p>Tímto jsme v souladu s EU směrnící a prvními dvěmi body českého předběžného znění. 
+            Třetí bod o vícenásobném zlevnění prozatím nereflektujeme, jelikož nedefinuje časové 
+            období mezi dalšími slevami. Situace, kdy pravidelně např. jednou za rok dojde ke zlevnění 
+            výrobku (a jinak se s cenou nehýba) a prodejce se může stále odkazovat na původní cenu před 
+            několika lety, nám příjde proti duchu EU směrnice.</p>
+
+          <p>Současně bychom uvítali definici časového období od začátku slevové akce (zlevnění výrobku), 
+            po které může prodejce stále uvádět slevu (“životnost slevy”). V naší metodice jsme definovali 
+            30 dní, případně ukončení v den, kdy dojde k pohybu ceny směrem nahoru.</p>  
+
       </article>
     </div>
   </div>
