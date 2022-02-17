@@ -8,9 +8,9 @@ const URL_TEMPLATE_CATEGORY =
 const URL_TEMPLATE_PRODUCT_LIST =
   "https://mw.luxor.cz/api/v1/products?page={PAGE}&size={PRODUCTS_PER_PAGE}&sort=revenue%3Adesc&filter%5Bcategory%5D={SLUG}";
 
-const URL_TEMPLATE_PRODUCT = "https://www.luxor.cz/product/{SLUG}";
+const URL_TEMPLATE_PRODUCT = "https://luxor.cz/product/{SLUG}";
 
-const URL_TEMPLATE_PAGE_URL = "https://www.luxor.cz/products/knihy?page={PAGE}";
+const URL_TEMPLATE_PAGE_URL = "https://luxor.cz/products/knihy?page={PAGE}";
 
 const URL_IMAGE_BASE = "https://cdn.luxor.cz/";
 

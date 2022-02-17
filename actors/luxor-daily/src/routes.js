@@ -1,25 +1,18 @@
-/*
-// Kategorie produktu
-// https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1
-// .data
-// obsahuje id (806), title (Knihy), slug (knihy), parent (
-
-// Produkty na stránce
-// https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=knihy
-// .data[0]
-// id(393858), author(Karel Gott), in_stock (true), description, title(Má cesta za štěstím),
-// current_variant_price_group[0]{with_vat(1399), without_vat(1271.8181), currency(CZK), type(RECOMMENDED, SALE)}
-
-// Subkategorie knih
-// https://mw.luxor.cz/api/v1/categories/slug/knihy
-// .data.children
-// obsahuje id (224), title (Beletrie), slug (knihy-beletrie)
-*/
-
 const Apify = require("apify");
-const { URL } = require("url");
+//const { URL } = require("url");
 const { gotScraping } = require("got-scraping");
 //const tools = require("./tools");
+
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
+
+const processedIds = new Set();
+
+const {
+  toProduct,
+  uploadToS3,
+  s3FileName
+} = require("@hlidac-shopu/actors-common/product.js");
 
 const {
   URL_TEMPLATE_PRODUCT_LIST,
@@ -36,7 +29,7 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleStart = async ({ request, requestQueue }) => {
+exports.handleStart = async ({ request, requestQueue }, stats) => {
   console.log("---\nhandleStart");
 
   const { body } = await gotScraping({
@@ -79,16 +72,30 @@ exports.handleStart = async ({ request, requestQueue }) => {
   }
 };
 
-exports.handleList = async ({ request, requestQueue }) => {
+exports.handleList = async ({ request, requestQueue }, stats) => {
   console.log("---\nhandleList", request);
 
-  const { body } = await gotScraping({
+  const requestResult = await gotScraping({
     responseType: "json",
     url: request.url
   });
 
+  const { body } = requestResult;
+
+  switch (requestResult.statusCode) {
+    case 200:
+      stats.pages++;
+      break;
+
+    default:
+      stats.failed++;
+      break;
+  }
+
   const products = body.data;
   const productTotalCount = body.total_count;
+
+  const requests = [];
 
   for (const productIx in products) {
     const { id, title, author, publisher, current_variant_price_group } =
@@ -129,36 +136,62 @@ exports.handleList = async ({ request, requestQueue }) => {
       currency,
       currentPrice,
       originalPrice,
+      discounted: currentPrice < originalPrice,
 
       img: `${URL_IMAGE_BASE}${imgPath}`,
       inStock: products[productIx].in_stock,
-      category: request.userData.slug,
-      slug: request.userData.slug,
+      category: request.userData.slug
 
-      author: products[productIx].author,
-      publisher: products[productIx].publisher,
-      prices: products[productIx].current_variant_price_group,
-      page: request.userData.page,
-      pageUrl: request.url
+      //slug: request.userData.slug,
+      //author: products[productIx].author,
+      //publisher: products[productIx].publisher,
+      //prices: products[productIx].current_variant_price_group,
+      //page: request.userData.page,
+      //pageUrl: request.url,
+
+      //blackFriday: null
 
       /*
-      itemId
-      itemCode
-      itemUrl
-      itemName
-      img
-      discounted,
+      itemId*
+      itemUrl*
+      itemName*
+      img*
+      discounted,*
       originalPrice
       currency
       currentPrice
       category
-      inStock
-      blackFriday
+      inStock  true
       */
     };
 
-    await Apify.pushData(product);
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product)
+        /*
+        uploadToS3(
+          s3,
+          "luxor.cz",
+          await s3FileName(product),
+          "jsonld",
+          toProduct(product, {})
+        )
+        */
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
   }
+
+  log.debug(
+    `Found ${requests.length / 2} unique products, stat.items: ${
+      stat.items
+    } products`
+  );
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
 
   /*
   How to request detail if will be needed
@@ -189,11 +222,16 @@ exports.handleList = async ({ request, requestQueue }) => {
       request.userData.slug
   );
 
-  // (page * PRODUCTS_PER_PAGE < productTotalCount)
+  if (page * PRODUCTS_PER_PAGE > productTotalCount) {
+    log.debug("All pages done with slug " + request.userData.slug);
+    return;
+  }
+  /*
   if (request.userData.page > 5) {
     log.debug("DEBUG BREAK / 5 pages only from " + pageCount);
     return;
   }
+  */
 
   const pageNext = request.userData.page + 1;
 
@@ -225,14 +263,10 @@ exports.handleList = async ({ request, requestQueue }) => {
   //return;
 };
 
-exports.handleDetail = async ({ request, requestQueue }) => {
+exports.handleDetail = async ({ request, requestQueue }, stats) => {
   console.log("---\nhandleDetail");
 
   console.log("PRODUCT", request.product);
-  //request.product.author,
-  //request.product.title,
-  //request.product.publisher,
-  //request.product.slug
 
   //console.log(products[product].sum_price[0]);
   console.log(request.userData.product.prices);

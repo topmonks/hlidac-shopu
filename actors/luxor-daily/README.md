@@ -1,34 +1,30 @@
-# CheerioCrawler project
+# Luxor actor
+Apify actor for Luxor.cz eshop
 
-This template is a production ready boilerplate for developing with `CheerioCrawler`.
-Use this to bootstrap your projects using the most up-to-date code.
+## Actor input
+Start page and page templates are defined in src/const.js
 
-If you're looking for examples or want to learn more visit:
+## eShop API
 
-- [Tutorial](https://sdk.apify.com/docs/guides/getting-started#cheeriocrawler-aka-jquery-crawler)
-- [Documentation](https://sdk.apify.com/docs/api/cheerio-crawler)
-- [Examples](https://sdk.apify.com/docs/examples/cheerio-crawler)
+### Product categories
+https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1
 
-## Documentation reference
+.data
 
-- [Apify SDK](https://sdk.apify.com/)
-- [Apify Actor documentation](https://docs.apify.com/actor)
-- [Apify CLI](https://docs.apify.com/cli)
+Cointain id (806), title (Knihy), slug (knihy), parent (
 
-## Writing a README
+### Products on page
+https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=knihy
 
-See our tutorial on [writing READMEs for your actors](https://help.apify.com/en/articles/2912548-how-to-write-great-readme-for-your-actors) if you need more inspiration.
+.data[0]
 
-### Table of contents
+id(393858), author(Karel Gott), in_stock (true), description, title(Má cesta za štěstím),
+current_variant_price_group[0]{with_vat(1399), without_vat(1271.8181), currency(CZK), type(RECOMMENDED, SALE)}
 
-If your README requires a table of contents, use the template below and make sure to keep the `<!-- toc start -->` and `<!-- toc end -->` markers.
+### Products subcategories
+https://mw.luxor.cz/api/v1/categories/slug/knihy
 
-<!-- toc start -->
-- Introduction
-- Use Cases
-  - Case 1
-  - Case 2
-- Input
-- Output
-- Miscellaneous
- <!-- toc end -->
+.data.children
+
+id (224), title (Beletrie), slug (knihy-beletrie)
+
