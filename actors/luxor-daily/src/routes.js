@@ -187,7 +187,7 @@ exports.handleList = async ({ request, requestQueue }, stats) => {
 
   log.debug(
     `Found ${requests.length / 2} unique products, stat.items: ${
-      stat.items
+      stats.items
     } products`
   );
   // await all requests, so we don't end before they end
@@ -222,7 +222,7 @@ exports.handleList = async ({ request, requestQueue }, stats) => {
       request.userData.slug
   );
 
-  if (page * PRODUCTS_PER_PAGE > productTotalCount) {
+  if (request.userData.page * PRODUCTS_PER_PAGE > productTotalCount) {
     log.debug("All pages done with slug " + request.userData.slug);
     return;
   }
