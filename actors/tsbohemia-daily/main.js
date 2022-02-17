@@ -115,9 +115,8 @@ Apify.main(async () => {
       log.info(body.toString());
       throw new Error("Session blocked, retiring.");
     }
-    const ids = body.toString().split("\n").slice(1);
-
-    const uploadBatchSize = 250;
+    const ids = body.toString().replace(/"/g, "").split("\n").slice(1);
+    const uploadBatchSize = 24;
     let pushedItemsCount = 0;
 
     for (let i = pushedItemsCount; i < ids.length; i += uploadBatchSize) {
@@ -528,31 +527,25 @@ Apify.main(async () => {
         url,
         userData: { ids, label }
       } = request;
-      const response = await gotScraping.post({
-        headerGeneratorOptions: {
-          browsers: [
-            {
-              name: "chrome",
-              minVersion: 89
-            }
-          ],
-          devices: ["desktop"],
-          locales: ["cs-CZ"],
-          operatingSystems: ["windows"]
-        },
+      const bodyList = "stiidlist=" + ids.join(",");
+
+      const response = await gotScraping({
+        url: "https://www.tsbohemia.cz/TsbStoitemPriceList_jx.asp",
         responseType: "json",
-        url,
-        body: `stiidlist=${ids.join(",")}`,
-        proxyUrl: await proxyConfiguration.newUrl(),
-        headers: {
-          "Accept": "*/*",
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
-          "Accept-Language": "en-US,en;q=0.9,cs;q=0.8,cs-CZ;q=0.7",
-          "Origin": "https://www.tsbohemia.cz",
-          "Referer": "https://www.tsbohemia.cz/"
-        }
+        proxyUrl: proxyConfiguration.newUrl(),
+        "headers": {
+          "accept": "*/*",
+          "accept-language": "cs,en-US;q=0.9,en;q=0.8",
+          "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "sec-gpc": "1",
+          "x-requested-with": "XMLHttpRequest",
+          "Referrer-Policy": "strict-origin-when-cross-origin"
+        },
+        "body": bodyList,
+        "method": "POST"
       });
       const { statusCode, body } = response;
       if (statusCode !== 200) {
