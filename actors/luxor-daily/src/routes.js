@@ -29,12 +29,17 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleStart = async ({ request, requestQueue }, stats) => {
+exports.handleStart = async (
+  { request, requestQueue },
+  proxyConfiguration,
+  stats
+) => {
   console.log("---\nhandleStart");
 
   const { body } = await gotScraping({
-    responseType: "json",
-    url: URL_TEMPLATE_CATEGORY
+    url: URL_TEMPLATE_CATEGORY,
+    proxyUrl: proxyConfiguration.newUrl(),
+    responseType: "json"
   });
 
   //console.log(body.data);
@@ -72,12 +77,17 @@ exports.handleStart = async ({ request, requestQueue }, stats) => {
   }
 };
 
-exports.handleList = async ({ request, requestQueue }, stats) => {
-  console.log("---\nhandleList", request);
+exports.handleList = async (
+  { request, requestQueue },
+  proxyConfiguration,
+  stats
+) => {
+  //console.log("---\nhandleList", request);
 
   const requestResult = await gotScraping({
-    responseType: "json",
-    url: request.url
+    url: request.url,
+    proxyUrl: proxyConfiguration.newUrl(),
+    responseType: "json"
   });
 
   const { body } = requestResult;
@@ -186,9 +196,7 @@ exports.handleList = async ({ request, requestQueue }, stats) => {
   }
 
   log.debug(
-    `Found ${requests.length / 2} unique products, stat.items: ${
-      stats.items
-    } products`
+    `Found ${requests.length} unique products, stat.items: ${stats.items} products`
   );
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
@@ -255,7 +263,7 @@ exports.handleList = async ({ request, requestQueue }, stats) => {
     }
   };
 
-  console.log("addRequest LIST", req);
+  //console.log("addRequest LIST", req);
 
   requestQueue.addRequest(req);
 

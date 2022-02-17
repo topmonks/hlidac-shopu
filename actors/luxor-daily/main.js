@@ -28,8 +28,9 @@ Apify.main(async () => {
 
   const {
     development = true,
-    maxConcurrency = 1,
-    maxRequestRetries = 1
+    maxConcurrency = 100,
+    maxRequestRetries = 3,
+    proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
   let sources = [];
   sources.push({
@@ -46,16 +47,16 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
 
-  //const proxyConfiguration = await Apify.createProxyConfiguration();
-
+  const proxyConfiguration = await Apify.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
   //const crawler = new Apify.CheerioCrawler({
   const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
-    //proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency: development ? 1 : maxConcurrency,
-    //handlePageFunction: async context => {
+    maxConcurrency,
     handleRequestFunction: async context => {
       const {
         url,
@@ -65,11 +66,11 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context, stats);
+          return handleList(context, proxyConfiguration, stats);
         case "DETAIL":
           return handleDetail(context, stats);
         default:
-          return handleStart(context, stats);
+          return handleStart(context, proxyConfiguration, stats);
       }
     },
     // If request failed 4 times then this function is executed
