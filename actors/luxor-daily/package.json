@@ -16,6 +16,6 @@
 	},
 	"scripts": {
 		"start": "node main.js",
-    "start-apify": "apify run -p"
+		"start-apify": "apify run -p"
 	}
 }
