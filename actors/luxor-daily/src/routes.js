@@ -41,6 +41,8 @@ exports.handleStart = async (context, crawlContext) => {
   }
   const { body } = await gotScraping(requestOptions);
 
+  crawlContext.stats.requests++;
+
   const categories = body.data;
 
   // First page for all categories
@@ -85,6 +87,8 @@ exports.handleList = async (context, crawlContext) => {
     requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
   }
   const requestResult = await gotScraping(requestOptions);
+
+  crawlContext.stats.requests++;
 
   const { body } = requestResult;
 
@@ -156,19 +160,6 @@ exports.handleList = async (context, crawlContext) => {
       //pageUrl: request.url,
 
       //blackFriday: null
-
-      /*
-      itemId*
-      itemUrl*
-      itemName*
-      img*
-      discounted,*
-      originalPrice
-      currency
-      currentPrice
-      category
-      inStock  true
-      */
     };
 
     if (!processedIds.has(product.itemId)) {
@@ -188,6 +179,12 @@ exports.handleList = async (context, crawlContext) => {
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
+
+      /*
+      log.info(
+        "Found item duplicity " + product.itemId + ": " + product.itemName
+      );
+      */
     }
   }
 
@@ -217,6 +214,8 @@ exports.handleList = async (context, crawlContext) => {
 
   const pageCount = Math.ceil(productTotalCount / PRODUCTS_PER_PAGE);
 
+  log.info("pageCount " + pageCount);
+
   log.info(
     "Current product page: " +
       request.userData.page +
@@ -230,6 +229,7 @@ exports.handleList = async (context, crawlContext) => {
     log.debug("All pages done with slug " + request.userData.slug);
     return;
   }
+
   /*
   if (request.userData.page > 5) {
     log.debug("DEBUG BREAK / 5 pages only from " + pageCount);

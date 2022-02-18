@@ -19,6 +19,7 @@ Apify.main(async () => {
 
   stats = (await Apify.getValue("STATS")) || {
     categories: 0,
+    requests: 0,
     pages: 0,
     items: 0,
     itemsSkipped: 0,
@@ -29,7 +30,7 @@ Apify.main(async () => {
   const {
     development = true,
     maxConcurrency = 100,
-    maxRequestRetries = 3,
+    maxRequestRetries = 4,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
   let sources = [];
@@ -92,7 +93,7 @@ Apify.main(async () => {
   log.info("Crawl finished.");
 
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
+  log.info(JSON.stringify(stats, null, 2));
 
   if (!development) {
     try {
