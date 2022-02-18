@@ -191,7 +191,7 @@ exports.handleList = async (context, crawlContext) => {
     }
   }
 
-  log.debug(
+  log.info(
     `Found ${requests.length} unique products, stat.items: ${crawlContext.stats.items} products`
   );
   // await all requests, so we don't end before they end
