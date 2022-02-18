@@ -29,20 +29,17 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleStart = async (
-  { request, requestQueue },
-  proxyConfiguration,
-  stats
-) => {
+exports.handleStart = async (context, crawlContext) => {
   console.log("---\nhandleStart");
 
-  const { body } = await gotScraping({
+  const requestOptions = {
     url: URL_TEMPLATE_CATEGORY,
-    proxyUrl: proxyConfiguration.newUrl(),
     responseType: "json"
-  });
-
-  //console.log(body.data);
+  };
+  if (!crawlContext.development) {
+    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
+  }
+  const { body } = await gotScraping(requestOptions);
 
   const categories = body.data;
 
@@ -70,35 +67,34 @@ exports.handleStart = async (
     };
     console.log("addRequest LIST / first page", req);
 
-    requestQueue.addRequest(req);
+    crawlContext.requestQueue.addRequest(req);
 
     //log.debug("DEBUG BREAK / 1 category only");
     //break;
   }
 };
 
-exports.handleList = async (
-  { request, requestQueue },
-  proxyConfiguration,
-  stats
-) => {
+exports.handleList = async (context, crawlContext) => {
+  const { request } = context;
   //console.log("---\nhandleList", request);
-
-  const requestResult = await gotScraping({
+  const requestOptions = {
     url: request.url,
-    proxyUrl: proxyConfiguration.newUrl(),
     responseType: "json"
-  });
+  };
+  if (!crawlContext.development) {
+    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
+  }
+  const requestResult = await gotScraping(requestOptions);
 
   const { body } = requestResult;
 
   switch (requestResult.statusCode) {
     case 200:
-      stats.pages++;
+      crawlContext.stats.pages++;
       break;
 
     default:
-      stats.failed++;
+      crawlContext.stats.failed++;
       break;
   }
 
@@ -189,14 +185,14 @@ exports.handleList = async (
         )
         */
       );
-      stats.items++;
+      crawlContext.stats.items++;
     } else {
-      stats.itemsDuplicity++;
+      crawlContext.stats.itemsDuplicity++;
     }
   }
 
   log.debug(
-    `Found ${requests.length} unique products, stat.items: ${stats.items} products`
+    `Found ${requests.length} unique products, stat.items: ${crawlContext.stats.items} products`
   );
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
@@ -214,7 +210,7 @@ exports.handleList = async (
 
   console.log("addRequest DETAIL", requestDetail);
 
-  requestQueue.addRequest(requestDetail);
+  crawlContext.requestQueue.addRequest(requestDetail);
   */
 
   // Do next page request
@@ -265,13 +261,13 @@ exports.handleList = async (
 
   //console.log("addRequest LIST", req);
 
-  requestQueue.addRequest(req);
+  crawlContext.requestQueue.addRequest(req);
 
   //console.log("DEBUG BREAK / Lists only");
   //return;
 };
 
-exports.handleDetail = async ({ request, requestQueue }, stats) => {
+exports.handleDetail = async (request, crawlContext) => {
   console.log("---\nhandleDetail");
 
   console.log("PRODUCT", request.product);

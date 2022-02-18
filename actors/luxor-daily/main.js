@@ -51,6 +51,14 @@ Apify.main(async () => {
     groups: proxyGroups,
     useApifyProxy: !development
   });
+
+  const crawlContext = {
+    requestQueue,
+    development,
+    stats,
+    proxyConfiguration
+  };
+
   //const crawler = new Apify.CheerioCrawler({
   const crawler = new Apify.BasicCrawler({
     requestList,
@@ -62,15 +70,14 @@ Apify.main(async () => {
         url,
         userData: { label }
       } = context.request;
-      context.requestQueue = requestQueue;
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context, proxyConfiguration, stats);
+          return handleList(context, crawlContext);
         case "DETAIL":
-          return handleDetail(context, stats);
+          return handleDetail(context, crawlContext);
         default:
-          return handleStart(context, proxyConfiguration, stats);
+          return handleStart(context, crawlContext);
       }
     },
     // If request failed 4 times then this function is executed
