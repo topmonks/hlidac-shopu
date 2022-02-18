@@ -30,6 +30,7 @@ const { czcValidator } = require("./src/validators/czcValidator");
 const { mallValidator } = require("./src/validators/mallValidator");
 const { mountfieldValidator } = require("./src/validators/mountfieldValidator");
 const { lekarnaValidator } = require("./src/validators/lekarnaValidator");
+const { luxorValidator } = require("./src/validators/luxoeValidator");
 const { kasaczValidator } = require("./src/validators/kasaczValidator");
 const { kasaczValidatorBf } = require("./src/validators/kasaczValidatorBf");
 const { datartValidatorBf } = require("./src/validators/datartValidatorBf");
@@ -178,6 +179,9 @@ async function processItems(
       case "lekarna_cz":
       case "lekarna_bf":
         item = lekarnaValidator(item);
+        break;
+      case "luxor_cz":
+        item = luxorValidator(item);
         break;
       case "czc_bf":
         item = czcValidator(item);
