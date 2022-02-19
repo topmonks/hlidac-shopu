@@ -5,8 +5,8 @@
 	"license": "EPL-2.0",
 	"description": "This is an actor to get data from obi eshop",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "3.51.0",
-		"@aws-sdk/client-s3": "3.51.0",
+		"@aws-sdk/client-cloudfront": "3.52.0",
+		"@aws-sdk/client-s3": "3.52.0",
 		"@hlidac-shopu/actors-common": "^1.1.8",
 		"apify": "^2.2.1"
 	},
