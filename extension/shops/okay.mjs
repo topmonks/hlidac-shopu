@@ -3,30 +3,19 @@ import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
   get injectionPoint() {
-    return ["afterend", ".add-basket-form"];
+    return ["afterend", ".product-form-container"];
   }
 
   async scrape() {
-    const elem = document.querySelector("#page-product-detail");
+    const elem = document.querySelector("#template-product");
     if (!elem) return;
-    const data = JSON.parse(
-      document.querySelector(".js-gtm-product").dataset.product
-    );
-    const itemId = data.id;
-    const title = data.name;
-    const sale =
-      data.labels
-        .filter(x => x.indexOf("SLEVA") > -1)
-        .map(x => parseFloat(x.match(/SLEVA\s(\d+)/)[1]) / 100)
-        .pop() || 0.0;
-    const currentPrice = Math.round(
-      data.priceWithTax - sale * data.priceWithTax
-    );
-    const originalPrice = cleanPrice("#product_price_recomended");
-    const imageUrl = document.querySelector(".js-zoomingImageSmall").src;
-
+    const itemId = document.querySelector("div.product-gallery__main").attributes["data-product-id"].textContent;
+    const originalPrice = cleanPrice("p.was-price  span.money");
+    const currentPrice = cleanPrice("p.current_price span.money");
+    const title = elem.querySelector("h1").innerText.trim();
+    const imageUrl = document.querySelector(".product-gallery__link").href;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
 
-registerShop(new Okay(), "okay", "okay_sk");
+registerShop(new Okay(), "okay_cz", "okay_sk");

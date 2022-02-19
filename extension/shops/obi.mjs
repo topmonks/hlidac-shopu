@@ -29,7 +29,7 @@ registerShop(
   "obi_pl",
   "obi_hu",
   "obi-italia_it",
-  " obi_de",
+  "obi_de",
   "obi_at",
   "obi_ru",
   "obi_ch"
