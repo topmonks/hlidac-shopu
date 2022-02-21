@@ -194,9 +194,9 @@ Apify.main(async () => {
           for (const product of responseData.products) {
             const item = {};
             item.itemId = product.id;
-            item.itemIdOld = product.original_tags
+            /*item.itemIdOld = product.original_tags
               .find(v => v.includes("SSID"))
-              .split("-")[1];
+              .split("-")[1];*/
             item.itemUrl = `${rootUrl}/products/${product.handle}`;
             item.img = product.images["1"];
             item.itemName = product.title;
