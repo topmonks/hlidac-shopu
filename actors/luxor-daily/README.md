@@ -28,3 +28,22 @@ https://mw.luxor.cz/api/v1/categories/slug/knihy
 
 id (224), title (Beletrie), slug (knihy-beletrie)
 
+### Pagination
+Pages at the bottom of page doesn't corespond with pages in the API
+
+Total count 267348
+Product on page: 24
+
+API page 20000 have still data - same as page 15000
+
+### Results testing
+"https://mw.luxor.cz/api/v1/categories?size=100";
+INFO  {
+"categories": 0,
+"requests": 15650,
+"pages": 15641,
+"items": 280229,
+"itemsSkipped": 0,
+"itemsDuplicity": 95085,
+"failed": 8
+}

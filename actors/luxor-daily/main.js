@@ -1,10 +1,21 @@
 const Apify = require("apify");
 
-const { handleStart, handleList, handleDetail } = require("./src/routes");
+const {
+  handleAPIStart,
+  handleAPIList,
+  handleAPIDetail,
+
+  handleFrontStart,
+  handleFrontList,
+  handleFrontDetail,
+
+  handleSitemapStart,
+  handleSitemapList
+} = require("./src/routes");
 
 let stats = {};
 
-const { URL_MAIN } = require("./src/const");
+const { URL_MAIN, URL_SITEMAP, URL_FRONT, LABELS } = require("./src/const");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
@@ -15,7 +26,6 @@ const { log } = Apify.utils;
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
-  const input = await Apify.getInput();
 
   stats = (await Apify.getValue("STATS")) || {
     categories: 0,
@@ -27,19 +37,44 @@ Apify.main(async () => {
     failed: 0
   };
 
+  const input = await Apify.getInput();
   const {
     development = true,
+    type = "SITEMAP", // [START, SITEMAP]
     maxConcurrency = 100,
     maxRequestRetries = 4,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
   let sources = [];
-  sources.push({
-    url: URL_MAIN,
-    userData: {
-      label: "START"
-    }
-  });
+
+  switch(type) {
+    case LABELS.API_START:
+      sources.push({
+        url: URL_MAIN,
+        userData: {
+          label: LABELS.API_START
+        }
+      });
+      break;
+
+    case LABELS.FRONT_START:
+      sources.push({
+        url: URL_FRONT,
+        userData: {
+          label: LABELS.FRONT_START
+        }
+      });
+      break;
+
+    case LABELS.SITEMAP_START:
+      sources.push({
+        url: URL_SITEMAP,
+        userData: {
+          label: LABELS.SITEMAP_START
+        }
+      });
+      break
+  }
 
   if (development) {
     log.setLevel(log.LEVELS.DEBUG);
@@ -73,12 +108,27 @@ Apify.main(async () => {
       } = context.request;
       log.info("Page opened.", { label, url });
       switch (label) {
-        case "LIST":
-          return handleList(context, crawlContext);
-        case "DETAIL":
-          return handleDetail(context, crawlContext);
+        case LABELS.API_START:
+          return handleAPIStart(context, crawlContext);
+        case LABELS.API_LIST:
+          return handleAPIList(context, crawlContext);
+        case LABELS.API_DETAIL:
+          return handleAPIDetail(context, crawlContext);
+
+        case LABELS.FRONT_START:
+          return handleFrontStart(context, crawlContext);
+        case LABELS.FRONT_LIST:
+          return handleFrontList(context, crawlContext);
+        case LABELS.FRONT_DETAIL:
+          return handleFrontDetail(context, crawlContext);
+
+        case LABELS.SITEMAP_START:
+          return handleSitemapStart(context, crawlContext)
+        case LABELS.SITEMAP_LIST:
+          return handleSitemapList(context, stats, crawlContext)
+
         default:
-          return handleStart(context, crawlContext);
+          console.error('Unknown label ' + label);
       }
     },
     // If request failed 4 times then this function is executed

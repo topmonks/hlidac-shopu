@@ -20,8 +20,12 @@ const {
   URL_TEMPLATE_PRODUCT,
   URL_TEMPLATE_PAGE_URL,
   URL_IMAGE_BASE,
-  PRODUCTS_PER_PAGE
+  URL_SITEMAP,
+  PRODUCTS_PER_PAGE,
+  LABELS,
+  URL_FRONT
 } = require("./const");
+const cheerio = require("cheerio");
 
 // const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 
@@ -29,7 +33,7 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleStart = async (context, crawlContext) => {
+exports.handleAPIStart = async (context, crawlContext) => {
   console.log("---\nhandleStart");
 
   const requestOptions = {
@@ -62,7 +66,7 @@ exports.handleStart = async (context, crawlContext) => {
     const req = {
       url,
       userData: {
-        label: "LIST",
+        label: LABELS.API_LIST,
         slug: slug,
         page: 1
       }
@@ -76,7 +80,7 @@ exports.handleStart = async (context, crawlContext) => {
   }
 };
 
-exports.handleList = async (context, crawlContext) => {
+exports.handleAPIList = async (context, crawlContext) => {
   const { request } = context;
   //console.log("---\nhandleList", request);
   const requestOptions = {
@@ -195,11 +199,11 @@ exports.handleList = async (context, crawlContext) => {
   await Promise.allSettled(requests);
 
   /*
-  How to request detail if will be needed
+  How to request detail if it will be needed
   const requestDetail = {
     url,
     userData: {
-      label: "DETAIL",
+      label: LABELS.API_DETAIL,
       product
       //slug: request.userData.slug
     }
@@ -245,12 +249,15 @@ exports.handleList = async (context, crawlContext) => {
     .replace(/{PRODUCTS_PER_PAGE}/g, PRODUCTS_PER_PAGE.toString())
     .replace(/{SLUG}/g, request.userData.slug);
 
-  const pageUrl = URL_TEMPLATE_PAGE_URL.replace(/{PAGE}/g, pageNext);
+  const pageUrl = URL_TEMPLATE_PAGE_URL.replace(
+    /{SLUG}/g,
+    request.userData.slug
+  ).replace(/{PAGE}/g, pageNext);
 
   const req = {
     url: url,
     userData: {
-      label: "LIST",
+      label: LABELS.API_LIST,
       page: pageNext,
       pageCount,
       slug: request.userData.slug,
@@ -267,7 +274,7 @@ exports.handleList = async (context, crawlContext) => {
   //return;
 };
 
-exports.handleDetail = async (request, crawlContext) => {
+exports.handleAPIDetail = async (request, crawlContext) => {
   console.log("---\nhandleDetail");
 
   console.log("PRODUCT", request.product);
@@ -279,4 +286,133 @@ exports.handleDetail = async (request, crawlContext) => {
   for (const price in prices) {
     console.log(prices[price]);
   }
+};
+
+exports.handleFrontStart = async (request, crawlContext) => {
+  console.log("---\nhandleFrontStart");
+
+  log.info("Downloading " + URL_FRONT);
+
+  const requestOptions = {
+    url: URL_FRONT,
+    responseType: "text"
+  };
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body, { xmlMode: true });
+
+  const pageNext = 1;
+
+  $(".fqo5ryo")
+    .find(".fowumum")
+    .each((ix, el) => {
+      const url_slug = $(el).attr("href");
+
+      if (url_slug.indexOf("/products") > -1) {
+        const req = {
+          url: URL_FRONT + url_slug,
+          userData: {
+            label: LABELS.FRONT_LIST,
+            page: pageNext,
+            //pageCount,
+            slug: url_slug,
+            pageUrl
+          }
+        };
+
+        crawlContext.requestQueue.addRequest(req);
+      }
+    });
+};
+
+exports.handleFrontList = async (request, crawlContext) => {
+  console.log("---\nhandleFrontList");
+};
+
+exports.handleFrontDetail = async (request, crawlContext) => {
+  console.log("---\nhandleFrontDetail");
+
+  const product = {
+    itemId: products[productIx].id,
+    itemUrl: URL_TEMPLATE_PRODUCT.replace(/{SLUG}/, products[productIx].slug),
+    itemName: products[productIx].title,
+
+    currency,
+    currentPrice,
+    originalPrice,
+    discounted: currentPrice < originalPrice,
+
+    img: `${URL_IMAGE_BASE}${imgPath}`,
+    inStock: products[productIx].in_stock,
+    category: request.userData.slug
+  };
+};
+
+/**
+ * Start sitemap parsing
+ * @param context
+ * @param crawlContext
+ * @returns {Promise<void>}
+ */
+exports.handleSitemapStart = async (context, crawlContext) => {
+  console.log("---\nhandleSitemapStart");
+
+  log.info("Downloading " + URL_SITEMAP);
+
+  const requestOptions = {
+    url: URL_SITEMAP,
+    responseType: "text"
+  };
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body, { xmlMode: true });
+
+  $("sitemap").each((ix, el) => {
+    const url = $(el).find("loc").html();
+    if (url.indexOf("product") > -1) {
+      const req = {
+        url,
+        userData: {
+          label: LABELS.SITEMAP_LIST
+        }
+      };
+
+      crawlContext.requestQueue.addRequest(req);
+    } else {
+      console.log("Skipper", url);
+    }
+  });
+};
+
+exports.handleSitemapList = async (context, stats, crawlContext) => {
+  const { request } = context;
+
+  const requestOptions = {
+    url: request.url,
+    responseType: "text"
+  };
+
+  // Page counted by pagination
+  // 11125*24+913×24+1004×24+957×24+1627×24 = 375024
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body, { xmlMode: true });
+
+  const urls = $("url");
+  let productId = [];
+  $(urls).each((ix, el) => {
+    const productName = $(el).find("loc").html();
+    if (!productId.includes(productName)) {
+      productId.push(productName);
+      stats.items++;
+    } else {
+      //console.log("itemsDuplicity", productName);
+      stats.itemsDuplicity++;
+    }
+  });
+
+  console.log(`Items count in XML: ${stats.items}`);
 };
