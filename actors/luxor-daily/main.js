@@ -47,7 +47,7 @@ Apify.main(async () => {
   } = input ?? {};
   let sources = [];
 
-  switch(type) {
+  switch (type) {
     case LABELS.API_START:
       sources.push({
         url: URL_MAIN,
@@ -73,7 +73,7 @@ Apify.main(async () => {
           label: LABELS.SITEMAP_START
         }
       });
-      break
+      break;
   }
 
   if (development) {
@@ -123,12 +123,12 @@ Apify.main(async () => {
           return handleFrontDetail(context, crawlContext);
 
         case LABELS.SITEMAP_START:
-          return handleSitemapStart(context, crawlContext)
+          return handleSitemapStart(context, crawlContext);
         case LABELS.SITEMAP_LIST:
-          return handleSitemapList(context, stats, crawlContext)
+          return handleSitemapList(context, stats, crawlContext);
 
         default:
-          console.error('Unknown label ' + label);
+          console.error("Unknown label " + label);
       }
     },
     // If request failed 4 times then this function is executed
