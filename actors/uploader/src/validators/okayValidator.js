@@ -10,6 +10,7 @@ function okayValidator(item) {
     "itemName",
     "itemUrl",
     "originalPrice",
+    "vatInfo",
     "blackFriday"
   ];
   for (const attr of attributes) {
