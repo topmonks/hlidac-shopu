@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class Megapixel extends Shop {
   get injectionPoint() {
-    return ["beforebegin", "div#snippet-addToCompare-"];
+    return ["beforebegin", "section.half-content-box"];
   }
 
   async scrape() {
