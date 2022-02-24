@@ -1,0 +1,36 @@
+{
+  "title": "conrad-count-daily",
+  "description": "Hlidac Conrad actors 1 (Daily) and 3 (Count)",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "type": {
+        "title": "type",
+        "type": "string",
+        "description": "Specify the type of the actor — daily or count",
+        "editor": "select",
+        "default": "DAILY",
+        "enum": ["DAILY", "COUNT"],
+        "enumTitles": ["DAILY", "COUNT"]
+    },
+    "development": {
+        "title": "development",
+        "type": "boolean",
+        "description": "Is in development mode",
+        "editor": "number"
+    },
+    "maxConcurrency": {
+        "title": "maxConcurrency",
+        "type": "integer",
+        "description": "Max concurrency",
+        "editor": "number"
+    },
+    "proxyCountryCode": {
+        "title": "proxyCountryCode",
+        "type": "string",
+        "description": "Country code for proxies",
+        "editor": "textfield"
+    }
+  },
+  "required": ["type"]
+}
