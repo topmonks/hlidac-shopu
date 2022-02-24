@@ -9,10 +9,10 @@
       "type": "string",
       "description": "Specify the type of the actor — daily or count",
       "editor": "select",
-      "default": "DAILY",
+      "default": "API-START",
       "enum": [
-        "DAILY",
-        "COUNT"
+        "API-START",
+        "SITEMAP-START"
       ],
       "enumTitles": [
         "DAILY",
