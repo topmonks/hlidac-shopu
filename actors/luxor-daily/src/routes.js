@@ -34,8 +34,6 @@ const {
 } = Apify;
 
 exports.handleAPIStart = async (context, crawlContext) => {
-  console.log("---\nhandleStart");
-
   const requestOptions = {
     url: URL_TEMPLATE_CATEGORY,
     responseType: "json"
@@ -57,6 +55,8 @@ exports.handleAPIStart = async (context, crawlContext) => {
 
     log.debug(slug);
 
+    crawlContext.stats.categories++;
+
     let url = URL_TEMPLATE_PRODUCT_LIST;
     url = url
       .replace(/{PAGE}/g, PAGE)
@@ -74,15 +74,11 @@ exports.handleAPIStart = async (context, crawlContext) => {
     console.log("addRequest LIST / first page", req);
 
     crawlContext.requestQueue.addRequest(req);
-
-    //log.debug("DEBUG BREAK / 1 category only");
-    //break;
   }
 };
 
 exports.handleAPIList = async (context, crawlContext) => {
   const { request } = context;
-  //console.log("---\nhandleList", request);
   const requestOptions = {
     url: request.url,
     responseType: "json"
@@ -183,17 +179,13 @@ exports.handleAPIList = async (context, crawlContext) => {
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
-
-      /*
-      log.info(
-        "Found item duplicity " + product.itemId + ": " + product.itemName
-      );
-      */
     }
   }
 
   log.info(
-    `Found ${requests.length} unique products, stat.items: ${crawlContext.stats.items} products`
+    `Found ${requests.length} unique products, overall: ${crawlContext.stats.items} products,` +
+      ` ${crawlContext.stats.itemsDuplicity} duplicits, ${crawlContext.stats.failed} failed,` +
+      ` ${crawlContext.stats.categories} categories`
   );
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
@@ -215,10 +207,7 @@ exports.handleAPIList = async (context, crawlContext) => {
   */
 
   // Do next page request
-
   const pageCount = Math.ceil(productTotalCount / PRODUCTS_PER_PAGE);
-
-  log.info("pageCount " + pageCount);
 
   log.info(
     "Current product page: " +
@@ -233,13 +222,6 @@ exports.handleAPIList = async (context, crawlContext) => {
     log.debug("All pages done with slug " + request.userData.slug);
     return;
   }
-
-  /*
-  if (request.userData.page > 5) {
-    log.debug("DEBUG BREAK / 5 pages only from " + pageCount);
-    return;
-  }
-  */
 
   const pageNext = request.userData.page + 1;
 
@@ -266,17 +248,10 @@ exports.handleAPIList = async (context, crawlContext) => {
     }
   };
 
-  //console.log("addRequest LIST", req);
-
   crawlContext.requestQueue.addRequest(req);
-
-  //console.log("DEBUG BREAK / Lists only");
-  //return;
 };
 
 exports.handleAPIDetail = async (request, crawlContext) => {
-  console.log("---\nhandleDetail");
-
   console.log("PRODUCT", request.product);
 
   //console.log(products[product].sum_price[0]);
@@ -289,8 +264,6 @@ exports.handleAPIDetail = async (request, crawlContext) => {
 };
 
 exports.handleFrontStart = async (request, crawlContext) => {
-  console.log("---\nhandleFrontStart");
-
   log.info("Downloading " + URL_FRONT);
 
   const requestOptions = {
@@ -386,16 +359,13 @@ exports.handleSitemapStart = async (context, crawlContext) => {
   });
 };
 
-exports.handleSitemapList = async (context, stats, crawlContext) => {
+exports.handleSitemapList = async (context, crawlContext) => {
   const { request } = context;
 
   const requestOptions = {
     url: request.url,
     responseType: "text"
   };
-
-  // Page counted by pagination
-  // 11125*24+913×24+1004×24+957×24+1627×24 = 375024
 
   const { body } = await gotScraping(requestOptions);
 
@@ -407,12 +377,12 @@ exports.handleSitemapList = async (context, stats, crawlContext) => {
     const productName = $(el).find("loc").html();
     if (!productId.includes(productName)) {
       productId.push(productName);
-      stats.items++;
+      crawlContext.stats.items++;
     } else {
       //console.log("itemsDuplicity", productName);
-      stats.itemsDuplicity++;
+      crawlContext.stats.itemsDuplicity++;
     }
   });
 
-  console.log(`Items count in XML: ${stats.items}`);
+  console.log(`Items count in XML: ${crawlContext.stats.items}`);
 };

@@ -15,7 +15,13 @@ const {
 
 let stats = {};
 
-const { URL_MAIN, URL_SITEMAP, URL_FRONT, LABELS } = require("./src/const");
+const {
+  URL_API_START,
+  URL_SITEMAP,
+  URL_FRONT,
+  LABELS
+} = require("./src/const");
+
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
@@ -39,18 +45,21 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
-    development = true,
-    type = "SITEMAP", // [START, SITEMAP]
+    development = false,
+    type = LABELS.API_START, // [LABELS.API_START, LABELS.SITEMAP_START]
     maxConcurrency = 100,
     maxRequestRetries = 4,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
+
+  log.info("DEVELOMENT: " + development);
+
   let sources = [];
 
   switch (type) {
     case LABELS.API_START:
       sources.push({
-        url: URL_MAIN,
+        url: URL_API_START,
         userData: {
           label: LABELS.API_START
         }
@@ -125,7 +134,7 @@ Apify.main(async () => {
         case LABELS.SITEMAP_START:
           return handleSitemapStart(context, crawlContext);
         case LABELS.SITEMAP_LIST:
-          return handleSitemapList(context, stats, crawlContext);
+          return handleSitemapList(context, crawlContext);
 
         default:
           console.error("Unknown label " + label);
