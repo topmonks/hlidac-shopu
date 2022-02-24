@@ -57,7 +57,6 @@ Apify.main(async () => {
   let sources = [];
 
   switch (type) {
-
     // Scraping via API
     case LABELS.API_START:
       sources.push({
