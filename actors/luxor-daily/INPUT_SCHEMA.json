@@ -28,14 +28,10 @@
     "maxConcurrency": {
       "title": "maxConcurrency",
       "type": "integer",
-      "description": "Max concurrency",
-      "editor": "textfield"
-    },
-    "proxyCountryCode": {
-      "title": "proxyCountryCode",
-      "type": "string",
-      "description": "Country code for proxies",
-      "editor": "textfield"
+      "description": "Select maxConcurrency",
+      "default": 50,
+      "maximum": 100,
+      "unit": "x"
     }
   },
   "required": [
