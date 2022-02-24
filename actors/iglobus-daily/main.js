@@ -3,34 +3,52 @@ const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
 const Apify = require("apify");
-const { handleStart, handleList, handleDetail } = require("./routes");
+const { handleStart, handleList } = require("./routes");
 
 const {
   utils: { log }
 } = Apify;
 
+let stats = {};
+const processedIds = new Set();
+
 Apify.main(async () => {
   rollbar.init();
-
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
-  const { development } = input ?? {};
+  const {
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 50,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
+  stats = (await Apify.getValue("STATS")) || {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    itemsDuplicity: 0
+  };
+
+  const crawlContext = {
+    requestQueue,
+    development,
+    stats,
+    processedIds
+  };
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"], // List of Apify Proxy groups
-    useApifyProxy: !development,
-    countryCode: "CZ"
+    groups: proxyGroups
   });
 
   await requestQueue.addRequest({ url: "https://www.iglobus.cz" });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    useSessionPool: true,
-    persistCookiesPerSession: false,
-    maxConcurrency: 50,
+    maxRequestRetries,
+    maxConcurrency: development ? 1 : maxConcurrency,
 
     handlePageFunction: async context => {
       const {
@@ -40,11 +58,9 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "LIST":
-          return handleList(context);
-        case "DETAIL":
-          return handleDetail(context);
+          return handleList(context, crawlContext);
         default:
-          return handleStart(context);
+          return handleStart(context, crawlContext);
       }
     }
   });
@@ -53,12 +69,14 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
 
+  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  log.info(JSON.stringify(stats));
+
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "iglobus.cz");
     log.info("invalidated Data CDN");
     await uploadToKeboola("globus_cz");
     log.info("upload to Keboola finished");
   }
-
-  console.log("Finished.");
+  log.info("Finished.");
 });
