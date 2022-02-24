@@ -22,13 +22,8 @@
     "development": {
       "title": "development",
       "type": "boolean",
-      "description": "Is in development mode",
-      "editor": "select",
-      "default": "false",
-      "enum": [
-        "false",
-        "true"
-      ]
+      "description": "If checked then actors runs at development mode",
+      "default": false
     },
     "maxConcurrency": {
       "title": "maxConcurrency",
