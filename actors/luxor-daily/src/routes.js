@@ -2,17 +2,9 @@ const Apify = require("apify");
 //const { URL } = require("url");
 const { gotScraping } = require("got-scraping");
 //const tools = require("./tools");
-
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-
 const processedIds = new Set();
 
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
+const { uploadToS3v2 } = require("@hlidac-shopu/actors-common/product.js");
 
 const {
   URL_TEMPLATE_PRODUCT_LIST,
@@ -26,8 +18,6 @@ const {
   URL_FRONT
 } = require("./const");
 const cheerio = require("cheerio");
-
-// const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
 
 const {
   utils: { log }
@@ -164,18 +154,7 @@ exports.handleAPIList = async (context, crawlContext) => {
 
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(
-        Apify.pushData(product)
-        /*
-        uploadToS3(
-          s3,
-          "luxor.cz",
-          await s3FileName(product),
-          "jsonld",
-          toProduct(product, {})
-        )
-        */
-      );
+      requests.push(Apify.pushData(product), uploadToS3v2(product, {}));
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
@@ -183,7 +162,9 @@ exports.handleAPIList = async (context, crawlContext) => {
   }
 
   log.info(
-    `Found ${requests.length} unique products, overall: ${crawlContext.stats.items} products,` +
+    `Found ${requests.length / 2} unique products, overall: ${
+      crawlContext.stats.items
+    } products,` +
       ` ${crawlContext.stats.itemsDuplicity} duplicits, ${crawlContext.stats.failed} failed,` +
       ` ${crawlContext.stats.categories} categories`
   );

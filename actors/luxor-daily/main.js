@@ -57,6 +57,8 @@ Apify.main(async () => {
   let sources = [];
 
   switch (type) {
+
+    // Scraping via API
     case LABELS.API_START:
       sources.push({
         url: URL_API_START,
@@ -66,6 +68,7 @@ Apify.main(async () => {
       });
       break;
 
+    // Unfinished frontend scraping
     case LABELS.FRONT_START:
       sources.push({
         url: URL_FRONT,
@@ -75,6 +78,7 @@ Apify.main(async () => {
       });
       break;
 
+    // Product counter
     case LABELS.SITEMAP_START:
       sources.push({
         url: URL_SITEMAP,

@@ -4,6 +4,34 @@ Apify actor for Luxor.cz eshop
 ## Actor input
 Start page and page templates are defined in src/const.js
 
+## How to switch type of scraper
+
+There are a few types of scrapping - API, Front, Sitemap
+
+The main scrapper is API type.
+Sitemap is working like a product counter.
+Frontend is unfinished base of scrapping via html code.
+
+Scraper type can be selected by changing label property in main.js.
+
+```
+"label": API_START | FRONT_START | SITEMAP_START
+```
+
+```
+  const req = {
+    url: url,
+    userData: {
+      label: LABELS.API_LIST,
+      page: pageNext,
+      pageCount,
+      slug: request.userData.slug,
+      pageUrl,
+      note: "NextPage"
+    }
+  };
+```
+
 ## eShop API
 
 ### Product categories
