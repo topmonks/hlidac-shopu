@@ -5,32 +5,45 @@
   "schemaVersion": 1,
   "properties": {
     "type": {
-        "title": "type",
-        "type": "string",
-        "description": "Specify the type of the actor — daily or count",
-        "editor": "select",
-        "default": "DAILY",
-        "enum": ["DAILY", "COUNT"],
-        "enumTitles": ["DAILY", "COUNT"]
+      "title": "type",
+      "type": "string",
+      "description": "Specify the type of the actor — daily or count",
+      "editor": "select",
+      "default": "DAILY",
+      "enum": [
+        "DAILY",
+        "COUNT"
+      ],
+      "enumTitles": [
+        "DAILY",
+        "COUNT"
+      ]
     },
     "development": {
-        "title": "development",
-        "type": "boolean",
-        "description": "Is in development mode",
-        "editor": "number"
+      "title": "development",
+      "type": "boolean",
+      "description": "Is in development mode",
+      "editor": "select",
+      "default": "false",
+      "enum": [
+        "false",
+        "true"
+      ]
     },
     "maxConcurrency": {
-        "title": "maxConcurrency",
-        "type": "integer",
-        "description": "Max concurrency",
-        "editor": "number"
+      "title": "maxConcurrency",
+      "type": "integer",
+      "description": "Max concurrency",
+      "editor": "textfield"
     },
     "proxyCountryCode": {
-        "title": "proxyCountryCode",
-        "type": "string",
-        "description": "Country code for proxies",
-        "editor": "textfield"
+      "title": "proxyCountryCode",
+      "type": "string",
+      "description": "Country code for proxies",
+      "editor": "textfield"
     }
   },
-  "required": ["type"]
+  "required": [
+    "type"
+  ]
 }
