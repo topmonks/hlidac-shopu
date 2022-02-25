@@ -2,9 +2,6 @@ const Apify = require("apify");
 //const { URL } = require("url");
 const { gotScraping } = require("got-scraping");
 //const tools = require("./tools");
-const processedIds = new Set();
-
-const { uploadToS3v2 } = require("@hlidac-shopu/actors-common/product.js");
 
 const {
   URL_TEMPLATE_PRODUCT_LIST,
@@ -26,11 +23,9 @@ const {
 exports.handleAPIStart = async (context, crawlContext) => {
   const requestOptions = {
     url: URL_TEMPLATE_CATEGORY,
+    proxyUrl: crawlContext.proxyConfiguration.newUrl(),
     responseType: "json"
   };
-  if (!crawlContext.development) {
-    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
-  }
   const { body } = await gotScraping(requestOptions);
 
   crawlContext.stats.requests++;
@@ -152,9 +147,12 @@ exports.handleAPIList = async (context, crawlContext) => {
       //blackFriday: null
     };
 
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Apify.pushData(product), uploadToS3v2(product, {}));
+    if (!crawlContext.processedIds.has(product.itemId)) {
+      crawlContext.processedIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product),
+        crawlContext.uploadToS3v2(product, {})
+      );
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;

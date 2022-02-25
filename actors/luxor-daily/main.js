@@ -14,6 +14,7 @@ const {
 } = require("./src/routes");
 
 let stats = {};
+const processedIds = new Set();
 
 const {
   URL_API_START,
@@ -21,8 +22,10 @@ const {
   URL_FRONT,
   LABELS
 } = require("./src/const");
-
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
+const {
+  invalidateCDN,
+  uploadToS3v2
+} = require("@hlidac-shopu/actors-common/product.js");
 const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
 const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
 const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
@@ -92,19 +95,26 @@ Apify.main(async () => {
     log.setLevel(log.LEVELS.DEBUG);
   }
 
+  const persistState = async () => {
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
+  };
+  Apify.events.on("persistState", persistState);
+
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development
+    groups: proxyGroups
   });
 
   const crawlContext = {
     requestQueue,
     development,
+    proxyConfiguration,
     stats,
-    proxyConfiguration
+    processedIds,
+    uploadToS3v2
   };
 
   //const crawler = new Apify.CheerioCrawler({
