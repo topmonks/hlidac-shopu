@@ -9,7 +9,7 @@ orbs:
   node: circleci/node@5.0.0
   pulumi: pulumi/pulumi@2.0.0
   rollbar: rollbar/deploy@1.0.1
-  slack: circleci/slack@4.8.2
+  slack: circleci/slack@4.8.3
 
 commands:
   install_packages:
