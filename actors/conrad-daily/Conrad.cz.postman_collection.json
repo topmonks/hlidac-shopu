@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "932f14c3-d527-440c-a4fb-03f4c904c8a4",
+		"name": "Conrad.cz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Conrad Topseller products",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clientTimeZone\": \"CET\",\n    \"version\": 1,\n    \"inputs\": {\n        \"shop\": \"cz\",\n        \"reco_id\": \"topseller_clicks\",\n        \"max_products\": \"10\",\n        \"product_number\": \"\",\n        \"category\": \"\",\n        \"cookie\": \"\",\n        \"customer_number\": \"\",\n        \"search_keywords\": \"\"\n    }\n}"
+				},
+				"url": {
+					"raw": "https://api.conrad.com/reco/3?apikey=SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X",
+					"protocol": "https",
+					"host": [
+						"api",
+						"conrad",
+						"com"
+					],
+					"path": [
+						"reco",
+						"3"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conrad Personalized Products",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clientTimeZone\": \"CET\",\n    \"version\": 1,\n    \"inputs\": {\n        \"shop\": \"cz\",\n        \"reco_id\": \"personalized\",\n        \"max_products\": \"10\",\n        \"product_number\": \"\",\n        \"category\": \"\",\n        \"cookie\": \"\",\n        \"customer_number\": \"\",\n        \"search_keywords\": \"\"\n    }\n}"
+				},
+				"url": {
+					"raw": "https://api.conrad.com/reco/3?apikey=SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X",
+					"protocol": "https",
+					"host": [
+						"api",
+						"conrad",
+						"com"
+					],
+					"path": [
+						"reco",
+						"3"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conrad  Get Product IDs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"facetFilter\": [],\n    \"from\": 0,\n    \"globalFilter\": [\n        {\n            \"field\": \"categoryId\",\n            \"type\": \"TERM_OR\",\n            \"values\": [\n                \"0203060\"\n            ]\n        }\n    ],\n    \"query\": \"\",\n    \"size\": 30,\n    \"sort\": [\n        {\n            \"field\": \"price\",\n            \"order\": \"asc\"\n        }\n    ],\n    \"disabledFeatures\": [\n        \"FIRST_LEVEL_CATEGORIES_ONLY\"\n    ],\n    \"enabledFeatures\": [\n        \"and_filters\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X",
+					"protocol": "https",
+					"host": [
+						"api",
+						"conrad",
+						"com"
+					],
+					"path": [
+						"search",
+						"1",
+						"v3",
+						"facetSearch",
+						"CZ",
+						"cs",
+						"b2c"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

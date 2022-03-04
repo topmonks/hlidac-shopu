@@ -45,7 +45,7 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
-    development = false,
+    development = true,
     type = LABELS.API_START, // [LABELS.API_START, LABELS.SITEMAP_START]
     maxConcurrency = 100,
     maxRequestRetries = 4,
@@ -55,6 +55,8 @@ Apify.main(async () => {
   log.info("DEVELOMENT: " + development);
 
   let sources = [];
+
+  log.info("type: " + type);
 
   switch (type) {
     // Scraping via API
@@ -157,14 +159,16 @@ Apify.main(async () => {
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats, null, 2));
 
+  /*
   if (!development) {
     try {
-      await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "luxor.cz");
+      await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "conrad.cz");
       log.info("invalidated Data CDN");
-      await uploadToKeboola("luxor_cz");
+      await uploadToKeboola("conrad_cz");
       log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);
     }
   }
+  */
 });

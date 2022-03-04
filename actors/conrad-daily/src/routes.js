@@ -15,7 +15,8 @@ const {
   URL_SITEMAP,
   PRODUCTS_PER_PAGE,
   LABELS,
-  URL_FRONT
+  URL_FRONT,
+  URL_API_START
 } = require("./const");
 const cheerio = require("cheerio");
 
@@ -23,19 +24,112 @@ const {
   utils: { log }
 } = Apify;
 
-exports.handleAPIStart = async (context, crawlContext) => {
+function traverseCategory(category) {
+  console.log("Category URL", category.url);
+
+  /*
+  if (category.hasOwnProperty("children")) {
+    for (let childIx in category.children) {
+      console.log("Child", category.children[childIx]);
+      traverseCategory(category.children[childIx]);
+    }
+  }
+  */
+}
+
+async function getApiKey() {
+  const requestOptions = {
+    url: URL_API_START
+  };
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body);
+
+  const globals = $("script#globals").html();
+
+  const matchX = globals.match(/apiKey: '(.*)',/);
+
+  if (matchX) {
+    return matchX[1];
+  } else {
+    return false;
+  }
+}
+
+async function traverseCategoryStart(crawlContext) {
   const requestOptions = {
     url: URL_TEMPLATE_CATEGORY,
     responseType: "json"
   };
+
   if (!crawlContext.development) {
     requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
   }
-  const { body } = await gotScraping(requestOptions);
 
   crawlContext.stats.requests++;
 
-  const categories = body.data;
+  const { body } = await gotScraping(requestOptions);
+  const categories = body.body;
+
+  //console.log(categories);
+
+  for (let categoryIx in categories) {
+    //console.log(categories[category]);
+
+    traverseCategory(categories[categoryIx]);
+  }
+}
+
+exports.handleAPIStart = async (context, crawlContext) => {
+  const apiKey = await getApiKey();
+  if (!apiKey) {
+    log.error("Cannot found apiKey");
+    return;
+  }
+
+  console.log(`apiKey ${apiKey}`);
+
+  //traverseCategoryStart(crawlContext);
+
+  const requestOptions = {
+    url: URL_TEMPLATE_PRODUCT_LIST.replace("{APIKEY}", apiKey),
+    responseType: "json"
+  };
+
+  if (!crawlContext.development) {
+    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
+  }
+
+  crawlContext.stats.requests++;
+
+  const { body } = await gotScraping.post(requestOptions, {
+    json: {
+      "facetFilter": [],
+      "from": 0,
+      "globalFilter": [
+        {
+          "field": "categoryId",
+          "type": "TERM_OR",
+          "values": ["0203060"]
+        }
+      ],
+      "query": "",
+      "size": 30,
+      "sort": [
+        {
+          "field": "price",
+          "order": "asc"
+        }
+      ],
+      "disabledFeatures": ["FIRST_LEVEL_CATEGORIES_ONLY"],
+      "enabledFeatures": ["and_filters"]
+    }
+  });
+
+  console.log(body.hits);
+
+  /*
 
   // First page for all categories
   const PAGE = 1;
@@ -65,6 +159,8 @@ exports.handleAPIStart = async (context, crawlContext) => {
 
     crawlContext.requestQueue.addRequest(req);
   }
+
+   */
 };
 
 exports.handleAPIList = async (context, crawlContext) => {

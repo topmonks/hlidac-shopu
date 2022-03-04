@@ -1,4 +1,4 @@
-# Luxor actor
+# Conrad actor
 Apify actor for Luxor.cz eshop
 
 ## Actor input
@@ -35,32 +35,162 @@ Scraper type can be selected by changing label property in main.js.
 ## eShop API
 
 ### Product categories
-https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1
+https://www.conrad.cz/restservices/CZ/megamenu
 
-.data
+```
+{
+  "statusCode": "SUCCESS",
+  "body": [
+  {
+    "title": "Aktivní součástky",
+    "url": "/t/aktivni-soucastky-t12",
+    "imageUrl": "/binaries/content/gallery/shared-images/t23-lvl1-semiconductorsjpg",
+    "icon": "/binaries/content/gallery/shared-images/categories-icons/componenten---actief.svg",
+    "children": [
+    {
+      "title": "ESD-ochrana",
+      "url": "/c/esd-ochrana-c27822",
+      "children": [
+      {
+        "title": "ESD SMD boxy",
+        "url": "/o/esd-smd-boxy-0203060"
+      },
+```
 
-Cointain id (806), title (Knihy), slug (knihy), parent (
+### How to get APIKEY
+https://www.conrad.cz
+
+```
+<script id="globals">
+    window.globals = Object.assign({}, window.globals, {
+        pageId: 'home',
+        services: {
+            apiKey: 'SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X',
+```
+
+### How to get products ID list
+https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X
+
+Page: "from": 0
+Product count: "size": 30
+
+Request payload
+```
+{
+    "facetFilter": [],
+    "from": 0,
+    "globalFilter": [
+        {
+            "field": "categoryId",
+            "type": "TERM_OR",
+            "values": [
+                "0203060"
+            ]
+        }
+    ],
+    "query": "",
+    "size": 30,
+    "sort": [
+        {
+            "field": "price",
+            "order": "asc"
+        }
+    ],
+    "disabledFeatures": [
+        "FIRST_LEVEL_CATEGORIES_ONLY"
+    ],
+    "enabledFeatures": [
+        "and_filters"
+    ]
+}
+```
+
+
+https://api.conrad.com/reco/3?apikey=SXc41FXfyxa0eL5MCBW1UyDGUVTG1D3X
+
+```
+{
+  "version": 1,
+  "startTimestamp": "2022-03-04T16:15:42.433179Z",
+  "endTimestamp": "2022-03-04T16:15:42.442517Z",
+  "outputs": {
+    "reco_products": "749507,1514239,2376390,820021,1881772,1565914,593686,125691,759903,2147495"
+  }
+}
+```
 
 ### Products on page
-https://mw.luxor.cz/api/v1/products?page=1&size=24&sort=revenue%3Adesc&filter%5Bcategory%5D=knihy
+Showed products
+https://www.conrad.cz/restservices/CZ/products/products?id=530941&id=530943&id=528255&id=524715&id=530924&id=530918&id=531318&id=531029&id=1888210&id=2238025
 
-.data[0]
+Product prices and availabilities (subcategory)
+Empty request payload
+https://www.conrad.cz/restservices/CZ/products/pricesAndAvailabilities?net=false&id=1298772&id=1298771
 
-id(393858), author(Karel Gott), in_stock (true), description, title(Má cesta za štěstím),
-current_variant_price_group[0]{with_vat(1399), without_vat(1271.8181), currency(CZK), type(RECOMMENDED, SALE)}
 
-### Products subcategories
-https://mw.luxor.cz/api/v1/categories/slug/knihy
-
-.data.children
-
-id (224), title (Beletrie), slug (knihy-beletrie)
+```
+{
+  "statusCode": "SUCCESS",
+  "body": [
+  {
+    "id": "530941",
+    "brand": {
+      "id": "Brand.2862",
+      "name": "Spelsberg",
+      "image": {
+        "url": "https://asset.conrad.com/media10/isa/160267/c1/-/cs/ELS-SPELSBERG_FL_00/image.jpg",
+        "type": "Vendor Logo"
+      },
+      "url": "Spelsberg"
+    },
+    "categoryId": "0203045",
+    "categoryName": "Nástěnné a instalační rozváděče",
+    "image": {
+      "url": "https://asset.conrad.com/media10/isa/160267/c1/-/cs/531010_RB_00_FB/image.jpg",
+      "type": "Primary Like Image"
+    },
+    "title": "instalační krabička Spelsberg TK PS 1809-8-t, (d x š x v) 180 x 94 x 81 mm, N/A, 1 ks",
+    "urlPath": "/p/instalacni-krabicka-spelsberg-tk-ps-1809-8-t-d-x-s-x-v-180-x-94-x-81-mm-na-1-ks-530941",
+    "rating": {
+      "reviewCount": 0,
+      "percentRating": 0
+    },
+    "price": {
+      "crossedOut": {
+        "gross": 453
+      },
+      "unit": {
+        "net": 347.93,
+        "gross": 421
+      },
+      "savedAmount": 32,
+      "vatPercentage": 21,
+      "currency": "CZK",
+      "freeShipping": false,
+      "pricedAttributes": [],
+      "priceScale": []
+    },
+    "availability": {
+      "stockQuantity": 6,
+      "availabilityColor": "GREEN",
+      "inStockArticle": true,
+      "deliveryTimeUnit": "DAYS",
+      "deliveryTimeUpperBound": 6,
+      "availabilityDate": "2022-03-04",
+      "lowerPromisedDeliveryDate": "2022-03-09",
+      "upperPromisedDeliveryDate": "2022-03-15",
+      "lowerPromisedDeliveryDayOfWeek": "WEDNESDAY",
+      "upperPromisedDeliveryDayOfWeek": "TUESDAY"
+    },
+    "exclusion": {
+      "exclusion": false,
+      "b2b": false,
+      "education": false
+    }
+  },
+```
 
 ### Pagination
-Pages at the bottom of page doesn't corespond with pages in the API
 
-Total count 267348
-Product on page: 24
 
-API page 20000 have still data - same as page 15000
 
