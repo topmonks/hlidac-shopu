@@ -106,7 +106,7 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
   const command = await getMetadataCommand(shop, itemUrl);
   return s3Client
     .send(command)
-    .then(x => x.Body.text())
+    .then(x => x.Body)
     .then(x => {
       console.log(x);
       return x;
@@ -138,7 +138,7 @@ export async function getHistoricalDataFromS3(s3Client, shop, itemUrl) {
   const command = await getHistoricalDataCommand(shop, itemUrl);
   return s3Client
     .send(command)
-    .then(x => x.Body.text())
+    .then(x => x.Body)
     .then(x => {
       console.log(x);
       return x;
