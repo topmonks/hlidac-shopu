@@ -75,7 +75,11 @@ export async function handler(event) {
   const item = await getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl);
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Missing data", shop: shop.origin, itemUrl: shop.itemUrl })
+      notFound({
+        error: "Missing data",
+        shop: shop.origin,
+        itemUrl: shop.itemUrl
+      })
     );
   }
 
