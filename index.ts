@@ -18,7 +18,7 @@ let db = createDatabase();
 let store = createDatastore();
 
 let api = createApi("api2.hlidacshopu.cz");
-let _api = createApi("api.hlidacshopu.cz", {stage: "v2"});
+//let _api = createApi("api.hlidacshopu.cz", {stage: "v2"});
 let web = createWebsite("www.hlidacshopu.cz");
 
 export const certificateArn = certificate;
