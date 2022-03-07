@@ -67,9 +67,14 @@ export function createDatastore() {
   });
 }
 
-export async function createApi(domainName: string) {
+function hsName(t: string, options?: any) {
+  const suffix = options?.version ? "-" + options?.version : "";
+  return `hlidac-shopu-${t}${suffix}`;
+}
+
+export async function createApi(domainName: string, options?: any) {
   const defaultLambdaRole = new aws.iam.Role(
-    "hlidac-shopu-default-lambda-role",
+    hsName("default-lambda-role", options),
     {
       assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
         aws.iam.Principals.LambdaPrincipal
@@ -78,7 +83,7 @@ export async function createApi(domainName: string) {
   );
 
   new aws.iam.RolePolicyAttachment(
-    "hlidac-shopu-lambda-basic-execution-attachment",
+    hsName("lambda-basic-execution-attachment", options),
     {
       policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
       role: defaultLambdaRole
@@ -86,14 +91,14 @@ export async function createApi(domainName: string) {
   );
 
   new aws.iam.RolePolicyAttachment(
-    "hlidac-shopu-lambda-dynamo-read-write-attachment",
+    hsName("lambda-dynamo-read-write-attachment", options),
     {
       policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
       role: defaultLambdaRole
     }
   );
 
-  new aws.iam.RolePolicyAttachment("hlidac-shopu-lambda-s3-read-attachment", {
+  new aws.iam.RolePolicyAttachment(hsName("lambda-s3-read-attachment", options), {
     policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
     role: defaultLambdaRole
   });
@@ -107,7 +112,7 @@ export async function createApi(domainName: string) {
     role: aws.iam.Role,
     { timeout = 15, environment }: RouteHandlerArgs
   ): aws.lambda.Function =>
-    new aws.lambda.Function(`hlidac-shopu-api-${name}-lambda`, {
+    new aws.lambda.Function(hsName(`api-${name}-lambda`, options), {
       publish: true,
       runtime: aws.lambda.Runtime.NodeJS14dX,
       architectures: ["arm64"],
@@ -145,9 +150,9 @@ export async function createApi(domainName: string) {
     cache
   });
 
-  const api = new Api("hlidac-shopu-api", {
-    stageName: "v1",
-    description: "Nová verze API Hlídače managovaná přes Pulumi",
+  const api = new Api(hsName("api", options), {
+    stageName: options?.stage ?? "v1",
+    description: options?.stage ? "Staged API Hlídače shopů managed by Pulumi" : "Nová verze API Hlídače managovaná přes Pulumi",
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
@@ -191,10 +196,11 @@ export async function createApi(domainName: string) {
   });
 
   const apiDistribution = new CustomDomainDistribution(
-    "hlidac-shopu-api",
+    hsName("api", options),
     {
       gateway: api.gateway,
-      domainName
+      domainName,
+      basePath: options?.stage
     },
     { dependsOn: [api] }
   );
