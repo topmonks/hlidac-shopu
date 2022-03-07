@@ -5,13 +5,13 @@
   "author": "Ladislav Šnajberk <ladislav.snajberk@topmonks.com>",
   "license": "EPL-2.0",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.49.0",
-    "@aws-sdk/client-s3": "^3.49.0",
+    "@aws-sdk/client-cloudfront": "^3.53.0",
+    "@aws-sdk/client-s3": "^3.53.1",
     "@hlidac-shopu/actors-common": "^1.1.9",
-    "apify": "^2.2.1"
+    "apify": "^2.2.2"
   },
   "devDependencies": {
-    "@types/node": "^16.11.22",
+    "@types/node": "^16.11.26",
     "apify-cli": "^0.6.7"
   },
   "scripts": {
