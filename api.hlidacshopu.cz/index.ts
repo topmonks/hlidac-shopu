@@ -68,7 +68,7 @@ export function createDatastore() {
 }
 
 function hsName(t: string, options?: any) {
-  const suffix = options?.version ? "-" + options?.version : "";
+  const suffix = options?.stage ? "-" + options?.stage : "";
   return `hlidac-shopu-${t}${suffix}`;
 }
 
