@@ -72,9 +72,7 @@ export async function handler(event) {
   }
   const extraData = getParsedData(db, shop);
   const meta = await getMetadataFromS3(s3, shop.origin, shop.itemUrl);
-  console.log({ meta });
   const item = await getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl);
-  console.log({ item });
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
       notFound({
@@ -85,7 +83,7 @@ export async function handler(event) {
     );
   }
 
-  const rows = prepareData(item);
+  const rows = prepareData({ json: item });
   const { currentPrice, originalPrice, imageUrl } = Object.assign(
     {},
     await extraData,
@@ -105,13 +103,7 @@ export async function handler(event) {
 
   const discount = getRealDiscount(rows);
   const claimedDiscount = getClaimedDiscount(rows);
-  const transformMetadata = ({
-    itemImage,
-    itemName,
-    real_sale,
-    max_price,
-    ...rest
-  }) => ({
+  const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
     name: itemName,
     imageUrl: itemImage ?? imageUrl,
     claimedDiscount,
