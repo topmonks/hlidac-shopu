@@ -89,10 +89,10 @@ export function getHistoricalData(db, name, itemId) {
  * @returns {GetObjectCommand}
  */
 async function getMetadataCommand(shop, slug) {
-  console.log({ Key: `items/${shop}/${slug}$/meta.json` });
+  console.log({ Key: `items/${shop}/${slug}/meta.json` });
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
-    Key: `items/${shop}/${slug}$/meta.json`
+    Key: `items/${shop}/${slug}/meta.json`
   });
 }
 
@@ -117,10 +117,10 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
  * @returns {GetItemCommand}
  */
 export async function getHistoricalDataCommand(shop, slug) {
-  console.log({ Key: `items/${shop}/${slug}$/price-history.json` });
+  console.log({ Key: `items/${shop}/${slug}/price-history.json` });
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
-    Key: `items/${shop}/${slug}$/price-history.json`
+    Key: `items/${shop}/${slug}/price-history.json`
   });
 }
 
