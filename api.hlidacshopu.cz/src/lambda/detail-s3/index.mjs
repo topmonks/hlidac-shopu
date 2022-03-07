@@ -71,11 +71,11 @@ export async function handler(event) {
     );
   }
   const extraData = getParsedData(db, shop);
-  const meta = getMetadataFromS3(s3, shop.key, shop.itemUrl);
-  const item = await getHistoricalDataFromS3(s3, shop.key, shop.itemUrl);
+  const meta = await getMetadataFromS3(s3, shop.origin, shop.itemUrl);
+  const item = await getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl);
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Missing data", shop: shop.key, itemUrl: shop.itemUrl })
+      notFound({ error: "Missing data", shop: shop.origin, itemUrl: shop.itemUrl })
     );
   }
 

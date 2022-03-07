@@ -9,7 +9,6 @@ import { createHash } from "crypto";
 import addDays from "date-fns/esm/addDays/index.js";
 import getUnixTime from "date-fns/esm/getUnixTime/index.js";
 import startOfDay from "date-fns/esm/startOfDay/index.js";
-import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
 /** @typedef { import("@aws-sdk/client-s3/S3Client").S3Client } S3Client */
@@ -85,12 +84,11 @@ export function getHistoricalData(db, name, itemId) {
 }
 
 /**
- * @param {string} name
+ * @param {string} shop
  * @param {string} slug
  * @returns {GetObjectCommand}
  */
-async function getMetadataCommand(name, slug) {
-  const shop = name.replace("_", ".");
+async function getMetadataCommand(shop, slug) {
   console.log({ Key: `items/${shop}/${slug}$/meta.json` });
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
@@ -100,12 +98,12 @@ async function getMetadataCommand(name, slug) {
 
 /**
  * @param {S3Client} s3Client
- * @param {string} name
+ * @param {string} shop
  * @param {string} itemUrl
  * @returns {Promise}
  */
-export async function getMetadataFromS3(s3Client, name, itemUrl) {
-  const command = await getMetadataCommand(name, itemSlug({ itemUrl }));
+export async function getMetadataFromS3(s3Client, shop, itemUrl) {
+  const command = await getMetadataCommand(shop, itemUrl);
   return s3Client
     .send(command)
     .then(x => x.Body.text())
@@ -133,7 +131,7 @@ export async function getHistoricalDataCommand(shop, slug) {
  * @returns {Promise}
  */
 export async function getHistoricalDataFromS3(s3Client, shop, itemUrl) {
-  const command = await getHistoricalDataCommand(shop, itemSlug({ itemUrl }));
+  const command = await getHistoricalDataCommand(shop, itemUrl);
   return s3Client
     .send(command)
     .then(x => x.Body.text())
