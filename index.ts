@@ -18,10 +18,7 @@ let db = createDatabase();
 let store = createDatastore();
 
 let api = createApi("api2.hlidacshopu.cz");
-api.then(x => x.stop());
-
 let web = createWebsite("www.hlidacshopu.cz");
-web.then(x => x.stop());
 
 export const certificateArn = certificate;
 export const apiGatewayUrl = api.then(({ apiGateway }) => apiGateway.url);

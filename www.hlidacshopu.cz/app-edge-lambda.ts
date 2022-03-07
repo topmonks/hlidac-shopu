@@ -28,9 +28,8 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
       role: role
     });
 
-    const builder = await lambdaBuilder.init();
     const buildAssets = (fileName: string) =>
-      builder.buildCodeAsset(
+      lambdaBuilder.buildCodeAsset(
         path.join(__dirname, "app-edge-lambda", fileName),
         true
       );
@@ -53,10 +52,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
     );
 
     return {
-      lambda: new AppEdgeLambda(name, lambda),
-      stop() {
-        builder.stop();
-      }
+      lambda: new AppEdgeLambda(name, lambda)
     };
   }
 }

@@ -98,9 +98,8 @@ export async function createApi(domainName: string) {
     role: defaultLambdaRole
   });
 
-  const builder = await lambdaBuilder.init();
   const buildAssets = (fileName: string) =>
-    builder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName));
+    lambdaBuilder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName));
 
   const getRouteHandler = (
     name: string,
@@ -203,10 +202,7 @@ export async function createApi(domainName: string) {
   return {
     apiGateway: api.gateway,
     openApiUrl: api.openApiUrl,
-    apiDistribution,
-    stop() {
-      builder.stop();
-    }
+    apiDistribution
   };
 }
 

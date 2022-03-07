@@ -24,9 +24,8 @@ export class RootEdgeLambda extends pulumi.ComponentResource {
       role
     });
 
-    const builder = await lambdaBuilder.init();
     const buildAssets = (fileName: string) =>
-      builder.buildCodeAsset(
+      lambdaBuilder.buildCodeAsset(
         path.join(__dirname, "root-edge-lambda", fileName),
         true
       );
@@ -50,9 +49,6 @@ export class RootEdgeLambda extends pulumi.ComponentResource {
 
     return {
       lambda: new RootEdgeLambda(name, lambda),
-      stop() {
-        builder.stop();
-      }
     };
   }
 }

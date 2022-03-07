@@ -13,10 +13,10 @@ export async function createWebsite(domain: string) {
   let securityHeadersLambda = SecurityHeadersLambda.create(
     "hlidac-shopu-security"
   );
-  let { lambda: appLambda, ...appBuilder } = await AppEdgeLambda.create(
+  let { lambda: appLambda } = await AppEdgeLambda.create(
     "hlidac-shopu-app-lambda"
   );
-  let { lambda: rootLambda, ...rootBuilder } = await RootEdgeLambda.create(
+  let { lambda: rootLambda} = await RootEdgeLambda.create(
     "hlidac-shopu-root-lambda"
   );
 
@@ -57,10 +57,6 @@ export async function createWebsite(domain: string) {
     gmailRecords,
     googleVerification,
     nakedDomainRedirect,
-    website,
-    stop() {
-      appBuilder.stop();
-      rootBuilder.stop();
-    }
+    website
   };
 }

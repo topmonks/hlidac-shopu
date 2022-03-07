@@ -1,32 +1,26 @@
 import * as pulumi from "@pulumi/pulumi";
-import { build } from "esbuild";
+import { buildSync } from "esbuild";
 
-export async function init() {
-  const buildTasks: Promise<string>[] = [];
+function build(entrypoint: string, minify: boolean) {
+  const result = buildSync({
+    bundle: true,
+    minify,
+    charset: "utf8",
+    platform: "node",
+    target: "node14",
+    mainFields: ["module", "main"],
+    external: ["aws-sdk"],
+    entryPoints: [entrypoint],
+    write: false,
+  });
+  return result?.outputFiles?.[0].text ?? "";
+}
 
-  return {
-    build(entrypoint: string, minify: boolean) {
-      const promise = build({
-        bundle: true,
-        minify,
-        charset: "utf8",
-        platform: "node",
-        target: "node14",
-        mainFields: ["module", "main"],
-        external: ["aws-sdk"],
-        entryPoints: [entrypoint],
-        write: false
-      }).then(result => result?.outputFiles?.[0].text ?? "");
-      buildTasks.push(promise);
-      return promise;
-    },
-    buildCodeAsset(entrypoint: string, minify: boolean = false) {
-      return new pulumi.asset.AssetArchive({
-        "index.js": new pulumi.asset.StringAsset(this.build(entrypoint, minify))
-      });
-    },
-    stop() {
-      Promise.all(buildTasks).catch(err => console.error(err));
-    }
-  };
+export function buildCodeAsset(
+  entrypoint: string,
+  minify = false
+): pulumi.asset.AssetArchive {
+  return new pulumi.asset.AssetArchive({
+    "index.js": new pulumi.asset.StringAsset(build(entrypoint, minify)),
+  });
 }
