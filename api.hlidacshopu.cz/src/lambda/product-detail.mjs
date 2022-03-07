@@ -107,8 +107,12 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
   return s3Client
     .send(command)
     .then(x => x.Body.text())
+    .then(x => {
+      console.log(x);
+      return x;
+    })
     .then(x => JSON.parse(x))
-    .catch(() => ({}));
+    .catch(err => console.error(err));
 }
 
 /**
@@ -135,8 +139,12 @@ export async function getHistoricalDataFromS3(s3Client, shop, itemUrl) {
   return s3Client
     .send(command)
     .then(x => x.Body.text())
+    .then(x => {
+      console.log(x);
+      return x;
+    })
     .then(x => JSON.parse(x))
-    .catch(() => ({}));
+    .catch(err => console.error(err));
 }
 
 /**
