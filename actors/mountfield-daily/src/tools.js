@@ -71,7 +71,7 @@ async function extractItems($, $products, userData) {
       !global.userInput.development
         ? uploadToS3(
             s3,
-            `mountfield.${country}`,
+            `mountfield.${country.toLowerCase()}`,
             await s3FileName(result),
             "jsonld",
             toProduct(
