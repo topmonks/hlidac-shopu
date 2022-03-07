@@ -321,14 +321,12 @@ async function processItems(
           : item.category;
       }
 
-      if (item["shop"] === undefined || item["shop"] === null) {
-        item["shop"] =
-          item.itemUrl !== null ? await getShopName(item.itemUrl) : null;
+      if (!item.shop) {
+        item.shop = item.itemUrl ? await getShopName(item.itemUrl) : null;
       }
 
-      if (item["slug"] === undefined || item["slug"] === null) {
-        item["slug"] =
-          item.itemUrl !== null ? await getItemSlug(item.itemUrl) : null;
+      if (!item.slug) {
+        item.slug = item.itemUrl ? await getItemSlug(item.itemUrl) : null;
       }
       item.category = blackFriday ? 1 : 0;
     }

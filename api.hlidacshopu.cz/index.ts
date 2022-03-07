@@ -159,7 +159,7 @@ export async function createApi(domainName: string, options?: any) {
       createHandlerRoute("detail", {
         httpMethod: "GET",
         path: "/detail",
-        fileName: options?.stage ? "detail-s3/index.mjs" :"detail/index.mjs",
+        fileName: options?.stage ? "detail-s3/index.mjs" : "detail/index.mjs",
         requiredParameters: [{ in: "query", name: "url" }]
       }),
       createHandlerRoute("data", {

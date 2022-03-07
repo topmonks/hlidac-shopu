@@ -1,9 +1,10 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist-es/DynamoDBClient.js";
+import { S3Client } from "@aws-sdk/client-s3/dist-es/S3Client.js";
 import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
-  getHistoricalData,
-  getMetadata,
+  getHistoricalDataFromS3,
+  getMetadataFromS3,
   getParsedData,
   putParsedData
 } from "../product-detail.mjs";
@@ -40,6 +41,7 @@ function createDataset(data) {
 }
 
 const db = new DynamoDBClient({});
+const s3 = new S3Client({});
 
 /**
  * @param {APIGatewayProxyEvent} event
@@ -62,7 +64,6 @@ export async function handler(event) {
     );
   }
 
-  let itemId = params.itemId ?? shop.itemId;
   if (params.currentPrice && params.currentPrice !== "null") {
     // store parsed data by extension
     putParsedData(db, shop, params).catch(err =>
@@ -70,18 +71,11 @@ export async function handler(event) {
     );
   }
   const extraData = getParsedData(db, shop);
-  const meta = getMetadata(db, shop.key, shop.itemUrl, itemId);
-
-  itemId = itemId ?? (await meta)?.itemId;
-  if (!itemId) {
-    return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Unknown item", itemId })
-    );
-  }
-  const item = await getHistoricalData(db, shop.key, itemId);
+  const meta = getMetadataFromS3(s3, shop.key, shop.itemUrl);
+  const item = await getHistoricalDataFromS3(s3, shop.key, shop.itemUrl);
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Missing data", itemId })
+      notFound({ error: "Missing data", shop: shop.key, itemUrl: shop.itemUrl })
     );
   }
 
@@ -104,16 +98,17 @@ export async function handler(event) {
   }
 
   const discount = getRealDiscount(rows);
+  const claimedDiscount = getClaimedDiscount(rows);
   const transformMetadata = ({
-                               itemImage,
-                               itemName,
-                               real_sale,
-                               max_price,
-                               ...rest
-                             }) => ({
+    itemImage,
+    itemName,
+    real_sale,
+    max_price,
+    ...rest
+  }) => ({
     name: itemName,
-    imageUrl: itemImage === "null" ? imageUrl : itemImage,
-    claimedDiscount: getClaimedDiscount(rows),
+    imageUrl: itemImage ?? imageUrl,
+    claimedDiscount,
     ...discount,
     ...rest
   });

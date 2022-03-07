@@ -3,13 +3,16 @@ import { QueryCommand } from "@aws-sdk/client-dynamodb/dist-es/commands/QueryCom
 import { PutItemCommand } from "@aws-sdk/client-dynamodb/dist-es/commands/PutItemCommand.js";
 import { marshall } from "@aws-sdk/util-dynamodb/dist-es/marshall.js";
 import { unmarshall } from "@aws-sdk/util-dynamodb/dist-es/unmarshall.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3/dist-es/commands/GetObjectCommand.js";
 import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { createHash } from "crypto";
 import addDays from "date-fns/esm/addDays/index.js";
 import getUnixTime from "date-fns/esm/getUnixTime/index.js";
 import startOfDay from "date-fns/esm/startOfDay/index.js";
+import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
+/** @typedef { import("@aws-sdk/client-s3/S3Client").S3Client } S3Client */
 /** @typedef { import("@hlidac-shopu/lib/shops.mjs").Shop } Shop */
 /** @typedef { import("@hlidac-shopu/lib/shops.mjs").ShopParams } ShopParams */
 
@@ -82,6 +85,63 @@ export function getHistoricalData(db, name, itemId) {
 }
 
 /**
+ * @param {string} name
+ * @param {string} slug
+ * @returns {GetObjectCommand}
+ */
+async function getMetadataCommand(name, slug) {
+  const shop = name.replace("_", ".");
+  console.log({ Key: `items/${shop}/${slug}$/meta.json` });
+  return new GetObjectCommand({
+    Bucket: "data.hlidacshopu.cz",
+    Key: `items/${shop}/${slug}$/meta.json`
+  });
+}
+
+/**
+ * @param {S3Client} s3Client
+ * @param {string} name
+ * @param {string} itemUrl
+ * @returns {Promise}
+ */
+export async function getMetadataFromS3(s3Client, name, itemUrl) {
+  const command = await getMetadataCommand(name, itemSlug({ itemUrl }));
+  return s3Client
+    .send(command)
+    .then(x => x.Body.text())
+    .then(x => JSON.parse(x))
+    .catch(() => ({}));
+}
+
+/**
+ * @param {string} shop
+ * @param {string} slug
+ * @returns {GetItemCommand}
+ */
+export async function getHistoricalDataCommand(shop, slug) {
+  console.log({ Key: `items/${shop}/${slug}$/price-history.json` });
+  return new GetObjectCommand({
+    Bucket: "data.hlidacshopu.cz",
+    Key: `items/${shop}/${slug}$/price-history.json`
+  });
+}
+
+/**
+ * @param {S3Client} s3Client
+ * @param {string} shop
+ * @param {string} itemUrl
+ * @returns {Promise}
+ */
+export async function getHistoricalDataFromS3(s3Client, shop, itemUrl) {
+  const command = await getHistoricalDataCommand(shop, itemSlug({ itemUrl }));
+  return s3Client
+    .send(command)
+    .then(x => x.Body.text())
+    .then(x => JSON.parse(x))
+    .catch(() => ({}));
+}
+
+/**
  * @param {Shop} shop
  * @param {Date} today
  * @param {ShopParams} params
@@ -96,7 +156,7 @@ function getPutParsedDataCommand(shop, today, params) {
         date: today.toISOString(),
         expirationDate: getUnixTime(addDays(today, 1)),
         data: {
-          currentPrice: parseFloat(params.currentPrice ?? "0"),
+          currentPrice: parseFloat(params.currentPrice ?? 0),
           title: params.title ?? "",
           originalPrice: params.originalPrice
             ? parseFloat(params.originalPrice)
