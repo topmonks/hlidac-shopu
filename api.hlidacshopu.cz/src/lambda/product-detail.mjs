@@ -84,6 +84,19 @@ export function getHistoricalData(db, name, itemId) {
 }
 
 /**
+ *
+ * @param {Readable} stream
+ * @returns {Promise<string>}
+ */
+const streamToString = (stream) =>
+  new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
+
+/**
  * @param {string} shop
  * @param {string} slug
  * @returns {GetObjectCommand}
@@ -107,10 +120,7 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
   return s3Client
     .send(command)
     .then(x => x.Body)
-    .then(x => {
-      console.log(x);
-      return x;
-    })
+    .then(x => streamToString(x))
     .then(x => JSON.parse(x))
     .catch(err => console.error(err));
 }
@@ -139,10 +149,7 @@ export async function getHistoricalDataFromS3(s3Client, shop, itemUrl) {
   return s3Client
     .send(command)
     .then(x => x.Body)
-    .then(x => {
-      console.log(x);
-      return x;
-    })
+    .then(x => streamToString(x))
     .then(x => JSON.parse(x))
     .catch(err => console.error(err));
 }
