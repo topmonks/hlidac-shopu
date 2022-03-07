@@ -85,12 +85,12 @@ export async function handler(event) {
     await extraData,
     params.currentPrice
       ? {
-        currentPrice: parseFloat(params.currentPrice),
-        originalPrice: params.originalPrice
-          ? parseFloat(params.originalPrice)
-          : null,
-        imageUrl: params.imageUrl
-      }
+          currentPrice: parseFloat(params.currentPrice),
+          originalPrice: params.originalPrice
+            ? parseFloat(params.originalPrice)
+            : null,
+          imageUrl: params.imageUrl
+        }
       : {}
   );
   if (currentPrice) {
