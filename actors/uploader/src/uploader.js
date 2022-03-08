@@ -1,7 +1,7 @@
+const { fetch } = require("@adobe/helix-fetch");
 const Apify = require("apify");
-const { fetch } = require("fetch-h2");
 const byteSize = require("byte-size");
-const FormData = require("form-data");
+const { FormData } = require("formdata-node");
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
@@ -14,16 +14,16 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
       const size = Buffer.byteLength(data);
 
       const body = new FormData();
-      body.append("tableId", tableId);
-      body.append("data", data, {
+      body.set("tableId", tableId);
+      body.set("data", data, {
         filename: isGzipped ? `${fileName}.gz` : fileName,
         contentType: isGzipped ? undefined : "text/csv"
       });
-      body.append("incremental", 1);
+      body.set("incremental", 1);
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: body.getHeaders({ "X-StorageApi-Token": KEBOOLA_KEY }),
+        headers: { "X-StorageApi-Token": KEBOOLA_KEY },
         body
       });
       console.log(`HTTP ${resp.status}`);

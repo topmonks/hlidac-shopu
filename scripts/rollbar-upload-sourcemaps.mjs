@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import path from "path";
 import fs from "fs";
-import { fetch } from "fetch-h2";
-import FormData from "form-data";
 import url from "url";
+import { fetch } from "@adobe/helix-fetch";
+import { FormData } from "formdata-node";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const rootPath = path.resolve(__dirname, "..", "public", "www.hlidacshopu.cz");

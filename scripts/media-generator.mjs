@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { fetch } from "@adobe/helix-fetch";
 import formatISO from "date-fns/formatISO/index.js";
-import { fetch } from "fetch-h2";
 import { parseHTML } from "linkedom/cached";
 import fs from "fs";
 import path from "path";

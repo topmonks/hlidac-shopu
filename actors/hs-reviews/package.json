@@ -7,6 +7,7 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
+    "@adobe/helix-fetch": "^3.0.6",
     "@aws-sdk/client-cloudfront": "^3.53.0",
     "@aws-sdk/client-s3": "^3.53.1",
     "@hlidac-shopu/actors-common": "^1.1.9",
@@ -15,7 +16,6 @@
     "apify": "^2.2.2",
     "cheerio": "^1.0.0-rc.10",
     "csv-parse": "^5.0.4",
-    "fetch-h2": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
     "schema-dts": "^1.1.0"
   },

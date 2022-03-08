@@ -1,3 +1,4 @@
+import { fetch } from "@adobe/helix-fetch";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
@@ -8,7 +9,6 @@ import Apify from "apify";
 import cheerio from "cheerio";
 import * as csv from "csv-parse/sync";
 import jwt from "jsonwebtoken";
-import { fetch } from "fetch-h2";
 import { URLSearchParams } from "url";
 import { promisify } from "util";
 import zlib from "zlib";

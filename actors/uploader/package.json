@@ -5,13 +5,13 @@
   "author": "TopMonks s.r.o. & contributors",
   "license": "EPL-2.0",
   "dependencies": {
+    "@adobe/helix-fetch": "^3.0.6",
     "@fast-csv/format": "^4.3.5",
-    "@hlidac-shopu/lib": "^1.2.5",
+    "@hlidac-shopu/lib": "^1.2.7",
     "apify": "^2.2.2",
     "byte-size": "^8.1.0",
     "date-fns": "^2.28.0",
-    "fetch-h2": "^3.0.2",
-    "form-data": "^4.0.0",
+    "formdata-node": "^4.3.2",
     "node-gzip": "^1.1.2"
   },
   "scripts": {

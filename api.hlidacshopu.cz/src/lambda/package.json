@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "Lambdas for handling API Gateway endpoints",
   "dependencies": {
+    "@adobe/helix-fetch": "^3.0.6",
     "@aws-sdk/client-dynamodb": "^3.53.0",
     "@aws-sdk/client-s3": "^3.53.1",
     "@aws-sdk/util-dynamodb": "^3.53.0",
-    "@hlidac-shopu/lib": "^1.2.5",
+    "@hlidac-shopu/lib": "workspace:lib",
     "@pulumi/aws": "^4.38.0",
     "@pulumi/awsx": "^0.33.0",
-    "abort-controller": "^3.0.0",
     "crypto": "^1.0.1",
     "date-fns": "^2.28.0",
-    "fetch-h2": "^3.0.2",
     "ramda": "^0.28.0"
   }
 }

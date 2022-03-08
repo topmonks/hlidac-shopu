@@ -1,5 +1,4 @@
-import AbortController from "abort-controller";
-import { fetch } from "fetch-h2";
+import { fetch, AbortController } from "@adobe/helix-fetch";
 import { withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */

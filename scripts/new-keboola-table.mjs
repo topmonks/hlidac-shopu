@@ -1,4 +1,4 @@
-import { fetch } from "fetch-h2";
+import { fetch } from "@adobe/helix-fetch";
 import { program } from "commander/esm.mjs";
 
 const tableTypes = new Map([
