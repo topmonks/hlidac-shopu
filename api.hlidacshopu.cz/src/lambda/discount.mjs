@@ -116,15 +116,22 @@ const commonPriceInterval = 60;
 const saleActionInterval = 30;
 
 /**
- * Searches for Sale Action in last 30 days. When there is any, it returns
- * real sale according to EU legislation - Minimum price in 30 days before
- * sale action. Sale action is simply last drop of price without any increase.
- * In other cases it counts discount against common price - most used price
- * in 60 days interval.
- * @param {DataRow[]} data Time series of prices
- * @returns {EUDiscount | CommonPriceDifference}
+ *
+ * @param {number} days
+ * @returns {function(Date): boolean}
  */
-export function getRealDiscount(data) {
+const isInLastDays = days => date =>
+  isWithinInterval(date, {
+    start: subDays(new Date(), days),
+    end: new Date()
+  });
+
+/**
+ *
+ * @param {DataRow[]} data
+ * @returns {{lastDiscountDate: Date | undefined, lastIncreaseDate: Date | undefined}}
+ */
+function getLastChangesInData(data) {
   const series = data
     .filter(({ currentPrice }) => currentPrice)
     .map(({ currentPrice, date }) => [date, currentPrice]);
@@ -141,11 +148,64 @@ export function getRealDiscount(data) {
   const lastIncreaseDate = last(
     changes.filter(([δ]) => δ > 0).map(([, date]) => date)
   );
-  const isInLastDays = days => date =>
-    isWithinInterval(date, {
-      start: subDays(new Date(), days),
-      end: new Date()
-    });
+  return { lastDiscountDate, lastIncreaseDate };
+}
+
+/**
+ * Searches for Sale Action in last 30 days. When there is any, it returns
+ * real sale according to EU legislation - Minimum price in 30 days before
+ * sale action. Sale action is simply last drop of price without any increase.
+ * In other cases it counts discount against common price - most used price
+ * in 60 days interval.
+ * @param {{commonPrice: number, minPrice?: number}} meta
+ * @param {DataRow[]} data Time series of prices
+ * @returns {EUDiscount | CommonPriceDifference}
+ */
+export function realDiscount(meta, data) {
+  const { commonPrice, minPrice } = meta;
+  const { currentPrice } = last(data);
+  const { lastDiscountDate, lastIncreaseDate } = getLastChangesInData(data);
+  if (
+    minPrice &&
+    isEuDiscountApplicable(
+      lastIncreaseDate,
+      lastDiscountDate,
+      isInLastDays(saleActionInterval)
+    )
+  ) {
+    return {
+      minPrice,
+      currentPrice,
+      realDiscount: discount(minPrice, currentPrice),
+      lastDiscountDate,
+      lastIncreaseDate,
+      type: "eu-minimum"
+    };
+  }
+  return {
+    commonPrice,
+    currentPrice,
+    realDiscount: discount(commonPrice, currentPrice),
+    lastDiscountDate,
+    lastIncreaseDate,
+    type: "common-price"
+  };
+}
+
+/**
+ * Searches for Sale Action in last 30 days. When there is any, it returns
+ * real sale according to EU legislation - Minimum price in 30 days before
+ * sale action. Sale action is simply last drop of price without any increase.
+ * In other cases it counts discount against common price - most used price
+ * in 60 days interval.
+ * @param {DataRow[]} data Time series of prices
+ * @returns {EUDiscount | CommonPriceDifference}
+ * @deprecated
+ */
+export function getRealDiscount(data) {
+  const { series, lastDiscountDate, lastIncreaseDate } =
+    getLastChangesInData(data);
+
   if (
     isEuDiscountApplicable(
       lastIncreaseDate,
@@ -164,8 +224,9 @@ export function getRealDiscount(data) {
 }
 
 /**
+ *
  * @param {DataRow[]} data
- * @returns {number}
+ * @returns {number | null}
  */
 export function getClaimedDiscount(data) {
   const lastRow = last(data);
@@ -176,23 +237,17 @@ export function getClaimedDiscount(data) {
 }
 
 /**
- * @param {string} s
- * @returns {Date}
- */
-function parseDate(s) {
-  return new Date(s);
-}
-
-/**
+ *
  * @param {Object} json
  * @returns {DataRow[]}
  */
 export function prepareData({ json }) {
   const rows = typeof json === "string" ? JSON.parse(json) : json;
+  // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({
     currentPrice: c === "" ? null : parseFloat(c),
     originalPrice: o === "" ? null : parseFloat(o),
-    date: parseDate(d)
+    date: new Date(d)
   }));
 
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));

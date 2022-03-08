@@ -8,11 +8,7 @@ import {
   getParsedData,
   putParsedData
 } from "../product-detail.mjs";
-import {
-  getClaimedDiscount,
-  getRealDiscount,
-  prepareData
-} from "../discount.mjs";
+import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
@@ -101,7 +97,7 @@ export async function handler(event) {
     rows.push({ currentPrice, originalPrice, date: new Date() });
   }
 
-  const discount = getRealDiscount(rows);
+  const discount = realDiscount(meta, rows);
   const claimedDiscount = getClaimedDiscount(rows);
   const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
     name: itemName,
