@@ -129,7 +129,7 @@ const isInLastDays = days => date =>
 /**
  *
  * @param {DataRow[]} data
- * @returns {{lastDiscountDate: Date | undefined, lastIncreaseDate: Date | undefined}}
+ * @returns {{lastDiscountDate: Date | undefined, lastIncreaseDate: Date | undefined, series: [Date, number][]}}
  */
 function getLastChangesInData(data) {
   const series = data
@@ -148,7 +148,7 @@ function getLastChangesInData(data) {
   const lastIncreaseDate = last(
     changes.filter(([δ]) => δ > 0).map(([, date]) => date)
   );
-  return { lastDiscountDate, lastIncreaseDate };
+  return { series, lastDiscountDate, lastIncreaseDate };
 }
 
 /**
