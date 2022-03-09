@@ -1,22 +1,131 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { LABELS, PRODUCTS_URLS } from "./const.js";
-import { createRouter } from "./routes.js";
-import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import {
+  LABELS,
+  PRODUCTS_URLS,
+  SCRIPT_WITH_JSON,
+  PRODUCTS_PER_PAGE,
+  PRODUCTS_BASE_URL
+} from "./const.js";
+import {
+  invalidateCDN,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import randomUA from "modern-random-ua";
 
 const { log } = Apify.utils;
 
-let stats = {};
-const processedIds = new Set();
+async function getProductJSON($) {
+  let correctScript;
+  const scripts = $("script").toArray();
+  for (const s of scripts) {
+    const data = s?.children[0]?.data;
+    if (data?.startsWith(SCRIPT_WITH_JSON.PREFIX)) {
+      correctScript = data;
+    }
+  }
+  if (correctScript) {
+    let resultJson = correctScript.replace(SCRIPT_WITH_JSON.PREFIX, "");
+    resultJson = resultJson.replace(SCRIPT_WITH_JSON.POSTFIX, "");
+    resultJson = resultJson.replaceAll(
+      SCRIPT_WITH_JSON.UNDEFINED,
+      `"${SCRIPT_WITH_JSON.UNDEFINED}"`
+    );
+    return resultJson;
+  }
+}
+
+function getCategory(sections) {
+  // create category from the first top down path from the tree
+  let result = [];
+  let prevParent = "initial";
+  for (const section in sections) {
+    const item = sections[section];
+    if (prevParent === item.parentId || prevParent === "initial") {
+      prevParent = item.id;
+      result.push(item);
+    }
+  }
+  return result.map(p => p.name.trim()).join(" > ");
+}
+
+async function scrapeListing({ context, stats, test }) {
+  log.info("Processing START");
+  const { crawler, request, $ } = context;
+  const resultJson = await getProductJSON($);
+  const json = JSON.parse(resultJson);
+  const totalItems = json.products.listingData.totalItems;
+  let totalPages = Math.floor(totalItems / PRODUCTS_PER_PAGE);
+  if (test) {
+    totalPages = 3;
+    log.info(`TEST mode. Data are taken only from ${totalPages} pages.`);
+  }
+  log.info(`Pocet produktu:${totalItems}`);
+  log.info(`Pocet stranek produktu:${totalPages}`);
+  stats.urls += totalPages;
+  for (let i = 1; i <= totalPages; i++) {
+    await crawler.requestQueue.addRequest({
+      url: `${request.url}?page=${i}`,
+      userData: {
+        label: LABELS.PRODUCTS
+      }
+    });
+  }
+}
+
+async function scrapeProducts({ processedIds, stats, development, $, s3 }) {
+  const resultJson = await getProductJSON($);
+  const json = JSON.parse(resultJson);
+  const products = json.products.listingData.items;
+
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
+  stats.totalItems += products.length;
+  for (const item of products) {
+    const detailImage = item?.images[0]?.detail;
+    const originalPrice = parseInt(item?.price?.baseWithVat?.decimal);
+    const currentPrice = parseInt(item.price.withVat.decimal);
+    const discounted = originalPrice !== currentPrice;
+    const category = getCategory(item.sections);
+    const result = {
+      itemId: item.id.toString().trim(),
+      itemCode: item.code,
+      itemUrl: `${PRODUCTS_BASE_URL}${item.urlRelative}`,
+      itemName: item.name,
+      img: detailImage,
+      discounted,
+      originalPrice: discounted ? originalPrice : null,
+      currency: item.price.withVat.currency,
+      currentPrice,
+      category,
+      inStock: !!item.availability,
+      blackFriday: item.blackFriday
+    };
+    // Save data to dataset
+    if (!processedIds.has(result.itemId)) {
+      processedIds.add(result.itemId);
+      requests.push(
+        !development ? uploadToS3v2(s3, result, { priceCurrency: "CZK" }) : [],
+        Apify.pushData(result)
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
+  }
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
+}
 
 Apify.main(async () => {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
-  global.s3 = new S3Client({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1" });
+
+  const processedIds = new Set();
   const input = await Apify.getInput();
   const {
     development = false,
@@ -27,31 +136,21 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL"
   } = input ?? {};
-  global.test = test;
-  global.type = type;
   const requestQueue = await Apify.openRequestQueue();
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = (await Apify.getValue("STATS")) || {
     urls: 0,
     items: 0,
     itemsDuplicity: 0,
     totalItems: 0
   };
 
-  const crawlContext = {
-    development,
-    processedIds,
-    stats
-  };
-
   const persistState = async () => {
-    await Apify.setValue("STATS", crawlContext.stats).then(() =>
-      log.debug("STATS saved!")
-    );
-    log.info(JSON.stringify(crawlContext.stats));
+    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+    log.info(JSON.stringify(stats));
   };
   Apify.events.on("persistState", persistState);
 
@@ -83,10 +182,6 @@ Apify.main(async () => {
     groups: proxyGroups
   });
 
-  // Create route
-  const router = createRouter();
-
-  // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxConcurrency,
@@ -94,12 +189,19 @@ Apify.main(async () => {
     proxyConfiguration,
     useSessionPool: true,
     handlePageFunction: async context => {
-      const { request } = context;
-      const {
-        userData: { label }
-      } = request;
+      const { request, $ } = context;
+      const { label } = request.userData;
       log.info(`Processing: [${label}] - [${request.url}]`);
-      await router(label, context, request.url, crawlContext);
+      switch (label) {
+        case LABELS.START:
+          return scrapeListing({
+            context,
+            stats,
+            test
+          });
+        case LABELS.PRODUCTS:
+          return scrapeProducts({ processedIds, stats, $, s3 });
+      }
     },
 
     // If request failed 4 times then this function is executed.
@@ -112,8 +214,8 @@ Apify.main(async () => {
 
   log.info("Crawl finished.");
 
-  await Apify.setValue("STATS", crawlContext.stats);
-  log.info(JSON.stringify(crawlContext.stats));
+  await Apify.setValue("STATS", stats);
+  log.info(JSON.stringify(stats));
 
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "prozdravi.cz");
