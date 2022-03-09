@@ -90,7 +90,7 @@ function getCoffeeCategory(userInput) {
   }
 }
 
-async function NAVIGATION({ json, crawler }, { userInput }) {
+async function scrapeNavigation({ json, crawler }, { userInput }) {
   const { country = "cz" } = userInput;
   for (const { children } of json.list) {
     for (const { href } of children) {
@@ -114,7 +114,7 @@ async function NAVIGATION({ json, crawler }, { userInput }) {
   }
 }
 
-async function CATEGORY({ $, crawler }) {
+async function scrapeCategory({ $, crawler }) {
   const menu = $(".c-tp-sidebarnavigation > ul > li > ul > li > a").toArray();
   for (const m of menu) {
     await crawler.requestQueue.addRequest({
@@ -126,7 +126,7 @@ async function CATEGORY({ $, crawler }) {
   }
 }
 
-async function CATEGORY_CAT({ $, crawler }) {
+async function scrapeCategoryCat({ $, crawler }) {
   const selectedCategory = $("a.active").parent().find("ul > li > a").toArray();
   for (const s of selectedCategory) {
     await crawler.requestQueue.addRequest({
@@ -161,7 +161,7 @@ async function scrapePagination($, pageNumber, crawler, url) {
   }
 }
 
-async function LIST(
+async function scrapeListing(
   { request: { url, userData }, $, crawler },
   { s3, handledIdsSet, currency, userInput }
 ) {
@@ -211,7 +211,7 @@ async function LIST(
   await Promise.all(promises);
 }
 
-async function COFFEE_CATEGORY(
+async function scrapeCoffeeCategory(
   { $, crawler },
   { s3, handledIdsSet, currency, userInput }
 ) {
@@ -321,20 +321,25 @@ Apify.main(async () => {
       log.info(`Processing: [${label}] - [${request.url}]`);
       switch (label) {
         case LABELS.LIST:
-          return LIST(context, { s3, handledIdsSet, currency, userInput });
+          return scrapeListing(context, {
+            s3,
+            handledIdsSet,
+            currency,
+            userInput
+          });
         case LABELS.CATEGORY:
-          return CATEGORY(context);
+          return scrapeCategory(context);
         case LABELS.NAVIGATION:
-          return NAVIGATION(context, { userInput });
+          return scrapeNavigation(context, { userInput });
         case LABELS.COFFEE_CATEGORY:
-          return COFFEE_CATEGORY(context, {
+          return scrapeCoffeeCategory(context, {
             s3,
             handledIdsSet,
             currency,
             userInput
           });
         case LABELS.CATEGORY_CAT:
-          return CATEGORY_CAT(context);
+          return scrapeCategoryCat(context);
       }
     },
     // If request failed 4 times then this function is executed
