@@ -15,11 +15,11 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import { BASE_URL, LABELS } from "./src/const.js";
-import { getRandomInt, getSitemapUrls } from "./src/utils.js";
+import { getRandomInt } from "./src/utils.js";
 import { CaptchaSolver } from "./src/captcha-solver.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const { log, requestAsBrowser } = Apify.utils;
+const { log } = Apify.utils;
 let stats = {
   categories: 0,
   pages: 0,
@@ -30,61 +30,7 @@ let stats = {
   failed: 0
 };
 const processedIds = new Set();
-const SITEMAP_URL = "https://www.tsbohemia.cz/sitemap_index.xml";
 
-async function streamToBuffer(stream) {
-  const chunks = [];
-  return new Promise((resolve, reject) => {
-    stream.on("data", chunk => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
-  });
-}
-
-async function enqueueAllCategories() {
-  const stream = await requestAsBrowser({
-    url: SITEMAP_URL,
-    stream: true
-  });
-  const buffer = await streamToBuffer(stream);
-  const xmlString = buffer.toString();
-  const $ = cheerio.load(xmlString, { xmlMode: true });
-  const categoryXmlUrls = [];
-
-  // Pick all category xml urls from sitemap
-  $("sitemap").each(function () {
-    const url = $(this).find("loc").text().trim();
-    categoryXmlUrls.push(url);
-  });
-  log.info(`Enqueued ${categoryXmlUrls.length} product xml urls`);
-  let requestListSources = [];
-  for await (const xmlUrl of categoryXmlUrls) {
-    const stream = await requestAsBrowser({
-      url: xmlUrl,
-      stream: true
-    });
-    const buffer = await streamToBuffer(stream);
-    const xmlString = buffer.toString();
-    const sitemapUrls = getSitemapUrls(xmlString);
-    requestListSources = requestListSources.concat(
-      sitemapUrls
-        .filter(url => url.match(/_c\d+.html/))
-        .map(url => {
-          return {
-            url,
-            userData: {
-              label: LABELS.PAGE
-            }
-          };
-        })
-    );
-  }
-  log.info(`Found ${requestListSources.length} categories from sitemap`);
-  stats.categories = requestListSources.length;
-  return requestListSources;
-}
-
-/** Main function */
 Apify.main(async () => {
   rollbar.init();
 
@@ -149,7 +95,6 @@ Apify.main(async () => {
       }
     });
   } else {
-    //requestListSources = await enqueueAllCategories();
     await requestQueue.addRequest({
       url: "https://www.tsbohemia.cz/",
       userData: {

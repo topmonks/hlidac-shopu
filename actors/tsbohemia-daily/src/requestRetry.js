@@ -3,7 +3,8 @@ import ProxyAgent from "proxy-agent";
 import tough from "tough-cookie";
 import got from "got";
 import { getRandomInt } from "./utils.js";
-import headersProvider from "./headersProvider.js";
+import randomMua from "random-mua";
+import { v4 as uuidv4 } from "uuid";
 
 const sessions = {};
 const proxyGroups = ["CZECH_LUMINATI"];
@@ -34,27 +35,27 @@ async function getSession() {
     const keys = Object.keys(sessions);
     const index = getRandomInt(0, keys.length - 1);
     const key = keys[index];
-    // console.log(`Reused session ${key}`);
     return sessions[key];
   }
 
-  const headers = headersProvider();
   const index = getRandomInt(0, 999999999);
 
-  // const proxyConfiguration = await Apify.createProxyConfiguration({
-  //     groups: ['CZECH_LUMINATI'], // List of Apify Proxy groups
-  //     countryCode: 'CZ'
-  // })
-  // const proxyUrl = proxyConfiguration.newUrl(index.toString());
   const proxyUrl = await Apify.getApifyProxyUrl({
     groups: proxyGroups,
     session: index.toString()
   });
   const session = {
     index,
-    headers,
+    headers: {
+      "x-requested-with": "XMLHttpRequest",
+      accept: "*/*",
+      "User-Agent": randomMua("m"),
+      "x-platform-type": "mobile-html5",
+      "x-client": "MWEB",
+      "x-device-id": uuidv4(),
+      authority: "m.olx.pl"
+    },
     proxyUrl,
-    // jar: requestPromise.jar(),
     usage: 0,
     maxUsage: getRandomInt(40, 100),
     agent: new ProxyAgent(proxyUrl),
@@ -66,7 +67,7 @@ async function getSession() {
   return session;
 }
 
-async function gotResponse(url) {
+export async function getResponse(url) {
   const session = await getSession();
   const { agent, headers, cookieJar } = session;
   const options = {
@@ -107,5 +108,3 @@ async function gotResponse(url) {
     throw e;
   }
 }
-
-module.exports = { getResponse: gotResponse };
