@@ -27,8 +27,8 @@ export function enqueueCategories(cats) {
  * create rootURL of dek site
  * @return {string}
  */
-export function getRootUrl() {
-  const { country = COUNTRY.CZ } = global.userInput;
+export function getRootUrl(userInput) {
+  const { country = COUNTRY.CZ } = userInput;
   return `https://www.dek.${country.toLowerCase()}`;
 }
 
@@ -36,8 +36,8 @@ export function getRootUrl() {
  * return name of the table in keboola according the language
  * @return {string|string}
  */
-export function getTableName() {
-  const { type, country = COUNTRY.CZ } = global.userInput;
+export function getTableName(userInput) {
+  const { type, country = COUNTRY.CZ } = userInput;
   let tableName = `dek_${country.toLowerCase()}`;
   if (type === BF) {
     tableName = `${tableName}_bf`;
