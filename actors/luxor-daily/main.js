@@ -1,35 +1,22 @@
-const Apify = require("apify");
-
-const {
-  handleAPIStart,
-  handleAPIList,
+import Apify from "apify";
+import {
   handleAPIDetail,
-
-  handleFrontStart,
-  handleFrontList,
+  handleAPIList,
+  handleAPIStart,
   handleFrontDetail,
-
-  handleSitemapStart,
-  handleSitemapList
-} = require("./src/routes");
+  handleFrontList,
+  handleFrontStart,
+  handleSitemapList,
+  handleSitemapStart
+} from "./src/routes";
+import { LABELS, URL_API_START, URL_FRONT, URL_SITEMAP } from "./src/const";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 let stats = {};
 const processedIds = new Set();
-
-const {
-  URL_API_START,
-  URL_SITEMAP,
-  URL_FRONT,
-  LABELS
-} = require("./src/const");
-const {
-  invalidateCDN,
-  uploadToS3v2
-} = require("@hlidac-shopu/actors-common/product.js");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-
 const { log } = Apify.utils;
 
 Apify.main(async () => {
@@ -113,8 +100,7 @@ Apify.main(async () => {
     development,
     proxyConfiguration,
     stats,
-    processedIds,
-    uploadToS3v2
+    processedIds
   };
 
   //const crawler = new Apify.CheerioCrawler({

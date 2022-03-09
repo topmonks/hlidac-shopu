@@ -1,26 +1,23 @@
-const Apify = require("apify");
-//const { URL } = require("url");
-const { gotScraping } = require("got-scraping");
-//const tools = require("./tools");
-
-const {
-  URL_TEMPLATE_PRODUCT_LIST,
-  URL_TEMPLATE_CATEGORY,
-  URL_TEMPLATE_PRODUCT,
-  URL_TEMPLATE_PAGE_URL,
+import Apify from "apify";
+import { gotScraping } from "got-scraping";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
+  LABELS,
+  PRODUCTS_PER_PAGE,
+  URL_FRONT,
   URL_IMAGE_BASE,
   URL_SITEMAP,
-  PRODUCTS_PER_PAGE,
-  LABELS,
-  URL_FRONT
-} = require("./const");
-const cheerio = require("cheerio");
+  URL_TEMPLATE_CATEGORY
+} from "./const";
+import cheerio from "cheerio";
 
+const s3 = new S3Client({ region: "eu-central-1" });
 const {
   utils: { log }
 } = Apify;
 
-exports.handleAPIStart = async (context, crawlContext) => {
+export async function handleAPIStart(context, crawlContext) {
   const requestOptions = {
     url: URL_TEMPLATE_CATEGORY,
     proxyUrl: crawlContext.proxyConfiguration.newUrl(),
@@ -42,14 +39,8 @@ exports.handleAPIStart = async (context, crawlContext) => {
 
     crawlContext.stats.categories++;
 
-    let url = URL_TEMPLATE_PRODUCT_LIST;
-    url = url
-      .replace(/{PAGE}/g, PAGE)
-      .replace(/{PRODUCTS_PER_PAGE}/g, PRODUCTS_PER_PAGE)
-      .replace(/{SLUG}/g, slug);
-
     const req = {
-      url,
+      url: `https://mw.luxor.cz/api/v1/products?page=${PAGE}&size=${PRODUCTS_PER_PAGE}&sort=revenue%3Adesc&filter%5Bcategory%5D=${slug}`,
       userData: {
         label: LABELS.API_LIST,
         slug: slug,
@@ -60,9 +51,9 @@ exports.handleAPIStart = async (context, crawlContext) => {
 
     crawlContext.requestQueue.addRequest(req);
   }
-};
+}
 
-exports.handleAPIList = async (context, crawlContext) => {
+export async function handleAPIList(context, crawlContext) {
   const { request } = context;
   const requestOptions = {
     url: request.url,
@@ -125,7 +116,7 @@ exports.handleAPIList = async (context, crawlContext) => {
 
     const product = {
       itemId: products[productIx].id,
-      itemUrl: URL_TEMPLATE_PRODUCT.replace(/{SLUG}/, products[productIx].slug),
+      itemUrl: `https://luxor.cz/product/${products[productIx].slug}`,
       itemName: products[productIx].title,
 
       currency,
@@ -149,10 +140,7 @@ exports.handleAPIList = async (context, crawlContext) => {
 
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
-      requests.push(
-        Apify.pushData(product),
-        crawlContext.uploadToS3v2(product, {})
-      );
+      requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
@@ -204,33 +192,22 @@ exports.handleAPIList = async (context, crawlContext) => {
 
   const pageNext = request.userData.page + 1;
 
-  let url = URL_TEMPLATE_PRODUCT_LIST;
-  url = url
-    .replace(/{PAGE}/g, pageNext)
-    .replace(/{PRODUCTS_PER_PAGE}/g, PRODUCTS_PER_PAGE.toString())
-    .replace(/{SLUG}/g, request.userData.slug);
-
-  const pageUrl = URL_TEMPLATE_PAGE_URL.replace(
-    /{SLUG}/g,
-    request.userData.slug
-  ).replace(/{PAGE}/g, pageNext);
-
   const req = {
-    url: url,
+    url: `https://mw.luxor.cz/api/v1/products?page=${pageNext}&size=${PRODUCTS_PER_PAGE}&sort=revenue%3Adesc&filter%5Bcategory%5D=${request.userData.slug}`,
     userData: {
       label: LABELS.API_LIST,
       page: pageNext,
       pageCount,
       slug: request.userData.slug,
-      pageUrl,
+      pageUrl: `https://luxor.cz/products/${request.userData.slug}?page=${pageNext}`,
       note: "NextPage"
     }
   };
 
   crawlContext.requestQueue.addRequest(req);
-};
+}
 
-exports.handleAPIDetail = async (request, crawlContext) => {
+export async function handleAPIDetail(request, crawlContext) {
   console.log("PRODUCT", request.product);
 
   //console.log(products[product].sum_price[0]);
@@ -240,9 +217,9 @@ exports.handleAPIDetail = async (request, crawlContext) => {
   for (const price in prices) {
     console.log(prices[price]);
   }
-};
+}
 
-exports.handleFrontStart = async (request, crawlContext) => {
+export async function handleFrontStart(request, crawlContext) {
   log.info("Downloading " + URL_FRONT);
 
   const requestOptions = {
@@ -276,18 +253,18 @@ exports.handleFrontStart = async (request, crawlContext) => {
         crawlContext.requestQueue.addRequest(req);
       }
     });
-};
+}
 
-exports.handleFrontList = async (request, crawlContext) => {
+export async function handleFrontList(request, crawlContext) {
   console.log("---\nhandleFrontList");
-};
+}
 
-exports.handleFrontDetail = async (request, crawlContext) => {
+export async function handleFrontDetail(request, crawlContext) {
   console.log("---\nhandleFrontDetail");
 
   const product = {
     itemId: products[productIx].id,
-    itemUrl: URL_TEMPLATE_PRODUCT.replace(/{SLUG}/, products[productIx].slug),
+    itemUrl: `https://luxor.cz/product/${products[productIx].slug}`,
     itemName: products[productIx].title,
 
     currency,
@@ -299,7 +276,7 @@ exports.handleFrontDetail = async (request, crawlContext) => {
     inStock: products[productIx].in_stock,
     category: request.userData.slug
   };
-};
+}
 
 /**
  * Start sitemap parsing
@@ -307,7 +284,7 @@ exports.handleFrontDetail = async (request, crawlContext) => {
  * @param crawlContext
  * @returns {Promise<void>}
  */
-exports.handleSitemapStart = async (context, crawlContext) => {
+export async function handleSitemapStart(context, crawlContext) {
   console.log("---\nhandleSitemapStart");
 
   log.info("Downloading " + URL_SITEMAP);
@@ -336,9 +313,9 @@ exports.handleSitemapStart = async (context, crawlContext) => {
       console.log("Skipper", url);
     }
   });
-};
+}
 
-exports.handleSitemapList = async (context, crawlContext) => {
+export async function handleSitemapList(context, crawlContext) {
   const { request } = context;
 
   const requestOptions = {
@@ -364,4 +341,4 @@ exports.handleSitemapList = async (context, crawlContext) => {
   });
 
   console.log(`Items count in XML: ${crawlContext.stats.items}`);
-};
+}
