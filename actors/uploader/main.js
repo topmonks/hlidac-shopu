@@ -2,8 +2,7 @@ import Apify from "apify";
 import byteSize from "byte-size";
 import gzip from "node-gzip";
 import { writeToBuffer } from "@fast-csv/format";
-import addMinutes from "date-fns/addMinutes";
-import format from "date-fns/format";
+import { addMinutes, format } from "date-fns";
 import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { retry } from "@hlidac-shopu/lib/remoting.mjs";
 
