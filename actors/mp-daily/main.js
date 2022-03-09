@@ -1,6 +1,7 @@
 import Apify from "apify";
 import { init, getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
 import { getJSONObject } from "@hlidac-shopu/actors-common/scraper";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 async function handleStart(crawlContext) {
   const { requestQueue, LABELS } = crawlContext;
@@ -63,6 +64,7 @@ async function handleList(request, crawlContext) {
 }
 
 Apify.main(async () => {
+  rollbar.init();
   const crawlContext = await init();
   const { input, requestQueue, log, LABELS } = crawlContext;
 

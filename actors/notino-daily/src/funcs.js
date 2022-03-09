@@ -1,5 +1,5 @@
-const Apify = require("apify");
-const {
+import Apify from "apify";
+import {
   DETAIL_PAGE,
   CATEGORY_PAGE,
   HOME_PAGE,
@@ -7,18 +7,14 @@ const {
   BASE_URL_SK,
   BF,
   COUNTRY
-} = require("./consts");
-const { getReviews } = require("./reviewParser");
+} from "./consts.js";
+import { getReviews } from "./reviewParser.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 const { log } = Apify.utils;
 
-const { S3Client } = require("@aws-sdk/client-s3");
 const s3 = new S3Client({ region: "eu-central-1" });
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
 
 const processedIds = new Set();
 const queueIds = new Set();
@@ -29,19 +25,12 @@ async function pushProducts(products, country, stats) {
   // we don't need to block pushes, we will await them all at the end
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
-      const fileName = await s3FileName(product);
       processedIds.add(product.itemId);
       // push data to dataset to be ready for upload to Keboola
       requests.push(
         Apify.pushData(product),
         // upload JSON+LD data to CDN
-        uploadToS3(
-          s3,
-          `notino.${country.toLowerCase()}`,
-          fileName,
-          "jsonld",
-          toProduct(product, {})
-        )
+        uploadToS3v2(s3, product)
       );
       count += 1;
     } else {
@@ -282,16 +271,7 @@ const handleCategoryPage = async (requestQueue, request, $, input, stats) => {
     }
     if (products.length > 0) {
       for (const product of products) {
-        requests.push(
-          Apify.pushData(product),
-          uploadToS3(
-            s3,
-            `okay.${input.country.toLowerCase()}`,
-            await s3FileName(product),
-            "jsonld",
-            toProduct(product, {})
-          )
-        );
+        requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
       }
       // await all requests, so we don't end before they end
       await Promise.allSettled(requests);

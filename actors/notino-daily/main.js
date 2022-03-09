@@ -1,10 +1,14 @@
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-
-const Apify = require("apify");
-const {
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import {
+  extendCheerio,
+  handlePageFunction,
+  handleFailedRequestFunction
+} from "./src/funcs.js";
+import {
   HOME_PAGE,
   CATEGORY_PAGE,
   BASE_URL,
@@ -13,12 +17,7 @@ const {
   BASE_URL_CZ_BF,
   BASE_URL_SK,
   COUNTRY
-} = require("./src/consts");
-const {
-  extendCheerio,
-  handlePageFunction,
-  handleFailedRequestFunction
-} = require("./src/funcs");
+} from "./src/consts.js";
 
 const { log } = Apify.utils;
 

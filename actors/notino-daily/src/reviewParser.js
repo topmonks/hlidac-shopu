@@ -1,4 +1,4 @@
-const Apify = require("apify");
+import Apify from "apify";
 
 const { requestAsBrowser, log } = Apify.utils;
 
@@ -55,7 +55,7 @@ async function getReviewPage({ sku, token, page, proxyConfiguration }) {
   return response.body.data.reviews;
 }
 
-async function getReviews({ sku, token, proxyConfiguration }) {
+export async function getReviews({ sku, token, proxyConfiguration }) {
   const reviews = [];
   for (let page = 1; 1 > 0; page += 1) {
     const reviewsRaw = await getReviewPage({
@@ -78,5 +78,3 @@ async function getReviews({ sku, token, proxyConfiguration }) {
   }
   return reviews;
 }
-
-module.exports = { getReviews };
