@@ -1,10 +1,19 @@
-import { fetch } from "@adobe/helix-fetch";
+import { fetch } from "fetch-h2";
 import Apify from "apify";
 import byteSize from "byte-size";
 import FormData from "form-data";
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
+/**
+ *
+ * @param bucket
+ * @param table
+ * @param {Buffer} data
+ * @param fileName
+ * @param isGzipped
+ * @returns {Promise<void>}
+ */
 export async function keboolaUploader(
   bucket,
   table,
