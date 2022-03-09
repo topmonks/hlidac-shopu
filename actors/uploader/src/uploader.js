@@ -1,7 +1,7 @@
 import { fetch } from "@adobe/helix-fetch";
 import Apify from "apify";
 import byteSize from "byte-size";
-import { FormData } from "formdata-node";
+import FormData from "form-data";
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
@@ -29,7 +29,7 @@ export async function keboolaUploader(
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: { "X-StorageApi-Token": KEBOOLA_KEY },
+        headers: body.getHeaders({ "X-StorageApi-Token": KEBOOLA_KEY }),
         body
       });
       console.log(`HTTP ${resp.status}`);
