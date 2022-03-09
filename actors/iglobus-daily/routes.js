@@ -1,3 +1,5 @@
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
 const {
   cleanPriceText,
   cleanUnitPriceText,
@@ -76,7 +78,7 @@ exports.handleList = async ({ request, $ }, crawlContext) => {
     for (const product of products) {
       if (!processedIds.has(product.itemId)) {
         processedIds.add(product.itemId);
-        requests.push(Apify.pushData(product), uploadToS3v2(product, {}));
+        requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
         stats.items++;
       } else {
         stats.itemsDuplicity++;

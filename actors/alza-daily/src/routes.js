@@ -388,22 +388,22 @@ exports.handleFeed = async (
     let s3Requests = [];
     for (const item of itemsToPush) {
       const detailItem = {
-        "itemId": item.itemId,
-        "itemName": item.itemName,
-        "itemUrl": item.itemUrl,
-        "img": item.img,
-        "inStock": true,
-        "currentPrice": item.currentPrice,
-        "originalPrice": item.originalPrice,
-        "currency": item.currency,
-        "category": item.Category.join(" > "),
-        "discounted": item.discounted === "true",
-        "itemCode": item.itemCode,
-        "rating": item.rating
+        itemId: item.itemId,
+        itemName: item.itemName,
+        itemUrl: item.itemUrl,
+        img: item.img,
+        inStock: true,
+        currentPrice: item.currentPrice,
+        originalPrice: item.originalPrice,
+        currency: item.currency,
+        category: item.Category.join(" > "),
+        discounted: item.discounted === "true",
+        itemCode: item.itemCode,
+        rating: item.rating
       };
       formattedItems.push(detailItem);
       if (!development) {
-        s3Requests.push(uploadToS3v2(detailItem, {}));
+        s3Requests.push(uploadToS3v2(s3, detailItem));
       }
     }
 

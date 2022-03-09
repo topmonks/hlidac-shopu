@@ -3,7 +3,8 @@ const Apify = require("apify");
 const { gotScraping } = require("got-scraping");
 //const tools = require("./tools");
 const processedIds = new Set();
-
+const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({ region: "eu-central-1" });
 const { uploadToS3v2 } = require("@hlidac-shopu/actors-common/product.js");
 
 const {
@@ -250,7 +251,7 @@ exports.handleAPIList = async (context, crawlContext) => {
 
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(Apify.pushData(product), uploadToS3v2(product, {}));
+      requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
