@@ -20,12 +20,12 @@ export async function keboolaUploader(
       const size = Buffer.byteLength(data);
 
       const body = new FormData();
-      body.set("tableId", tableId);
-      body.set("data", data, {
+      body.append("tableId", tableId);
+      body.append("data", data, {
         filename: isGzipped ? `${fileName}.gz` : fileName,
         contentType: isGzipped ? undefined : "text/csv"
       });
-      body.set("incremental", 1);
+      body.append("incremental", 1);
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
