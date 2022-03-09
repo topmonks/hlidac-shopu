@@ -4,8 +4,8 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
-import { createInitRequests } from "./tools";
-import { createRouter } from "./routes";
+import { createInitRequests } from "./tools.js";
+import { createRouter } from "./routes.js";
 
 const { log } = Apify.utils;
 

@@ -1,7 +1,7 @@
 import Apify from "apify";
 import { toProduct, uploadToS3 } from "@hlidac-shopu/actors-common/product.js";
-import { COFFEE_CATEGORIES, LABELS, THROW_AWAY_CATEGORIES } from "./const";
-import tools, { getCoffeeCategory, getSlug, parsePrice } from "./tools";
+import { COFFEE_CATEGORIES, LABELS, THROW_AWAY_CATEGORIES } from "./const.js";
+import { getCoffeeCategory, getSlug, parsePrice } from "./tools.js";
 
 const {
   utils: { log }

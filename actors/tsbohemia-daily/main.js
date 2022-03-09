@@ -1,22 +1,22 @@
 import Apify from "apify";
-import { Session } from "apify/build/session_pool/session";
+import { Session } from "apify/build/session_pool/session.js";
 import { PlaywrightPlugin, PuppeteerPlugin } from "browser-pool";
 import FingerprintGenerator from "fingerprint-generator";
 import { FingerprintInjector } from "fingerprint-injector";
 import playwright from "playwright";
 import cheerio from "cheerio";
 import { gotScraping } from "got-scraping";
-import { getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { BASE_URL, LABELS } from "./src/const";
-import { getRandomInt, getSitemapUrls } from "./src/utils";
-import { CaptchaSolver } from "./src/captcha-solver";
+import { BASE_URL, LABELS } from "./src/const.js";
+import { getRandomInt, getSitemapUrls } from "./src/utils.js";
+import { CaptchaSolver } from "./src/captcha-solver.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 const { log, requestAsBrowser } = Apify.utils;

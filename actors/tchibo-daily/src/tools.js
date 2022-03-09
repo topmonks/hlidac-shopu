@@ -1,4 +1,4 @@
-import { LABELS } from "./const";
+import { LABELS } from "./const.js";
 
 export function getCurrencyISO(country) {
   let currency;

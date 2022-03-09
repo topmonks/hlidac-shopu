@@ -2,8 +2,8 @@ import Apify from "apify";
 import ProxyAgent from "proxy-agent";
 import tough from "tough-cookie";
 import got from "got";
-import { getRandomInt } from "./utils";
-import headersProvider from "./headersProvider";
+import { getRandomInt } from "./utils.js";
+import headersProvider from "./headersProvider.js";
 
 const sessions = {};
 const proxyGroups = ["CZECH_LUMINATI"];

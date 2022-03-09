@@ -1,11 +1,11 @@
+import Apify from "apify";
 import { S3Client } from "@aws-sdk/client-s3";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 const s3 = new S3Client({ region: "eu-central-1" });
