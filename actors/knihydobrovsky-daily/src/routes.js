@@ -1,10 +1,6 @@
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const Apify = require("apify");
-const { URL } = require("url");
+import Apify from "apify";
+import { URL } from "url";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 const {
   utils: { log }
@@ -13,7 +9,7 @@ const {
 const canonicalUrl = x => new URL(x, "https://www.knihydobrovsky.cz");
 const canonical = x => canonicalUrl(x).href;
 
-exports.handleStart = async (request, $, requestQueue, stats) => {
+export async function handleStart(request, $, requestQueue, stats) {
   const links = $("#main div.row-main li a")
     .not("div:contains('Magnesia Litera')")
     .map(function () {
@@ -35,9 +31,9 @@ exports.handleStart = async (request, $, requestQueue, stats) => {
       userData: { label: "SUBLIST" }
     });
   }
-};
+}
 
-exports.handleSubList = async (request, $, requestQueue, stats) => {
+export async function handleSubList(request, $, requestQueue, stats) {
   // if there are more subcategories enque urls...
   let $bookGenres = $("#bookGenres");
   if ($bookGenres.text()) {
@@ -65,7 +61,7 @@ exports.handleSubList = async (request, $, requestQueue, stats) => {
     uniqueKey: `${request.url}?sort=2&currentPage=1`,
     userData: { label: "LIST" }
   });
-};
+}
 
 /**
  *
@@ -77,7 +73,14 @@ exports.handleSubList = async (request, $, requestQueue, stats) => {
  * @param {JSON} stats
  * @returns {Promise<void>}
  */
-async function handleList(request, $, requestQueue, handledIds, s3, stats) {
+export async function handleList(
+  request,
+  $,
+  requestQueue,
+  handledIds,
+  s3,
+  stats
+) {
   //console.log($.html());
   // Handle pagination
   let nextPageHref = $("nav.paging span:contains('Další')")
@@ -135,13 +138,7 @@ async function handleList(request, $, requestQueue, handledIds, s3, stats) {
       handledIds.add(product.itemId);
       requests.push(
         Apify.pushData(product),
-        uploadToS3(
-          s3,
-          "knihydobrovsky.cz",
-          await s3FileName(product),
-          "jsonld",
-          toProduct({ ...product, category: "" }, {})
-        )
+        uploadToS3v2(s3, { ...product, category: "" })
       );
       stats.items++;
     } else {
@@ -152,5 +149,3 @@ async function handleList(request, $, requestQueue, handledIds, s3, stats) {
   // await all requests, so we don't end before they end
   await Promise.allSettled(requests);
 }
-
-exports.handleList = handleList;

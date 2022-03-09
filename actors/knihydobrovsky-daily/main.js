@@ -1,10 +1,10 @@
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { S3Client } = require("@aws-sdk/client-s3");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { handleStart, handleList, handleSubList } = require("./src/routes");
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { handleStart, handleList, handleSubList } from "./src/routes.js";
 
 const { log } = Apify.utils;
 
@@ -102,7 +102,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    async handlePageFunction({ request, $, session, response }) {
+    async handlePageFunction({ request, $ }) {
       const {
         url,
         userData: { label }
