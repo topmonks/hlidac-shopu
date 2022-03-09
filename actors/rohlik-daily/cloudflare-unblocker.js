@@ -1,15 +1,12 @@
-const Apify = require("apify");
-const { Session } = require("apify/build/session_pool/session");
-const { BrowserPool, PlaywrightPlugin } = require("browser-pool");
-const playwright = require("playwright");
-const {
-  default: CrawlerExtension
-} = require("apify/build/crawlers/crawler_extension");
+import Apify from "apify";
+import { Session } from "apify/build/session_pool/session.js";
+import CrawlerExtension from "apify/build/crawlers/crawler_extension.js";
+import { BrowserPool, PlaywrightPlugin } from "browser-pool";
+import playwright from "playwright";
 
 const {
   utils: {
     log,
-    sleep,
     requestAsBrowser,
     puppeteer: { addInterceptRequestHandler }
   }
@@ -20,7 +17,7 @@ const {
  * @typedef { import("./types.js").CloudflareUnblockerOptions } CloudflareUnblockerOptions
  */
 
-class CloudflareUnblocker extends CrawlerExtension {
+export default class CloudflareUnblocker extends CrawlerExtension {
   /**
    *
    * @param options {CloudflareUnblockerOptions} - Cloudflare unblocker options
@@ -453,5 +450,3 @@ class CloudflareUnblocker extends CrawlerExtension {
     };
   }
 }
-
-module.exports = CloudflareUnblocker;

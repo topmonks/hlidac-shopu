@@ -1,17 +1,14 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName,
-  invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const CloudFlareUnBlocker = require("./cloudflare-unblocker");
-const getItems = require("./itemParser");
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
+  invalidateCDN,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import CloudFlareUnBlocker from "./cloudflare-unblocker.js";
+import getItems from "./itemParser.js";
 
 /** @typedef { import("./apify.json").ApifyEnv } ApifyEnv */
 /** @typedef { import("./apify.json").ActorRun } ActorRun */
@@ -28,7 +25,7 @@ const firstPage =
 
 const processedIds = new Set();
 
-async function processItem(products) {
+async function processItem(s3, products) {
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
   const unprocessedProducts = products.filter(p => !processedIds.has(p.itemId));
@@ -41,13 +38,7 @@ async function processItem(products) {
       // push data to dataset to be ready for upload to Keboola
       Apify.pushData(item),
       // upload JSON+LD data to CDN
-      uploadToS3(
-        s3,
-        `rohlik.cz`,
-        await s3FileName(product),
-        "jsonld",
-        toProduct(product, { priceCurrency: "CZK" })
-      )
+      uploadToS3v2(s3, product, { priceCurrency: "CZK" })
     );
     processedIds.add(item.itemId);
   }
@@ -58,6 +49,7 @@ async function processItem(products) {
 Apify.main(async () => {
   rollbar.init();
 
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
@@ -91,7 +83,7 @@ Apify.main(async () => {
     requestQueue,
     maxConcurrency: 5,
     useSessionPool: true,
-    handleRequestFunction: async ({ request, session }) => {
+    async handleRequestFunction({ request, session }) {
       const response = await Apify.utils.requestAsBrowser({
         url: request.url,
         json: true,
@@ -161,21 +153,21 @@ Apify.main(async () => {
             })
           );
         }
-        if (body.data && body.data.productList && body.data.productList !== 0) {
+        if (body.data?.productList?.length !== 0) {
           console.log(
             `Stroring ${body.data.productList.length} items for category ${categoryId}`
           );
           const products = getItems(body.data.productList, jsonCategories);
-          await processItem(products);
+          await processItem(s3, products);
         }
       } else if (request.userData.label === "PAGE") {
         const { categoryId } = request.userData;
-        if (body.data && body.data.productList && body.data.productList !== 0) {
+        if (body.data?.productList?.length !== 0) {
           console.log(
-            `Stroring ${body.data.productList.length} items for category ${categoryId}`
+            `Storing ${body.data.productList.length} items for category ${categoryId}`
           );
           const products = getItems(body.data.productList, jsonCategories);
-          await processItem(products);
+          await processItem(s3, products);
         }
       }
 
@@ -188,7 +180,7 @@ Apify.main(async () => {
     },
 
     // If request failed 4 times then this function is executed.
-    handleFailedRequestFunction: async ({ request }) => {
+    async handleFailedRequestFunction({ request }) {
       console.log(`Request ${request.url} failed 4 times`);
     }
   });
@@ -198,9 +190,12 @@ Apify.main(async () => {
   log.info("crawler finished");
 
   try {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz");
+    await Promise.allSettled([
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
+      uploadToKeboola("rohlik")
+    ]);
+
     log.info("invalidated Data CDN");
-    await uploadToKeboola("rohlik");
     log.info("upload to Keboola finished");
   } catch (err) {
     log.warning("upload to Keboola failed");

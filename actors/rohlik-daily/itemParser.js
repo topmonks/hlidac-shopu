@@ -9,7 +9,7 @@ function getBreadCrumbs(categoryId, jsonCategories) {
   return breadcrumbs;
 }
 
-function getItems(items, jsonCategories) {
+export default function getItems(items, jsonCategories) {
   const results = [];
   for (const item of items) {
     const result = {
@@ -55,4 +55,3 @@ function getItems(items, jsonCategories) {
   }
   return results;
 }
-module.exports = getItems;
