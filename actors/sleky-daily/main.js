@@ -3,9 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -15,7 +13,6 @@ const { log } = Apify.utils;
 
 const web = "https://www.sleky.cz";
 
-//
 // mode switch in INPUT.json
 // { "mode": "DETAIL"}
 // mode = 'LIST'; // prices and other attrs are taken from product list page
@@ -236,20 +233,10 @@ Apify.main(async () => {
         }
 
         for (const product of products) {
-          await uploadToS3(
-            s3,
-            "sleky.cz",
-            await s3FileName(product),
-            "jsonld",
-            toProduct(
-              {
-                ...product,
-                inStock: true
-              },
-              { priceCurrency: "CZK" }
-            )
-          );
-          await Apify.pushData(product);
+          await Promise.allSettled([
+            Apify.pushData(product),
+            uploadToS3v2(s3, product, { priceCurrency: "CZK" })
+          ]);
         }
       } catch (e) {
         log.info(`Failed extraction of items. ${request.url}`);
@@ -329,9 +316,12 @@ Apify.main(async () => {
   // Run crawler.
   await crawler.run();
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "sleky.cz");
+  await Promise.allSettled([
+    invalidateCDN(cloudfront, "EQYSHWUECAQC9", "sleky.cz"),
+    uploadToKeboola("sleky_cz")
+  ]);
+
   log.info("invalidated Data CDN");
-  await uploadToKeboola("sleky_cz");
   log.info("upload to Keboola finished");
 
   log.info("Finished.");
