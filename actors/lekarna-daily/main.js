@@ -3,9 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import zlib from "zlib";
 import cheerio from "cheerio";
@@ -311,18 +309,13 @@ async function handleProducts($, requestQueue, request, type) {
           processedIds.add(product.itemId);
           requests.push(
             Apify.pushData(product),
-            uploadToS3(
+            uploadToS3v2(
               s3,
-              "lekarna.cz",
-              await s3FileName(product),
-              "jsonld",
-              toProduct(
-                {
-                  ...product,
-                  inStock: true
-                },
-                { priceCurrency: "CZK" }
-              )
+              {
+                ...product,
+                inStock: true
+              },
+              { priceCurrency: "CZK" }
             )
           );
         } else {
