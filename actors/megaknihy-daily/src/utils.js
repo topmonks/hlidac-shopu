@@ -1,4 +1,4 @@
-exports.getAllSubcategories = $ => {
+export function getAllSubcategories($) {
   // left panel contains links to all categories with subcategories
   // we're enqueueing all subcategories to have smaller pagination
   const subcategories = [];
@@ -29,10 +29,11 @@ exports.getAllSubcategories = $ => {
       }
     });
   return subcategories;
-};
+}
 
-exports.getMaxPaginationNumber = $ =>
-  $("li[id='pagination_next']").prev().eq(0).text();
+export function getMaxPaginationNumber($) {
+  return $("li[id='pagination_next']").prev().eq(0).text();
+}
 
 const modelProductData = ($, product, categories) => {
   const title = $(product).find("h2 a");
@@ -74,7 +75,7 @@ const modelProductData = ($, product, categories) => {
   };
 };
 
-exports.getProductsData = ($, categories, alreadyScrapedProducts) => {
+export function getProductsData($, categories, alreadyScrapedProducts) {
   const productsData = [];
   let outOfStockProductDiscovered = false;
   const products = $("ul[id='product_list']").find("li");
@@ -116,4 +117,4 @@ exports.getProductsData = ($, categories, alreadyScrapedProducts) => {
     productsData,
     outOfStockProductDiscovered
   };
-};
+}

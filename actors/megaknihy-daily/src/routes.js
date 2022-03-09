@@ -1,21 +1,16 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const cheerio = require("cheerio");
-const {
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
   getAllSubcategories,
   getMaxPaginationNumber,
   getProductsData
-} = require("./utils");
+} from "./utils.js";
 
 const {
   utils: { log }
 } = Apify;
 
-exports.handleStart = async ({ url, $, body }, requestQueue) => {
+export async function handleStart({ url, $, body }, requestQueue) {
   const subcategories = getAllSubcategories($);
 
   for (const subcategory of subcategories) {
@@ -38,15 +33,15 @@ exports.handleStart = async ({ url, $, body }, requestQueue) => {
       `Handling of starting url ${url} failed, look at the HTML in key-value store.`
     );
   }
-};
+}
 
-exports.handlePage = async (
+export async function handlePage(
   { url, $, body },
   categories,
   requestQueue,
   page,
   alreadyScrapedProducts
-) => {
+) {
   const { s3 } = global;
   // The subcategories on the page does not contain all the products, that the list does
   // They are more of a specific selection
@@ -72,18 +67,13 @@ exports.handlePage = async (
   for (const product of productsData) {
     promises.push(
       Apify.pushData(productsData),
-      uploadToS3(
+      uploadToS3v2(
         s3,
-        "megaknihy.cz",
-        product.itemId,
-        "jsonld",
-        toProduct(
-          {
-            ...product,
-            inStock: true
-          },
-          { priceCurrency: product.currency }
-        )
+        {
+          ...product,
+          inStock: true
+        },
+        { priceCurrency: product.currency }
       )
     );
   }
@@ -121,4 +111,4 @@ exports.handlePage = async (
       );
     }
   }
-};
+}
