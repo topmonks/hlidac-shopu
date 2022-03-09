@@ -1,10 +1,7 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const { COUNTRY, WEB, WEB_SK, BF } = require("./const");
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { COUNTRY, WEB, WEB_SK, BF } from "./const.js";
+
 const { log } = Apify.utils;
 
 function parsePrice(text) {
@@ -69,18 +66,13 @@ async function extractItems($, $products, userData) {
     requests.push(
       Apify.pushData(result),
       !global.userInput.development
-        ? uploadToS3(
+        ? uploadToS3v2(
             s3,
-            `mountfield.${country.toLowerCase()}`,
-            await s3FileName(result),
-            "jsonld",
-            toProduct(
-              {
-                ...result,
-                inStock: true
-              },
-              { priceCurrency: result.currency }
-            )
+            {
+              ...result,
+              inStock: true
+            },
+            { priceCurrency: result.currency }
           )
         : null
     );

@@ -1,15 +1,15 @@
-const Apify = require("apify");
-const { LABELS } = require("./const");
-const tools = require("./tools");
+import Apify from "apify";
+import { LABELS } from "./const.js";
+import tools from "./tools.js";
 
 const {
   utils: { log }
 } = Apify;
 
 // Create router
-const createRouter = globalContext => {
+export const createRouter = globalContext => {
   return async function (routeName, requestContext) {
-    const route = module.exports[routeName];
+    const route = routes[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
     return route(requestContext, globalContext);
@@ -67,8 +67,7 @@ const CATEGORY = async ({ $, request, crawler }) => {
   }
 };
 
-module.exports = {
-  createRouter,
+const routes = {
   START,
   CATEGORY
 };
