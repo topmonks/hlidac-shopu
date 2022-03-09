@@ -1,4 +1,4 @@
-function lidlValidator(item) {
+export function lidlValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -19,4 +19,3 @@ function lidlValidator(item) {
 
   return item;
 }
-module.exports = { lidlValidator };

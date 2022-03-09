@@ -1,4 +1,4 @@
-function alzaValidator(item) {
+export function alzaValidator(item) {
   const attributes = [
     "itemId",
     "itemCode",
@@ -21,4 +21,3 @@ function alzaValidator(item) {
 
   return item;
 }
-module.exports = { alzaValidator };

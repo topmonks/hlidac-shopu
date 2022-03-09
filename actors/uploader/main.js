@@ -1,82 +1,58 @@
-const Apify = require("apify");
-const byteSize = require("byte-size");
-const { gzip } = require("node-gzip");
-const { writeToBuffer, writeToString } = require("@fast-csv/format");
-const addMinutes = require("date-fns/addMinutes");
-const format = require("date-fns/format");
+import Apify from "apify";
+import byteSize from "byte-size";
+import { gzip } from "node-gzip";
+import { writeToBuffer } from "@fast-csv/format";
+import addMinutes from "date-fns/addMinutes";
+import format from "date-fns/format";
+import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { retry } from "@hlidac-shopu/lib/remoting.mjs";
 
-const { keboolaUploader } = require("./src/uploader");
-const { mironetValidator } = require("./src/validators/mironetValidator");
-const { rohlikValidator } = require("./src/validators/rohlikValidator");
-const {
-  rohlikDetailValidator
-} = require("./src/validators/rohlikDetailValidator");
-const { tsbohemiaValidator } = require("./src/validators/tsbohemiaValidator");
-const {
-  tsbohemiaPriceValidator
-} = require("./src/validators/tsbohemiaPriceValidator");
-const { notinoValidator } = require("./src/validators/notinoValidator");
-const { datartValidator } = require("./src/validators/datartValidator");
-const { itescoValidator } = require("./src/validators/itescoValidator");
-const {
-  itescoDetailValidator
-} = require("./src/validators/itescoDetailValidator");
-const { kosikValidator } = require("./src/validators/kosikValidator");
-const {
-  kosikDetailValidator
-} = require("./src/validators/kosikDetailValidator");
-const { alzaValidator } = require("./src/validators/alzaValidator");
-const { czcValidator } = require("./src/validators/czcValidator");
-const { mallValidator } = require("./src/validators/mallValidator");
-const { mountfieldValidator } = require("./src/validators/mountfieldValidator");
-const { lekarnaValidator } = require("./src/validators/lekarnaValidator");
-const { luxorValidator } = require("./src/validators/luxoeValidator");
-const { kasaczValidator } = require("./src/validators/kasaczValidator");
-const { kasaczValidatorBf } = require("./src/validators/kasaczValidatorBf");
-const { datartValidatorBf } = require("./src/validators/datartValidatorBf");
-const { slekyczValidator } = require("./src/validators/slekyczValidator");
-const { pilulkaczValidator } = require("./src/validators/pilulkaczValidator");
-const { benuczValidator } = require("./src/validators/benuczValidator");
-const {
-  prozdraviczValidator
-} = require("./src/validators/prozdraviczValidator");
-const { aaaautoValidator } = require("./src/validators/aaaautoValidator");
-const { obiValidator } = require("./src/validators/obiValidator");
-const { okayValidator } = require("./src/validators/okayValidator");
-const { globusValidator } = require("./src/validators/globusValidator");
-const { coopValidator } = require("./src/validators/coopValidator");
-const { makroczValidator } = require("./src/validators/makroczValidator");
-const { dmValidator } = require("./src/validators/dmValidator");
-const { tetaValidator } = require("./src/validators/tetaValidator");
-const {
-  knihydobrovsky_dailyValidator
-} = require("./src/validators/knihydobrovsky_dailyValidator");
-const { rozetkaValidator } = require("./src/validators/rozetkaValidator");
-const { hornbachValidator } = require("./src/validators/hornbachValidator");
-const {
-  electroworldValidator
-} = require("./src/validators/electroworldValidator");
-const { lidlValidator } = require("./src/validators/lidlValidator");
-const { evaValidator } = require("./src/validators/evaValidator");
-const { tchiboValidator } = require("./src/validators/tchiboValidator");
-const { megaknihyValidator } = require("./src/validators/megaknihyValidator");
-const { ikeaValidator } = require("./src/validators/ikeaValidator");
-const { dekValidator } = require("./src/validators/dekValidator");
+import { keboolaUploader } from "./src/uploader";
+import { mironetValidator } from "./src/validators/mironetValidator";
+import { rohlikValidator } from "./src/validators/rohlikValidator";
+import { rohlikDetailValidator } from "./src/validators/rohlikDetailValidator";
+import { tsbohemiaValidator } from "./src/validators/tsbohemiaValidator";
+import { tsbohemiaPriceValidator } from "./src/validators/tsbohemiaPriceValidator";
+import { notinoValidator } from "./src/validators/notinoValidator";
+import { datartValidator } from "./src/validators/datartValidator";
+import { itescoValidator } from "./src/validators/itescoValidator";
+import { itescoDetailValidator } from "./src/validators/itescoDetailValidator";
+import { kosikValidator } from "./src/validators/kosikValidator";
+import { kosikDetailValidator } from "./src/validators/kosikDetailValidator";
+import { alzaValidator } from "./src/validators/alzaValidator";
+import { czcValidator } from "./src/validators/czcValidator";
+import { mallValidator } from "./src/validators/mallValidator";
+import { mountfieldValidator } from "./src/validators/mountfieldValidator";
+import { lekarnaValidator } from "./src/validators/lekarnaValidator";
+import { luxorValidator } from "./src/validators/luxoeValidator";
+import { kasaczValidator } from "./src/validators/kasaczValidator";
+import { kasaczValidatorBf } from "./src/validators/kasaczValidatorBf";
+import { datartValidatorBf } from "./src/validators/datartValidatorBf";
+import { slekyczValidator } from "./src/validators/slekyczValidator";
+import { pilulkaczValidator } from "./src/validators/pilulkaczValidator";
+import { benuczValidator } from "./src/validators/benuczValidator";
+import { prozdraviczValidator } from "./src/validators/prozdraviczValidator";
+import { aaaautoValidator } from "./src/validators/aaaautoValidator";
+import { obiValidator } from "./src/validators/obiValidator";
+import { okayValidator } from "./src/validators/okayValidator";
+import { globusValidator } from "./src/validators/globusValidator";
+import { coopValidator } from "./src/validators/coopValidator";
+import { makroczValidator } from "./src/validators/makroczValidator";
+import { dmValidator } from "./src/validators/dmValidator";
+import { tetaValidator } from "./src/validators/tetaValidator";
+import { knihydobrovsky_dailyValidator } from "./src/validators/knihydobrovsky_dailyValidator";
+import { rozetkaValidator } from "./src/validators/rozetkaValidator";
+import { hornbachValidator } from "./src/validators/hornbachValidator";
+import { electroworldValidator } from "./src/validators/electroworldValidator";
+import { lidlValidator } from "./src/validators/lidlValidator";
+import { evaValidator } from "./src/validators/evaValidator";
+import { tchiboValidator } from "./src/validators/tchiboValidator";
+import { megaknihyValidator } from "./src/validators/megaknihyValidator";
+import { ikeaValidator } from "./src/validators/ikeaValidator";
+import { dekValidator } from "./src/validators/dekValidator";
 
 const { KEBOOLA_BUCKET } = process.env;
 let stateValues = 0;
-
-async function getItemSlug(itemUrl) {
-  const { shops, shopName } = await import("@hlidac-shopu/lib/shops.mjs");
-  const url = new URL(itemUrl);
-  const shop = shops.get(shopName(url));
-  return shop.parse(url).itemUrl;
-}
-
-async function getShopName(url) {
-  const { shopName } = await import("@hlidac-shopu/lib/shops.mjs");
-  return shopName(new URL(url));
-}
 
 async function processItems(
   {
@@ -321,12 +297,19 @@ async function processItems(
           : item.category;
       }
 
+      // TODO: do it in actors
       if (!item.shop) {
-        item.shop = item.itemUrl ? await getShopName(item.itemUrl) : null;
+        item.shop = item.itemUrl ? shopName(item.itemUrl) : null;
       }
 
+      // TODO: do it in actors
+      if (!item.shopOrigin) {
+        item.shopOrigin = item.itemUrl ? shopOrigin(item.itemUrl) : null;
+      }
+
+      // TODO: do it in actors
       if (!item.slug) {
-        item.slug = item.itemUrl ? await getItemSlug(item.itemUrl) : null;
+        item.slug = item.itemUrl ? itemSlug(item.itemUrl) : null;
       }
       item.category = blackFriday ? 1 : 0;
     }
@@ -370,7 +353,6 @@ async function processItems(
 }
 
 async function loadDatasetItems(datasetId, offset, pageLimit, test) {
-  const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
   return retry(4, async () => {
     const start = Date.now();
     const currentLimit = test ? 10 : pageLimit;
@@ -494,7 +476,6 @@ Apify.main(async () => {
   }, 30000);
 
   try {
-    const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
     const dataset = await retry(4, () => Apify.openDataset(datasetId));
     const { createdAt } = await dataset.getInfo();
     const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");

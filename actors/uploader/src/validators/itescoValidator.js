@@ -1,4 +1,4 @@
-function itescoValidator(item) {
+export function itescoValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "currentPrice",
@@ -18,4 +18,3 @@ function itescoValidator(item) {
 
   return updated;
 }
-module.exports = { itescoValidator };

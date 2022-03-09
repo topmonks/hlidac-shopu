@@ -1,4 +1,4 @@
-function luxorValidator(item) {
+export function luxorValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -19,4 +19,3 @@ function luxorValidator(item) {
 
   return item;
 }
-module.exports = { luxorValidator };

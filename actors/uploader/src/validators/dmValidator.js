@@ -1,4 +1,4 @@
-function dmValidator(item) {
+export function dmValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -20,5 +20,3 @@ function dmValidator(item) {
 
   return item;
 }
-
-module.exports = { dmValidator };

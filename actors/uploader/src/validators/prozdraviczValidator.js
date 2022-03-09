@@ -1,4 +1,4 @@
-function prozdraviczValidator(item) {
+export function prozdraviczValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -20,4 +20,3 @@ function prozdraviczValidator(item) {
 
   return item;
 }
-module.exports = { prozdraviczValidator };

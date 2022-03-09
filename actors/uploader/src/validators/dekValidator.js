@@ -1,4 +1,4 @@
-function dekValidator(item) {
+export function dekValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -18,4 +18,3 @@ function dekValidator(item) {
 
   return item;
 }
-module.exports = { dekValidator };

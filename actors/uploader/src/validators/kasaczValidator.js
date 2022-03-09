@@ -1,4 +1,4 @@
-function kasaczValidator(item) {
+export function kasaczValidator(item) {
   const attributes = [
     "itemId",
     "itemUrl",
@@ -15,4 +15,3 @@ function kasaczValidator(item) {
 
   return item;
 }
-module.exports = { kasaczValidator };

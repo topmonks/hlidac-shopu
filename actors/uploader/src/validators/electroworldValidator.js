@@ -1,4 +1,4 @@
-function electroworldValidator(item) {
+export function electroworldValidator(item) {
   const attributes = [
     "itemId",
     "img",
@@ -21,4 +21,3 @@ function electroworldValidator(item) {
 
   return item;
 }
-module.exports = { electroworldValidator };

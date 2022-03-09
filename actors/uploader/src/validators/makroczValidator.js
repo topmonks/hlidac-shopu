@@ -1,4 +1,4 @@
-function makroczValidator(item) {
+export function makroczValidator(item) {
   const updated = { ...item };
   const attributes = [
     "category",
@@ -18,4 +18,3 @@ function makroczValidator(item) {
 
   return updated;
 }
-module.exports = { makroczValidator };

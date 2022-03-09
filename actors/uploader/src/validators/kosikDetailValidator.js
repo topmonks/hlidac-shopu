@@ -1,4 +1,4 @@
-function kosikDetailValidator(item) {
+export function kosikDetailValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = ["identifier"];
   for (const attr of attributes) {
@@ -9,4 +9,3 @@ function kosikDetailValidator(item) {
 
   return updated;
 }
-module.exports = { kosikDetailValidator };

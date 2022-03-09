@@ -1,4 +1,4 @@
-function rohlikDetailValidator(item) {
+export function rohlikDetailValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = ["identifier"];
   for (const attr of attributes) {
@@ -9,4 +9,3 @@ function rohlikDetailValidator(item) {
 
   return updated;
 }
-module.exports = { rohlikDetailValidator };

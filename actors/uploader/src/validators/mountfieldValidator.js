@@ -1,4 +1,4 @@
-function mountfieldValidator(item) {
+export function mountfieldValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -19,4 +19,3 @@ function mountfieldValidator(item) {
 
   return item;
 }
-module.exports = { mountfieldValidator };

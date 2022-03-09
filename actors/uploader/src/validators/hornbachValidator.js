@@ -1,4 +1,4 @@
-function hornbachValidator(item) {
+export function hornbachValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -16,4 +16,3 @@ function hornbachValidator(item) {
 
   return item;
 }
-module.exports = { hornbachValidator };

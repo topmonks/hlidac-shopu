@@ -1,4 +1,4 @@
-function tetaValidator(item) {
+export function tetaValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -16,5 +16,3 @@ function tetaValidator(item) {
 
   return item;
 }
-
-module.exports = { tetaValidator };

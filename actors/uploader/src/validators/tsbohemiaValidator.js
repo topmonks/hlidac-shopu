@@ -1,4 +1,4 @@
-function tsbohemiaValidator(item) {
+export function tsbohemiaValidator(item) {
   const attributes = [
     "breadCrumbs",
     "currentPrice",
@@ -18,4 +18,3 @@ function tsbohemiaValidator(item) {
 
   return item;
 }
-module.exports = { tsbohemiaValidator };

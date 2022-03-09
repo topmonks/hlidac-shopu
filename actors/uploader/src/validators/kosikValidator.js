@@ -1,4 +1,4 @@
-function kosikValidator(item) {
+export function kosikValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "currentPrice",
@@ -18,4 +18,3 @@ function kosikValidator(item) {
 
   return updated;
 }
-module.exports = { kosikValidator };

@@ -1,4 +1,4 @@
-function mallValidator(item) {
+export function mallValidator(item) {
   const attributes = [
     "itemId",
     "img",
@@ -23,4 +23,3 @@ function mallValidator(item) {
 
   return item;
 }
-module.exports = { mallValidator };

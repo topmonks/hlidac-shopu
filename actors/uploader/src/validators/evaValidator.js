@@ -1,4 +1,4 @@
-function evaValidator(item) {
+export function evaValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -19,4 +19,3 @@ function evaValidator(item) {
 
   return item;
 }
-module.exports = { evaValidator };

@@ -1,4 +1,4 @@
-function czcValidator(item) {
+export function czcValidator(item) {
   const attributes = [
     "itemUrl",
     "itemId",
@@ -18,4 +18,3 @@ function czcValidator(item) {
 
   return item;
 }
-module.exports = { czcValidator };

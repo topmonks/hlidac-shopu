@@ -1,4 +1,4 @@
-function mironetValidator(item) {
+export function mironetValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -14,4 +14,3 @@ function mironetValidator(item) {
 
   return item;
 }
-module.exports = { mironetValidator };

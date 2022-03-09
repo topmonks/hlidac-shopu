@@ -1,4 +1,4 @@
-function rozetkaValidator(item) {
+export function rozetkaValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -22,5 +22,3 @@ function rozetkaValidator(item) {
 
   return item;
 }
-
-module.exports = { rozetkaValidator };

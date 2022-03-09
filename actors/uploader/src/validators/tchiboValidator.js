@@ -1,4 +1,4 @@
-function tchiboValidator(item) {
+export function tchiboValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -18,4 +18,3 @@ function tchiboValidator(item) {
 
   return item;
 }
-module.exports = { tchiboValidator };

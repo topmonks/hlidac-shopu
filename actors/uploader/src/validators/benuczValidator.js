@@ -1,4 +1,4 @@
-function benuczValidator(item) {
+export function benuczValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -19,4 +19,3 @@ function benuczValidator(item) {
 
   return item;
 }
-module.exports = { benuczValidator };

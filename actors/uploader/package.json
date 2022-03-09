@@ -4,6 +4,7 @@
   "description": "Keboola uploader",
   "author": "TopMonks s.r.o. & contributors",
   "license": "EPL-2.0",
+  "type": "module",
   "dependencies": {
     "@adobe/helix-fetch": "^3.0.6",
     "@fast-csv/format": "^4.3.5",

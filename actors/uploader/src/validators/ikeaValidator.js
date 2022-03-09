@@ -1,4 +1,4 @@
-function ikeaValidator(item) {
+export function ikeaValidator(item) {
   const attributes = [
     "itemName",
     "itemUrl",
@@ -22,5 +22,3 @@ function ikeaValidator(item) {
   }
   return item;
 }
-
-module.exports = { ikeaValidator };

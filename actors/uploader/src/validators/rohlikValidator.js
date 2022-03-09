@@ -1,4 +1,4 @@
-function rohlikValidator(item) {
+export function rohlikValidator(item) {
   const attributes = [
     "currency",
     "currentPrice",
@@ -21,4 +21,3 @@ function rohlikValidator(item) {
 
   return item;
 }
-module.exports = { rohlikValidator };

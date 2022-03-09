@@ -1,4 +1,4 @@
-function lekarnaValidator(item) {
+export function lekarnaValidator(item) {
   const attributes = [
     "itemId",
     "itemUrl",
@@ -18,4 +18,3 @@ function lekarnaValidator(item) {
 
   return item;
 }
-module.exports = { lekarnaValidator };

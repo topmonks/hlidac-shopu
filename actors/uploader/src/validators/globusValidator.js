@@ -1,4 +1,4 @@
-function globusValidator(item) {
+export function globusValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "currentPrice",
@@ -17,4 +17,3 @@ function globusValidator(item) {
 
   return updated;
 }
-module.exports = { globusValidator };

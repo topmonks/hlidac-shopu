@@ -1,4 +1,4 @@
-function coopValidator(item) {
+export function coopValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "currentPrice",
@@ -17,4 +17,3 @@ function coopValidator(item) {
 
   return updated;
 }
-module.exports = { coopValidator };

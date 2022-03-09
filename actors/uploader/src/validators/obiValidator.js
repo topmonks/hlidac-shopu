@@ -1,4 +1,4 @@
-function obiValidator(item) {
+export function obiValidator(item) {
   const attributes = [
     "category",
     "currency",
@@ -19,4 +19,3 @@ function obiValidator(item) {
 
   return item;
 }
-module.exports = { obiValidator };

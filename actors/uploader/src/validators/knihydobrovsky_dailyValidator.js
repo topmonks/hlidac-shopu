@@ -1,4 +1,4 @@
-function knihydobrovsky_dailyValidator(item) {
+export function knihydobrovsky_dailyValidator(item) {
   const attributes = [
     "itemId",
     "itemName",
@@ -21,5 +21,3 @@ function knihydobrovsky_dailyValidator(item) {
 
   return item;
 }
-
-module.exports = { knihydobrovsky_dailyValidator };

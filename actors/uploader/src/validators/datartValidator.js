@@ -1,4 +1,4 @@
-function datartValidator(item) {
+export function datartValidator(item) {
   // to fix the days where there was a bug with category
   const updated = Object.assign({}, item);
   if (updated.breadcrumbs) {
@@ -23,4 +23,3 @@ function datartValidator(item) {
 
   return updated;
 }
-module.exports = { datartValidator };

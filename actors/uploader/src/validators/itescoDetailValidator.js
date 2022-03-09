@@ -1,4 +1,4 @@
-function itescoDetailValidator(item) {
+export function itescoDetailValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = ["identifier"];
   for (const attr of attributes) {
@@ -9,4 +9,3 @@ function itescoDetailValidator(item) {
 
   return updated;
 }
-module.exports = { itescoDetailValidator };

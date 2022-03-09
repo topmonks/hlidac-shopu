@@ -1,4 +1,4 @@
-function pilulkaczValidator(item) {
+export function pilulkaczValidator(item) {
   const attributes = [
     "availability",
     "category",
@@ -21,4 +21,3 @@ function pilulkaczValidator(item) {
 
   return item;
 }
-module.exports = { pilulkaczValidator };

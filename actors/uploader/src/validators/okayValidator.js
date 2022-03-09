@@ -1,4 +1,4 @@
-function okayValidator(item) {
+export function okayValidator(item) {
   const attributes = [
     "breadcrumb",
     "currency",
@@ -21,4 +21,3 @@ function okayValidator(item) {
 
   return item;
 }
-module.exports = { okayValidator };

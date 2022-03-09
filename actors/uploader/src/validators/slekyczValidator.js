@@ -1,4 +1,4 @@
-function slekyczValidator(item) {
+export function slekyczValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -17,4 +17,3 @@ function slekyczValidator(item) {
 
   return item;
 }
-module.exports = { slekyczValidator };

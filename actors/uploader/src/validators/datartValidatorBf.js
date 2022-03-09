@@ -1,4 +1,4 @@
-function datartValidatorBf(item) {
+export function datartValidatorBf(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "category",
@@ -20,4 +20,3 @@ function datartValidatorBf(item) {
 
   return updated;
 }
-module.exports = { datartValidatorBf };

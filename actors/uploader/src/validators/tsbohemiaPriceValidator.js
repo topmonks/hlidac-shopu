@@ -1,4 +1,4 @@
-function tsbohemiaPriceValidator(item) {
+export function tsbohemiaPriceValidator(item) {
   const attributes = ["itemId", "currentPrice", "originalPrice", "discounted"];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
@@ -8,5 +8,3 @@ function tsbohemiaPriceValidator(item) {
 
   return item;
 }
-
-module.exports = { tsbohemiaPriceValidator };

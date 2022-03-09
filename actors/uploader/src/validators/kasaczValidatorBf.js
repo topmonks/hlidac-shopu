@@ -1,4 +1,4 @@
-function kasaczValidatorBf(item) {
+export function kasaczValidatorBf(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -17,4 +17,3 @@ function kasaczValidatorBf(item) {
 
   return item;
 }
-module.exports = { kasaczValidatorBf };

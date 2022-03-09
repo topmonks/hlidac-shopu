@@ -1,4 +1,4 @@
-function aaaautoValidator(item) {
+export function aaaautoValidator(item) {
   const attributes = [
     "actionPrice",
     "currency",
@@ -25,4 +25,3 @@ function aaaautoValidator(item) {
 
   return item;
 }
-module.exports = { aaaautoValidator };

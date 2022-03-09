@@ -1,11 +1,17 @@
-const { fetch } = require("@adobe/helix-fetch");
-const Apify = require("apify");
-const byteSize = require("byte-size");
-const { FormData } = require("formdata-node");
+import { fetch } from "@adobe/helix-fetch";
+import Apify from "apify";
+import byteSize from "byte-size";
+import { FormData } from "formdata-node";
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
-async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
+export async function keboolaUploader(
+  bucket,
+  table,
+  data,
+  fileName,
+  isGzipped
+) {
   let lastError;
   for (let i = 0; i < 4; i++) {
     try {
@@ -53,5 +59,3 @@ async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
     process.exit(1);
   }
 }
-
-module.exports = { keboolaUploader };

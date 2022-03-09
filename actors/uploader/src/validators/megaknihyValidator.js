@@ -1,4 +1,4 @@
-function megaknihyValidator(item) {
+export function megaknihyValidator(item) {
   const attributes = [
     "category",
     "currentPrice",
@@ -18,4 +18,3 @@ function megaknihyValidator(item) {
 
   return item;
 }
-module.exports = { megaknihyValidator };

@@ -1,4 +1,4 @@
-function notinoValidator(item) {
+export function notinoValidator(item) {
   const attributes = [
     "currentPrice",
     "discounted",
@@ -16,4 +16,3 @@ function notinoValidator(item) {
 
   return item;
 }
-module.exports = { notinoValidator };
