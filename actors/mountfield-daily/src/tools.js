@@ -15,9 +15,8 @@ function parsePrice(text) {
   );
 }
 
-async function extractItems($, $products, userData) {
-  const { s3 } = global;
-  const { country = COUNTRY.CZ } = global.userInput;
+async function extractItems({ $, $products, s3, userInput }) {
+  const { country = COUNTRY.CZ } = userInput;
   const category = [];
   $(".box-breadcrumb__item").each(function () {
     category.push($(this).text().trim());
@@ -65,31 +64,21 @@ async function extractItems($, $products, userData) {
     }
     requests.push(
       Apify.pushData(result),
-      !global.userInput.development
-        ? uploadToS3v2(
-            s3,
-            {
-              ...result,
-              inStock: true
-            },
-            { priceCurrency: result.currency }
-          )
+      !userInput.development
+        ? uploadToS3v2(s3, result, {
+            priceCurrency: result.currency,
+            inStock: true
+          })
         : null
     );
   }
   await Promise.allSettled(requests);
 }
 
-/**
- * @param {CheerioSelector} $
- * @param {Apify.Request} request
- * @param {string} rootUrl
- * @returns {Promise<*[]>}
- */
-async function scrapProducts($, request) {
+export async function scrapProducts({ $, s3, userInput }) {
   const $products = $(".list-products__item__in");
   if ($products.length > 0) {
-    await extractItems($, $products, request.userData);
+    await extractItems({ $, $products, s3, userInput });
   }
 }
 
@@ -97,8 +86,8 @@ async function scrapProducts($, request) {
  * create rootURL of mountfield site
  * @return {string}
  */
-const getRootUrl = () => {
-  const { country = COUNTRY.CZ } = global.userInput;
+export const getRootUrl = userInput => {
+  const { country = COUNTRY.CZ } = userInput;
   return country === COUNTRY.CZ ? WEB : WEB_SK;
 };
 
@@ -106,18 +95,11 @@ const getRootUrl = () => {
  * return name of the table in keboola according the language
  * @return {string|string}
  */
-const getTableName = () => {
-  const { type, country = COUNTRY.CZ } = global.userInput;
+export const getTableName = userInput => {
+  const { type, country = COUNTRY.CZ } = userInput;
   let tableName = `mountfield_${country.toLowerCase()}`;
   if (type === BF) {
     tableName = `${tableName}_bf`;
   }
   return tableName;
-};
-
-module.exports = {
-  extractItems,
-  scrapProducts,
-  getRootUrl,
-  getTableName
 };

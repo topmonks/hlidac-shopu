@@ -4,15 +4,65 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
-import { createRouter } from "./routes.js";
 import { LABELS, COUNTRY, BF } from "./const.js";
-import tools from "./tools.js";
+import { getTableName, scrapProducts, getRootUrl } from "./tools.js";
 
 const { log } = Apify.utils;
 
+async function scrapeCategoryItems({ $, crawler }) {
+  const categoryItems = $(".list-categories__item__block").toArray();
+  for (const cat of categoryItems) {
+    const url = $(cat).attr("href");
+    await crawler.requestQueue.addRequest({
+      url,
+      userData: {
+        label: LABELS.CATEGORY,
+        mainCategory: $(cat).find("h3").text()?.trim()
+      }
+    });
+  }
+}
+
+async function scrapeCategory({ $, request, crawler }, { userInput, s3 }) {
+  const { mainCategory } = request.userData;
+  let categories = $(".list-categories__item__block").toArray();
+  if (categories.length === 0) {
+    categories = $(".list-categories-with-article__box").toArray();
+  }
+  if (categories.length === 0) {
+    await scrapProducts({ $, s3, userInput });
+    const nextPagination = $("a.in-paging__control__item--arrow-next");
+    if (nextPagination.length > 0) {
+      const paginationUrl = `https://mountfield.${userInput.country.toLocaleLowerCase()}${nextPagination.attr(
+        "href"
+      )}`;
+      await crawler.requestQueue.addRequest({
+        url: paginationUrl,
+        userData: {
+          label: LABELS.CATEGORY,
+          mainCategory
+        }
+      });
+      log.info(`Found pagination page ${paginationUrl}`);
+    }
+  } else {
+    for (const cat of categories) {
+      const url = $(cat).attr("href");
+      await crawler.requestQueue.addRequest({
+        url,
+        userData: {
+          label: LABELS.CATEGORY,
+          mainCategory
+        }
+      });
+    }
+    log.info(`Found categories ${categories.length}`);
+  }
+}
+
 Apify.main(async () => {
   rollbar.init();
-  global.userInput = await Apify.getInput();
+  const userInput = await Apify.getInput();
   const {
     development = false,
     debugLog = false,
@@ -22,11 +72,11 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "FULL",
     bfUrl = "https://www.mountfield.cz/black-friday"
-  } = global.userInput ?? {};
+  } = userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
   if (type === "FULL") {
     await requestQueue.addRequest({
-      url: tools.getRootUrl(),
+      url: getRootUrl(userInput),
       userData: {
         label: LABELS.START
       }
@@ -49,16 +99,12 @@ Apify.main(async () => {
     });
   }
 
-  global.s3 = new S3Client({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
 
-  // Create route
-  const router = createRouter();
-
-  // Set up the crawler, passing a single options object as an argument.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxConcurrency,
@@ -73,7 +119,12 @@ Apify.main(async () => {
       } = request;
       log.info(`Scraping [${label}] - ${url}`);
 
-      await router(label, context);
+      switch (label) {
+        case LABELS.START:
+          return scrapeCategoryItems(context);
+        case LABELS.SUB_CATEGORY:
+          return scrapeCategory(context, { userInput, s3 });
+      }
     },
     // If request failed 4 times then this function is executed
     handleFailedRequestFunction: async ({ request }) => {
@@ -92,7 +143,7 @@ Apify.main(async () => {
     );
     log.info("invalidated Data CDN");
 
-    await uploadToKeboola(tools.getTableName());
+    await uploadToKeboola(getTableName(userInput));
   }
   log.info("Finished.");
 });
