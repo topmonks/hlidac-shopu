@@ -1,6 +1,6 @@
 import Apify from "apify";
 import byteSize from "byte-size";
-import { gzip } from "node-gzip";
+import gzip from "node-gzip";
 import { writeToBuffer } from "@fast-csv/format";
 import addMinutes from "date-fns/addMinutes";
 import format from "date-fns/format";
@@ -330,7 +330,9 @@ async function processItems(
       await keboolaUploader(
         KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
-        await writeToBuffer(validItems, { headers: true }).then(x => gzip(x)),
+        await writeToBuffer(validItems, { headers: true }).then(x =>
+          gzip.gzip(x)
+        ),
         `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`,
         true
       );
