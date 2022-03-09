@@ -7,10 +7,17 @@ import playwright from "playwright";
 import cheerio from "cheerio";
 import { gotScraping } from "got-scraping";
 import { getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
+  invalidateCDN,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
 import { BASE_URL, LABELS } from "./src/const";
 import { getRandomInt, getSitemapUrls } from "./src/utils";
 import { CaptchaSolver } from "./src/captcha-solver";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 const { log, requestAsBrowser } = Apify.utils;
 let stats = {
@@ -77,13 +84,13 @@ async function enqueueAllCategories() {
   return requestListSources;
 }
 
-/**
- * Gets attribute as text from a ElementHandle.
- * @param {ElementHandle} element - The element to get attribute from.
- * @param {string} attr - Name of the attribute to get.
- */
 /** Main function */
 Apify.main(async () => {
+  rollbar.init();
+
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+
   log.info("ACTOR - Start");
   const input = await Apify.getInput();
   const {
@@ -317,7 +324,10 @@ Apify.main(async () => {
         // Save data to dataset
         if (!processedIds.has(product.itemId)) {
           processedIds.add(product.itemId);
-          requests.push(Apify.pushData(product));
+          requests.push(
+            Apify.pushData(product),
+            uploadToS3v2(s3, product, { priceCurrency: "CZK" })
+          );
           stats.items++;
         } else {
           stats.itemsDuplicity++;
@@ -402,7 +412,7 @@ Apify.main(async () => {
         } else {
           log.warning("Captcha found");
           // solve using captcha solver .
-          const [mainFrame, recaptchaFrame] = await page.frames();
+          const [, recaptchaFrame] = await page.frames();
           await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
             state: "attached"
           });
@@ -423,7 +433,7 @@ Apify.main(async () => {
           }, solution);
           // DO not start the robotic logic right after solving
           await Apify.utils.sleep(10000);
-          // Force the crawler to process the the response by saying it is alright
+          // Force the crawler to process the response by saying it is alright
           response.status = () => 200;
           log.info("Captcha solved!");
         }
@@ -520,10 +530,7 @@ Apify.main(async () => {
     maxRequestRetries,
     handleRequestFunction: async context => {
       const { request } = context;
-      const {
-        url,
-        userData: { ids, label }
-      } = request;
+      const { ids } = request.userData;
       const bodyList = "stiidlist=" + ids.join(",");
 
       const response = await gotScraping({
@@ -591,7 +598,8 @@ Apify.main(async () => {
 
   log.info("ACTOR - End crawler");
 
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  await Apify.setValue("STATS", stats);
+  log.debug("STATS saved!");
   log.info(JSON.stringify(stats));
 
   if (!development) {
@@ -602,7 +610,11 @@ Apify.main(async () => {
     } else if (type === "BF") {
       tableName = `${tableName}_bf`;
     }
-    await uploadToKeboola(tableName);
+    await Promise.allSettled([
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tsbohemia.cz"),
+      uploadToKeboola(tableName)
+    ]);
+    log.info("invalidated Data CDN");
   }
 
   log.info("ACTOR - Finished");

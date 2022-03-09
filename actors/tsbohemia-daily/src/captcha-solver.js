@@ -1,7 +1,6 @@
 import Apify from "apify";
 
 const { log } = Apify.utils;
-
 const { ANTI_CAPTCHA_TOKEN, APIFY_PROXY_PASSWORD } = process.env;
 
 const SELECTORS = {
