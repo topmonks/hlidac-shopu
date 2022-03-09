@@ -4,6 +4,7 @@
   "description": "Knihydobrovsky.cz counting actor",
   "author": "<oodoow@gmail.com>",
   "license": "EPL-2.0",
+  "type": "module",
   "dependencies": {
     "@hlidac-shopu/actors-common": "^1.1.9",
     "apify": "^2.2.2"

@@ -1,17 +1,15 @@
-const Apify = require("apify");
-const { handleStart, handleList, handleSubList } = require("./src/routes");
+import Apify from "apify";
+import { handleStart, handleList, handleSubList } from "./src/routes.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 const {
   utils: { log }
 } = Apify;
 
 Apify.main(async () => {
+  rollbar.init();
   const input = await Apify.getInput();
-  const {
-    development,
-    maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"]
-  } = input ?? {};
+  const { maxConcurrency = 10, proxyGroups = ["CZECH_LUMINATI"] } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("categories", [

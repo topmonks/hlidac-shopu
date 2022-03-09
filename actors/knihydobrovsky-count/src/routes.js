@@ -1,4 +1,4 @@
-const Apify = require("apify");
+import Apify from "apify";
 
 const {
   utils: { log }
@@ -6,7 +6,7 @@ const {
 
 const completeUrl = x => `https://www.knihydobrovsky.cz${x}`;
 
-exports.handleStart = async ({ request, $ }, requestQueue) => {
+export async function handleStart({ request, $ }, requestQueue) {
   const links = $("#main div.row-main li a")
     .not('div:contains("Magnesia Litera")')
     .map(function () {
@@ -23,9 +23,9 @@ exports.handleStart = async ({ request, $ }, requestQueue) => {
   for (const link of absoluteLinks) {
     await requestQueue.addRequest({ url: link, userData: { label: "LIST" } });
   }
-};
+}
 
-exports.handleSubList = async ({ request, $ }, requestQueue) => {
+export async function handleSubList({ request, $ }, requestQueue) {
   // if there are more subcategories enque urls...
   if ($("#bookGenres").text()) {
     const links = $("#bookGenres")
@@ -50,8 +50,9 @@ exports.handleSubList = async ({ request, $ }, requestQueue) => {
       userData: { label: "LIST" }
     });
   }
-};
-const getCategoryKey = $ => {
+}
+
+function getCategoryKey($) {
   const category = $("#menu-breadcrumb a")
     .map(function () {
       return $(this).text();
@@ -60,10 +61,11 @@ const getCategoryKey = $ => {
     .slice(1);
   category.push($("#menu-breadcrumb").find("strong").last().text());
   return category.join("|");
-};
+}
+
 const getNumberOfProducts = $ => $("li[data-productinfo]").get().length;
 
-exports.handleList = async ({ request, $ }, categoryCount, requestQueue) => {
+export async function handleList({ request, $ }, categoryCount, requestQueue) {
   // Handle pagination
   const lastText = $("#snippet-categoryBookList-pagination-change-page")
     .find("a")
@@ -95,4 +97,4 @@ exports.handleList = async ({ request, $ }, categoryCount, requestQueue) => {
       });
     }
   }
-};
+}
