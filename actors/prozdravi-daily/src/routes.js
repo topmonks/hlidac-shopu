@@ -12,9 +12,9 @@ const {
 } = Apify;
 
 // Create router
-const createRouter = globalContext => {
+export const createRouter = globalContext => {
   return async function (routeName, requestContext, requestUrl, crawlContext) {
-    const route = module.exports[routeName];
+    const route = routes[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
     return route(requestUrl, crawlContext, requestContext, globalContext);
@@ -124,8 +124,7 @@ const PRODUCTS = async (requestUrl, crawlContext, { $ }) => {
   await Promise.allSettled(requests);
 };
 
-module.exports = {
-  createRouter,
+const routes = {
   START,
   PRODUCTS
 };
