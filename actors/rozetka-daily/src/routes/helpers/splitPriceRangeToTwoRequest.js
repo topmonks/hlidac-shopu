@@ -1,9 +1,6 @@
-const {
-  BAD_HARDWARE_PAGE_URL,
-  GOOD_HARDWARE_PAGE_URL
-} = require("../../consts.js");
+import { BAD_HARDWARE_PAGE_URL, GOOD_HARDWARE_PAGE_URL } from "../../consts.js";
 
-async function splitPriceRangeToTwoRequest(
+export async function splitPriceRangeToTwoRequest(
   url,
   minPrice,
   maxPrice,
@@ -45,7 +42,3 @@ async function splitPriceRangeToTwoRequest(
     userData
   });
 }
-
-module.exports = {
-  splitPriceRangeToTwoRequest
-};

@@ -1,5 +1,5 @@
-const Apify = require("apify");
-const { MAIN_DOMAIN, LABELS } = require("../consts.js");
+import Apify from "apify";
+import { LABELS, MAIN_DOMAIN } from "../consts.js";
 
 const {
   utils: { log }
@@ -7,11 +7,12 @@ const {
 const { CATEGORY_OR_PRODUCTS } = LABELS;
 
 /** @type {Apify.CheerioHandlePage} */
-const handleMainPage = async ({
-  $,
-  request: { loadedUrl },
-  crawler: { requestQueue }
-}) => {
+export async function handleMainPage(context) {
+  const {
+    $,
+    request: { loadedUrl },
+    crawler: { requestQueue }
+  } = context;
   log.info("Entered main page.");
 
   await Apify.utils.enqueueLinks({
@@ -31,7 +32,7 @@ const handleMainPage = async ({
       return req;
     }
   });
-};
+}
 
 module.exports = {
   handleMainPage

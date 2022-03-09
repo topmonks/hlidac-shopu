@@ -1,19 +1,13 @@
-const Apify = require("apify");
-
-const {
-  scrapeProductsOrSplitPriceRange
-} = require("./helpers/scrapeProductsOrSplitPriceRange.js");
-const {
-  countProductsOrSplitPriceRange
-} = require("./helpers/countProductsOrSplitPriceRange.js");
-
-const {
+import Apify from "apify";
+import { scrapeProductsOrSplitPriceRange } from "./helpers/scrapeProductsOrSplitPriceRange.js";
+import { countProductsOrSplitPriceRange } from "./helpers/countProductsOrSplitPriceRange.js";
+import {
   ACTOR_TYPES,
   CATEGORY_LIST_ITEM_SELECTOR,
-  LABELS,
   GAMER_GOODS_URL,
+  LABELS,
   RESTAURANT_GOODS_URL
-} = require("../consts.js");
+} from "../consts.js";
 
 const { DAILY } = ACTOR_TYPES;
 const {
@@ -21,14 +15,15 @@ const {
 } = Apify;
 
 /** @type {Apify.CheerioHandlePage} */
-const handleProductList = async ({
-  $,
-  request: { userData, loadedUrl },
-  crawler: { requestQueue },
-  type,
-  stats,
-  processedIds
-}) => {
+export async function handleProductList(context) {
+  const {
+    $,
+    request: { userData, loadedUrl },
+    crawler: { requestQueue },
+    type,
+    stats,
+    processedIds
+  } = context;
   log.info(`Entered product list page: ${loadedUrl}`);
 
   let maxCategoryDepth = 1;
@@ -98,8 +93,4 @@ const handleProductList = async ({
   } else {
     await countProductsOrSplitPriceRange($, loadedUrl, requestQueue, userData);
   }
-};
-
-module.exports = {
-  handleProductList
-};
+}

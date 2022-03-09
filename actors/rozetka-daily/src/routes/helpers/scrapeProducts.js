@@ -1,17 +1,12 @@
-const { S3Client } = require("@aws-sdk/client-s3");
+import Apify from "apify";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { CURRENCY, PRODUCT_CELL_SELECTOR } from "../../consts.js";
+
 const s3 = new S3Client({ region: "eu-central-1" });
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const Apify = require("apify");
 
-const { CURRENCY, PRODUCT_CELL_SELECTOR } = require("../../consts.js");
-
-async function scrapeProducts($, category, stats, processedIds) {
+export async function scrapeProducts($, category, stats, processedIds) {
   const products = $(PRODUCT_CELL_SELECTOR);
-  const datasetArr = [];
 
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
@@ -21,16 +16,7 @@ async function scrapeProducts($, category, stats, processedIds) {
     // Save data to dataset
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(
-        Apify.pushData(product),
-        uploadToS3(
-          s3,
-          "rozetka.com.ua",
-          await s3FileName(product),
-          "jsonld",
-          toProduct(product, {})
-        )
-      );
+      requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
       stats.items++;
     } else {
       stats.itemsDuplicity++;
@@ -116,7 +102,3 @@ function scrapeOneProduct(product, category) {
     inStock
   };
 }
-
-module.exports = {
-  scrapeProducts
-};

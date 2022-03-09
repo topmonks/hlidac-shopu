@@ -1,12 +1,11 @@
-const Apify = require("apify");
-
-const { PRODUCT_LIST_NEXT_PAGE_SELECTOR } = require("../../consts.js");
+import Apify from "apify";
+import { PRODUCT_LIST_NEXT_PAGE_SELECTOR } from "../../consts.js";
 
 const {
   utils: { log }
 } = Apify;
 
-const handlePagination = async ($, url, requestQueue, userData) => {
+export async function handlePagination($, url, requestQueue, userData) {
   const nextPageLink = $(PRODUCT_LIST_NEXT_PAGE_SELECTOR).attr("href");
 
   // case when there is a button 'next page'
@@ -18,8 +17,4 @@ const handlePagination = async ($, url, requestQueue, userData) => {
       userData
     });
   }
-};
-
-module.exports = {
-  handlePagination
-};
+}

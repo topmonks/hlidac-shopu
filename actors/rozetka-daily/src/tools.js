@@ -1,12 +1,12 @@
-const Apify = require("apify");
-const { STATS_KEY } = require("./consts");
+import Apify from "apify";
+import { STATS_KEY } from "./consts.js";
 
 const {
   utils: { log }
 } = Apify;
 
 let isMigrating = false;
-function migrationFlagGetOrSet(value) {
+export function migrationFlagGetOrSet(value) {
   if (value === undefined) {
     return isMigrating;
   }
@@ -14,7 +14,7 @@ function migrationFlagGetOrSet(value) {
 }
 
 let statsValue = 0;
-async function getOrIncStatsValue(inc, url) {
+export async function getOrIncStatsValue(inc, url) {
   if (inc !== undefined) {
     statsValue += inc;
 
@@ -30,7 +30,7 @@ async function getOrIncStatsValue(inc, url) {
   }
 }
 
-async function migrationConfig() {
+export async function migrationConfig() {
   /**
    * At start we check whether the key-value store has a value
    * of the STATS_KEY key (in case previous actor run migrated here)
@@ -60,9 +60,3 @@ async function migrationConfig() {
     60000
   );
 }
-
-module.exports = {
-  migrationFlagGetOrSet,
-  getOrIncStatsValue,
-  migrationConfig
-};

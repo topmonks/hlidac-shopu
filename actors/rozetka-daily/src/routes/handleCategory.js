@@ -1,5 +1,5 @@
-const Apify = require("apify");
-const { LABELS, CATEGORY_CELL_SELECTOR } = require("../consts.js");
+import Apify from "apify";
+import { CATEGORY_CELL_SELECTOR, LABELS } from "../consts.js";
 
 const {
   utils: { log }
@@ -7,11 +7,12 @@ const {
 const { CATEGORY_OR_PRODUCTS } = LABELS;
 
 /** @type {Apify.CheerioHandlePage} */
-const handleCategory = async ({
-  $,
-  request: { loadedUrl },
-  crawler: { requestQueue }
-}) => {
+export async function handleCategory(context) {
+  const {
+    $,
+    request: { loadedUrl },
+    crawler: { requestQueue }
+  } = context;
   log.info(`Entered Category page: ${loadedUrl}`);
 
   await Apify.utils.enqueueLinks({
@@ -27,8 +28,4 @@ const handleCategory = async ({
       return req;
     }
   });
-};
-
-module.exports = {
-  handleCategory
-};
+}

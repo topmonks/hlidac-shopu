@@ -1,16 +1,14 @@
-const { getOrIncStatsValue } = require("../../tools.js");
-const { enqueueLastPage } = require("./enqueueLastPage.js");
-const {
-  splitPriceRangeToTwoRequest
-} = require("./splitPriceRangeToTwoRequest.js");
-const { MAX_PAGE_COUNT, PRODUCT_CELL_SELECTOR } = require("../../consts.js");
+import { enqueueLastPage } from "./enqueueLastPage.js";
+import { splitPriceRangeToTwoRequest } from "./splitPriceRangeToTwoRequest.js";
+import { MAX_PAGE_COUNT, PRODUCT_CELL_SELECTOR } from "../../consts.js";
+import { getOrIncStatsValue } from "../../tools.js";
 
-const countProductsOrSplitPriceRange = async (
+export async function countProductsOrSplitPriceRange(
   $,
   url,
   requestQueue,
   userData
-) => {
+) {
   if (
     !$(".pagination").length ||
     !$(".pagination__direction_type_forward[href]").length
@@ -43,8 +41,4 @@ const countProductsOrSplitPriceRange = async (
     requestQueue,
     userData
   );
-};
-
-module.exports = {
-  countProductsOrSplitPriceRange
-};
+}

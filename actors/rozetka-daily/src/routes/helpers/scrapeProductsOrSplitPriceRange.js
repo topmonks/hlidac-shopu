@@ -1,18 +1,16 @@
-const {
-  splitPriceRangeToTwoRequest
-} = require("./splitPriceRangeToTwoRequest.js");
-const { scrapeProducts } = require("./scrapeProducts.js");
-const { handlePagination } = require("./handlePagination.js");
-const { MAX_PAGE_COUNT } = require("../../consts.js");
+import { splitPriceRangeToTwoRequest } from "./splitPriceRangeToTwoRequest.js";
+import { scrapeProducts } from "./scrapeProducts.js";
+import { handlePagination } from "./handlePagination.js";
+import { MAX_PAGE_COUNT } from "../../consts.js";
 
-const scrapeProductsOrSplitPriceRange = async (
+export async function scrapeProductsOrSplitPriceRange(
   $,
   url,
   requestQueue,
   userData,
   stats,
   processedIds
-) => {
+) {
   // take categories from userData in case of pagination pages
   let { category } = userData;
   if (!category) {
@@ -55,8 +53,4 @@ const scrapeProductsOrSplitPriceRange = async (
     requestQueue,
     userData
   );
-};
-
-module.exports = {
-  scrapeProductsOrSplitPriceRange
-};
+}

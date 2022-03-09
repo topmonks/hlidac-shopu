@@ -1,21 +1,18 @@
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { migrationConfig, getOrIncStatsValue } = require("./tools");
-const {
-  handleMainPage,
-  handleCategory,
-  handleProductList
-} = require("./routes.js");
-const {
-  LABELS,
-  START_REQUESTS,
+import Apify from "apify";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { getOrIncStatsValue, migrationConfig } from "./tools.js";
+import { handleCategory, handleMainPage, handleProductList } from "./routes.js";
+
+import {
   ACTOR_TYPES,
+  CATEGORY_CELL_SELECTOR,
   CATEGORY_LIST_ITEM_SELECTOR,
-  CATEGORY_CELL_SELECTOR
-} = require("./consts.js");
+  LABELS,
+  START_REQUESTS
+} from "./consts.js";
 
 const { MAIN_PAGE, CATEGORY_OR_PRODUCTS } = LABELS;
 
