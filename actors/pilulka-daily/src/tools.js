@@ -1,4 +1,4 @@
-exports.buildUrl = (domain, link) => {
+export function buildUrl(domain, link) {
   if (link === null) {
     return null;
   }
@@ -12,4 +12,4 @@ exports.buildUrl = (domain, link) => {
   }
 
   return `${domain}/${link}`;
-};
+}

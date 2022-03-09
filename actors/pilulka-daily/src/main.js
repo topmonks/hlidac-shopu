@@ -1,20 +1,18 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName,
-  shopName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const randomUA = require("modern-random-ua");
-const tools = require("./tools");
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { LABEL, COUNTRY, ROOT_WEB_URL } from "./const.js";
+import { buildUrl } from "./tools.js";
+import randomUA from "modern-random-ua";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 
-const { LABEL, COUNTRY, ROOT_WEB_URL } = require("./const");
+const s3 = new S3Client({ region: "eu-central-1" });
 
 const { log } = Apify.utils;
 
@@ -42,7 +40,7 @@ async function fetchCategories($, requestQueue, country, test) {
       category.push($(this).text().trim());
 
       categories.push({
-        url: tools.buildUrl(ROOT_WEB_URL(country), link),
+        url: buildUrl(ROOT_WEB_URL(country), link),
         headers: { userAgent: randomUA.generate() },
         userData: { label: LABEL.CATEGORY, category }
       });
@@ -56,7 +54,7 @@ async function fetchCategories($, requestQueue, country, test) {
         category.push($(this).text().trim());
 
         categories.push({
-          url: tools.buildUrl(ROOT_WEB_URL(country), link),
+          url: buildUrl(ROOT_WEB_URL(country), link),
           headers: { userAgent: randomUA.generate() },
           userData: { label: LABEL.SUB_CATEGORY, category }
         });
@@ -80,7 +78,7 @@ async function fetchSubCategories($, requestQueue, request, country) {
     category.push($(this).text().trim().split("\n")[0].trim());
 
     categories.push({
-      url: tools.buildUrl(ROOT_WEB_URL(country), link),
+      url: buildUrl(ROOT_WEB_URL(country), link),
       headers: { userAgent: randomUA.generate() },
       userData: { label: LABEL.CATEGORY, category }
     });
@@ -176,7 +174,7 @@ async function fetchProductBase(
         } else {
           let originalPrice = getOriginalPrice(item, country);
 
-          const itemUrl = tools.buildUrl(ROOT_WEB_URL(country), link);
+          const itemUrl = buildUrl(ROOT_WEB_URL(country), link);
           const isDiscounted =
             !Number.isNaN(originalPrice) && originalPrice > 0;
 
@@ -184,9 +182,9 @@ async function fetchProductBase(
             itemId: id,
             itemName: name,
             itemUrl: itemUrl,
-            shop: await shopName(itemUrl),
-            slug: await s3FileName({ itemUrl }),
-            img: tools.buildUrl(ROOT_WEB_URL(country), imgLink),
+            shop: shopName(itemUrl),
+            slug: itemSlug(itemUrl),
+            img: buildUrl(ROOT_WEB_URL(country), imgLink),
             shortDesc,
             availability,
             category: request.userData.category,
@@ -209,18 +207,13 @@ async function fetchProductBase(
   if (!crawlContext.development) {
     for (const product of allFulfilledProducts) {
       requests.push(
-        uploadToS3(
+        uploadToS3v2(
           s3,
-          `pilulka.${country.toLowerCase()}`,
-          await s3FileName(product),
-          "jsonld",
-          toProduct(
-            {
-              ...product,
-              inStock: true
-            },
-            { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-          )
+          {
+            ...product,
+            inStock: true
+          },
+          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
         )
       );
     }
@@ -262,7 +255,7 @@ async function fetchProductDetail($, requestQueue, request, country) {
     );
     const detailTable = $("#product-info .product-detail__table");
 
-    result.img = tools.buildUrl(
+    result.img = buildUrl(
       ROOT_WEB_URL(country),
       $(".product-detail__images picture img").data("src")
     );
@@ -296,18 +289,13 @@ async function fetchProductDetail($, requestQueue, request, country) {
         result.discounted = false;
       }
 
-      await uploadToS3(
+      await uploadToS3v2(
         s3,
-        `pilulka.${country.toLowerCase()}`,
-        await s3FileName(result),
-        "jsonld",
-        toProduct(
-          {
-            ...result,
-            inStock: true
-          },
-          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-        )
+        {
+          ...result,
+          inStock: true
+        },
+        { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
       );
 
       await Apify.pushData(result);
