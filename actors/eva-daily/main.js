@@ -1,16 +1,17 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
   toProduct,
   uploadToS3,
   s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { log, requestAsBrowser } = Apify.utils;
+} from "@hlidac-shopu/actors-common/product.js";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+
+const s3 = new S3Client({ region: "eu-central-1" });
+const { log } = Apify.utils;
 let stats = {};
 const processedIds = new Set();
 const HOST = "https://www.eva.cz";
@@ -171,7 +172,7 @@ Apify.main(async () => {
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    handlePageFunction: async ({ request, $, response }) => {
+    handlePageFunction: async ({ request, $ }) => {
       if (request.userData.label === "PAGE") {
         //Check if there is next pagination
         await handlePagination($, request, requestQueue);

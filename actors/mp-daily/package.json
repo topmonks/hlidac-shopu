@@ -4,6 +4,7 @@
   "author": "TopMonks s.r.o. & contributors",
   "license": "EPL-2.0",
   "description": "",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.53.0",
     "@aws-sdk/client-s3": "^3.53.1",

@@ -1,15 +1,15 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
   toProduct,
   uploadToS3,
   s3FileName,
   shopName,
   invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
@@ -130,10 +130,6 @@ function pageFunction(requestQueue, s3) {
   return handlePageFunction;
 }
 
-function getTableName(country) {
-  return `kosik`;
-}
-
 Apify.main(async () => {
   rollbar.init();
 
@@ -196,7 +192,7 @@ Apify.main(async () => {
     log.info("invalidated Data CDN");
 
     try {
-      let tableName = getTableName(country);
+      let tableName = `kosik`;
       if (type === "BF") {
         tableName = `${tableName}_bf`;
       }

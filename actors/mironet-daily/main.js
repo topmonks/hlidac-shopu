@@ -1,19 +1,19 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
   toProduct,
   uploadToS3,
   shopName,
   s3FileName,
   invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const cheerio = require("cheerio");
-const zlib = require("zlib");
+} from "@hlidac-shopu/actors-common/product.js";
+import zlib from "zlib";
+import cheerio from "cheerio";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
+const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
 const BF = "BF";
 let stats = {};

@@ -1,12 +1,15 @@
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const Apify = require("apify");
-const _ = require("underscore");
-const { COUNTRY, LABELS, STARTURLS } = require("./consts");
-const { ExtractItems, findArraysUrl } = require("./tools");
-const { s3FileName } = require("@hlidac-shopu/actors-common/product.js");
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
+  invalidateCDN,
+  s3FileName
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Apify from "apify";
+import _ from "underscore";
+import { COUNTRY, LABELS, STARTURLS } from "./consts";
+
+import { ExtractItems, findArraysUrl } from "./tools";
 
 const stats = {
   offers: 0

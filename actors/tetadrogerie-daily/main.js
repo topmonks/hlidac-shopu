@@ -1,16 +1,16 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
   toProduct,
   s3FileName,
   uploadToS3,
   invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const cheerio = require("cheerio");
-const { URL, URLSearchParams } = require("url");
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import cheerio from "cheerio";
+import { URL, URLSearchParams } from "url";
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */

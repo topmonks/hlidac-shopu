@@ -1,18 +1,19 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
   toProduct,
   s3FileName,
   uploadToS3,
   invalidateCDN,
   currencyToISO4217
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { URL, URLSearchParams } from "url";
+import { gotScraping } from "got-scraping";
+
 const { log } = Apify.utils;
-const { URL, URLSearchParams } = require("url");
-const { gotScraping } = require("got-scraping");
 
 const COUNTRY = {
   CZ: "CZ",
@@ -210,7 +211,7 @@ Apify.main(async () => {
           });
         }
       } else {
-        const { products, count, currentPage, totalPages } = body;
+        const { products, currentPage, totalPages } = body;
         // we don't need to block pushes, we will await them all at the end
         const requests = [];
         stats.items += products.length;

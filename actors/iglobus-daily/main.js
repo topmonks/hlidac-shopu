@@ -1,9 +1,9 @@
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { handleStart, handleList } = require("./routes");
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { handleStart, handleList } from "./routes";
 
 const {
   utils: { log }

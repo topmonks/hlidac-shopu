@@ -1,9 +1,6 @@
-const Apify = require("apify");
-const {
-  init,
-  getCheerioObject
-} = require("@hlidac-shopu/actors-common/scraper.js");
-const { getJSONObject } = require("@hlidac-shopu/actors-common/scraper");
+import Apify from "apify";
+import { init, getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
+import { getJSONObject } from "@hlidac-shopu/actors-common/scraper";
 
 async function handleStart(crawlContext) {
   const { requestQueue, LABELS } = crawlContext;
@@ -56,18 +53,18 @@ async function handleSubCategory(request, crawlContext) {
 }
 
 async function handleList(request, crawlContext) {
-  const { requestQueue, proxyConfiguration, LABELS } = crawlContext;
+  const { proxyConfiguration } = crawlContext;
   const json = await getJSONObject(request, proxyConfiguration);
   const { results } = json;
   if (results && results.length > 0) {
-    const { selectedPage, pagesCount, products } = results;
+    const { pagesCount } = results;
     console.log(pagesCount);
   }
 }
 
 Apify.main(async () => {
   const crawlContext = await init();
-  const { input, stats, requestQueue, log, LABELS } = crawlContext;
+  const { input, requestQueue, log, LABELS } = crawlContext;
 
   // Add first urls to scrape.
   await handleStart(crawlContext);
@@ -80,7 +77,6 @@ Apify.main(async () => {
     handleRequestFunction: async context => {
       const { request } = context;
       const {
-        url,
         userData: { label }
       } = request;
 
