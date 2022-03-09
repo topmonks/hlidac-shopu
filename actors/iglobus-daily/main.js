@@ -3,7 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
-import { handleStart, handleList } from "./routes";
+import { handleStart, handleList } from "./routes.js";
 
 const {
   utils: { log }

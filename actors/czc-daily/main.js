@@ -5,7 +5,7 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { extractItems } from "./src/itemParser";
+import { extractItems } from "./src/itemParser.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 

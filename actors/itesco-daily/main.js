@@ -4,8 +4,8 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Apify from "apify";
 import _ from "underscore";
-import { COUNTRY, LABELS, STARTURLS } from "./consts";
-import { ExtractItems, findArraysUrl } from "./tools";
+import { COUNTRY, LABELS, STARTURLS } from "./consts.js";
+import { ExtractItems, findArraysUrl } from "./tools.js";
 
 const stats = {
   offers: 0

@@ -1,6 +1,6 @@
 import Apify from "apify";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
-import { LABELS, API_URL, PRICE_HEADER } from "./const";
+import { LABELS, API_URL, PRICE_HEADER } from "./const.js";
 import { siteMapToLinks, getCategoryId, getCategories } from "./tools.js";
 
 const {

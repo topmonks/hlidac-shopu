@@ -1,7 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
-import { COUNTRY } from "./consts";
+import { COUNTRY } from "./consts.js";
 
 const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;

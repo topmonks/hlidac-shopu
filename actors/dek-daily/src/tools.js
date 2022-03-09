@@ -1,4 +1,4 @@
-import { COUNTRY, BF } from "./const";
+import { COUNTRY, BF } from "./const.js";
 
 export function parsePrice(text) {
   return parseFloat(

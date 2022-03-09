@@ -1,9 +1,7 @@
-const Apify = require("apify");
-
-// const { utils: { log } } = Apify;
+import Apify from "apify";
 
 // at this point, the main page is already loaded in $
-exports.handleStart = async ({ $ }) => {
+export async function handleStart({ $ }) {
   const requestQueue = await Apify.openRequestQueue();
   // start page, add all categories links to requestQueue
   const links = $("ul.main-menu-nav li.has-sub-nav > a");
@@ -23,10 +21,10 @@ exports.handleStart = async ({ $ }) => {
     }
   }
   console.log(`Saved all links (${menu.length}) to request queue.`);
-};
+}
 
 // v {} si posilam informace, ktere chci mit, tedy tady navic state, ve kterem je pocet produktu, a request, ze ktereho taham url a mohu tahat i label
-exports.handleList = async ({ $, state, request }) => {
+export async function handleList({ $, state, request }) {
   // const requestQueue = await Apify.openRequestQueue();
   const cat = $("ul.sidebar-menu-tree li:not(.is-extra)");
   const list = [];
@@ -57,4 +55,4 @@ exports.handleList = async ({ $, state, request }) => {
   console.log(
     `Products on this page: ${sum}, ${request.url}, products altogether so far ${state.productCount}`
   );
-};
+}

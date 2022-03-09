@@ -10,8 +10,8 @@ import {
   handleCategory,
   handleList,
   handleDetail
-} from "./routes";
-import { getCategoryRequests } from "./utils";
+} from "./routes.js";
+import { getCategoryRequests } from "./utils.js";
 
 const {
   utils: { log, requestAsBrowser }

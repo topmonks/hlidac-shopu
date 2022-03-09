@@ -9,7 +9,7 @@ import {
   getProductDetailCategories,
   getPrice,
   getVariantName
-} from "./utils";
+} from "./utils.js";
 
 const {
   utils: { log }

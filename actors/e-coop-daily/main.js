@@ -4,7 +4,7 @@ import {
   uploadToS3v2,
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
-import { LABELS, MARKETS_URL, COOP_BOX_CATEGORY_POST } from "./src/const";
+import { LABELS, MARKETS_URL, COOP_BOX_CATEGORY_POST } from "./src/const.js";
 import {
   extractMainCategories,
   extractCategories,
@@ -14,7 +14,7 @@ import {
   extractCoopBoxCategories,
   extractCoopBoxItems,
   extractCoopBoxPages
-} from "./src/extractors";
+} from "./src/extractors.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 

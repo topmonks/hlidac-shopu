@@ -2,7 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
-import { fetchPage, fetchDetail, countProducts } from "./src/crawler";
+import { fetchPage, fetchDetail, countProducts } from "./src/crawler.js";
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";

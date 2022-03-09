@@ -8,8 +8,8 @@ import {
   handleFrontDetail,
   handleSitemapStart,
   handleSitemapList
-} from "./src/routes";
-import { URL_API_START, URL_SITEMAP, URL_FRONT, LABELS } from "./src/const";
+} from "./src/routes.js";
+import { URL_API_START, URL_SITEMAP, URL_FRONT, LABELS } from "./src/const.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 

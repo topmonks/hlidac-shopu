@@ -13,7 +13,7 @@ import {
   LABELS,
   URL_FRONT,
   URL_API_START
-} from "./const";
+} from "./const.js";
 import cheerio from "cheerio";
 
 const processedIds = new Set();

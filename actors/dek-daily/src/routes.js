@@ -1,6 +1,6 @@
 import Apify from "apify";
-import { LABELS, COUNTRY } from "./const";
-import { enqueueCategories, getRootUrl, parsePrice } from "./tools";
+import { LABELS, COUNTRY } from "./const.js";
+import { enqueueCategories, getRootUrl, parsePrice } from "./tools.js";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 const {

@@ -1,5 +1,5 @@
-const Apify = require("apify");
-const { handleStart, handleList, handleDetail } = require("./src/routes");
+import Apify from "apify";
+import { handleStart, handleList, handleDetail } from "./src/routes.js";
 
 const {
   utils: { log }

@@ -1,14 +1,13 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import {
   cleanPriceText,
   cleanUnitPriceText,
   uploadToS3v2
-} = require("@hlidac-shopu/actors-common/product.js");
+} from "@hlidac-shopu/actors-common/product.js";
+import Apify from "apify";
+import { URL } from "url";
 
-const Apify = require("apify");
-const { contains } = require("cheerio");
-const { URL } = require("url");
+const s3 = new S3Client({ region: "eu-central-1" });
 
 const {
   utils: { log }
@@ -21,7 +20,7 @@ const productUrl = x => `${HOST}${x}`;
 const canonicalUrl = x => new URL(x, HOST);
 
 exports.handleStart = async ({ request, $ }, crawlContext) => {
-  const { requestQueue, processedIds, stats, development } = crawlContext;
+  const { requestQueue, stats } = crawlContext;
   const listLinks = $("#categories a")
     .map(function () {
       return $(this).attr("href");
@@ -44,7 +43,7 @@ exports.handleStart = async ({ request, $ }, crawlContext) => {
 exports.handleList = async ({ request, $ }, crawlContext) => {
   // Handle pagination
   const { url, userData } = request;
-  const { requestQueue, processedIds, stats, development } = crawlContext;
+  const { requestQueue, processedIds, stats } = crawlContext;
   stats.pages++;
   if (userData.page === 0) {
     const paginationLinks = $(".pagination .page-link")

@@ -5,8 +5,8 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { LABELS, COUNTRY_TYPE, BASE_URL, BASE_URL_BF } from "./src/const";
-import { extractPrice, getHumanDelayMillis } from "./src/tools";
+import { LABELS, COUNTRY_TYPE, BASE_URL, BASE_URL_BF } from "./src/const.js";
+import { extractPrice, getHumanDelayMillis } from "./src/tools.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 

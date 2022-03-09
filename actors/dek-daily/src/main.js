@@ -4,9 +4,9 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
-import { createRouter } from "./routes";
-import { LABELS, COUNTRY } from "./const";
-import { getTableName, getRootUrl } from "./tools";
+import { createRouter } from "./routes.js";
+import { LABELS, COUNTRY } from "./const.js";
+import { getTableName, getRootUrl } from "./tools.js";
 
 const { log } = Apify.utils;
 
