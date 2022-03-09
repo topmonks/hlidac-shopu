@@ -60,9 +60,10 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`);
+  await Promise.allSettled([
+    invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`),
+    uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`)
+  ]);
   log.info("invalidated Data CDN");
-
-  await uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`);
   log.info("Finished.");
 });
