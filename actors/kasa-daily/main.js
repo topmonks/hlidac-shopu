@@ -2,9 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  toProduct,
-  s3FileName,
-  uploadToS3,
+  uploadToS3v2,
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
@@ -113,13 +111,7 @@ async function handleProducts($, request) {
         //Keboola data structure fix
         delete detail.inStock;
         requests.push(
-          uploadToS3(
-            s3,
-            "kasa.cz",
-            await s3FileName(detail),
-            "jsonld",
-            toProduct(s3item, { priceCurrency: "CZK" })
-          ),
+          uploadToS3v2(s3, s3item, { priceCurrency: "CZK" }),
           Apify.pushData(detail)
         );
         // remember processed product IDs
