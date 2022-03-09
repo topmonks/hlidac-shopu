@@ -1,4 +1,4 @@
-const Apify = require("apify");
+import Apify from "apify";
 
 const { log } = Apify.utils;
 
@@ -9,11 +9,9 @@ const SELECTORS = {
   captchaResponse: "#g-recaptcha-response"
 };
 
-class CaptchaSolver {
+export class CaptchaSolver {
   /**
-   *
-   * @param {string} token
-   * @param {Stats} stats
+   * @param {Stats=} stats
    */
   constructor(stats = {}) {
     this.token = ANTI_CAPTCHA_TOKEN;
@@ -126,5 +124,3 @@ class CaptchaSolver {
     return this.solved;
   }
 }
-
-module.exports = { CaptchaSolver };

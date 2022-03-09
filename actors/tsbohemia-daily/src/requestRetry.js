@@ -1,9 +1,9 @@
-const Apify = require("apify");
-const ProxyAgent = require("proxy-agent");
-const tough = require("tough-cookie");
-const got = require("got");
-const { getRandomInt } = require("./utils");
-const headersProvider = require("./headersProvider");
+import Apify from "apify";
+import ProxyAgent from "proxy-agent";
+import tough from "tough-cookie";
+import got from "got";
+import { getRandomInt } from "./utils";
+import headersProvider from "./headersProvider";
 
 const sessions = {};
 const proxyGroups = ["CZECH_LUMINATI"];

@@ -1,7 +1,7 @@
-const randomMua = require("random-mua");
-const { v4: uuidv4 } = require("uuid");
+import randomMua from "random-mua";
+import { v4 as uuidv4 } from "uuid";
 
-function getHeaders() {
+export default function getHeaders() {
   return {
     "x-requested-with": "XMLHttpRequest",
     accept: "*/*",
@@ -12,5 +12,3 @@ function getHeaders() {
     authority: "m.olx.pl"
   };
 }
-
-module.exports = getHeaders;

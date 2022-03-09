@@ -1,17 +1,16 @@
-const Apify = require("apify");
-const { Session } = require("apify/build/session_pool/session");
-const { PlaywrightPlugin, PuppeteerPlugin } = require("browser-pool");
-const FingerprintGenerator = require("fingerprint-generator");
-const { FingerprintInjector } = require("fingerprint-injector");
-
-const playwright = require("playwright");
-const cheerio = require("cheerio");
-const utils = require("./src/utils");
-const { LABELS, BASE_URL } = require("./src/const");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { getCheerioObject } = require("@hlidac-shopu/actors-common/scraper.js");
-const { CaptchaSolver } = require("./src/captcha-solver");
-const { gotScraping } = require("got-scraping");
+import Apify from "apify";
+import { Session } from "apify/build/session_pool/session";
+import { PlaywrightPlugin, PuppeteerPlugin } from "browser-pool";
+import FingerprintGenerator from "fingerprint-generator";
+import { FingerprintInjector } from "fingerprint-injector";
+import playwright from "playwright";
+import cheerio from "cheerio";
+import { gotScraping } from "got-scraping";
+import { getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { BASE_URL, LABELS } from "./src/const";
+import { getRandomInt, getSitemapUrls } from "./src/utils";
+import { CaptchaSolver } from "./src/captcha-solver";
 
 const { log, requestAsBrowser } = Apify.utils;
 let stats = {
@@ -59,7 +58,7 @@ async function enqueueAllCategories() {
     });
     const buffer = await streamToBuffer(stream);
     const xmlString = buffer.toString();
-    const sitemapUrls = utils.getSitemapUrls(xmlString);
+    const sitemapUrls = getSitemapUrls(xmlString);
     requestListSources = requestListSources.concat(
       sitemapUrls
         .filter(url => url.match(/_c\d+.html/))
@@ -329,7 +328,7 @@ Apify.main(async () => {
       // await all requests, so we don't end before they end
       await Promise.allSettled(requests);
       // Iterate all products and extract data
-      await Apify.utils.sleep(utils.getRandomInt(250, 950));
+      await Apify.utils.sleep(getRandomInt(250, 950));
     }
   };
 
@@ -370,9 +369,6 @@ Apify.main(async () => {
       launcher: playwright.firefox
     },
     useSessionPool: true,
-    sessionPoolOptions: {
-      maxPoolSize: 12
-    },
     preNavigationHooks: [
       async (context, gotoOptions) => {
         const { browserController, session, request, page } = context;
@@ -434,6 +430,7 @@ Apify.main(async () => {
       }
     ],
     sessionPoolOptions: {
+      maxPoolSize: 12,
       createSessionFunction: async sessionPool => {
         const session = new Session({ sessionPool });
         session.userData.fingerprint =
