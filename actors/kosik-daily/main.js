@@ -1,15 +1,13 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName,
-  shopName,
-  invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import {
+  invalidateCDN,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
@@ -64,20 +62,26 @@ async function enqueuePagination(requestQueue, { products }) {
   }
 }
 
-const parseItem = (item, breadcrumbs) => ({
-  itemId: item.id,
-  itemUrl: new URL(item.url, baseUrl).href,
-  itemName: item.name,
-  discounted: item.percentageDiscount > 0,
-  discountedName:
-    item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
-  currentPrice: item.price,
-  originalPrice:
-    item.price == item.recommendedPrice ? null : item.recommendedPrice,
-  inStock: !item.firstOrderDay,
-  category: breadcrumbs,
-  img: item.image
-});
+const parseItem = (item, breadcrumbs) => {
+  let itemUrl = new URL(item.url, baseUrl).href;
+  return {
+    itemId: item.id,
+    itemUrl,
+    itemName: item.name,
+    discounted: item.percentageDiscount > 0,
+    discountedName:
+      item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
+    currentPrice: item.price,
+    originalPrice:
+      item.price == item.recommendedPrice ? null : item.recommendedPrice,
+    inStock: !item.firstOrderDay,
+    category: breadcrumbs,
+    img: item.image,
+    shop: shopName(itemUrl),
+    slug: itemSlug(itemUrl),
+    shopOrigin: shopOrigin(itemUrl)
+  };
+};
 
 /**
  * @param {RequestQueue} requestQueue
@@ -108,17 +112,9 @@ function pageFunction(requestQueue, s3) {
       for (const item of json.products.items) {
         if (processedIds.has(item.id)) continue;
         const detail = parseItem(item, breadcrumbs);
-        const shop = await shopName(baseUrl);
-        const slug = await s3FileName(detail);
         await Promise.all([
-          Apify.pushData({ ...detail, shop, slug }),
-          uploadToS3(
-            s3,
-            "kosik.cz",
-            slug,
-            "jsonld",
-            toProduct(detail, { priceCurrency: "CZK" })
-          )
+          Apify.pushData(detail),
+          uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
         ]);
         processedIds.add(item.id);
       }
