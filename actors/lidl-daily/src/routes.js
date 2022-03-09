@@ -1,25 +1,22 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const { URL } = require("url");
-const { LABELS, MAIN_URL, BF } = require("./const");
-const tools = require("./tools");
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { URL } from "url";
+import { LABELS, MAIN_URL, BF } from "./const.js";
+import { getBaseProducts } from "./tools.js";
+
 const {
   utils: { log }
 } = Apify;
 
 // Create router
-const createRouter = globalContext => {
+export function createRouter(globalContext) {
   return async function (routeName, requestContext) {
-    const route = module.exports[routeName];
+    const route = routes[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
     return route(requestContext, globalContext);
   };
-};
+}
 
 const MAIN_NABIDKA = async ({ $, crawler }) => {
   log.info("Start MAIN_NABIDKA");
@@ -36,7 +33,7 @@ const MAIN_NABIDKA = async ({ $, crawler }) => {
 };
 
 const MAIN_NABIDKA_CAT = async ({ $, crawler }) => {
-  const products = tools.getBaseProducts($);
+  const products = getBaseProducts($);
   for (const product of products) {
     await crawler.requestQueue.addRequest(
       {
@@ -63,18 +60,13 @@ const DETAIL = async ({ request, $ }) => {
     breadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
     product.category = breadcrumbs.map(b => $(b).text().trim()).join(" > ");
     await Apify.pushData(product);
-    await uploadToS3(
+    await uploadToS3v2(
       s3,
-      "lidl.cz",
-      await s3FileName(product),
-      "jsonld",
-      toProduct(
-        {
-          ...product,
-          inStock: true
-        },
-        { priceCurrency: product.currency }
-      )
+      {
+        ...product,
+        inStock: true
+      },
+      { priceCurrency: product.currency }
     );
   }
 };
@@ -184,10 +176,9 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
     const a = product.attr("href");
     const url = new URL(`https://www.lidl.cz${a}`);
     const itemUrl = `https://www.lidl.cz${url.pathname}`;
-    const itemId = await s3FileName({ itemUrl });
     stats.items++;
-    if (!processedIds.has(itemId)) {
-      processedIds.add(itemId);
+    if (!processedIds.has(itemUrl)) {
+      processedIds.add(itemUrl);
       const title = product.find("h2").text().trim();
       const imageSource = product.find("img.product-grid-box__image");
       const price = product.find(
@@ -195,7 +186,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
       );
       const stock = product.find(".product-grid-box__availabilities > .badge");
       const result = {
-        itemId: itemId,
+        itemId: itemUrl,
         itemUrl,
         itemName: title,
         currency: "CZK",
@@ -208,7 +199,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
           breadcrumbs.length === 0
             ? heading
             : breadcrumbs.map(b => $(b).text().trim()).join(" > "),
-        slug: itemId
+        slug: itemUrl
       };
       const strikePrice = product.find(
         "> .product-grid-box__price .m-price__top"
@@ -224,13 +215,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
       }
       requests.push(
         Apify.pushData(result),
-        uploadToS3(
-          s3,
-          "lidl.cz",
-          await s3FileName(result),
-          "jsonld",
-          toProduct(result, { priceCurrency: result.currency })
-        )
+        uploadToS3v2(s3, result, { priceCurrency: result.currency })
       );
       stats.itemsUnique++;
     } else {
@@ -241,8 +226,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
   await Promise.allSettled(requests);
 };
 
-module.exports = {
-  createRouter,
+const routes = {
   MAIN_NABIDKA,
   MAIN_NABIDKA_CAT,
   LIDL_SHOP,

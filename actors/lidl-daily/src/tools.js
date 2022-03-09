@@ -1,6 +1,6 @@
-const { LABELS, MAIN_URL } = require("./const");
+import { LABELS, MAIN_URL } from "./const.js";
 
-const createInitRequests = () => {
+export function createInitRequests() {
   const sources = [];
   /*sources.push({
     url: "https://www.lidl.cz/aktualni-nabidka",
@@ -52,14 +52,14 @@ const createInitRequests = () => {
     }
   });
   return sources;
-};
+}
 
-const getItemId = url => {
+export function getItemId(url) {
   const arr = url.split("/");
   return arr[arr.length - 1];
-};
+}
 
-const getBaseProducts = $ => {
+export function getBaseProducts($) {
   const articles = $("article.product").toArray();
   const products = [];
   if (articles.length > 0) {
@@ -93,9 +93,9 @@ const getBaseProducts = $ => {
     }
   }
   return products;
-};
+}
 
-const getShopProduct = ($, url) => {
+export function getShopProduct($, url) {
   let breadcrumbs = $(".m-breadcrumbs--full .m-breadcrumbs__item").toArray();
   breadcrumbs = breadcrumbs.slice(1, breadcrumbs.length - 1);
   const title = $("h1").text().trim();
@@ -118,11 +118,4 @@ const getShopProduct = ($, url) => {
     result.originalPrice = parseFloat(strikePrice.text().trim());
   }
   return result;
-};
-
-module.exports = {
-  createInitRequests,
-  getItemId,
-  getBaseProducts,
-  getShopProduct
-};
+}

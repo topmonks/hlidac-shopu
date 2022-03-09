@@ -1,4 +1,4 @@
-const LABELS = {
+export const LABELS = {
   MAIN_NABIDKA: "MAIN_NABIDKA",
   MAIN_NABIDKA_CAT: "MAIN_NABIDKA_CAT",
   DETAIL: "DETAIL",
@@ -8,11 +8,5 @@ const LABELS = {
   LIDL_SHOP_DETAIL: "LIDL_SHOP_DETAIL",
   LIDL_SHOP_SECTION: "LIDL_SHOP_SECTION"
 };
-const MAIN_URL = "https://www.lidl.cz";
-const BF = "BF";
-
-module.exports = {
-  LABELS,
-  MAIN_URL,
-  BF
-};
+export const MAIN_URL = "https://www.lidl.cz";
+export const BF = "BF";

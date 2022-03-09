@@ -1,12 +1,13 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const tools = require("./tools");
-const { createRouter } = require("./routes");
-const { LABELS, BF } = require("./const");
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { createInitRequests } from "./tools.js";
+import { createRouter } from "./routes.js";
+import { LABELS, BF } from "./const.js";
+
 const { log } = Apify.utils;
 
 global.processedIds = new Set();
@@ -36,7 +37,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   let sources = [];
   if (type !== BF) {
-    sources = tools.createInitRequests();
+    sources = createInitRequests();
   } else {
     sources.push({
       url: "https://www.lidl.cz/c/black-friday/a10010065",

@@ -10,14 +10,14 @@ const {
 // Create router
 export const createRouter = globalContext => {
   return async function (routeName, requestContext) {
-    const route = module.exports[routeName];
+    const route = routes[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
     return route(requestContext, globalContext);
   };
 };
 
-export const START = async ({ $, crawler }) => {
+const START = async ({ $, crawler }) => {
   for (const script of $("script")) {
     if ($(script).html().includes("JSON.parse")) {
       const start =
@@ -44,7 +44,7 @@ export const START = async ({ $, crawler }) => {
   }
 };
 
-export const CATEGORY = async ({ $, request, crawler }) => {
+const CATEGORY = async ({ $, request, crawler }) => {
   const { country = COUNTRY.CZ } = global.userInput;
   const { page } = request.userData;
   const subCategories = $(".comd-menu-menu-image__link").toArray();
@@ -126,4 +126,9 @@ export const CATEGORY = async ({ $, request, crawler }) => {
     );
   }
   await Promise.allSettled(requests);
+};
+
+const routes = {
+  START,
+  CATEGORY
 };

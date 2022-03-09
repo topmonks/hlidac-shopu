@@ -10,7 +10,7 @@ const {
 // Create router
 const createRouter = globalContext => {
   return async function (routeName, requestContext) {
-    const route = module.exports[routeName];
+    const route = routes[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
     log.debug(`Invoking route: ${routeName}`);
     return route(requestContext, globalContext);
@@ -108,8 +108,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
   }
 };
 
-module.exports = {
-  createRouter,
+const routes = {
   SITE,
   CATEGORY
 };
