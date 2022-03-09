@@ -3,6 +3,7 @@ import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { URL } from "url";
 import { LABELS, MAIN_URL, BF } from "./const.js";
 import { getBaseProducts } from "./tools.js";
+import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 const {
   utils: { log }
@@ -176,9 +177,10 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
     const a = product.attr("href");
     const url = new URL(`https://www.lidl.cz${a}`);
     const itemUrl = `https://www.lidl.cz${url.pathname}`;
+    const itemId = itemSlug(itemUrl);
     stats.items++;
-    if (!processedIds.has(itemUrl)) {
-      processedIds.add(itemUrl);
+    if (!processedIds.has(itemId)) {
+      processedIds.add(itemId);
       const title = product.find("h2").text().trim();
       const imageSource = product.find("img.product-grid-box__image");
       const price = product.find(
@@ -186,7 +188,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
       );
       const stock = product.find(".product-grid-box__availabilities > .badge");
       const result = {
-        itemId: itemUrl,
+        itemId,
         itemUrl,
         itemName: title,
         currency: "CZK",
@@ -199,7 +201,7 @@ const LIDL_SHOP_CAT = async ({ $, crawler }) => {
           breadcrumbs.length === 0
             ? heading
             : breadcrumbs.map(b => $(b).text().trim()).join(" > "),
-        slug: itemUrl
+        slug: itemId
       };
       const strikePrice = product.find(
         "> .product-grid-box__price .m-price__top"

@@ -6,6 +6,7 @@ import Apify from "apify";
 import _ from "underscore";
 import { COUNTRY, LABELS, STARTURLS } from "./consts.js";
 import { ExtractItems, findArraysUrl } from "./tools.js";
+import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 const stats = {
   offers: 0
@@ -154,7 +155,7 @@ Apify.main(async () => {
             productBlock.each(async function () {
               const itemUrl = $(this).find("a.ghs-link").first().attr("href");
               if (itemUrl) {
-                const itemId = await s3FileName({ itemUrl });
+                const itemId = itemSlug(itemUrl);
                 const itemName = $(this).find(".product__name").text();
                 const originalPrice =
                   parseFloat(

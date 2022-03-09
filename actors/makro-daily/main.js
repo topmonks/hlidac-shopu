@@ -1,13 +1,13 @@
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { handleStart, handleList, handlePage } from "./src/routes.js";
 
-const Apify = require("apify");
 const {
   utils: { log }
 } = Apify;
-const { handleStart, handleList, handlePage } = require("./src/routes");
 
 let stats = {};
 const processedIds = new Set();

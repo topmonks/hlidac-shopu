@@ -1,19 +1,15 @@
-const Apify = require("apify");
+import Apify from "apify";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { parseItems } from "./utils.js";
+
 const {
   utils: { log }
 } = Apify;
 
-const { S3Client } = require("@aws-sdk/client-s3");
 const s3 = new S3Client({ region: "eu-central-1" });
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
 
-const { parseItems } = require("./utils");
-
-exports.handleStart = async ({ $, requestQueue }, stats, input) => {
+export async function handleStart({ $, requestQueue }, stats, input) {
   // Handle Start URLs
   let menuUrls = [];
   $("ul.navbar-nav li a").each(function () {
@@ -35,9 +31,9 @@ exports.handleStart = async ({ $, requestQueue }, stats, input) => {
     });
     stats.urls += 1;
   }
-};
+}
 
-exports.handleList = async ({ request, $, requestQueue }, stats, input) => {
+export async function handleList({ request, $, requestQueue }, stats, input) {
   // Handle pagination
   const itemCount = parseInt(
     $("p.mo-pagination-status strong").text().match(/\d+/)[0]
@@ -69,9 +65,9 @@ exports.handleList = async ({ request, $, requestQueue }, stats, input) => {
     );
     stats.urls += 1;
   }
-};
+}
 
-exports.handlePage = async ({ $, request }, stats, processedIds) => {
+export async function handlePage({ $, request }, stats, processedIds) {
   // Handle details
   const productList = parseItems($, request);
   let requestList = [];
@@ -79,11 +75,10 @@ exports.handlePage = async ({ $, request }, stats, processedIds) => {
   for (const product of productList) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      const fileName = await s3FileName(product);
       requestList.push(
         Apify.pushData(product),
         // upload JSON+LD data to CDN
-        uploadToS3(s3, "makro.cz", fileName, "jsonld", toProduct(product, {}))
+        uploadToS3v2(s3, product)
       );
       stats.items += 1;
     } else {
@@ -91,4 +86,4 @@ exports.handlePage = async ({ $, request }, stats, processedIds) => {
     }
   }
   await Promise.all(requestList);
-};
+}

@@ -1,10 +1,10 @@
-const Apify = require("apify");
+import Apify from "apify";
 
 const {
   utils: { log }
 } = Apify;
 
-function parseItems($, request) {
+export function parseItems($, request) {
   const breadCrubms = [];
   $("ol.breadcrumb li").each(function () {
     breadCrubms.push($(this).text().trim());
@@ -67,5 +67,3 @@ function parseItems($, request) {
   log.info(`Found ${results.length} on ${request.url}`);
   return results;
 }
-
-module.exports = { parseItems };
