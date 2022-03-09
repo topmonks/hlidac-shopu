@@ -8,7 +8,6 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import CloudFlareUnBlocker from "./cloudflare-unblocker.js";
-import getItems from "./itemParser.js";
 
 /** @typedef { import("./apify.json").ApifyEnv } ApifyEnv */
 /** @typedef { import("./apify.json").ActorRun } ActorRun */
@@ -24,6 +23,53 @@ const firstPage =
   "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
 
 const processedIds = new Set();
+
+function getBreadCrumbs(categoryId, jsonCategories) {
+  const breadcrumbs = [];
+  while (jsonCategories[categoryId]) {
+    const category = jsonCategories[categoryId];
+    breadcrumbs.push(category.name);
+    categoryId = category.parentId;
+  }
+  breadcrumbs.reverse();
+  return breadcrumbs;
+}
+
+export default function getItems(items, jsonCategories) {
+  const results = [];
+  for (const item of items) {
+    const result = {
+      img: item.imgPath ?? null,
+      itemId: item.productId ?? null,
+      itemUrl: item.baseLink ? `https://www.rohlik.cz/${item.baseLink}` : null,
+      itemName: item.productName ?? null,
+      discounted: false,
+      currentPrice: item.price?.full ?? null,
+      currentUnitPrice: item.pricePerUnit?.full ?? null,
+      currency: item.price?.currency ?? null,
+      inStock: item.inStock,
+      useUnitPrice: item.textualAmount.includes("cca")
+    };
+    if (item.sales.length !== 0) {
+      for (const sale of item.sales) {
+        if (sale.type === "sale") {
+          result.originalPrice = result.currentPrice;
+          result.originalUnitPrice = result.currentUnitPrice;
+          result.currentPrice = sale.price?.full ?? null;
+          result.currentUnitPrice = sale.priceForUnit?.full ?? null;
+          result.discounted = true;
+        }
+      }
+    } else if (item.goodPrice) {
+      const { originalPrice } = item;
+      result.originalPrice = originalPrice.full;
+      result.discounted = true;
+    }
+    result.breadcrumbs = getBreadCrumbs(item.mainCategoryId, jsonCategories);
+    results.push(result);
+  }
+  return results;
+}
 
 async function processItem(s3, products) {
   // we don't need to block pushes, we will await them all at the end
