@@ -1,12 +1,12 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { LABELS, PRODUCTS_URLS } = require("./const");
-const { createRouter } = require("./routes");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const randomUA = require("modern-random-ua");
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { LABELS, PRODUCTS_URLS } from "./const.js";
+import { createRouter } from "./routes.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import randomUA from "modern-random-ua";
 
 const { log } = Apify.utils;
 

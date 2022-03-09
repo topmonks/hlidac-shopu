@@ -1,16 +1,11 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const {
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
   LABELS,
   SCRIPT_WITH_JSON,
   PRODUCTS_PER_PAGE,
-  PRODUCTS_BASE_URL,
-  PRODUCTS_URLS
-} = require("./const");
+  PRODUCTS_BASE_URL
+} from "./const.js";
 
 const {
   utils: { log }
@@ -116,13 +111,7 @@ const PRODUCTS = async (requestUrl, crawlContext, { $ }) => {
       crawlContext.processedIds.add(result.itemId);
       requests.push(
         !crawlContext.development
-          ? uploadToS3(
-              s3,
-              "prozdravi.cz",
-              await s3FileName(result),
-              "jsonld",
-              toProduct(result, { priceCurrency: "CZK" })
-            )
+          ? uploadToS3v2(s3, result, { priceCurrency: "CZK" })
           : [],
         Apify.pushData(result)
       );
