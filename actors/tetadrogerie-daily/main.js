@@ -318,13 +318,15 @@ Apify.main(async () => {
   log.info(JSON.stringify(stats));
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz");
-    log.info("invalidated Data CDN");
     let tableName = "teta_cz";
     if (type === "BF") {
       tableName = `${tableName}_bf`;
     }
-    await uploadToKeboola(tableName);
+    await Promise.allSettled([
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz"),
+      uploadToKeboola(tableName)
+    ]);
+    log.info("invalidated Data CDN");
   }
   log.info("Finished.");
 });
