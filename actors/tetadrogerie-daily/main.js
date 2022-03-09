@@ -2,10 +2,8 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  toProduct,
-  s3FileName,
-  uploadToS3,
-  invalidateCDN
+  invalidateCDN,
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
@@ -214,13 +212,7 @@ async function pageFunction(requestQueue, s3) {
       for (const detail of unprocessedProducts) {
         requests.push(
           Apify.pushData(detail),
-          uploadToS3(
-            s3,
-            "tetadrogerie.cz",
-            await s3FileName(detail),
-            "jsonld",
-            toProduct(detail, { priceCurrency: "CZK" })
-          )
+          uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
         );
 
         // remember processed product IDs
