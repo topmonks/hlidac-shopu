@@ -1,6 +1,6 @@
-const { COUNTRY, BF } = require("./const");
+import { COUNTRY, BF } from "./const";
 
-function parsePrice(text) {
+export function parsePrice(text) {
   return parseFloat(
     text
       .replace(/\s/g, "")
@@ -11,7 +11,7 @@ function parsePrice(text) {
   );
 }
 
-function enqueueCategories(cats) {
+export function enqueueCategories(cats) {
   let catUrls = [];
   for (const c of cats) {
     if (c.category && c.category.length > 0) {
@@ -27,7 +27,7 @@ function enqueueCategories(cats) {
  * create rootURL of dek site
  * @return {string}
  */
-function getRootUrl() {
+export function getRootUrl() {
   const { country = COUNTRY.CZ } = global.userInput;
   return `https://www.dek.${country.toLowerCase()}`;
 }
@@ -36,7 +36,7 @@ function getRootUrl() {
  * return name of the table in keboola according the language
  * @return {string|string}
  */
-function getTableName() {
+export function getTableName() {
   const { type, country = COUNTRY.CZ } = global.userInput;
   let tableName = `dek_${country.toLowerCase()}`;
   if (type === BF) {
@@ -44,10 +44,3 @@ function getTableName() {
   }
   return tableName;
 }
-
-module.exports = {
-  getRootUrl,
-  getTableName,
-  enqueueCategories,
-  parsePrice
-};

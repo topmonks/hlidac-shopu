@@ -1,19 +1,17 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const cheerio = require("cheerio");
-
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import cheerio from "cheerio";
+import {
   handleSitemap,
   handleCategory,
   handleList,
   handleDetail
-} = require("./routes");
-
-const { getCategoryRequests } = require("./utils");
+} from "./routes";
+import { getCategoryRequests } from "./utils";
 
 const {
   utils: { log, requestAsBrowser }

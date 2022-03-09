@@ -1,16 +1,15 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { extractItems } = require("./src/itemParser");
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { extractItems } from "./src/itemParser";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+
+const s3 = new S3Client({ region: "eu-central-1" });
 
 const web = "https://www.czc.cz";
 const { log } = Apify.utils;
@@ -227,16 +226,7 @@ Apify.main(async () => {
               //Keboola data structure fix
               delete product.inStock;
               processedIds.add(product.itemId);
-              requests.push(
-                Apify.pushData(product),
-                uploadToS3(
-                  s3,
-                  "czc.cz",
-                  await s3FileName(s3item),
-                  "jsonld",
-                  toProduct(s3item, {})
-                )
-              );
+              requests.push(Apify.pushData(product), uploadToS3v2(s3, s3item));
               stats.items++;
             } else {
               stats.itemsDuplicity++;

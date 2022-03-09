@@ -1,6 +1,7 @@
-const Apify = require("apify");
-const cheerio = require("cheerio");
-const { gotScraping } = require("got-scraping");
+import Apify from "apify";
+import cheerio from "cheerio";
+import { gotScraping } from "got-scraping";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 const {
   utils: { log, requestAsBrowser }
@@ -151,16 +152,12 @@ async function scrapeProductListPage($, crawlContext) {
     }
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
-      const slug = await crawlContext.s3FileName(product);
       requests.push(
         crawlContext.dataset.pushData(product),
-        crawlContext.uploadToS3(
-          crawlContext.s3,
-          "electroworld.cz",
-          slug,
-          "jsonld",
-          crawlContext.toProduct({ ...product, inStock: product.available }, {})
-        )
+        uploadToS3v2(crawlContext.s3, {
+          ...product,
+          inStock: product.available
+        })
       );
       crawlContext.stats.items++;
     } else {
@@ -200,7 +197,7 @@ async function addProductListPagesToQueue($, crawlContext, firstPageURL) {
   }
 }
 
-exports.fetchPage = async ({ request, $ }, crawlContext) => {
+export async function fetchPage({ request, $ }, crawlContext) {
   if (request.userData.label === "nthPage") {
     log.info(
       `Scraping ${request.userData.pageN}th product list page: ${request.url},` +
@@ -227,7 +224,7 @@ exports.fetchPage = async ({ request, $ }, crawlContext) => {
       crawlContext.stats.pages++;
     }
   }
-};
+}
 
 /**
  *  Product detail scraping
@@ -312,7 +309,7 @@ function mkProperties($) {
   return properties;
 }
 
-exports.fetchDetail = async ($, request, dataset) => {
+export async function fetchDetail($, request, dataset) {
   const json = JSON.parse($("#snippet-productRichSnippet-richSnippet").html());
 
   const rating = mkRating($);
@@ -366,7 +363,7 @@ exports.fetchDetail = async ($, request, dataset) => {
       ]
     }
   });
-};
+}
 
 /**
  * Count all products from sitemap.xml
@@ -381,7 +378,7 @@ async function streamToBuffer(stream) {
   });
 }
 
-exports.countProducts = async stats => {
+export async function countProducts(stats) {
   const stream = await requestAsBrowser({
     url: `${urlBase}/sitemap.xml`,
     stream: true
@@ -413,4 +410,4 @@ exports.countProducts = async stats => {
     });
   }
   log.info(`Total items ${stats.items}x`);
-};
+}

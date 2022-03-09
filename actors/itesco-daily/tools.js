@@ -1,13 +1,10 @@
-const { S3Client } = require("@aws-sdk/client-s3");
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import Apify from "apify";
+import { COUNTRY } from "./consts";
+
 const s3 = new S3Client({ region: "eu-central-1" });
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const Apify = require("apify");
 const { log } = Apify.utils;
-const { COUNTRY } = require("./consts");
 
 function flat(array) {
   let result = [];
@@ -19,7 +16,8 @@ function flat(array) {
   });
   return result;
 }
-const findArraysUrl = async (urlsCatHtml, country) => {
+
+export const findArraysUrl = async (urlsCatHtml, country) => {
   const resultArrUrls = [];
   const { navList } = urlsCatHtml.taxonomy;
   const childrenArr = [];
@@ -81,7 +79,7 @@ const getProductRedux = (productId, reduxResults) => {
  * @returns {Promise<[]>}
  * @constructor
  */
-async function ExtractItems($, country, uniqueItems, stats, request) {
+export async function ExtractItems($, country, uniqueItems, stats, request) {
   const itemsArray = [];
   const rootUrl =
     country === COUNTRY.CZ
@@ -189,15 +187,7 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
       if (!uniqueItems.has(result.itemId)) {
         uniqueItems.add(result.itemId);
         itemsArray.push(result);
-        await Promise.all([
-          uploadToS3(
-            s3,
-            `itesco.${country.toLowerCase()}`,
-            await s3FileName(result),
-            "jsonld",
-            toProduct(result, {})
-          )
-        ]);
+        await uploadToS3v2(s3, result);
       }
     });
   }
@@ -205,11 +195,3 @@ async function ExtractItems($, country, uniqueItems, stats, request) {
   log.info(`Storing ${itemsArray.length} for ${request.url}`);
   return itemsArray;
 }
-
-module.exports = {
-  flat,
-  ExtractItems,
-  findArraysUrl,
-  formatPrice,
-  getProductRedux
-};

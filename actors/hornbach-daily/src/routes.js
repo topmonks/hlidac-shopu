@@ -1,11 +1,7 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const { LABELS, API_URL, PRICE_HEADER } = require("./const");
-const tools = require("./tools");
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { LABELS, API_URL, PRICE_HEADER } from "./const";
+import { siteMapToLinks, getCategoryId, getCategories } from "./tools.js";
 
 const {
   utils: { log, requestAsBrowser }
@@ -24,9 +20,9 @@ const createRouter = globalContext => {
 const SITE = async ({ body, crawler }) => {
   const { country } = global.userInput;
   log.info("START with main page");
-  const links = tools.siteMapToLinks(body);
+  const links = siteMapToLinks(body);
   for (const link of links) {
-    const id = tools.getCategoryId(link);
+    const id = getCategoryId(link);
     await crawler.requestQueue.addRequest(
       {
         url: API_URL(country, id),
@@ -82,7 +78,7 @@ const CATEGORY = async ({ request, json, crawler }) => {
         currentPrice: parseFloat(currentPrice),
         originalPrice: null,
         discounted: false,
-        category: tools.getCategories(article.categoryPath)
+        category: getCategories(article.categoryPath)
       };
       const price = body.filter(p => p.articleCode === article.articleCode);
       if (price) {
@@ -98,18 +94,13 @@ const CATEGORY = async ({ request, json, crawler }) => {
       }
       requests.push(
         Apify.pushData(result),
-        uploadToS3(
+        uploadToS3v2(
           s3,
-          `hornbach.${country}`,
-          await s3FileName(result),
-          "jsonld",
-          toProduct(
-            {
-              ...result,
-              inStock: true
-            },
-            { priceCurrency: result.currency }
-          )
+          {
+            ...result,
+            inStock: true
+          },
+          { priceCurrency: result.currency }
         )
       );
     }

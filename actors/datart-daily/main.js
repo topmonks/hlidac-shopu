@@ -3,9 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import cheerio from "cheerio";
 import Apify from "apify";
@@ -357,16 +355,7 @@ Apify.main(async () => {
             // Save data to dataset
             if (!processedIds.has(product.itemId)) {
               processedIds.add(product.itemId);
-              requests.push(
-                Apify.pushData(product),
-                uploadToS3(
-                  s3,
-                  `datart.${country.toLowerCase()}`,
-                  await s3FileName(s3item),
-                  "jsonld",
-                  toProduct(s3item, {})
-                )
-              );
+              requests.push(Apify.pushData(product), uploadToS3v2(s3, s3item));
               stats.items++;
             } else {
               stats.itemsDuplicity++;

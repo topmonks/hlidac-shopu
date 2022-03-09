@@ -3,9 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import randomUA from "modern-random-ua";
 import Apify from "apify";
@@ -89,18 +87,13 @@ async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
       discounted: originalPrice ? currentPrice < originalPrice : false
     };
     if (!processedIds.has(result.itemId)) {
-      await uploadToS3(
+      await uploadToS3v2(
         s3,
-        "benu.cz",
-        await s3FileName(result),
-        "jsonld",
-        toProduct(
-          {
-            ...result,
-            inStock: true
-          },
-          { priceCurrency: "CZK" }
-        )
+        {
+          ...result,
+          inStock: true
+        },
+        { priceCurrency: "CZK" }
       );
       await Apify.pushData(result);
       stats.items++;

@@ -1,32 +1,19 @@
-const Apify = require("apify");
-
-const {
+import Apify from "apify";
+import {
   handleAPIStart,
   handleAPIList,
   handleAPIDetail,
-
   handleFrontStart,
   handleFrontList,
   handleFrontDetail,
-
   handleSitemapStart,
   handleSitemapList
-} = require("./src/routes");
+} from "./src/routes";
+import { URL_API_START, URL_SITEMAP, URL_FRONT, LABELS } from "./src/const";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 
 let stats = {};
-
-const {
-  URL_API_START,
-  URL_SITEMAP,
-  URL_FRONT,
-  LABELS
-} = require("./src/const");
-
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-
 const { log } = Apify.utils;
 
 Apify.main(async () => {

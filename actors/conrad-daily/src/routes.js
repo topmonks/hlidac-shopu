@@ -1,13 +1,8 @@
-const Apify = require("apify");
-//const { URL } = require("url");
-const { gotScraping } = require("got-scraping");
-//const tools = require("./tools");
-const processedIds = new Set();
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToS3v2 } = require("@hlidac-shopu/actors-common/product.js");
-
-const {
+import Apify from "apify";
+import { gotScraping } from "got-scraping";
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
   URL_TEMPLATE_PRODUCT_LIST,
   URL_TEMPLATE_CATEGORY,
   URL_TEMPLATE_PRODUCT,
@@ -18,9 +13,12 @@ const {
   LABELS,
   URL_FRONT,
   URL_API_START
-} = require("./const");
-const cheerio = require("cheerio");
+} from "./const";
+import cheerio from "cheerio";
 
+const processedIds = new Set();
+
+const s3 = new S3Client({ region: "eu-central-1" });
 const {
   utils: { log }
 } = Apify;
@@ -82,7 +80,7 @@ async function traverseCategoryStart(crawlContext) {
   }
 }
 
-exports.handleAPIStart = async (context, crawlContext) => {
+export async function handleAPIStart(context, crawlContext) {
   const apiKey = await getApiKey();
   if (!apiKey) {
     log.error("Cannot found apiKey");
@@ -162,9 +160,9 @@ exports.handleAPIStart = async (context, crawlContext) => {
   }
 
    */
-};
+}
 
-exports.handleAPIList = async (context, crawlContext) => {
+export async function handleAPIList(context, crawlContext) {
   const { request } = context;
   const requestOptions = {
     url: request.url,
@@ -327,9 +325,9 @@ exports.handleAPIList = async (context, crawlContext) => {
   };
 
   crawlContext.requestQueue.addRequest(req);
-};
+}
 
-exports.handleAPIDetail = async (request, crawlContext) => {
+export async function handleAPIDetail(request, crawlContext) {
   console.log("PRODUCT", request.product);
 
   //console.log(products[product].sum_price[0]);
@@ -339,9 +337,9 @@ exports.handleAPIDetail = async (request, crawlContext) => {
   for (const price in prices) {
     console.log(prices[price]);
   }
-};
+}
 
-exports.handleFrontStart = async (request, crawlContext) => {
+export async function handleFrontStart(request, crawlContext) {
   log.info("Downloading " + URL_FRONT);
 
   const requestOptions = {
@@ -375,13 +373,13 @@ exports.handleFrontStart = async (request, crawlContext) => {
         crawlContext.requestQueue.addRequest(req);
       }
     });
-};
+}
 
-exports.handleFrontList = async (request, crawlContext) => {
+export async function handleFrontList(request, crawlContext) {
   console.log("---\nhandleFrontList");
-};
+}
 
-exports.handleFrontDetail = async (request, crawlContext) => {
+export async function handleFrontDetail(request, crawlContext) {
   console.log("---\nhandleFrontDetail");
 
   const product = {
@@ -398,7 +396,7 @@ exports.handleFrontDetail = async (request, crawlContext) => {
     inStock: products[productIx].in_stock,
     category: request.userData.slug
   };
-};
+}
 
 /**
  * Start sitemap parsing
@@ -406,7 +404,7 @@ exports.handleFrontDetail = async (request, crawlContext) => {
  * @param crawlContext
  * @returns {Promise<void>}
  */
-exports.handleSitemapStart = async (context, crawlContext) => {
+export async function handleSitemapStart(context, crawlContext) {
   console.log("---\nhandleSitemapStart");
 
   log.info("Downloading " + URL_SITEMAP);
@@ -435,9 +433,9 @@ exports.handleSitemapStart = async (context, crawlContext) => {
       console.log("Skipper", url);
     }
   });
-};
+}
 
-exports.handleSitemapList = async (context, crawlContext) => {
+export async function handleSitemapList(context, crawlContext) {
   const { request } = context;
 
   const requestOptions = {
@@ -463,4 +461,4 @@ exports.handleSitemapList = async (context, crawlContext) => {
   });
 
   console.log(`Items count in XML: ${crawlContext.stats.items}`);
-};
+}

@@ -2,9 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  toProduct,
-  s3FileName,
-  uploadToS3,
+  uploadToS3v2,
   invalidateCDN,
   currencyToISO4217
 } from "@hlidac-shopu/actors-common/product.js";
@@ -237,22 +235,15 @@ Apify.main(async () => {
               processedIds.add(item.gtin);
               stats.itemsUnique++;
               const detail = parseItem(item);
-              const slug = await s3FileName(detail);
               requests.push(
                 // push data to dataset to be ready for upload to Keboola
                 Apify.pushData(detail),
                 // upload JSON+LD data to CDN
-                uploadToS3(
-                  s3,
-                  `dm.${country.toLowerCase()}`,
-                  slug,
-                  "jsonld",
-                  toProduct(detail, {
-                    brand: item.brandName,
-                    name: item.name,
-                    gtin: item.gtin
-                  })
-                )
+                uploadToS3v2(s3, detail, {
+                  brand: item.brandName,
+                  name: item.name,
+                  gtin: item.gtin
+                })
               );
             } else {
               stats.itemsDuplicity++;

@@ -1,25 +1,18 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const tools = require("./src/tools");
-const {
-  LABELS,
-  COUNTRY_TYPE,
-  HEADER,
-  BASE_URL,
-  BASE_URL_BF
-} = require("./src/const");
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { LABELS, COUNTRY_TYPE, BASE_URL, BASE_URL_BF } from "./src/const";
+import { extractPrice, getHumanDelayMillis } from "./src/tools";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const { log, requestAsBrowser } = Apify.utils;
+const s3 = new S3Client({ region: "eu-central-1" });
+
+const { log } = Apify.utils;
 
 const ROOT_URL =
   "https://www.aaaauto.cz/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy";
@@ -109,10 +102,10 @@ Apify.main(async () => {
               const currentPrice = item
                 .find("span[id*=garageHeart]")
                 .attr("data-price");
-              const actionPrice = tools.extractPrice(
+              const actionPrice = extractPrice(
                 item.find(".carPrice h3.error:not(.hide)").text()
               );
-              let originalPrice = tools.extractPrice(
+              let originalPrice = extractPrice(
                 item.find(".carPrice .darkGreyAlt").text()
               );
               const description = item.find(".carFeatures p").text().trim();
@@ -155,23 +148,14 @@ Apify.main(async () => {
         let sleepTotal = 0;
         for (const product of allFulfilledProducts) {
           requests.push(
-            uploadToS3(
-              s3,
-              "aaaauto.cz",
-              await s3FileName(product),
-              "jsonld",
-              toProduct(
-                {
-                  ...product,
-                  category: "",
-                  inStock: true
-                },
-                {}
-              )
-            )
+            uploadToS3v2(s3, {
+              ...product,
+              category: "",
+              inStock: true
+            })
           );
         }
-        sleepTotal += tools.getHumanDelayMillis(250, 950);
+        sleepTotal += getHumanDelayMillis(250, 950);
         log.debug(`Found ${allFulfilledProducts.length} cars, ${request.url}`);
         // await all requests, so we don't end before they end
         await Promise.allSettled(requests);

@@ -1,4 +1,4 @@
-const siteMapToLinks = data => {
+export const siteMapToLinks = data => {
   const locs = data.replace(/\s+/g, "").match(/(<loc>)(.*?)(<\/loc>)/g);
   if (locs) {
     return locs.map(link => link.replace(/<loc>|<\/loc>/g, ""));
@@ -6,13 +6,13 @@ const siteMapToLinks = data => {
   return [];
 };
 
-const getCategoryId = url => {
+export const getCategoryId = url => {
   const match = url.match(/\/([A-Z]+\d+)\/[se|zo]+znam/);
   const [all, id] = match;
   return id;
 };
 
-const getIdFromUrl = url => {
+export const getIdFromUrl = url => {
   const match = url.match(/\/(\d+)\/artikl.html$/);
   if (match && match.length > 2) {
     const [full, id] = match;
@@ -21,7 +21,7 @@ const getIdFromUrl = url => {
   return null;
 };
 
-const getCategories = categoryPath => {
+export const getCategories = categoryPath => {
   const arr = categoryPath.split("/");
   const category = [];
   for (const a of arr) {
@@ -31,11 +31,4 @@ const getCategories = categoryPath => {
     }
   }
   return category.join(" > ");
-};
-
-module.exports = {
-  siteMapToLinks,
-  getIdFromUrl,
-  getCategoryId,
-  getCategories
 };

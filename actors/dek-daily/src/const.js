@@ -1,15 +1,9 @@
-const COUNTRY = {
+export const COUNTRY = {
   CZ: "CZ",
   SK: "SK"
 };
-const LABELS = {
+export const LABELS = {
   START: "START",
   CATEGORY: "CATEGORY"
 };
-const BF = "BF";
-
-module.exports = {
-  COUNTRY,
-  LABELS,
-  BF
-};
+export const BF = "BF";

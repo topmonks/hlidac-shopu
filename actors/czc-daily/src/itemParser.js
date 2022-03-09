@@ -1,4 +1,4 @@
-async function extractItems($, request, web) {
+export async function extractItems($, request, web) {
   const results = [];
   if ($("#tiles div[data-ga-impression]").length !== 0) {
     $("#tiles div[data-ga-impression]").each(function () {
@@ -93,5 +93,3 @@ async function extractItems($, request, web) {
     url: request.url
   });
 }
-
-module.exports = { extractItems };

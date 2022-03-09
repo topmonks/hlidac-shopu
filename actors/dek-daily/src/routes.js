@@ -1,18 +1,14 @@
-const Apify = require("apify");
-const { LABELS, COUNTRY } = require("./const");
-const tools = require("./tools");
-const {
-  uploadToS3,
-  s3FileName,
-  toProduct
-} = require("@hlidac-shopu/actors-common/product.js");
+import Apify from "apify";
+import { LABELS, COUNTRY } from "./const";
+import { enqueueCategories, getRootUrl, parsePrice } from "./tools";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 const {
   utils: { log }
 } = Apify;
 
 // Create router
-const createRouter = globalContext => {
+export const createRouter = globalContext => {
   return async function (routeName, requestContext) {
     const route = module.exports[routeName];
     if (!route) throw new Error(`No route for name: ${routeName}`);
@@ -21,7 +17,7 @@ const createRouter = globalContext => {
   };
 };
 
-const START = async ({ $, crawler }) => {
+export const START = async ({ $, crawler }) => {
   for (const script of $("script")) {
     if ($(script).html().includes("JSON.parse")) {
       const start =
@@ -34,10 +30,10 @@ const START = async ({ $, crawler }) => {
         .replace(/\\"/g, '"')
         .replace(/\\\\/g, "");
       const json = JSON.parse(rawJson);
-      const cats = tools.enqueueCategories(Object.values(json));
+      const cats = enqueueCategories(Object.values(json));
       for (const cat of cats) {
         await crawler.requestQueue.addRequest({
-          url: `${tools.getRootUrl()}${cat}`,
+          url: `${getRootUrl()}${cat}`,
           userData: {
             label: LABELS.CATEGORY,
             page: 1
@@ -48,14 +44,14 @@ const START = async ({ $, crawler }) => {
   }
 };
 
-const CATEGORY = async ({ $, request, crawler }) => {
+export const CATEGORY = async ({ $, request, crawler }) => {
   const { country = COUNTRY.CZ } = global.userInput;
   const { page } = request.userData;
   const subCategories = $(".comd-menu-menu-image__link").toArray();
   if (subCategories.length > 0) {
     for (const sc of subCategories) {
       await crawler.requestQueue.addRequest({
-        url: `${tools.getRootUrl()}${$(sc).attr("href")}`,
+        url: `${getRootUrl()}${$(sc).attr("href")}`,
         userData: {
           label: LABELS.CATEGORY,
           page: 1
@@ -99,12 +95,12 @@ const CATEGORY = async ({ $, request, crawler }) => {
       .find(".com-price-product-eshop__price-vat--highlight")
       .text()
       .trim();
-    const currentPrice = tools.parsePrice(currentPriceRaw);
+    const currentPrice = parsePrice(currentPriceRaw);
     const originalPriceRaw = $(product)
       .find(".com-price-product-eshop > strike")
       ?.text()
       ?.trim();
-    const originalPrice = tools.parsePrice(originalPriceRaw);
+    const originalPrice = parsePrice(originalPriceRaw);
     const img = $(product).find("picture > img").attr("src");
     const inStock = $(product).find(
       ".com-add-to-cart-eshop__availability--green"
@@ -112,7 +108,7 @@ const CATEGORY = async ({ $, request, crawler }) => {
 
     const result = {
       itemId: url.match(/\/(\d+)-/)?.[1],
-      itemUrl: `${tools.getRootUrl()}${url}`,
+      itemUrl: `${getRootUrl()}${url}`,
       itemName: title,
       category: category.join(" > "),
       currency: country === COUNTRY.CZ ? "CZK" : "EUR",
@@ -125,21 +121,9 @@ const CATEGORY = async ({ $, request, crawler }) => {
     requests.push(
       Apify.pushData(result),
       !global.userInput.development
-        ? uploadToS3(
-            s3,
-            `dek.${country.toLowerCase()}`,
-            await s3FileName(result),
-            "jsonld",
-            toProduct(result, { priceCurrency: result.currency })
-          )
+        ? uploadToS3v2(s3, result, { priceCurrency: result.currency })
         : null
     );
   }
   await Promise.allSettled(requests);
-};
-
-module.exports = {
-  createRouter,
-  START,
-  CATEGORY
 };

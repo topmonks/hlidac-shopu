@@ -1,12 +1,12 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { load } = require("cheerio");
-const { createRouter } = require("./routes");
-const { LABELS } = require("./const");
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { createRouter } from "./routes";
+import { LABELS } from "./const";
+
 const { log } = Apify.utils;
 
 Apify.main(async () => {

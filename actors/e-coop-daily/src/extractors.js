@@ -1,11 +1,11 @@
-const { LABELS, COOP_BOX_URL } = require("./const");
+import { LABELS, COOP_BOX_URL } from "./const";
 
 /**
  * @param {CheerioSelector} $
  * @param element
  * @return {string | jQuery}
  */
-const parseScriptJson = function ($, element) {
+export const parseScriptJson = function ($, element) {
   return $(element)
     .map((i, el) => $(el).html())
     .get()
@@ -18,7 +18,7 @@ const parseScriptJson = function ($, element) {
  * @param {Request} request
  * @return {Array}
  */
-const extractMainCategories = function ($, request) {
+export const extractMainCategories = function ($, request) {
   const requests = [];
   $("div.banner-bottom-block ul li a").each((_, el) => {
     requests.push({
@@ -38,7 +38,7 @@ const extractMainCategories = function ($, request) {
  * @param {Request} request
  * @return {Array}
  */
-const extractCategories = function ($, request) {
+export const extractCategories = function ($, request) {
   const { mainCategory, marketTitle, marketId } = request.userData;
   const requests = [];
   $(".filter-content ol.items li a").each((_, el) => {
@@ -69,7 +69,7 @@ const extractCategories = function ($, request) {
  * @param {Request} request
  * @return {Array}
  */
-const extractPages = function ($, request) {
+export const extractPages = function ($, request) {
   const requests = [];
   let lastPage = 0;
   $("ul.pages-items")
@@ -101,7 +101,7 @@ const extractPages = function ($, request) {
  * @param {Request} request
  * @return {Array}
  */
-const extractItemDetails = function ($, request) {
+export const extractItemDetails = function ($, request) {
   const requests = [];
   $(".product-items > li .product-item-photo").each((_, el) => {
     requests.push({
@@ -120,7 +120,7 @@ const extractItemDetails = function ($, request) {
  * @param {Request} request
  * @return {Object}
  */
-const extractItem = function ($, request) {
+export const extractItem = function ($, request) {
   const dataScripts = $('script[type="text/x-magento-init"]').toArray();
   const result = {
     category: request.userData.categories,
@@ -162,7 +162,7 @@ const extractItem = function ($, request) {
  * @param {Request} request
  * @return {Object}
  */
-const extractCoopBoxCategories = function ($, request) {
+export const extractCoopBoxCategories = function ($, request) {
   const requests = [];
   $('form[name="PB_MENU"] .l3-link').each((_, el) => {
     requests.push({
@@ -184,7 +184,7 @@ const extractCoopBoxCategories = function ($, request) {
  * @param {Request} request
  * @return {Object}
  */
-const extractCoopBoxItems = function ($, request) {
+export const extractCoopBoxItems = function ($, request) {
   const { marketTitle, marketId } = request.userData;
   const items = [];
   $("#PB__I .pb-item").each((_, el) => {
@@ -212,7 +212,7 @@ const extractCoopBoxItems = function ($, request) {
   return items;
 };
 
-const extractCoopBoxPages = function ($, request) {
+export const extractCoopBoxPages = function ($, request) {
   const { actualPage } = request.userData;
   const requests = [];
   let lastPage = actualPage;
@@ -237,15 +237,4 @@ const extractCoopBoxPages = function ($, request) {
       }
     };
   });
-};
-
-module.exports = {
-  extractMainCategories,
-  extractCategories,
-  extractPages,
-  extractItemDetails,
-  extractItem,
-  extractCoopBoxCategories,
-  extractCoopBoxItems,
-  extractCoopBoxPages
 };

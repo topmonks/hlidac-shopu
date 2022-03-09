@@ -1,14 +1,10 @@
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  s3FileName
-} from "@hlidac-shopu/actors-common/product.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Apify from "apify";
 import _ from "underscore";
 import { COUNTRY, LABELS, STARTURLS } from "./consts";
-
 import { ExtractItems, findArraysUrl } from "./tools";
 
 const stats = {

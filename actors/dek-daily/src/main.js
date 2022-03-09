@@ -1,12 +1,13 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { invalidateCDN } = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { createRouter } = require("./routes");
-const { LABELS, COUNTRY, BF } = require("./const");
-const tools = require("./tools");
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Apify from "apify";
+import { createRouter } from "./routes";
+import { LABELS, COUNTRY } from "./const";
+import { getTableName, getRootUrl } from "./tools";
+
 const { log } = Apify.utils;
 
 Apify.main(async () => {
@@ -24,7 +25,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   if (type === "FULL") {
     await requestQueue.addRequest({
-      url: tools.getRootUrl(),
+      url: getRootUrl(),
       userData: {
         label: LABELS.START
       }
@@ -81,7 +82,7 @@ Apify.main(async () => {
     );
     log.info("invalidated Data CDN");
 
-    await uploadToKeboola(tools.getTableName());
+    await uploadToKeboola(getTableName());
   }
   log.info("Finished.");
 });

@@ -1,11 +1,6 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-
-const {
+import Apify from "apify";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
   getSubcategoriesUrls,
   siteMapToLinks,
   fillProductData,
@@ -14,13 +9,13 @@ const {
   getProductDetailCategories,
   getPrice,
   getVariantName
-} = require("./utils");
+} from "./utils";
 
 const {
   utils: { log }
 } = Apify;
 
-exports.handleSitemap = async ({ body, crawler }) => {
+export async function handleSitemap({ body, crawler }) {
   const links = siteMapToLinks(body);
   global.stats.categories += links.length;
   for (const url of links) {
@@ -31,9 +26,13 @@ exports.handleSitemap = async ({ body, crawler }) => {
       }
     });
   }
-};
+}
 
-exports.handleCategory = async ({ request, $, crawler }, countryPath, type) => {
+export async function handleCategory(
+  { request, $, crawler },
+  countryPath,
+  type
+) {
   // If category contains subcategories then don't add it to requestQueue
   // subcategories were already added in request queue
   const subcategories = getSubcategoriesUrls($);
@@ -72,9 +71,9 @@ exports.handleCategory = async ({ request, $, crawler }, countryPath, type) => {
   if (type === "COUNT") {
     return 0;
   }
-};
+}
 
-exports.handleList = async ({ request, body, crawler }) => {
+export async function handleList({ request, body, crawler }) {
   let products = [];
   try {
     products = JSON.parse(body).moreProducts.productWindow;
@@ -117,9 +116,9 @@ exports.handleList = async ({ request, body, crawler }) => {
       });
     }
   }
-};
+}
 
-exports.handleDetail = async ({ $ }, productData) => {
+export async function handleDetail({ $ }, productData) {
   const { s3, country } = global;
   productData.currentPrice = getPrice($) || productData.currentPrice;
   productData.originalPrice = tryGetRetailPrice($) || null;
@@ -153,20 +152,14 @@ exports.handleDetail = async ({ $ }, productData) => {
   productData.numberOfReviews = review.numberOfReviews;
 
   const categories = getProductDetailCategories($);
-  const slug = await s3FileName(productData);
   productData = {
     ...productData,
-    category: categories,
-    slug: slug
+    category: categories
   };
   global.stats.items++;
-  await Apify.pushData(productData);
-  await uploadToS3(
-    s3,
-    `ikea.${country.toLowerCase()}`,
-    slug,
-    "jsonld",
-    toProduct(
+  await Apify.pushData(
+    await uploadToS3v2(
+      s3,
       {
         ...productData,
         inStock: true
@@ -174,4 +167,4 @@ exports.handleDetail = async ({ $ }, productData) => {
       { priceCurrency: productData.currency }
     )
   );
-};
+}

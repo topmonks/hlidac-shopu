@@ -3,7 +3,7 @@
  * @param $
  * @returns {[{url,{label}}]}
  */
-exports.getCategoryRequests = $ => {
+export function getCategoryRequests($) {
   const categories = [];
   $("loc").each((index, locElement) => {
     categories.push({
@@ -14,20 +14,22 @@ exports.getCategoryRequests = $ => {
     });
   });
   return categories;
-};
-exports.siteMapToLinks = data => {
+}
+
+export function siteMapToLinks(data) {
   const locs = data.replace(/\s+/g, "").match(/(<loc>)(.*?)(<\/loc>)/g);
   if (locs) {
     return locs.map(link => link.replace(/<loc>|<\/loc>/g, ""));
   }
   return [];
-};
+}
+
 /**
  * Gets urls of subcategories on category labeled page, if any.
  * @param $
  * @returns {[subcategories' urls]}
  */
-exports.getSubcategoriesUrls = $ => {
+export function getSubcategoriesUrls($) {
   const subcategories = [];
   $("nav[role='navigation'] a[class*='vn-link']").each((index, link) => {
     const subcategory = $(link).attr("href");
@@ -36,14 +38,15 @@ exports.getSubcategoriesUrls = $ => {
     }
   });
   return subcategories;
-};
+}
+
 /**
  * Models and fills productData object.
  * @param product product object returned by previous request
  * @param numberOfVariants number of available product variants
  * @returns {productData}
  */
-exports.fillProductData = (product, numberOfVariants) => {
+export function fillProductData(product, numberOfVariants) {
   return {
     itemName: `${product.name}: ${product.typeName}`,
     itemUrl: product.pipUrl,
@@ -63,13 +66,14 @@ exports.fillProductData = (product, numberOfVariants) => {
     img: product.mainImageUrl,
     sale: 0
   };
-};
+}
+
 /**
  * Gets product's price from detail page.
  * @param $
  * @returns {number|boolean}
  */
-exports.getPrice = $ => {
+export function getPrice($) {
   const integer = $("div[class='range-revamp-pip-price-package__main-price']")
     .find("span[class='range-revamp-price__integer']")
     .eq(0)
@@ -91,13 +95,14 @@ exports.getPrice = $ => {
     return parseFloat(integer);
   }
   return false;
-};
+}
+
 /**
  * Gets product's variant name from detail page.
  * @param $
  * @returns {string|null}
  */
-exports.getVariantName = ($, productTypeName) => {
+export function getVariantName($, productTypeName) {
   let name = "";
   const spans = $("h1[class='range-revamp-header-section']")
     .find("div[class='range-revamp-header-section__description']")
@@ -111,13 +116,14 @@ exports.getVariantName = ($, productTypeName) => {
   });
 
   return name.substr(productTypeName.length + 2);
-};
+}
+
 /**
  * Tries to get product's price before sale.
  * @param $
  * @returns {number|boolean}
  */
-exports.tryGetRetailPrice = $ => {
+export function tryGetRetailPrice($) {
   // retail price if the item is in sale (strike through)
   let integer = $(
     "div[class='range-revamp-pip-price-package__previous-price-hasStrikeThrough']"
@@ -163,13 +169,14 @@ exports.tryGetRetailPrice = $ => {
     return parseInt(integer, 10);
   }
   return false;
-};
+}
+
 /**
  * Gets number of reviews and review score from product's detail page.
  * @param $
  * @returns {{reviewScore: string, numberOfReviews: number}}
  */
-exports.getReview = $ => {
+export function getReview($) {
   const review = {
     numberOfReviews: 0,
     reviewScore: ""
@@ -193,14 +200,15 @@ exports.getReview = $ => {
     .text()
     .match(/[0-9]+/)[0];
   return review;
-};
+}
+
 /**
  * Returns the category path to a product as an array of strings.
  * Starts from the most general category.
  * @param $
  * @returns {[array of categories]}
  */
-exports.getProductDetailCategories = $ => {
+export function getProductDetailCategories($) {
   const categories = [];
   $("li[class='bc-breadcrumb__list-item']")
     .find("span")
@@ -210,4 +218,4 @@ exports.getProductDetailCategories = $ => {
   // the last category is the name of the product
   categories.pop();
   return categories;
-};
+}

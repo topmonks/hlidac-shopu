@@ -4,6 +4,7 @@
   "author": "Lukas Sirhal <lukas.sirhal@topmonks.com>",
   "license": "EPL-2.0",
   "description": "This is the e-coop actor.",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.53.0",
     "@aws-sdk/client-s3": "^3.53.1",

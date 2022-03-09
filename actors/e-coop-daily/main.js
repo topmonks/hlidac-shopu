@@ -1,21 +1,26 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const {
-  toProduct,
-  uploadToS3,
-  s3FileName,
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
+  uploadToS3v2,
   invalidateCDN
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const Apify = require("apify");
-const { load } = require("cheerio");
-const extractor = require("./src/extractors");
+} from "@hlidac-shopu/actors-common/product.js";
+import { LABELS, MARKETS_URL, COOP_BOX_CATEGORY_POST } from "./src/const";
+import {
+  extractMainCategories,
+  extractCategories,
+  extractPages,
+  extractItemDetails,
+  extractItem,
+  extractCoopBoxCategories,
+  extractCoopBoxItems,
+  extractCoopBoxPages
+} from "./src/extractors";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const { LABELS, MARKETS_URL, COOP_BOX_CATEGORY_POST } = require("./src/const");
+const s3 = new S3Client({ region: "eu-central-1" });
 
-const { log, requestAsBrowser } = Apify.utils;
+const { log } = Apify.utils;
 
 const stats = async () => {
   return (
@@ -39,8 +44,8 @@ function pageFunction(requestQueue) {
    *  @returns {Promise<void>}
    */
   async function handler(context) {
-    const { $, body, contentType, request, response } = context;
-    const { label, category, currentPage } = request.userData;
+    const { $, body, request, response } = context;
+    const { label } = request.userData;
     log.debug(`Start scraping label: [${label}] url: [${request.url}]`);
     let requests = [];
     let item = null;
@@ -68,7 +73,7 @@ function pageFunction(requestQueue) {
         break;
       case LABELS.COOP_BOX:
         log.debug("COOP-BOX market");
-        requests = extractor.extractCoopBoxCategories($, request);
+        requests = extractCoopBoxCategories($, request);
         break;
       case LABELS.COOP_BOX_CATEGORY:
         await requestQueue.addRequest({
@@ -84,8 +89,8 @@ function pageFunction(requestQueue) {
         break;
       case LABELS.COOP_BOX_CATEGORY_RESPONSE:
         if (response.statusCode === 200) {
-          requests = extractor.extractCoopBoxPages($, request);
-          items = extractor.extractCoopBoxItems($, request);
+          requests = extractCoopBoxPages($, request);
+          items = extractCoopBoxItems($, request);
         }
         break;
       case LABELS.COOP_BOX_NEXT_PAGE:
@@ -102,25 +107,25 @@ function pageFunction(requestQueue) {
         break;
       case LABELS.COOP_BOX_NEXT_PAGE_RESPONSE:
         if (response.statusCode === 200) {
-          requests = extractor.extractCoopBoxPages($, request);
-          items = extractor.extractCoopBoxItems($, request);
+          requests = extractCoopBoxPages($, request);
+          items = extractCoopBoxItems($, request);
         }
         break;
       case LABELS.MARKET:
-        requests = extractor.extractMainCategories($, request);
+        requests = extractMainCategories($, request);
         stats.markets++;
         log.debug(`Found ${requests.length} main categories`);
         break;
       case LABELS.MAIN_CATEGORY:
-        requests = extractor.extractCategories($, request);
+        requests = extractCategories($, request);
         log.debug(`Found ${requests.length} categories`);
         break;
       case LABELS.CATEGORY:
-        requests = extractor.extractPages($, request);
-        requests = requests.concat(extractor.extractItemDetails($, request));
+        requests = extractPages($, request);
+        requests = requests.concat(extractItemDetails($, request));
         break;
       case LABELS.DETAIL:
-        item = extractor.extractItem($, request);
+        item = extractItem($, request);
         stats.items++;
         await processItem(item);
         await Apify.utils.sleep(1000);
@@ -150,13 +155,7 @@ async function processItem(item) {
     // push data to dataset to be ready for upload to Keboola
     await Apify.pushData(item);
     // upload JSON+LD data to CDN
-    await uploadToS3(
-      s3,
-      `e-coop.cz`,
-      await s3FileName(product),
-      "jsonld",
-      toProduct(product, { priceCurrency: "CZK" })
-    );
+    await uploadToS3v2(s3, product, { priceCurrency: "CZK" });
   }
 }
 
@@ -227,7 +226,7 @@ Apify.main(async () => {
   log.info("ACTOR - crawler end");
 
   if (!development) {
-    //await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "e-coop.cz");
     log.info("invalidated Data CDN");
     //await uploadToKeboola("coop_cz");
     log.info("upload to Keboola finished");
