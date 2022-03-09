@@ -2,16 +2,14 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  toProduct,
-  uploadToS3,
-  shopName,
-  s3FileName,
+  uploadToS3v2,
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
 import zlib from "zlib";
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { shopName, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
@@ -89,7 +87,7 @@ Apify.main(async () => {
     type = "FULL",
     bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
   } = input ?? {};
-  const shop = await shopName(WEB);
+  const shop = shopName(WEB);
 
   if (development || debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
@@ -285,26 +283,21 @@ Apify.main(async () => {
             // Save data to dataset
             if (!processedIds.has(dataItem.itemId)) {
               processedIds.add(dataItem.itemId);
-              const slug = await s3FileName(dataItem);
+              const slug = itemSlug(dataItem);
               requests.push(
                 Apify.pushData({
                   ...dataItem,
                   shop,
                   slug
                 }),
-                uploadToS3(
+                uploadToS3v2(
                   s3,
-                  "mironet.cz",
-                  await s3FileName(dataItem),
-                  "jsonld",
-                  toProduct(
-                    {
-                      ...dataItem,
-                      category: dataItem.breadCrumbs.join(" > "),
-                      inStock: true
-                    },
-                    { priceCurrency: "CZK" }
-                  )
+                  {
+                    ...dataItem,
+                    category: dataItem.breadCrumbs.join(" > "),
+                    inStock: true
+                  },
+                  { priceCurrency: "CZK" }
                 )
               );
             } else {
