@@ -1,11 +1,8 @@
-const Apify = require("apify");
-const {
-  toProduct,
-  uploadToS3
-} = require("@hlidac-shopu/actors-common/product.js");
-const { URL } = require("url");
-const { LABELS, COFFEE_CATEGORIES, THROW_AWAY_CATEGORIES } = require("./const");
-const tools = require("./tools");
+import Apify from "apify";
+import { toProduct, uploadToS3 } from "@hlidac-shopu/actors-common/product.js";
+import { COFFEE_CATEGORIES, LABELS, THROW_AWAY_CATEGORIES } from "./const";
+import tools, { getCoffeeCategory, getSlug, parsePrice } from "./tools";
+
 const {
   utils: { log }
 } = Apify;
@@ -133,18 +130,18 @@ const LIST = async ({ request: { url, userData }, $, crawler }) => {
       const result = {
         itemId,
         itemUrl: url,
-        slug: tools.getSlug(url),
+        slug: getSlug(url),
         itemName,
         img: `https://www.tchibo.${country}${img}`,
         discounted: false,
         originalPrice: null,
         currency,
-        currentPrice: tools.parsePrice(currentPrice),
+        currentPrice: parsePrice(currentPrice),
         category: breadcrumbItems.map(p => $(p).text().trim()).join(" > ")
       };
       if (oldPrice && oldPrice.length > 0) {
         result.discounted = true;
-        result.originalPrice = tools.parsePrice(oldPrice);
+        result.originalPrice = parsePrice(oldPrice);
       }
       // promises.push(Apify.pushData(result));
       promises.push(
@@ -194,7 +191,7 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
     const result = {
       itemId,
       itemUrl,
-      slug: tools.getSlug(itemUrl),
+      slug: getSlug(itemUrl),
       itemName: `${topLineText ? `${topLineText} - ` : ""}${
         title ? `${title} - ` : ""
       }${name}${subName ? ` - ${subName}` : ""}`,
@@ -202,8 +199,8 @@ const COFFEE_CATEGORY = async ({ $, crawler }) => {
       originalPrice: null,
       discounted: false,
       currency,
-      currentPrice: tools.parsePrice(currentPrice),
-      category: tools.getCoffeeCategory()
+      currentPrice: parsePrice(currentPrice),
+      category: getCoffeeCategory()
     };
     if (oldPrice && oldPrice.length > 0) {
       result.discounted = true;

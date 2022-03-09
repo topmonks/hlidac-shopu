@@ -1,4 +1,4 @@
-const LABELS = {
+export const LABELS = {
   NAVIGATION: "NAVIGATION",
   CATEGORY: "CATEGORY",
   CATEGORY_CAT: "CATEGORY_CAT",
@@ -6,7 +6,7 @@ const LABELS = {
   LIST: "LIST"
 };
 
-const COFFEE_CATEGORIES = [
+export const COFFEE_CATEGORIES = [
   "svet-kavy-c37.html",
   "kava-cely-sortiment-tchibo-prehledne-c400061792.html",
   "kava-zo-100-zrniek-arabica-dokonaly-pozitok-c400004921.html",
@@ -19,14 +19,8 @@ const COFFEE_CATEGORIES = [
   "tchibo-kahve-cesitleri-c400011809.html",
   "kaffee-aus-100-arabica-bohnen-vollkommener-kaffeegenuss-bei-t-c15.html"
 ];
-const THROW_AWAY_CATEGORIES = [
+export const THROW_AWAY_CATEGORIES = [
   "https://foto.tchibo.de/",
   "https://reisen.tchibo.de/",
   "aktionen-c400070426.html"
 ];
-
-module.exports = {
-  LABELS,
-  COFFEE_CATEGORIES,
-  THROW_AWAY_CATEGORIES
-};

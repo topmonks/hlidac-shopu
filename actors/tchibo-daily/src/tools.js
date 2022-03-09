@@ -1,19 +1,6 @@
-const { LABELS } = require("./const");
+import { LABELS } from "./const";
 
-const createInitRequests = () => {
-  const { country = "cz" } = global.userInput;
-  global.currency = getCurrencyISO(country);
-  return [
-    {
-      url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
-      userData: {
-        label: LABELS.NAVIGATION
-      }
-    }
-  ];
-};
-
-const getCurrencyISO = country => {
+export function getCurrencyISO(country) {
   let currency;
   switch (country) {
     case "cz":
@@ -40,9 +27,23 @@ const getCurrencyISO = country => {
       currency = null;
   }
   return currency;
-};
+}
 
-const parsePrice = price => {
+// TODO: do not use globals
+export function createInitRequests() {
+  const { country = "cz" } = global.userInput;
+  global.currency = getCurrencyISO(country);
+  return [
+    {
+      url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
+      userData: {
+        label: LABELS.NAVIGATION
+      }
+    }
+  ];
+}
+
+export function parsePrice(price) {
   const { country = "cz" } = global.userInput;
   price = price.replace(/\s/, "").replace(",", ".");
   price = price.match(/[\d+|.]+/)[0];
@@ -52,9 +53,9 @@ const parsePrice = price => {
   } else {
     return price;
   }
-};
+}
 
-const getCoffeeCategory = () => {
+export function getCoffeeCategory() {
   const { country = "cz" } = global.userInput;
   switch (country) {
     case "cz":
@@ -74,18 +75,13 @@ const getCoffeeCategory = () => {
     case "com.tr":
       return "Kahve";
   }
-};
+}
 
-const getSlug = url => {
+// TODO: use lib/shops.mjs shop.parse(url) instead
+/** @deprecated */
+export function getSlug(url) {
   const urlArr = url.split("/");
   let slug = urlArr[urlArr.length - 1];
   slug = slug.replace(".html", "");
   return slug;
-};
-
-module.exports = {
-  createInitRequests,
-  parsePrice,
-  getCoffeeCategory,
-  getSlug
-};
+}
