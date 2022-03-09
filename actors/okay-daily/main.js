@@ -1,20 +1,17 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { gotScraping } from "got-scraping";
+import { URLSearchParams } from "url";
+import { COUNTRY, BASE_URL_CZ, BASE_URL_SK } from "./src/consts.js";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const Apify = require("apify");
-
-const { COUNTRY, BASE_URL_CZ, BASE_URL_SK } = require("./src/consts");
-const { URLSearchParams } = require("url");
-const { gotScraping } = require("got-scraping");
+const s3 = new S3Client({ region: "eu-central-1" });
 
 const {
   utils: { log }
@@ -214,16 +211,7 @@ Apify.main(async () => {
               crawlContext.stats.totalItems += 1;
               if (!processedIds.has(item.itemId)) {
                 processedIds.add(item.itemId);
-                requests.push(
-                  Apify.pushData(item),
-                  uploadToS3(
-                    s3,
-                    `okay.${country.toLowerCase()}`,
-                    await s3FileName(item),
-                    "jsonld",
-                    toProduct(item, {})
-                  )
-                );
+                requests.push(Apify.pushData(item), uploadToS3v2(s3, item));
                 crawlContext.stats.items += 1;
               } else {
                 crawlContext.stats.itemsDuplicity += 1;

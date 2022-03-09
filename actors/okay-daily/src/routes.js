@@ -1,13 +1,12 @@
-const Apify = require("apify");
+import Apify from "apify";
+import { COUNTRY } from "./consts.js";
 
 const {
   utils: { log }
 } = Apify;
 
-const { COUNTRY } = require("./consts");
-
 // at this point, the main page is already loaded in $
-const handleStart = async ($, crawlContext) => {
+export const handleStart = async ($, crawlContext) => {
   // const requestQueue = await Apify.openRequestQueue();
   // start page, add all categories links to requestQueue
   let links = $("nav > ul")
@@ -32,7 +31,7 @@ const handleStart = async ($, crawlContext) => {
   log.debug(`Found ${links.length}x categories => added to queue`);
 };
 
-const handleList = async ($, crawlContext) => {
+export const handleList = async ($, crawlContext) => {
   //https://help.boostcommerce.net/article/458-filter-search-api
   // const requestQueue = await Apify.openRequestQueue();
   // add detail pages of all products on the page to requestQueue
@@ -69,7 +68,7 @@ const handleList = async ($, crawlContext) => {
   }
 };
 
-const handleListSK = async ({ $, requestQueue }, crawlContext) => {
+export const handleListSK = async ({ $, requestQueue }, crawlContext) => {
   // const requestQueue = await Apify.openRequestQueue();
   // add detail pages of all products on the page to requestQueue
   console.log($("div.collection-matrix__wrapper").html());
@@ -104,7 +103,7 @@ const handleListSK = async ({ $, requestQueue }, crawlContext) => {
   }
 };
 
-const handleDetail = async ({ request, $ }, crawlContext, country) => {
+export const handleDetail = async ({ request, $ }, crawlContext, country) => {
   // parse detail page
 
   const productDescription = JSON.parse(
@@ -174,10 +173,4 @@ const handleDetail = async ({ request, $ }, crawlContext, country) => {
   result.blackFriday = $('p.flags img[alt="Black friday"]').length !== 0;
 
   return result;
-};
-
-module.exports = {
-  handleStart,
-  handleList,
-  handleDetail
 };
