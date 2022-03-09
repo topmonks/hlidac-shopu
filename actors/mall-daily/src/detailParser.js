@@ -1,10 +1,7 @@
-const {
-  s3FileName,
-  shopName
-} = require("@hlidac-shopu/actors-common/product.js");
-const parseCurrency = require("parsecurrency");
+import parseCurrency from "parsecurrency";
+import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 
-async function extractItems($, web, country) {
+export async function extractItems($, web, country) {
   const results = [];
   // New technic
   const articles = $("article.product-box-category").toArray();
@@ -40,15 +37,13 @@ async function extractItems($, web, country) {
           category.push($(this).text().trim());
         });
 
-      const slug = await s3FileName({ itemUrl: itemUrl });
-
       const result = {
         itemId: itemId,
         productId: itemId,
         itemUrl: itemUrl,
         itemName: title,
         category: category,
-        slug: slug,
+        slug: itemSlug(itemUrl),
         currency: country === "CZ" ? "CZK" : "EUR",
         img: itemImgUrl,
         currentPrice: currentPrice !== null ? currentPrice.value : null,
@@ -162,7 +157,7 @@ async function extractItems($, web, country) {
   return results;
 }
 
-async function extractBfItems(products, country) {
+export async function extractBfItems(products, country) {
   const results = [];
   for await (const item of products) {
     const product = item.mainVariant;
@@ -175,8 +170,8 @@ async function extractBfItems(products, country) {
       // priceRrp recommended retail price
       const originalPrice = product.priceRrp ? product.priceRrp : 0;
       const itemUrl = `https://www.mall.${country}/${item.mainCategoryUrlKey}/${product.variantUrl}`;
-      const slug = await s3FileName({ itemUrl });
-      const shop = await shopName(itemUrl);
+      const slug = itemSlug(itemUrl);
+      const shop = shopName(itemUrl);
       results.push({
         itemId: product.variantId,
         itemName: item.title,
@@ -199,5 +194,3 @@ async function extractBfItems(products, country) {
   }
   return results;
 }
-
-module.exports = { extractItems, extractBfItems };

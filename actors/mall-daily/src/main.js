@@ -1,24 +1,21 @@
-const { S3Client } = require("@aws-sdk/client-s3");
-const s3 = new S3Client({ region: "eu-central-1" });
-const { uploadToKeboola } = require("@hlidac-shopu/actors-common/keboola.js");
-const { CloudFrontClient } = require("@aws-sdk/client-cloudfront");
-const {
+import { S3Client } from "@aws-sdk/client-s3";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import {
   invalidateCDN,
-  toProduct,
-  uploadToS3,
-  s3FileName
-} = require("@hlidac-shopu/actors-common/product.js");
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
+import { gotScraping } from "got-scraping";
+import { paginationParser } from "./paginationParser.js";
+import { extractItems, extractBfItems } from "./detailParser.js";
+import cheerio from "cheerio";
+import Apify from "apify";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const Apify = require("apify");
-const cheerio = require("cheerio");
-const { extractItems, extractBfItems } = require("./detailParser");
-const paginationParser = require("./paginationParser");
-
+const s3 = new S3Client({ region: "eu-central-1" });
 const {
   utils: { log }
 } = Apify;
-const { gotScraping } = require("got-scraping");
 
 const webCz = "https://www.mall.cz";
 const webSk = "https://www.mall.sk";
@@ -346,18 +343,13 @@ Apify.main(async () => {
                     processedIds.add(product.itemId);
                     requests.push(
                       Apify.pushData(product),
-                      uploadToS3(
+                      uploadToS3v2(
                         s3,
-                        `mall.${country.toLowerCase()}`,
-                        await s3FileName(product),
-                        "jsonld",
-                        toProduct(
-                          {
-                            ...product,
-                            inStock: true
-                          },
-                          { priceCurrency: country === "CZ" ? "CZK" : "EUR" }
-                        )
+                        {
+                          ...product,
+                          inStock: true
+                        },
+                        { priceCurrency: country === "CZ" ? "CZK" : "EUR" }
                       )
                     );
                     stats.items++;

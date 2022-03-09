@@ -1,6 +1,6 @@
-const { requestRetry, getHeaders } = require("./utils");
+import { requestRetry, getHeaders } from "./utils.js";
 
-async function paginationParser(
+export async function paginationParser(
   $,
   requestQueue,
   request,
@@ -140,5 +140,3 @@ async function paginationParser(
     );
   }
 }
-
-module.exports = paginationParser;

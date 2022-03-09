@@ -1,15 +1,15 @@
-const Apify = require("apify");
-const rp = require("request-fixed-tunnel-agent");
-const UserAgents = require("user-agents");
+import Apify from "apify";
+import rp from "request-fixed-tunnel-agent";
+import UserAgents from "user-agents";
 
-function getHeaders() {
+export function getHeaders() {
   const userAgent = new UserAgents();
   return {
     "User-Agent": userAgent.toString()
   };
 }
 
-async function requestRetry(options) {
+export async function requestRetry(options) {
   let lastError;
   for (let i = 0; i < 4; i++) {
     try {
@@ -23,4 +23,3 @@ async function requestRetry(options) {
 
   throw lastError;
 }
-module.exports = { requestRetry, getHeaders };
