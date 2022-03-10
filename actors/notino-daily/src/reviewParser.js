@@ -2,19 +2,6 @@ import Apify from "apify";
 
 const { requestAsBrowser, log } = Apify.utils;
 
-const i = {
-  operationName: "getReviews",
-  variables: {
-    code: "LAMVEBW_AEDP10",
-    orderBy: "DateTime",
-    orderDesc: true,
-    page: 1,
-    pageSize: 5
-  },
-  query:
-    "query getReviews($page: Int!, $pageSize: Int!, $orderDesc: Boolean!, $orderBy: ReviewOrderBy!, $code: String!) {\n  reviews(page: $page, pageSize: $pageSize, orderDesc: $orderDesc, orderBy: $orderBy, code: $code) {\n    id\n    text\n    userName\n    score\n    createdDate\n    like\n    dislike\n    alreadyLiked\n    alreadyDisliked\n    __typename\n  }\n}\n"
-};
-
 async function getReviewPage({ sku, token, page, proxyConfiguration }) {
   const headers = {
     "User-Agent":

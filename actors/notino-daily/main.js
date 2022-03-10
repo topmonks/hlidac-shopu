@@ -46,8 +46,7 @@ Apify.main(async () => {
     `development: ${development}, debug: ${debug}, country: ${country}`
   );
 
-  global.crawledProducts = 0;
-  // global.MAX_CRAWLED_PRODUCTS = 50;
+  const crawledProducts = 0;
 
   const requestQueue = await Apify.openRequestQueue();
   if (type === BF) {
@@ -110,7 +109,8 @@ Apify.main(async () => {
           response,
           input,
           proxyConfiguration,
-          stats
+          stats,
+          crawledProducts
         );
       },
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
@@ -123,7 +123,7 @@ Apify.main(async () => {
   // await persistState();
   await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   log.info(JSON.stringify(stats));
-  log.info(`Total products: ${global.crawledProducts}.`);
+  log.info(`Total products: ${crawledProducts}.`);
 
   if (!development && type !== "CZECHITAS") {
     const tableName = `notino${

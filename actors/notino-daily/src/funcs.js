@@ -47,7 +47,7 @@ async function pushProducts(products, country, stats) {
  * @property {Function} exists
  * @returns {Cheerio}
  */
-function extendCheerio($) {
+export function extendCheerio($) {
   $.prototype.exists = function () {
     return this.length > 0;
   };
@@ -291,14 +291,6 @@ function isDebugMode() {
   return log.getLevel() === log.LEVELS.DEBUG;
 }
 
-/**
- *
- * @param requestQueue
- * @param request
- * @param {CheerioSelector} $
- * @param {Array} input
- * @return {Promise<void>}
- */
 const handleProductInDetailPage = async (
   requestQueue,
   request,
@@ -307,16 +299,14 @@ const handleProductInDetailPage = async (
   response,
   input,
   proxyConfiguration,
-  stats
+  stats,
+  crawledProducts
 ) => {
   const results = [];
 
   async function handleProductUsingWindowObject() {
     log.debug("Handled by windowObject");
-    const dataStringFromScriptTag = await getScriptContent(
-      $,
-      /id="__APOLLO_STATE__"/g
-    );
+    const dataStringFromScriptTag = await getScriptContent($);
     // await Apify.setValue(`${Math.random()}_debug`, dataStringFromScriptTag, { contentType: 'text/html' });
     if (dataStringFromScriptTag === undefined) {
       log.error(
@@ -403,7 +393,7 @@ const handleProductInDetailPage = async (
       }
       product.inStock = true;
       results.push(product);
-      global.crawledProducts++;
+      crawledProducts++;
     }
   }
 
@@ -450,7 +440,7 @@ const handleProductInDetailPage = async (
       }
       product.inStock = true;
       results.push(product);
-      global.crawledProducts++;
+      crawledProducts++;
     }
   }
 
@@ -504,7 +494,7 @@ const handleProductInDetailPage = async (
   }
 };
 
-const handlePageFunction = async (
+export const handlePageFunction = async (
   requestQueue,
   request,
   $,
@@ -512,7 +502,8 @@ const handlePageFunction = async (
   response,
   input,
   proxyConfiguration,
-  stats
+  stats,
+  crawledProducts
 ) => {
   log.info(`Processing ${request.url}, ${request.userData.label}`);
   const { statusCode } = response;
@@ -540,7 +531,8 @@ const handlePageFunction = async (
         response,
         input,
         proxyConfiguration,
-        stats
+        stats,
+        crawledProducts
       );
       break;
     }
@@ -548,15 +540,9 @@ const handlePageFunction = async (
   }
 };
 
-const handleFailedRequestFunction = async ({ request }) => {
+export const handleFailedRequestFunction = async ({ request }) => {
   log.error(`Request ${request.url} failed too many times`);
   await Apify.pushData({
     "#debug": Apify.utils.createRequestDebugInfo(request)
   });
-};
-
-module.exports = {
-  handlePageFunction,
-  handleFailedRequestFunction,
-  extendCheerio
 };
