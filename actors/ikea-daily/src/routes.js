@@ -15,9 +15,9 @@ const {
   utils: { log }
 } = Apify;
 
-export async function handleSitemap({ body, crawler }) {
+export async function handleSitemap({ body, crawler }, { stats }) {
   const links = siteMapToLinks(body);
-  global.stats.categories += links.length;
+  stats.categories += links.length;
   for (const url of links) {
     await crawler.requestQueue.addRequest({
       url,
@@ -118,8 +118,7 @@ export async function handleList({ request, body, crawler }) {
   }
 }
 
-export async function handleDetail({ $ }, productData) {
-  const { s3, country } = global;
+export async function handleDetail({ $ }, { productData, s3, stats }) {
   productData.currentPrice = getPrice($) || productData.currentPrice;
   productData.originalPrice = tryGetRetailPrice($) || null;
   if (
@@ -156,7 +155,7 @@ export async function handleDetail({ $ }, productData) {
     ...productData,
     category: categories
   };
-  global.stats.items++;
+  stats.items++;
   await Apify.pushData(
     await uploadToS3v2(s3, productData, {
       priceCurrency: productData.currency,

@@ -17,8 +17,6 @@ const {
   utils: { log, requestAsBrowser }
 } = Apify;
 
-let productCount = 0;
-
 Apify.main(async () => {
   rollbar.init();
   const input = await Apify.getInput();
@@ -31,12 +29,12 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     type = "DAILY"
   } = input ?? {};
-  global.country = country;
 
-  global.stats = (await Apify.getValue("STATS")) || {
+  const stats = (await Apify.getValue("STATS")) || {
     categories: 0,
     items: 0
   };
+  let productCount = 0;
 
   // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
   let sitemap = "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml";
@@ -70,7 +68,7 @@ Apify.main(async () => {
       throw new Error(`The scraper does not support ${country} country`);
   }
 
-  global.s3 = new S3Client({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -141,7 +139,7 @@ Apify.main(async () => {
       log.info("Page opened.", { label, url });
       switch (label) {
         case "SITEMAP":
-          return handleSitemap(context);
+          return handleSitemap(context, { stats });
         case "CATEGORY":
           const handleCategoryResult = await handleCategory(
             context,
@@ -157,7 +155,7 @@ Apify.main(async () => {
         case "LIST":
           return handleList(context);
         case "DETAIL":
-          return handleDetail(context, productData);
+          return handleDetail(context, { productData, s3, stats });
         default:
           throw new Error(`No route for label: ${label}`);
       }

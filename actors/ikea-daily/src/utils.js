@@ -100,6 +100,7 @@ export function getPrice($) {
 /**
  * Gets product's variant name from detail page.
  * @param $
+ * @param productTypeName {string}
  * @returns {string|null}
  */
 export function getVariantName($, productTypeName) {
