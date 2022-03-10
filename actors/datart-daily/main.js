@@ -9,7 +9,6 @@ import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
 const LABELS = {
   START: "START",
@@ -25,9 +24,6 @@ const COUNTRY = {
 const BASE_URL = "https://www.datart.cz";
 const BASE_URL_SK = "https://www.datart.sk";
 
-let stats = {};
-const processedIds = new Set();
-
 async function streamToBuffer(stream) {
   const chunks = [];
   return new Promise((resolve, reject) => {
@@ -37,7 +33,7 @@ async function streamToBuffer(stream) {
   });
 }
 
-async function countAllProducts(rootUrl) {
+async function countAllProducts(rootUrl, stats) {
   const stream = await requestAsBrowser({
     url: `${rootUrl}/sitemap/sitemapindex.xml`,
     stream: true
@@ -162,6 +158,9 @@ async function enqueuRequests(requestQueu, items) {
 
 Apify.main(async () => {
   rollbar.init();
+  let stats = {};
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
@@ -194,7 +193,7 @@ Apify.main(async () => {
       }
     });
   } else if (type === "COUNT") {
-    await countAllProducts(rootUrl);
+    await countAllProducts(rootUrl, stats);
   } else if (type === "FULL") {
     await requestQueue.addRequest({
       url: `${rootUrl}/katalog`,
