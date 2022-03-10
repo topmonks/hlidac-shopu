@@ -4,11 +4,11 @@ import { Shop } from "./shop.mjs";
 export class Ikea extends Shop {
 
   get injectionPoint() {
-    return ["beforebegin", ".range-revamp-product-availability"];
+    return ["afterend", ".pip-product-availability"];
   }
 
   async scrape() {
-    const elem = document.querySelector("#content .range-revamp-product__subgrid");
+    const elem = document.querySelector("#content .product-pip");
     if (!elem) return;
 
     const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[1];
