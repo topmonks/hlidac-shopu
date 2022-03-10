@@ -207,14 +207,10 @@ async function fetchProductBase(
   if (!crawlContext.development) {
     for (const product of allFulfilledProducts) {
       requests.push(
-        uploadToS3v2(
-          s3,
-          {
-            ...product,
-            inStock: true
-          },
-          { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-        )
+        uploadToS3v2(s3, product, {
+          priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR",
+          inStock: true
+        })
       );
     }
   }
@@ -289,14 +285,10 @@ async function fetchProductDetail($, requestQueue, request, country) {
         result.discounted = false;
       }
 
-      await uploadToS3v2(
-        s3,
-        {
-          ...result,
-          inStock: true
-        },
-        { priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR" }
-      );
+      await uploadToS3v2(s3, result, {
+        priceCurrency: country === COUNTRY.CZ ? "CZK" : "EUR",
+        inStock: true
+      });
 
       await Apify.pushData(result);
     } else {

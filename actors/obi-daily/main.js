@@ -2,8 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  toProduct,
-  uploadToS3,
+  uploadToS3v2,
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
@@ -231,13 +230,7 @@ async function handleDetail(context, country, dataset) {
       // push data to dataset to be ready for upload to Keboola
       dataset.pushData(result),
       // upload JSON+LD data to CDN
-      uploadToS3(
-        s3,
-        `obi${country === "it" ? "-italia" : ""}.${country}`,
-        s3FileNameSync(result),
-        "jsonld",
-        toProduct(result, {})
-      )
+      uploadToS3v2(s3, result)
     );
     processedIds.add(result.itemId);
     stats.items += 1;

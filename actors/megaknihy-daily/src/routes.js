@@ -67,14 +67,10 @@ export async function handlePage(
   for (const product of productsData) {
     promises.push(
       Apify.pushData(productsData),
-      uploadToS3v2(
-        s3,
-        {
-          ...product,
-          inStock: true
-        },
-        { priceCurrency: product.currency }
-      )
+      uploadToS3v2(s3, product, {
+        priceCurrency: product.currency,
+        inStock: true
+      })
     );
   }
   log.info(`[PAGE]: Scraped ${productsData.length} products --- ${url}`);

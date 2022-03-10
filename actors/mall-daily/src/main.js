@@ -343,14 +343,10 @@ Apify.main(async () => {
                     processedIds.add(product.itemId);
                     requests.push(
                       Apify.pushData(product),
-                      uploadToS3v2(
-                        s3,
-                        {
-                          ...product,
-                          inStock: true
-                        },
-                        { priceCurrency: country === "CZ" ? "CZK" : "EUR" }
-                      )
+                      uploadToS3v2(s3, product, {
+                        priceCurrency: country === "CZ" ? "CZK" : "EUR",
+                        inStock: true
+                      })
                     );
                     stats.items++;
                   } else {

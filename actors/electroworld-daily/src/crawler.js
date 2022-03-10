@@ -154,8 +154,7 @@ async function scrapeProductListPage($, crawlContext) {
       crawlContext.processedIds.add(product.itemId);
       requests.push(
         crawlContext.dataset.pushData(product),
-        uploadToS3v2(crawlContext.s3, {
-          ...product,
+        uploadToS3v2(crawlContext.s3, product, {
           inStock: product.available
         })
       );

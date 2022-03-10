@@ -309,14 +309,7 @@ async function handleProducts($, requestQueue, request, type) {
           processedIds.add(product.itemId);
           requests.push(
             Apify.pushData(product),
-            uploadToS3v2(
-              s3,
-              {
-                ...product,
-                inStock: true
-              },
-              { priceCurrency: "CZK" }
-            )
+            uploadToS3v2(s3, product, { priceCurrency: "CZK", inStock: true })
           );
         } else {
           stats.itemsDuplicity++;

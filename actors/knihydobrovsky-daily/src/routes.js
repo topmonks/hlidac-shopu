@@ -138,7 +138,7 @@ export async function handleList(
       handledIds.add(product.itemId);
       requests.push(
         Apify.pushData(product),
-        uploadToS3v2(s3, { ...product, category: "" })
+        uploadToS3v2(s3, product, { category: "" })
       );
       stats.items++;
     } else {

@@ -290,15 +290,11 @@ Apify.main(async () => {
                   shop,
                   slug
                 }),
-                uploadToS3v2(
-                  s3,
-                  {
-                    ...dataItem,
-                    category: dataItem.breadCrumbs.join(" > "),
-                    inStock: true
-                  },
-                  { priceCurrency: "CZK" }
-                )
+                uploadToS3v2(s3, dataItem, {
+                  priceCurrency: "CZK",
+                  category: dataItem.breadCrumbs.join(" > "),
+                  inStock: true
+                })
               );
             } else {
               stats.itemsDuplicity++;

@@ -148,8 +148,7 @@ Apify.main(async () => {
         let sleepTotal = 0;
         for (const product of allFulfilledProducts) {
           requests.push(
-            uploadToS3v2(s3, {
-              ...product,
+            uploadToS3v2(s3, product, {
               category: "",
               inStock: true
             })

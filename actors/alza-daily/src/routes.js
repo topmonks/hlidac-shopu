@@ -1,8 +1,6 @@
 const { S3Client } = require("@aws-sdk/client-s3");
 const s3 = new S3Client({ region: "eu-central-1" });
 const {
-  toProduct,
-  uploadToS3,
   uploadToS3v2,
   s3FileName
 } = require("@hlidac-shopu/actors-common/product.js");
@@ -164,20 +162,11 @@ exports.handlePage = async (
       for (const product of items) {
         const slug = await s3FileName(product);
         if (!development) {
-          await uploadToS3(
-            s3,
-            `alza.${country.toLowerCase()}`,
+          await uploadToS3v2(s3, product, {
+            priceCurrency: currency,
             slug,
-            "jsonld",
-            toProduct(
-              {
-                ...product,
-                slug,
-                inStock: true
-              },
-              { priceCurrency: currency }
-            )
-          );
+            inStock: true
+          });
         }
         await Apify.pushData(product);
       }
@@ -216,19 +205,10 @@ exports.handleDetail = async (
   const detailItem = await parseDetail($, request);
   stats.details++;
   if (!development) {
-    await uploadToS3(
-      s3,
-      `alza.${country.toLowerCase()}`,
-      await s3FileName(detailItem),
-      "jsonld",
-      toProduct(
-        {
-          ...detailItem,
-          inStock: true
-        },
-        { priceCurrency: currency }
-      )
-    );
+    await uploadToS3v2(s3, detailItem, {
+      priceCurrency: currency,
+      inStock: true
+    });
   }
   await Apify.pushData(detailItem);
 };
@@ -336,19 +316,10 @@ exports.handleTrhakDetail = async (
 ) => {
   const detailItem = await parseTrhakDetail($, domain, request);
   if (!development) {
-    await uploadToS3(
-      s3,
-      `alza.${country.toLowerCase()}`,
-      await s3FileName(detailItem),
-      "jsonld",
-      toProduct(
-        {
-          ...detailItem,
-          inStock: true
-        },
-        { priceCurrency: currency }
-      )
-    );
+    await uploadToS3v2(s3, detailItem, {
+      priceCurrency: currency,
+      inStock: true
+    });
   }
   await Apify.pushData(detailItem);
 };

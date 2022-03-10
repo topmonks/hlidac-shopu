@@ -113,19 +113,7 @@ Apify.main(async () => {
 
         itemsArray.push(result);
 
-        await uploadToS3(
-          s3,
-          "sleky.cz",
-          await s3FileName(result),
-          "jsonld",
-          toProduct(
-            {
-              ...result,
-              inStock: true
-            },
-            { priceCurrency: "CZK" }
-          )
-        );
+        await uploadToS3v2(s3, result, { priceCurrency: "CZK", inStock: true });
 
         log.debug(
           `END with product ${name}, id=${result.itemId}, price=${result.currentPrice}, SUKLId=${result.SUKLId}`

@@ -87,14 +87,7 @@ async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
       discounted: originalPrice ? currentPrice < originalPrice : false
     };
     if (!processedIds.has(result.itemId)) {
-      await uploadToS3v2(
-        s3,
-        {
-          ...result,
-          inStock: true
-        },
-        { priceCurrency: "CZK" }
-      );
+      await uploadToS3v2(s3, result, { priceCurrency: "CZK", inStock: true });
       await Apify.pushData(result);
       stats.items++;
     } else {

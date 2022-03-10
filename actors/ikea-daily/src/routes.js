@@ -158,13 +158,9 @@ export async function handleDetail({ $ }, productData) {
   };
   global.stats.items++;
   await Apify.pushData(
-    await uploadToS3v2(
-      s3,
-      {
-        ...productData,
-        inStock: true
-      },
-      { priceCurrency: productData.currency }
-    )
+    await uploadToS3v2(s3, productData, {
+      priceCurrency: productData.currency,
+      inStock: true
+    })
   );
 }

@@ -11,26 +11,30 @@ const { CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
  * @param additionalData
  * @returns {Product}
  */
-const toProduct = (detail, { priceCurrency, ...additionalData }) => ({
-  "@scope": "https://schema.org/",
-  "@type": "Product",
-  sku: detail.itemId,
-  name: detail.itemName,
-  url: detail.itemUrl,
-  image: detail.img,
-  category: detail.category,
-  offers: {
-    "@type": "Offer",
-    availability: `https://schema.org/${
-      detail.inStock ? "InStock" : "OutOfStock"
-    }`,
-    price: detail.currentPrice,
-    priceCurrency: detail.currency
-      ? currencyToISO4217(detail.currency)
-      : priceCurrency
-  },
-  ...additionalData
-});
+function toProduct(detail, { priceCurrency, ...additionalData }) {
+  return Object.assign(
+    {
+      "@scope": "https://schema.org/",
+      "@type": "Product",
+      sku: detail.itemId,
+      name: detail.itemName,
+      url: detail.itemUrl,
+      image: detail.img,
+      category: detail.category,
+      offers: {
+        "@type": "Offer",
+        availability: `https://schema.org/${
+          detail.inStock ? "InStock" : "OutOfStock"
+        }`,
+        price: detail.currentPrice,
+        priceCurrency: detail.currency
+          ? currencyToISO4217(detail.currency)
+          : priceCurrency
+      }
+    },
+    additionalData
+  );
+}
 
 /**
  * @param {S3Client} s3
