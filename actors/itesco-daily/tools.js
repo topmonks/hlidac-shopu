@@ -1,9 +1,7 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import { COUNTRY } from "./consts.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
 
 function flat(array) {
@@ -17,7 +15,7 @@ function flat(array) {
   return result;
 }
 
-export const findArraysUrl = async (urlsCatHtml, country) => {
+export async function findArraysUrl(urlsCatHtml, country) {
   const resultArrUrls = [];
   const { navList } = urlsCatHtml.taxonomy;
   const childrenArr = [];
@@ -47,17 +45,17 @@ export const findArraysUrl = async (urlsCatHtml, country) => {
     });
   });
   return resultArrUrls;
-};
+}
 
-const formatPrice = string => {
+function formatPrice(string) {
   return parseFloat(string.replace(/,/, "."));
-};
+}
 
 /**
  * @param {int} productId
  * @param {Object} reduxResults
  */
-const getProductRedux = (productId, reduxResults) => {
+function getProductRedux(productId, reduxResults) {
   try {
     const objReduxResults = Object.fromEntries(reduxResults);
     if (objReduxResults[productId.toString()]) {
@@ -71,15 +69,16 @@ const getProductRedux = (productId, reduxResults) => {
     log.info(e.message);
     return null;
   }
-};
+}
 
-/**
- * @param {CheerioSelector} $
- * @param {COUNTRY.CZ|COUNTRY.SK} country
- * @returns {Promise<[]>}
- * @constructor
- */
-export async function ExtractItems($, country, uniqueItems, stats, request) {
+export async function extractItems({
+  $,
+  country,
+  uniqueItems,
+  stats,
+  request,
+  s3
+}) {
   const itemsArray = [];
   const rootUrl =
     country === COUNTRY.CZ

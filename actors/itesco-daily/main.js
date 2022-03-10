@@ -5,14 +5,9 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Apify from "apify";
 import _ from "underscore";
 import { COUNTRY, LABELS, STARTURLS } from "./consts.js";
-import { ExtractItems, findArraysUrl } from "./tools.js";
+import { extractItems, findArraysUrl } from "./tools.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
-
-const stats = {
-  offers: 0
-};
-
-const uniqueItems = new Set();
+import { S3Client } from "@aws-sdk/client-s3";
 
 const { log } = Apify.utils;
 
@@ -27,7 +22,12 @@ function getTableName(country, type) {
 Apify.main(async () => {
   rollbar.init();
 
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const stats = {
+    offers: 0
+  };
+  const uniqueItems = new Set();
 
   const input = await Apify.getInput();
   const {
@@ -62,10 +62,9 @@ Apify.main(async () => {
     });
   }
 
-  const persistState = async () => {
+  Apify.events.on("persistState", async () => {
     console.log(stats);
-  };
-  Apify.events.on("persistState", persistState);
+  });
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -113,13 +112,14 @@ Apify.main(async () => {
               }
             }
           }
-          const items = await ExtractItems(
+          const items = await extractItems({
             $,
             country,
             uniqueItems,
             stats,
-            request
-          );
+            request,
+            s3
+          });
           log.debug(`Found ${items.length} storing them, ${request.url}`);
           await Apify.pushData(items);
         } catch (e) {
@@ -207,13 +207,14 @@ Apify.main(async () => {
         }
       } else if (request.userData.label === LABELS.PAGINATION) {
         try {
-          const items = await ExtractItems(
+          const items = await extractItems({
             $,
             country,
             uniqueItems,
             stats,
-            request
-          );
+            request,
+            s3
+          });
           log.debug(`Found ${items.length} storing them, ${request.url}`);
           await Apify.pushData(items);
         } catch (e) {
@@ -232,7 +233,7 @@ Apify.main(async () => {
     }
   });
   await crawler.run();
-  await persistState();
+  console.log(stats);
   if (!development) {
     await invalidateCDN(
       cloudfront,
