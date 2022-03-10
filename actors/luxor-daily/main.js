@@ -8,12 +8,13 @@ import {
   handleFrontStart,
   handleSitemapList,
   handleSitemapStart
-} from "./src/routes";
-import { LABELS, URL_API_START, URL_FRONT, URL_SITEMAP } from "./src/const";
+} from "./src/routes.js";
+import { LABELS, URL_API_START, URL_FRONT, URL_SITEMAP } from "./src/const.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { S3Client } from "@aws-sdk/client-s3";
 
 let stats = {};
 const processedIds = new Set();
@@ -21,6 +22,8 @@ const { log } = Apify.utils;
 
 Apify.main(async () => {
   rollbar.init();
+
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   stats = (await Apify.getValue("STATS")) || {
@@ -100,7 +103,8 @@ Apify.main(async () => {
     development,
     proxyConfiguration,
     stats,
-    processedIds
+    processedIds,
+    s3
   };
 
   //const crawler = new Apify.CheerioCrawler({

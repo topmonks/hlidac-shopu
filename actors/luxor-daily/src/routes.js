@@ -1,6 +1,5 @@
 import Apify from "apify";
 import { gotScraping } from "got-scraping";
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import {
   LABELS,
@@ -9,10 +8,9 @@ import {
   URL_IMAGE_BASE,
   URL_SITEMAP,
   URL_TEMPLATE_CATEGORY
-} from "./const";
+} from "./const.js";
 import cheerio from "cheerio";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const {
   utils: { log }
 } = Apify;
@@ -140,7 +138,10 @@ export async function handleAPIList(context, crawlContext) {
 
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
-      requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3v2(crawlContext.s3, product)
+      );
       crawlContext.stats.items++;
     } else {
       crawlContext.stats.itemsDuplicity++;
