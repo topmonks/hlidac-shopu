@@ -5,15 +5,12 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import { handleStart, handleList } from "./routes.js";
 
-const {
-  utils: { log }
-} = Apify;
-
-let stats = {};
-const processedIds = new Set();
+const { log } = Apify.utils;
 
 Apify.main(async () => {
   rollbar.init();
+  let stats = {};
+  const processedIds = new Set();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
