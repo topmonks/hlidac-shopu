@@ -1,10 +1,15 @@
-const Apify = require("apify");
+import Apify from "apify";
+
 const { log } = Apify.utils;
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 
-async function uploadToKeboola(tableName) {
+/**
+ * @param {string} tableName
+ * @returns {Promise<void>}
+ */
+export async function uploadToKeboola(tableName) {
   /** @type {ApifyEnv} */
   const env = await Apify.getEnv();
   /** @type {ActorRun} */
@@ -22,7 +27,3 @@ async function uploadToKeboola(tableName) {
   );
   log.info(`Keboola upload called: ${run.id}`);
 }
-
-module.exports = {
-  uploadToKeboola
-};

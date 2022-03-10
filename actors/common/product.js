@@ -1,5 +1,7 @@
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
-const { CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
+import { shopOrigin, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+
 /** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 /** @typedef { import("@aws-sdk/client-cloudfront").CloudFrontClient } CloudFrontClient */
 /** @typedef { import("schema-dts").Product} Product */
@@ -11,7 +13,7 @@ const { CreateInvalidationCommand } = require("@aws-sdk/client-cloudfront");
  * @param additionalData
  * @returns {Product}
  */
-function toProduct(detail, { priceCurrency, ...additionalData }) {
+export function toProduct(detail, { priceCurrency, ...additionalData }) {
   return Object.assign(
     {
       "@scope": "https://schema.org/",
@@ -55,11 +57,15 @@ async function uploadToS3(s3, shop, fileName, ext, data) {
   );
 }
 
-async function uploadToS3v2(s3, item, extraData = {}) {
+/**
+ * @param {S3Client} s3
+ * @param {*} item
+ * @param {*} extraData
+ */
+export async function uploadToS3v2(s3, item, extraData = {}) {
   if (!item.itemUrl) {
     throw new Error("Item missing attribute itemUrl");
   }
-  const { shopOrigin, itemSlug } = await import("@hlidac-shopu/lib/shops.mjs");
   return uploadToS3(
     s3,
     shopOrigin(item.itemUrl),
@@ -76,7 +82,7 @@ async function uploadToS3v2(s3, item, extraData = {}) {
  * @param {string} shop
  * @returns {Promise<void>}
  */
-async function invalidateCDN(cloudfront, distributionId, shop) {
+export async function invalidateCDN(cloudfront, distributionId, shop) {
   await cloudfront.send(
     new CreateInvalidationCommand({
       DistributionId: distributionId,
@@ -88,7 +94,7 @@ async function invalidateCDN(cloudfront, distributionId, shop) {
   );
 }
 
-function currencyToISO4217(currency) {
+export function currencyToISO4217(currency) {
   switch (currency.toLowerCase()) {
     case "kč":
       return "CZK";
@@ -99,28 +105,22 @@ function currencyToISO4217(currency) {
   }
 }
 
-function cleanPriceText(priceText) {
-  priceText = priceText.replace(/\s+/g, "");
-  if (priceText.includes("cca")) priceText = priceText.split("cca")[1];
-  const match = priceText.match(/\d+(:?[,.]\d+)?/);
+export function cleanPriceText(priceText) {
+  let result = priceText.replace(/\s+/g, "");
+  if (result.includes("cca")) {
+    result = result.split("cca")[1];
+  }
+  const match = result.match(/\d+(:?[,.]\d+)?/);
   if (!match) return null;
   return match[0].replace(",", ".");
 }
 
-function cleanUnitPriceText(priceText) {
-  priceText = priceText.replace(/\s+/g, "");
-  if (priceText.includes("/kg")) priceText = priceText.split("/kg")[0];
-  const match = priceText.match(/\d+(:?[,.]\d+)?/);
+export function cleanUnitPriceText(priceText) {
+  let result = priceText.replace(/\s+/g, "");
+  if (result.includes("/kg")) {
+    result = result.split("/kg")[0];
+  }
+  const match = result.match(/\d+(:?[,.]\d+)?/);
   if (!match) return null;
   return match[0].replace(",", ".");
 }
-
-module.exports = {
-  toProduct,
-  uploadToS3,
-  uploadToS3v2,
-  invalidateCDN,
-  currencyToISO4217,
-  cleanPriceText,
-  cleanUnitPriceText
-};

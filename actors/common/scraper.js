@@ -1,8 +1,9 @@
-const Apify = require("apify");
+import Apify from "apify";
+import { gotScraping } from "got-scraping";
+import cheerio from "cheerio";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+
 const { log } = Apify.utils;
-const rollbar = require("@hlidac-shopu/actors-common/rollbar.js");
-const { gotScraping } = require("got-scraping");
-const cheerio = require("cheerio");
 
 const COUNTRY = {
   CZ: "CZ",
@@ -42,7 +43,7 @@ const defaultStats = {
   failed: 0
 };
 
-async function init() {
+export async function init() {
   rollbar.init();
   //Input settings
   const getInput = await Apify.getInput();
@@ -104,12 +105,12 @@ async function doScraping(request, proxyConfiguration, headers = null) {
   return body;
 }
 
-async function getCheerioObject(request, proxyConfiguration) {
+export async function getCheerioObject(request, proxyConfiguration) {
   const body = await doScraping(request, proxyConfiguration);
   return cheerio.load(body);
 }
 
-async function getJSONObject(request, proxyConfiguration) {
+export async function getJSONObject(request, proxyConfiguration) {
   const body = await doScraping(request, proxyConfiguration, {
     headers: {
       "Content-Type": "application/json",
@@ -123,9 +124,3 @@ async function getJSONObject(request, proxyConfiguration) {
     return false;
   }
 }
-
-module.exports = {
-  init,
-  getCheerioObject,
-  getJSONObject
-};

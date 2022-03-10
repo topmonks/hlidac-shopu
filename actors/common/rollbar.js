@@ -1,6 +1,6 @@
-const Rollbar = require("rollbar");
+import Rollbar from "rollbar";
 
-module.exports = {
+export default {
   init() {
     return new Rollbar({
       accessToken: "16376a37ab5c4ee790501771e9bb84f9",
