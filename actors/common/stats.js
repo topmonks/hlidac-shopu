@@ -1,4 +1,5 @@
 import Apify from "apify";
+import { defAtom } from "@thi.ng/atom";
 
 // TODO: make this lowes common denominator
 const defaultStats = {
@@ -10,12 +11,34 @@ const defaultStats = {
   ok: 0
 };
 
+const inc = x => x + 1;
+const dec = x => x - 1;
+
 // TODO: stats should be in atom and updated via swap function atomically
+class Stats {
+  constructor(init) {
+    this.stats = defAtom(init);
+  }
+  inc(key) {
+    this.stats.swapIn(key, inc);
+  }
+  dec(key) {
+    this.stats.swapIn(key, dec);
+  }
+  add(key, value) {
+    this.stats.swapIn(key, x => x + value);
+  }
+  async save() {
+    const stats = this.stats.deref();
+    return stats?.save();
+  }
+}
+
 /**
  *
- * @param {function(object): object} fn
+ * @param {function} fn
  * @param {*} init
- * @returns {Promise<*>}
+ * @returns {Promise<Stats>}
  */
 export async function withPersistedStats(fn, init) {
   const stats = (await Apify.getValue("STATS")) ?? init ?? defaultStats;
@@ -41,5 +64,5 @@ export async function withPersistedStats(fn, init) {
     Apify.utils.log.info(`stats: ${JSON.stringify(stats)}`);
   }, 20 * 1000);
 
-  return fn(stats);
+  return new Stats(fn(stats));
 }
