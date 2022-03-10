@@ -10,8 +10,6 @@ import { extractPrice, getHumanDelayMillis } from "./src/tools.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
 const { log } = Apify.utils;
 
 const ROOT_URL =
@@ -21,6 +19,8 @@ const ROOT_URL_SK =
 
 Apify.main(async () => {
   rollbar.init();
+
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
