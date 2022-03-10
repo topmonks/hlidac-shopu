@@ -8,17 +8,15 @@ import {
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
-const BF = "BF";
 
+const BF = "BF";
 const web = "https://www.kasa.cz";
 const limit = "limit=96";
 const akce = "akce";
 const aktuality = "aktuality";
 const bazar = "bazar";
 const LAST_CATEGORY = "LAST_CATEGORY";
-const processedIds = new Set();
 
 function parseAvailability(availability) {
   switch (availability) {
@@ -87,7 +85,7 @@ async function enqueuRequests(requestQueue, items) {
   }
 }
 
-async function handleProducts($, request) {
+async function handleProducts({ $, request, s3, processedIds }) {
   const breadCrums = [];
   $(".col-main-content-right > ol.breadcrumb > li").each(function () {
     breadCrums.push($(this).text().trim());
@@ -161,6 +159,8 @@ async function handleCategories($, categories, requestQueue) {
 
 Apify.main(async () => {
   rollbar.init();
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
@@ -238,7 +238,7 @@ Apify.main(async () => {
         nextSteps.each(function () {
           maxPage = $(this).find("> a").text();
         });
-        await handleProducts($, request);
+        await handleProducts({ $, request, s3, processedIds });
         if (maxPage !== 0) {
           const pagiPages = [];
           for (let i = 2; i <= maxPage; i++) {
@@ -254,7 +254,7 @@ Apify.main(async () => {
         }
       } else if (request.userData.label === "LAST_CATEGORY_PAGE") {
         log.info(`START with page ${request.url}`);
-        await handleProducts($, request);
+        await handleProducts({ $, request, s3, processedIds });
       } else if (request.userData.label === BF) {
         log.info(`START BF ${request.url}`);
         const categories = [];
