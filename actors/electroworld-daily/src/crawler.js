@@ -24,7 +24,6 @@ const productLinkToken = "a.product-box__link";
 const productImgToken = ".product-box__img-box img";
 const productAvailability =
   ".product-box__availability a span.complex-link__underline";
-const productCategoriesToken = ".breadcrumb";
 
 /**
  *  Daily scraping info from products on page
@@ -234,7 +233,7 @@ function mkBreadcrumbsList($) {
   const categoriesArr = $(
     ".breadcrumb__list.l-in-box.u-maw-1310px.ol--reset"
   ).children();
-  categoriesArr.each((i, e) => {
+  categoriesArr.each(i => {
     if (i > 0) {
       categories.push(
         $(categoriesArr[i])

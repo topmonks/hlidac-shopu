@@ -7,17 +7,13 @@ import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
-const {
-  utils: { log }
-} = Apify;
-
-let stats = {};
-const processedIds = new Set();
+const { log } = Apify.utils;
 
 Apify.main(async () => {
   rollbar.init();
+  let stats = {};
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
