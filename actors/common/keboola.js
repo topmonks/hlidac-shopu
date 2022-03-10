@@ -10,6 +10,7 @@ const { log } = Apify.utils;
  * @returns {Promise<void>}
  */
 export async function uploadToKeboola(tableName) {
+  if (process.env.TEST) return;
   /** @type {ApifyEnv} */
   const env = await Apify.getEnv();
   /** @type {ActorRun} */

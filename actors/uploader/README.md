@@ -1,9 +1,7 @@
-# My beautiful actor
+# Keboola Uploader
 
-The `README.md` file contains a documentation what your actor does and how to use it,
-which is then displayed in the app or Apify Store. It's always a good
-idea to write a good `README.md`, in a few months not even you
-will remember all the details about the actor.
+Actor for uploading scraped data setd to Keboola.
 
-You can use [Markdown](https://www.markdownguide.org/cheat-sheet)
-language for rich formatting.
+`process.env.KEBOOLA_BUCKET` sets target bucket for uploading.
+`process.env.KEBOOLA_URI` sets Keboola API endpoint for upload
+`process.env.KEBOOLA_KEY` sets API KEY for upload 

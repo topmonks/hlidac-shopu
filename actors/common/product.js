@@ -47,6 +47,7 @@ export function toProduct(detail, { priceCurrency, ...additionalData }) {
  * @returns {Promise<void>}
  */
 async function uploadToS3(s3, shop, fileName, ext, data) {
+  if (process.env.TEST) return;
   await s3.send(
     new PutObjectCommand({
       Bucket: "data.hlidacshopu.cz",
@@ -83,6 +84,7 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
  * @returns {Promise<void>}
  */
 export async function invalidateCDN(cloudfront, distributionId, shop) {
+  if (process.env.TEST) return;
   await cloudfront.send(
     new CreateInvalidationCommand({
       DistributionId: distributionId,
@@ -91,6 +93,14 @@ export async function invalidateCDN(cloudfront, distributionId, shop) {
         CallerReference: new Date().getTime().toString()
       }
     })
+  );
+}
+
+export function invalidateCDNv2(cloudfront, rootUrl) {
+  return invalidateCDN(
+    cloudfront,
+    process.env.AWS_CLOUDFRONT_DISTRIBUTION_ID,
+    shopOrigin(rootUrl)
   );
 }
 
