@@ -282,10 +282,9 @@ Apify.main(async () => {
   await crawler.run();
   log.info("crawler finished");
 
-  stats.save();
-
   await Promise.allSettled([
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
-    await uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz")
+    stats.save(),
+    invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
+    uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz")
   ]);
 });
