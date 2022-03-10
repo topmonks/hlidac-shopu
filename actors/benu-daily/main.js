@@ -9,8 +9,8 @@ import randomUA from "modern-random-ua";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
+
 const LABELS = {
   START: "START",
   HOME: "HOME",
@@ -19,13 +19,9 @@ const LABELS = {
   CATEGORY: "CATEGORY",
   PAGI_PAGE: "PAGI_PAGE"
 };
-
-let stats = {};
-const processedIds = new Set();
-
 const web = "https://www.benu.cz";
 
-async function enqueuRequests(requestQueue, items, forefront) {
+async function enqueueRequests(requestQueue, items, forefront) {
   for (const item of items) {
     await requestQueue.addRequest(item, { forefront });
   }
@@ -46,7 +42,7 @@ async function extractItems($, $products, breadCrumbs, requestQueue) {
       }
     });
   });
-  await enqueuRequests(requestQueue, productsOnPage, false);
+  await enqueueRequests(requestQueue, productsOnPage, false);
   return productsOnPage;
 }
 
@@ -58,7 +54,14 @@ function parseScriptJson($, element) {
     .trim();
 }
 
-async function handleSingleDetailOfProduct($, request, requestQueue, stats) {
+async function handleSingleDetailOfProduct(
+  $,
+  request,
+  requestQueue,
+  stats,
+  processedIds,
+  s3
+) {
   try {
     const $jsonData = JSON.parse(
       parseScriptJson($, $("#snippet-productRichSnippet-richSnippet"))
@@ -134,6 +137,9 @@ async function handleProducts($, request, requestQueue) {
 
 Apify.main(async () => {
   rollbar.init();
+  let stats = {};
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
@@ -228,7 +234,7 @@ Apify.main(async () => {
         });
         log.info(`Found ${allCategories.size} allCategories.`);
         stats.categories += allCategories.size;
-        await enqueuRequests(requestQueue, allCategories, false);
+        await enqueueRequests(requestQueue, allCategories, false);
       } else if (request.userData.label === LABELS.PAGE) {
         log.info(`START with page ${request.url}`);
         let maxPage = 0;
@@ -255,14 +261,21 @@ Apify.main(async () => {
           }
           log.info(`Found ${paginationPage.length} pages in category.`);
           stats.pages += paginationPage.length;
-          await enqueuRequests(requestQueue, paginationPage, true);
+          await enqueueRequests(requestQueue, paginationPage, true);
         }
       } else if (request.userData.label === LABELS.PAGI_PAGE) {
         log.info(`START with page ${request.url}`);
         await handleProducts($, request, requestQueue);
       } else if (request.userData.label === LABELS.DETAIL) {
         log.info(`START with product ${request.url}`);
-        await handleSingleDetailOfProduct($, request, requestQueue, stats);
+        await handleSingleDetailOfProduct(
+          $,
+          request,
+          requestQueue,
+          stats,
+          processedIds,
+          s3
+        );
         log.info(`END with product ${request.url}`);
       }
     },
