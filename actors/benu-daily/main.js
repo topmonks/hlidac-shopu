@@ -8,6 +8,7 @@ import {
 import randomUA from "modern-random-ua";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const { log } = Apify.utils;
 
@@ -137,7 +138,6 @@ async function handleProducts($, request, requestQueue) {
 
 Apify.main(async () => {
   rollbar.init();
-  let stats = {};
   const processedIds = new Set();
   const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
@@ -150,13 +150,13 @@ Apify.main(async () => {
     type = "FULL"
   } = input ?? {};
 
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = await withPersistedStats(x => x, {
     categories: 0,
     pages: 0,
     items: 0,
     itemsDuplicity: 0,
     failed: 0
-  };
+  });
 
   const requestQueue = await Apify.openRequestQueue();
   if (type === "BF") {
@@ -189,17 +189,10 @@ Apify.main(async () => {
     });
   }
 
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
-
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
 
-  // Create crawler.
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     maxRequestRetries,
@@ -286,18 +279,13 @@ Apify.main(async () => {
     }
   });
 
-  // Run crawler.
   await crawler.run();
   log.info("crawler finished");
 
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
+  stats.save();
 
-  if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz");
-    log.info("invalidated Data CDN");
-
-    await uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz");
-    log.info("upload to Keboola finished");
-  }
+  await Promise.allSettled([
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
+    await uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz")
+  ]);
 });
