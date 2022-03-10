@@ -1,4 +1,4 @@
-async function parseTrhakDetail($, domain, request) {
+export async function parseTrhakDetail($, domain, request) {
   const result = {
     itemUrl: request.url
   };
@@ -50,5 +50,3 @@ async function parseTrhakDetail($, domain, request) {
 
   return result;
 }
-
-module.exports = { parseTrhakDetail };

@@ -1,4 +1,4 @@
-function getCountry(input) {
+export default function getCountry(input) {
   const proxies = [
     "HUNGARY",
     "CZECH_LUMINATI",
@@ -54,5 +54,3 @@ function getCountry(input) {
       throw new Error(`Country code "${input}" is invalid`);
   }
 }
-
-module.exports = getCountry;
