@@ -80,7 +80,7 @@ async function handleLeftMenu({ $, request }, domain, requestQueue, stats) {
       });
   });
   log.info(`Found ${menuItems.length} LEFT MENU at page ${request.url}`);
-  stats.categories += menuItems.length;
+  stats.add("categories", menuItems.length);
   await enqueueRequests(requestQueue, menuItems);
 }
 
@@ -126,7 +126,7 @@ async function handlePage(
           ) / 24
         );
         log.info(`Adding ${max - 1}x pagination pages `);
-        stats.pages += max;
+        stats.add("pages", max);
         for (let i = 2; i <= max; i++) {
           const url = `${request.userData.baseUrl.replace(
             /\.htm/,
@@ -178,7 +178,7 @@ async function handlePage(
     );
     if (items !== true) {
       log.info(`Found ${items.length} storing them, ${request.url}`);
-      stats.items += items.length;
+      stats.add("items", items.length);
       for (const product of items) {
         const slug = await s3FileName(product);
         if (!development) {
@@ -195,7 +195,7 @@ async function handlePage(
     }
     if (items.length === 0 && items !== true) {
       await Apify.utils.sleep(2000);
-      stats.zeroItems++;
+      stats.inc("zeroItems");
       const fileName = `denied_products_${Math.random()}`;
       log.info(
         `Store bad items lenght into OUTPUT ${request.url} ----- ${fileName}`
@@ -224,7 +224,7 @@ async function handleDetail(
   s3
 ) {
   const detailItem = await parseDetail($, request);
-  stats.details++;
+  stats.inc("details");
   if (!development) {
     await uploadToS3v2(s3, detailItem, {
       priceCurrency: currency,
@@ -405,7 +405,7 @@ async function handleFeed(items, outputDatasetIdOrName, stats, options = {}) {
     // await all requests, so we don't end before they end
     await Apify.pushData(formattedItems);
     await Promise.allSettled(s3Requests);
-    stats.items += formattedItems.length;
+    stats.add("items", formattedItems.length);
     await Apify.utils.sleep(uploadSleepMs);
   }
 }
@@ -661,7 +661,7 @@ Apify.main(async () => {
           } catch (e) {
             log.error(e);
             await Apify.utils.sleep(5000);
-            stats.denied++;
+            stats.inc("denied");
             request.retryCount--;
             session.isBlocked();
             throw new Error("Proxy blocked");
@@ -671,40 +671,40 @@ Apify.main(async () => {
           // for this we don't need to parse the response in cheerio
           if (request.userData.label === "XML") {
             const categoryUrls = body.match(domain.regex);
-            if (categoryUrls !== null) {
-              log.info(`Adding to the queue ${categoryUrls.length} from XML`);
-              stats.categories += categoryUrls.length;
-              for (const url of categoryUrls) {
-                await requestQueue.addRequest({
-                  url,
-                  userData: {
-                    label: "PAGE",
-                    baseUrl: url
-                  }
-                });
-              }
+            if (!categoryUrls) return;
+
+            log.info(`Adding to the queue ${categoryUrls.length} from XML`);
+            stats.add("categories", categoryUrls.length);
+            for (const url of categoryUrls) {
+              await requestQueue.addRequest({
+                url,
+                userData: {
+                  label: "PAGE",
+                  baseUrl: url
+                }
+              });
             }
-            return;
-          }
-          const $ = cheerio.load(body);
-          context.$ = $;
-          if ($(".captcha-mid").length !== 0) {
-            stats.captchas++;
-            request.retryCount--;
-            session.retire();
-            throw new Error("Captcha Encountered");
-          }
+          } else {
+            const $ = cheerio.load(body);
+            context.$ = $;
+            if ($(".captcha-mid").length !== 0) {
+              stats.inc("captchas");
+              request.retryCount--;
+              session.retire();
+              throw new Error("Captcha Encountered");
+            }
 
-          if ($("h1").eq(0).text() === "403 Forbidden") {
-            await Apify.utils.sleep(5000);
-            stats.denied++;
-            request.retryCount--;
-            session.retire();
-            throw new Error("Access Denied");
-          }
+            if ($("h1").eq(0).text() === "403 Forbidden") {
+              await Apify.utils.sleep(5000);
+              stats.inc("denied");
+              request.retryCount--;
+              session.retire();
+              throw new Error("Access Denied");
+            }
 
-          stats.ok++;
-          session.setCookiesFromResponse(response);
+            stats.inc("ok");
+            session.setCookiesFromResponse(response);
+          }
         }
       }
 
@@ -747,7 +747,7 @@ Apify.main(async () => {
           );
         case "FEED":
           log.info(`Items count: ${response.body.items[0].length}`);
-          stats.pages++;
+          stats.inc("pages");
           return handleFeed(response.body.items[0], "", stats, {
             uploadBatchSize,
             uploadSleepMs,
