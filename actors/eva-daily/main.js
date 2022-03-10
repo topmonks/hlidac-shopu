@@ -8,10 +8,8 @@ import {
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
-let stats = {};
-const processedIds = new Set();
+
 const HOST = "https://www.eva.cz";
 
 const completeUrl = x => `${HOST}${x}`;
@@ -81,7 +79,7 @@ function parseItem($, category) {
   };
 }
 
-async function handleItems($, request) {
+async function handleItems($, request, processedIds, stats, s3) {
   const category = $("div#regularcontent h1").text();
   const products = $("#content_list div.zitembox")
     .get()
@@ -109,6 +107,9 @@ async function handleItems($, request) {
 
 Apify.main(async () => {
   rollbar.init();
+  let stats = {};
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const input = await Apify.getInput();
   const {
@@ -166,7 +167,7 @@ Apify.main(async () => {
         //Check if there is next pagination
         await handlePagination($, request, requestQueue);
         //Scrap products from page
-        await handleItems($, request);
+        await handleItems($, request, processedIds, stats, s3);
         stats.pages++;
       } else if (request.userData.label === "CATEGORY") {
         try {
@@ -192,7 +193,7 @@ Apify.main(async () => {
           //Check if there is next pagination
           await handlePagination($, request, requestQueue);
           //Scrap products from page
-          await handleItems($, request);
+          await handleItems($, request, processedIds, stats, s3);
         } catch (e) {
           console.log(`Error processing url ${request.url}`);
           console.error(e);
