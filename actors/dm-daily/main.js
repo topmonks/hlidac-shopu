@@ -22,10 +22,7 @@ const COUNTRY = {
   AT: "AT"
 };
 
-let stats = {};
-const processedIds = new Set();
-
-const getCountrySlug = country => {
+function getCountrySlug(country) {
   switch (country.toUpperCase()) {
     case COUNTRY.CZ:
       return "cs-cz";
@@ -38,27 +35,15 @@ const getCountrySlug = country => {
     case COUNTRY.AT:
       return "de-at";
   }
-};
+}
 
-const getCategoryUrlSlug = country => {
-  return `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-    country
-  )}/?view=navigation&json`;
-};
-
-const getCategoryId = (country, categorySlug) => {
-  return `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-    country
-  )}${categorySlug}/?json`;
-};
-
-const makeListingUrl = (
+function makeListingUrl(
   countryCode,
   productQuery,
   currentPage,
   pageSize = 100
-) =>
-  `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams(
+) {
+  return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams(
     {
       ...productQuery,
       pageSize,
@@ -67,15 +52,16 @@ const makeListingUrl = (
       type: "search-static"
     }
   )}`;
+}
 
-const createProductUrl = (country, url) => {
+function createProductUrl(country, url) {
   switch (country.toUpperCase()) {
     case COUNTRY.SK:
       return new URL(url, "https://mojadm.sk").href;
     default:
       return new URL(url, `https://dm.${country.toLowerCase()}`).href;
   }
-};
+}
 
 function* traverseCategories(categories, names = []) {
   for (const category of categories) {
@@ -89,16 +75,14 @@ function* traverseCategories(categories, names = []) {
   }
 }
 
-function getTableName(country) {
-  return `dm_${country.toLowerCase()}`;
-}
-
 Apify.main(async () => {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
+  let stats = {};
+  const processedIds = new Set();
   const input = await Apify.getInput();
   const {
     development = false,
@@ -123,7 +107,9 @@ Apify.main(async () => {
 
   if (type === "FULL") {
     await requestQueue.addRequest({
-      url: getCategoryUrlSlug(country),
+      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+        country
+      )}/?view=navigation&json`,
       userData: {
         country,
         productQuery: "",
@@ -175,7 +161,9 @@ Apify.main(async () => {
           // we need to await here to prevent higher categories
           // to be enqueued sooner than sub-categories
           await requestQueue.addRequest({
-            url: getCategoryId(country, category.link),
+            url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+              country
+            )}${category.link}/?json`,
             userData: {
               country,
               category: category.breadcrumbs.toString(),
@@ -303,7 +291,7 @@ Apify.main(async () => {
     );
     log.info("invalidated Data CDN");
 
-    await uploadToKeboola(getTableName(country));
+    await uploadToKeboola(`dm_${country.toLowerCase()}`);
   }
 
   log.info("Finished.");
