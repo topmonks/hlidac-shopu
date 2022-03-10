@@ -23,7 +23,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   await requestQueue.addRequest(source);
 
-  global.s3 = new S3Client({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   let count = 0;
   const ALREADY_SCRAPED = (await Apify.getValue("ALREADY-SCRAPED")) || [];
@@ -96,7 +96,8 @@ Apify.main(async () => {
             categories,
             requestQueue,
             context.page,
-            alreadyScrapedProducts
+            alreadyScrapedProducts,
+            s3
           );
         default:
           throw new Error(`No route for label: ${label}`);

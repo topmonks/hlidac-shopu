@@ -40,9 +40,9 @@ export async function handlePage(
   categories,
   requestQueue,
   page,
-  alreadyScrapedProducts
+  alreadyScrapedProducts,
+  s3
 ) {
-  const { s3 } = global;
   // The subcategories on the page does not contain all the products, that the list does
   // They are more of a specific selection
   // Because I am not going into details, just listings, there would be a lot
