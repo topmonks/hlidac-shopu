@@ -8,19 +8,12 @@ import {
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
 
-const processedIds = new Set();
-const variantIds = new Set();
-let stats = {};
-let pushList = [];
-
-function getHomePageUrl() {
-  return global.homePageUrl;
-}
-
-const handleStart = async ({ $, requestQueue, request }) => {
+async function handleStart(
+  { $, requestQueue, request },
+  { homePageUrl, inputData }
+) {
   let categoryLinkList = $(
     "div.headr__nav-cat-col-inner > div.headr__nav-cat-row > a.headr__nav-cat-link"
   )
@@ -45,14 +38,13 @@ const handleStart = async ({ $, requestQueue, request }) => {
       request.url
     }, subcategories: ${JSON.stringify(categoryLinkList)}`
   );
-  if (global.inputData.development) {
+  if (inputData.development) {
     categoryLinkList = categoryLinkList.slice(0, 1);
     log.debug(
       `development mode, subcategory is ${JSON.stringify(categoryLinkList)}`
     );
   }
 
-  const homePageUrl = getHomePageUrl();
   for (const categoryObject of categoryLinkList) {
     if (!categoryObject.dataWebtrekk) {
       const categoryUrl = new URL(categoryObject.href, homePageUrl).href;
@@ -63,9 +55,9 @@ const handleStart = async ({ $, requestQueue, request }) => {
       stats.urls += 1;
     }
   }
-};
+}
 
-async function handleSubCategory(context) {
+async function handleSubCategory(context, { homePageUrl, inputData }) {
   const { $, requestQueue, request } = context;
   const productCount = $($("div.variants")).attr("data-productcount");
   const label = request.userData.label;
@@ -74,7 +66,7 @@ async function handleSubCategory(context) {
   );
 
   if (productCount) {
-    await handleLastSubCategory(context);
+    await handleLastSubCategory(context, { inputData });
   } else {
     let subCategoryList = $('a[wt_name="assortment_menu.level2"]')
       .map(function () {
@@ -82,13 +74,12 @@ async function handleSubCategory(context) {
       })
       .get();
     log.debug(`${label}I ${JSON.stringify(subCategoryList)}`);
-    if (global.inputData.development) {
+    if (inputData.development) {
       subCategoryList = subCategoryList.slice(0, 1);
       log.debug(
         `development mode, ${label}I is ${JSON.stringify(subCategoryList)}`
       );
     }
-    const homePageUrl = getHomePageUrl();
     for (const subcategoryLink of subCategoryList) {
       const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
       await requestQueue.addRequest({
@@ -100,7 +91,7 @@ async function handleSubCategory(context) {
   }
 }
 
-async function handleLastSubCategory(context) {
+async function handleLastSubCategory(context, { inputData }) {
   const { $, requestQueue, request } = context;
   const productCount = parseInt($($("div.variants")).attr("data-productcount"));
   log.debug(
@@ -114,7 +105,7 @@ async function handleLastSubCategory(context) {
     })
     .get().length;
   let pageCount = Math.ceil(productCount / productPerPageCount);
-  if (global.inputData.development) {
+  if (inputData.development) {
     pageCount = 1;
   }
   if (pageCount > 1) {
@@ -131,10 +122,10 @@ async function handleLastSubCategory(context) {
     await Promise.all(requestList);
     stats.urls += requestList.length;
   }
-  await handleList(context);
+  await handleList(context, { inputData });
 }
 
-async function handleList({ $, requestQueue, request }) {
+async function handleList({ $, requestQueue, request }, { homePageUrl }) {
   let productLinkList = $("li.product > a")
     .map(function () {
       if ($(this).attr("data-ui-name")) {
@@ -147,7 +138,6 @@ async function handleList({ $, requestQueue, request }) {
       request.url
     }, productLinkList: ${JSON.stringify(productLinkList)}`
   );
-  const homePageUrl = getHomePageUrl();
   const requestList = productLinkList.map(url => {
     const productDetailUrl = new URL(url, homePageUrl).href;
     return requestQueue.addRequest({
@@ -159,7 +149,10 @@ async function handleList({ $, requestQueue, request }) {
   stats.urls += requestList.length;
 }
 
-async function handleDetail(context, country, dataset) {
+async function handleDetail(
+  context,
+  { dataset, s3, processedIds, pushList, variantIds }
+) {
   // log.debug(
   //   `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
   // );
@@ -244,14 +237,17 @@ async function handleDetail(context, country, dataset) {
     pushList = [];
   }
 
-  await handleVariant(context);
+  await handleVariant(context, { variantIds, processedIds });
 }
 
 function getItemIdFromUrl(url) {
   return url.match(/p\/(\d+)(#\/)?$/)?.[1];
 }
 
-async function handleVariant({ $, requestQueue, request }) {
+async function handleVariant(
+  { $, requestQueue, request },
+  { variantIds, processedIds }
+) {
   let crawledItemId = getItemIdFromUrl(request.url);
   let productLinkList = $(
     '.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"], ' +
@@ -305,16 +301,16 @@ function parsePrice(text) {
   return price;
 }
 
-function s3FileNameSync(detail) {
-  const url = new URL(detail.itemUrl);
-  return url.pathname.match(/p\/(\d+)(#\/)?$/)?.[1];
-}
-
 Apify.main(async () => {
   log.info("Actor starts.");
 
   rollbar.init();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const processedIds = new Set();
+  const variantIds = new Set();
+  let stats = {};
+  let pushList = [];
 
   const input = await Apify.getInput();
 
@@ -327,7 +323,7 @@ Apify.main(async () => {
   } = input ?? {};
   const country =
     (input && input.country && input.country.toLowerCase()) || "cz";
-  global.inputData = { country, development, debug };
+  const inputData = { country, development, debug };
 
   if (development || debug) {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
@@ -345,7 +341,6 @@ Apify.main(async () => {
   let homePageUrl = `https://www.obi${
     country === "it" ? "-italia" : ""
   }.${country}`;
-  global.homePageUrl = homePageUrl;
   await requestQueue.addRequest({
     url: homePageUrl,
     userData: {
@@ -374,13 +369,19 @@ Apify.main(async () => {
       const { label } = context.request.userData;
       context.requestQueue = requestQueue;
       if (label === "START") {
-        await handleStart(context);
+        await handleStart(context, { homePageUrl, inputData });
       } else if (label.includes("SUBCAT")) {
-        await handleSubCategory(context);
+        await handleSubCategory(context, { homePageUrl, inputData });
       } else if (label === "LIST") {
-        await handleList(context);
+        await handleList(context, { homePageUrl });
       } else if (label === "DETAIL") {
-        await handleDetail(context, country, dataset);
+        await handleDetail(context, {
+          dataset,
+          s3,
+          processedIds,
+          pushList,
+          variantIds
+        });
       }
     },
     handleFailedRequestFunction: async ({ request }) => {
