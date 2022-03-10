@@ -18,27 +18,18 @@ import {
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
 const { log } = Apify.utils;
 
-const stats = async () => {
+async function stats() {
   return (
     (await Apify.getValue("STATS")) || {
       markets: 0,
       items: 0
     }
   );
-};
-const uniqueItemId = new Set();
-const processedIds = new Set();
-/**
- * Creates Page Function for scraping
- * @param {RequestQueue} requestQueue
- * @param {S3Client} s3
- * @returns {CheerioHandlePage}
- */
-function pageFunction(requestQueue) {
+}
+
+function pageFunction({ requestQueue, uniqueItemId, processedIds, s3 }) {
   /**
    *  @param {CheerioHandlePageInputs} context
    *  @returns {Promise<void>}
@@ -67,7 +58,6 @@ function pageFunction(requestQueue) {
                 marketId: market.id
               }
             });
-            //break;
           }
         }
         break;
@@ -127,7 +117,7 @@ function pageFunction(requestQueue) {
       case LABELS.DETAIL:
         item = extractItem($, request);
         stats.items++;
-        await processItem(item);
+        await processItem({ item, processedIds, s3 });
         await Apify.utils.sleep(1000);
         break;
     }
@@ -144,7 +134,7 @@ function pageFunction(requestQueue) {
   return handler;
 }
 
-async function processItem(item) {
+async function processItem({ item, processedIds, s3 }) {
   // we don't need to block pushes, we will await them all at the end
   if (!processedIds.has(item.itemId)) {
     processedIds.add(item.itemId);
@@ -152,9 +142,7 @@ async function processItem(item) {
       ...item,
       category: ""
     };
-    // push data to dataset to be ready for upload to Keboola
     await Apify.pushData(item);
-    // upload JSON+LD data to CDN
     await uploadToS3v2(s3, product, { priceCurrency: "CZK" });
   }
 }
@@ -162,6 +150,9 @@ async function processItem(item) {
 Apify.main(async () => {
   rollbar.init();
 
+  const uniqueItemId = new Set();
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   log.info("ACTOR - start");
@@ -179,7 +170,6 @@ Apify.main(async () => {
   }
 
   const requestQueue = await Apify.openRequestQueue();
-  /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
@@ -192,14 +182,6 @@ Apify.main(async () => {
     }
   });
 
-  /*
-  await requestQueue.addRequest({
-    url: "https://coophb.e-coop.cz/babice/030790.html",
-    userData: {
-      label: "DETAIL"
-    }
-  });
- */
   log.info("ACTOR - setUp crawler");
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
@@ -213,7 +195,12 @@ Apify.main(async () => {
     maxRequestRetries,
     maxConcurrency,
     requestTimeoutSecs: 60,
-    handlePageFunction: pageFunction(requestQueue),
+    handlePageFunction: pageFunction({
+      requestQueue,
+      uniqueItemId,
+      processedIds,
+      s3
+    }),
     handleFailedRequestFunction: async ({ request }) => {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
