@@ -9,16 +9,14 @@ import { extractItems } from "./src/itemParser.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
-const web = "https://www.czc.cz";
 const { log } = Apify.utils;
-
-let stats = {};
-const processedIds = new Set();
 
 Apify.main(async () => {
   rollbar.init();
+  const web = "https://www.czc.cz";
+  let stats = {};
+  const processedIds = new Set();
+  const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   // Get queue and enqueue first url.
   const input = await Apify.getInput();
