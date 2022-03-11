@@ -12,24 +12,28 @@ The main scrapper is API type.
 Sitemap is working like a product counter.
 Frontend is unfinished base of scrapping via html code.
 
-Scraper type can be selected by changing label property in main.js.
+Scraper type can be selected by changing label property in INPUT.json (use raw text).
+If not INPUT.json used, change this value in main.js (use labels).
 
 ```
-"label": API_START | FRONT_START | SITEMAP_START
-```
+// const.js
+// API-START | FRONT-START | SITEMAP-START
+{
+  "type": "SITEMAP-START"
+}
 
 ```
-  const req = {
-    url: url,
-    userData: {
-      label: LABELS.API_LIST,
-      page: pageNext,
-      pageCount,
-      slug: request.userData.slug,
-      pageUrl,
-      note: "NextPage"
-    }
-  };
+
+
+```
+// main.js
+const {
+  development = true,
+  type = LABELS.API_START, // LABELS.API_START | LABELS.FRONT_START | LABELS.SITEMAP_START
+  maxConcurrency = 100,
+  maxRequestRetries = 4,
+  proxyGroups = ["CZECH_LUMINATI"]
+} = input ?? {};
 ```
 
 ## eShop API
