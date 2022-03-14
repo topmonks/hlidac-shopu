@@ -1,11 +1,11 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { S3Client } from "@aws-sdk/client-s3";
 import {
   invalidateCDN,
   uploadToS3v2
-} from "@hlidac-shopu/actors-common/product";
-import rollbar from "@hlidac-shopu/actors-common/rollbar";
+} from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import { gotScraping } from "got-scraping";
 import httpRequest from "@apify/http-request";
@@ -14,7 +14,7 @@ import UserAgent from "user-agents";
 import { extractItems, parseDetail } from "./src/detailParser.js";
 import getCountry from "./src/countryProvider.js";
 import { parseTrhakDetail } from "./src/trhakDetailParser.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const {
   utils: { log }
@@ -560,6 +560,7 @@ Apify.main(async () => {
       log.info(`Visiting: ${request.url}, ${label}`);
       if (
         (label !== "START" || label !== "BF") &&
+        type !== "FEED" &&
         isMalformedUrl(request.url, country.toLowerCase())
       ) {
         log.info(`Malformed url ignored: ${request.url}`);

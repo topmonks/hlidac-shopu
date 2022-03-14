@@ -4,6 +4,7 @@
   "description": "This is the alza actor.",
   "author": "TopMonks s.r.o. & contributors",
   "license": "EPL-2.0",
+  "type": "module",
   "dependencies": {
     "@apify/http-request": "^2.1.2",
     "@aws-sdk/client-cloudfront": "^3.53.0",
