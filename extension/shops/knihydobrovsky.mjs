@@ -8,7 +8,7 @@ import { Shop } from "./shop.mjs";
 
 export class Knihydobrovsky extends Shop {
   get injectionPoint() {
-    return ["afterend", "#snippet--availabilityInfo"];
+    return ["afterend", "#snippet--deliveryInfo .variants"];
   }
 
   async scrape() {
