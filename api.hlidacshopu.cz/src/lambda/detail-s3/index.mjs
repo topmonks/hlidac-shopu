@@ -68,11 +68,20 @@ export async function handler(event) {
   }
   const extraData = getParsedData(db, shop);
   const meta = await getMetadataFromS3(s3, shop.origin, shop.itemUrl);
+  if (!meta) {
+    return withCORS(["GET", "OPTIONS"])(
+      notFound({
+        error: "Missing metadata",
+        shop: shop.origin,
+        itemUrl: shop.itemUrl
+      })
+    );
+  }
   const item = await getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl);
   if (!item) {
     return withCORS(["GET", "OPTIONS"])(
       notFound({
-        error: "Missing data",
+        error: "Missing price history",
         shop: shop.origin,
         itemUrl: shop.itemUrl
       })
