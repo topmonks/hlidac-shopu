@@ -353,7 +353,13 @@ async function handleTrhakDetail(
   await Apify.pushData(detailItem);
 }
 
-async function handleFeed(items, outputDatasetIdOrName, stats, options = {}) {
+async function handleFeed(
+  items,
+  outputDatasetIdOrName,
+  stats,
+  s3,
+  options = {}
+) {
   const {
     uploadBatchSize = 5000,
     uploadSleepMs = 1000,
@@ -749,7 +755,7 @@ Apify.main(async () => {
         case "FEED":
           log.info(`Items count: ${response.body.items[0].length}`);
           stats.inc("pages");
-          return handleFeed(response.body.items[0], "", stats, {
+          return handleFeed(response.body.items[0], "", stats, s3, {
             uploadBatchSize,
             uploadSleepMs,
             country,
