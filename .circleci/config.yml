@@ -86,6 +86,9 @@ jobs:
       - run:
           name: Lint actors
           command: yarn lint:actors
+      - run:
+          name: Actors unit tests
+          command: yarn test:actors
       - slack/notify:
           event: fail
           template: basic_fail_1
