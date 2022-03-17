@@ -111,6 +111,13 @@ For visual testing at scale, there is `./scripts/screenshotter.mjs`. This will r
 and take a screenshot of embedded widget on every supported e-shop. You can find resulting pictures in `./screenshots`
 folder.
 
+## Extension release
+
+Release process of extension is fully automated. To start the release process, you have to:
+1. [Update extension version](#updating-extension-version)
+2. Commit & create tag in github repository in following format: `extension-x.y.z`, 
+   where `x.y.z` is the version you set in previous step. This 
+
 
 ## Web www.hlidacshopu.cz development
 
