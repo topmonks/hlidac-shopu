@@ -353,17 +353,12 @@ async function handleTrhakDetail(
   await Apify.pushData(detailItem);
 }
 
-async function handleFeed(
-  items,
-  outputDatasetIdOrName,
-  stats,
-  s3,
-  options = {}
-) {
+async function handleFeed(items, stats, s3, options = {}) {
   const {
     uploadBatchSize = 5000,
-    uploadSleepMs = 1000,
-    country = "CZ",
+    uploadSleepMs = 500,
+    outputDatasetIdOrName = "",
+    parallelPushes = 1,
     development = false
   } = options;
   let isMigrating = false;
@@ -371,7 +366,9 @@ async function handleFeed(
     isMigrating = true;
   });
 
-  let pushedItemsCount = 0;
+  const kvRecordName = `STATE-PUSHED-COUNT-${outputDatasetIdOrName}`;
+  let pushedItemsCount = (await Apify.getValue(kvRecordName)) || 0;
+  const dataset = await Apify.openDataset(outputDatasetIdOrName);
 
   for (let i = pushedItemsCount; i < items.length; i += uploadBatchSize) {
     if (isMigrating) {
@@ -379,14 +376,13 @@ async function handleFeed(
       // Do nothing
       await new Promise(() => {});
     }
-    const start = i;
-    const end = i + uploadBatchSize;
-    const itemsToPush = items.slice(start, end);
+    const itemsToPush = items.slice(i, i + uploadBatchSize);
+    log.info(
+      `Pushing ${itemsToPush.length} from index ${i} to ${i + uploadBatchSize}`
+    );
 
-    log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
-
-    let formattedItems = [];
-    let s3Requests = [];
+    const formattedItems = [];
+    const s3Requests = [];
     for (const item of itemsToPush) {
       const detailItem = {
         itemId: item.itemId,
@@ -408,8 +404,21 @@ async function handleFeed(
       }
     }
 
-    // await all requests, so we don't end before they end
-    await Apify.pushData(formattedItems);
+    const pushPromises = [];
+    const parallelizedBatchSize = Math.ceil(
+      formattedItems.length / parallelPushes
+    );
+    for (let j = 0; j < parallelPushes; j++) {
+      const start = j * parallelizedBatchSize;
+      const end = (j + 1) * parallelizedBatchSize;
+      const parallelPushChunk = formattedItems.slice(start, end);
+      pushPromises.push(dataset.pushData(parallelPushChunk));
+    }
+    // We must update it before awaiting the promises because the push can take time
+    // and migration can cut us off but the items will already be on the way to dataset
+    pushedItemsCount += formattedItems.length;
+    await Apify.setValue(kvRecordName, pushedItemsCount);
+    await Promise.all(pushPromises);
     await Promise.allSettled(s3Requests);
     stats.add("items", formattedItems.length);
     await Apify.utils.sleep(uploadSleepMs);
@@ -450,6 +459,7 @@ Apify.main(async () => {
     handleRequestTimeoutSecs = 60,
     uploadBatchSize = 5000,
     uploadSleepMs = development ? 100 : 1500,
+    parallelPushes = 20,
     feedUrls = []
   } = input ?? {};
 
@@ -755,10 +765,10 @@ Apify.main(async () => {
         case "FEED":
           log.info(`Items count: ${response.body.items[0].length}`);
           stats.inc("pages");
-          return handleFeed(response.body.items[0], "", stats, s3, {
+          return handleFeed(response.body.items[0], stats, s3, {
             uploadBatchSize,
             uploadSleepMs,
-            country,
+            parallelPushes,
             development
           });
       }
