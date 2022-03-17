@@ -15,7 +15,7 @@ import { extractItems, parseDetail } from "./src/detailParser.js";
 import getCountry from "./src/countryProvider.js";
 import { parseTrhakDetail } from "./src/trhakDetailParser.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { createHash } from "crypto";
+import { URL } from "url";
 
 const {
   utils: { log }
@@ -770,9 +770,9 @@ Apify.main(async () => {
             uploadBatchSize,
             uploadSleepMs,
             parallelPushes,
-            outputDatasetIdOrName: createHash("md5")
-              .update(Math.random().toString())
-              .digest("hex"),
+            outputDatasetIdOrName: new URL(request.url).pathname
+              .match(/([^\/]+)\.json$/)?.[1]
+              .replaceAll("_", ""),
             development
           });
       }
