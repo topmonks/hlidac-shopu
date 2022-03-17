@@ -48,7 +48,7 @@ On macOS run `bash ./scripts/install-macos-tools.sh` - this will use homebrew to
 
 Install Docker for your OS (all OSes are supported) and then execute the following command from the root of the project:
 
-```
+```bash
 ./scripts/build-firefox-extension-dockerized.sh
 ```
 
@@ -89,13 +89,13 @@ from TopMonks 1Password.
 
 To check current version in `package.json`, `manifest.json` and `about.html` run
 
-```
+```bash
 ./version.sh
 ```
 
 Update to new version run
 
-```
+```bash
 ./version.sh x.y.z
 ```
 
@@ -117,7 +117,7 @@ folder.
 Website has it's own [Blendid](https://github.com/topmonks/blendid) configuration.
 Start `www.hlidacshopu.cz` development with following command:
 
-```
+```bash
 yarn start:www.hlidacshopu.cz
 ```
 
@@ -129,7 +129,7 @@ Go to [Cloudinary console](https://cloudinary.com/console) (credentials are in T
 and copy the `Environment variable` with credentials. Insert copied credentials into `.env` file in root directory.
 Or use this command (copy it to console before you copy Cloudinary credentials, or simply write it):
 
-```
+```bash
 # on macOS in ./hlidac-shopu
 pbpaste > .env
 ```
@@ -152,21 +152,7 @@ that should work in conjunction with generated `images.json`. Usage should be as
 <img src="{{ images["picture.png"]["public_id"] | cloudinaryUrl(width=300, height=240) }}" alt="">
 ```
 
-You can use following transformations (listed with default values and SDK names in comment):
-
-```js
-width = "auto",
-height,
-format = "auto", // fetch_format
-quality = "auto",
-dpr = 1,
-crop,
-gravity,
-flags = "progressive",
-ar // aspect_ratio
-```
-
-For more details see [Cloudinary JS SDK](https://cloudinary.com/documentation/image_transformations).
+You can use all supported transformations in JS SDK, for more details see [Cloudinary JS SDK](https://cloudinary.com/documentation/image_transformations).
 
 ## Other sources
 
@@ -178,15 +164,15 @@ For more details see [Cloudinary JS SDK](https://cloudinary.com/documentation/im
 
 ## Update @hlidac-shopu/lib version for actors
 1. Update version @hlidac-shopu/lib in ./lib/package.json
-1. Publish package to npm. Ask @JanFiedler about login  
-```   
+2. Publish package to npm. Login credential are in TopMonks 1password. 
+    ```bash
     cd lib
     npm login
     npm publish --access public --tag latest
-```
-1. Update version @hlidac-shopu/lib across the project
-```   
-yarn up @hlidac-shopu/lib -i
-```
+    ```
+3. Update version @hlidac-shopu/lib across the project
+    ```bash
+    yarn up @hlidac-shopu/lib -i
+    ```
 
-© 2018-2021 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
+© 2018-2022 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
