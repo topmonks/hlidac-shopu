@@ -49,13 +49,16 @@ const config = {
     collections: ["media", "images", "assets", "build"],
     nunjucksRender: {
       filters: {
-        longDate: str =>
-          new Intl.DateTimeFormat("cs", {
+        longDate(str) {
+          return new Intl.DateTimeFormat("cs", {
             year: "numeric",
             month: "long",
             day: "numeric"
-          }).format(new Date(str)),
-        year: () => new Date().getFullYear()
+          }).format(new Date(str));
+        },
+        year() {
+          return new Date().getFullYear();
+        }
       }
     },
     htmlmin: {
