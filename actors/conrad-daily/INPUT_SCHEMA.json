@@ -5,32 +5,36 @@
   "schemaVersion": 1,
   "properties": {
     "type": {
-        "title": "type",
-        "type": "string",
-        "description": "Specify the type of the actor — daily or count",
-        "editor": "select",
-        "default": "DAILY",
-        "enum": ["DAILY", "COUNT"],
-        "enumTitles": ["DAILY", "COUNT"]
+      "title": "type",
+      "type": "string",
+      "description": "Specify the type of the actor — daily or count",
+      "editor": "select",
+      "default": "API-START",
+      "enum": [
+        "API-START",
+        "SITEMAP-START"
+      ],
+      "enumTitles": [
+        "DAILY",
+        "COUNT"
+      ]
     },
     "development": {
-        "title": "development",
-        "type": "boolean",
-        "description": "Is in development mode",
-        "editor": "number"
+      "title": "development",
+      "type": "boolean",
+      "description": "If checked then actors runs at development mode",
+      "default": false
     },
     "maxConcurrency": {
-        "title": "maxConcurrency",
-        "type": "integer",
-        "description": "Max concurrency",
-        "editor": "number"
-    },
-    "proxyCountryCode": {
-        "title": "proxyCountryCode",
-        "type": "string",
-        "description": "Country code for proxies",
-        "editor": "textfield"
+      "title": "maxConcurrency",
+      "type": "integer",
+      "description": "Select maxConcurrency",
+      "default": 50,
+      "maximum": 100,
+      "unit": "x"
     }
   },
-  "required": ["type"]
+  "required": [
+    "type"
+  ]
 }
