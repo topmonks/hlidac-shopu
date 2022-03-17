@@ -368,7 +368,7 @@ async function handleFeed(items, stats, s3, options = {}) {
   });
 
   const kvRecordName = `STATE-PUSHED-COUNT-${outputDatasetIdOrName}`;
-  let pushedItemsCount = (await Apify.getValue(kvRecordName)) || 0;
+  let pushedItemsCount = 0;
   const dataset = await Apify.openDataset(outputDatasetIdOrName);
 
   for (let i = pushedItemsCount; i < items.length; i += uploadBatchSize) {
@@ -770,9 +770,6 @@ Apify.main(async () => {
             uploadBatchSize,
             uploadSleepMs,
             parallelPushes,
-            outputDatasetIdOrName: new URL(request.url).pathname
-              .match(/([^\/]+)\.json$/)?.[1]
-              .replaceAll("_", ""),
             development
           });
       }
