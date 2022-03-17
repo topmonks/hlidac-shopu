@@ -19,18 +19,39 @@ class Stats {
   constructor(init) {
     this.stats = defAtom(init);
   }
+
   inc(key) {
     this.stats.swapIn(key, inc);
   }
+
   dec(key) {
     this.stats.swapIn(key, dec);
   }
+
   add(key, value) {
     this.stats.swapIn(key, x => x + value);
   }
+
+  get() {
+    return this.stats.deref();
+  }
+
+  log() {
+    const stats = this.stats.deref();
+    Apify.utils.log.info(`stats: ${JSON.stringify(stats)}`);
+  }
+
   async save() {
     const stats = this.stats.deref();
-    return stats?.save();
+    await Apify.setValue("STATS", this.get()).then(() =>
+      Apify.utils.log.debug("STATS saved!")
+    );
+    if (stats.ok !== 0) {
+      Apify.utils.log.info(
+        `Denied ratio: ${(stats.denied / stats.ok) * 100} %`
+      );
+    }
+    this.log();
   }
 }
 
@@ -42,27 +63,13 @@ class Stats {
  */
 export async function withPersistedStats(fn, init) {
   const stats = (await Apify.getValue("STATS")) ?? init ?? defaultStats;
-
-  async function persistState() {
-    await Apify.setValue("STATS", stats);
-    if (stats.ok !== 0) {
-      Apify.utils.log.info(
-        `Denied ratio: ${(stats.denied / stats.ok) * 100} %`
-      );
-    }
-    Apify.utils.log.info(JSON.stringify(stats));
-  }
+  const state = new Stats(fn(stats));
+  const persistState = () => state.save();
 
   Apify.events.on("persistState", persistState);
   Apify.events.on("migrating", persistState);
 
-  Object.defineProperty(stats, "save", {
-    value: persistState
-  });
+  setInterval(() => state.log(), 20 * 1000);
 
-  setInterval(() => {
-    Apify.utils.log.info(`stats: ${JSON.stringify(stats)}`);
-  }, 20 * 1000);
-
-  return new Stats(fn(stats));
+  return state;
 }
