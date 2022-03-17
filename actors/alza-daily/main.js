@@ -769,6 +769,7 @@ Apify.main(async () => {
             uploadBatchSize,
             uploadSleepMs,
             parallelPushes,
+            outputDatasetIdOrName: Math.random().toString(),
             development
           });
       }
