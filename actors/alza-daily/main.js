@@ -772,15 +772,19 @@ Apify.main(async () => {
   // Run crawler.
   await crawler.run();
 
-  log.info("Crawler finished, calling upload.");
-
   await stats.save();
-
-  await Promise.allSettled([
-    invalidateCDN(cloudfront, "EQYSHWUECAQC9", `alza.${country.toLowerCase()}`),
-    callKeboolaUpload(country, type)
-  ]);
-  log.info("invalidated Data CDN");
+  if (!development) {
+    log.info("Crawler finished, calling upload.");
+    await Promise.allSettled([
+      invalidateCDN(
+        cloudfront,
+        "EQYSHWUECAQC9",
+        `alza.${country.toLowerCase()}`
+      ),
+      callKeboolaUpload(country, type)
+    ]);
+    log.info("invalidated Data CDN");
+  }
 
   log.info("Finished.");
 });
