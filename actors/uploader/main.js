@@ -19,6 +19,7 @@ import { itescoDetailValidator } from "./src/validators/itescoDetailValidator.js
 import { kosikValidator } from "./src/validators/kosikValidator.js";
 import { kosikDetailValidator } from "./src/validators/kosikDetailValidator.js";
 import { alzaValidator } from "./src/validators/alzaValidator.js";
+import { alzaFeedValidator } from "./src/validators/alzaFeedValidator.js";
 import { czcValidator } from "./src/validators/czcValidator.js";
 import { mallValidator } from "./src/validators/mallValidator.js";
 import { mountfieldValidator } from "./src/validators/mountfieldValidator.js";
@@ -135,6 +136,14 @@ async function processItems(
       case "alza_cz_bf":
       case "alza_sk_bf":
         item = alzaValidator(item);
+        break;
+      case "alza_cz_feed":
+      case "alza_sk_feed":
+      case "alza_de_feed":
+      case "alza_hu_feed":
+      case "alza_uk_feed":
+      case "alza_at_feed":
+        item = alzaFeedValidator(item);
         break;
       case "czc":
         item = czcValidator(item);
