@@ -16,8 +16,7 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 export const URL_MAIN = "https://www.conrad.cz";
 
-export const URL_CATEGORY =
-  "https://www.conrad.cz/restservices/CZ/megamenu";
+export const URL_CATEGORY = "https://www.conrad.cz/restservices/CZ/megamenu";
 
 export const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
 
