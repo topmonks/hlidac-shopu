@@ -7,11 +7,16 @@ import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import cheerio from "cheerio";
-import { withPersistedStats } from "../common/stats.js";
+
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+
+// There is problem with stat dependency on command line
+// Not possible to update library with stats for unknown reason
+// import { withPersistedStats } from "../common/stats.js";
 
 export const URL_MAIN = "https://www.conrad.cz";
 
-export const URL_TEMPLATE_CATEGORY =
+export const URL_CATEGORY =
   "https://www.conrad.cz/restservices/CZ/megamenu";
 
 export const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
@@ -30,10 +35,12 @@ export const LABELS = {
 const processedIds = new Set();
 const { log } = Apify.utils;
 
-async function getApiKey() {
+async function getApiKey(stats) {
   const requestOptions = {
     url: URL_MAIN
   };
+
+  stats.inc("requests");
 
   const { body } = await gotScraping(requestOptions);
 
@@ -59,13 +66,9 @@ async function traverseCategory(crawlContext, category, stats) {
       categoryId,
       apiKey: crawlContext.apiKey,
       label: LABELS.API_LIST,
-      //slug: slug,
       page: 1
     }
   };
-
-  // for debug only
-  // console.log("addRequest LIST / first page", req);
 
   await crawlContext.requestQueue.addRequest(req);
 
@@ -73,7 +76,6 @@ async function traverseCategory(crawlContext, category, stats) {
 
   if (category.hasOwnProperty("children") && category.children.length) {
     for (let childIx in category.children) {
-      //console.log("Child", category.children[childIx]);
       await traverseCategory(crawlContext, category.children[childIx], stats);
     }
   }
@@ -81,7 +83,7 @@ async function traverseCategory(crawlContext, category, stats) {
 
 async function traverseCategoryStart(crawlContext, stats) {
   const requestOptions = {
-    url: URL_TEMPLATE_CATEGORY,
+    url: URL_CATEGORY,
     responseType: "json"
   };
 
@@ -89,12 +91,10 @@ async function traverseCategoryStart(crawlContext, stats) {
     requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
   }
 
-  //stats.inc("requests");
+  stats.inc("requests");
 
   const { body } = await gotScraping(requestOptions);
   const categories = body.body;
-
-  //console.log("BODY", categories);
 
   for (let categoryIx in categories) {
     await traverseCategory(crawlContext, categories[categoryIx], stats);
@@ -109,7 +109,7 @@ async function traverseCategoryStart(crawlContext, stats) {
  * @returns {Promise<void>}
  */
 async function handleAPIStart(context, stats, crawlContext) {
-  const apiKey = await getApiKey();
+  const apiKey = await getApiKey(stats);
   if (!apiKey) {
     log.error("Cannot found apiKey");
     return;
@@ -130,7 +130,6 @@ async function handleAPIStart(context, stats, crawlContext) {
  * @returns {Promise<void>}
  */
 async function handleAPIList(context, stats, crawlContext) {
-  console.log("HANDLE_API_LIST");
   const { request } = context;
 
   const requestOptions = {
@@ -174,19 +173,8 @@ async function handleAPIList(context, stats, crawlContext) {
 
     stats.inc("requests");
 
-    //console.log("Payload", requestPayload.json.globalFilter);
-    //console.log("HITS", body.hits);
-
-    /*
-    const products = body.hits.map(({ productId, image, isBuyable }) => {
-      console.log(productId, isBuyable, image);
-    });
-    */
-
     // Update product count
     productCount = body.meta.total;
-
-    //console.log("Product paging", productOffset, "/", productCount);
 
     const products = body.hits.map(({ productId, image, isBuyable }) => {
       return { productId, isBuyable, image };
@@ -194,14 +182,10 @@ async function handleAPIList(context, stats, crawlContext) {
 
     const productsIds = products.map(({ productId }) => productId);
 
-    // for debug only
-    // console.log(productsIds);
-
     const productList = "&id=" + productsIds.join("&id=");
 
-    //console.log("Product list", productList);
-
-    //const breadcrumbs = body.meta.breadcrumb.map(({ name }) => name);
+    // Can be useful
+    // const breadcrumbs = body.meta.breadcrumb.map(({ name }) => name);
 
     const requestPrice = {
       url:
@@ -209,6 +193,8 @@ async function handleAPIList(context, stats, crawlContext) {
         productList,
       responseType: "json"
     };
+
+    stats.inc("requests");
 
     const priceResponse = await gotScraping.get(requestPrice);
     const productsPrices = priceResponse.body.body;
@@ -222,6 +208,8 @@ async function handleAPIList(context, stats, crawlContext) {
       url: `https://www.conrad.cz/restservices/CZ/products/products?id=${productList}`,
       responseType: "json"
     };
+
+    stats.inc("requests");
 
     const detailResponse = await gotScraping.get(requestDetail);
     const productsDetails = detailResponse.body.body;
@@ -265,6 +253,8 @@ async function handleAPIList(context, stats, crawlContext) {
     }
 
     productOffset += PRODUCTS_PER_PAGE;
+
+    log.info("Product offset " + productOffset + "/" + productCount);
   } while (productOffset < productCount);
 }
 
@@ -282,17 +272,13 @@ async function handleAPIDetail(context, stats, crawlContext) {
 
   stats.inc("items");
 
-  // for debug only
-  // console.log("PRODUCT", product);
-
   crawlContext.requests.set(
-    Apify.pushData(product)
-    //uploadToS3v2(crawlContext.s3, product)*/
+    Apify.pushData(product),
+    uploadToS3v2(crawlContext.s3, product)
   );
 }
 
 /**
- // TODO
  * Start sitemap parsing
  * @param context
  * @param stats Statistics reference
@@ -300,11 +286,37 @@ async function handleAPIDetail(context, stats, crawlContext) {
  * @returns {Promise<void>}
  */
 async function handleSitemapStart(context, stats, crawlContext) {
-  log.debug("---\nhandleSitemapStart");
+  log.info("Downloading " + URL_SITEMAP);
+
+  const requestOptions = {
+    url: URL_SITEMAP,
+    responseType: "text"
+  };
+
+  stats.inc("requests");
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body, { xmlMode: true });
+
+  $("sitemap").each((ix, el) => {
+    const url = $(el).find("loc").html();
+    if (url.indexOf("products") > -1) {
+      const req = {
+        url,
+        userData: {
+          label: LABELS.SITEMAP_LIST
+        }
+      };
+
+      crawlContext.requestQueue.addRequest(req);
+    } else {
+      console.log("Skipped", url);
+    }
+  });
 }
 
 /**
- * TODO
  * Parsing sitemap list
  * @param context
  * @param stats
@@ -312,7 +324,29 @@ async function handleSitemapStart(context, stats, crawlContext) {
  * @returns {Promise<void>}
  */
 async function handleSitemapList(context, stats, crawlContext) {
-  log.debug("---\nhandleSitemapList");
+  const { request } = context;
+
+  const requestOptions = {
+    url: request.url,
+    responseType: "text"
+  };
+
+  stats.inc("requests");
+
+  const { body } = await gotScraping(requestOptions);
+
+  const $ = cheerio.load(body, { xmlMode: true });
+
+  $("url").each((ix, el) => {
+    const productId = $(el).find("loc").text();
+
+    if (!processedIds.has(productId)) {
+      processedIds.add(productId);
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  });
 }
 
 Apify.main(async () => {
@@ -425,9 +459,11 @@ Apify.main(async () => {
           log.error("Unknown label " + label);
       }
     },
+
     // If request failed 4 times then this function is executed
     handleFailedRequestFunction: async ({ request }) => {
       log.info(`Request ${request.url} failed ${maxRequestRetries} times`);
+      stats.inc("failed");
     }
   });
 
@@ -437,7 +473,6 @@ Apify.main(async () => {
   await Promise.allSettled(crawlContext.requests);
   await stats.save();
 
-  /*
   if (!development) {
     log.info("Calling upload");
     await Promise.allSettled([
@@ -446,7 +481,6 @@ Apify.main(async () => {
     ]);
     log.info("Invalidated Data CDN, upload to Keboola finished");
   }
-  */
 
   log.info("Crawler finished");
 });
