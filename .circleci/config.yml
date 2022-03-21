@@ -73,6 +73,14 @@ commands:
       - aws-cloudfront/invalidate:
           distribution_id: << parameters.distribution_id >>
           paths: << parameters.paths >>
+  deploy_actor:
+    parameters:
+      token:
+        type: string
+        default: "${APIFY_TOKEN}"
+    steps:
+      - run: yarn apify login -t << parameters.token >>
+      - run: yarn apify push
 
 jobs:
   test-actors:
