@@ -2,14 +2,17 @@
 
 INPUT_PATH="apify_storage/key_value_stores/default/INPUT.json"
 
+create_nested_file() { mkdir -p "$(dirname "$1")" && touch "$1" ; }
+
 if [ -z "$(dirname $0)" ]; then
   echo "This script must be called from actors/* directory"
   exit 1
 fi
 
 if [ ! -f "$INPUT_PATH" ]; then
-  echo "$INPUT_PATH not found"
-  exit 1
+  echo "$INPUT_PATH not found, creating..."
+  create_nested_file "$INPUT_PATH"
+  echo '{}' > "$INPUT_PATH"
 fi
 
 \cp $INPUT_PATH $INPUT_PATH.tmp
