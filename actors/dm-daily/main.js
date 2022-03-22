@@ -258,7 +258,11 @@ Apify.main(async () => {
   const detailUrl = defAtom(null);
 
   const input = await Apify.getInput();
-  const { debug = false, country = COUNTRY.CZ, type = ActorType.FULL } = input ?? {};
+  const {
+    debug = false,
+    country = COUNTRY.CZ,
+    type = ActorType.FULL
+  } = input ?? {};
 
   if (debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
