@@ -9,6 +9,7 @@ import zlib from "zlib";
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
@@ -338,7 +339,7 @@ Apify.main(async () => {
     maxConcurrency = 10,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {

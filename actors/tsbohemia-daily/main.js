@@ -18,6 +18,7 @@ import { BASE_URL, LABELS } from "./src/const.js";
 import { getRandomInt } from "./src/utils.js";
 import { CaptchaSolver } from "./src/captcha-solver.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 let stats = {
@@ -45,7 +46,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 6,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     feedUrl = ""
   } = input ?? {};
 

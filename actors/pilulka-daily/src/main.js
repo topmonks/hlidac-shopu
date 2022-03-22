@@ -10,6 +10,7 @@ import { buildUrl } from "./tools.js";
 import randomUA from "modern-random-ua";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 
 const s3 = new S3Client({ region: "eu-central-1" });
@@ -334,7 +335,7 @@ Apify.main(async () => {
     maxRequestRetries = 4,
     maxConcurrency = 20,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     bfUrls = ["https://www.pilulka.cz/black-friday-2021"]
   } = input ?? {};
 

@@ -7,6 +7,7 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 
@@ -118,7 +119,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {

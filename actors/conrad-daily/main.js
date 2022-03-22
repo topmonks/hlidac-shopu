@@ -1,6 +1,7 @@
 import Apify from "apify";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { gotScraping } from "got-scraping";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";

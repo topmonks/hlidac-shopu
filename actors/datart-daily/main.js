@@ -8,6 +8,7 @@ import {
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log, requestAsBrowser } = Apify.utils;
 const LABELS = {
@@ -170,7 +171,7 @@ Apify.main(async () => {
     maxConcurrency = 10,
     country = COUNTRY.CZ,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = input ?? {};
 
   stats = (await Apify.getValue("STATS")) || {

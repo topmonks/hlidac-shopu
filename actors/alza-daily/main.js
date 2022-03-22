@@ -6,6 +6,7 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { gotScraping } from "got-scraping";
 import httpRequest from "@apify/http-request";
@@ -454,7 +455,7 @@ Apify.main(async () => {
   const {
     development = false,
     country = "CZ",
-    type = "FULL",
+    type = ActorType.FULL,
     maxConcurrency = 30,
     maxRequestRetries = 5,
     handleRequestTimeoutSecs = 60,

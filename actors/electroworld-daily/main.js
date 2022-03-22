@@ -6,6 +6,7 @@ import { fetchPage, fetchDetail, countProducts } from "./src/crawler.js";
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 
@@ -21,7 +22,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     startUrls = [
       "https://www.electroworld.cz/smart-inteligentni-domacnost",
       "https://www.electroworld.cz/televize-foto-audio-video",

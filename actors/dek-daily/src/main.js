@@ -6,6 +6,7 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { LABELS, COUNTRY } from "./const.js";
 import {
@@ -138,7 +139,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
   if (type === "FULL") {

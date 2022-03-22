@@ -2,6 +2,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import {
   extendCheerio,
@@ -32,7 +33,7 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     country = COUNTRY.CZ,
-    type = "FULL",
+    type = ActorType.FULL,
     debug = false,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],

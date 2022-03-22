@@ -6,6 +6,7 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import cheerio from "cheerio";
 import { URL, URLSearchParams } from "url";
@@ -243,7 +244,7 @@ Apify.main(async () => {
     test = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    type = "FULL",
+    type = ActorType.FULL,
     bfUrl = "https://www.tetadrogerie.cz/eshop/produkty?offerID=ESH210007"
   } = input ?? {};
 

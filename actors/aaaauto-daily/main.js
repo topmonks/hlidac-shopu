@@ -9,6 +9,7 @@ import { LABELS, COUNTRY_TYPE, BASE_URL, BASE_URL_BF } from "./src/const.js";
 import { extractPrice, getHumanDelayMillis } from "./src/tools.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 
@@ -28,7 +29,7 @@ Apify.main(async () => {
     debug = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
-    type = "FULL",
+    type = ActorType.FULL,
     proxyGroups = ["CZECH_LUMINATI"],
     country = COUNTRY_TYPE.CZ
   } = input ?? {};

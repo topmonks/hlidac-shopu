@@ -1,6 +1,7 @@
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Apify from "apify";
 import _ from "underscore";
@@ -37,7 +38,7 @@ Apify.main(async () => {
     maxRequestRetries = 5,
     country = COUNTRY.CZ,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/"
   } = input ?? {};
 

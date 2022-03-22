@@ -9,6 +9,7 @@ import zlib from "zlib";
 import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { shopName, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 const s3 = new S3Client({ region: "eu-central-1" });
@@ -84,7 +85,7 @@ Apify.main(async () => {
     maxConcurrency = 10,
     country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
   } = input ?? {};
   const shop = shopName(WEB);

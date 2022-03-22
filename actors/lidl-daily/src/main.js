@@ -6,6 +6,7 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { createInitRequests, getBaseProducts } from "./tools.js";
 import { LABELS, BF, MAIN_URL } from "./const.js";
@@ -145,7 +146,7 @@ async function scrapeShopCategory(
   { $, crawler },
   { s3, stats, processedIds, input }
 ) {
-  const { type = "FULL" } = input;
+  const { type = ActorType.FULL } = input;
   const nextButton = $("a.s-load-more__button");
   if (nextButton && nextButton.length > 0) {
     await crawler.requestQueue.addRequest({
@@ -229,7 +230,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 5,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = input ?? {};
   if (debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);

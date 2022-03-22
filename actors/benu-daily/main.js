@@ -8,6 +8,7 @@ import {
 import randomUA from "modern-random-ua";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const { log } = Apify.utils;
@@ -147,7 +148,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL"
+    type = ActorType.FULL
   } = input ?? {};
 
   const stats = await withPersistedStats(x => x, {

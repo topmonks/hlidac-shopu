@@ -3,6 +3,7 @@ import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { LABELS, COUNTRY, BF } from "./const.js";
 import { getTableName, scrapProducts, getRootUrl } from "./tools.js";
@@ -70,7 +71,7 @@ Apify.main(async () => {
     maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = "FULL",
+    type = ActorType.FULL,
     bfUrl = "https://www.mountfield.cz/black-friday"
   } = userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
