@@ -9,7 +9,6 @@ if [ -z "$SCRIPT_VALUE" ]; then
 fi
 
 for file in $(find actors/* -name package.json -maxdepth 1); do
-
   if [[ $file == "actors/common/package.json" || $file == "actors/uploader/package.json" ]]; then
     echo "Skipping $file"
     continue
