@@ -4,7 +4,7 @@ INPUT_PATH="apify_storage/key_value_stores/default/INPUT.json"
 
 if [[ "$PWD" =~ .*/actors/.* ]]; then
   if [ ! -e "$file" ] ; then
-    echo '{}' > $INPUT_PATH
+    apify init
   fi
   \cp $INPUT_PATH $INPUT_PATH.tmp
   json="$(jq --arg type TEST '. + {type: $type}' $INPUT_PATH)"
