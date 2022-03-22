@@ -15,21 +15,23 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 // Not possible to update library with stats for unknown reason
 // import { withPersistedStats } from "../common/stats.js";
 
-export const URL_MAIN = "https://www.conrad.cz";
+const URL_MAIN = "https://www.conrad.cz";
 
-export const URL_CATEGORY = "https://www.conrad.cz/restservices/CZ/megamenu";
+const URL_CATEGORY = "https://www.conrad.cz/restservices/CZ/megamenu";
 
-export const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
+const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
 
-export const PRODUCTS_PER_PAGE = 30;
+const PRODUCTS_PER_PAGE = 30;
 
-export const LABELS = {
+const LABELS = {
   API_START: "API-START",
   API_LIST: "API-LIST",
   API_DETAIL: "API-DETAIL",
 
   SITEMAP_START: "SITEMAP-START",
-  SITEMAP_LIST: "SITEMAP-LIST"
+  SITEMAP_LIST: "SITEMAP-LIST",
+
+  TEST: "TEST"
 };
 
 const processedIds = new Set();
@@ -58,12 +60,19 @@ async function getApiKey(stats) {
 }
 
 async function traverseCategory(crawlContext, category, stats) {
-  const categoryId = category.url.split("-").pop();
+  const categoryUrl = category.url;
+  const categoryId = categoryUrl.split("-").pop();
+  const categoryTitle = category.title;
+
+  log.debug("Adding category " + categoryId + " " + categoryTitle);
 
   const req = {
-    url: `https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=${crawlContext.apiKey}`,
+    url: `https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=${crawlContext.apiKey}&id=${categoryId}`,
+    //url: URL_MAIN + categoryUrl,
     userData: {
       categoryId,
+      categoryUrl,
+      categoryTitle,
       apiKey: crawlContext.apiKey,
       label: LABELS.API_LIST,
       page: 1
@@ -72,11 +81,13 @@ async function traverseCategory(crawlContext, category, stats) {
 
   await crawlContext.requestQueue.addRequest(req);
 
-  stats.inc("categories");
+  stats.inc("categoriesParsed");
 
-  if (category.hasOwnProperty("children") && category.children.length) {
-    for (let childIx in category.children) {
-      await traverseCategory(crawlContext, category.children[childIx], stats);
+  if (category.hasOwnProperty("children")) {
+    if (category.children.length) {
+      for (let childIx in category.children) {
+        await traverseCategory(crawlContext, category.children[childIx], stats);
+      }
     }
   }
 }
@@ -143,6 +154,10 @@ async function handleAPIList(context, stats, crawlContext) {
 
   let productOffset = 0;
   let productCount = PRODUCTS_PER_PAGE;
+
+  log.debug("Processing category " + request.userData.categoryTitle);
+
+  stats.inc("categories");
 
   do {
     const requestPayload = {
@@ -218,7 +233,6 @@ async function handleAPIList(context, stats, crawlContext) {
     for (const ix in productsDetails) {
       productsDetailsMap.set(productsDetails[ix].id, productsDetails[ix]);
     }
-
     for (const ix in productsIds) {
       if (!crawlContext.processedIds.has(productsIds[ix])) {
         crawlContext.processedIds.add(productsIds[ix]);
@@ -227,26 +241,32 @@ async function handleAPIList(context, stats, crawlContext) {
         const detail = productsDetailsMap.get(productsIds[ix]);
         const price = productsPricesMap.get(productsIds[ix]);
 
-        const req = {
-          url: URL_MAIN + detail.urlPath,
-          userData: {
-            label: LABELS.API_DETAIL,
-            product: {
-              itemId: productsIds[ix],
-              itemUrl: detail.urlPath,
-              itemName: detail.title,
-              img: detail.image?.url,
-              //discounted:
-              //originalPrice:
-              currency: price.price.currency,
-              currentPrice: price.price.unit.gross, // gross | net
-              inStock: detail.availability.inStockArticle,
-              vatPercentage: price.price.vatPercentage
+        if (detail.hasOwnProperty("urlPath")) {
+          const req = {
+            url: URL_MAIN + detail.urlPath,
+            userData: {
+              label: LABELS.API_DETAIL,
+              product: {
+                itemId: productsIds[ix],
+                itemUrl: detail.urlPath,
+                itemName: detail.title,
+                img: detail.image?.url,
+                discounted:
+                  price.price.crossedOut.gross &&
+                  price.price.unit.gross < price.price.crossedOut.gross,
+                originalPrice: price.price.crossedOut.gross,
+                currency: price.price.currency,
+                currentPrice: price.price.unit.gross, // gross | net
+                inStock: detail.availability.inStockArticle,
+                vatPercentage: price.price.vatPercentage
+              }
             }
-          }
-        };
+          };
 
-        await crawlContext.requestQueue.addRequest(req);
+          await crawlContext.requestQueue.addRequest(req);
+        } else {
+          stats.inc("missingUrl");
+        }
       } else {
         stats.inc("itemsDuplicity");
       }
@@ -254,7 +274,22 @@ async function handleAPIList(context, stats, crawlContext) {
 
     productOffset += PRODUCTS_PER_PAGE;
 
-    log.info("Product offset " + productOffset + "/" + productCount);
+    stats.inc("pages");
+
+    log.info(
+      "Product offset " +
+        productOffset +
+        " / " +
+        productCount +
+        " [" +
+        request.userData.categoryTitle +
+        "]"
+    );
+
+    if (crawlContext.testScraping) {
+      log.info("Scraping test break");
+      break;
+    }
   } while (productOffset < productCount);
 }
 
@@ -310,8 +345,6 @@ async function handleSitemapStart(context, stats, crawlContext) {
       };
 
       crawlContext.requestQueue.addRequest(req);
-    } else {
-      console.log("Skipped", url);
     }
   });
 }
@@ -338,7 +371,7 @@ async function handleSitemapList(context, stats, crawlContext) {
   const $ = cheerio.load(body, { xmlMode: true });
 
   $("url").each((ix, el) => {
-    const productId = $(el).find("loc").text();
+    const productId = $(el).find("loc").text().split("-").pop();
 
     if (!processedIds.has(productId)) {
       processedIds.add(productId);
@@ -360,9 +393,11 @@ Apify.main(async () => {
     development = true,
     type = LABELS.API_START, // API_START | SITEMAP_START
     maxConcurrency = 100,
-    maxRequestRetries = 4,
+    maxRequestRetries = 8,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
+
+  const testScraping = type === "TEST";
 
   log.info("DEVELOPMENT: " + development);
 
@@ -372,14 +407,14 @@ Apify.main(async () => {
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
+    categoriesParsed: 0,
     requests: 0,
     pages: 0,
     items: 0,
     itemsSkipped: 0,
     itemsDuplicity: 0,
     failed: 0,
-    itemsTest: 0,
-    itemsDuplicityTest: 0
+    missingUrl: 0
   });
 
   let sources = [];
@@ -406,6 +441,16 @@ Apify.main(async () => {
         }
       });
       break;
+
+    // Test scraping via API
+    case LABELS.TEST:
+      sources.push({
+        url: URL_MAIN,
+        userData: {
+          label: LABELS.API_START
+        }
+      });
+      break;
   }
 
   if (development) {
@@ -425,6 +470,7 @@ Apify.main(async () => {
   const crawlContext = {
     requestQueue,
     development,
+    testScraping,
     proxyConfiguration,
     processedIds,
     s3,
@@ -444,6 +490,7 @@ Apify.main(async () => {
       log.debug("Page opened.", { label, url });
       switch (label) {
         case LABELS.API_START:
+        case LABELS.TEST:
           return handleAPIStart(context, stats, crawlContext);
         case LABELS.API_LIST:
           return handleAPIList(context, stats, crawlContext);
