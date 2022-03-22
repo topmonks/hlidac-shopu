@@ -17,6 +17,7 @@
     "apify-cli": "^0.6.7"
   },
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "test": "../../scripts/test-actor.sh"
   }
 }

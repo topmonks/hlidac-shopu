@@ -1,22 +1,23 @@
 {
-	"name": "@hlidac-shopu/luxor-daily",
-	"version": "1.0.0",
-	"description": "Luxor eshop actor",
-	"author": "TopMonks s.r.o. & contributors",
-	"license": "EPL-2.0",
-	"type": "module",
-	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.54.1",
-		"@aws-sdk/client-s3": "^3.54.1",
-		"@hlidac-shopu/actors-common": "^1.2.3",
-		"apify": "^2.2.2"
-	},
-	"devDependencies": {
-		"@types/node": "^16.11.26",
-		"apify-cli": "^0.6.7"
-	},
-	"scripts": {
-		"start": "node main.js",
-		"start-apify": "apify run -p"
-	}
+  "name": "@hlidac-shopu/luxor-daily",
+  "version": "1.0.0",
+  "description": "Luxor eshop actor",
+  "author": "TopMonks s.r.o. & contributors",
+  "license": "EPL-2.0",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.54.1",
+    "@aws-sdk/client-s3": "^3.54.1",
+    "@hlidac-shopu/actors-common": "^1.2.3",
+    "apify": "^2.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.26",
+    "apify-cli": "^0.6.7"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "start-apify": "apify run -p",
+    "test": "../../scripts/test-actor.sh"
+  }
 }

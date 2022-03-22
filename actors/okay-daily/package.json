@@ -14,6 +14,7 @@
   },
   "scripts": {
     "start": "node main.js",
-    "lint:fix": "eslint . --ext .js,.jsx --fix"
+    "lint:fix": "eslint . --ext .js,.jsx --fix",
+    "test": "../../scripts/test-actor.sh"
   }
 }

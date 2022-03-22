@@ -1,18 +1,19 @@
 {
-	"name": "@hlidac-shopu/notino-daily",
-	"version": "1.0.0",
-	"description": "This is a notino actor.",
-	"type": "module",
-	"dependencies": {
-		"@aws-sdk/client-cloudfront": "^3.54.1",
-		"@aws-sdk/client-s3": "^3.54.1",
-		"@hlidac-shopu/actors-common": "^1.2.3",
-		"@hlidac-shopu/lib": "^1.2.9",
-		"apify": "^2.2.2"
-	},
-	"scripts": {
-		"start": "node main.js"
-	},
-	"author": "TopMonks s.r.o. & contributors",
-	"license": "EPL-2.0"
+  "name": "@hlidac-shopu/notino-daily",
+  "version": "1.0.0",
+  "description": "This is a notino actor.",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.54.1",
+    "@aws-sdk/client-s3": "^3.54.1",
+    "@hlidac-shopu/actors-common": "^1.2.3",
+    "@hlidac-shopu/lib": "^1.2.9",
+    "apify": "^2.2.2"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "../../scripts/test-actor.sh"
+  },
+  "author": "TopMonks s.r.o. & contributors",
+  "license": "EPL-2.0"
 }
