@@ -7,16 +7,14 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { gotScraping } from "got-scraping";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import cheerio from "cheerio";
-import { withPersistedStats } from "../common/stats.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const URL_API_START =
   //"https://www.luxor.cz/products/knihy?sort=price%3Aasc&only_in_stock=1";  // For case sort will be used
   //"https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1"; // Use root categories only
   "https://mw.luxor.cz/api/v1/categories?size=1000"; // Use all categories
 
-const URL_TEMPLATE_CATEGORY =
-  //"https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1";
-  "https://mw.luxor.cz/api/v1/categories?size=1000";
+const URL_TEMPLATE_CATEGORY = "https://mw.luxor.cz/api/v1/categories?size=1000";
 
 const URL_IMAGE_BASE = "https://cdn.luxor.cz/";
 
@@ -36,7 +34,9 @@ const LABELS = {
   FRONT_DETAIL: "FRONT-DETAIL",
 
   SITEMAP_START: "SITEMAP-START",
-  SITEMAP_LIST: "SITEMAP-LIST"
+  SITEMAP_LIST: "SITEMAP-LIST",
+
+  TEST: "TEST"
 };
 
 const processedIds = new Set();
@@ -71,8 +71,6 @@ async function handleAPIStart(context, stats, crawlContext) {
   for (const category in categories) {
     const slug = categories[category].slug;
 
-    log.debug(slug);
-
     stats.inc("categories");
 
     const req = {
@@ -84,12 +82,12 @@ async function handleAPIStart(context, stats, crawlContext) {
       }
     };
 
-    /*
-    For debug only
-    console.log("addRequest LIST / first page", req);
-    */
-
     crawlContext.requestQueue.addRequest(req);
+
+    if (crawlContext.testScraping) {
+      log.info("Scraping test break");
+      break;
+    }
   }
 }
 
@@ -170,24 +168,20 @@ async function handleAPIList(context, stats, crawlContext) {
       inStock: products[productIx].in_stock,
       category: request.userData.slug
 
-      //slug: request.userData.slug,
-      //author: products[productIx].author,
-      //publisher: products[productIx].publisher,
-      //prices: products[productIx].current_variant_price_group,
-      //page: request.userData.page,
-      //pageUrl: request.url,
+      /*
+      May be useful later
+      slug: request.userData.slug,
+      author: products[productIx].author,
+      publisher: products[productIx].publisher,
+      prices: products[productIx].current_variant_price_group,
+      page: request.userData.page,
+      pageUrl: request.url,
+      */
 
       //blackFriday: null
     };
 
     if (!crawlContext.processedIds.has(product.itemId)) {
-      /*
-      For debug only
-      log.debug(
-        "Adding unique product " + product.itemId + ": " + product.itemUrl
-      );
-      */
-
       crawlContext.processedIds.add(product.itemId);
       requests.push(
         Apify.pushData(product),
@@ -196,11 +190,6 @@ async function handleAPIList(context, stats, crawlContext) {
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
-
-      /*
-      For debug only
-      log.debug("Duplicity found " + product.itemId + ": " + product.itemUrl);
-      */
     }
   }
 
@@ -227,8 +216,6 @@ async function handleAPIList(context, stats, crawlContext) {
       product
     }
   };
-
-  console.log("addRequest DETAIL", requestDetail);
 
   crawlContext.requestQueue.addRequest(requestDetail);
   */
@@ -277,8 +264,6 @@ async function handleAPIList(context, stats, crawlContext) {
 async function handleAPIDetail(request, stats, crawlContext) {
   const prices = request.userData.product.prices;
 
-  //log.debug("PRODUCT" + JSON.stringify(prices));
-
   // Log price only - prepared for casually need more product data
   for (const price in prices) {
     log.info(prices[price]);
@@ -286,15 +271,13 @@ async function handleAPIDetail(request, stats, crawlContext) {
 }
 
 /**
- * Handle frontend product scraping start
+ * Handle frontend product scraping start (unfinished code skelet only)
  * @param request
  * @param stats Statistics reference
  * @param crawlContext
  * @returns {Promise<void>}
  */
 async function handleFrontStart(request, stats, crawlContext) {
-  //log.info("Downloading " + URL_FRONT);
-
   const requestOptions = {
     url: URL_FRONT,
     responseType: "text"
@@ -317,7 +300,6 @@ async function handleFrontStart(request, stats, crawlContext) {
           userData: {
             label: LABELS.FRONT_LIST,
             page: pageNext,
-            //pageCount,
             slug: url_slug,
             pageUrl
           }
@@ -329,7 +311,7 @@ async function handleFrontStart(request, stats, crawlContext) {
 }
 
 /**
- * Handle frontend product list scraping
+ * Handle frontend product list scraping (unfinished code skelet only)
  * @param request
  * @param stats Statistics reference
  * @param crawlContext
@@ -340,15 +322,13 @@ async function handleFrontList(request, stats, crawlContext) {
 }
 
 /**
- * Handle frontend product detail scraping
+ * Handle frontend product detail scraping (unfinished code skelet only)
  * @param request
  * @param stats Statistics reference
  * @param crawlContext
  * @returns {Promise<void>}
  */
 async function handleFrontDetail(request, stats, crawlContext) {
-  log.debug("---\nhandleFrontDetail");
-
   const product = {
     itemId: products[productIx].id,
     itemUrl: `https://luxor.cz/product/${products[productIx].slug}`,
@@ -373,8 +353,6 @@ async function handleFrontDetail(request, stats, crawlContext) {
  * @returns {Promise<void>}
  */
 async function handleSitemapStart(context, stats, crawlContext) {
-  log.debug("---\nhandleSitemapStart");
-
   log.info("Downloading " + URL_SITEMAP);
 
   const requestOptions = {
@@ -397,8 +375,6 @@ async function handleSitemapStart(context, stats, crawlContext) {
       };
 
       crawlContext.requestQueue.addRequest(req);
-    } else {
-      console.log("Skipper", url);
     }
   });
 }
@@ -423,44 +399,16 @@ async function handleSitemapList(context, stats, crawlContext) {
       .text()
       .replace("https://www.luxor.cz/product/", "");
 
-    //console.log(typeof productId);
-
     if (!processedIds.has(productId)) {
       processedIds.add(productId);
       stats.inc("items");
     } else {
-      //console.log("itemsDuplicity", productName);
       stats.inc("itemsDuplicity");
-
-      //console.log("Entry exists", productId);
-      //console.log("Values", crawlContext.processedIds.keys());
     }
-
-    /*
-    For debug only
-    const productFound = productIds.map(_productId => {
-      console.log("TEST", _productId, productId);
-      productIds.push(productId);
-      return _productId === productId;
-    });
-
-    if (productFound.length) {
-      console.log("productFound", productFound);
-    }
-    */
-
-    /*
-    if (!productIds.includes(productId)) {
-      productIds.push(productId);
-      stats.inc("itemsTest");
-    } else {
-      stats.inc("itemsDuplicityTest");
-    }
-    */
   });
 
-  //console.log(`Items count in XML: ${stats.items}`);
-  console.log("processedIds size", crawlContext.processedIds.size);
+  log.debug(`Items count in XML: ${stats.items}`);
+  log.debug("processedIds size", crawlContext.processedIds.size);
 }
 
 Apify.main(async () => {
@@ -471,14 +419,16 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
-    development = false,
-    type = LABELS.API_START, // API_START | FRONT_START | SITEMAP_START
+    development = true,
+    type = LABELS.TEST, // API_START | FRONT_START | SITEMAP_START | TEST
     maxConcurrency = 100,
     maxRequestRetries = 4,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
 
   log.info("DEVELOPMENT: " + development);
+
+  const testScraping = type === "TEST";
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -549,6 +499,7 @@ Apify.main(async () => {
   const crawlContext = {
     requestQueue,
     development,
+    testScraping,
     proxyConfiguration,
     processedIds,
     s3
@@ -567,6 +518,7 @@ Apify.main(async () => {
       } = context.request;
       log.debug("Page opened.", { label, url });
       switch (label) {
+        case LABELS.TEST:
         case LABELS.API_START:
           return handleAPIStart(context, stats, crawlContext);
         case LABELS.API_LIST:
@@ -615,7 +567,7 @@ Apify.main(async () => {
       await uploadToKeboola("luxor_cz");
       log.info("upload to Keboola finished");
     } catch (e) {
-      console.log(e);
+      log.debug(e);
     }
   }
 });
