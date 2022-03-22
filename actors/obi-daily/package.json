@@ -6,8 +6,8 @@
 	"description": "This is an actor to get data from obi eshop",
 	"type": "module",
 	"dependencies": {
-		"@aws-sdk/client-cloudfront": "3.54.1",
-		"@aws-sdk/client-s3": "3.54.1",
+		"@aws-sdk/client-cloudfront": "3.55.0",
+		"@aws-sdk/client-s3": "3.55.0",
 		"@hlidac-shopu/actors-common": "^1.2.3",
 		"apify": "^2.2.2"
 	},
