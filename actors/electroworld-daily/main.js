@@ -71,7 +71,7 @@ Apify.main(async () => {
     type
   };
 
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     for (let i = 0; i < startUrls.length; i++) {
       await requestQueue.addRequest({ url: startUrls[i] });
     }
@@ -86,14 +86,14 @@ Apify.main(async () => {
       userData: { label: "nthPage", pageN: 0 },
       url: "https://www.electroworld.cz/smart-televize?p5%5B43814%5D=hisense"
     });
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     for (let i = 0; i < bfUrls.length; i++) {
       await requestQueue.addRequest({ url: bfUrls[i] });
     }
   }
 
   let crawler;
-  if (type === "BF") {
+  if (type === ActorType.BF) {
     crawler = new Apify.PlaywrightCrawler({
       requestQueue,
       proxyConfiguration,
@@ -126,7 +126,7 @@ Apify.main(async () => {
       maxRequestRetries,
       maxConcurrency,
       handlePageFunction: async context => {
-        if (type === "FULL" || type === "TEST_FULL") {
+        if (type === ActorType.FULL || type === "TEST_FULL") {
           await fetchPage(context, crawlContext);
         } else if (type === "DETAIL") {
           await fetchDetail(context.$, context.request, dataset);
@@ -153,7 +153,7 @@ Apify.main(async () => {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "electroworld.cz");
     log.info("invalidated Data CDN");
     await uploadToKeboola(
-      type === "BF" ? "electroworld_cz_bf" : "electroworld_cz"
+      type === ActorType.BF ? "electroworld_cz_bf" : "electroworld_cz"
     );
     log.info("upload to Keboola finished");
   }

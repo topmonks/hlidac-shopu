@@ -60,7 +60,7 @@ Apify.main(async () => {
         label: "PAGE"
       }
     });
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: `https://www.mall.${country}/api/campaign/data?pathName=/kampan/black-friday&page=1&o=campaign,sort_2&menuSorting=sort_4&promotionPrice=true&labels[]=BFLV&sortingLabels[]=BF01`,
       userData: {
@@ -198,7 +198,7 @@ Apify.main(async () => {
       }
 
       let $;
-      if (type === "BF") {
+      if (type === ActorType.BF) {
         const responseData = JSON.parse(response.body);
         if (request.userData.label === "START") {
           if (responseData.total > 60) {
@@ -460,7 +460,7 @@ Apify.main(async () => {
     log.info("invalidated Data CDN");
     if (!test) {
       let tableName = country === "CZ" ? "mall" : "mall_sk";
-      if (type === "BF") {
+      if (type === ActorType.BF) {
         tableName = `${tableName}_bf`;
       }
 

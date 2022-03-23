@@ -160,7 +160,7 @@ Apify.main(async () => {
   });
 
   const requestQueue = await Apify.openRequestQueue();
-  if (type === "BF") {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: "https://www.benu.cz/black-friday",
       userData: {
@@ -168,7 +168,7 @@ Apify.main(async () => {
       }
     });
     stats.categories++;
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: "https://www.benu.cz/alavis-maxima-triple-blend-extra-silny-700-g",
       headers: {
@@ -204,7 +204,7 @@ Apify.main(async () => {
         log.info("START scraping benu.cz");
         const allCategories = new Set();
         let categories = $("div.submenu li:not(.title) > a");
-        if (type === "TEST") {
+        if (type === ActorType.TEST) {
           log.info("type === TEST");
           categories = categories.slice(0, 1);
         }
@@ -286,6 +286,6 @@ Apify.main(async () => {
   await Promise.allSettled([
     stats.save(),
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
-    uploadToKeboola(type === "BF" ? "benu_cz_bf" : "benu_cz")
+    uploadToKeboola(type === ActorType.BF ? "benu_cz_bf" : "benu_cz")
   ]);
 });

@@ -9,4 +9,3 @@ export const LABELS = {
   CATEGORY: "CATEGORY",
   SUB_CATEGORY: "SUB_CATEGORY"
 };
-export const BF = "BF";

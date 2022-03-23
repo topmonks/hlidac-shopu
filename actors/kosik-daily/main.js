@@ -8,6 +8,7 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type";
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
@@ -138,7 +139,7 @@ Apify.main(async () => {
     development,
     maxConcurrency = 4,
     proxyGroups = ["CZECH_LUMINATI"],
-    type,
+    type = ActorType.FULL,
     bfUrls = ["https://www.kosik.cz/listy/bf-nanecisto-2021"]
   } = input ?? {};
 
@@ -149,7 +150,7 @@ Apify.main(async () => {
 
   /** @type {RequestQueue} */
   const requestQueue = await Apify.openRequestQueue();
-  if (type === "BF") {
+  if (type === ActorType.BF) {
     for (const url of bfUrls) {
       await requestQueue.addRequest({
         url: listingBFUrl(url),
@@ -189,7 +190,7 @@ Apify.main(async () => {
 
     try {
       let tableName = `kosik`;
-      if (type === "BF") {
+      if (type === ActorType.BF) {
         tableName = `${tableName}_bf`;
       }
       await uploadToKeboola(tableName);

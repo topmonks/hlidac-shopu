@@ -11,7 +11,6 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 
-const BF = "BF";
 const web = "https://www.kasa.cz";
 const limit = "limit=96";
 const akce = "akce";
@@ -182,14 +181,14 @@ Apify.main(async () => {
     useApifyProxy: !development
   });
 
-  if (type === BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: "https://www.kasa.cz/black-friday",
       userData: {
-        label: BF
+        label: ActorType.BF
       }
     });
-  } else if (type === "FULL") {
+  } else if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: web,
       userData: {
@@ -256,7 +255,7 @@ Apify.main(async () => {
       } else if (request.userData.label === "LAST_CATEGORY_PAGE") {
         log.info(`START with page ${request.url}`);
         await handleProducts({ $, request, s3, processedIds });
-      } else if (request.userData.label === BF) {
+      } else if (request.userData.label === ActorType.BF) {
         log.info(`START BF ${request.url}`);
         const categories = [];
         $(".html_obsah .wsw > div > a").each(function () {
@@ -287,7 +286,7 @@ Apify.main(async () => {
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kasa.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== "FULL" ? "kasa_bf" : "kasacz");
+    await uploadToKeboola(type !== ActorType.FULL ? "kasa_bf" : "kasacz");
     log.info("upload to Keboola finished");
   }
 

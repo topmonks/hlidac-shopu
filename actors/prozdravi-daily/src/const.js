@@ -1,7 +1,6 @@
 export const LABELS = {
   START: "START",
-  PRODUCTS: "PRODUCTS",
-  BF: "BF"
+  PRODUCTS: "PRODUCTS"
 };
 
 export const SCRIPT_WITH_JSON = {

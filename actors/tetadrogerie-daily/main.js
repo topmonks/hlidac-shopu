@@ -272,7 +272,7 @@ Apify.main(async () => {
     await requestQueue.addRequest({
       url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/myti-nadobi/doplnky-do-mycky?pocet=40&razeni=price"
     });
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: `${bfUrl}&pocet=60&razeni=price`,
       userData: {
@@ -320,7 +320,7 @@ Apify.main(async () => {
 
   if (!development) {
     let tableName = "teta_cz";
-    if (type === "BF") {
+    if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
     }
     await Promise.allSettled([

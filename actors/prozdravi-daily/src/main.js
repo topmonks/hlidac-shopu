@@ -155,7 +155,7 @@ Apify.main(async () => {
   };
   Apify.events.on("persistState", persistState);
 
-  if (type === LABELS.BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: PRODUCTS_URLS.BF_PRODUCTS_PAGE,
       headers: {
@@ -223,7 +223,7 @@ Apify.main(async () => {
     log.info("invalidated Data CDN");
 
     let tableName = "prozdravi_cz";
-    if (type === "BF") {
+    if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
     }
     await uploadToKeboola(tableName);

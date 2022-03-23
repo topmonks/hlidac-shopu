@@ -50,14 +50,14 @@ Apify.main(async () => {
   const crawledProducts = 0;
 
   const requestQueue = await Apify.openRequestQueue();
-  if (type === BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: country === COUNTRY.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
       userData: {
         label: BF
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
     await requestQueue.addRequest({
       url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
@@ -129,7 +129,7 @@ Apify.main(async () => {
   if (!development && type !== "CZECHITAS") {
     const tableName = `notino${
       country === COUNTRY.CZ ? "" : "_" + country.toLowerCase()
-    }${type === "BF" ? "_bf" : ""}`;
+    }${type === ActorType.BF ? "_bf" : ""}`;
     await invalidateCDN(
       cloudfront,
       "EQYSHWUECAQC9",

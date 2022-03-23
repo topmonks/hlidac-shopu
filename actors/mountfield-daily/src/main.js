@@ -5,7 +5,7 @@ import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
-import { LABELS, COUNTRY, BF } from "./const.js";
+import { LABELS, COUNTRY } from "./const.js";
 import { getTableName, scrapProducts, getRootUrl } from "./tools.js";
 
 const { log } = Apify.utils;
@@ -75,14 +75,14 @@ Apify.main(async () => {
     bfUrl = "https://www.mountfield.cz/black-friday"
   } = userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: getRootUrl(userInput),
       userData: {
         label: LABELS.START
       }
     });
-  } else if (type === BF) {
+  } else if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: bfUrl,
       userData: {
@@ -90,7 +90,7 @@ Apify.main(async () => {
         mainCategory: "Black Friday"
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: "https://www.mountfield.sk/pily-prislusenstvo-retaze",
       userData: {

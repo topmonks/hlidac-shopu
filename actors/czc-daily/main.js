@@ -46,7 +46,7 @@ Apify.main(async () => {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: "https://www.czc.cz/",
       userData: {
@@ -60,14 +60,14 @@ Apify.main(async () => {
                 baseUrl: 'https://www.czc.cz/mesh/produkty',
             },
         }); */
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: bfURL,
       userData: {
-        label: "BF"
+        label: ActorType.BF
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty",
       userData: {
@@ -123,7 +123,7 @@ Apify.main(async () => {
             }
           });
         }
-      } else if (request.userData.label === "BF") {
+      } else if (request.userData.label === ActorType.BF) {
         try {
           const items = await extractItems($, request, web);
           console.log(`Found ${items.length} storing them, ${request.url}`);
@@ -261,7 +261,7 @@ Apify.main(async () => {
     try {
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "czc.cz");
       log.info("invalidated Data CDN");
-      await uploadToKeboola(type === "BF" ? "czc_bf" : "czc");
+      await uploadToKeboola(type === ActorType.BF ? "czc_bf" : "czc");
       log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);

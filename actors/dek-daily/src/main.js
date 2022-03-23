@@ -142,14 +142,14 @@ Apify.main(async () => {
     type = ActorType.FULL
   } = userInput ?? {};
   const requestQueue = await Apify.openRequestQueue();
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: getRootUrl(userInput),
       userData: {
         label: LABELS.START
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: "https://www.dek.cz/produkty/vypis/13321-kamna-a-krby",
       userData: {

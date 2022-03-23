@@ -11,6 +11,7 @@ import {
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type";
 
 const {
   utils: { log }
@@ -30,11 +31,6 @@ const LABEL = {
   LIST: "LIST"
 };
 
-const TYPE = {
-  BF: "BF",
-  TEST: "TEST",
-  FULL: "FULL"
-};
 
 function getBaseUrl(country) {
   switch (country) {
@@ -186,7 +182,7 @@ async function enqueueRequests(
   crawlContext
 ) {
   switch (type) {
-    case TYPE.BF:
+    case ActorType.BF:
       for (const url of bfUrls) {
         await requestQueue.addRequest({
           url,
@@ -195,13 +191,13 @@ async function enqueueRequests(
         crawlContext.stats.urls += 1;
       }
       break;
-    case TYPE.TEST:
+    case ActorType.TEST:
       await requestQueue.addRequest({
         url: "https://www.okay.cz/tv-s-uhloprickou-55-139-cm/",
         userData: { label: LABEL.LIST }
       });
       break;
-    case TYPE.FULL:
+    case ActorType.FULL:
       const params = { page: 1 };
       const url = `${rootUrl}/collections?${new URLSearchParams(params)}`;
       await requestQueue.addRequest({
@@ -262,7 +258,7 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     country = COUNTRY.CZ,
-    type = TYPE.FULL,
+    type = ActorType.FULL,
     debug = false,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
@@ -350,7 +346,7 @@ Apify.main(async () => {
   await crawlContext.stats.save();
 
   if (!development) {
-    const suffix = type === TYPE.BF ? "_bf" : "";
+    const suffix = type === ActorType.BF ? "_bf" : "";
     const tableName = customTableName ?? `${shopName(rootUrl)}${suffix}`;
     await Promise.allSettled([
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(rootUrl)),

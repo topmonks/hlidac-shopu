@@ -17,7 +17,6 @@ const LABELS = {
   CATEGORY_NEXT: "CATEGORY_NEXT",
   BF: "BF"
 };
-const BF = "BF";
 const COUNTRY = {
   CZ: "CZ",
   SK: "SK"
@@ -186,7 +185,7 @@ Apify.main(async () => {
   const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
-  if (type === BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: `${rootUrl}/black-friday`,
       userData: {
@@ -195,21 +194,21 @@ Apify.main(async () => {
     });
   } else if (type === "COUNT") {
     await countAllProducts(rootUrl, stats);
-  } else if (type === "FULL") {
+  } else if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: `${rootUrl}/katalog`,
       userData: {
         label: LABELS.START
       }
     });
-  } else if (type === "TEST" && country === COUNTRY.CZ) {
+  } else if (type === ActorType.TEST && country === COUNTRY.CZ) {
     await requestQueue.addRequest({
       url: `https://www.datart.cz/televize.html`,
       userData: {
         label: LABELS.CATEGORY
       }
     });
-  } else if (type === "TEST" && country === COUNTRY.SK) {
+  } else if (type === ActorType.TEST && country === COUNTRY.SK) {
     await requestQueue.addRequest({
       url: `https://www.datart.sk/televizory.html`,
       userData: {
@@ -408,13 +407,13 @@ Apify.main(async () => {
   try {
     let tableName = "";
 
-    if (type === "FULL" && country === "CZ") {
+    if (type === ActorType.FULL && country === "CZ") {
       tableName = "datart";
-    } else if (type === "FULL" && country === "SK") {
+    } else if (type === ActorType.FULL && country === "SK") {
       tableName = "datart_sk";
-    } else if (type !== "FULL" && country === "CZ") {
+    } else if (type !== ActorType.FULL && country === "CZ") {
       tableName = "datart_bf";
-    } else if (type !== "FULL" && country === "SK") {
+    } else if (type !== ActorType.FULL && country === "SK") {
       tableName = "datart_sk_bf";
     }
 

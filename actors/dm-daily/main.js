@@ -218,7 +218,7 @@ async function handleStart(type, navigation, stats, requestQueue, country) {
 }
 
 async function enqueInitialRequest(type, requestQueue, country) {
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
         country
@@ -229,7 +229,7 @@ async function enqueInitialRequest(type, requestQueue, country) {
         step: "START"
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     const productQuery = { "brandName": "SEINZ." };
     await requestQueue.addRequest({
       url: makeListingUrl(country, productQuery, 0),

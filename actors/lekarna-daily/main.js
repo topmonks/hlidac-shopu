@@ -13,7 +13,6 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
-const BF = "BF";
 const web = "https://www.lekarna.cz";
 const SITEMAP_URL = "https://www.lekarna.cz/sitemap.xml";
 const SITEMAP_CATEGORY_URL = "https://www.lekarna.cz/feed/sitemap/category";
@@ -235,7 +234,7 @@ async function handleSubCategory($, requestQueue, request) {
 async function handlePagination($, requestQueue, request, type) {
   let maxPage = 0;
   const snippetListing =
-    type === "FULL"
+    type === ActorType.FULL
       ? $("#snippet--productListing")
       : $("#snippet--itemListing");
   snippetListing.find("ul.flex.flex-wrap.items-stretch li").each(function () {
@@ -267,7 +266,7 @@ async function handlePagination($, requestQueue, request, type) {
 
 async function handleProducts($, requestQueue, request, type) {
   const itemListElements =
-    type === "FULL"
+    type === ActorType.FULL
       ? $('[itemprop="itemListElement"]')
       : $(
           "#snippet--itemListing div.flex.flex-col.flex-wrap.items-stretch.w-full"
@@ -299,7 +298,7 @@ async function handleProducts($, requestQueue, request, type) {
       }
 
       const products =
-        type === "FULL"
+        type === ActorType.FULL
           ? await extractItems($, itemListElements, breadCrumbs)
           : await extractBfItems($, itemListElements, breadCrumbs);
       // we don't need to block pushes, we will await them all at the end
@@ -355,7 +354,7 @@ Apify.main(async () => {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
   const requestQueue = await Apify.openRequestQueue();
-  if (type === BF) {
+  if (type === ActorType.BF) {
     const bfUrl = "https://www.lekarna.cz/blackfriday/";
     await requestQueue.addRequest({
       url: bfUrl,
@@ -364,7 +363,7 @@ Apify.main(async () => {
         category: bfUrl
       }
     });
-  } else if (type === "FULL" && test) {
+  } else if (type === ActorType.FULL && test) {
     await requestQueue.addRequest({
       url: "https://www.lekarna.cz/masazni-gely-roztoky/",
       userData: {
@@ -436,7 +435,7 @@ Apify.main(async () => {
   if (!development && type !== "COUNT") {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "lekarna.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== "FULL" ? "lekarna_bf" : "lekarna_cz");
+    await uploadToKeboola(type !== ActorType.FULL ? "lekarna_bf" : "lekarna_cz");
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");

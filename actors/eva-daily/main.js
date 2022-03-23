@@ -134,14 +134,14 @@ Apify.main(async () => {
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
 
-  if (type === "FULL" || type === "COUNT") {
+  if (type === ActorType.FULL || type === "COUNT") {
     await requestQueue.addRequest({
       url: "https://eva.cz",
       userData: {
         label: "START"
       }
     });
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: `https://www.eva.cz/oddeleni/mraznicky-pultove/`,
       userData: {

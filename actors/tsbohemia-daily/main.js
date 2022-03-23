@@ -54,7 +54,7 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
 
   let requestListSources = [];
-  if (type === LABELS.BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       userData: { label: LABELS.BF },
       url: "https://www.tsbohemia.cz/-black-friday_c41438.html"
@@ -87,7 +87,7 @@ Apify.main(async () => {
       });
       log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
     }
-  } else if (type === "test") {
+  } else if (type === ActorType.TEST) {
     await requestQueue.addRequest({
       url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
       userData: {
@@ -553,7 +553,7 @@ Apify.main(async () => {
     let tableName = "tsbohemia";
     if (type === LABELS.PRICE) {
       tableName = `${tableName}_cz_price`;
-    } else if (type === "BF") {
+    } else if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
     }
     await Promise.allSettled([

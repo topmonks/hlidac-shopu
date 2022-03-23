@@ -15,13 +15,10 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 // Not possible to update library with stats for unknown reason
 // import { withPersistedStats } from "../common/stats.js";
 
-const URL_MAIN = "https://www.conrad.cz";
-
-const URL_CATEGORY = "https://www.conrad.cz/restservices/CZ/megamenu";
-
-const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
-
-const PRODUCTS_PER_PAGE = 30;
+export const URL_MAIN = "https://www.conrad.cz";
+export const URL_CATEGORY = "https://www.conrad.cz/restservices/CZ/megamenu";
+export const URL_SITEMAP = "https://www.conrad.cz/sitemap.xml";
+export const PRODUCTS_PER_PAGE = 30;
 
 const LABELS = {
   API_START: "API-START",
@@ -31,7 +28,7 @@ const LABELS = {
   SITEMAP_START: "SITEMAP-START",
   SITEMAP_LIST: "SITEMAP-LIST",
 
-  TEST: "TEST"
+  TEST: "TEST" // FIXME: use ActorType.TEST
 };
 
 const processedIds = new Set();

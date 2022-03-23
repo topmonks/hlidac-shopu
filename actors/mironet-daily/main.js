@@ -14,7 +14,6 @@ import { shopName, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
 const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
-const BF = "BF";
 let stats = {};
 const processedIds = new Set();
 
@@ -95,7 +94,7 @@ Apify.main(async () => {
   }
   // Open request queue and add statrUrl
   const requestQueue = await Apify.openRequestQueue();
-  if (type === BF) {
+  if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: bfUrl,
       userData: {
@@ -330,7 +329,7 @@ Apify.main(async () => {
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "mironet.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== "FULL" ? "mironet_bf" : "mironet");
+    await uploadToKeboola(type !== ActorType.FULL ? "mironet_bf" : "mironet");
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");

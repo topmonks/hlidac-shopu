@@ -14,14 +14,13 @@ const URL_API_START =
   //"https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1"; // Use root categories only
   "https://mw.luxor.cz/api/v1/categories?size=1000"; // Use all categories
 
-const URL_TEMPLATE_CATEGORY = "https://mw.luxor.cz/api/v1/categories?size=1000";
+const URL_TEMPLATE_CATEGORY =
+  //"https://mw.luxor.cz/api/v1/categories?size=100&filter%5BonlyRoot%5D=1";
+  "https://mw.luxor.cz/api/v1/categories?size=1000";
 
 const URL_IMAGE_BASE = "https://cdn.luxor.cz/";
-
 const URL_FRONT = "https://luxor.cz";
-
 const URL_SITEMAP = "https://www.luxor.cz/sitemap.xml";
-
 const PRODUCTS_PER_PAGE = 24; // 24 is default NO products on page
 
 const LABELS = {

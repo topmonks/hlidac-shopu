@@ -14,7 +14,7 @@ const { log } = Apify.utils;
 
 function getTableName(country, type) {
   let tableName = country === COUNTRY.CZ ? "itesco" : "itesco_sk";
-  if (type === "BF") {
+  if (type === ActorType.BF) {
     tableName = `${tableName}_bf`;
   }
   return tableName;
@@ -47,14 +47,14 @@ Apify.main(async () => {
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url,
       userData: {
         label: LABELS.START
       }
     });
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: bfUrl,
       userData: {

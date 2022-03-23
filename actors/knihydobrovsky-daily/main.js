@@ -45,7 +45,7 @@ Apify.main(async () => {
   });
 
   const requestQueue = await Apify.openRequestQueue();
-  if (type === "FULL") {
+  if (type === ActorType.FULL) {
     await requestQueue.addRequest({
       url: "https://www.knihydobrovsky.cz/kategorie"
     });
@@ -64,7 +64,7 @@ Apify.main(async () => {
         }
       });
     }
-  } else if (type === "BF") {
+  } else if (type === ActorType.BF) {
     //await requestQueue.addRequest({
     //  url: "https://www.knihydobrovsky.cz/akce-a-slevy/detail/black-friday-prave-dnes"
     //});
@@ -76,7 +76,7 @@ Apify.main(async () => {
         }
       });
     }
-  } else if (type === "TEST") {
+  } else if (type === ActorType.TEST) {
     // Navigate to https://www.example.com in Playwright with a POST request
     await requestQueue.addRequest({
       url: "https://www.knihydobrovsky.cz/detektivky-thrillery-a-horor?sort=2&currentPage=130",
@@ -133,7 +133,7 @@ Apify.main(async () => {
 
     try {
       await uploadToKeboola(
-        type === "BF" ? "knihydobrovsky_cz_bf" : "knihydobrovsky_cz"
+        type === ActorType.BF ? "knihydobrovsky_cz_bf" : "knihydobrovsky_cz"
       );
       log.info("upload to Keboola finished");
     } catch (err) {

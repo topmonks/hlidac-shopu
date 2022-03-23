@@ -9,4 +9,3 @@ export const LABELS = {
   LIDL_SHOP_SECTION: "LIDL_SHOP_SECTION"
 };
 export const MAIN_URL = "https://www.lidl.cz";
-export const BF = "BF";

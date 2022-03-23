@@ -43,7 +43,7 @@ Apify.main(async () => {
   }
 
   await requestQueue.addRequest({
-    url: type === "FULL" ? rootUrl : rootUrlBf,
+    url: type === ActorType.FULL ? rootUrl : rootUrlBf,
     userData: {
       label: LABELS.START
     }
@@ -81,7 +81,7 @@ Apify.main(async () => {
         ).map(async pageNumber => {
           await requestQueue.addRequest({
             url:
-              type === "FULL"
+              type === ActorType.FULL
                 ? BASE_URL(country, pageNumber)
                 : BASE_URL_BF(country, pageNumber),
             userData: { label: LABELS.PAGE, pageNumber }
@@ -178,7 +178,7 @@ Apify.main(async () => {
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "aaaauto.cz");
       log.info("invalidated Data CDN");
       let tableName = `aaaauto_${country.toLocaleLowerCase()}`;
-      if (type === "BF") {
+      if (type === ActorType.BF) {
         tableName = `${tableName}_bf`;
       }
       await uploadToKeboola(tableName);

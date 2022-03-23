@@ -9,7 +9,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { createInitRequests, getBaseProducts } from "./tools.js";
-import { LABELS, BF, MAIN_URL } from "./const.js";
+import { LABELS, MAIN_URL } from "./const.js";
 import { URL } from "url";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 
@@ -157,7 +157,7 @@ async function scrapeShopCategory(
     });
   }
   let products = $("#s-results .s-grid__item > a").toArray();
-  if (type === BF) {
+  if (type === ActorType.BF) {
     products = $(".product-grid-box").toArray();
   }
   const requests = [];
@@ -204,7 +204,7 @@ async function scrapeShopCategory(
         result.discounted = true;
         result.originalPrice = parseFloat(price);
       }
-      if (type === BF) {
+      if (type === ActorType.BF) {
         result.category = "Black Friday";
       }
       requests.push(
@@ -245,7 +245,7 @@ Apify.main(async () => {
 
   const requestQueue = await Apify.openRequestQueue();
   let sources = [];
-  if (type !== BF) {
+  if (type !== ActorType.BF) {
     sources = createInitRequests();
   } else {
     sources.push({
@@ -319,7 +319,7 @@ Apify.main(async () => {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `lidl.cz`);
     log.info("invalidated Data CDN");
 
-    await uploadToKeboola(type !== BF ? "lidl_cz" : "lidl_cz_bf");
+    await uploadToKeboola(type !== ActorType.BF ? "lidl_cz" : "lidl_cz_bf");
   }
 
   log.info("Finished.");

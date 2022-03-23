@@ -144,7 +144,7 @@ async function fetchProductBase(
   type
 ) {
   const productsCards =
-    type === "BF"
+    type === ActorType.BF
       ? $(".product-prev__content")
       : $(".product-cards, .top-product-cards").find(".product-prev__content");
 
@@ -348,7 +348,7 @@ Apify.main(async () => {
   if (debugLog) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
-  if (type === "BF") {
+  if (type === ActorType.BF) {
     for (const url of bfUrls) {
       await requestQueue.addRequest({
         url,
@@ -439,7 +439,7 @@ Apify.main(async () => {
     log.info("invalidated Data CDN");
 
     let tableName = country === COUNTRY.CZ ? "pilulka_cz" : "pilulka_sk";
-    if (type === "BF") {
+    if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
     }
 
