@@ -6,12 +6,12 @@
   "license": "EPL-2.0",
   "type": "module",
   "dependencies": {
-    "@hlidac-shopu/actors-common": "^1.2.3",
+    "@hlidac-shopu/actors-common": "^1.2.4",
     "apify": "^2.2.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
-    "apify-cli": "^0.6.7"
+    "apify-cli": "^0.7.0"
   },
   "scripts": {
     "start": "node main.js",
