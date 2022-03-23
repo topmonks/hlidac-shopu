@@ -249,9 +249,9 @@ async function handleAPIList(context, stats, crawlContext) {
                 itemName: detail.title,
                 img: detail.image?.url,
                 discounted:
-                  price.price.crossedOut.gross &&
+                  price.price.crossedOut?.gross &&
                   price.price.unit.gross < price.price.crossedOut.gross,
-                originalPrice: price.price.crossedOut.gross,
+                originalPrice: price.price.crossedOut?.gross,
                 currency: price.price.currency,
                 currentPrice: price.price.unit.gross, // gross | net
                 inStock: detail.availability.inStockArticle,
@@ -387,7 +387,7 @@ Apify.main(async () => {
 
   const input = await Apify.getInput();
   const {
-    development = true,
+    development = false,
     type = LABELS.API_START, // API_START | SITEMAP_START
     maxConcurrency = 100,
     maxRequestRetries = 8,
