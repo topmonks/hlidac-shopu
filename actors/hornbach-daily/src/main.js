@@ -6,11 +6,13 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import Apify from "apify";
 import { LABELS, API_URL, PRICE_HEADER } from "./const.js";
 import { siteMapToLinks, getCategoryId, getCategories } from "./tools.js";
 
-const { log, requestAsBrowser } = Apify.utils;
+const { log } = Apify.utils;
+import { gotScraping } from "got-scraping";
 
 async function scrapeSitemapLinks({ body, crawler }, { userInput }) {
   const { country } = userInput;
@@ -32,7 +34,10 @@ async function scrapeSitemapLinks({ body, crawler }, { userInput }) {
   }
 }
 
-async function scrapeCategory({ request, json, crawler }, { userInput, s3 }) {
+async function scrapeCategory(
+  { request, json, crawler },
+  { userInput, s3, proxyConfiguration, stats }
+) {
   const { country } = userInput;
   const { pageNumber, pageCount, articles } = json;
   if (pageNumber === 1) {
@@ -53,13 +58,24 @@ async function scrapeCategory({ request, json, crawler }, { userInput, s3 }) {
   if (articles.length > 0) {
     const requests = [];
     const codes = articles.map(a => a.articleCode);
-    const { body } = await requestAsBrowser({
+    const { body } = await gotScraping.post({
+      headerGeneratorOptions: {
+        browsers: [
+          {
+            name: "chrome",
+            minVersion: 89
+          }
+        ],
+        devices: ["desktop"],
+        locales: ["cs-CZ"],
+        operatingSystems: ["windows"]
+      },
       url: `https://www.hornbach.${country}/mvc/article/displaystates-and-prices.json`,
-      method: "POST",
-      json: true,
-      useHttp2: true,
-      headers: PRICE_HEADER,
-      payload: JSON.stringify(codes)
+      body: JSON.stringify(codes),
+      http2: true,
+      responseType: "json",
+      proxyUrl: proxyConfiguration.newUrl(),
+      headers: PRICE_HEADER
     });
     for (const article of articles) {
       let currentPrice = article.allPrices.displayPrice.price.replace(",", ".");
@@ -94,14 +110,24 @@ async function scrapeCategory({ request, json, crawler }, { userInput, s3 }) {
         })
       );
     }
-    await Promise.all(requests);
+    await Promise.allSettled(requests);
+    const addedItems = requests.length / 2;
+    stats.add("items", addedItems);
+    log.info(`${addedItems} unique products`);
   }
 }
 
 Apify.main(async () => {
   rollbar.init();
   const userInput = await Apify.getInput();
-  const { country = "cz" } = userInput;
+  const {
+    country = "cz",
+    development = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 20,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = userInput;
+
   const requestQueue = await Apify.openRequestQueue();
   if (country === "cz") {
     await requestQueue.addRequest({
@@ -122,13 +148,18 @@ Apify.main(async () => {
   const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
+    groups: proxyGroups
+  });
+
+  const stats = await withPersistedStats(x => x, {
+    items: 0
   });
 
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
-    maxConcurrency: 20,
+    maxConcurrency: development ? 1 : maxConcurrency,
+    maxRequestRetries,
     useSessionPool: true,
     handlePageFunction: async context => {
       const { request } = context;
@@ -136,9 +167,16 @@ Apify.main(async () => {
         userData: { label }
       } = request;
 
+      log.info(`Scraping page ${request.url} with label: ${label}`);
+
       switch (label) {
         case LABELS.CATEGORY:
-          return scrapeCategory(context, { s3, userInput });
+          return scrapeCategory(context, {
+            s3,
+            userInput,
+            proxyConfiguration,
+            stats
+          });
         case LABELS.SITE:
           return scrapeSitemapLinks(context, { userInput });
       }
@@ -151,10 +189,13 @@ Apify.main(async () => {
 
   await crawler.run();
   log.info("crawler finished");
+  await stats.save();
+  if (!development) {
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.${country}`);
+    log.info("invalidated Data CDN");
 
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.${country}`);
-  log.info("invalidated Data CDN");
+    await uploadToKeboola(`hornbach_${country}`);
+  }
 
-  await uploadToKeboola(`hornbach_${country}`);
   log.info("Finished.");
 });
