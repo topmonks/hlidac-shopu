@@ -435,7 +435,9 @@ Apify.main(async () => {
   if (!development && type !== "COUNT") {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "lekarna.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== ActorType.FULL ? "lekarna_bf" : "lekarna_cz");
+    await uploadToKeboola(
+      type !== ActorType.FULL ? "lekarna_bf" : "lekarna_cz"
+    );
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");

@@ -31,7 +31,6 @@ const LABEL = {
   LIST: "LIST"
 };
 
-
 function getBaseUrl(country) {
   switch (country) {
     case COUNTRY.CZ:
