@@ -18,6 +18,7 @@ const dec = x => x - 1;
 class Stats {
   constructor(init) {
     this.stats = defAtom(init);
+    this.interval = setInterval(() => this.log(), 20 * 1000);
   }
 
   inc(key) {
@@ -41,14 +42,19 @@ class Stats {
     Apify.utils.log.info(`stats: ${JSON.stringify(stats)}`);
   }
 
-  async save() {
+  /**
+   * @param final {boolean} - If true, clearInterval apply
+   */
+  async save(final = false) {
+    if (final) {
+      clearInterval(this.interval);
+    }
     const stats = this.stats.deref();
-    await Apify.setValue("STATS", this.get()).then(() =>
-      Apify.utils.log.debug("STATS saved!")
-    );
-    if (stats.ok !== 0) {
+    await Apify.setValue("STATS", this.get());
+    Apify.utils.log.info("STATS saved!");
+    if (stats.ok) {
       Apify.utils.log.info(
-        `Denied ratio: ${(stats.denied / stats.ok) * 100} %`
+        `Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`
       );
     }
     this.log();
@@ -69,7 +75,7 @@ export async function withPersistedStats(fn, init) {
   Apify.events.on("persistState", persistState);
   Apify.events.on("migrating", persistState);
 
-  setInterval(() => state.log(), 20 * 1000);
+  //setInterval(() => state.log(), 20 * 1000);
 
   return state;
 }
