@@ -145,16 +145,22 @@ async function handleAPIList(context, stats, crawlContext) {
     responseType: "json"
   };
 
-  if (!crawlContext.development) {
-    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
-  }
-
   let productOffset = 0;
   let productCount = PRODUCTS_PER_PAGE;
 
   log.debug("Processing category " + request.userData.categoryTitle);
 
   stats.inc("categories");
+
+  log.info(
+    "Product offset " +
+      productOffset +
+      " / " +
+      productCount +
+      " [" +
+      request.userData.categoryTitle +
+      "]"
+  );
 
   do {
     const requestPayload = {
@@ -181,6 +187,10 @@ async function handleAPIList(context, stats, crawlContext) {
       }
     };
 
+    if (!crawlContext.development) {
+      requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
+    }
+
     const { body } = await gotScraping.post(requestOptions, requestPayload);
 
     stats.inc("requests");
@@ -188,28 +198,26 @@ async function handleAPIList(context, stats, crawlContext) {
     // Update product count
     productCount = body.meta.total;
 
-    const products = body.hits.map(({ productId, image, isBuyable }) => {
-      return { productId, isBuyable, image };
-    });
-
-    const productsIds = products.map(({ productId }) => productId);
-
-    const productList = "&id=" + productsIds.join("&id=");
+    const productsIds = body.hits.map(({ productId }) => productId);
+    const productParamList = "&id=" + productsIds.join("&id=");
 
     // Can be useful
     // const breadcrumbs = body.meta.breadcrumb.map(({ name }) => name);
 
+    // BTW: There is not used literal template, because Lint is crazy from it
+    // and it show error - productParamList is undefined
     const requestPrice = {
       url:
         "https://www.conrad.cz/restservices/CZ/products/pricesAndAvailabilities?net=false" +
-        productList,
+        productParamList,
+      proxyUrl: crawlContext.proxyConfiguration.newUrl(),
       responseType: "json"
     };
 
-    stats.inc("requests");
-
     const priceResponse = await gotScraping.get(requestPrice);
     const productsPrices = priceResponse.body.body;
+
+    stats.inc("requests");
 
     const productsPricesMap = new Map();
     for (const ix in productsPrices) {
@@ -217,7 +225,7 @@ async function handleAPIList(context, stats, crawlContext) {
     }
 
     const requestDetail = {
-      url: `https://www.conrad.cz/restservices/CZ/products/products?id=${productList}`,
+      url: `https://www.conrad.cz/restservices/CZ/products/products?${productParamList}`,
       responseType: "json"
     };
 
@@ -230,37 +238,42 @@ async function handleAPIList(context, stats, crawlContext) {
     for (const ix in productsDetails) {
       productsDetailsMap.set(productsDetails[ix].id, productsDetails[ix]);
     }
+
     for (const ix in productsIds) {
       if (!crawlContext.processedIds.has(productsIds[ix])) {
         crawlContext.processedIds.add(productsIds[ix]);
         stats.inc("items");
 
+        // There are two requests needed (price & detail), because price do not containe urlPath
+        // and product name. Set with productId is try to avoid to finding key from first array
+        // (set) in second array
         const detail = productsDetailsMap.get(productsIds[ix]);
         const price = productsPricesMap.get(productsIds[ix]);
 
         if (detail.hasOwnProperty("urlPath")) {
-          const req = {
-            url: URL_MAIN + detail.urlPath,
-            userData: {
-              label: LABELS.API_DETAIL,
-              product: {
-                itemId: productsIds[ix],
-                itemUrl: detail.urlPath,
-                itemName: detail.title,
-                img: detail.image?.url,
-                discounted:
-                  price.price.crossedOut?.gross &&
-                  price.price.unit.gross < price.price.crossedOut.gross,
-                originalPrice: price.price.crossedOut?.gross,
-                currency: price.price.currency,
-                currentPrice: price.price.unit.gross, // gross | net
-                inStock: detail.availability.inStockArticle,
-                vatPercentage: price.price.vatPercentage
-              }
-            }
+          const product = {
+            itemId: productsIds[ix],
+            itemUrl: detail.urlPath,
+            itemName: detail.title,
+            img: detail.image?.url,
+            discounted:
+              price.price.crossedOut?.gross &&
+              price.price.unit.gross < price.price.crossedOut.gross,
+            originalPrice: price.price.crossedOut?.gross,
+            currency: price.price.currency,
+            currentPrice: price.price.unit.gross, // gross | net
+            inStock: detail.availability.inStockArticle,
+            vatPercentage: price.price.vatPercentage
           };
 
-          await crawlContext.requestQueue.addRequest(req);
+          await Promise.allSettled(crawlContext.requests);
+
+          stats.inc("items");
+
+          crawlContext.requests.set(
+            Apify.pushData(product),
+            uploadToS3v2(crawlContext.s3, product)
+          );
         } else {
           stats.inc("missingUrl");
         }
@@ -272,16 +285,6 @@ async function handleAPIList(context, stats, crawlContext) {
     productOffset += PRODUCTS_PER_PAGE;
 
     stats.inc("pages");
-
-    log.info(
-      "Product offset " +
-        productOffset +
-        " / " +
-        productCount +
-        " [" +
-        request.userData.categoryTitle +
-        "]"
-    );
 
     if (crawlContext.testScraping) {
       log.info("Scraping test break");
@@ -297,6 +300,7 @@ async function handleAPIList(context, stats, crawlContext) {
  * @param crawlContext
  * @returns {Promise<void>}
  */
+/*
 async function handleAPIDetail(context, stats, crawlContext) {
   const { request } = context;
 
@@ -309,6 +313,7 @@ async function handleAPIDetail(context, stats, crawlContext) {
     uploadToS3v2(crawlContext.s3, product)
   );
 }
+*/
 
 /**
  * Start sitemap parsing
@@ -454,11 +459,14 @@ Apify.main(async () => {
     log.setLevel(log.LEVELS.DEBUG);
   }
 
+  /*
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
     log.info(JSON.stringify(stats));
   };
-  Apify.events.on("persistState", persistState);
+  */
+
+  //Apify.events.on("persistState", persistState);
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
@@ -491,8 +499,10 @@ Apify.main(async () => {
           return handleAPIStart(context, stats, crawlContext);
         case LABELS.API_LIST:
           return handleAPIList(context, stats, crawlContext);
+        /*
         case LABELS.API_DETAIL:
           return handleAPIDetail(context, stats, crawlContext);
+        */
 
         case LABELS.SITEMAP_START:
           return handleSitemapStart(context, stats, crawlContext);
@@ -514,7 +524,6 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
 
-  await Promise.allSettled(crawlContext.requests);
   await stats.save();
 
   if (!development) {
