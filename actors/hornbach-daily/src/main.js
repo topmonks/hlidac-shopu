@@ -125,24 +125,42 @@ Apify.main(async () => {
     development = false,
     maxRequestRetries = 3,
     maxConcurrency = 20,
-    proxyGroups = ["CZECH_LUMINATI"]
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = "FULL"
   } = userInput;
 
   const requestQueue = await Apify.openRequestQueue();
-  if (country === "cz") {
-    await requestQueue.addRequest({
-      url: "https://www.hornbach.cz/SitemapShop_category_cs_1.xml",
-      userData: {
-        label: LABELS.SITE
-      }
-    });
+  if (type === "FULL") {
+    if (country === "cz") {
+      await requestQueue.addRequest({
+        url: "https://www.hornbach.cz/SitemapShop_category_cs_1.xml",
+        userData: {
+          label: LABELS.SITE
+        }
+      });
+    } else {
+      await requestQueue.addRequest({
+        url: "https://www.hornbach.sk/SitemapShop_category_sk_1.xml",
+        userData: {
+          label: LABELS.SITE
+        }
+      });
+    }
   } else {
-    await requestQueue.addRequest({
-      url: "https://www.hornbach.sk/SitemapShop_category_sk_1.xml",
-      userData: {
-        label: LABELS.SITE
-      }
-    });
+    const link =
+      "https://www.hornbach.cz/shop/Okna-a-prislusenstvi/Okna/S11759/seznam-zbozi.html";
+    const id = getCategoryId(link);
+    await requestQueue.addRequest(
+      {
+        url: API_URL(country, id),
+        userData: {
+          label: LABELS.CATEGORY,
+          categoryId: id,
+          link
+        }
+      },
+      { forefront: true }
+    );
   }
 
   const s3 = new S3Client({ region: "eu-central-1" });
@@ -189,7 +207,7 @@ Apify.main(async () => {
 
   await crawler.run();
   log.info("crawler finished");
-  await stats.save();
+  await stats.save(true);
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `hornbach.${country}`);
     log.info("invalidated Data CDN");
