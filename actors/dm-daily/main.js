@@ -119,8 +119,7 @@ async function handleProducts(
   const { products, currentPage, totalPages } = body;
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
-  // TODO: atomic updates via stats.add("items", products.length);
-  stats.items += products.length;
+  stats.add("items", products.length);
   if (products.length > 0) {
     if (currentPage === 0 && totalPages > 1) {
       for (let i = 1; i < totalPages; i++) {
@@ -141,8 +140,7 @@ async function handleProducts(
     for (const item of products) {
       if (!processedIds.has(item.gtin)) {
         processedIds.add(item.gtin);
-        // TODO: atomic updates via stats.inc("itemsUnique");
-        stats.itemsUnique++;
+        stats.inc("itemsUnique");
         const detail = parseItem(item, country, category);
         if (!detailUrl.deref()) detailUrl.reset(detail.itemUrl);
 
@@ -157,8 +155,7 @@ async function handleProducts(
           })
         );
       } else {
-        // TODO: atomic updates via stats.inc("itemsDuplicity");
-        stats.itemsDuplicity++;
+        stats.inc("itemsDuplicity");
       }
     }
     log.debug(`Found ${requests.length / 2} unique products at ${request.url}`);
@@ -201,7 +198,7 @@ async function handleStart(type, navigation, stats, requestQueue, country) {
   // we are traversing recursively from leaves to trunk
   for (const category of traverseCategories(children)) {
     log.debug(`Found category ${category.title} at link: ${category.link}`);
-    stats.categories++;
+    stats.inc("categories");
     // we need to await here to prevent higher categories
     // to be enqueued sooner than sub-categories
     await requestQueue.addRequest({
