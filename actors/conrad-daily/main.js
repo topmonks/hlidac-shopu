@@ -10,6 +10,8 @@ import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import cheerio from "cheerio";
 
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { defAtom } from "@thi.ng/atom";
 
 // There is problem with stat dependency on command line
 // Not possible to update library with stats for unknown reason
@@ -31,7 +33,6 @@ const LABELS = {
   TEST: "TEST" // FIXME: use ActorType.TEST
 };
 
-const processedIds = new Set();
 const { log } = Apify.utils;
 
 async function getApiKey(stats) {
@@ -250,7 +251,7 @@ async function handleAPIList(context, stats, crawlContext) {
         const detail = productsDetailsMap.get(productsIds[ix]);
         const price = productsPricesMap.get(productsIds[ix]);
 
-        if (detail.hasOwnProperty("urlPath")) {
+        if (detail.hasOwnProperty("urlPath") && price.hasOwnProperty("price")) {
           const product = {
             itemId: productsIds[ix],
             itemUrl: detail.urlPath,
@@ -390,6 +391,9 @@ Apify.main(async () => {
   const s3 = new S3Client({ region: "eu-central-1" });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
+  const detailUrl = defAtom(null);
+  const processedIds = new Set();
+
   const input = await Apify.getInput();
   const {
     development = false,
@@ -524,15 +528,12 @@ Apify.main(async () => {
   log.info("Starting the crawl.");
   await crawler.run();
 
-  await stats.save();
-
   if (!development) {
-    log.info("Calling upload");
     await Promise.allSettled([
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "conrad.cz"),
-      await uploadToKeboola("conrad_cz")
+      stats.save(),
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
+      uploadToKeboola(shopName(detailUrl.deref()))
     ]);
-    log.info("Invalidated Data CDN, upload to Keboola finished");
   }
 
   log.info("Crawler finished");
