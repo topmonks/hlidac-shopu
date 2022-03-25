@@ -4,10 +4,12 @@ import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 import { S3Client } from "@aws-sdk/client-s3";
 
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 
 const HOME_PAGE = "HOME_PAGE";
 const CATEGORY_PAGE = "CATEGORY_PAGE";
@@ -25,8 +27,6 @@ const COUNTRY = {
 const s3 = new S3Client({ region: "eu-central-1" });
 
 const { log } = Apify.utils;
-
-let stats = {};
 
 const { requestAsBrowser } = Apify.utils;
 
@@ -109,10 +109,10 @@ async function pushProducts(products, country, stats, processedIds) {
       );
       count += 1;
     } else {
-      stats.itemsDuplicity += 1;
+      stats.inc("itemsDuplicity");
     }
   }
-  stats.items += count;
+  stats.add("items", count);
   await Promise.all(requests);
 }
 
@@ -213,8 +213,8 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
     links = links.slice(0, 1);
     log.info("Development mode, find products only in 1 category.");
   }
-  stats.categories = links.length;
-  stats.pages += links.length;
+  stats.add("categories", links.length);
+  stats.add("pages", links.length);
   // eslint-disable-next-line no-return-await
   await links.forEach(async l => await requestQueue.addRequest(l));
 };
@@ -282,7 +282,7 @@ const handleCategoryPage = async (
         },
         { forefront: true }
       );
-      stats.pages += 1;
+      stats.inc("pages");
     }
   }
   if (page) {
@@ -313,7 +313,7 @@ const handleCategoryPage = async (
             item.discounted = false;
             item.inStock = true;
             item.category = jsonData.ecommerce.click.products[0].type;
-            stats.items++;
+            stats.inc("items");
             products.push(item);
           } else {
             //Product missing jsonData, we need scrape detail
@@ -324,7 +324,7 @@ const handleCategoryPage = async (
           productsDetail.push(url);
         }
       } else {
-        stats.itemsDuplicity++;
+        stats.inc("itemsDuplicity");
       }
     });
     // if ((await inputPromise).testMode) {
@@ -341,7 +341,7 @@ const handleCategoryPage = async (
             ? `${rootUrl}${productDetail}`
             : productDetail;
         //    stats.items++;
-        stats.pages++;
+        stats.inc("pages");
         await requestQueue.addRequest(
           {
             url: productUrl,
@@ -361,7 +361,7 @@ const handleCategoryPage = async (
         `${products.length}/${productsUrls.length} unique products parsed on page number ${page}`
       );
     }
-    stats.categoriesDone++;
+    stats.inc("categoriesDone");
   }
 };
 
@@ -695,13 +695,13 @@ Apify.main(async () => {
     });
   }
 
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = await withPersistedStats(x => x, {
     categories: 0,
     categoriesDone: 0,
     items: 0,
     pages: 0,
     itemsDuplicity: 0
-  };
+  });
 
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
@@ -746,25 +746,29 @@ Apify.main(async () => {
 
   log.info("Crawling start");
   await crawler.run();
+
   log.info("Crawling finished.");
-  // await persistState();
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
-  log.info(`Total products: ${crawledProducts}.`);
+
+  const tableName = `notino${
+    country === COUNTRY.CZ ? "" : "_" + country.toLowerCase()
+  }${type === ActorType.BF ? "_bf" : ""}`;
+
+  await stats.save();
 
   if (!development && type !== "CZECHITAS") {
-    const tableName = `notino${
-      country === COUNTRY.CZ ? "" : "_" + country.toLowerCase()
-    }${type === ActorType.BF ? "_bf" : ""}`;
-    await invalidateCDN(
-      cloudfront,
-      "EQYSHWUECAQC9",
-      `notino.${country.toLowerCase()}`
-    );
-    log.info("invalidated Data CDN");
-    await uploadToKeboola(tableName);
-    log.info("upload to Keboola finished");
+    await Promise.allSettled([
+      //invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),  // TODO: test it
+      invalidateCDN(
+        cloudfront,
+        "EQYSHWUECAQC9",
+        `notino.${country.toLowerCase()}`
+      ),
+
+      // uploadToKeboola(shopName(detailUrl.deref())) // TODO: test it
+      uploadToKeboola(tableName)
+    ]);
   }
 
-  log.info("ACTOR - Finished");
+  log.info("invalidated Data CDN");
+  log.info("Finished.");
 });
