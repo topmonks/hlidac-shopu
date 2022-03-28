@@ -273,12 +273,12 @@ async function handleAPIList(context, stats, crawlContext) {
 
     log.info(
       "Product offset " +
-      productOffset +
-      " / " +
-      productCount +
-      " [" +
-      request.userData.categoryTitle +
-      "]"
+        productOffset +
+        " / " +
+        productCount +
+        " [" +
+        request.userData.categoryTitle +
+        "]"
     );
 
     productOffset += PRODUCTS_PER_PAGE;
