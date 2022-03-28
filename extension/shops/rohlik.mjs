@@ -15,7 +15,7 @@ export class Rohlik extends StatefulShop {
   get injectionPoint() {
     return [
       "beforeend",
-      '#productDetail div[data-test="product-detail-upper-section"]'
+      '#productDetail div[data-test="product-detail-upper-section"] > div:last-child'
     ];
   }
 
