@@ -148,6 +148,7 @@ async function handleAPIList(context, stats, crawlContext) {
 
   let productOffset = 0;
   let productCount = PRODUCTS_PER_PAGE;
+  const requests = [];
 
   log.debug("Processing category " + request.userData.categoryTitle);
 
@@ -218,8 +219,6 @@ async function handleAPIList(context, stats, crawlContext) {
     const priceResponse = await gotScraping.get(requestPrice);
     const productsPrices = priceResponse.body.body;
 
-    stats.inc("requests");
-
     const productsPricesMap = new Map();
     for (const ix in productsPrices) {
       productsPricesMap.set(productsPrices[ix].id, productsPrices[ix]);
@@ -229,8 +228,6 @@ async function handleAPIList(context, stats, crawlContext) {
       url: `https://www.conrad.cz/restservices/CZ/products/products?${productParamList}`,
       responseType: "json"
     };
-
-    stats.inc("requests");
 
     const detailResponse = await gotScraping.get(requestDetail);
     const productsDetails = detailResponse.body.body;
@@ -243,7 +240,6 @@ async function handleAPIList(context, stats, crawlContext) {
     for (const ix in productsIds) {
       if (!crawlContext.processedIds.has(productsIds[ix])) {
         crawlContext.processedIds.add(productsIds[ix]);
-        stats.inc("items");
 
         // There are two requests needed (price & detail), because price do not containe urlPath
         // and product name. Set with productId is try to avoid to finding key from first array
@@ -267,14 +263,14 @@ async function handleAPIList(context, stats, crawlContext) {
             vatPercentage: price.price.vatPercentage
           };
 
-          await Promise.allSettled(crawlContext.requests);
-
           stats.inc("items");
 
-          crawlContext.requests.set(
+          requests.push(
             Apify.pushData(product),
             uploadToS3v2(crawlContext.s3, product)
           );
+
+          await Promise.allSettled(requests);
         } else {
           stats.inc("missingUrl");
         }
@@ -474,7 +470,6 @@ Apify.main(async () => {
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
-  const requests = new Map();
 
   const crawlContext = {
     requestQueue,
@@ -482,8 +477,7 @@ Apify.main(async () => {
     testScraping,
     proxyConfiguration,
     processedIds,
-    s3,
-    requests
+    s3
   };
 
   const crawler = new Apify.BasicCrawler({
