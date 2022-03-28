@@ -460,7 +460,8 @@ Apify.main(async () => {
     uploadBatchSize = 5000,
     uploadSleepMs = development ? 100 : 1500,
     parallelPushes = 20,
-    feedUrls = []
+    feedUrls = [],
+    testUrl = "https://www.alza.cz/kuchynske-roboty/18850372.htm"
   } = input ?? {};
 
   if (!country) {
@@ -543,7 +544,6 @@ Apify.main(async () => {
       }
     });
   } else if (type === TYPE.TEST) {
-    const testUrl = "https://www.alza.cz/kuchynske-roboty/18850372.htm";
     await requestQueue.addRequest({
       url: testUrl,
       userData: {
