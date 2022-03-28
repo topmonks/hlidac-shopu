@@ -5,18 +5,49 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { LABELS, COUNTRY_TYPE, BASE_URL, BASE_URL_BF } from "./src/const.js";
-import { extractPrice, getHumanDelayMillis } from "./src/tools.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 
-const ROOT_URL =
-  "https://www.aaaauto.cz/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy";
-const ROOT_URL_SK =
-  "https://www.aaaauto.sk/sk/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojazdene-vozidla";
+const LABELS = {
+  START: "START",
+  PAGE: "PAGE"
+};
+const COUNTRY_TYPE = {
+  CZ: "CZ",
+  SK: "SK"
+};
+
+const getRootUrls = (country = COUNTRY_TYPE.CZ) => {
+  const origin = `https://www.aaaauto.${country.toLocaleLowerCase()}`;
+  const root = {
+    [COUNTRY_TYPE.CZ]: `${origin}/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy%2F`,
+    [COUNTRY_TYPE.SK]: `${origin}/sk/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojazdene-vozidla%2F`
+  }[country];
+
+  return {
+    [ActorType.TEST]: root.replace("limit=50", "limit=1"),
+    [ActorType.FULL]: root,
+    [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50`
+  };
+};
+
+const getBaseUrls = (country = COUNTRY_TYPE.CZ, page = 1) => {
+  const tld = country.toLocaleLowerCase();
+  const origin = `https://www.aaaauto.${tld}`;
+  const category = {
+    [COUNTRY_TYPE.CZ]: "ojete-vozy",
+    [COUNTRY_TYPE.SK]: "ojazdene-vozidla"
+  }[country];
+
+  return {
+    [ActorType.TEST]: `${origin}/${tld}/cars.php?carlist=1&limit=1&page=1&modern-request&origListURL=%2F${category}%2F`,
+    [ActorType.FULL]: `${origin}/${tld}/cars.php?carlist=1&limit=50&page=${page}&modern-request&origListURL=%2F${category}%2F`,
+    [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50&page=${page}`
+  };
+};
 
 Apify.main(async () => {
   rollbar.init();
@@ -33,8 +64,6 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"],
     country = COUNTRY_TYPE.CZ
   } = input ?? {};
-  const rootUrl = country === COUNTRY_TYPE.CZ ? ROOT_URL : ROOT_URL_SK;
-  const rootUrlBf = `https://www.aaaauto.${country.toLocaleLowerCase()}/black-friday/?category=92&limit=50`;
 
   const requestQueue = await Apify.openRequestQueue();
 
@@ -43,7 +72,7 @@ Apify.main(async () => {
   }
 
   await requestQueue.addRequest({
-    url: type === ActorType.FULL ? rootUrl : rootUrlBf,
+    url: getRootUrls(country)[type],
     userData: {
       label: LABELS.START
     }
@@ -80,10 +109,7 @@ Apify.main(async () => {
           (_value, index) => index + 1
         ).map(async pageNumber => {
           await requestQueue.addRequest({
-            url:
-              type === ActorType.FULL
-                ? BASE_URL(country, pageNumber)
-                : BASE_URL_BF(country, pageNumber),
+            url: getBaseUrls(country, pageNumber)[type],
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
@@ -182,7 +208,6 @@ Apify.main(async () => {
         tableName = `${tableName}_bf`;
       }
       await uploadToKeboola(tableName);
-      log.info("upload to Keboola finished");
     } catch (e) {
       console.log(e);
     }
@@ -190,3 +215,27 @@ Apify.main(async () => {
 
   console.log("Finished.");
 });
+
+/**
+ *
+ * @param {String} string
+ * @returns {undefined|number}
+ */
+export function extractPrice(string) {
+  const match = string.match(/[\d*\s]*\s[Kč|€]/g);
+  if (match && match.length > 0) {
+    const value = match[0]
+      .replace(/\s/g, "")
+      .replace("Kč", "")
+      .replace("€", "")
+      .replace("Cena", "");
+    return parseInt(value);
+  }
+  return undefined;
+}
+
+export function getHumanDelayMillis(min = 400, max = 800) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
