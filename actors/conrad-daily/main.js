@@ -154,16 +154,6 @@ async function handleAPIList(context, stats, crawlContext) {
 
   stats.inc("categories");
 
-  log.info(
-    "Product offset " +
-      productOffset +
-      " / " +
-      productCount +
-      " [" +
-      request.userData.categoryTitle +
-      "]"
-  );
-
   do {
     const requestPayload = {
       json: {
@@ -198,7 +188,9 @@ async function handleAPIList(context, stats, crawlContext) {
     stats.inc("requests");
 
     // Update product count
-    productCount = body.meta.total;
+    if (body.meta.total) {
+      productCount = body.meta.total;
+    }
 
     const productsIds = body.hits.map(({ productId }) => productId);
     const productParamList = "&id=" + productsIds.join("&id=");
@@ -278,6 +270,16 @@ async function handleAPIList(context, stats, crawlContext) {
         stats.inc("itemsDuplicity");
       }
     }
+
+    log.info(
+      "Product offset " +
+      productOffset +
+      " / " +
+      productCount +
+      " [" +
+      request.userData.categoryTitle +
+      "]"
+    );
 
     productOffset += PRODUCTS_PER_PAGE;
 
