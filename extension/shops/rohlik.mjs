@@ -13,7 +13,10 @@ const didRenderDetail = mutations =>
 
 export class Rohlik extends StatefulShop {
   get injectionPoint() {
-    return ["afterend", "#productDetail div.kfgNRJ"];
+    return [
+      "beforeend",
+      '#productDetail div[data-test="product-detail-upper-section"]'
+    ];
   }
 
   get detailSelector() {
