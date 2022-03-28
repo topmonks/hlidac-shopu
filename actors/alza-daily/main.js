@@ -182,11 +182,9 @@ async function handlePage(
       log.info(`Found ${items.length} storing them, ${request.url}`);
       stats.add("items", items.length);
       for (const product of items) {
-        const slug = await s3FileName(product);
         if (!development) {
           await uploadToS3v2(s3, product, {
             priceCurrency: currency,
-            slug,
             inStock: true
           });
         }
@@ -614,7 +612,7 @@ Apify.main(async () => {
               proxyUrl: await proxyConfiguration.newUrl(session.id),
               payload: data,
               headers: {
-                "User-Agent": userAgent(),
+                "User-Agent": userAgent().toString(),
                 accept: "application/json, text/javascript, */*; q=0.01",
                 "Content-type": "application/json",
                 Referer: `https://www.alza.${country.toLowerCase()}/black-friday`,
@@ -670,7 +668,7 @@ Apify.main(async () => {
               url: request.url,
               proxyUrl: proxyConfiguration.newUrl(session.id),
               headers: {
-                "User-Agent": userAgent(),
+                "User-Agent": userAgent().toString(),
                 "Accept-Language":
                   "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                 "Upgrade-Insecure-Requests": 1,
