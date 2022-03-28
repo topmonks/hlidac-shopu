@@ -20,7 +20,7 @@ const COUNTRY_TYPE = {
   SK: "SK"
 };
 
-const getRootUrls = (country = COUNTRY_TYPE.CZ) => {
+const getRootUrl = (type = ActorType.FULL, country = COUNTRY_TYPE.CZ) => {
   const origin = `https://www.aaaauto.${country.toLocaleLowerCase()}`;
   const root = {
     [COUNTRY_TYPE.CZ]: `${origin}/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy%2F`,
@@ -31,10 +31,14 @@ const getRootUrls = (country = COUNTRY_TYPE.CZ) => {
     [ActorType.TEST]: root.replace("limit=50", "limit=1"),
     [ActorType.FULL]: root,
     [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50`
-  };
+  }[type];
 };
 
-const getBaseUrls = (country = COUNTRY_TYPE.CZ, page = 1) => {
+const getBaseUrl = (
+  type = ActorType.FULL,
+  country = COUNTRY_TYPE.CZ,
+  page = 1
+) => {
   const tld = country.toLocaleLowerCase();
   const origin = `https://www.aaaauto.${tld}`;
   const category = {
@@ -46,7 +50,7 @@ const getBaseUrls = (country = COUNTRY_TYPE.CZ, page = 1) => {
     [ActorType.TEST]: `${origin}/${tld}/cars.php?carlist=1&limit=1&page=1&modern-request&origListURL=%2F${category}%2F`,
     [ActorType.FULL]: `${origin}/${tld}/cars.php?carlist=1&limit=50&page=${page}&modern-request&origListURL=%2F${category}%2F`,
     [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50&page=${page}`
-  };
+  }[type];
 };
 
 Apify.main(async () => {
@@ -72,7 +76,7 @@ Apify.main(async () => {
   }
 
   await requestQueue.addRequest({
-    url: getRootUrls(country)[type],
+    url: getRootUrl(type, country),
     userData: {
       label: LABELS.START
     }
@@ -109,7 +113,7 @@ Apify.main(async () => {
           (_value, index) => index + 1
         ).map(async pageNumber => {
           await requestQueue.addRequest({
-            url: getBaseUrls(country, pageNumber)[type],
+            url: getBaseUrl(type, country, pageNumber),
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
