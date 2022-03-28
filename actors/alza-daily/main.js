@@ -29,15 +29,15 @@ const LABEL = {
   LEFT_MENU: "LEFTMENU",
   XML: "XML",
   FEED: "FEED",
-  BLACK_FRIDAY: "BF"
+  BF: "BF"
 };
 
 const TYPE = {
-  FULL: "FULL",
-  TRHAK: "TRHAK",
+  FULL: ActorType.FULL,
+  BF: ActorType.BF,
+  TEST: ActorType.TEST,
   FEED: "FEED",
-  BLACK_FRIDAY: "BF",
-  TEST: "TEST"
+  TRHAK: "TRHAK"
 };
 
 async function enqueueRequests(requestQueue, items, foreFront = false) {
@@ -430,11 +430,11 @@ async function handleFeed(items, stats, s3, options = {}) {
 async function callKeboolaUpload(country, type) {
   const countryLower = country.toLowerCase();
   let tableName = "alza";
-  if (type === "FULL" && countryLower !== "cz") {
+  if (type === TYPE.FULL && countryLower !== "cz") {
     tableName = `${tableName}_${countryLower}`;
-  } else if (type === "BF") {
+  } else if (type === TYPE.BF) {
     tableName = `${tableName}_${countryLower}_bf`;
-  } else if (type === "FEED") {
+  } else if (type === TYPE.FEED) {
     tableName = `${tableName}_${countryLower}_feed`;
   }
   try {
@@ -537,11 +537,11 @@ Apify.main(async () => {
         }
       });
     }
-  } else if (type === TYPE.BLACK_FRIDAY) {
+  } else if (type === TYPE.BF) {
     await requestQueue.addRequest({
       url: `https://www.alza.${country.toLowerCase()}/black-friday`,
       userData: {
-        label: LABEL.BLACK_FRIDAY
+        label: LABEL.BF
       }
     });
   } else if (type === TYPE.TEST) {
@@ -577,8 +577,8 @@ Apify.main(async () => {
 
       log.info(`Visiting: ${request.url}, ${label}`);
       if (
-        (label !== "START" || label !== "BF") &&
-        type !== "FEED" &&
+        (label !== "START" || label !== LABEL.BF) && // what is LABEL.START?
+        type !== TYPE.FEED &&
         isMalformedUrl(request.url, country.toLowerCase())
       ) {
         log.info(`Malformed url ignored: ${request.url}`);
@@ -586,7 +586,7 @@ Apify.main(async () => {
       }
 
       let response, parsedResponse, cheerioContext;
-      if (label === "FEED") {
+      if (label === LABEL.FEED) {
         response = await gotScraping({
           responseType: "json",
           timeout: {
@@ -605,7 +605,7 @@ Apify.main(async () => {
           );
         }
       } else {
-        if (type === "BF" && label === "PAGE") {
+        if (type === TYPE.BF && label === LABEL.PAGE) {
           try {
             const data = JSON.stringify(payload);
             const response = await httpRequest({
@@ -688,7 +688,7 @@ Apify.main(async () => {
           const { body } = response;
 
           // for this we don't need to parse the response in cheerio
-          if (request.userData.label === "XML") {
+          if (request.userData.label === LABEL.XML) {
             const categoryUrls = body.match(domain.regex);
             if (!categoryUrls) return;
 
@@ -698,7 +698,7 @@ Apify.main(async () => {
               await requestQueue.addRequest({
                 url,
                 userData: {
-                  label: "PAGE",
+                  label: LABEL.PAGE,
                   baseUrl: url
                 }
               });
@@ -728,9 +728,9 @@ Apify.main(async () => {
       }
 
       switch (label) {
-        case "LEFTMENU":
+        case LABEL.LEFTMENU:
           return handleLeftMenu(context, domain, requestQueue, stats);
-        case "PAGE":
+        case LABEL.PAGE:
           return handlePage(
             context,
             country,
@@ -742,7 +742,7 @@ Apify.main(async () => {
             development,
             s3
           );
-        case "DETAIL":
+        case LABEL.DETAIL:
           return handleDetail(
             context,
             country,
@@ -751,11 +751,11 @@ Apify.main(async () => {
             development,
             s3
           );
-        case "BF":
+        case LABEL.BF:
           return handleBF(context, domain, requestQueue, country, session);
-        case "TRHAK":
+        case LABEL.TRHAK:
           return handleTrhak(context, domain, requestQueue);
-        case "TRHAK_DETAIL":
+        case LABEL.TRHAK_DETAIL:
           return handleTrhakDetail(
             context,
             domain,
@@ -764,7 +764,7 @@ Apify.main(async () => {
             development,
             s3
           );
-        case "FEED":
+        case LABEL.FEED:
           log.info(`Items count: ${response.body.items[0].length}`);
           stats.inc("pages");
           return handleFeed(response.body.items[0], stats, s3, {
