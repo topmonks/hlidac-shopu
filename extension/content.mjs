@@ -21,7 +21,7 @@ function fetchData(url, info) {
   );
   searchString.append("url", url);
   searchString.append("ext", getVersion());
-  return fetch(`https://api2.hlidacshopu.cz/detail?${searchString}`).then(
+  return fetch(`https://api.hlidacshopu.cz/v2/detail?${searchString}`).then(
     resp => {
       if (resp.status === 404) {
         return resp.json();
