@@ -230,7 +230,7 @@ jobs:
 
   build-safari-extension:
     macos:
-      xcode: "12.0.1"
+      xcode: "13.3.0"
     steps:
       - checkout
       - attach_workspace:
@@ -258,7 +258,7 @@ jobs:
 
   build-ios-app:
     macos:
-      xcode: "12.0.1"
+      xcode: "13.3.0"
     steps:
       - checkout
       - attach_workspace:
