@@ -240,7 +240,12 @@ async function handleAPIList(context, stats, crawlContext) {
         const detail = productsDetailsMap.get(productsIds[ix]);
         const price = productsPricesMap.get(productsIds[ix]);
 
-        if (detail.hasOwnProperty("urlPath") && price.hasOwnProperty("price")) {
+        if (
+          detail &&
+          price &&
+          detail.hasOwnProperty("urlPath") &&
+          price.hasOwnProperty("price")
+        ) {
           const product = {
             itemId: productsIds[ix],
             itemUrl: detail.urlPath,
