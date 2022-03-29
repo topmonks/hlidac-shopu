@@ -62,11 +62,10 @@ async function traverseCategory(crawlContext, category, stats) {
   const categoryId = categoryUrl.split("-").pop();
   const categoryTitle = category.title;
 
-  log.debug("Adding category " + categoryId + " " + categoryTitle);
+  log.info("Adding category " + categoryId + " " + categoryTitle);
 
   const req = {
-    url: `https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=${crawlContext.apiKey}&id=${categoryId}`,
-    //url: URL_MAIN + categoryUrl,
+    url: `https://api.conrad.com/search/1/v3/facetSearch/CZ/cs/b2c?apikey=${crawlContext.apiKey}`,
     userData: {
       categoryId,
       categoryUrl,
@@ -74,7 +73,8 @@ async function traverseCategory(crawlContext, category, stats) {
       apiKey: crawlContext.apiKey,
       label: LABELS.API_LIST,
       page: 1
-    }
+    },
+    uniqueKey: Math.random().toString()
   };
 
   await crawlContext.requestQueue.addRequest(req);
@@ -146,51 +146,52 @@ async function handleAPIList(context, stats, crawlContext) {
     responseType: "json"
   };
 
-  let productOffset = 0;
-  let productCount = PRODUCTS_PER_PAGE;
   const requests = [];
 
-  log.debug("Processing category " + request.userData.categoryTitle);
+  if (crawlContext.debug) {
+    log.info("Processing category " + request.userData.categoryTitle);
+  }
 
   stats.inc("categories");
-
-  do {
-    const requestPayload = {
-      json: {
-        "facetFilter": [],
-        "from": productOffset,
-        "globalFilter": [
-          {
-            "field": "categoryId",
-            "type": "TERM_OR",
-            "values": [request.userData.categoryId]
-          }
-        ],
-        "query": "",
-        "size": PRODUCTS_PER_PAGE,
-        "sort": [
-          {
-            "field": "price",
-            "order": "asc"
-          }
-        ],
-        "disabledFeatures": ["FIRST_LEVEL_CATEGORIES_ONLY"],
-        "enabledFeatures": ["and_filters"]
+  let requestPayload = request.userData.json
+    ? {
+        json: request.userData.json
       }
-    };
+    : {
+        json: {
+          "facetFilter": [],
+          "from": 0,
+          "globalFilter": [
+            {
+              "field": "categoryId",
+              "type": "TERM_OR",
+              "values": [request.userData.categoryId]
+            }
+          ],
+          "query": "",
+          "size": PRODUCTS_PER_PAGE,
+          "sort": [
+            {
+              "field": "price",
+              "order": "asc"
+            }
+          ],
+          "disabledFeatures": ["FIRST_LEVEL_CATEGORIES_ONLY"],
+          "enabledFeatures": ["and_filters"]
+        }
+      };
 
-    if (!crawlContext.development) {
-      requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
-    }
+  if (!crawlContext.development) {
+    requestOptions.proxyUrl = crawlContext.proxyConfiguration.newUrl();
+  }
 
-    const { body } = await gotScraping.post(requestOptions, requestPayload);
+  const response = await gotScraping.post(requestOptions, requestPayload);
 
+  const { body } = response;
+
+  // Update product count
+  if (requestPayload.json.from < body.meta.total) {
     stats.inc("requests");
-
-    // Update product count
-    if (body.meta.total) {
-      productCount = body.meta.total;
-    }
 
     const productsIds = body.hits.map(({ productId }) => productId);
     const productParamList = "&id=" + productsIds.join("&id=");
@@ -271,48 +272,38 @@ async function handleAPIList(context, stats, crawlContext) {
       }
     }
 
-    log.info(
-      "Product offset " +
-        productOffset +
-        " / " +
-        productCount +
-        " [" +
-        request.userData.categoryTitle +
-        "]"
+    if (crawlContext.debug) {
+      log.info(
+        "Product offset " +
+          requestPayload.json.from +
+          " [" +
+          request.userData.categoryTitle +
+          "]"
+      );
+    }
+
+    requestPayload.json.from += PRODUCTS_PER_PAGE;
+
+    await crawlContext.requestQueue.addRequest(
+      {
+        url: request.url,
+        userData: {
+          label: LABELS.API_LIST,
+          categoryTitle: request.userData.categoryTitle,
+          json: requestPayload.json
+        },
+        uniqueKey: Math.random().toString()
+      },
+      {
+        forefront: true
+      }
     );
 
-    productOffset += PRODUCTS_PER_PAGE;
-
     stats.inc("pages");
-
-    if (crawlContext.testScraping) {
-      log.info("Scraping test break");
-      break;
-    }
-  } while (productOffset < productCount);
+  } else {
+    log.info("LAST PRODUCT IN CATEGORY");
+  }
 }
-
-/**
- * Handle API product detail scraping
- * @param context
- * @param stats Statistics reference
- * @param crawlContext
- * @returns {Promise<void>}
- */
-/*
-async function handleAPIDetail(context, stats, crawlContext) {
-  const { request } = context;
-
-  const product = request.userData.product;
-
-  stats.inc("items");
-
-  crawlContext.requests.set(
-    Apify.pushData(product),
-    uploadToS3v2(crawlContext.s3, product)
-  );
-}
-*/
 
 /**
  * Start sitemap parsing
@@ -395,6 +386,7 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     development = false,
+    debug = true,
     type = LABELS.API_START, // API_START | SITEMAP_START
     maxConcurrency = 100,
     maxRequestRetries = 8,
@@ -404,6 +396,7 @@ Apify.main(async () => {
   const testScraping = type === "TEST";
 
   log.info("DEVELOPMENT: " + development);
+  log.info("DEBUG: " + debug);
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -457,18 +450,9 @@ Apify.main(async () => {
       break;
   }
 
-  if (development) {
+  if (debug || development) {
     log.setLevel(log.LEVELS.DEBUG);
   }
-
-  /*
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  */
-
-  //Apify.events.on("persistState", persistState);
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
@@ -476,6 +460,7 @@ Apify.main(async () => {
   const crawlContext = {
     requestQueue,
     development,
+    debug,
     testScraping,
     proxyConfiguration,
     processedIds,
@@ -492,22 +477,22 @@ Apify.main(async () => {
         url,
         userData: { label }
       } = context.request;
-      log.debug("Page opened.", { label, url });
+      log.info(
+        `Page ${context.request.url} opened ${JSON.stringify(
+          context.request.userData
+        )}`
+      );
       switch (label) {
         case LABELS.API_START:
         case LABELS.TEST:
-          return handleAPIStart(context, stats, crawlContext);
+          return await handleAPIStart(context, stats, crawlContext);
         case LABELS.API_LIST:
-          return handleAPIList(context, stats, crawlContext);
-        /*
-        case LABELS.API_DETAIL:
-          return handleAPIDetail(context, stats, crawlContext);
-        */
+          return await handleAPIList(context, stats, crawlContext);
 
         case LABELS.SITEMAP_START:
-          return handleSitemapStart(context, stats, crawlContext);
+          return await handleSitemapStart(context, stats, crawlContext);
         case LABELS.SITEMAP_LIST:
-          return handleSitemapList(context, stats, crawlContext);
+          return await handleSitemapList(context, stats, crawlContext);
 
         default:
           log.error("Unknown label " + label);
