@@ -26,11 +26,14 @@ const LABELS = {
   API_START: "API-START",
   API_LIST: "API-LIST",
   API_DETAIL: "API-DETAIL",
-
   SITEMAP_START: "SITEMAP-START",
-  SITEMAP_LIST: "SITEMAP-LIST",
+  SITEMAP_LIST: "SITEMAP-LIST"
+};
 
-  TEST: "TEST" // FIXME: use ActorType.TEST
+const TYPE = {
+  FULL: ActorType.FULL,
+  TEST: ActorType.TEST,
+  COUNT: "COUNT"
 };
 
 const { log } = Apify.utils;
@@ -81,11 +84,16 @@ async function traverseCategory(crawlContext, category, stats) {
 
   stats.inc("categoriesParsed");
 
-  if (category.hasOwnProperty("children")) {
-    if (category.children.length) {
-      for (let childIx in category.children) {
-        await traverseCategory(crawlContext, category.children[childIx], stats);
-      }
+  if (!category.children?.length) {
+    log.debug("No category to traverse");
+    return;
+  }
+
+  for (let childIx in category.children) {
+    await traverseCategory(crawlContext, category.children[childIx], stats);
+    if (crawlContext.type === TYPE.TEST) {
+      log.debug("Stopping after first category child");
+      break;
     }
   }
 }
@@ -103,10 +111,14 @@ async function traverseCategoryStart(crawlContext, stats) {
   stats.inc("requests");
 
   const { body } = await gotScraping(requestOptions);
-  const categories = body.body;
+  const categories = body.body || [];
 
   for (let categoryIx in categories) {
     await traverseCategory(crawlContext, categories[categoryIx], stats);
+    if (crawlContext.type === TYPE.TEST) {
+      log.debug("Stopping after first category");
+      break;
+    }
   }
 }
 
@@ -328,8 +340,8 @@ async function handleSitemapStart(context, stats, crawlContext) {
   stats.inc("requests");
 
   const { body } = await gotScraping(requestOptions);
-
   const $ = cheerio.load(body, { xmlMode: true });
+  let requestCount = 0;
 
   $("sitemap").each((ix, el) => {
     const url = $(el).find("loc").html();
@@ -340,8 +352,12 @@ async function handleSitemapStart(context, stats, crawlContext) {
           label: LABELS.SITEMAP_LIST
         }
       };
-
+      if (crawlContext.type === TYPE.TEST && requestCount > 1) {
+        log.debug("Skipping " + url);
+        return;
+      }
       crawlContext.requestQueue.addRequest(req);
+      requestCount++;
     }
   });
 }
@@ -353,7 +369,7 @@ async function handleSitemapStart(context, stats, crawlContext) {
  * @param crawlContext
  * @returns {Promise<void>}
  */
-async function handleSitemapList(context, stats, crawlContext) {
+async function handleSitemapList(context, stats, { processedIds }) {
   const { request } = context;
 
   const requestOptions = {
@@ -392,14 +408,13 @@ Apify.main(async () => {
   const {
     development = false,
     debug = true,
-    type = LABELS.API_START, // API_START | SITEMAP_START
+    type = ActorType.FULL,
     maxConcurrency = 100,
     maxRequestRetries = 8,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
 
-  const testScraping = type === "TEST";
-
+  log.info("TYPE: " + type);
   log.info("DEVELOPMENT: " + development);
   log.info("DEBUG: " + debug);
 
@@ -424,8 +439,8 @@ Apify.main(async () => {
   log.info("Type " + type);
 
   switch (type) {
-    // Scraping via API
-    case LABELS.API_START:
+    case TYPE.TEST:
+    case TYPE.FULL:
       sources.push({
         url: URL_MAIN,
         userData: {
@@ -435,21 +450,11 @@ Apify.main(async () => {
       break;
 
     // Product counter
-    case LABELS.SITEMAP_START:
+    case TYPE.COUNT:
       sources.push({
         url: URL_SITEMAP,
         userData: {
           label: LABELS.SITEMAP_START
-        }
-      });
-      break;
-
-    // Test scraping via API
-    case LABELS.TEST:
-      sources.push({
-        url: URL_MAIN,
-        userData: {
-          label: LABELS.API_START
         }
       });
       break;
@@ -466,7 +471,7 @@ Apify.main(async () => {
     requestQueue,
     development,
     debug,
-    testScraping,
+    type,
     proxyConfiguration,
     processedIds,
     s3
@@ -489,7 +494,6 @@ Apify.main(async () => {
       );
       switch (label) {
         case LABELS.API_START:
-        case LABELS.TEST:
           return await handleAPIStart(context, stats, crawlContext);
         case LABELS.API_LIST:
           return await handleAPIList(context, stats, crawlContext);
