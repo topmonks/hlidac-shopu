@@ -1,4 +1,5 @@
-import { COUNTRY, BF } from "./const.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { COUNTRY } from "./main.js";
 
 export function parsePrice(text) {
   return parseFloat(
@@ -39,7 +40,7 @@ export function getRootUrl(userInput) {
 export function getTableName(userInput) {
   const { type, country = COUNTRY.CZ } = userInput;
   let tableName = `dek_${country.toLowerCase()}`;
-  if (type === BF) {
+  if (type === ActorType.BF) {
     tableName = `${tableName}_bf`;
   }
   return tableName;

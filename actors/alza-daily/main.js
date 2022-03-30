@@ -12,9 +12,9 @@ import { gotScraping } from "got-scraping";
 import httpRequest from "@apify/http-request";
 import cheerio from "cheerio";
 import UserAgent from "user-agents";
-import { extractItems, parseDetail } from "./src/detailParser.js";
-import getCountry from "./src/countryProvider.js";
-import { parseTrhakDetail } from "./src/trhakDetailParser.js";
+import { extractItems, parseDetail } from "./detailParser.js";
+import getCountry from "./countryProvider.js";
+import { parseTrhakDetail } from "./trhakDetailParser.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
 

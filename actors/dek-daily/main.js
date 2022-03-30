@@ -8,7 +8,6 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
-import { LABELS, COUNTRY } from "./const.js";
 import {
   getTableName,
   getRootUrl,
@@ -17,6 +16,15 @@ import {
 } from "./tools.js";
 
 const { log } = Apify.utils;
+
+export const COUNTRY = {
+  CZ: "CZ",
+  SK: "SK"
+};
+export const LABELS = {
+  START: "START",
+  CATEGORY: "CATEGORY"
+};
 
 async function scrapeScriptTags({ $, crawler }, { userInput }) {
   for (const script of $("script")) {

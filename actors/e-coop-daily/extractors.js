@@ -1,4 +1,4 @@
-import { LABELS, COOP_BOX_URL } from "./const.js";
+import { LABELS, COOP_BOX_URL } from "./main.js";
 
 /**
  * @param {CheerioSelector} $
