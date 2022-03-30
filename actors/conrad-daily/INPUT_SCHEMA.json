@@ -25,6 +25,12 @@
       "description": "If checked then actors runs at development mode",
       "default": false
     },
+    "debug": {
+      "title": "debug",
+      "type": "boolean",
+      "description": "If checked then actors will show debug logs",
+      "default": false
+    },
     "maxConcurrency": {
       "title": "maxConcurrency",
       "type": "integer",
