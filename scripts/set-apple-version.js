@@ -4,7 +4,7 @@ const { execSync } = require("child_process");
 
 const extensionPath = path.resolve(__dirname, "../extension");
 const paths = new Map([
-  ["macOS", path.resolve(__dirname, "../apple/osx/hlidac shopu")],
+  ["macOS", path.resolve(__dirname, "../apple/macos")],
   ["iOS", path.resolve(__dirname, "../apple/ios")]
 ]);
 
