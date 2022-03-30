@@ -1,0 +1,10 @@
+{
+  "name": "@hlidac-shopu/extension",
+  "version": "1.0.0",
+  "description": "Extension",
+  "dependencies": {
+    "@hlidac-shopu/lib": "workspace:lib",
+    "lit-element": "3.2.0",
+    "lit-html": "2.2.1"
+  }
+}

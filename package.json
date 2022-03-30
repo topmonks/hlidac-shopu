@@ -78,7 +78,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
-    "build": "run-all build:extension -p build:firefox build:chrome",
+    "build": "npm-run-all build:extension -p build:firefox build:chrome",
     "start": "run-p 'start:*'",
     "test": "run-p 'test:*'",
     "test:lib": "wtr lib/**/*.test.mjs --coverage",
@@ -101,9 +101,9 @@
     "build:chrome:build": "web-ext build --overwrite-dest",
     "build:chrome:rename": "node scripts/rename.mjs dist/*.zip 'hl_da_shop_(.*)' 'chrome-extension%1'",
     "build:chrome": "run-s build:chrome:build build:chrome:rename",
+    "start:safari": "open 'apple/macos/hlidac shopu.xcodeproj'",
     "start:chrome": "web-ext run --target=chromium",
     "publish:chrome": "chrome-webstore-upload upload --auto-publish --extension-id=plmlonggbfebcjelncogcnclagkmkikk --source=dist/chrome-extension-$(PRINT=manifest ./version.sh).zip",
-    "open:osx": "open './apple/osx/hlidac shopu/hlidac shopu.xcodeproj'",
     "start:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid",
     "build:www.hlidacshopu.cz": "BLENDID_CONFIG_PATH=./www.hlidacshopu.cz/config/ dotenv blendid -- build --production",
     "outdated": "yarn upgrade-interactive"

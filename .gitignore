@@ -24,16 +24,16 @@ coverage/
 /test-results.xml
 
 
-/apple/osx/build/
-apple/osx/hlidac shopu/fastlane/README.md
-apple/osx/hlidac shopu/fastlane/report.xml
-apple/osx/hlidac shopu/hlidac shopu.app.dSYM.zip
-apple/osx/hlidac shopu/hlidac shopu.app/
-apple/osx/hlidac shopu/hlidac shopu.pkg
-project.xcworkspace/
-xcuserdata/
-*.xcuserstate
-*.xcscheme
+apple/safari/build/
+apple/safari/fastlane/README.md
+apple/safari/fastlane/report.xml
+apple/safari/hlidac shopu.app.dSYM.zip
+apple/safari/hlidac shopu.app/
+apple/safari/hlidac shopu.pkg
+apple/**/project.xcworkspace/
+apple/**/xcuserdata/
+apple/**/*.xcuserstate
+apple/**/*.xcscheme
 
 extension/content.js.map
 diff.json

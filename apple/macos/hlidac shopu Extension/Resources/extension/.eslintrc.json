@@ -1,0 +1,22 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2018
+  },
+  "env": {
+    "es6": true,
+    "webextensions": true,
+    "browser": true,
+    "node": false
+  },
+  "globals": {
+    "globalThis": "writable"
+  },
+  "extends": ["prettier", "plugin:es/restrict-to-es2018"],
+  "rules": {
+    "semi": "error",
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-console": "off"
+  }
+}
