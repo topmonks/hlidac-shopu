@@ -23,6 +23,21 @@
         "CZECHITAS"
       ]
     },
+    "country": {
+      "title": "type",
+      "type": "string",
+      "description": "Specify the target country — CZ or SK",
+      "editor": "select",
+      "default": "CZ",
+      "enum": [
+        "CZ",
+        "SK"
+      ],
+      "enumTitles": [
+        "CZ",
+        "SK"
+      ]
+    },
     "development": {
       "title": "development",
       "type": "boolean",
