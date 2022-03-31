@@ -9,7 +9,7 @@
   {% for import in imports %}
     <link rel="preload" as="script" href="/assets/esm/{{ import.path }}">
   {% endfor %}
-  <link rel="preload" as="fetch" href="https://api2.hlidacshopu.cz/shop-numbers" crossorigin />
+  <link rel="preload" as="fetch" href="https://api.hlidacshopu.cz/v2/shop-numbers" crossorigin />
   <link rel="preload" as="fetch" href="https://data.hlidacshopu.cz/app/stats.jsonld" crossorigin />
 {% endblock %}
 
