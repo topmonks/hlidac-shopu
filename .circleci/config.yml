@@ -237,20 +237,20 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - v1-gem-cache-macos-{{ checksum "apple/osx/hlidac shopu/Gemfile.lock" }}
+            - v1-gem-cache-macos-{{ checksum "apple/macos/Gemfile.lock" }}
       - run:
-          working_directory: "apple/osx/hlidac shopu"
+          working_directory: "apple/macos"
           command: bundle install
       - run:
           name: Build and Release Mac Extension App
-          working_directory: "apple/osx/hlidac shopu"
+          working_directory: "apple/macos"
           command: |
             echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
             bundle exec fastlane release
       - save_cache:
           paths:
             - ~/.bundle
-          key: v1-gem-cache-macos-{{ checksum "apple/osx/hlidac shopu/Gemfile.lock" }}
+          key: v1-gem-cache-macos-{{ checksum "apple/macos/Gemfile.lock" }}
       - slack/notify:
           event: fail
           template: basic_fail_1
