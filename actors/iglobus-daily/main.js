@@ -14,10 +14,13 @@ import { URL } from "url";
 const { log } = Apify.utils;
 const s3 = new S3Client({ region: "eu-central-1" });
 
-const HOST = "https://www.iglobus.cz";
-const listUrl = x => `${HOST}${x}/core?razeni=cena&strana=0`;
-const productUrl = x => `${HOST}${x}`;
-const canonicalUrl = x => new URL(x, HOST);
+const STORES = {
+  ZLI: "ZLI",
+  OST: "OST"
+};
+const ROOT = "https://shop.iglobus.cz";
+const rootUrl = (store = STORES.OST) =>
+  `${ROOT}/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72`;
 
 Apify.main(async () => {
   rollbar.init();
@@ -30,7 +33,8 @@ Apify.main(async () => {
     development = false,
     maxRequestRetries = 3,
     maxConcurrency = 50,
-    proxyGroups = ["CZECH_LUMINATI"]
+    proxyGroups = ["CZECH_LUMINATI"],
+    store = STORES.OST
   } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
@@ -52,7 +56,7 @@ Apify.main(async () => {
     groups: proxyGroups
   });
 
-  await requestQueue.addRequest({ url: "https://www.iglobus.cz" });
+  await requestQueue.addRequest({ url: rootUrl(store) });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
@@ -92,18 +96,18 @@ Apify.main(async () => {
 
 async function handleStart({ request, $ }, crawlContext) {
   const { requestQueue, stats } = crawlContext;
-  const listLinks = $("#categories a")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .get();
+  const listLinks = $(
+    "#product-category-list .navigation-multilevel-node__link-inner--lvl-1"
+  ).get();
+
   for (const link of listLinks) {
+    const url = new URL($(link).attr("href"), ROOT);
     await requestQueue.addRequest({
-      url: listUrl(link),
+      url: `${url.href}?ipp=72`,
       userData: {
         label: "LIST",
         page: 0,
-        category: link.replace("/", "").replaceAll("-", " ")
+        category: $(link).text().trim()
       }
     });
   }
@@ -117,30 +121,29 @@ async function handleList({ request, $ }, crawlContext) {
   const { requestQueue, processedIds, stats } = crawlContext;
   stats.pages++;
   if (userData.page === 0) {
-    const paginationLinks = $(".pagination .page-link")
-      .map(function () {
-        return parseInt($(this).text().trim());
-      })
-      .get();
-    if (paginationLinks.length > 0) {
-      //get last pagination page
-      const lastPaginationPage = paginationLinks[paginationLinks.length - 2];
-      for (let i = 1; i < lastPaginationPage; i++) {
-        const newUrl = canonicalUrl(url);
-        newUrl.searchParams.set("strana", i.toString());
-        userData.page = i;
-        await requestQueue.addRequest(
-          {
-            url: newUrl.href,
-            userData
-          },
-          { forefront: true }
-        );
-      }
+    const pagesCount = parseInt(
+      $(".pagination .pagination__step:not(.pagination__step--next)")
+        .last()
+        .text()
+        .trim()
+    );
+
+    //get last pagination page
+    for (let i = 1; i <= pagesCount; i++) {
+      const newUrl = new URL(url, ROOT);
+      newUrl.searchParams.set("page", i.toString());
+      userData.page = i;
+      await requestQueue.addRequest(
+        {
+          url: newUrl.href,
+          userData
+        },
+        { forefront: true }
+      );
     }
   }
   // Handle products on list
-  const $products = $(".products article.product-wrap");
+  const $products = $(".product-list product-item");
   try {
     const products = await extractItems($, $products, userData.category);
     // we don't need to block pushes, we will await them all at the end
@@ -167,29 +170,38 @@ async function extractItems($, $products, category) {
   const itemsArray = [];
   $products.each(function () {
     const result = {};
-    const $head = $(this).find(".article-head");
-    const $product = $(this).find(".product-box");
-
-    result.itemId = $(this).attr("data-stock-item-code");
-    result.itemName = $head.attr("data-title");
-    result.itemUrl = productUrl(
-      $head.find(".product-detail-link").attr("href")
+    result.itemId = $(this).find(".add-to-cart-btn a").attr("data-product-id");
+    result.itemName = $(this).find(".product-item__name").text().trim();
+    result.itemUrl = extractProductUrl(
+      $(this).find(".product-item__name").attr("onclick")
     );
-    result.img = $head.find(".img-fluid").eq(0).attr("src");
-    const currentPrice = $product.find(".product-price").text().trim();
-    result.currentPrice = cleanPriceText(currentPrice);
+    result.img = $(this).find(".image-link img").attr("src");
+
+    result.currentPrice = cleanPriceText(
+      $(this).find(".money-price__amount:last-child").text().trim()
+    );
     result.originalPrice = cleanPriceText(
-      $product.find(".product-price-before").text().trim()
+      $(this).find(".money-price__amount:first-child").text().trim()
     );
     result.currentUnitPrice = cleanUnitPriceText(
-      $product.find(".product-price-unit").text().trim()
+      $(this).find(".product-item__sale-volume").text().trim()
     );
-    result.useUnitPrice = currentPrice.includes("cca");
+    result.useUnitPrice = $(this)
+      .find(".product-item__info")
+      .text()
+      .includes("cca");
     result.discounted = result.currentPrice < result.originalPrice;
     result.currency = "CZK";
-    result.instStock = $head.attr("data-availability") === "skladem";
+    // result.instStock =
     result.category = category;
     itemsArray.push(result);
   });
   return itemsArray;
+}
+
+function extractProductUrl(onclickAttr) {
+  if (!onclickAttr) return null;
+  const regexp = /\'(\S+)\'/m;
+  const match = regexp.exec(onclickAttr);
+  return `${ROOT}${match[1]}`;
 }
