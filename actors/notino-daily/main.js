@@ -654,8 +654,8 @@ Apify.main(async () => {
   const {
     country = COUNTRY.CZ,
     type = ActorType.FULL,
-    debug = false,
-    development = true,
+    debug = true,
+    development = false,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 10,
     maxRequestRetries = 3
@@ -682,7 +682,6 @@ Apify.main(async () => {
       }
     });
   } else if (type === ActorType.TEST) {
-    const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
     await requestQueue.addRequest({
       url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
       userData: { label: CATEGORY_PAGE }

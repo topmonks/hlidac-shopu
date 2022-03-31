@@ -1,0 +1,50 @@
+{
+  "title": "conrad-count-daily",
+  "description": "Hlidac Conrad actors 1 (Daily) and 3 (Count)",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "type": {
+      "title": "type",
+      "type": "string",
+      "description": "Specify the type of the actor — daily or count",
+      "editor": "select",
+      "default": "BF",
+      "enum": [
+        "BF",
+        "COUNT",
+        "TEST",
+        "CZECHITAS"
+      ],
+      "enumTitles": [
+        "DAILY",
+        "COUNT",
+        "TEST",
+        "CZECHITAS"
+      ]
+    },
+    "development": {
+      "title": "development",
+      "type": "boolean",
+      "description": "If checked then actors runs at development mode",
+      "default": false
+    },
+    "debug": {
+      "title": "debug",
+      "type": "boolean",
+      "description": "If checked then actors will show debug logs",
+      "default": false
+    },
+    "maxConcurrency": {
+      "title": "maxConcurrency",
+      "type": "integer",
+      "description": "Select maxConcurrency",
+      "default": 50,
+      "maximum": 100,
+      "unit": "x"
+    }
+  },
+  "required": [
+    "type"
+  ]
+}
