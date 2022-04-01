@@ -1,14 +1,19 @@
 # iglobus.cz
 
-Eshop běží na https://shop.iglobus.cz/, před nákupem je ale potřeba nejprve zvolit kamenný obchod.
-Proto je `ROOT` URL nastavena na `/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72` kdy **72** je maximální počet produktů na stránku. Dále jsou procházeny pouze hlavní kategorie. Snad obsahují vše.
+Eshop běží na https://shop.iglobus.cz/, před nákupem je ale nejprve potřeba zvolit kamenný obchod.
+Proto je `ROOT` URL nastavena na `/store/switch?store=${store}&referer-url=/cs/outlet&ipp=72`, kde 
+* `${store}` je název kamenného obchodu
+* `/cs/outlet` je cesta k první kategorii ("Akce")
+* `ipp` je počet položek na stránce, **72** je maximální hodnota a `page` je číslo stránky
 
 
+## INPUT
 ```js
 const STORES = {
   ZLI: "ZLI",
   OST: "OST"
 };
+
 const {
   development = false,
   maxRequestRetries = 3,
@@ -17,7 +22,7 @@ const {
   store = STORES.OST
 } = input ?? {};
 ```
-
+## OUTPUT
 ``` 
 {
   "itemId": "33744",

@@ -14,13 +14,18 @@ import { URL } from "url";
 const { log } = Apify.utils;
 const s3 = new S3Client({ region: "eu-central-1" });
 
+const ROOT_URL = "https://shop.iglobus.cz";
+const LABELS = {
+  START: "START",
+  LIST: "LIST"
+};
 const STORES = {
   ZLI: "ZLI",
   OST: "OST"
 };
-const ROOT = "https://shop.iglobus.cz";
-const rootUrl = (store = STORES.OST) =>
-  `${ROOT}/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72`;
+
+const rootUrl = ({ store = STORES.OST } = {}) =>
+  `${ROOT_URL}/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72`;
 
 Apify.main(async () => {
   rollbar.init();
@@ -56,7 +61,10 @@ Apify.main(async () => {
     groups: proxyGroups
   });
 
-  await requestQueue.addRequest({ url: rootUrl(store) });
+  await requestQueue.addRequest({
+    url: rootUrl({ store }),
+    userData: { label: LABELS.START }
+  });
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
@@ -70,10 +78,12 @@ Apify.main(async () => {
       } = context.request;
       log.info("Page opened.", { label, url });
       switch (label) {
-        case "LIST":
+        case LABELS.START:
+          return handleStart(context, crawlContext);
+        case LABELS.LIST:
           return handleList(context, crawlContext);
         default:
-          return handleStart(context, crawlContext);
+          log.error(`Unknown label ${label}`);
       }
     }
   });
@@ -82,7 +92,8 @@ Apify.main(async () => {
   await crawler.run();
   log.info("Crawl finished.");
 
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  await Apify.setValue("STATS", stats);
+  log.debug("STATS saved!");
   log.info(JSON.stringify(stats));
 
   if (!development) {
@@ -96,16 +107,20 @@ Apify.main(async () => {
 
 async function handleStart({ request, $ }, crawlContext) {
   const { requestQueue, stats } = crawlContext;
-  const listLinks = $(
-    "#product-category-list .navigation-multilevel-node__link-inner--lvl-1"
-  ).get();
+  const listLinks = [
+    "#product-category-list .navigation-multilevel-node--lvl-3 a",
+    "#product-category-list .navigation-multilevel-node--lvl-2 a",
+    "#product-category-list .navigation-multilevel-node--lvl-1 a"
+  ]
+    .map(selector => $(selector).get())
+    .flat();
 
   for (const link of listLinks) {
-    const url = new URL($(link).attr("href"), ROOT);
+    const url = new URL($(link).attr("href"), ROOT_URL);
     await requestQueue.addRequest({
       url: `${url.href}?ipp=72`,
       userData: {
-        label: "LIST",
+        label: LABELS.LIST,
         page: 0,
         category: $(link).text().trim()
       }
@@ -121,7 +136,7 @@ async function handleList({ request, $ }, crawlContext) {
   const { requestQueue, processedIds, stats } = crawlContext;
   stats.pages++;
   if (userData.page === 0) {
-    const pagesCount = parseInt(
+    const pagesTotal = parseInt(
       $(".pagination .pagination__step:not(.pagination__step--next)")
         .last()
         .text()
@@ -129,8 +144,8 @@ async function handleList({ request, $ }, crawlContext) {
     );
 
     //get last pagination page
-    for (let i = 1; i <= pagesCount; i++) {
-      const newUrl = new URL(url, ROOT);
+    for (let i = 1; i <= pagesTotal; i++) {
+      const newUrl = new URL(url, ROOT_URL);
       newUrl.searchParams.set("page", i.toString());
       userData.page = i;
       await requestQueue.addRequest(
@@ -203,5 +218,5 @@ function extractProductUrl(onclickAttr) {
   if (!onclickAttr) return null;
   const regexp = /\'(\S+)\'/m;
   const match = regexp.exec(onclickAttr);
-  return `${ROOT}${match[1]}`;
+  return `${ROOT_URL}${match[1]}`;
 }
