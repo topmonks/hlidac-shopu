@@ -8,15 +8,13 @@ import {
 import { AppEdgeLambda } from "./app-edge-lambda";
 import { RootEdgeLambda } from "./root-edge-lambda";
 
-export async function createWebsite(domain: string) {
+export function createWebsite(domain: string) {
   let assetsCachingLambda = AssetsCachingLambda.create("hlidac-shopu-caching");
   let securityHeadersLambda = SecurityHeadersLambda.create(
     "hlidac-shopu-security"
   );
-  let { lambda: appLambda } = await AppEdgeLambda.create(
-    "hlidac-shopu-app-lambda"
-  );
-  let { lambda: rootLambda} = await RootEdgeLambda.create(
+  let { lambda: appLambda } = AppEdgeLambda.create("hlidac-shopu-app-lambda");
+  let { lambda: rootLambda } = RootEdgeLambda.create(
     "hlidac-shopu-root-lambda"
   );
 

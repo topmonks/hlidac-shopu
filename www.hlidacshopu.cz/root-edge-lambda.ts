@@ -17,7 +17,7 @@ export class RootEdgeLambda extends pulumi.ComponentResource {
     this.lambda = lambda;
   }
 
-  static async create(name: string) {
+  static create(name: string) {
     const role = createRole(name);
     new aws.iam.RolePolicyAttachment(`${name}-basic-execution-attachment`, {
       policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
@@ -48,7 +48,7 @@ export class RootEdgeLambda extends pulumi.ComponentResource {
     );
 
     return {
-      lambda: new RootEdgeLambda(name, lambda),
+      lambda: new RootEdgeLambda(name, lambda)
     };
   }
 }

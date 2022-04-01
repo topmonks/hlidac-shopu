@@ -72,7 +72,7 @@ function hsName(t: string, options?: any) {
   return `hlidac-shopu-${t}${suffix}`;
 }
 
-export async function createApi(domainName: string, options?: any) {
+export function createApi(domainName: string, options?: any) {
   const defaultLambdaRole = new aws.iam.Role(
     hsName("default-lambda-role", options),
     {
@@ -98,13 +98,18 @@ export async function createApi(domainName: string, options?: any) {
     }
   );
 
-  new aws.iam.RolePolicyAttachment(hsName("lambda-s3-read-attachment", options), {
-    policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
-    role: defaultLambdaRole
-  });
+  new aws.iam.RolePolicyAttachment(
+    hsName("lambda-s3-read-attachment", options),
+    {
+      policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
+      role: defaultLambdaRole
+    }
+  );
 
   const buildAssets = (fileName: string) =>
-    lambdaBuilder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName));
+    lambdaBuilder.buildCodeAsset(
+      path.join(__dirname, "src", "lambda", fileName)
+    );
 
   const getRouteHandler = (
     name: string,
@@ -152,7 +157,9 @@ export async function createApi(domainName: string, options?: any) {
 
   const api = new Api(hsName("api", options), {
     stageName: options?.stage ?? "v1",
-    description: options?.stage ? "Staged API Hlídače shopů managed by Pulumi" : "Nová verze API Hlídače managovaná přes Pulumi",
+    description: options?.stage
+      ? "Staged API Hlídače shopů managed by Pulumi"
+      : "Nová verze API Hlídače managovaná přes Pulumi",
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [

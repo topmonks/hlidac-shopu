@@ -28,31 +28,18 @@ Website.createRedirect("api2.hlidacshopu.cz", {
 let web = createWebsite("www.hlidacshopu.cz");
 
 export const certificateArn = certificate;
-export const apiGatewayUrl = api.then(({ apiGateway }) => apiGateway.url);
-export const apiDocumentationUrl = api.then(({ openApiUrl }) => openApiUrl);
-export const apiUrl = api.then(({ apiDistribution }) => apiDistribution.url);
-export const assetsCachingLambdaArn = web.then(
-  ({ assetsCachingLambda }) => assetsCachingLambda.arn
-);
-export const securityHeadersLambdaArn = web.then(
-  ({ securityHeadersLambda }) => securityHeadersLambda.arn
-);
-export const websiteUrl = web.then(({ website }) => website.url);
-export const websiteS3BucketUri = web.then(
-  ({ website }) => website.s3BucketUri
-);
-export const websiteS3WebsiteUrl = web.then(
-  ({ website }) => website.s3WebsiteUrl
-);
-export const websiteCloudFrontId = web.then(
-  ({ website }) => website.cloudFrontId
-);
-export const nakedDomainRedirectUrl = web.then(
-  ({ nakedDomainRedirect }) => nakedDomainRedirect.url
-);
-export const nakedDomainRedirectCloudFrontId = web.then(
-  ({ nakedDomainRedirect }) => nakedDomainRedirect.cloudFrontId
-);
+export const apiGatewayUrl = api.apiGateway.url;
+export const apiDocumentationUrl = api.openApiUrl;
+export const apiUrl = api.apiDistribution.url;
+export const assetsCachingLambdaArn = web.assetsCachingLambda.arn;
+export const securityHeadersLambdaArn = web.securityHeadersLambda.arn;
+export const websiteUrl = web.website.url;
+export const websiteS3BucketUri = web.website.s3BucketUri;
+export const websiteS3WebsiteUrl = web.website.s3WebsiteUrl;
+export const websiteCloudFrontId = web.website.cloudFrontId;
+export const nakedDomainRedirectUrl = web.nakedDomainRedirect.url;
+export const nakedDomainRedirectCloudFrontId =
+  web.nakedDomainRedirect.cloudFrontId;
 export const allShopsTable = db.allShopsTable.name;
 export const allShopsMetadataTable = db.allShopsMetadataTable.name;
 export const allShopsStatsTable = db.allShopsStatsTable.name;
