@@ -22,9 +22,9 @@ let db = createDatabase();
 let store = createDatastore();
 
 let api = createApi("api.hlidacshopu.cz", { stage: "v2" });
-Website.createRedirect("api2.hlidacshopu.cz", {
-  target: "https://api.hlidacshopu.cz/v2"
-});
+// Website.createRedirect("api2.hlidacshopu.cz", {
+//   target: "https://api.hlidacshopu.cz/v2"
+// });
 let web = createWebsite("www.hlidacshopu.cz");
 
 export const certificateArn = certificate;
