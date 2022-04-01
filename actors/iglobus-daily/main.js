@@ -184,7 +184,7 @@ async function handleList({ request, $ }, crawlContext) {
 async function extractItems($, $products, category) {
   const itemsArray = [];
   $products.each(function () {
-    const result = {};
+    const result = { inStock: true };
     result.itemId = $(this).find(".add-to-cart-btn a").attr("data-product-id");
     result.itemName = $(this).find(".product-item__name").text().trim();
     result.itemUrl = extractProductUrl(
