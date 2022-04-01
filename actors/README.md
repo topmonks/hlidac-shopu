@@ -1,102 +1,208 @@
-# Tips and advices for beginners
+# Apify Actory pro Hlídač shopů
 
-## How to start with actor HlidacShopu
-Please don't start a new actor via "Apify create". It is a way to create an actor for Apify,
-not for HlidacShopu. Better way is to copy the already functional actor and edit.
-Some modules then do not match and are not configured correctly for the HlidacShopu
-at the beginning of the code that the input data is filled in correctly
-In otherwise case is possible to create actor via "Apify create", but it will needed
-to add missing data - see in another actors
+Actor pro **každý jeden eshop** pravidelně kontroluje uváděné **slevy a ceny**.
+Jeho úkolem je projít veškeré kategorie a získat data pro každý produkt v nich. 
 
-## Beware of product sorting
-If sorting is not defined, there can some recommended products exists in the product list.
-Therefore, it is better to sort the list of products, for ex. from the cheapest alphabetically.
+# Postup
+Nejprve si na eshopu najdeme stránku, sitemapu nebo endpoint, odkud získáme kompletní 
+seznam kategorií. Budou nás zajímat jejich URL adresy a názvy.
 
-## API processing via RequestAsBrowser / gotScraping
-Apify.utils.requestAsBrowser je deprecated, místo něj používat gotScraping.
+### Kategorie
+Podrobnější informace o kategorii produktu získáváme tak, že procházíme nejprve nejhlubší kategorie a pokračujeme výš k těm hlavním.
 
-## How to see CI log of pushed actor
-https://docs.apify.com/crawling-basics/scraping-the-data#review-code
-
-Here you can monitor CI errors to avoid blocking other people's code testing.
-The notification is sent by e-mail or in the #ntf-hlidac-shop channel on Slack too.
-
-## Number of products on page
-It is usually safe to keep the original number of products per page,
-which is normally loaded in the e-shop.
-
-## Register eshop in shop.mjs
-Do not forget to add actor to lib/shops.mjs file.
-You can let inspire in DM or Alza actors, which are presentable.
-
+```bash
+# Kategorie
+├── A #14
+│   ├── AA #6
+│   │   ├── AA1 #1
+│   │   ├── AA2 #2
+│   │   └── AA3 #3
+│   ├── AB #7
+│   └── AC #8
+├── B #15
+├── C #16
+│   ├── CA #9
+│   └── CB #10
+│       ├── CB1 #4
+│       └── CB2 #5
+└── D #17
+    ├── DA #11
+    ├── DB #12
+    └── DC #13
 ```
-["luxor_cz", {
-  name: "Luxor.cz",
-  currency: "CZK",
-  logo: "luxor_logo",
-  url: "https://www.luxor.cz/",
-  viewBox: null,
-  parse(url) {
-    return {
-      itemId: null,
-      itemUrl: url.pathname.substr(1).match(/[^\/]+$/)?.[0]
-    };
+
+#### Stránkování
+Nezřídka ve výpisu kategorie narazíme na stránkování. Chceme projít všechny jednotlivé stránky  
+a proto si nejdříve zjistíme:
+
+* Kolik je celkem stránek?
+* Jaký je maximální možný počet produktů na stránku?
+
+A poté sestavíme URL adresy pro každou z nich.
+
+```js
+const categoryUrl = "https://eshop.example.com/some-categoty/";
+const itemsPerPage = 100;
+
+const requests = [];
+
+for (let i = 1; i <= pagesTotal; i++) {
+  requests.push(`${categoryUrl}?page=${i}&limit=${itemsPerPage}`);
+}
+```
+
+### Produkty
+Ve většině případů není nutné procházet jednotlivé detaily produktů. 
+Potřebná data bývá možné získat z položek ve výpisy kategorie. Protože se ale produkt 
+může nacházet ve více než jedné kategorii, je potřeba ukládat pouze jeho první výskyt.
+
+```js
+  const products = new Set();
+
+  for (let $item of $items) {
+    const data = extractProductData($item);
+    if (products.has(data.itemId)) {
+      continue;
+    }
+    products.set(data.itemId, data);
   }
-}],
+```
+#### Data produktu
+```json
+{
+  "itemId": "",
+  "itemUrl": "",
+  "itemName": "",
+  "img": "",
+  "discounted": false,
+  "originalPrice": 0,
+  "currency": "",
+  "currentPrice": 0,
+  "category": "",
+  "inStock": true
+}
 ```
 
-## Register actor test in shops-test.mjs
-Add test to lib/shops-test.mjs
+### Apify Actor
+Kostru nového actoru vygenerujete pomocí `scripts/new-actor.mjs nazev-shopu`.
+
+```bash
+actors/nazev-shopu
+├── Dockerfile
+├── README.md # 👈 zde si popište specifika daného shopu
+├── apify.json
+├── apify_storage
+├── main.js # 🥩
+└── package.json
 ```
-describe("shopName", () => {
-  ["https://www.luxor.cz/product/ma-cesta-za-stestim-zbo000418126", "luxor_cz"]
-  ...
-describe("shopSlug", () => {
-  ["https://www.luxor.cz/product/ma-cesta-za-stestim-zbo000418126", "ma-cesta-za-stestim-zbo000418126"]
-  ...
-```
+#### `main.js`
+Jeden eshop → jeden actor → jeden soubor.
+Společnou funkcionalitu importujeme z balíčku `@hlidac-shopu/actors-common`.
 
-## Product properties
-```
-itemId*
-itemUrl*
-itemName*
-img*
-discounted,*
-originalPrice
-currency
-currentPrice
-category
-inStock  [true]
+```js
+import { S3Client } from "@aws-sdk/client-s3";
+import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import Apify from "apify";
+import { gotScraping } from "got-scraping";
+import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { defAtom } from "@thi.ng/atom";
 
-Legend:
-* Required
-[ ] Default value
-```
+const { log } = Apify.utils;
 
-## Recommended tools
+// 👀 Jednotlivé kroky crawlování
+const LABELS = {
+  START: "START",
+  CATEGORY: "CATEGORY"
+};
 
-### JSON formatter
-to easy formating & reading of unformated JSON
-https://jsonformatter.org/
+const ROOT_URL = "https://eshop.example.com";
 
-### Plugin to Chrome
-https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=en
+Apify.main(async () => {
+  rollbar.init();
 
-### Regex tester
-https://regex101.com/
+  const s3 = new S3Client({ region: "eu-central-1" });
+  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
-## How to prepare actor for production
+  const stats = await withPersistedStats(x => x, {
+    categories: 0,
+    items: 0,
+    itemsUnique: 0,
+    itemsDuplicity: 0
+  });
+  const processedIds = new Set();
 
-* Push last changes to Hlidac GIT repository
+  const input = await Apify.getInput();
+  const {
+    debug = false,
+    type = ActorType.FULL // 👀 mód ve kterém je actor spuštěn
+  } = input ?? {};
 
-* Open Apify console of HlidacShopu under HlidacShopu account
-https://console.apify.com/organization/iMWJjifpQdTwbkKYn/actors/d2zzhc6xL9dHwdlNQ#/source
+  if (debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
 
-* Duplicate actor via Actors menu on top right corner - it will clone actor with keys and passwords
+  /** @type {RequestQueue} */
+  const requestQueue = await Apify.openRequestQueue();
   
-* Source tab - Change GIT url to new actor
+  if (type === ActorType.FULL) {
+    await requestQueue.addRequest({
+      url: ROOT_URL,
+      userData: {
+        label: LABELS.START
+      }
+    });
+  } else if (type === ActorType.TEST) {
+    // implement test run here
+  }
+    
 
-* Settings tab - Usual memory for BasicCrawler is 2048 or 4096
+  const crawler = new Apify.BasicCrawler({
+    requestQueue,
+    maxConcurrency: 10,
+    maxRequestRetries: 1,
+    async handleRequestFunction({ request }) {
+      const {
+        url,
+        userData: { label, category }
+      } = request;
 
+      const { statusCode, body } = await gotScraping({
+        responseType: "json",
+        url
+      });
 
+      if (statusCode !== 200) {
+        return log.info(body.toString());
+      }
+
+      switch (label) {
+        case LABELS.START:
+          return handleStart({ type }); // 👈 implement me
+        case LABELS.CATEGORY:
+          return handleCategory({ type, category }); // 👈 implement me
+        default:
+          throw new Error("Unknown actor type");
+      }
+    }
+    async handleFailedRequestFunction() {
+      log.error(`Request ${request.url} failed multiple times`, request);
+    }
+  });
+
+  await crawler.run();
+  log.info("crawler finished");
+
+  await Promise.allSettled([
+    stats.save(),
+    invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
+    uploadToKeboola(shopName(detailUrl.deref()))
+  ]);
+
+  log.info("invalidated Data CDN");
+  log.info("Finished.");
+```
