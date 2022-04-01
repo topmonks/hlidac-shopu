@@ -26,6 +26,11 @@ const COUNTRY = {
   AT: "AT"
 };
 
+const LABELS = {
+  START: "START",
+  CATEGORY: "CATEGORY"
+};
+
 function getCountrySlug(country) {
   switch (country.toUpperCase()) {
     case COUNTRY.CZ:
@@ -208,7 +213,7 @@ async function handleStart(type, navigation, stats, requestQueue, country) {
       userData: {
         country,
         category: category.breadcrumbs.toString(),
-        step: "CATEGORY"
+        label: LABELS.CATEGORY
       }
     });
   }
@@ -223,7 +228,7 @@ async function enqueInitialRequest(type, requestQueue, country) {
       userData: {
         country,
         productQuery: "",
-        step: "START"
+        label: LABELS.START
       }
     });
   } else if (type === ActorType.TEST) {
@@ -277,7 +282,7 @@ Apify.main(async () => {
       const { request } = context;
       const {
         url,
-        userData: { country, step, category, productQuery }
+        userData: { country, label, category, productQuery }
       } = request;
       const response = await gotScraping({
         responseType: "json",
@@ -289,8 +294,8 @@ Apify.main(async () => {
       }
 
       const { type, navigation } = body;
-      switch (step) {
-        case "START":
+      switch (label) {
+        case LABELS.START:
           return await handleStart(
             type,
             navigation,
@@ -298,7 +303,7 @@ Apify.main(async () => {
             requestQueue,
             country
           );
-        case "CATEGORY":
+        case LABELS.CATEGORY:
           return await handleCategory(body, requestQueue, country, category);
         default:
           return await handleProducts(
