@@ -1,5 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
-import { createCertificate, registerAutoTags } from "@topmonks/pulumi-aws";
+import {
+  createCertificate,
+  registerAutoTags,
+  Website
+} from "@topmonks/pulumi-aws";
 import { createWebsite } from "./www.hlidacshopu.cz";
 import {
   createApi,
@@ -17,8 +21,10 @@ let certificate = createCertificate("www.hlidacshopu.cz");
 let db = createDatabase();
 let store = createDatastore();
 
-let api = createApi("api2.hlidacshopu.cz");
-let _api = createApi("api.hlidacshopu.cz", {stage: "v2"});
+let api = createApi("api.hlidacshopu.cz", { stage: "v2" });
+Website.createRedirect("api2.hlidacshopu.cz", {
+  target: "https://api.hlidacshopu.cz/v2"
+});
 let web = createWebsite("www.hlidacshopu.cz");
 
 export const certificateArn = certificate;
