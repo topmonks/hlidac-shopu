@@ -1,31 +1,23 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { StatefulShop } from "./shop.mjs";
+import { Shop } from "./shop.mjs";
 
-export class Globus extends StatefulShop {
+export class Globus extends Shop {
   get injectionPoint() {
-    return ["beforebegin", "#detail-tabs-content"];
-  }
-
-  get detailSelector() {
-    return "#detail-container";
-  }
-
-  shouldRender(mutations) {
-    return this.didMutate(mutations, "addedNodes", "modal-backdrop");
-  }
-
-  shouldCleanup(mutations) {
-    return this.didMutate(mutations, "removedNodes", "modal-backdrop");
+    return ["afterend", ".product-configurator"];
   }
 
   async scrape() {
-    const elem = document.querySelector("#detail-container");
+    const elem = document.querySelector(".product-configurator");
     if (!elem) return;
-    const itemId = elem.getAttribute("data-stock-item-code");
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".detail-price-now");
-    const originalPrice = cleanPrice(".product-discount strong");
-    const imageUrl = document.querySelector(".detail-image img").src;
+    const itemId = elem
+      .querySelector("form")
+      .getAttribute("action")
+      .split("/")
+      .slice(-1)[0];
+    const title = elem.querySelector(".title--product").textContent.trim();
+    const originalPrice = cleanPrice(".money-price__amount:first-child");
+    const currentPrice = cleanPrice(".money-price__amount:last-child");
+    const imageUrl = document.querySelector("lazy-image img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
