@@ -40,8 +40,8 @@ export const websiteCloudFrontId = web.website.cloudFrontId;
 export const nakedDomainRedirectUrl = web.nakedDomainRedirect.url;
 export const nakedDomainRedirectCloudFrontId =
   web.nakedDomainRedirect.cloudFrontId;
-export const allShopsTable = db.allShopsTable.name;
-export const allShopsMetadataTable = db.allShopsMetadataTable.name;
-export const allShopsStatsTable = db.allShopsStatsTable.name;
 export const dataBucketName = store.dataBucket.bucket;
 export const dataDistributionID = store.dataDistributionID;
+export const blackFridayDataTable = db.blackFridayDataTable;
+export const extensionParsingDataTable = db.extensionParsingDataTable;
+export const apiHitCounterDataTable = db.apiHitCounterDataTable;
