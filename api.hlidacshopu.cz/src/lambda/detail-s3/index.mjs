@@ -5,7 +5,8 @@ import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalDataFromS3,
   getMetadataFromS3,
-  getParsedData, incHitCounter,
+  getParsedData,
+  incHitCounter,
   putParsedData
 } from "../product-detail.mjs";
 import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";

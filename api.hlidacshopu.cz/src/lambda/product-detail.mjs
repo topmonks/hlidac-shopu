@@ -236,7 +236,5 @@ function incHitCounterQuery(shop, today) {
 export function incHitCounter(db, shop) {
   const today = startOfDay(new Date());
   const query = incHitCounterQuery(shop, today);
-  return db
-    .send(query)
-    .catch(() => ({}));
+  return db.send(query).catch(() => ({}));
 }
