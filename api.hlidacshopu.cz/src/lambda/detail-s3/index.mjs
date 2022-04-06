@@ -89,7 +89,7 @@ export async function handler(event) {
     );
   }
 
-  incHitCounter(db, shop.origin);
+  incHitCounter(db, shop.origin).catch(err => console.error("ERROR: " + err));
 
   const rows = prepareData({ json: item });
   const { currentPrice, originalPrice, imageUrl } = Object.assign(
