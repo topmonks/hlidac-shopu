@@ -17,12 +17,6 @@ const path = require("path");
 const config = new pulumi.Config("hlidacshopu");
 
 export function createDatabase() {
-  const allShopsTable = aws.dynamodb.getTable({ name: "all_shops" });
-  const allShopsMetadataTable = aws.dynamodb.getTable({
-    name: "all_shops_metadata"
-  });
-  const allShopsStatsTable = aws.dynamodb.getTable({ name: "all_shops_stats" });
-
   const extensionParsedDataTable = new aws.dynamodb.Table(
     "extension_parsed_data",
     {
@@ -42,6 +36,19 @@ export function createDatabase() {
     }
   );
 
+  const apiHitCounterDataTable = new aws.dynamodb.Table("api_hit_counter", {
+    name: "api_hit_counter",
+    hashKey: "shop",
+    rangeKey: "date",
+    attributes: [
+      { name: "shop", type: "S" },
+      { name: "date", type: "S" },
+      { name: "views", type: "N" }
+    ],
+    writeCapacity: 1,
+    readCapacity: 1
+  });
+
   const blackFridayDataTable = new aws.dynamodb.Table("black_friday_data", {
     name: "black_friday_data",
     hashKey: "year",
@@ -51,11 +58,9 @@ export function createDatabase() {
   });
 
   return pulumi.Output.create({
-    allShopsTable,
-    allShopsMetadataTable,
-    allShopsStatsTable,
     blackFridayDataTable: blackFridayDataTable.name,
-    extensionParsingDataTable: extensionParsedDataTable.name
+    extensionParsingDataTable: extensionParsedDataTable.name,
+    apiHitCounterDataTable: apiHitCounterDataTable.name
   });
 }
 

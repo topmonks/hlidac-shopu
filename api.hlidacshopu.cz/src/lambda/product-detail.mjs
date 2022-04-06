@@ -9,6 +9,7 @@ import { createHash } from "crypto";
 import addDays from "date-fns/esm/addDays/index.js";
 import getUnixTime from "date-fns/esm/getUnixTime/index.js";
 import startOfDay from "date-fns/esm/startOfDay/index.js";
+import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
 /** @typedef { import("@aws-sdk/client-s3/S3Client").S3Client } S3Client */
@@ -220,5 +221,22 @@ export function getParsedData(db, shop) {
   return db
     .send(query)
     .then(x => x.Item && unmarshall(x.Item).data)
+    .catch(() => ({}));
+}
+
+function incHitCounterQuery(shop, today) {
+  return new UpdateItemCommand({
+    TableName: "api_hit_counter",
+    Key: { shop: { S: shop }, date: { S: today.toISOString() } },
+    ExpressionAttributeValues: { ":inc": { N: "1" } },
+    UpdateExpression: "ADD views :inc"
+  });
+}
+
+export function incHitCounter(db, shop) {
+  const today = startOfDay(new Date());
+  const query = incHitCounterQuery(shop, today);
+  return db
+    .send(query)
     .catch(() => ({}));
 }

@@ -5,7 +5,7 @@ import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalDataFromS3,
   getMetadataFromS3,
-  getParsedData,
+  getParsedData, incHitCounter,
   putParsedData
 } from "../product-detail.mjs";
 import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
@@ -87,6 +87,8 @@ export async function handler(event) {
       })
     );
   }
+
+  incHitCounter(db, shop.origin);
 
   const rows = prepareData({ json: item });
   const { currentPrice, originalPrice, imageUrl } = Object.assign(
