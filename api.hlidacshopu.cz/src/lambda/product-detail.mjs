@@ -131,7 +131,6 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
  * @returns {GetItemCommand}
  */
 export async function getHistoricalDataCommand(shop, slug) {
-  console.log({ Key: `items/${shop}/${slug}/price-history.json` });
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
     Key: `items/${shop}/${slug}/price-history.json`
@@ -228,7 +227,7 @@ function incHitCounterQuery(shop, today) {
     TableName: "api_hit_counter",
     Key: marshall({ shop, date: today.toISOString() }),
     ExpressionAttributeValues: marshall({ ":inc": 1 }),
-    UpdateExpression: "ADD views :inc"
+    UpdateExpression: "ADD hits :inc"
   });
 }
 
