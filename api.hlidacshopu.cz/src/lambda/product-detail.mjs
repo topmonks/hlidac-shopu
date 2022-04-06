@@ -103,7 +103,6 @@ const streamToString = stream =>
  * @returns {GetObjectCommand}
  */
 async function getMetadataCommand(shop, slug) {
-  console.log({ Key: `items/${shop}/${slug}/meta.json` });
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
     Key: `items/${shop}/${slug}/meta.json`
@@ -227,8 +226,8 @@ export function getParsedData(db, shop) {
 function incHitCounterQuery(shop, today) {
   return new UpdateItemCommand({
     TableName: "api_hit_counter",
-    Key: { shop: { S: shop }, date: { S: today.toISOString() } },
-    ExpressionAttributeValues: { ":inc": { N: "1" } },
+    Key: marshall({ shop, date: today.toISOString() }),
+    ExpressionAttributeValues: marshall({ ":inc": 1 }),
     UpdateExpression: "ADD views :inc"
   });
 }
@@ -236,5 +235,6 @@ function incHitCounterQuery(shop, today) {
 export function incHitCounter(db, shop) {
   const today = startOfDay(new Date());
   const query = incHitCounterQuery(shop, today);
-  return db.send(query).catch(() => ({}));
+  console.log({ event: "incHitCounter", shop, date: today.toISOString() });
+  return db.send(query).catch(err => console.error(err));
 }
