@@ -234,6 +234,5 @@ function incHitCounterQuery(shop, today) {
 export function incHitCounter(db, shop) {
   const today = startOfDay(new Date());
   const query = incHitCounterQuery(shop, today);
-  console.log({ event: "incHitCounter", shop, date: today.toISOString() });
   return db.send(query).catch(err => console.error(err));
 }
