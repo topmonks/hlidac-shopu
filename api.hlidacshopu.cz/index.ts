@@ -42,8 +42,8 @@ export function createDatabase() {
     rangeKey: "date",
     attributes: [
       { name: "shop", type: "S" },
-      { name: "date", type: "S" },
-      { name: "views", type: "N" }
+      { name: "date", type: "S" }
+      //{ name: "views", type: "N" }
     ],
     writeCapacity: 1,
     readCapacity: 1
