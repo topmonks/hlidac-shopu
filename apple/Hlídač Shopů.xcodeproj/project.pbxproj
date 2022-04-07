@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		824D781D27FF1B17004A5882 /* GetURL.js in Resources */ = {isa = PBXBuildFile; fileRef = 824D781C27FF1B17004A5882 /* GetURL.js */; };
+		824D781F27FF1B51004A5882 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291832527FF10E900CAFD3A /* ShareViewController.swift */; };
+		824D782027FF1B53004A5882 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291832527FF10E900CAFD3A /* ShareViewController.swift */; };
+		8291832927FF10E900CAFD3A /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8291832727FF10E900CAFD3A /* MainInterface.storyboard */; };
+		8291832D27FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8291832327FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		82CC13FD27FDB81B001A030F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC13FC27FDB81B001A030F /* AppDelegate.swift */; };
 		82CC13FF27FDB81B001A030F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CC13FE27FDB81B001A030F /* SceneDelegate.swift */; };
 		82CC140227FDB81B001A030F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82CC140027FDB81B001A030F /* LaunchScreen.storyboard */; };
@@ -44,6 +49,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8291832B27FF10E900CAFD3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82CC13DD27FDB81A001A030F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8291832227FF10E900CAFD3A;
+			remoteInfo = "iOS (ShareExtension)";
+		};
 		82CC141927FDB81B001A030F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 82CC13DD27FDB81A001A030F /* Project object */;
@@ -67,6 +79,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				8291832D27FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex in Embed App Extensions */,
 				82CC141827FDB81B001A030F /* Hlídač Shopů Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -86,6 +99,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		824D781C27FF1B17004A5882 /* GetURL.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = GetURL.js; sourceTree = "<group>"; };
+		8291832327FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Hlídač Shopů ShareExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8291832527FF10E900CAFD3A /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		8291832827FF10E900CAFD3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		8291832A27FF10E900CAFD3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82CC13E427FDB81A001A030F /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		82CC13E527FDB81A001A030F /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		82CC13E627FDB81A001A030F /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -117,6 +135,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8291832027FF10E900CAFD3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		82CC13F627FDB81B001A030F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +173,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8291832427FF10E900CAFD3A /* iOS (ShareExtension) */ = {
+			isa = PBXGroup;
+			children = (
+				824D781C27FF1B17004A5882 /* GetURL.js */,
+				8291832527FF10E900CAFD3A /* ShareViewController.swift */,
+				8291832727FF10E900CAFD3A /* MainInterface.storyboard */,
+				8291832A27FF10E900CAFD3A /* Info.plist */,
+			);
+			path = "iOS (ShareExtension)";
+			sourceTree = "<group>";
+		};
 		82CC13DC27FDB81A001A030F = {
 			isa = PBXGroup;
 			children = (
@@ -157,6 +193,7 @@
 				82CC140C27FDB81B001A030F /* macOS (App) */,
 				82CC141B27FDB81B001A030F /* iOS (Extension) */,
 				82CC142527FDB81B001A030F /* macOS (Extension) */,
+				8291832427FF10E900CAFD3A /* iOS (ShareExtension) */,
 				82CC13FA27FDB81B001A030F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -211,6 +248,7 @@
 				82CC140B27FDB81B001A030F /* Hlídač Shopů.app */,
 				82CC141727FDB81B001A030F /* Hlídač Shopů Extension.appex */,
 				82CC142127FDB81B001A030F /* Hlídač Shopů Extension.appex */,
+				8291832327FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -257,6 +295,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8291832227FF10E900CAFD3A /* Hlídač Shopů ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8291833027FF10E900CAFD3A /* Build configuration list for PBXNativeTarget "Hlídač Shopů ShareExtension" */;
+			buildPhases = (
+				8291831F27FF10E900CAFD3A /* Sources */,
+				8291832027FF10E900CAFD3A /* Frameworks */,
+				8291832127FF10E900CAFD3A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Hlídač Shopů ShareExtension";
+			productName = "iOS (ShareExtension)";
+			productReference = 8291832327FF10E900CAFD3A /* Hlídač Shopů ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		82CC13F827FDB81B001A030F /* Hlídač Shopů (iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 82CC144C27FDB81B001A030F /* Build configuration list for PBXNativeTarget "Hlídač Shopů (iOS)" */;
@@ -270,6 +325,7 @@
 			);
 			dependencies = (
 				82CC141A27FDB81B001A030F /* PBXTargetDependency */,
+				8291832C27FF10E900CAFD3A /* PBXTargetDependency */,
 			);
 			name = "Hlídač Shopů (iOS)";
 			productName = "hlidac shopu (iOS)";
@@ -339,6 +395,9 @@
 				LastSwiftUpdateCheck = 1330;
 				LastUpgradeCheck = 1330;
 				TargetAttributes = {
+					8291832227FF10E900CAFD3A = {
+						CreatedOnToolsVersion = 13.3;
+					};
 					82CC13F827FDB81B001A030F = {
 						CreatedOnToolsVersion = 13.3;
 					};
@@ -370,11 +429,20 @@
 				82CC140A27FDB81B001A030F /* Hlídač Shopů (macOS) */,
 				82CC141627FDB81B001A030F /* Hlídač Shopů Extension (iOS) */,
 				82CC142027FDB81B001A030F /* Hlídač Shopů Extension (macOS) */,
+				8291832227FF10E900CAFD3A /* Hlídač Shopů ShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8291832127FF10E900CAFD3A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8291832927FF10E900CAFD3A /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		82CC13F727FDB81B001A030F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -386,6 +454,7 @@
 				82CC143227FDB81B001A030F /* Assets.xcassets in Resources */,
 				82CC140527FDB81B001A030F /* Main.storyboard in Resources */,
 				82CC142C27FDB81B001A030F /* Style.css in Resources */,
+				824D781D27FF1B17004A5882 /* GetURL.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,12 +500,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8291831F27FF10E900CAFD3A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				824D781F27FF1B51004A5882 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		82CC13F527FDB81B001A030F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				82CC143027FDB81B001A030F /* ViewController.swift in Sources */,
 				82CC13FD27FDB81B001A030F /* AppDelegate.swift in Sources */,
+				824D782027FF1B53004A5882 /* ShareViewController.swift in Sources */,
 				82CC13FF27FDB81B001A030F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -469,6 +547,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8291832C27FF10E900CAFD3A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8291832227FF10E900CAFD3A /* Hlídač Shopů ShareExtension */;
+			targetProxy = 8291832B27FF10E900CAFD3A /* PBXContainerItemProxy */;
+		};
 		82CC141A27FDB81B001A030F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 82CC141627FDB81B001A030F /* Hlídač Shopů Extension (iOS) */;
@@ -482,6 +565,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		8291832727FF10E900CAFD3A /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8291832827FF10E900CAFD3A /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		82CC13E327FDB81A001A030F /* Main.html */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -517,6 +608,61 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		8291832E27FF10E900CAFD3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (ShareExtension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Ověřit pomocí Hlídače Shopů";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.9.38;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8291832F27FF10E900CAFD3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 8P5697C5H7;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (ShareExtension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Ověřit pomocí Hlídače Shopů";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.9.38;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		82CC144627FDB81B001A030F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -630,7 +776,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
@@ -647,7 +793,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.Extension";
 				PRODUCT_NAME = "Hlídač Shopů Extension";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -661,7 +807,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
@@ -678,7 +824,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.ShareExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.Extension";
 				PRODUCT_NAME = "Hlídač Shopů Extension";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -696,7 +842,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
@@ -734,7 +880,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
@@ -771,7 +917,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/hlidac shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -803,7 +949,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/hlidac shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -838,7 +984,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/hlidac shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -874,7 +1020,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/hlidac shopu.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -905,6 +1051,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8291833027FF10E900CAFD3A /* Build configuration list for PBXNativeTarget "Hlídač Shopů ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8291832E27FF10E900CAFD3A /* Debug */,
+				8291832F27FF10E900CAFD3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		82CC13E027FDB81A001A030F /* Build configuration list for PBXProject "Hlídač Shopů" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
