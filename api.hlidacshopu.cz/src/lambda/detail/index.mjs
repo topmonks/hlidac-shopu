@@ -1,17 +1,15 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb/dist-es/DynamoDBClient.js";
+import { S3Client } from "@aws-sdk/client-s3/dist-es/S3Client.js";
 import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
-  getHistoricalData,
-  getMetadata,
+  getHistoricalDataFromS3,
+  getMetadataFromS3,
   getParsedData,
+  incHitCounter,
   putParsedData
 } from "../product-detail.mjs";
-import {
-  getClaimedDiscount,
-  getRealDiscount,
-  prepareData
-} from "../discount.mjs";
+import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
@@ -40,6 +38,7 @@ function createDataset(data) {
 }
 
 const db = new DynamoDBClient({});
+const s3 = new S3Client({});
 
 /**
  * @param {APIGatewayProxyEvent} event
@@ -62,7 +61,6 @@ export async function handler(event) {
     );
   }
 
-  let itemId = params.itemId ?? shop.itemId;
   if (params.currentPrice && params.currentPrice !== "null") {
     // store parsed data by extension
     putParsedData(db, shop, params).catch(err =>
@@ -70,22 +68,34 @@ export async function handler(event) {
     );
   }
   const extraData = getParsedData(db, shop);
-  const meta = getMetadata(db, shop.key, shop.itemUrl, itemId);
-
-  itemId = itemId ?? (await meta)?.itemId;
-  if (!itemId) {
+  const meta = await getMetadataFromS3(s3, shop.origin, shop.itemUrl);
+  if (!meta) {
     return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Unknown item", itemId })
+      notFound({
+        error: "Missing metadata",
+        shop: shop.origin,
+        itemUrl: shop.itemUrl
+      })
     );
   }
-  const item = await getHistoricalData(db, shop.key, itemId);
-  if (!item) {
+  const historicalData = await getHistoricalDataFromS3(
+    s3,
+    shop.origin,
+    shop.itemUrl
+  );
+  if (!historicalData) {
     return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Missing data", itemId })
+      notFound({
+        error: "Missing price history",
+        shop: shop.origin,
+        itemUrl: shop.itemUrl
+      })
     );
   }
 
-  const rows = prepareData(item);
+  incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
+
+  const rows = prepareData({ json: historicalData.entries ?? historicalData });
   const { currentPrice, originalPrice, imageUrl } = Object.assign(
     {},
     await extraData,
@@ -103,17 +113,15 @@ export async function handler(event) {
     rows.push({ currentPrice, originalPrice, date: new Date() });
   }
 
-  const discount = getRealDiscount(rows);
-  const transformMetadata = ({
-    itemImage,
-    itemName,
-    real_sale,
-    max_price,
-    ...rest
-  }) => ({
+  const discount = realDiscount(
+    historicalData.commonPrice ? historicalData : meta,
+    rows
+  );
+  const claimedDiscount = getClaimedDiscount(rows);
+  const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
     name: itemName,
-    imageUrl: itemImage === "null" ? imageUrl : itemImage,
-    claimedDiscount: getClaimedDiscount(rows),
+    imageUrl: itemImage ?? imageUrl,
+    claimedDiscount,
     ...discount,
     ...rest
   });
