@@ -12,6 +12,7 @@
   },
   "scripts": {
     "start": "node main.js",
+    "start-apify": "apify run -p",
     "test": "../../scripts/test-actor.sh"
   },
   "author": "TopMonks s.r.o. & contributors",

@@ -10,10 +10,16 @@ import { S3Client } from "@aws-sdk/client-s3";
 
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { gotScraping } from "got-scraping";
+import cheerio from "cheerio";
 
 const HOME_PAGE = "HOME_PAGE";
 const CATEGORY_PAGE = "CATEGORY_PAGE";
 const DETAIL_PAGE = "DETAIL_PAGE";
+const COUNT = "COUNT";
+const COUNT_PRODUCT = "COUNT_PRODUCT";
+const SITEMAP_URL_CZ = "https://www.notino.cz/sitemap.xml";
+const SITEMAP_URL_SK = "https://www.notino.sk/sitemap.xml";
 const BASE_URL = "https://www.notino.cz";
 const BASE_URL_SK = "https://www.notino.sk";
 const BASE_URL_CZ_BF = "https://www.notino.cz/black-friday/";
@@ -577,6 +583,43 @@ const handleProductInDetailPage = async (
   }
 };
 
+const handleCount = async (requestQueue, request, $) => {
+  log.info("Downloading sitemap root");
+
+  $("sitemap").each((ix, el) => {
+    const url = $(el).find("loc").html();
+
+    if (url.indexOf("detail") > -1) {
+      requestQueue.addRequest({
+        url,
+        userData: {
+          label: COUNT_PRODUCT
+        }
+      });
+    }
+  });
+};
+
+const handleCountProduct = async (
+  requestQueue,
+  request,
+  $,
+  processedIds,
+  stats
+) => {
+  $("url").each((ix, el) => {
+    const url = $(el).find("loc").html();
+
+    if (!processedIds.has(url)) {
+      processedIds.add(url);
+
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  });
+};
+
 const handlePageFunction = async (
   requestQueue,
   request,
@@ -629,7 +672,12 @@ const handlePageFunction = async (
       );
       break;
     }
-    default:
+    case COUNT:
+      await handleCount(requestQueue, request, $);
+      break;
+    case COUNT_PRODUCT:
+      await handleCountProduct(requestQueue, request, $, processedIds, stats);
+      break;
   }
 };
 
@@ -653,7 +701,7 @@ Apify.main(async () => {
 
   const {
     country = COUNTRY.CZ,
-    type = ActorType.FULL,
+    type = ActorType.FULL, // FULL | BF | TEST | COUNT
     debug = true,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
@@ -667,31 +715,39 @@ Apify.main(async () => {
 
   console.log("input", input);
 
-  log.debug(
-    `development: ${development}, debug: ${debug}, country: ${country}`
-  );
-
   const crawledProducts = 0;
 
   const requestQueue = await Apify.openRequestQueue();
-  if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: country === COUNTRY.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
-      userData: {
-        label: BF
-      }
-    });
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
-      userData: { label: CATEGORY_PAGE }
-    });
-  } else {
-    const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
-    await requestQueue.addRequest({
-      url: rootUrl,
-      userData: { label: HOME_PAGE }
-    });
+  switch (type) {
+    case ActorType.BF:
+      await requestQueue.addRequest({
+        url: country === COUNTRY.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
+        userData: {
+          label: BF
+        }
+      });
+      break;
+
+    case ActorType.TEST:
+      await requestQueue.addRequest({
+        url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
+        userData: { label: CATEGORY_PAGE }
+      });
+      break;
+
+    case ActorType.COUNT:
+      await requestQueue.addRequest({
+        url: country === COUNTRY.CZ ? SITEMAP_URL_CZ : SITEMAP_URL_SK,
+        userData: { label: COUNT }
+      });
+      break;
+
+    default:
+      const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
+      await requestQueue.addRequest({
+        url: rootUrl,
+        userData: { label: HOME_PAGE }
+      });
   }
 
   const stats = await withPersistedStats(x => x, {
@@ -702,11 +758,13 @@ Apify.main(async () => {
     itemsDuplicity: 0
   });
 
+  /*
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
     log.info(JSON.stringify(stats));
   };
   Apify.events.on("persistState", persistState);
+  */
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -754,7 +812,8 @@ Apify.main(async () => {
 
   await stats.save();
 
-  if (!development && type !== "CZECHITAS") {
+  // TODO: check if type=CZECHITAS is still relevant
+  if (!development && type !== "CZECHITAS" && type !== ActorType.COUNT) {
     await Promise.allSettled([
       //invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),  // TODO: test it
       invalidateCDN(
