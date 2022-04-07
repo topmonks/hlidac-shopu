@@ -162,9 +162,7 @@ export function createApi(domainName: string, options?: any) {
 
   const api = new Api(hsName("api", options), {
     stageName: options?.stage ?? "v1",
-    description: options?.stage
-      ? "Staged API Hlídače shopů managed by Pulumi"
-      : "Nová verze API Hlídače managovaná přes Pulumi",
+    description: "Staged API Hlídače shopů managed by Pulumi",
     cacheEnabled: true,
     cacheSize: "0.5", // GB
     routes: [
