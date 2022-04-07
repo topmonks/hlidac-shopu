@@ -71,6 +71,9 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
                 NSApplication.shared.terminate(nil)
             }
         }
+#else
+        let url = URL(string: "App-Prefs:root=path")!
+        UIApplication.shared.open(url)
 #endif
     }
 
