@@ -228,57 +228,23 @@ jobs:
           mentions: "@here"
           channel: ntf-hlidac-shopu
 
-  build-safari-extension:
+  build-apple-apps:
     macos:
       xcode: "13.3.0"
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - v1-gem-cache-macos-{{ checksum "apple/macos/Gemfile.lock" }}
+      # - run:
+      #     working_directory: "apple"
+      #     command: bundle install
       - run:
-          working_directory: "apple/macos"
-          command: bundle install
-      - run:
-          name: Build and Release Mac Extension App
-          working_directory: "apple/macos"
+          name: Build and Release Apple apps
+          working_directory: "apple"
           command: |
-            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
-            bundle exec fastlane release
-      - save_cache:
-          paths:
-            - ~/.bundle
-          key: v1-gem-cache-macos-{{ checksum "apple/macos/Gemfile.lock" }}
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-          channel: ntf-hlidac-shopu
-
-  build-ios-app:
-    macos:
-      xcode: "13.3.0"
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - v1-gem-cache-ios-{{ checksum "apple/ios/Gemfile.lock" }}
-      - run:
-          working_directory: "apple/ios"
-          command: bundle install
-      - run:
-          name: Build and Release iOS App
-          working_directory: "apple/ios"
-          command: |
-            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
-            bundle exec fastlane release
-      - save_cache:
-          paths:
-            - ~/.bundle
-          key: v1-gem-cache-ios-{{ checksum "apple/ios/Gemfile.lock" }}
+            echo tbd
+            # echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
+            # bundle exec fastlane release
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -449,22 +415,12 @@ workflows:
 #              ignore: /.*/
 #            tags:
 #              only: /^extension-.*/
-      - build-ios-app:
+      - build-apple-apps:
           context:
             - org-global
             - org-fastlane
           requires:
             - test-lib
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^extension-.*/
-      - build-safari-extension:
-          context:
-            - org-global
-            - org-fastlane
-          requires:
             - build-web-extension
           filters:
             branches:
