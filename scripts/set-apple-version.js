@@ -3,19 +3,42 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 const extensionPath = path.resolve(__dirname, "../extension");
-const paths = new Map([
-  ["macOS", path.resolve(__dirname, "../apple/macos")],
-  ["iOS", path.resolve(__dirname, "../apple/ios")]
-]);
+const appleProjectPath = path.resolve(__dirname, "../apple");
 
-for (let [os, cwd] of paths.entries()) {
-  try {
-    const { version } = require(`${extensionPath}/manifest.json`);
-    execSync(`xcrun agvtool new-marketing-version ${version}`, { cwd });
-    execSync(`xcrun agvtool next-version -all`, { cwd }); // this just increments build num
+try {
+  const { version } = require(`${extensionPath}/manifest.json`);
+  changeProductVersion(version);
+  execSync(`xcrun agvtool next-version -all`, { cwd: appleProjectPath });
 
-    console.log(`${os} app version is now ${version}`);
-  } catch (error) {
-    console.error("Failed to set app version", error.stdout.toString("utf8"));
+  console.log(`All App versions are now ${version}`);
+} catch (error) {
+  console.error("Failed to set app version", error.message);
+}
+
+function changeProductVersion(version) {
+  const filePath = path.resolve(
+    appleProjectPath,
+    "Hlídač Shopů.xcodeproj/project.pbxproj"
+  );
+
+  const prev = execSync(`cat "${filePath}"`).toString();
+  const next = prev
+    .split("\n")
+    .map(line =>
+      !line.trim().startsWith("MARKETING_VERSION")
+        ? line
+        : line.replace(
+            /MARKETING_VERSION = \d+\.\d+(\.\d+)?/,
+            `MARKETING_VERSION = ${version}`
+          )
+    )
+    .join("\n");
+
+  if (prev === next) {
+    console.log("No changes to project.pbxproj");
+    return;
   }
+
+  // write new content using node fs
+  require("fs").writeFileSync(filePath, next);
 }
