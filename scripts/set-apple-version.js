@@ -39,6 +39,5 @@ function changeProductVersion(version) {
     return;
   }
 
-  // write new content using node fs
   require("fs").writeFileSync(filePath, next);
 }

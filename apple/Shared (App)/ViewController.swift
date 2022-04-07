@@ -71,7 +71,7 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
             }
         }
 #elseif os(iOS)
-        let settingsUrl = URL(string: UIApplication.openSettingsURLString)!
+        let settingsUrl = URL(string: "App-Prefs:")!
         
         if UIApplication.shared.canOpenURL(settingsUrl) {
             UIApplication.shared.open(settingsUrl, completionHandler: nil)
