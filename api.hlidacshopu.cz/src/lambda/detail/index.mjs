@@ -95,7 +95,7 @@ export async function handler(event) {
 
   incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
 
-  const rows = prepareData({ json: historicalData.entries ?? historicalData });
+  const rows = prepareData({ json: historicalData });
   const { currentPrice, originalPrice, imageUrl } = Object.assign(
     {},
     await extraData,
