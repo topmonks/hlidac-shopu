@@ -63,7 +63,6 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
 
         SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
             guard error == nil else {
-                // Insert code to inform the user that something went wrong.
                 return
             }
 
@@ -71,9 +70,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
                 NSApplication.shared.terminate(nil)
             }
         }
-#else
-        let url = URL(string: "App-Prefs:root=path")!
-        UIApplication.shared.open(url)
+#elseif os(iOS)
+        let settingsUrl = URL(string: UIApplication.openSettingsURLString)!
+        
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl, completionHandler: nil)
+        }
 #endif
     }
 
