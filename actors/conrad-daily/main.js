@@ -30,12 +30,6 @@ const LABELS = {
   SITEMAP_LIST: "SITEMAP-LIST"
 };
 
-const TYPE = {
-  FULL: ActorType.FULL,
-  TEST: ActorType.TEST,
-  COUNT: "COUNT"
-};
-
 const { log } = Apify.utils;
 
 async function getApiKey(stats) {
@@ -91,7 +85,7 @@ async function traverseCategory(crawlContext, category, stats) {
 
   for (let childIx in category.children) {
     await traverseCategory(crawlContext, category.children[childIx], stats);
-    if (crawlContext.type === TYPE.TEST) {
+    if (crawlContext.type === ActorType.TEST) {
       log.debug("Stopping after first category child");
       break;
     }
@@ -115,7 +109,7 @@ async function traverseCategoryStart(crawlContext, stats) {
 
   for (let categoryIx in categories) {
     await traverseCategory(crawlContext, categories[categoryIx], stats);
-    if (crawlContext.type === TYPE.TEST) {
+    if (crawlContext.type === ActorType.TEST) {
       log.debug("Stopping after first category");
       break;
     }
@@ -352,7 +346,7 @@ async function handleSitemapStart(context, stats, crawlContext) {
           label: LABELS.SITEMAP_LIST
         }
       };
-      if (crawlContext.type === TYPE.TEST && requestCount > 1) {
+      if (crawlContext.type === ActorType.TEST && requestCount > 1) {
         log.debug("Skipping " + url);
         return;
       }
@@ -414,9 +408,7 @@ Apify.main(async () => {
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
 
-  log.info("TYPE: " + type);
-  log.info("DEVELOPMENT: " + development);
-  log.info("DEBUG: " + debug);
+  log.info(JSON.stringify(input, null, 2));
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
@@ -436,11 +428,9 @@ Apify.main(async () => {
 
   let sources = [];
 
-  log.info("Type " + type);
-
   switch (type) {
-    case TYPE.TEST:
-    case TYPE.FULL:
+    case ActorType.TEST:
+    case ActorType.FULL:
       sources.push({
         url: URL_MAIN,
         userData: {
@@ -450,7 +440,7 @@ Apify.main(async () => {
       break;
 
     // Product counter
-    case TYPE.COUNT:
+    case ActorType.COUNT:
       sources.push({
         url: URL_SITEMAP,
         userData: {
@@ -521,8 +511,14 @@ Apify.main(async () => {
   if (!development) {
     await Promise.allSettled([
       stats.save(),
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
-      uploadToKeboola(shopName(detailUrl.deref()))
+
+      // TODO: fix it - TypeError [ERR_INVALID_URL]: Invalid URL
+      //invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "conrad.cz"),
+
+      // TODO: fix it - TypeError [ERR_INVALID_URL]: Invalid URL
+      //uploadToKeboola(shopName(detailUrl.deref()))
+      uploadToKeboola("conrad_cz")
     ]);
   }
 
