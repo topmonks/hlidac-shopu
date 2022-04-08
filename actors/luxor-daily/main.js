@@ -8,6 +8,7 @@ import { gotScraping } from "got-scraping";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import cheerio from "cheerio";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const URL_API_START =
   //"https://www.luxor.cz/products/knihy?sort=price%3Aasc&only_in_stock=1";  // For case sort will be used
@@ -28,9 +29,11 @@ const LABELS = {
   API_LIST: "API-LIST",
   API_DETAIL: "API-DETAIL",
 
+  /*
   FRONT_START: "FRONT-START",
   FRONT_LIST: "FRONT-LIST",
   FRONT_DETAIL: "FRONT-DETAIL",
+  */
 
   SITEMAP_START: "SITEMAP-START",
   SITEMAP_LIST: "SITEMAP-LIST",
@@ -182,10 +185,16 @@ async function handleAPIList(context, stats, crawlContext) {
 
     if (!crawlContext.processedIds.has(product.itemId)) {
       crawlContext.processedIds.add(product.itemId);
-      requests.push(
-        Apify.pushData(product),
-        uploadToS3v2(crawlContext.s3, product)
-      );
+
+      if (crawlContext.development) {
+        await Apify.pushData(product);
+      } else {
+        requests.push(
+          Apify.pushData(product),
+          uploadToS3v2(crawlContext.s3, product)
+        );
+      }
+
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
@@ -276,6 +285,7 @@ async function handleAPIDetail(request, stats, crawlContext) {
  * @param crawlContext
  * @returns {Promise<void>}
  */
+/*
 async function handleFrontStart(request, stats, crawlContext) {
   const requestOptions = {
     url: URL_FRONT,
@@ -308,6 +318,7 @@ async function handleFrontStart(request, stats, crawlContext) {
       }
     });
 }
+*/
 
 /**
  * Handle frontend product list scraping (unfinished code skelet only)
@@ -316,9 +327,11 @@ async function handleFrontStart(request, stats, crawlContext) {
  * @param crawlContext
  * @returns {Promise<void>}
  */
+/*
 async function handleFrontList(request, stats, crawlContext) {
   log.debug("---\nhandleFrontList");
 }
+*/
 
 /**
  * Handle frontend product detail scraping (unfinished code skelet only)
@@ -327,6 +340,7 @@ async function handleFrontList(request, stats, crawlContext) {
  * @param crawlContext
  * @returns {Promise<void>}
  */
+/*
 async function handleFrontDetail(request, stats, crawlContext) {
   const product = {
     itemId: products[productIx].id,
@@ -343,6 +357,7 @@ async function handleFrontDetail(request, stats, crawlContext) {
     category: request.userData.slug
   };
 }
+*/
 
 /**
  * Start sitemap parsing
@@ -406,8 +421,9 @@ async function handleSitemapList(context, stats, crawlContext) {
     }
   });
 
-  log.debug(`Items count in XML: ${stats.items}`);
-  log.debug("processedIds size", crawlContext.processedIds.size);
+  const { items, itemsDuplicity } = await stats.get();
+
+  log.debug(`Items count in XML: ${items}, duplicity ${itemsDuplicity}`);
 }
 
 Apify.main(async () => {
@@ -419,7 +435,7 @@ Apify.main(async () => {
   const input = await Apify.getInput();
   const {
     development = true,
-    type = LABELS.TEST, // API_START | FRONT_START | SITEMAP_START | TEST
+    type = ActorType.FULL, // FULL | TEST | COUNT
     maxConcurrency = 100,
     maxRequestRetries = 4,
     proxyGroups = ["CZECH_LUMINATI"]
@@ -449,7 +465,8 @@ Apify.main(async () => {
 
   switch (type) {
     // Scraping via API
-    case LABELS.API_START:
+    case ActorType.TEST:
+    case ActorType.FULL:
       log.info("API_START");
       sources.push({
         url: URL_API_START,
@@ -460,6 +477,7 @@ Apify.main(async () => {
       break;
 
     // Unfinished frontend scraping
+    /*
     case LABELS.FRONT_START:
       log.info("FRONT_START");
       sources.push({
@@ -469,9 +487,10 @@ Apify.main(async () => {
         }
       });
       break;
+    */
 
     // Product counter
-    case LABELS.SITEMAP_START:
+    case ActorType.COUNT:
       log.info("SITEMAP_START");
       sources.push({
         url: URL_SITEMAP,
@@ -485,12 +504,6 @@ Apify.main(async () => {
   if (development) {
     log.setLevel(log.LEVELS.DEBUG);
   }
-
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
 
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await Apify.openRequestList("start-url", sources);
@@ -525,12 +538,14 @@ Apify.main(async () => {
         case LABELS.API_DETAIL:
           return handleAPIDetail(context, stats, crawlContext);
 
+        /*
         case LABELS.FRONT_START:
           return handleFrontStart(context, stats, crawlContext);
         case LABELS.FRONT_LIST:
           return handleFrontList(context, stats, crawlContext);
         case LABELS.FRONT_DETAIL:
           return handleFrontDetail(context, stats, crawlContext);
+        */
 
         case LABELS.SITEMAP_START:
           return handleSitemapStart(context, stats, crawlContext);
@@ -558,9 +573,9 @@ Apify.main(async () => {
   // await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
   //log.info(JSON.stringify(stats, null, 2));
 
-  log.info("Calling upload");
   if (!development) {
     try {
+      log.info("Calling upload");
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "luxor.cz");
       log.info("invalidated Data CDN");
       await uploadToKeboola("luxor_cz");
