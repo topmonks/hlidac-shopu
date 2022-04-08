@@ -108,11 +108,15 @@ async function pushProducts(products, country, stats, processedIds) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
       // push data to dataset to be ready for upload to Keboola
-      requests.push(
-        Apify.pushData(product),
-        // upload JSON+LD data to CDN
-        uploadToS3v2(s3, product)
-      );
+      if (input.development) {
+        requests.push(Apify.pushData(product));
+      } else {
+        requests.push(
+          Apify.pushData(product),
+          // upload JSON+LD data to CDN
+          uploadToS3v2(s3, product)
+        );
+      }
       count += 1;
     } else {
       stats.inc("itemsDuplicity");
@@ -359,7 +363,11 @@ const handleCategoryPage = async (
     }
     if (products.length > 0) {
       for (const product of products) {
-        requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
+        if (input.development) {
+          requests.push(Apify.pushData(product));
+        } else {
+          requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
+        }
       }
       // await all requests, so we don't end before they end
       await Promise.allSettled(requests);
@@ -486,7 +494,7 @@ const handleProductInDetailPage = async (
     }
   }
 
-  async function handleProductUsingHTML(processedIds) {
+  async function handleProductUsingHTML() {
     log.debug("Handled by HTML");
     if (!$('a[href="#variants"]').exists()) {
       log.error(
@@ -705,6 +713,7 @@ Apify.main(async () => {
     debug = true,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
+    //proxyGroups = ["RESIDENTIAL"],
     maxConcurrency = 10,
     maxRequestRetries = 3
   } = input ?? {};
