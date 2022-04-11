@@ -140,11 +140,13 @@ export async function handler(event) {
     );
   } catch (err) {
     console.error(err);
-    if (err.$metadata.httpStatusCode === 404)
-    return withCORS(["GET", "OPTIONS"])(notFound());
-    else return withCORS(["GET", "OPTIONS"])({
-      statusCode: 500,
-      body: ""
-    })
+    if (err.$metadata.httpStatusCode === 404) {
+      return withCORS(["GET", "OPTIONS"])(notFound());
+    } else {
+      return withCORS(["GET", "OPTIONS"])({
+        statusCode: 500,
+        body: ""
+      });
+    }
   }
 }
