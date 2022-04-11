@@ -22,9 +22,12 @@ export function createWebsite(domain: string) {
   );
 
   // @ts-ignore
-  let cacheBoostingPolicy = createCacheBoostingPolicy(domain);
+  let cacheBoostingPolicy = createCacheBoostingPolicy(domain, {});
   // @ts-ignore
-  let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(domain);
+  let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(
+    domain,
+    {}
+  );
   let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
     target: `https://${domain}`
   });
