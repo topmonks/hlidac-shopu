@@ -81,11 +81,14 @@ export async function handler(event) {
   }
 
   try {
+    console.time("data fetching");
     const [meta, priceHistory, extraData] = await Promise.all([
       getMetadataFromS3(s3, shop.origin, shop.itemUrl),
       getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl),
       getParsedData(db, shop)
     ]);
+    console.timeEnd("data fetching");
+
     if (!meta) {
       return withCORS(["GET", "OPTIONS"])(
         notFound({
@@ -108,6 +111,8 @@ export async function handler(event) {
     incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
 
     console.log(priceHistory);
+
+    console.time("data preparation");
     const rows = prepareData(priceHistory);
     const { currentPrice, originalPrice, imageUrl } = Object.assign(
       {},
@@ -117,9 +122,11 @@ export async function handler(event) {
     if (currentPrice) {
       rows.push({ currentPrice, originalPrice, date: new Date() });
     }
+    console.timeEnd("data preparation");
 
+    console.time("discount computation");
     const discount = realDiscount(
-      priceHistory.commonPrice ? priceHistory : meta,
+      priceHistory?.commonPrice ? priceHistory : meta,
       rows
     );
     const claimedDiscount = getClaimedDiscount(rows);
@@ -130,6 +137,7 @@ export async function handler(event) {
       ...discount,
       ...rest
     });
+    console.timeEnd("discount computation");
     return withCORS(["GET", "OPTIONS"])(
       response(
         {
