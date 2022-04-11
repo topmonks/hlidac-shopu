@@ -113,14 +113,15 @@ export function createApi(domainName: string, options?: any) {
 
   const buildAssets = (fileName: string) =>
     lambdaBuilder.buildCodeAsset(
-      path.join(__dirname, "src", "lambda", fileName)
+      path.join(__dirname, "src", "lambda", fileName),
+      true
     );
 
   const getRouteHandler = (
     name: string,
     fileName: string,
     role: aws.iam.Role,
-    { timeout = 15, environment }: RouteHandlerArgs
+    { environment, timeout = 15, memorySize = 128 }: RouteHandlerArgs
   ): aws.lambda.Function =>
     new aws.lambda.Function(hsName(`api-${name}-lambda`, options), {
       publish: true,
@@ -129,6 +130,7 @@ export function createApi(domainName: string, options?: any) {
       role: role.arn,
       handler: "index.handler",
       code: buildAssets(fileName),
+      memorySize,
       timeout, // reasonable timeout for initial request without 500
       environment
     });
@@ -143,6 +145,7 @@ export function createApi(domainName: string, options?: any) {
       requiredParameters,
       cache,
       timeout,
+      memorySize,
       authorizers,
       environment
     }: RouteArgs
@@ -150,6 +153,7 @@ export function createApi(domainName: string, options?: any) {
     type: "handler",
     handler: getRouteHandler(name, fileName, role ?? defaultLambdaRole, {
       timeout: timeout ?? 15,
+      memorySize,
       environment
     }),
     cors: { methods: [httpMethod, "OPTIONS"] }, // autogenerate CORS handler
@@ -170,7 +174,8 @@ export function createApi(domainName: string, options?: any) {
         httpMethod: "GET",
         path: "/detail",
         fileName: "detail/index.mjs",
-        requiredParameters: [{ in: "query", name: "url" }]
+        requiredParameters: [{ in: "query", name: "url" }],
+        memorySize: 512
       }),
       createHandlerRoute("shop-numbers", {
         httpMethod: "GET",
@@ -219,6 +224,7 @@ export function createApi(domainName: string, options?: any) {
 interface RouteHandlerArgs {
   timeout?: number;
   environment?: lambda.FunctionEnvironment;
+  memorySize?: number;
 }
 
 interface RouteArgs {
@@ -231,4 +237,5 @@ interface RouteArgs {
   timeout?: number;
   authorizers?: LambdaAuthorizer[] | LambdaAuthorizer;
   environment?: lambda.FunctionEnvironment;
+  memorySize?: number;
 }
