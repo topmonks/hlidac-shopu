@@ -242,8 +242,12 @@ export function getClaimedDiscount(data) {
  * @returns {DataRow[]}
  */
 export function prepareData({ json }) {
+  console.log(typeof json);
   let rows = typeof json === "string" ? JSON.parse(json) : json;
-  //rows = rows.entries ?? rows;
+  if (!Array.isArray(rows) && rows.entries) {
+    rows = rows.entries;
+  }
+
   // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({
     currentPrice: c === "" ? null : parseFloat(c),
