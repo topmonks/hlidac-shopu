@@ -7,11 +7,11 @@
   "type": "module",
   "dependencies": {
     "@hlidac-shopu/actors-common": "^1.2.5",
-    "apify": "^2.2.2"
+    "apify": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
-    "apify-cli": "^0.7.0"
+    "apify-cli": "^0.7.2"
   },
   "scripts": {
     "start": "node main.js",

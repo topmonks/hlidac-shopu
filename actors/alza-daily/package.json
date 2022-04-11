@@ -7,20 +7,20 @@
   "type": "module",
   "dependencies": {
     "@apify/http-request": "^2.1.2",
-    "@aws-sdk/client-cloudfront": "^3.55.0",
-    "@aws-sdk/client-s3": "^3.55.0",
+    "@aws-sdk/client-cloudfront": "^3.67.0",
+    "@aws-sdk/client-s3": "^3.67.0",
     "@hlidac-shopu/actors-common": "^1.2.5",
     "@hlidac-shopu/lib": "^1.2.9",
-    "apify": "^2.2.2",
+    "apify": "^2.3.0",
     "got-scraping": "^3.2.8",
     "modern-random-ua": "^1.0.3",
     "parsecurrency": "^1.0.1",
     "request-fixed-tunnel-agent": "^2.88.3",
-    "user-agents": "^1.0.964"
+    "user-agents": "^1.0.983"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
-    "apify-cli": "^0.7.0"
+    "apify-cli": "^0.7.2"
   },
   "scripts": {
     "start": "node main.js",
