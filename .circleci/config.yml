@@ -14,11 +14,23 @@ orbs:
 commands:
   install_packages:
     steps:
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - node/install
+      - restore_cache:
+          keys:
+            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2
           override-ci-command: yarn install --immutable
+      - save_cache:
+          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+          paths:
+            - ~/.cache
+            - ~/.pulumi/plugins
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
@@ -91,9 +103,6 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint actors
@@ -114,9 +123,6 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Run tests
@@ -140,9 +146,6 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint website
@@ -176,9 +179,6 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Build extension bundle
@@ -216,9 +216,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Make screenshots
@@ -239,9 +236,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
-      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Publish extension
@@ -286,8 +280,6 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
       - install_packages
       - run:
           name: Lint API
