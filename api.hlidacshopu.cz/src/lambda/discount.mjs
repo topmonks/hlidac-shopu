@@ -238,16 +238,18 @@ export function getClaimedDiscount(data) {
 
 /**
  *
- * @param {Object} json
+ * @param {Array | Object} historicalData
  * @returns {DataRow[]}
  */
-export function prepareData({ json }) {
-  const rows = Array.isArray(json) ? json : json.entries;
+export function prepareData(historicalData) {
+  const rows = Array.isArray(historicalData)
+    ? historicalData
+    : historicalData.entries;
 
   // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({
-    currentPrice: c === "" ? null : parseFloat(c),
-    originalPrice: o === "" ? null : parseFloat(o),
+    currentPrice: c,
+    originalPrice: o,
     date: new Date(d)
   }));
 
