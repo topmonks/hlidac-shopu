@@ -20,14 +20,14 @@ commands:
       - node/install
       - restore_cache:
           keys:
-            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/yarn-zero-lockfile" }}
+            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2
           override-ci-command: yarn install --immutable
       - save_cache:
-          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/yarn-zero-lockfile" }}
+          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
             - ~/.pulumi/plugins
@@ -95,6 +95,15 @@ commands:
       - run: yarn apify push
 
 jobs:
+  warm-up-cache:
+    machine:
+      image: ubuntu-2004:202111-02
+    # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
+    steps:
+      - checkout
+      - install_packages
   test-actors:
     machine:
       image: ubuntu-2004:202111-02
@@ -363,8 +372,12 @@ workflows:
     jobs:
       - test-actors:
           context: org-global
+          requires:
+            - warm-up-cache
       - test-lib:
           context: org-global
+          requires:
+            - warm-up-cache
           filters:
             branches:
               only: /.*/
