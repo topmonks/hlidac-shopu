@@ -40,6 +40,18 @@ function createDataset(data) {
 const db = new DynamoDBClient({});
 const s3 = new S3Client({});
 
+function scrapedData(params) {
+  return params.currentPrice
+    ? {
+        currentPrice: parseFloat(params.currentPrice),
+        originalPrice: params.originalPrice
+          ? parseFloat(params.originalPrice)
+          : null,
+        imageUrl: params.imageUrl
+      }
+    : {};
+}
+
 /**
  * @param {APIGatewayProxyEvent} event
  * @returns {Promise.<APIGatewayProxyResult>}
@@ -67,71 +79,72 @@ export async function handler(event) {
       console.error("ERROR: " + err)
     );
   }
-  const extraData = getParsedData(db, shop);
-  const meta = await getMetadataFromS3(s3, shop.origin, shop.itemUrl);
-  if (!meta) {
-    return withCORS(["GET", "OPTIONS"])(
-      notFound({
-        error: "Missing metadata",
-        shop: shop.origin,
-        itemUrl: shop.itemUrl
-      })
+
+  try {
+    const [meta, priceHistory, extraData] = await Promise.allSettled([
+      getMetadataFromS3(s3, shop.origin, shop.itemUrl),
+      getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl),
+      getParsedData(db, shop)
+    ]);
+    if (!meta) {
+      return withCORS(["GET", "OPTIONS"])(
+        notFound({
+          error: "Missing metadata",
+          shop: shop.origin,
+          itemUrl: shop.itemUrl
+        })
+      );
+    }
+    if (!priceHistory) {
+      return withCORS(["GET", "OPTIONS"])(
+        notFound({
+          error: "Missing price history",
+          shop: shop.origin,
+          itemUrl: shop.itemUrl
+        })
+      );
+    }
+
+    incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
+
+    const rows = prepareData(priceHistory);
+    const { currentPrice, originalPrice, imageUrl } = Object.assign(
+      {},
+      extraData,
+      scrapedData(params)
     );
-  }
-  const historicalData = await getHistoricalDataFromS3(
-    s3,
-    shop.origin,
-    shop.itemUrl
-  );
-  if (!historicalData) {
-    return withCORS(["GET", "OPTIONS"])(
-      notFound({
-        error: "Missing price history",
-        shop: shop.origin,
-        itemUrl: shop.itemUrl
-      })
+    if (currentPrice) {
+      rows.push({ currentPrice, originalPrice, date: new Date() });
+    }
+
+    const discount = realDiscount(
+      priceHistory.commonPrice ? priceHistory : meta,
+      rows
     );
+    const claimedDiscount = getClaimedDiscount(rows);
+    const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
+      name: itemName,
+      imageUrl: itemImage ?? imageUrl,
+      claimedDiscount,
+      ...discount,
+      ...rest
+    });
+    return withCORS(["GET", "OPTIONS"])(
+      response(
+        {
+          data: createDataset(rows),
+          metadata: meta ? transformMetadata(meta) : null
+        },
+        { "Cache-Control": "max-age=3600" }
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    if (err.$metadata.httpStatusCode === 404)
+    return withCORS(["GET", "OPTIONS"])(notFound());
+    else return withCORS(["GET", "OPTIONS"])({
+      statusCode: 500,
+      body: ""
+    })
   }
-
-  incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
-
-  const rows = prepareData(historicalData);
-  const { currentPrice, originalPrice, imageUrl } = Object.assign(
-    {},
-    await extraData,
-    params.currentPrice
-      ? {
-          currentPrice: parseFloat(params.currentPrice),
-          originalPrice: params.originalPrice
-            ? parseFloat(params.originalPrice)
-            : null,
-          imageUrl: params.imageUrl
-        }
-      : {}
-  );
-  if (currentPrice) {
-    rows.push({ currentPrice, originalPrice, date: new Date() });
-  }
-
-  const discount = realDiscount(
-    historicalData.commonPrice ? historicalData : meta,
-    rows
-  );
-  const claimedDiscount = getClaimedDiscount(rows);
-  const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
-    name: itemName,
-    imageUrl: itemImage ?? imageUrl,
-    claimedDiscount,
-    ...discount,
-    ...rest
-  });
-  return withCORS(["GET", "OPTIONS"])(
-    response(
-      {
-        data: createDataset(rows),
-        metadata: meta ? transformMetadata((await meta) ?? {}) : null
-      },
-      { "Cache-Control": "max-age=3600" }
-    )
-  );
 }
