@@ -242,11 +242,7 @@ export function getClaimedDiscount(data) {
  * @returns {DataRow[]}
  */
 export function prepareData({ json }) {
-  console.log(typeof json);
-  let rows = typeof json === "string" ? JSON.parse(json) : json;
-  if (!Array.isArray(rows) && rows.entries) {
-    rows = rows.entries;
-  }
+  const rows = Array.isArray(json) ? json : json.entries;
 
   // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({
