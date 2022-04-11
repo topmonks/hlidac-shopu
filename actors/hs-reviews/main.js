@@ -1,18 +1,18 @@
+import Apify from "apify";
 import { fetch } from "@adobe/helix-fetch";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
   CreateInvalidationCommand
 } from "@aws-sdk/client-cloudfront";
+import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import Apify from "apify";
 import cheerio from "cheerio";
 import * as csv from "csv-parse/sync";
 import jwt from "jsonwebtoken";
 import { URLSearchParams } from "url";
 import { promisify } from "util";
 import zlib from "zlib";
-import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
 /** @typedef { import("apify").RequestQueue } RequestQueue */
 /** @typedef { import("apify").RequestList } RequestList */

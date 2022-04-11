@@ -87,8 +87,12 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
       - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
@@ -106,8 +110,12 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
       - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
@@ -128,8 +136,13 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Lint website
@@ -159,8 +172,13 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Build extension bundle
@@ -192,10 +210,15 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - attach_workspace:
           at: .
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Make screenshots
@@ -210,10 +233,15 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
     # resource_class: arm.medium
+    environment:
+      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - attach_workspace:
           at: .
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
+      - run: nvm install $(< .nvmrc)
       - install_packages
       - run:
           name: Publish extension

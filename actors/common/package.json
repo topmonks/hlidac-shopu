@@ -12,11 +12,9 @@
   "peerDependencies": {
     "@aws-sdk/client-cloudfront": "^3.11.0",
     "@aws-sdk/client-s3": "^3.11.0",
-    "apify": "^2.2.1",
-    "got-scraping": "^3.2.6"
+    "apify": "^2.2.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.26",
-    "schema-dts": "^1.1.0"
+    "@types/node": "^16.11.26"
   }
 }

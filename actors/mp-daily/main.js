@@ -1,7 +1,6 @@
 import Apify from "apify";
-import { init, getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
-import { getJSONObject } from "@hlidac-shopu/actors-common/scraper";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { init, getJSONObject } from "./scraper.js";
 
 async function handleStart(crawlContext) {
   const { requestQueue, LABELS } = crawlContext;

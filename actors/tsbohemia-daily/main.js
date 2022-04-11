@@ -8,17 +8,17 @@ import cheerio from "cheerio";
 import { gotScraping } from "got-scraping";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { getCheerioObject } from "@hlidac-shopu/actors-common/scraper.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
+import { getCheerioObject } from "./scraper.js";
 import { BASE_URL, LABELS } from "./src/const.js";
 import { getRandomInt } from "./src/utils.js";
 import { CaptchaSolver } from "./src/captcha-solver.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const { log } = Apify.utils;
 let stats = {
