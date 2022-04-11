@@ -107,6 +107,7 @@ export async function handler(event) {
 
     incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
 
+    console.log(priceHistory);
     const rows = prepareData(priceHistory);
     const { currentPrice, originalPrice, imageUrl } = Object.assign(
       {},
@@ -140,7 +141,7 @@ export async function handler(event) {
     );
   } catch (err) {
     console.error(err);
-    if (err.$metadata.httpStatusCode === 404) {
+    if (err?.$metadata?.httpStatusCode === 404) {
       return withCORS(["GET", "OPTIONS"])(notFound());
     } else {
       return withCORS(["GET", "OPTIONS"])({
