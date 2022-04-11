@@ -20,17 +20,19 @@ commands:
       - node/install
       - restore_cache:
           keys:
-            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-binary-deps-{{ arch }}-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-binary-deps-{{ arch }}-v2-{{ .Branch }}-
             - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2
           override-ci-command: yarn install --immutable
       - save_cache:
-          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-binary-deps-{{ arch }}-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
             - ~/.pulumi/plugins
+            - node_modules
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
