@@ -20,14 +20,14 @@ commands:
       - node/install
       - restore_cache:
           keys:
-            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+            - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/yarn-zero-lockfile" }}
             - yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2
           override-ci-command: yarn install --immutable
       - save_cache:
-          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+          key: yarn-binary-deps-{{ arch }}-v1-{{ .Branch }}-{{ checksum "/tmp/yarn-zero-lockfile" }}
           paths:
             - ~/.cache
             - ~/.pulumi/plugins
