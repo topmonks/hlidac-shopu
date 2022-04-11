@@ -81,7 +81,7 @@ export async function handler(event) {
   }
 
   try {
-    const [meta, priceHistory, extraData] = await Promise.allSettled([
+    const [meta, priceHistory, extraData] = await Promise.all([
       getMetadataFromS3(s3, shop.origin, shop.itemUrl),
       getHistoricalDataFromS3(s3, shop.origin, shop.itemUrl),
       getParsedData(db, shop)
