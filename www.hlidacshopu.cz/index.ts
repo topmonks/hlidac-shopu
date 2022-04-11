@@ -26,7 +26,7 @@ export function createWebsite(domain: string) {
   // @ts-ignore
   let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(
     domain,
-    {}
+    {} as any
   );
   let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
     target: `https://${domain}`
