@@ -10,7 +10,7 @@ Scrapes data from JSON API on
 * Supported country codes: `cz`, `sk`, `pl`, `hu`, `de`, `at`
 * item ID is `gtin`, pattern in detail URL `.*-p(\d+).html`
 
-## Actors INPUT
+## Actor's INPUT
 
 You can choose `country` by country code and `productQuery`. Default values are:
 
