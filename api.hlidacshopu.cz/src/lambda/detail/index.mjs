@@ -110,8 +110,6 @@ export async function handler(event) {
 
     incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
 
-    console.log(priceHistory);
-
     console.time("data preparation");
     const rows = prepareData(priceHistory);
     const { currentPrice, originalPrice, imageUrl } = Object.assign(
