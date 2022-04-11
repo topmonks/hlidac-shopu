@@ -29,8 +29,8 @@ export function createWebsite(domain: string) {
     target: `https://${domain}`
   });
   let website = Website.create(domain, {
-    assetsCachingLambdaArn: assetsCachingLambda.arn,
-    securityHeadersLambdaArn: securityHeadersLambda.arn,
+    // assetsCachingLambdaArn: assetsCachingLambda.arn,
+    //securityHeadersLambdaArn: securityHeadersLambda.arn,
     edgeLambdas: [
       {
         pathPattern: "/app/*",
