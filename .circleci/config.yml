@@ -370,6 +370,8 @@ jobs:
 workflows:
   ci:
     jobs:
+      - warm-up-cache:
+          context: org-global
       - test-actors:
           context: org-global
           requires:
