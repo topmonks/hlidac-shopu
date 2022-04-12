@@ -372,16 +372,10 @@ jobs:
 workflows:
   ci:
     jobs:
-      - warm-up-cache:
-          context: org-global
       - test-actors:
           context: org-global
-          requires:
-            - warm-up-cache
       - test-lib:
           context: org-global
-          requires:
-            - warm-up-cache
           filters:
             branches:
               only: /.*/
@@ -412,9 +406,9 @@ workflows:
               only: /.*/
             tags:
               only: /^extension-.*/
-#      - test-web-extension:
-#          requires:
-#            - build-web-extension
+      - test-web-extension:
+          requires:
+            - build-web-extension
       - github_release:
           context:
             - org-github
