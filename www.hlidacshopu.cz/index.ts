@@ -21,12 +21,14 @@ export function createWebsite(domain: string) {
     "google-site-verification=95Q6P8PAOMniBIXaI_FgFgE4iPPjknOH8lNH9lJ88bA"
   );
 
-  // @ts-ignore
-  let cacheBoostingPolicy = createCacheBoostingPolicy(domain, {});
-  // @ts-ignore
+  let cacheBoostingPolicy = createCacheBoostingPolicy(domain, {
+    cookiesConfig: { cookieBehavior: "none" },
+    headersConfig: { headerBehavior: "none" },
+    queryStringsConfig: { queryStringBehavior: "none" }
+  });
   let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(
     domain,
-    {} as any
+    {}
   );
   let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
     target: `https://${domain}`
