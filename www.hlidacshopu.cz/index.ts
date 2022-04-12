@@ -3,6 +3,7 @@ import {
   createTxtRecord,
   createCacheBoostingPolicy,
   createSecurityHeadersAndPermissionsPolicy,
+  CloudFront,
   Website
 } from "@topmonks/pulumi-aws";
 import { AppEdgeLambda } from "./app-edge-lambda";
@@ -35,6 +36,10 @@ export function createWebsite(domain: string) {
   });
   let website = Website.create(domain, {
     assetsCachePolicyId: cacheBoostingPolicy.id,
+    assetResponseHeadersPolicyId:
+      CloudFront.ManagedResponseHeaderPolicy
+        .CORSwithPreflightAndSecurityHeadersPolicy,
+    cachePolicyId: CloudFront.ManagedCachePolicy.CachingOptimized,
     responseHeadersPolicyId: securityHeadersPolicy.id,
     edgeLambdas: [
       {
