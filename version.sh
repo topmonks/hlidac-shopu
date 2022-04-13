@@ -29,9 +29,12 @@ if [ ! -e $new_ver ]; then
   mv $tmp package.json
 
   tmp=$(mktemp)
+  jq ".version = \"$new_ver\"" extension/package.json > $tmp
+  mv $tmp extension/package.json
+
+  tmp=$(mktemp)
   jq ".version = \"$new_ver\"" extension/manifest.json > $tmp
   mv $tmp extension/manifest.json
-
 
   tmp=$(mktemp)
   jq ".version = \"$new_ver\"" www.hlidacshopu.cz/src/static/webapp.json > $tmp
