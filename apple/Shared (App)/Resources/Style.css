@@ -60,5 +60,10 @@ body.state-off :is(.state-on, .state-unknown) {
 
 button {
     font-size: 1em;
-    color: #000;
+    color: black;
+    border-radius: 4px;
+    background-color: white;
+    border: 2px solid black;
+    padding: 6px;
+    font-size: 16px;
 }
