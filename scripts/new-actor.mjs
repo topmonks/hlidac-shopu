@@ -32,6 +32,9 @@ async function main(actorName, actorApifyName = actorName) {
     const newFilePath = path.join(actorDir, file);
     await fs.promises.writeFile(newFilePath, newFileContent, "utf8");
   }
+  console.log(
+    `New actor "${actorName}" prepared. You can start coding now:\n${actorDir}/main.js`
+  );
 }
 
 const program = new Command("createActor")

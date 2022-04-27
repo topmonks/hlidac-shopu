@@ -66,12 +66,12 @@ function makeListingUrl(
 
 function createProductUrl(country, url) {
   throw new Error("Not implemented");
-  // switch (country.toUpperCase()) {
-  //   case COUNTRY.SK:
-  //     return new URL(url, "https://example.sk").href;
-  //   default:
-  //     return new URL(url, `https://example.${country.toLowerCase()}`).href;
-  // }
+  switch (country.toUpperCase()) {
+    case COUNTRY.SK:
+      return new URL(url, "https://exampla.sk").href;
+    default:
+      return new URL(url, `https://example.${country.toLowerCase()}`).href;
+  }
 }
 
 function* traverseCategories(categories, names = []) {
@@ -194,51 +194,51 @@ async function handleCategory(body, requestQueue, country, category) {
 
 async function handleStart(type, navigation, stats, requestQueue, country) {
   throw new Error("Not implemented");
-  // log.info("Pagination info", type);
-  // const { children } = navigation;
-  // // we are traversing recursively from leaves to trunk
-  // for (const category of traverseCategories(children)) {
-  //   log.debug(`Found category ${category.title} at link: ${category.link}`);
-  //   stats.inc("categories");
-  //   // we need to await here to prevent higher categories
-  //   // to be enqueued sooner than sub-categories
-  //   await requestQueue.addRequest({
-  //     url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-  //       country
-  //     )}${category.link}/?json`,
-  //     userData: {
-  //       country,
-  //       category: category.breadcrumbs.toString(),
-  //       label: LABELS.CATEGORY
-  //     }
-  //   });
-  // }
+  log.info("Pagination info", type);
+  const { children } = navigation;
+  // we are traversing recursively from leaves to trunk
+  for (const category of traverseCategories(children)) {
+    log.debug(`Found category ${category.title} at link: ${category.link}`);
+    stats.inc("categories");
+    // we need to await here to prevent higher categories
+    // to be enqueued sooner than sub-categories
+    //   await requestQueue.addRequest({
+    //     url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+    //       country
+    //     )}${category.link}/?json`,
+    //     userData: {
+    //       country,
+    //       category: category.breadcrumbs.toString(),
+    //       label: LABELS.CATEGORY
+    //     }
+    //   });
+  }
 }
 
 async function enqueInitialRequest(type, requestQueue, country) {
   throw new Error("Not implemented");
-  // if (type === ActorType.FULL) {
-  //   await requestQueue.addRequest({
-  //     url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-  //       country
-  //     )}/?view=navigation&json`,
-  //     userData: {
-  //       country,
-  //       productQuery: "",
-  //       label: LABELS.START
-  //     }
-  //   });
-  // } else if (type === ActorType.TEST) {
-  //   const productQuery = { "brandName": "SEINZ." };
-  //   await requestQueue.addRequest({
-  //     url: makeListingUrl(country, productQuery, 0),
-  //     userData: {
-  //       country,
-  //       category: "test > test",
-  //       categoryId: "020800"
-  //     }
-  //   });
-  // }
+  if (type === ActorType.FULL) {
+    //   await requestQueue.addRequest({
+    //     url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
+    //       country
+    //     )}/?view=navigation&json`,
+    //     userData: {
+    //       country,
+    //       productQuery: "",
+    //       label: LABELS.START
+    //     }
+    //   });
+  } else if (type === ActorType.TEST) {
+    //   const productQuery = { "brandName": "SEINZ." };
+    //   await requestQueue.addRequest({
+    //     url: makeListingUrl(country, productQuery, 0),
+    //     userData: {
+    //       country,
+    //       category: "test > test",
+    //       categoryId: "020800"
+    //     }
+    //   });
+  }
 }
 
 Apify.main(async () => {
