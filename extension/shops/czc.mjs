@@ -14,7 +14,10 @@ export class CZC extends Shop {
     const currentPrice = cleanPrice(".pd-info .price .price-vatin");
     if (!currentPrice) return null;
     const originalPrice = cleanPrice(".pd-info .price-before .price-vatin");
-    const imageUrl = document.querySelector("meta[itemprop=image]").content;
+    const imageElement = document.querySelector(
+      "#pd-image [scroll-into-view] img"
+    );
+    const imageUrl = imageElement ? imageElement.src : null;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
