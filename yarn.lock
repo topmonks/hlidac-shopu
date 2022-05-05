@@ -2851,20 +2851,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily"
-  dependencies:
-    "@aws-sdk/client-cloudfront": ^3.67.0
-    "@aws-sdk/client-s3": ^3.67.0
-    "@hlidac-shopu/actors-common": ^1.2.5
-    "@types/node": ^16.11.26
-    apify: ^2.3.0
-    apify-cli: ^0.7.2
-    got-scraping: ^3.2.8
-  languageName: unknown
-  linkType: soft
-
 "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
