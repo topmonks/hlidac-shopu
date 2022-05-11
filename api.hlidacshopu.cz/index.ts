@@ -189,6 +189,12 @@ export function createApi(domainName: string, options?: any) {
         fileName: "reviewStats/index.mjs",
         cache: { ttl: 3600 }
       }),
+      createHandlerRoute("dashboard", {
+        httpMethod: "GET",
+        path: "/dashboard",
+        fileName: "dashboard/index.mjs",
+        cache: { ttl: 3600 }
+      }),
       createHandlerRoute("og", {
         httpMethod: "GET",
         path: "/og",
