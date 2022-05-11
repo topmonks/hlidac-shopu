@@ -1,5 +1,16 @@
 {
-  "extends": ["plugin:compat/recommended"],
+  "plugins": [
+    "es",
+    "lit",
+    "prettier",
+    "promise"
+  ],
+  "extends": [
+    "prettier",
+    "plugin:lit/recommended",
+    "plugin:promise/recommended",
+    "plugin:compat/recommended"
+  ],
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2020
