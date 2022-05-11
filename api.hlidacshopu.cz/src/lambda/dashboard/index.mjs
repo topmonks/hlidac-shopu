@@ -24,8 +24,8 @@ export async function handler(_event) {
   return withCORS(["GET", "OPTIONS"])(
     res.Item
       ? response(unmarshall(res.Item).json, {
-        "Cache-Control": "max-age=14400"
-      })
+          "Cache-Control": "max-age=14400"
+        })
       : notFound()
   );
 }
