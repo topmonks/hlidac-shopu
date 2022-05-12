@@ -24,6 +24,7 @@ addEventListener("DOMContentLoaded", async e => {
 
 function tableTemplate(data) {
   return data
+    .filter(x => !x.hidden)
     .map(x => Object.assign({}, x, { updatedAt: new Date(x.updatedAt) }))
     .sort((a, b) => a.sortKey - b.sortKey)
     .filter(x => x.allProducts)
