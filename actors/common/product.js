@@ -115,6 +115,10 @@ export function currencyToISO4217(currency) {
   }
 }
 
+export function cleanPrice(s) {
+  return parseFloat(cleanPriceText(s));
+}
+
 export function cleanPriceText(priceText) {
   let result = priceText.replace(/\s+/g, "");
   if (result.includes("cca")) {
