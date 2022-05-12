@@ -32,7 +32,7 @@ const config = {
   },
 
   generate: {
-    exclude: ["assets.json", "media.json", "images.json"],
+    exclude: ["assets.json", "media.json", "images.json", "dashboard.json"],
     json: [
       {
         collection: "media",
@@ -41,12 +41,20 @@ const config = {
           fileName: "media.json",
           edit: json => ({ [json.published.split("-").shift()]: [json] })
         }
+      },
+      {
+        collection: "dashboard",
+        mergeOptions: {
+          concatArrays: true,
+          fileName: "dashboard.json",
+          edit: json => ({ [json.shop]: json })
+        }
       }
     ]
   },
 
   html: {
-    collections: ["media", "images", "assets", "build"],
+    collections: ["media", "images", "assets", "build", "dashboard"],
     nunjucksRender: {
       filters: {
         longDate(str) {
