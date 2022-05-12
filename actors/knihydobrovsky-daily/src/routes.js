@@ -1,7 +1,7 @@
 import Apify from "apify";
 import { URL } from "url";
 import {
-  cleanPriceText,
+  cleanPrice,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 
@@ -108,7 +108,7 @@ export async function handleList(
       const $item = $(this);
       const dataLink = canonicalUrl($item.find("a.buy-now").attr("data-link"));
       const originalPrice =
-        cleanPriceText($item.find(".price-wrap .price-strike").text()) || null;
+        cleanPrice($item.find(".price-wrap .price-strike").text()) || null;
       return {
         itemId:
           $item
@@ -119,7 +119,7 @@ export async function handleList(
         itemUrl: canonical($item.find("h3 a").attr("href")),
         itemName: $item.find("span.name").text(),
         img: $item.find("picture img").attr("src"),
-        currentPrice: cleanPriceText($item.find("p.price strong").text()) || 0,
+        currentPrice: cleanPrice($item.find("p.price strong").text()) || 0,
         originalPrice,
         discounted: Boolean(originalPrice),
         rating: parseFloat(
