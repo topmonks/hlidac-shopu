@@ -13,8 +13,6 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
 const { log } = Apify.utils;
 
 async function enqueuRequests(requestQueue, items) {
@@ -141,7 +139,8 @@ async function fetchProductBase(
   requestQueue,
   request,
   country,
-  type
+  type,
+  s3
 ) {
   const productsCards =
     type === ActorType.BF
@@ -238,7 +237,7 @@ async function fetchProductUrl($, requestQueue, request) {
 }
 
 // fetch details from each product detail page
-async function fetchProductDetail($, requestQueue, request, country) {
+async function fetchProductDetail($, requestQueue, request, country, s3) {
   const result = {};
 
   try {
@@ -307,7 +306,8 @@ function parseProducts(
   crawlContext,
   country,
   type,
-  parseDetails
+  parseDetails,
+  s3
 ) {
   if (parseDetails) {
     return fetchProductUrl($, requestQueue, request);
@@ -318,13 +318,18 @@ function parseProducts(
     requestQueue,
     request,
     country,
-    type
+    type,
+    s3
   );
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   const input = await Apify.getInput();
   const {
@@ -396,7 +401,8 @@ Apify.main(async () => {
             crawlContext,
             country,
             type,
-            input.parseDetails
+            input.parseDetails,
+            s3
           );
           break;
         case LABEL.CATEGORY_PAGE:
@@ -407,7 +413,8 @@ Apify.main(async () => {
             crawlContext,
             country,
             type,
-            input.parseDetails
+            input.parseDetails,
+            s3
           );
           break;
         case LABEL.PRODUCT_DETAIL:
@@ -416,7 +423,8 @@ Apify.main(async () => {
             $,
             requestQueue,
             request,
-            country
+            country,
+            s3
           );
           break;
       }

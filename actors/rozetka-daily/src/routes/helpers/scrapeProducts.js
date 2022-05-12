@@ -3,7 +3,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { CURRENCY, PRODUCT_CELL_SELECTOR } from "../../consts.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
+const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
 export async function scrapeProducts($, category, stats, processedIds) {
   const products = $(PRODUCT_CELL_SELECTOR);

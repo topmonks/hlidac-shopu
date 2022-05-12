@@ -106,12 +106,15 @@ async function handleItems($, request, processedIds, stats, s3) {
   await Promise.allSettled(requests);
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   let stats = {};
   const processedIds = new Set();
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const input = await Apify.getInput();
   const {
     development = false,

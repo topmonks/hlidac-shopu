@@ -62,7 +62,7 @@ async function handleList(request, crawlContext) {
   }
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   const crawlContext = await init();
   const { input, requestQueue, log, LABELS } = crawlContext;

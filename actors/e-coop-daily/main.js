@@ -173,13 +173,16 @@ async function processItem({ item, processedIds, s3 }) {
   }
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
 
   const uniqueItemId = new Set();
   const processedIds = new Set();
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   log.info("ACTOR - start");
   const input = await Apify.getInput();

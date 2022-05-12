@@ -122,7 +122,7 @@ const LABELS = {
 
 const ROOT_URL = "https://eshop.example.com";
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1" });

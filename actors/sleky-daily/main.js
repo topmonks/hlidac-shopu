@@ -8,7 +8,6 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log } = Apify.utils;
 
 const web = "https://www.sleky.cz";
@@ -18,9 +17,13 @@ const web = "https://www.sleky.cz";
 // mode = 'LIST'; // prices and other attrs are taken from product list page
 // mode = 'DETAIL'; // prices and other attrs are taken from product detail page
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const input = await Apify.getInput();
 
   let mode = "LIST";

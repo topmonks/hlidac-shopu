@@ -1,13 +1,10 @@
 import Apify from "apify";
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { parseItems } from "./utils.js";
 
 const {
   utils: { log }
 } = Apify;
-
-const s3 = new S3Client({ region: "eu-central-1" });
 
 export async function handleStart({ $, requestQueue }, stats, input) {
   // Handle Start URLs
@@ -67,7 +64,7 @@ export async function handleList({ request, $, requestQueue }, stats, input) {
   }
 }
 
-export async function handlePage({ $, request }, stats, processedIds) {
+export async function handlePage({ $, request }, stats, processedIds, s3) {
   // Handle details
   const productList = parseItems($, request);
   let requestList = [];

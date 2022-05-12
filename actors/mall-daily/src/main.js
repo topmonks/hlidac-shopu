@@ -13,7 +13,6 @@ import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const {
   utils: { log }
 } = Apify;
@@ -24,10 +23,283 @@ const webSk = "https://www.mall.sk";
 let stats = {};
 const processedIds = new Set();
 
-Apify.main(async () => {
+async function handleReview(request, response, requestQueue) {
+  const { result, offset } = request.userData;
+  const responseData = JSON.parse(response.body);
+  result.reviewStats = responseData.stats;
+  if (!result.reviews) {
+    result.reviews = responseData.reviews;
+  } else {
+    result.reviews = result.reviews.concat(responseData.reviews);
+  }
+
+  if (responseData.stats.messages_count > offset) {
+    const url = `https://www.mall.cz/api/product-reviews/find?productId=${
+      result.productId
+    }&offset=${offset + 15}`;
+    await requestQueue.addRequest(
+      {
+        url,
+        userData: {
+          label: "REVIEW",
+          result,
+          offset: offset + 15
+        }
+      },
+      {
+        forefront: true
+      }
+    );
+  } else {
+    console.log(result.reviews);
+    await Apify.pushData(result);
+  }
+}
+
+async function handleBFStart(responseData, requestQueue, country) {
+  if (responseData.total > 60) {
+    const max = Math.ceil(responseData.total / 60);
+    for (let i = 2; i <= max; i++) {
+      await requestQueue.addRequest({
+        url: `https://www.mall.${country}/api/campaign/data?pathName=/kampan/black-friday&page=${i}&o=campaign,sort_2&menuSorting=sort_4&promotionPrice=true&labels[]=BFLV&sortingLabels[]=BF01`,
+        userData: {
+          label: "PAGE"
+        }
+      });
+    }
+  }
+
+  const storeItems = await extractBfItems(responseData.products, country);
+  log.info(`Storing ${storeItems.length} items`);
+  await Apify.pushData(storeItems);
+}
+
+async function handleBFPage(responseData, country) {
+  const storeItems = await extractBfItems(responseData.products, country);
+  log.info(`Storing ${storeItems.length} items`);
+  await Apify.pushData(storeItems);
+}
+
+async function handleStart($, requestQueue) {
+  const pageUrls = [];
+  $("a.card, a.card-link").each(function () {
+    const url = $(this).attr("href");
+    pageUrls.push({
+      url: !url.includes("http") ? `https://www.mall.cz${url}` : url,
+      userData: {
+        label: "PAGE"
+      }
+    });
+  });
+  for (const item of pageUrls) {
+    await requestQueue.addRequest(item);
+  }
+}
+
+async function handleMap(country, $, web, test, requestQueue) {
+  let menuItems = [];
+  const mapSelector =
+    country === "CZ"
+      ? $('h1:contains("Mapa stránek")')
+      : $('h1:contains("Mapa stránok")');
+  mapSelector
+    .closest("div")
+    .find("a")
+    .each(function () {
+      const menuItemHref = $(this).attr("href");
+      if (menuItemHref !== undefined) {
+        menuItems.push(web + menuItemHref);
+      }
+    });
+  console.log(`Found ${menuItems.length} valid urls, going to enqueue them.`);
+
+  if (test) {
+    menuItems = menuItems.slice(0, 10);
+    log.info(
+      `TEST is ${test}. Reduced menu items size to ${menuItems.length}.`
+    );
+  }
+  for (const keyword of menuItems) {
+    await requestQueue.addRequest({
+      url: keyword,
+      userData: {
+        label: "PAGE"
+      }
+    });
+  }
+}
+
+async function handleBrand($, web, test, requestQueue) {
+  let brandUrls = [];
+  $("ul li a").each(function () {
+    const urlRaw = $(this).attr("href");
+    if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
+      brandUrls.push(urlRaw);
+    } else {
+      brandUrls.push(web + urlRaw);
+    }
+  });
+
+  if (test) {
+    brandUrls = brandUrls.slice(0, 10);
+    log.info(
+      `TEST is ${test}. Reduced menu brandUrls size to ${brandUrls.length}.`
+    );
+  }
+
+  for (const url of brandUrls) {
+    await requestQueue.addRequest({
+      url,
+      userData: {
+        label: "PAGE"
+      }
+    });
+  }
+}
+
+async function handlePage(
+  $,
+  web,
+  country,
+  type,
+  requestQueue,
+  s3,
+  request,
+  test,
+  proxyConfiguration,
+  session
+) {
+  // extract items from page
+  try {
+    const items = await extractItems($, web, country);
+    if (items.length !== 0) {
+      // This is for Katka czechitas team, should be one time, we can remove it later
+      if (type === "CZECHITAS") {
+        for (const item of items) {
+          const url = `https://www.mall.cz/api/product-reviews/find?productId=${item.productId}`;
+          await requestQueue.addRequest(
+            {
+              url,
+              userData: {
+                label: "REVIEW",
+                result: item,
+                offset: 15
+              }
+            },
+            {
+              forefront: true
+            }
+          );
+        }
+      } else {
+        // we don't need to block pushes, we will await them all at the end
+        const requests = [];
+        for (const product of items) {
+          if (!processedIds.has(product.itemId)) {
+            processedIds.add(product.itemId);
+            requests.push(
+              Apify.pushData(product),
+              uploadToS3v2(s3, product, {
+                priceCurrency: country === "CZ" ? "CZK" : "EUR",
+                inStock: true
+              })
+            );
+            stats.items++;
+          } else {
+            stats.itemsDuplicity++;
+          }
+        }
+        console.log(
+          `${request.url} Found ${requests.length / 2} unique products`
+        );
+        // await all requests, so we don't end before they end
+        await Promise.allSettled(requests);
+      }
+    }
+  } catch (e) {
+    // no items on the page check it out
+    console.log(e.message);
+    /*throw new Error(
+      `Check this url, there are no items ${request.url}`
+    );*/
+  }
+
+  //Only from first pagination need obtain secondary menu links and pagination links and enqueue them.
+  if (request.url.indexOf("pagination=") === -1) {
+    // left menu add sub categories, just do it once and dont do it on pagination
+    try {
+      let itemsMenu = [];
+      // Old secondary menu type
+      if ($("ul.nav-secondary li>a").length !== 0) {
+        $(".sdb-panel ul.nav-secondary--secondary li>a:not([class])").each(
+          function () {
+            const urlRaw = $(this).attr("href");
+            if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
+              itemsMenu.push(urlRaw);
+            } else {
+              itemsMenu.push(`${web}${urlRaw}`);
+            }
+          }
+        );
+      }
+      // new secondary menu type
+      const newSecondaryMenu = $(
+        "ul.navigation-menu li.navigation-menu__item--child>a"
+      );
+      if (newSecondaryMenu.length !== 0) {
+        newSecondaryMenu.each(function () {
+          const urlRaw = $(this).attr("href");
+          if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
+            itemsMenu.push(urlRaw);
+          } else {
+            itemsMenu.push(`${web}${urlRaw}`);
+          }
+        });
+      }
+      if (itemsMenu.length !== 0) {
+        stats.categories += itemsMenu.length;
+        console.log(
+          `${request.url} Found ${itemsMenu.length} submenu urls, going to enqueue them`
+        );
+
+        if (test) {
+          itemsMenu = itemsMenu.slice(0, 10);
+          log.info(
+            `TEST is ${test}. Reduced itemsMenu size to ${itemsMenu.length}.`
+          );
+        }
+        for (const urls of itemsMenu) {
+          await requestQueue.addRequest({
+            url: urls,
+            userData: {
+              label: "PAGE"
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    await paginationParser(
+      $,
+      requestQueue,
+      request,
+      web,
+      proxyConfiguration.newUrl(session.id),
+      stats
+    );
+  }
+}
+
+Apify.main(async function main() {
   // Get queue and enqueue first url.
   rollbar.init();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const input = await Apify.getInput();
   const {
     development = false,
@@ -165,276 +437,47 @@ Apify.main(async () => {
       }
 
       if (request.userData.label === "REVIEW") {
-        const { result, offset } = request.userData;
-        const responseData = JSON.parse(response.body);
-        result.reviewStats = responseData.stats;
-        if (!result.reviews) {
-          result.reviews = responseData.reviews;
-        } else {
-          result.reviews = result.reviews.concat(responseData.reviews);
-        }
-
-        if (responseData.stats.messages_count > offset) {
-          const url = `https://www.mall.cz/api/product-reviews/find?productId=${
-            result.productId
-          }&offset=${offset + 15}`;
-          await requestQueue.addRequest(
-            {
-              url,
-              userData: {
-                label: "REVIEW",
-                result,
-                offset: offset + 15
-              }
-            },
-            {
-              forefront: true
-            }
-          );
-        } else {
-          console.log(result.reviews);
-          await Apify.pushData(result);
-        }
+        await handleReview(request, response, requestQueue);
       }
 
-      let $;
       if (type === ActorType.BF) {
         const responseData = JSON.parse(response.body);
         if (request.userData.label === "START") {
-          if (responseData.total > 60) {
-            const max = Math.ceil(responseData.total / 60);
-            for (let i = 2; i <= max; i++) {
-              await requestQueue.addRequest({
-                url: `https://www.mall.${country}/api/campaign/data?pathName=/kampan/black-friday&page=${i}&o=campaign,sort_2&menuSorting=sort_4&promotionPrice=true&labels[]=BFLV&sortingLabels[]=BF01`,
-                userData: {
-                  label: "PAGE"
-                }
-              });
-            }
-          }
-
-          const storeItems = await extractBfItems(
-            responseData.products,
-            country
-          );
-          log.info(`Storing ${storeItems.length} items`);
-          await Apify.pushData(storeItems);
+          await handleBFStart(responseData, requestQueue, country);
         } else if (request.userData.label === "PAGE") {
-          const storeItems = await extractBfItems(
-            responseData.products,
-            country
-          );
-          log.info(`Storing ${storeItems.length} items`);
-          await Apify.pushData(storeItems);
+          await handleBFPage(responseData, country);
         }
       } else if (request.userData.label !== "REVIEW") {
-        $ = cheerio.load(response.body);
+        const $ = cheerio.load(response.body);
         if ($(".cbm-error--404").length !== 0) {
           log.info(`404 ${request.url}`);
           return;
         }
 
-        if (request.userData.label === "CZECHITAS-START") {
-          const pageUrls = [];
-          $("a.card, a.card-link").each(function () {
-            const url = $(this).attr("href");
-            pageUrls.push({
-              url: !url.includes("http") ? `https://www.mall.cz${url}` : url,
-              userData: {
-                label: "PAGE"
-              }
-            });
-          });
-          for (const item of pageUrls) {
-            await requestQueue.addRequest(item);
-          }
-        }
-
-        if (request.userData.label === "MAP") {
-          let menuItems = [];
-          const mapSelector =
-            country === "CZ"
-              ? $('h1:contains("Mapa stránek")')
-              : $('h1:contains("Mapa stránok")');
-          mapSelector
-            .closest("div")
-            .find("a")
-            .each(function () {
-              const menuItemHref = $(this).attr("href");
-              if (menuItemHref !== undefined) {
-                menuItems.push(web + menuItemHref);
-              }
-            });
-          console.log(
-            `Found ${menuItems.length} valid urls, going to enqueue them.`
-          );
-
-          if (test) {
-            menuItems = menuItems.slice(0, 10);
-            log.info(
-              `TEST is ${test}. Reduced menu items size to ${menuItems.length}.`
-            );
-          }
-          for (const keyword of menuItems) {
-            await requestQueue.addRequest({
-              url: keyword,
-              userData: {
-                label: "PAGE"
-              }
-            });
-          }
-        } else if (request.userData.label === "BRAND") {
-          // for debug
-          // await Apify.setValue('html', $('body').html(), { contentType: 'text/html' });
-
-          let brandUrls = [];
-          $("ul li a").each(function () {
-            const urlRaw = $(this).attr("href");
-            if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
-              brandUrls.push(urlRaw);
-            } else {
-              brandUrls.push(web + urlRaw);
-            }
-            // brandUrls.push(web + $(this).attr('href'));
-          });
-
-          if (test) {
-            brandUrls = brandUrls.slice(0, 10);
-            log.info(
-              `TEST is ${test}. Reduced menu brandUrls size to ${brandUrls.length}.`
-            );
-          }
-
-          for (const url of brandUrls) {
-            await requestQueue.addRequest({
-              url,
-              userData: {
-                label: "PAGE"
-              }
-            });
-          }
-        } else if (request.userData.label === "PAGE") {
-          // extract items from page
-          try {
-            const items = await extractItems($, web, country);
-            if (items.length !== 0) {
-              // This is for Katka czechitas team, should be one time, we can remove it later
-              if (type === "CZECHITAS") {
-                for (const item of items) {
-                  const url = `https://www.mall.cz/api/product-reviews/find?productId=${item.productId}`;
-                  await requestQueue.addRequest(
-                    {
-                      url,
-                      userData: {
-                        label: "REVIEW",
-                        result: item,
-                        offset: 15
-                      }
-                    },
-                    {
-                      forefront: true
-                    }
-                  );
-                }
-              } else {
-                // we don't need to block pushes, we will await them all at the end
-                const requests = [];
-                for (const product of items) {
-                  if (!processedIds.has(product.itemId)) {
-                    processedIds.add(product.itemId);
-                    requests.push(
-                      Apify.pushData(product),
-                      uploadToS3v2(s3, product, {
-                        priceCurrency: country === "CZ" ? "CZK" : "EUR",
-                        inStock: true
-                      })
-                    );
-                    stats.items++;
-                  } else {
-                    stats.itemsDuplicity++;
-                  }
-                }
-                console.log(
-                  `${request.url} Found ${requests.length / 2} unique products`
-                );
-                // await all requests, so we don't end before they end
-                await Promise.allSettled(requests);
-              }
-            }
-          } catch (e) {
-            // no items on the page check it out
-            console.log(e.message);
-            /*throw new Error(
-              `Check this url, there are no items ${request.url}`
-            );*/
-          }
-
-          //Only from first pagination need obtain secondary menu links and pagination links and enqueue them.
-          if (request.url.indexOf("pagination=") === -1) {
-            // left menu add sub categories, just do it once and dont do it on pagination
-            try {
-              let itemsMenu = [];
-              // Old secondary menu type
-              if ($("ul.nav-secondary li>a").length !== 0) {
-                $(
-                  ".sdb-panel ul.nav-secondary--secondary li>a:not([class])"
-                ).each(function () {
-                  const urlRaw = $(this).attr("href");
-                  if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
-                    itemsMenu.push(urlRaw);
-                  } else {
-                    itemsMenu.push(`${web}${urlRaw}`);
-                  }
-                });
-              }
-              // new secondary menu type
-              const newSecondaryMenu = $(
-                "ul.navigation-menu li.navigation-menu__item--child>a"
-              );
-              if (newSecondaryMenu.length !== 0) {
-                newSecondaryMenu.each(function () {
-                  const urlRaw = $(this).attr("href");
-                  if (urlRaw.includes("http") && urlRaw.includes("mall.")) {
-                    itemsMenu.push(urlRaw);
-                  } else {
-                    itemsMenu.push(`${web}${urlRaw}`);
-                  }
-                });
-              }
-              if (itemsMenu.length !== 0) {
-                stats.categories += itemsMenu.length;
-                console.log(
-                  `${request.url} Found ${itemsMenu.length} submenu urls, going to enqueue them`
-                );
-
-                if (test) {
-                  itemsMenu = itemsMenu.slice(0, 10);
-                  log.info(
-                    `TEST is ${test}. Reduced itemsMenu size to ${itemsMenu.length}.`
-                  );
-                }
-                for (const urls of itemsMenu) {
-                  await requestQueue.addRequest({
-                    url: urls,
-                    userData: {
-                      label: "PAGE"
-                    }
-                  });
-                }
-              }
-            } catch (e) {
-              console.log(e);
-            }
-
-            await paginationParser(
+        switch (request.userData.label) {
+          case "CZECHITAS-START":
+            await handleStart($, requestQueue);
+            break;
+          case "MAP":
+            await handleMap(country, $, web, test, requestQueue);
+            break;
+          case "BRAND":
+            await handleBrand($, web, test, requestQueue);
+            break;
+          case "PAGE":
+            await handlePage(
               $,
-              requestQueue,
-              request,
               web,
-              proxyConfiguration.newUrl(session.id),
-              stats
+              country,
+              type,
+              requestQueue,
+              s3,
+              request,
+              test,
+              proxyConfiguration,
+              session
             );
-          }
+            break;
         }
       }
     },

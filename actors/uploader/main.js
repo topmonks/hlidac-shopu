@@ -442,7 +442,7 @@ async function loadItems(
   }
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   const input = await Apify.getValue("INPUT");
   const {
     datasetId,

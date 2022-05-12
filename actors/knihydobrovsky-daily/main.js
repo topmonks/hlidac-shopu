@@ -11,11 +11,14 @@ const { log } = Apify.utils;
 
 let stats = {};
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
 
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   const input = await Apify.getInput();
   const {

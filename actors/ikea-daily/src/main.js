@@ -17,7 +17,7 @@ const {
   utils: { log, requestAsBrowser }
 } = Apify;
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   const input = await Apify.getInput();
   const {
@@ -68,8 +68,11 @@ Apify.main(async () => {
       throw new Error(`The scraper does not support ${country} country`);
   }
 
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });

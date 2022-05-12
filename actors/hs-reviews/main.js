@@ -370,7 +370,7 @@ async function invalidateCDN(cloudfront, distributionId) {
 }
 
 async function saveData({ reviews, stats }) {
-  const configuration = { region: "eu-central-1" };
+  const configuration = { region: "eu-central-1", maxAttempts: 3 };
 
   log.info("S3: starting upload of data");
   const s3 = new S3Client(configuration);
@@ -530,7 +530,7 @@ function createAppleJWT(applePK) {
   });
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
 
   const input = await Apify.getInput();

@@ -11,7 +11,6 @@ import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
-const s3 = new S3Client({ region: "eu-central-1" });
 const { log, requestAsBrowser } = Apify.utils;
 const web = "https://www.lekarna.cz";
 const SITEMAP_URL = "https://www.lekarna.cz/sitemap.xml";
@@ -264,7 +263,7 @@ async function handlePagination($, requestQueue, request, type) {
   }
 }
 
-async function handleProducts($, requestQueue, request, type) {
+async function handleProducts($, requestQueue, request, type, s3) {
   const itemListElements =
     type === ActorType.FULL
       ? $('[itemprop="itemListElement"]')
@@ -326,9 +325,13 @@ async function handleProducts($, requestQueue, request, type) {
   }
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const input = await Apify.getInput();
   const {
     development = false,
@@ -412,10 +415,10 @@ Apify.main(async () => {
         //Check for pagination pages
         await handlePagination($, requestQueue, request, type);
         //Handle product on page
-        await handleProducts($, requestQueue, request, type);
+        await handleProducts($, requestQueue, request, type, s3);
       } else if (request.userData.label === "PAGI_PAGE") {
         log.info(`START with page ${request.url}`);
-        await handleProducts($, request, requestQueue, type);
+        await handleProducts($, request, requestQueue, type, s3);
       } else if (request.userData.label === "START") {
         await handleStart($, requestQueue);
       }

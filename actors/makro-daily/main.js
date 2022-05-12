@@ -1,5 +1,6 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
@@ -12,11 +13,15 @@ const {
 let stats = {};
 const processedIds = new Set();
 
-Apify.main(async () => {
+Apify.main(async function main() {
   log.info("ACTOR - start");
 
   rollbar.init();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   const input = await Apify.getInput();
   const {
@@ -65,7 +70,7 @@ Apify.main(async () => {
         case "LIST":
           return handleList(context, stats, input);
         case "PAGE":
-          return handlePage(context, stats, processedIds);
+          return handlePage(context, stats, processedIds, s3);
         default:
           return handleStart(context, stats, input);
       }

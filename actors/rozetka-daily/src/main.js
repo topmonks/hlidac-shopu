@@ -25,7 +25,7 @@ const {
 let stats = {};
 const processedIds = new Set();
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
   stats = (await Apify.getValue("STATS")) || {

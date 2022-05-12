@@ -30,8 +30,6 @@ const COUNTRY = {
   SK: "SK"
 };
 
-const s3 = new S3Client({ region: "eu-central-1" });
-
 const { log } = Apify.utils;
 
 const { requestAsBrowser } = Apify.utils;
@@ -100,7 +98,7 @@ async function getReviews({ sku, token, proxyConfiguration }) {
   return reviews;
 }
 
-async function pushProducts(products, country, stats, processedIds) {
+async function pushProducts(products, country, stats, processedIds, s3) {
   const requests = [];
   let count = 0;
   // we don't need to block pushes, we will await them all at the end
@@ -277,7 +275,8 @@ const handleCategoryPage = async (
   $,
   input,
   stats,
-  queueIds
+  queueIds,
+  s3
 ) => {
   const { page } = request.userData;
   const categoryPages = getCategoryPages($);
@@ -397,7 +396,8 @@ const handleProductInDetailPage = async (
   proxyConfiguration,
   stats,
   crawledProducts,
-  processedIds
+  processedIds,
+  s3
 ) => {
   const results = [];
 
@@ -584,10 +584,10 @@ const handleProductInDetailPage = async (
           }
         }
       }
-      await pushProducts(variantList, country, stats, processedIds);
+      await pushProducts(variantList, country, stats, processedIds, s3);
     }
   } else {
-    await pushProducts(results, country, stats, processedIds);
+    await pushProducts(results, country, stats, processedIds, s3);
   }
 };
 
@@ -639,7 +639,8 @@ const handlePageFunction = async (
   stats,
   crawledProducts,
   queueIds,
-  processedIds
+  processedIds,
+  s3
 ) => {
   log.info(`Processing ${request.url}, ${request.userData.label}`);
   const { statusCode } = response;
@@ -662,7 +663,8 @@ const handlePageFunction = async (
         $,
         input,
         stats,
-        queueIds
+        queueIds,
+        s3
       );
       break;
     case DETAIL_PAGE: {
@@ -676,7 +678,8 @@ const handlePageFunction = async (
         proxyConfiguration,
         stats,
         crawledProducts,
-        processedIds
+        processedIds,
+        s3
       );
       break;
     }
@@ -696,13 +699,14 @@ const handleFailedRequestFunction = async ({ request }) => {
   });
 };
 
-Apify.main(async () => {
+Apify.main(async function main() {
   log.info("ACTOR - start");
 
   const processedIds = new Set();
   const queueIds = new Set();
 
   rollbar.init();
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
   const input = await Apify.getInput();
@@ -803,7 +807,8 @@ Apify.main(async () => {
           stats,
           crawledProducts,
           queueIds,
-          processedIds
+          processedIds,
+          s3
         );
       },
     // This function is called if the page processing failed more than maxRequestRetries+1 times.

@@ -12,7 +12,6 @@ import {
 import { URL } from "url";
 
 const { log } = Apify.utils;
-const s3 = new S3Client({ region: "eu-central-1" });
 
 const ROOT_URL = "https://shop.iglobus.cz";
 const LABELS = {
@@ -27,11 +26,15 @@ const STORES = {
 const rootUrl = ({ store = STORES.OST } = {}) =>
   `${ROOT_URL}/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72`;
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   let stats = {};
   const processedIds = new Set();
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   const input = await Apify.getInput();
   const {
@@ -54,7 +57,8 @@ Apify.main(async () => {
     requestQueue,
     development,
     stats,
-    processedIds
+    processedIds,
+    s3
   };
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
@@ -133,7 +137,7 @@ async function handleStart({ request, $ }, crawlContext) {
 async function handleList({ request, $ }, crawlContext) {
   // Handle pagination
   const { url, userData } = request;
-  const { requestQueue, processedIds, stats } = crawlContext;
+  const { requestQueue, processedIds, stats, s3 } = crawlContext;
   stats.pages++;
   if (userData.page === 0) {
     const pagesTotal = parseInt(

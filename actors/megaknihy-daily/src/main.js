@@ -12,7 +12,7 @@ const {
   utils: { log }
 } = Apify;
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
   const source = {
     url: "https://www.megaknihy.cz/",
@@ -23,8 +23,11 @@ Apify.main(async () => {
   const requestQueue = await Apify.openRequestQueue();
   await requestQueue.addRequest(source);
 
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   let count = 0;
   const ALREADY_SCRAPED = (await Apify.getValue("ALREADY-SCRAPED")) || [];
   const alreadyScrapedProducts = new Set(ALREADY_SCRAPED);

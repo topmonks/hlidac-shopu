@@ -301,12 +301,15 @@ function parsePrice(text) {
   return price;
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   log.info("Actor starts.");
 
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1" });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   const processedIds = new Set();
   const variantIds = new Set();
   let stats = {};
