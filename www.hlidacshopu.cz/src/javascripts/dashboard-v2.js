@@ -8,19 +8,21 @@ import { fetchDashboardV2Data } from "@hlidac-shopu/lib/remoting.mjs";
 import { rating } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
-rollbar.init();
+export function main({ tableRoot, extraData }) {
+  rollbar.init();
 
-const tableRoot = document.getElementById("table-root");
-
-addEventListener("DOMContentLoaded", async e => {
-  try {
-    const data = await fetchDashboardV2Data();
-    tableRoot.innerHTML = null;
-    render(tableTemplate(data), tableRoot);
-  } catch (ex) {
-    console.error(ex);
-  }
-});
+  addEventListener("DOMContentLoaded", async e => {
+    try {
+      const data = await fetchDashboardV2Data(
+        new Map(Object.entries(extraData))
+      );
+      tableRoot.innerHTML = null;
+      render(tableTemplate(data), tableRoot);
+    } catch (ex) {
+      console.error(ex);
+    }
+  });
+}
 
 function tableTemplate(data) {
   return data
