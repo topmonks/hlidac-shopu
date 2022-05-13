@@ -1,7 +1,6 @@
 ---
 shop: alza.cz
-misleadingLink: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq6ON6h_wsU/edit#gid=0
-manipulatedLink: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq6ON6h_wsU/edit#gid=145444357
+link: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq6ON6h_wsU
 ---
 
 Alza lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,...

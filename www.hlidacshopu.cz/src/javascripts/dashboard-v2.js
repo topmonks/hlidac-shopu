@@ -1,4 +1,5 @@
 import { html, svg, render } from "lit";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import {
   formatNumber,
   formatPercents,
@@ -8,29 +9,78 @@ import { fetchDashboardV2Data } from "@hlidac-shopu/lib/remoting.mjs";
 import { rating } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
-export function main({ tableRoot, extraData }) {
-  rollbar.init();
-
-  addEventListener("DOMContentLoaded", async e => {
-    try {
-      const data = await fetchDashboardV2Data(
-        new Map(Object.entries(extraData))
-      );
-      tableRoot.innerHTML = null;
-      render(tableTemplate(data), tableRoot);
-    } catch (ex) {
-      console.error(ex);
-    }
-  });
+function logoTemplate({ logo, name, url, viewBox }) {
+  const image = svg`
+    <svg viewBox="${viewBox ?? ""}">
+      <title>${name}</title>
+      <use href="#${logo}"/>
+    </svg>
+  `;
+  return html`
+    <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
+  `;
 }
 
-function tableTemplate(data) {
+function cardTemplate({
+  name,
+  shop,
+  allProducts,
+  bfProducts,
+  misleadingCount,
+  manipulatedCount,
+  rating: ratingValue,
+  link,
+  body
+}) {
+  const inSale = bfProducts / allProducts;
+  const weDontAgree =
+    bfProducts !== 0 ? (misleadingCount + manipulatedCount) / bfProducts : 0;
+  return html`
+    <div
+      class="hs-card mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      id="${shop}"
+    >
+      <a
+        href="${link}"
+        target="drive"
+        title="Přejít na detailní data v Google Sheets"
+      >
+        <h3>${name} ${rating(ratingValue, { maxValue: 3 }) ?? "-"}</h3>
+
+        <div class="hs-metrics">
+          <dl class="hs-metrics__item">
+            <dt>produktů ve slevě</dt>
+            <dd>
+              <data value="${inSale}">${formatPercents(inSale) ?? "-"}</data>
+            </dd>
+          </dl>
+          <dl class="hs-metrics__item">
+            <dt>slevy nesedí</dt>
+            <dd>
+              <data value="${weDontAgree}"
+                >${formatPercents(weDontAgree) ?? "-"}</data
+              >
+            </dd>
+          </dl>
+        </div>
+        ${unsafeHTML(body)}
+      </a>
+    </div>
+  `;
+}
+
+// <p>
+//         Naposledy aktualizováno
+//         <time datetime="${updatedAt?.toISOString()}"
+//           >${formatShortDate(updatedAt) ?? "-"}</time
+//         >
+//       </p>
+
+function cardsTemplate(data) {
   return data
-    .filter(x => !x.hidden)
-    .map(x => Object.assign({}, x, { updatedAt: new Date(x.updatedAt) }))
+    .filter(x => x.allProducts && !x.hidden)
     .sort((a, b) => a.sortKey - b.sortKey)
-    .filter(x => x.allProducts)
-    .map(shopTemplate);
+    .map(cardTemplate);
 }
 
 function shopTemplate({
@@ -62,14 +112,28 @@ function shopTemplate({
   `;
 }
 
-function logoTemplate({ logo, name, url, viewBox }) {
-  const image = svg`
-    <svg viewBox="${viewBox ?? ""}">
-      <title>${name}</title>
-      <use href="#${logo}"/>
-    </svg>
-  `;
-  return html`
-    <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
-  `;
+function tableTemplate(data) {
+  return data
+    .filter(x => x.allProducts && !x.hidden)
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .map(x => Object.assign({}, x, { updatedAt: new Date(x.updatedAt) }))
+    .map(shopTemplate);
+}
+
+export function main({ tableRoot, shopCards, extraData }) {
+  rollbar.init();
+
+  addEventListener("DOMContentLoaded", async e => {
+    try {
+      const data = await fetchDashboardV2Data(
+        new Map(Object.entries(extraData))
+      );
+      tableRoot.innerHTML = null;
+      console.log(data);
+      render(tableTemplate(data), tableRoot);
+      render(cardsTemplate(data), shopCards);
+    } catch (ex) {
+      console.error(ex);
+    }
+  });
 }

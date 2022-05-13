@@ -58,6 +58,27 @@
     .review__rating {
       padding-right: 0;
     }
+
+    .hs-metrics {
+      display: flex;
+      margin: 0 24px;
+      justify-content: space-evenly;
+    }
+
+    .hs-metrics__item {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .hs-metrics__item dt,
+    .hs-metrics__item dd {
+      margin: 0;
+      text-align: center;
+    }
+
+    .hs-metrics__item data {
+      font-size: 3em;
+    }
   </style>
 {% endblock %}
 
@@ -67,7 +88,11 @@
       <div class="layout-wrapper">
         <div class="mdc-layout-grid__inner">
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <h2>Připravenost e-shopů v číslech</h2>
+            <h2>Sledované e-shopy v číslech</h2>
+            <p></p>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <div id="shop-cards" class="mdc-layout-grid__inner"></div>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
@@ -231,10 +256,11 @@
 
 {% block scripts %}
   <script type="module">
-    import {main} from "/assets/esm/dashboard-v2.js";
+    import { main } from "/assets/esm/dashboard-v2.js";
 
     const tableRoot = document.getElementById("table-root");
-    main({ tableRoot, extraData: {{ dashboard | dump | safe }} });
+    const shopCards = document.getElementById("shop-cards");
+    main({ tableRoot, shopCards, extraData: {{ dashboard | dump | safe }} });
   </script>
   <script nomodule src="https://polyfill.io/v3/polyfill.min.js?features=globalThis%2Cdefault"></script>
   <script nomodule src="https://unpkg.com/regenerator-runtime@0.13.7/runtime.js"></script>
