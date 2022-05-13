@@ -16,7 +16,7 @@
     "apify-cli": "^0.7.2"
   },
   "scripts": {
-    "start": "node src/main.js",
+    "start": "node main.js",
     "lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
     "lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
     "test": "../../scripts/test-actor.sh"
