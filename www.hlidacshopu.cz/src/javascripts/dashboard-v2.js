@@ -24,17 +24,12 @@ function logoTemplate({ logo, name, url, viewBox }) {
 function cardTemplate({
   name,
   shop,
-  allProducts,
-  bfProducts,
-  misleadingCount,
-  manipulatedCount,
+  inSale,
+  weDontAgree,
   rating: ratingValue,
   link,
   body
 }) {
-  const inSale = bfProducts / allProducts;
-  const weDontAgree =
-    bfProducts !== 0 ? (misleadingCount + manipulatedCount) / bfProducts : 0;
   return html`
     <div
       class="hs-card mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
@@ -79,6 +74,15 @@ function cardTemplate({
 function cardsTemplate(data) {
   return data
     .filter(x => x.allProducts && !x.hidden)
+    .map(x =>
+      Object.assign({}, x, {
+        inSale: x.bfProducts / x.allProducts,
+        weDontAgree:
+          x.bfProducts !== 0
+            ? (x.misleadingCount + x.manipulatedCount) / x.bfProducts
+            : 0
+      })
+    )
     .sort((a, b) => a.sortKey - b.sortKey)
     .map(cardTemplate);
 }

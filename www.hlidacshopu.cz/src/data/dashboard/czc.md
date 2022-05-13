@@ -1,5 +1,5 @@
 ---
-shop: czc
+shop: czc.cz
 link: https://docs.google.com/spreadsheets/d/1lrTbUaRt80-YCgxEjmK-mQbOwjlKiWdPyJczvVODUB8
 ---
 
