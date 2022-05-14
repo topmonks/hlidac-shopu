@@ -46,7 +46,7 @@ function siteMapToLinks(data) {
  */
 function getSubcategoriesUrls($) {
   const subcategories = [];
-  $("nav[role='navigation'] a[class*='vn-link']").each((index, link) => {
+  $("nav[role='navigation'] a").each((index, link) => {
     const subcategory = $(link).attr("href");
     if (subcategory != null) {
       subcategories.push(subcategory);
@@ -89,13 +89,14 @@ function fillProductData(product, numberOfVariants) {
  * @returns {number|boolean}
  */
 function getPrice($) {
-  const integer = $("div[class='range-revamp-pip-price-package__main-price']")
-    .find("span[class='range-revamp-price__integer']")
+  let $mainPrice = $(".pip-pip-price-package__main-price");
+  const integer = $mainPrice
+    .find(".pip-price__integer")
     .eq(0)
     .text()
     .replace(/\s/, "");
-  const decimals = $("div[class='range-revamp-pip-price-package__main-price']")
-    .find("span[class='range-revamp-price__decimals']")
+  const decimals = $mainPrice
+    .find(".pip-price__decimals")
     .eq(0)
     .clone() // clone the element
     .children() // select all the children
@@ -120,8 +121,8 @@ function getPrice($) {
  */
 function getVariantName($, productTypeName) {
   let name = "";
-  const spans = $("h1[class='range-revamp-header-section']")
-    .find("div[class='range-revamp-header-section__description']")
+  const spans = $(".pip-header-section")
+    .find(".pip-header-section__description")
     .eq(0)
     .find("span");
   spans.each((index, span) => {
@@ -131,7 +132,7 @@ function getVariantName($, productTypeName) {
     }
   });
 
-  return name.substr(productTypeName.length + 2);
+  return name.substr(productTypeName?.length + 2);
 }
 
 /**
@@ -141,12 +142,16 @@ function getVariantName($, productTypeName) {
  */
 function tryGetRetailPrice($) {
   // retail price if the item is in sale (strike through)
-  let integer = $(".pip-pip-price-package__previous-price-hasStrikeThrough")
+  let $previousPrice = $(
+    `.pip-pip-price-package__previous-price-hasStrikeThrough,
+    .pip-pip-price-package__previous-price`
+  );
+  let integer = $previousPrice
     .find(".pip-price__integer")
     .eq(0)
     .text()
     .replace(/\s/, "");
-  let decimals = $(".pip-pip-price-package__previous-price-hasStrikeThrough")
+  let decimals = $previousPrice
     .find(".pip-price__decimals")
     .eq(0)
     .clone() // clone the element
@@ -155,25 +160,6 @@ function tryGetRetailPrice($) {
     .end() // again go back to selected element
     .text()
     .replace(/\s/, "");
-  if (integer && decimals) {
-    return parseFloat(`${integer}.${decimals}`);
-  }
-  if (integer) {
-    return parseInt(integer, 10);
-  }
-  // retail price if the item is in sale (without strike through) e.g. ikea family sale
-  integer = $(".pip-pip-price-package__previous-price")
-    .find(".pip-price__integer")
-    .eq(0)
-    .text();
-  decimals = $(".pip-pip-price-package__previous-price")
-    .find(".pip-price__decimals")
-    .eq(0)
-    .clone() // clone the element
-    .children() // select all the children
-    .remove() // remove all the children
-    .end() // again go back to selected element
-    .text();
   if (integer && decimals) {
     return parseFloat(`${integer}.${decimals}`);
   }
@@ -193,21 +179,19 @@ function getReview($) {
     numberOfReviews: 0,
     reviewScore: ""
   };
-  const reviewButton = $(
-    "button[class='range-revamp-average-rating range-revamp-average-rating__button']"
-  );
-  if ($(reviewButton).eq(0).html() === null) {
+  const reviewButton = $(".pip-average-rating__button");
+  if (reviewButton.eq(0).html() === null) {
     // if there is no review of the product yet
     return review;
   }
   // review score
-  review.reviewScore = $(reviewButton)
+  review.reviewScore = reviewButton
     .eq(0)
     .attr("aria-label")
     .match(/[0-9]\.?[0-9]?/)[0];
   // number of reviews
-  review.numberOfReviews = $(reviewButton)
-    .find("span[class='range-revamp-average-rating__reviews']")
+  review.numberOfReviews = reviewButton
+    .find(".pip-average-rating__reviews")
     .eq(0)
     .text()
     .match(/[0-9]+/)[0];
@@ -222,7 +206,7 @@ function getReview($) {
  */
 function getProductDetailCategories($) {
   const categories = [];
-  $("li[class='bc-breadcrumb__list-item']")
+  $("li.bc-breadcrumb__list-item")
     .find("span")
     .each((index, category) => {
       categories.push($(category).text());
@@ -255,7 +239,7 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
   if (subcategories.length === 0) {
     try {
       const dataCategory = JSON.parse(
-        $("div[class='js-product-list']").eq(0).attr("data-category")
+        $(".js-product-list").eq(0).attr("data-category")
       );
       log.info(
         `[CATEGORY]: found ${dataCategory.totalCount} products --- ${request.url}`
@@ -358,7 +342,7 @@ async function handleDetail({ $ }, { productData, s3, stats }) {
 
   productData.currency = $("div[data-currency]").eq(0).attr("data-currency");
 
-  // productData.description = $("p[class='range-revamp-product-summary__description']").eq(0).text();
+  // productData.description = $("p[class='pip-product-summary__description']").eq(0).text();
   const review = getReview($);
   productData.rating = review.reviewScore;
   productData.numberOfReviews = review.numberOfReviews;
