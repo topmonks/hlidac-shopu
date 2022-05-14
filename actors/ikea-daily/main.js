@@ -151,7 +151,7 @@ function getPrice($) {
   if (integer) {
     return parseFloat(integer);
   }
-  return false;
+  return null;
 }
 
 /**
@@ -179,7 +179,7 @@ function getVariantName($, productTypeName) {
 /**
  * Tries to get product's price before sale.
  * @param $
- * @returns {number|boolean}
+ * @returns {number|null}
  */
 function tryGetRetailPrice($) {
   // retail price if the item is in sale (strike through)
@@ -207,7 +207,7 @@ function tryGetRetailPrice($) {
   if (integer) {
     return parseInt(integer, 10);
   }
-  return false;
+  return null;
 }
 
 /**
@@ -292,6 +292,7 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
         return parseInt(totalCount, 10);
       }
     } catch (e) {
+      log.exception(e, "[CATEGORY]: error detail");
       log.info(
         `[CATEGORY]: Category does not contain any products --- ${request.url}`
       );
@@ -305,24 +306,20 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
   }
 }
 
-async function handleList({ request, body, crawler }) {
-  let products = [];
+async function handleList({ request, body }, { requestQueue }) {
   let json = JSON.parse(body);
-  try {
-    products = json.moreProducts.productWindow;
-    log.info(
-      `[LIST]: ready to scrape ${products.length} products --- ${request.url}`
-    );
-  } catch (e) {
+  if (json.reason) {
     log.info(
       `[LIST]: ${json.reason}, removing from scraped pages --- ${request.url}`
     );
+    return;
   }
+  const products = json.moreProducts.productWindow;
   for (const product of products) {
     const productVariants = product.gprDescription.variants;
     const productData = fillProductData(product, productVariants.length);
     // add product detail to request queue
-    await crawler.requestQueue.addRequest({
+    await requestQueue.addRequest({
       url: product.pipUrl,
       userData: { label: "DETAIL", productData }
     });
@@ -335,7 +332,7 @@ async function handleList({ request, body, crawler }) {
           productData.productTypeName.length +
           2
       );
-      await crawler.requestQueue.addRequest({
+      await requestQueue.addRequest({
         url: variant.pipUrl,
         userData: { label: "DETAIL", productData }
       });
@@ -345,7 +342,7 @@ async function handleList({ request, body, crawler }) {
 
 async function handleDetail({ $ }, { productData, s3, stats }) {
   productData.currentPrice = getPrice($) ?? productData.currentPrice;
-  productData.originalPrice = tryGetRetailPrice($) ?? null;
+  productData.originalPrice = tryGetRetailPrice($);
   if (
     productData.originalPrice &&
     productData.currentPrice < productData.originalPrice
@@ -477,14 +474,14 @@ async function main() {
     proxyConfiguration,
     maxConcurrency,
     maxRequestRetries,
-    handlePageTimeoutSecs: 240,
-    requestTimeoutSecs: 180,
+    handlePageTimeoutSecs: 360,
+    requestTimeoutSecs: 240,
     async handlePageFunction(context) {
       const {
         url,
         userData: { label, productData }
       } = context.request;
-      log.info("Page opened.", { label, url });
+      log.info("Page opened", { label, url });
       switch (label) {
         case "SITEMAP":
           return handleSitemap(context, { stats });
@@ -501,7 +498,7 @@ async function main() {
           }
           return;
         case "LIST":
-          return handleList(context);
+          return handleList(context, { requestQueue });
         case "DETAIL":
           return handleDetail(context, { productData, s3, stats });
         default:
