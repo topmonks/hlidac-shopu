@@ -13,11 +13,6 @@ const {
   utils: { log, requestAsBrowser }
 } = Apify;
 
-/**
- * Gets urls of categories and subcategories on site.
- * @param $
- * @returns {[{url,{label}}]}
- */
 function getCategoryRequests($) {
   const categories = [];
   $("loc").each((index, locElement) => {
@@ -42,7 +37,7 @@ function siteMapToLinks(data) {
 /**
  * Gets urls of subcategories on category labeled page, if any.
  * @param $
- * @returns {[subcategories' urls]}
+ * @returns {String[]}
  */
 function getSubcategoriesUrls($) {
   const subcategories = [];
@@ -59,7 +54,7 @@ function getSubcategoriesUrls($) {
  * Models and fills productData object.
  * @param product product object returned by previous request
  * @param numberOfVariants number of available product variants
- * @returns {productData}
+ * @returns {Product}
  */
 function fillProductData(product, numberOfVariants) {
   return {
@@ -206,7 +201,7 @@ function getReview($) {
  */
 function getProductDetailCategories($) {
   const categories = [];
-  $("li.bc-breadcrumb__list-item")
+  $(".bc-breadcrumb__list-item")
     .find("span")
     .each((index, category) => {
       categories.push($(category).text());
@@ -353,12 +348,14 @@ async function handleDetail({ $ }, { productData, s3, stats }) {
     category: categories
   };
   stats.items++;
-  await Apify.pushData(
-    await uploadToS3v2(s3, productData, {
+
+  await Promise.allSettled([
+    Apify.pushData(productData),
+    uploadToS3v2(s3, productData, {
       priceCurrency: productData.currency,
       inStock: true
     })
-  );
+  ]);
 }
 
 Apify.main(async function main() {
@@ -478,7 +475,7 @@ Apify.main(async function main() {
     maxRequestRetries,
     handlePageTimeoutSecs: 240,
     requestTimeoutSecs: 180,
-    handlePageFunction: async context => {
+    async handlePageFunction(context) {
       const {
         url,
         userData: { label, productData }
