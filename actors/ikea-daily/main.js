@@ -314,7 +314,9 @@ async function handleList({ request, body }, { requestQueue }) {
     );
     return;
   }
+  // log.info("DEBUG", json.moreProducts);
   const products = json.moreProducts.productWindow;
+  log.info(`[LIST]: adding ${products.length} products to queue`);
   for (const product of products) {
     const productVariants = product.gprDescription.variants;
     const productData = fillProductData(product, productVariants.length);
