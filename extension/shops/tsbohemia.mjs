@@ -16,9 +16,7 @@ export class TSBohemia extends Shop {
       .textContent.split("Kč")[0]
       .replace(",-", "")
       .replace(/\s/g, "");
-    const originalPrice = cleanPrice(
-      ".price .mc"
-    );
+    const originalPrice = cleanPrice(".price .mc");
     const imageUrl = document.querySelector("#sti_bigimg img").src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

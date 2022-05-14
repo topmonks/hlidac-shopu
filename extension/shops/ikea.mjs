@@ -1,25 +1,26 @@
-import { cleanPrice, cleanUnitPrice, isUnitPrice, registerShop } from "../helpers.mjs";
+import { registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Ikea extends Shop {
-
   get injectionPoint() {
-    return ["beforebegin", `.pip-product-summary`];
+    return ["beforebegin", ".pip-product-summary"];
   }
 
   async scrape() {
     const elem = document.querySelector("#content .product-pip");
     if (!elem) return;
 
-    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[1];
+    const jsonld = document.querySelectorAll(
+      'script[type="application/ld+json"]'
+    )[1];
     if (jsonld) {
       try {
         const data = JSON.parse(jsonld.innerText);
         let originalPrice, currentPrice;
-        if(data.offers["@type"] === "Offer"){
+        if (data.offers["@type"] === "Offer") {
           originalPrice = null;
           currentPrice = data.offers.price;
-        } else if(data.offers["@type"] === "AggregateOffer"){
+        } else if (data.offers["@type"] === "AggregateOffer") {
           originalPrice = data.offers.highPrice;
           currentPrice = data.offers.lowPrice;
         }

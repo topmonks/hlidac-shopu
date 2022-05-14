@@ -1,4 +1,4 @@
-import {cleanPrice, cleanPriceText, registerShop} from "../helpers.mjs";
+import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class AAAAuto extends Shop {
@@ -36,10 +36,10 @@ export class AAAAuto extends Shop {
     let originalPrice = null;
     let currentPrice = null;
     for (const p of price) {
-      if (p.textContent.includes('Cena')) {
-        let strikePrice = p.querySelector('span.notranslate s');
+      if (p.textContent.includes("Cena")) {
+        let strikePrice = p.querySelector("span.notranslate s");
         if (strikePrice) {
-          strikePrice = p.querySelector('span.notranslate');
+          strikePrice = p.querySelector("span.notranslate");
           originalPrice = cleanPriceText(strikePrice.childNodes[0].textContent);
           currentPrice = cleanPriceText(strikePrice.childNodes[1].textContent);
         } else {
@@ -49,7 +49,7 @@ export class AAAAuto extends Shop {
     }
 
     console.log(originalPrice);
-    console.log(`currentPrice ${currentPrice}`)
+    console.log(`currentPrice ${currentPrice}`);
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
