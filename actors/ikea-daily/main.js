@@ -280,7 +280,7 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
   if (subcategories.length === 0) {
     try {
       const { id, totalCount } = JSON.parse(
-        $(".js-product-list").first().attr("data-category")
+        $(".js-product-list[data-category]").first().attr("data-category")
       );
       log.info(`[CATEGORY]: found ${totalCount} products --- ${request.url}`);
       if (type === "DAILY" && totalCount) {
