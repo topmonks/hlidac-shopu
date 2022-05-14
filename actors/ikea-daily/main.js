@@ -6,12 +6,58 @@ import {
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { retry } from "@hlidac-shopu/lib/remoting.mjs";
 import Apify from "apify";
 import cheerio from "cheerio";
 
 const {
   utils: { log, requestAsBrowser }
 } = Apify;
+
+const countryParams = new Map([
+  [
+    "cz",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml",
+      countryPath: "cz/cs"
+    }
+  ],
+  [
+    "sk",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-sk-SK_1.xml",
+      countryPath: "sk/sk"
+    }
+  ],
+  [
+    "hu",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-hu-HU_1.xml",
+      countryPath: "hu/hu"
+    }
+  ],
+  [
+    "pl",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-pl-PL_1.xml",
+      countryPath: "pl/pl"
+    }
+  ],
+  [
+    "de",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-de-DE_1.xml",
+      countryPath: "de/de"
+    }
+  ],
+  [
+    "at",
+    {
+      sitemap: "https://www.ikea.com/sitemaps/cat-de-AT_1.xml",
+      countryPath: "at/de"
+    }
+  ]
+]);
 
 function getCategoryRequests($) {
   const categories = [];
@@ -87,12 +133,12 @@ function getPrice($) {
   let $mainPrice = $(".pip-pip-price-package__main-price");
   const integer = $mainPrice
     .find(".pip-price__integer")
-    .eq(0)
+    .first()
     .text()
     .replace(/\s/, "");
   const decimals = $mainPrice
     .find(".pip-price__decimals")
-    .eq(0)
+    .first()
     .clone() // clone the element
     .children() // select all the children
     .remove() // remove all the children
@@ -118,7 +164,7 @@ function getVariantName($, productTypeName) {
   let name = "";
   const spans = $(".pip-header-section")
     .find(".pip-header-section__description")
-    .eq(0)
+    .first()
     .find("span");
   spans.each((index, span) => {
     name += `${$(span).text()}`;
@@ -143,12 +189,12 @@ function tryGetRetailPrice($) {
   );
   let integer = $previousPrice
     .find(".pip-price__integer")
-    .eq(0)
+    .first()
     .text()
     .replace(/\s/, "");
   let decimals = $previousPrice
     .find(".pip-price__decimals")
-    .eq(0)
+    .first()
     .clone() // clone the element
     .children() // select all the children
     .remove() // remove all the children
@@ -175,22 +221,24 @@ function getReview($) {
     reviewScore: ""
   };
   const reviewButton = $(".pip-average-rating__button");
-  if (reviewButton.eq(0).html() === null) {
+  if (reviewButton.first().html() === null) {
     // if there is no review of the product yet
-    return review;
+    return {
+      numberOfReviews: 0,
+      reviewScore: ""
+    };
   }
-  // review score
-  review.reviewScore = reviewButton
-    .eq(0)
-    .attr("aria-label")
-    .match(/[0-9]\.?[0-9]?/)[0];
-  // number of reviews
-  review.numberOfReviews = reviewButton
-    .find(".pip-average-rating__reviews")
-    .eq(0)
-    .text()
-    .match(/[0-9]+/)[0];
-  return review;
+  return {
+    reviewScore: reviewButton
+      .first()
+      .attr("aria-label")
+      .match(/\d\.?\d?/)[0],
+    numberOfReviews: reviewButton
+      .find(".pip-average-rating__reviews")
+      .first()
+      .text()
+      .match(/\d+/)[0]
+  };
 }
 
 /**
@@ -217,9 +265,7 @@ async function handleSitemap({ body, crawler }, { stats }) {
   for (const url of links) {
     await crawler.requestQueue.addRequest({
       url,
-      userData: {
-        label: "CATEGORY"
-      }
+      userData: { label: "CATEGORY" }
     });
   }
 }
@@ -233,23 +279,17 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
   );
   if (subcategories.length === 0) {
     try {
-      const dataCategory = JSON.parse(
-        $(".js-product-list").eq(0).attr("data-category")
+      const { id, totalCount } = JSON.parse(
+        $(".js-product-list").first().attr("data-category")
       );
-      log.info(
-        `[CATEGORY]: found ${dataCategory.totalCount} products --- ${request.url}`
-      );
-      if (type === "DAILY") {
+      log.info(`[CATEGORY]: found ${totalCount} products --- ${request.url}`);
+      if (type === "DAILY" && totalCount) {
         await crawler.requestQueue.addRequest({
-          url:
-            `https://sik.search.blue.cdtapps.com/${countryPath}/product-list-page/more-products?category=${dataCategory.id}` +
-            `&sort=RELEVANCE&start=0&end=${dataCategory.totalCount}&c=lf`,
-          userData: {
-            label: "LIST"
-          }
+          url: `https://sik.search.blue.cdtapps.com/${countryPath}/product-list-page/more-products?category=${id}&sort=RELEVANCE&start=0&end=${totalCount}&c=lf`,
+          userData: { label: "LIST" }
         });
       } else if (type === "COUNT") {
-        return parseInt(dataCategory.totalCount, 10);
+        return parseInt(totalCount, 10);
       }
     } catch (e) {
       log.info(
@@ -267,16 +307,15 @@ async function handleCategory({ request, $, crawler }, countryPath, type) {
 
 async function handleList({ request, body, crawler }) {
   let products = [];
+  let json = JSON.parse(body);
   try {
-    products = JSON.parse(body).moreProducts.productWindow;
+    products = json.moreProducts.productWindow;
     log.info(
       `[LIST]: ready to scrape ${products.length} products --- ${request.url}`
     );
   } catch (e) {
     log.info(
-      `[LIST]: ${JSON.parse(body).reason}, removing from scraped pages --- ${
-        request.url
-      }`
+      `[LIST]: ${json.reason}, removing from scraped pages --- ${request.url}`
     );
   }
   for (const product of products) {
@@ -285,10 +324,7 @@ async function handleList({ request, body, crawler }) {
     // add product detail to request queue
     await crawler.requestQueue.addRequest({
       url: product.pipUrl,
-      userData: {
-        label: "DETAIL",
-        productData
-      }
+      userData: { label: "DETAIL", productData }
     });
     // handle product variants
     for (const variant of productVariants) {
@@ -301,18 +337,15 @@ async function handleList({ request, body, crawler }) {
       );
       await crawler.requestQueue.addRequest({
         url: variant.pipUrl,
-        userData: {
-          label: "DETAIL",
-          productData
-        }
+        userData: { label: "DETAIL", productData }
       });
     }
   }
 }
 
 async function handleDetail({ $ }, { productData, s3, stats }) {
-  productData.currentPrice = getPrice($) || productData.currentPrice;
-  productData.originalPrice = tryGetRetailPrice($) || null;
+  productData.currentPrice = getPrice($) ?? productData.currentPrice;
+  productData.originalPrice = tryGetRetailPrice($) ?? null;
   if (
     productData.originalPrice &&
     productData.currentPrice < productData.originalPrice
@@ -335,21 +368,17 @@ async function handleDetail({ $ }, { productData, s3, stats }) {
   delete productData.variantName;
   delete productData.productTypeName;
 
-  productData.currency = $("div[data-currency]").eq(0).attr("data-currency");
+  productData.currency = $("div[data-currency]").first().attr("data-currency");
 
-  // productData.description = $("p[class='pip-product-summary__description']").eq(0).text();
+  // productData.description = $("p[class='pip-product-summary__description']").first().text();
   const review = getReview($);
   productData.rating = review.reviewScore;
   productData.numberOfReviews = review.numberOfReviews;
+  productData.category = getProductDetailCategories($);
 
-  const categories = getProductDetailCategories($);
-  productData = {
-    ...productData,
-    category: categories
-  };
   stats.items++;
 
-  await Promise.allSettled([
+  return await Promise.allSettled([
     Apify.pushData(productData),
     uploadToS3v2(s3, productData, {
       priceCurrency: productData.currency,
@@ -358,8 +387,23 @@ async function handleDetail({ $ }, { productData, s3, stats }) {
   ]);
 }
 
-Apify.main(async function main() {
+function getCountryParams(country) {
+  // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
+  const params = countryParams.get(country);
+  if (!params)
+    throw new Error(`The scraper does not support ${country} country`);
+  return params;
+}
+
+async function main() {
   rollbar.init();
+
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
+
   const input = await Apify.getInput();
   const {
     development = false,
@@ -371,68 +415,29 @@ Apify.main(async function main() {
     type = "DAILY"
   } = input ?? {};
 
-  const stats = (await Apify.getValue("STATS")) || {
+  const stats = (await Apify.getValue("STATS")) ?? {
     categories: 0,
     items: 0
   };
   let productCount = 0;
 
-  // sitemap available here: https://www.ikea.com/sitemaps/sitemap.xml
-  let sitemap = "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml";
-  let countryPath = "cz/cs";
-  switch (country) {
-    case "cz":
-      sitemap = "https://www.ikea.com/sitemaps/cat-cs-CZ_1.xml";
-      countryPath = "cz/cs";
-      break;
-    case "sk":
-      sitemap = "https://www.ikea.com/sitemaps/cat-sk-SK_1.xml";
-      countryPath = "sk/sk";
-      break;
-    case "hu":
-      sitemap = "https://www.ikea.com/sitemaps/cat-hu-HU_1.xml";
-      countryPath = "hu/hu";
-      break;
-    case "pl":
-      sitemap = "https://www.ikea.com/sitemaps/cat-pl-PL_1.xml";
-      countryPath = "pl/pl";
-      break;
-    case "de":
-      sitemap = "https://www.ikea.com/sitemaps/cat-de-DE_1.xml";
-      countryPath = "de/de";
-      break;
-    case "at":
-      sitemap = "https://www.ikea.com/sitemaps/cat-de-AT_1.xml";
-      countryPath = "at/de";
-      break;
-    default:
-      throw new Error(`The scraper does not support ${country} country`);
-  }
+  let { sitemap, countryPath } = getCountryParams(country);
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
 
   const requestQueue = await Apify.openRequestQueue();
 
-  if (development && test) {
+  if (development || test) {
     await requestQueue.addRequest({
       url: "https://www.ikea.com/cz/cs/cat/rozkladaci-sedaci-soupravy-20874/",
-      userData: {
-        label: "CATEGORY"
-      }
+      userData: { label: "CATEGORY" }
     });
   } else if (type === "DAILY") {
     await requestQueue.addRequest({
       url: sitemap,
-      userData: {
-        label: "SITEMAP"
-      }
+      userData: { label: "SITEMAP" }
     });
   } else if (type === "COUNT") {
     productCount = (await Apify.getValue("COUNT")) || 0;
@@ -450,7 +455,6 @@ Apify.main(async function main() {
     }, 20 * 1000);
 
     // Categories are added to requestQueue
-    const { retry } = await import("@hlidac-shopu/lib/remoting.mjs");
     const categoryRequests = await retry(10, async () => {
       // if anything throws, we retry
       const response = await requestAsBrowser({
@@ -510,23 +514,24 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("Crawl finished.");
 
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
+  await Apify.setValue("STATS", stats);
+  log.debug("STATS saved!");
   log.info(JSON.stringify(stats));
 
-  if (!development) {
-    if (type === "DAILY") {
-      await invalidateCDN(
-        cloudfront,
-        "EQYSHWUECAQC9",
-        `ikea.${country.toLowerCase()}`
-      );
-      log.info("invalidated Data CDN");
+  if (!development && type === "DAILY") {
+    await invalidateCDN(
+      cloudfront,
+      "EQYSHWUECAQC9",
+      `ikea.${country.toLowerCase()}`
+    );
+    log.info("invalidated Data CDN");
 
-      await uploadToKeboola(`ikea_${country.toLowerCase()}`);
-    } else if (type === "COUNT") {
-      await Apify.pushData({ numberOfProducts: productCount });
-    }
+    await uploadToKeboola(`ikea_${country.toLowerCase()}`);
+  } else if (type === "COUNT") {
+    await Apify.pushData({ numberOfProducts: productCount });
   }
 
   log.info("Finished.");
-});
+}
+
+Apify.main(main);
