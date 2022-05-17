@@ -69,30 +69,3 @@
     }
   }
 }
-
-// Donut chart //
-svg.radial-progress {
-  height: auto;
-  max-width: 120px;
-  transform: rotate(-90deg);
-  width: 100%;
-}
-
-svg.radial-progress circle {
-  fill: white;
-  stroke: #EBEEF2;
-  stroke-dashoffset: 219.91148575129;
-  stroke-width: 10;
-}
-
-svg.radial-progress circle.incomplete {
-  stroke: #EBEEF2;
-}
-
-svg.radial-progress circle.complete {
-  stroke-dasharray: 219.91148575129;
-}
-
-svg.radial-progress circle {
-  stroke: #5C62CD;
-}

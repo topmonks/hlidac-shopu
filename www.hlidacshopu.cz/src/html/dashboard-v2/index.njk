@@ -76,8 +76,30 @@
       text-align: center;
     }
 
-    .hs-metrics__item data {
-      font-size: 3em;
+    .radial-progress {
+      height: auto;
+      max-width: 120px;
+      transform: rotate(-90deg);
+      width: 100%;
+    }
+
+    .radial-progress circle {
+      fill: white;
+      stroke: #EBEEF2;
+      stroke-dashoffset: 219.91148575129;
+      stroke-width: 10;
+    }
+
+    .radial-progress circle {
+      stroke: #5C62CD;
+    }
+
+    .radial-progress .incomplete {
+      stroke: #EBEEF2;
+    }
+
+    .radial-progress .complete {
+      stroke-dasharray: 219.91148575129;
     }
   </style>
 {% endblock %}
