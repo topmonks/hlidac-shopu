@@ -22,46 +22,85 @@ function logoTemplate({ logo, name, url, viewBox }) {
 }
 
 function cardTemplate({
-  name,
-  shop,
-  inSale,
-  weDontAgree,
-  rating: ratingValue,
-  link,
-  body
-}) {
+                        name,
+                        shop,
+                        inSale,
+                        weDontAgree,
+                        rating: ratingValue,
+                        link,
+                        body
+                      }) {
   return html`
     <div
       class="hs-card mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
-      id="${shop}"
-    >
+      id="${shop}">
       <a
         href="${link}"
         target="drive"
         title="Přejít na detailní data v Google Sheets"
       >
         <h3>${name} ${rating(ratingValue, { maxValue: 3 }) ?? "-"}</h3>
-
         <div class="hs-metrics">
           <dl class="hs-metrics__item">
             <dt>produktů ve slevě</dt>
             <dd>
-              <data value="${inSale}">${formatPercents(inSale) ?? "-"}</data>
+              <svg class="radial-progress" data-percentage="{inSale}" viewBox="0 0 80 80">
+                <circle class="incomplete" cx="40" cy="40" r="35"></circle>
+                <circle class="complete" cx="40" cy="40" r="35" style="stroke-dashoffset: 39.58406743523136;"></circle>
+                <text class="percentage" x="50%" y="57%" transform="matrix(0, 1, -1, 0, 80, 0)">
+                  ${formatPercents(inSale) ?? "-"}
+                </text>
+              </svg>
             </dd>
           </dl>
           <dl class="hs-metrics__item">
             <dt>slevy nesedí</dt>
             <dd>
-              <data value="${weDontAgree}"
-                >${formatPercents(weDontAgree) ?? "-"}</data
-              >
+              <svg class="radial-progress" data-percentage="${formatPercents(weDontAgree) ?? "-"}" viewBox="0 0 80 80">
+                <circle class="incomplete" cx="40" cy="40" r="35"></circle>
+                <circle class="complete" cx="40" cy="40" r="35" style="stroke-dashoffset: 39.58406743523136;"></circle>
+                <text class="percentage" x="50%" y="57%" transform="matrix(0, 1, -1, 0, 80, 0)">
+                  ${formatPercents(weDontAgree) ?? "-"}
+                </text>
+              </svg>
             </dd>
           </dl>
+          <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+                  integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+                  crossorigin="anonymous">
+          </script>
+          <script>
+            $('svg.radial-progress').each(function(index, value) {
+              $(this).find($('circle.complete')).removeAttr('style');
+            });
+
+            $(window).scroll(function() {
+              $('svg.radial-progress').each(function(index, value) {
+                // If svg.radial-progress is approximately 25% vertically into the window when scrolling from the top or the bottom
+                if (
+                  $(window).scrollTop() > $(this).offset().top - ($(window).height() * 0.75) &&
+                  $(window).scrollTop() < $(this).offset().top + $(this).height() - ($(window).height() * 0.25)
+                ) {
+                  // Get percentage of progress
+                  percent = $(value).data('percentage');
+                  // Get radius of the svg's circle.complete
+                  radius = $(this).find($('circle.complete')).attr('r');
+                  // Get circumference (2πr)
+                  circumference = 2 * Math.PI * radius;
+                  // Get stroke-dashoffset value based on the percentage of the circumference
+                  strokeDashOffset = circumference - ((percent * circumference) / 100);
+                  // Transition progress for 1.25 seconds
+                  $(this).find($('circle.complete')).animate({ 'stroke-dashoffset': strokeDashOffset }, 1250);
+                }
+              });
+            }).trigger('scroll');
+          </script>
         </div>
         ${unsafeHTML(body)}
       </a>
     </div>
   `;
+
 }
 
 // <p>
@@ -88,19 +127,19 @@ function cardsTemplate(data) {
 }
 
 function shopTemplate({
-  name,
-  url,
-  logo,
-  viewBox,
-  allProducts,
-  bfProducts,
-  avgClaimedDiscount,
-  avgRealDiscount,
-  updatedAt,
-  misleadingCount,
-  manipulatedCount,
-  rating: ratingValue
-}) {
+                        name,
+                        url,
+                        logo,
+                        viewBox,
+                        allProducts,
+                        bfProducts,
+                        avgClaimedDiscount,
+                        avgRealDiscount,
+                        updatedAt,
+                        misleadingCount,
+                        manipulatedCount,
+                        rating: ratingValue
+                      }) {
   return html`
     <tr class="dashboard-row">
       <th scope="row">${logoTemplate({ name, url, logo, viewBox })}</th>
