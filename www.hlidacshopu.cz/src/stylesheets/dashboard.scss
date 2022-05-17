@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=BIZ+UDMincho&display=swap');
+// Dashboard styles //
+
+.dashboard {
+  background-color: #FBFBFF;
+
+  h2 {
+    font-size: 40px;
+  }
+
+  h3 {
+    font-size: 22px;
+  }
+
+  .hs-card {
+    padding: 24px 14px 48px;
+
+    .hs-metrics {
+      .hs-metrics__item {
+        dd text {
+          font-size: 12px;
+          font-weight: bold;
+          fill: black;
+          text-anchor: middle;
+        }
+
+        dt {
+          font-size: 16px;
+          margin-top: 20px;
+        }
+      }
+    }
+
+    blockquote {
+      background-color: #EBEEF2;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      margin: 16px;
+
+      p {
+        color: #000000;
+      }
+      &:before {
+        content: '"';
+        font-family: 'BIZ UDMincho', serif;
+        font-size: 140px;
+        font-weight: 400;
+        color: #ffffff;
+        width: 45px;
+        height: 45px;
+        margin-left: 34px;
+        transform: rotate(180deg);
+      }
+    }
+
+    p:nth-of-type(2) {
+      color: #000000;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 21px;
+      color: #828282;
+
+    }
+  }
+}
+
+// Donut chart //
+svg.radial-progress {
+  height: auto;
+  max-width: 120px;
+  transform: rotate(-90deg);
+  width: 100%;
+}
+
+svg.radial-progress circle {
+  fill: white;
+  stroke: #EBEEF2;
+  stroke-dashoffset: 219.91148575129;
+  stroke-width: 10;
+}
+
+svg.radial-progress circle.incomplete {
+  stroke: #EBEEF2;
+}
+
+svg.radial-progress circle.complete {
+  stroke-dasharray: 219.91148575129;
+}
+
+svg.radial-progress circle {
+  stroke: #5C62CD;
+}
