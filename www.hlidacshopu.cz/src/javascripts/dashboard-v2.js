@@ -41,19 +41,14 @@ function cardTemplate({
   inSale,
   weDontAgree,
   rating: ratingValue,
-  link,
   body
 }) {
   return html`
     <div
       class="hs-card mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
-      id="${shop}"
+      id="summary-${shop}"
     >
-      <a
-        href="${link}"
-        target="drive"
-        title="Přejít na detailní data v Google Sheets"
-      >
+      <a href="#row-${shop}" title="Zobrazit detail v tabulce">
         <h3>${name} ${rating(ratingValue, { maxValue: 3 }) ?? "-"}</h3>
         <div class="hs-metrics">
           <dl class="hs-metrics__item">
@@ -96,6 +91,7 @@ function cardsTemplate(data) {
 }
 
 function shopTemplate({
+  shop,
   name,
   url,
   logo,
@@ -107,10 +103,11 @@ function shopTemplate({
   updatedAt,
   misleadingCount,
   manipulatedCount,
+  link,
   rating: ratingValue
 }) {
   return html`
-    <tr class="dashboard-row">
+    <tr class="dashboard-row" id="row-${shop}">
       <th scope="row">${logoTemplate({ name, url, logo, viewBox })}</th>
       <td>${formatNumber(allProducts)}</td>
       <td>${formatNumber(bfProducts) ?? "-"}</td>
@@ -120,6 +117,19 @@ function shopTemplate({
       <td>${formatNumber(manipulatedCount) ?? "-"}</td>
       <td>${formatShortDate(updatedAt) ?? "-"}</td>
       <td>${rating(ratingValue, { maxValue: 3 }) ?? "-"}</td>
+      <td>
+        <a href="${link}" target="sheets" title="Otevřít data v Google Sheets"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            style="width: 24px"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path
+              d="M19 7H9a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm0 2v2H9V9h10zm-6 6v-2h2v2h-2zm2 2v2h-2v-2h2zm-4-2H9v-2h2v2zm6-2h2v2h-2v-2zm-8 4h2v2H9v-2zm8 2v-2h2v2h-2zM6 17H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v1h-2V5H5v10h1v2z"
+            /></svg
+        ></a>
+      </td>
     </tr>
   `;
 }

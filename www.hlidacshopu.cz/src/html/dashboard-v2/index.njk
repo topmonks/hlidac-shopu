@@ -101,6 +101,14 @@
     .radial-progress .complete {
       stroke-dasharray: 219.91148575129;
     }
+
+    .dashboard-row:target {
+      scroll-margin-top: 100px;
+    }
+    .dashboard-row:target th,
+    .dashboard-row:target td {
+      border-color: #1d3650;
+    }
   </style>
 {% endblock %}
 
@@ -127,10 +135,11 @@
                 <th scope="col">Produktů ve slevě</th>
                 <th scope="col">Průměrná uváděná sleva</th>
                 <th scope="col">Průměrná reálná sleva</th>
-                <th scope="col">Počet rozdílných slev</th>
-                <th scope="col">Počet změn referenční ceny</th>
+                <th scope="col">Kde se neshodneme</th>
+                <th scope="col">Zvýšení referenční ceny</th>
                 <th scope="col">Poslední aktualizace</th>
                 <th scope="col">Rating</th>
+                <th scope="col">Detail</th>
               </tr>
               </thead>
               <tbody id="table-root">
