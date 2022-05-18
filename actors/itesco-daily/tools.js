@@ -1,4 +1,7 @@
-import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import {
+  cleanPrice,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import { COUNTRY } from "./consts.js";
 
@@ -45,10 +48,6 @@ export async function findArraysUrl(urlsCatHtml, country) {
     });
   });
   return resultArrUrls;
-}
-
-function formatPrice(string) {
-  return parseFloat(string.replace(/,/, "."));
 }
 
 /**
@@ -139,31 +138,29 @@ export async function extractItems({
       const productRedux = getProductRedux(result.itemId, resultsData);
       result.itemName = productRedux.title;
 
-      const promotionProduct = $(this).find(".product-promotion .offer-text");
+      const promotionProduct = $(this).find(
+        ".product-details--wrapper .offer-text"
+      );
       if (promotionProduct) {
         const offer = promotionProduct.text();
         if (country === COUNTRY.CZ) {
           result.discounted = !!offer;
           result.currentPrice =
             offer !== ""
-              ? formatPrice(offer.split("nyní")[1])
-              : formatPrice(
-                  $(this).find(".price-control-wrapper").text().split(" ")[0]
-                );
+              ? cleanPrice(offer.split("nyní")[1])
+              : cleanPrice($(this).find(".beans-price__text").text());
           result.originalPrice =
             offer !== ""
-              ? formatPrice(offer.replace(/^.+cena|nyní.+/g, ""))
+              ? cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""))
               : null;
         } else {
           result.currentPrice =
             offer !== ""
-              ? formatPrice(offer.split("teraz")[1])
-              : formatPrice(
-                  $(this).find(".price-control-wrapper").text().split(" ")[0]
-                );
+              ? cleanPrice(offer.split("teraz")[1])
+              : cleanPrice($(this).find(".beans-price__text").text());
           const match = offer.match(/(predtým) ([\d+|,]+)/);
           if (match && match.length === 3) {
-            result.originalPrice = formatPrice(match[2]);
+            result.originalPrice = cleanPrice(match[2]);
           }
           result.discounted = result.originalPrice !== undefined;
         }

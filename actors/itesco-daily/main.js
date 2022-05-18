@@ -42,7 +42,8 @@ Apify.main(async function main() {
     country = COUNTRY.CZ,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.FULL,
-    bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/"
+    bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
+    testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/alkoholicke-napoje/whisky-a-bourbon/bourbon/all"
   } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
@@ -62,6 +63,13 @@ Apify.main(async function main() {
       url: bfUrl,
       userData: {
         label: LABELS.PAGE_BF
+      }
+    });
+  } else if (type === ActorType.TEST) {
+    await requestQueue.addRequest({
+      url: testUrl,
+      userData: {
+        label: LABELS.PAGE
       }
     });
   }
