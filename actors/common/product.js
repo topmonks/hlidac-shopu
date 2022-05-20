@@ -1,6 +1,7 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
 import { shopOrigin, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 
 /** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 /** @typedef { import("@aws-sdk/client-cloudfront").CloudFrontClient } CloudFrontClient */
@@ -13,7 +14,7 @@ import { shopOrigin, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
  * @param additionalData
  * @returns {Product}
  */
-export function toProduct(detail, { priceCurrency, ...additionalData }) {
+export function toProduct(detail, { priceCurrency, ...additionalData } = {}) {
   return Object.assign(
     {
       "@scope": "https://schema.org/",
@@ -116,25 +117,11 @@ export function currencyToISO4217(currency) {
 }
 
 export function cleanPrice(s) {
-  return parseFloat(cleanPriceText(s));
+  const price = cleanPriceText(s);
+  if (!price) return null;
+  const number = parseFloat(price);
+  if (isNaN(number)) return null;
+  return number;
 }
 
-export function cleanPriceText(priceText) {
-  let result = priceText.replace(/\s+/g, "");
-  if (result.includes("cca")) {
-    result = result.split("cca")[1];
-  }
-  const match = result.match(/\d+(:?[,.]\d+)?/);
-  if (!match) return null;
-  return match[0].replace(",", ".");
-}
-
-export function cleanUnitPriceText(priceText) {
-  let result = priceText.replace(/\s+/g, "");
-  if (result.includes("/kg")) {
-    result = result.split("/kg")[0];
-  }
-  const match = result.match(/\d+(:?[,.]\d+)?/);
-  if (!match) return null;
-  return match[0].replace(",", ".");
-}
+export * from "@hlidac-shopu/lib/parse.mjs";

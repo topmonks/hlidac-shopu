@@ -5,6 +5,6 @@
 Login credentials are in TopMonks 1password. 
 
 ```bash
-npm login
-npm publish --access public --tag latest
+yarn npm login
+yarn npm publish --access public --tag latest
 ```

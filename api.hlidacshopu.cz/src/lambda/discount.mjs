@@ -1,8 +1,10 @@
-import eachDayOfInterval from "date-fns/esm/eachDayOfInterval/index.js";
-import endOfToday from "date-fns/esm/endOfToday/index.js";
-import isAfter from "date-fns/esm/isAfter/index.js";
-import isWithinInterval from "date-fns/esm/isWithinInterval/index.js";
-import subDays from "date-fns/esm/subDays/index.js";
+import {
+  eachDayOfInterval,
+  endOfToday,
+  isAfter,
+  isWithinInterval,
+  subDays
+} from "date-fns";
 import { drop, groupBy, head, last, zipWith } from "ramda";
 
 /**
