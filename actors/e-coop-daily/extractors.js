@@ -73,7 +73,7 @@ export const extractPages = function ($, request) {
   const requests = [];
   let lastPage = 0;
   $("ul.pages-items")
-    .eq(0)
+    .first()
     .find("li a.page")
     .each((_, el) => {
       const page = $(el).find("span:not(.label)").text();

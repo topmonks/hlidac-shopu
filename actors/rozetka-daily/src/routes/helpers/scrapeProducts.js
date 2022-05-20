@@ -30,27 +30,27 @@ export async function scrapeProducts($, category, stats, processedIds) {
 function scrapeOneProduct(product, category) {
   const itemId = product
     .find("[data-goods-id]")
-    ?.eq(0)
+    ?.first()
     .attr("data-goods-id")
     ?.trim();
   const itemName = product
     .find(".goods-tile__heading")
-    ?.eq(0)
+    ?.first()
     .attr("title")
     ?.trim();
   const itemUrl = product
     .find(".goods-tile__heading")
-    ?.eq(0)
+    ?.first()
     .attr("href")
     ?.trim();
   const itemImg = product
     .find(".goods-tile__picture img")
-    ?.eq(0)
+    ?.first()
     .attr("src")
     ?.trim();
   const currentPrice = product
     .find(".goods-tile__price-value")
-    ?.eq(0)
+    ?.first()
     .text()
     ?.trim()
     .split(" ")
@@ -58,7 +58,7 @@ function scrapeOneProduct(product, category) {
   const originalPrice =
     product
       .find(".goods-tile__price--old")
-      ?.eq(0)
+      ?.first()
       .text()
       ?.trim()
       .match(/\d.*\d/)?.[0]
@@ -68,21 +68,21 @@ function scrapeOneProduct(product, category) {
   const sale =
     product
       .find(".promo-label_type_action")
-      .eq(0)
+      .first()
       .text()
       ?.trim()
       .match(/\d+/)?.[0] || undefined;
   const rating =
     product
       .find(".goods-tile__stars svg[aria-label]")
-      ?.eq(0)
+      ?.first()
       .attr("aria-label")
       ?.trim()
       ?.match(/[\d|.]+/)?.[0] || undefined;
 
   const inStockMessageStart = product
     .find(".goods-tile__availability")
-    .eq(0)
+    .first()
     .text()
     ?.trim()?.[0];
   const inStock = inStockMessageStart === "Є" || inStockMessageStart === "Е";

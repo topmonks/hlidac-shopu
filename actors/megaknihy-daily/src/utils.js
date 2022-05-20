@@ -4,11 +4,11 @@ export function getAllSubcategories($) {
   const subcategories = [];
   const menu = $("div[id='categories_block_left']")
     .find("ul[class*='tree']")
-    .eq(0);
+    .first();
   $(menu)
     .find("> li:not([class*='action'])")
     .each((index, category) => {
-      const categoryName = $(category).find("a").eq(0).attr("title");
+      const categoryName = $(category).find("a").first().attr("title");
       if ($(category).has("ul").length !== 0) {
         $(category)
           .find("li")
@@ -16,15 +16,15 @@ export function getAllSubcategories($) {
             subcategories.push({
               name: [
                 categoryName,
-                $(subcategory).find("a").eq(0).attr("title")
+                $(subcategory).find("a").first().attr("title")
               ],
-              url: $(subcategory).find("a").eq(0).attr("href")
+              url: $(subcategory).find("a").first().attr("href")
             });
           });
       } else {
         subcategories.push({
           name: [categoryName],
-          url: $(category).find("a").eq(0).attr("href")
+          url: $(category).find("a").first().attr("href")
         });
       }
     });
@@ -32,7 +32,7 @@ export function getAllSubcategories($) {
 }
 
 export function getMaxPaginationNumber($) {
-  return $("li[id='pagination_next']").prev().eq(0).text();
+  return $("li[id='pagination_next']").prev().first().text();
 }
 
 const modelProductData = ($, product, categories) => {
@@ -50,27 +50,27 @@ const modelProductData = ($, product, categories) => {
       .attr("href")
       .match(/\/([0-9]){4}[0-9]*-/)[0]
       .match(/[0-9]+/)[0],
-    img: $(product).find("img").eq(0).attr("src"),
+    img: $(product).find("img").first().attr("src"),
     itemUrl,
     itemName: $(title).text(),
     slug,
     currentPrice: parseInt(
       $(bottomBox)
         .find("span[class='price']")
-        .eq(0)
+        .first()
         .text()
         .match(/[0-9]+/)[0],
       10
     ),
-    originalPrice: $(bottomBox).find("span[class='old-price']").eq(0).text(),
-    rating: $(bottomBox).find("span[class='rating']").eq(0).text().trim(),
+    originalPrice: $(bottomBox).find("span[class='old-price']").first().text(),
+    rating: $(bottomBox).find("span[class='rating']").first().text().trim(),
     discounted: false,
-    sale: $(product).find("div[class*='product-sale']").eq(0).text(),
+    sale: $(product).find("div[class*='product-sale']").first().text(),
     category: categories.join(" > "),
     currency:
-      $(bottomBox).find("span[class='price_currency']").eq(0).text() === "Kč"
+      $(bottomBox).find("span[class='price_currency']").first().text() === "Kč"
         ? "CZK"
-        : $(bottomBox).find("span[class='price_currency']").eq(0).text(),
+        : $(bottomBox).find("span[class='price_currency']").first().text(),
     inStock: $(product).find("span[class='product-available']").length > 0
   };
 };

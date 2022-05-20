@@ -68,7 +68,7 @@ export async function extractItems($, web, country) {
         result.img = `${web}/i/${result.itemId}/1000/1000`;
       }
       if ($(this).find("h3").length !== 0) {
-        result.itemName = $(this).find("h3").eq(0).text().trim();
+        result.itemName = $(this).find("h3").first().text().trim();
         if (result.itemName.match(/\n/)) {
           result.itemName =
             result.itemName.split(/\n/).length !== 0
@@ -77,12 +77,12 @@ export async function extractItems($, web, country) {
         }
       }
       if (
-        $(this).find("del.lst-product-item-price--retail").eq(0).length !== 0
+        $(this).find("del.lst-product-item-price--retail").first().length !== 0
       ) {
         const oldPriceText = parseCurrency(
           $(this)
             .find("del.lst-product-item-price--retail")
-            .eq(0)
+            .first()
             .text()
             .replace(/\s+/g, "")
             .trim()
@@ -92,18 +92,18 @@ export async function extractItems($, web, country) {
             ? oldPriceText.value
             : $(this)
                 .find("del.lst-product-item-price--retail")
-                .eq(0)
+                .first()
                 .text()
                 .replace(/\s+/g, "")
                 .trim();
       }
 
       if (
-        $(this).find("span.lst-product-item-price-value").eq(0).length !== 0
+        $(this).find("span.lst-product-item-price-value").first().length !== 0
       ) {
         const priceText = $(this)
           .find("span.lst-product-item-price-value")
-          .eq(0)
+          .first()
           .text()
           .replace(/\s+/g, "")
           .trim();
@@ -126,13 +126,13 @@ export async function extractItems($, web, country) {
 
       if ($(this).find("a.lst-product-item-media").length !== 0) {
         result.itemUrl =
-          web + $(this).find("a.lst-product-item-media").eq(0).attr("href");
+          web + $(this).find("a.lst-product-item-media").first().attr("href");
       }
 
       if ($(this).find("article[data-id]").length !== 0) {
         result.productId = $(this).find('input[name="articleId"]').val();
       } else if ($(this).find("a[id]").length !== 0) {
-        result.productId = $(this).find("a[id]").eq(0).attr("id");
+        result.productId = $(this).find("a[id]").first().attr("id");
       }
 
       if ($(this).find("product-availability").length !== 0) {

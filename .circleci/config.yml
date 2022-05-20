@@ -85,15 +85,6 @@ commands:
       - run: yarn apify push
 
 jobs:
-  warm-up-cache:
-    machine:
-      image: ubuntu-2004:202111-02
-    # resource_class: arm.medium
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
-    steps:
-      - checkout
-      - install_packages
   test-actors:
     machine:
       image: ubuntu-2004:202111-02
@@ -102,7 +93,11 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - install_packages
+      - node/install
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v2
+          override-ci-command: yarn install --immutable
       - run:
           name: Lint actors
           command: yarn lint:actors
@@ -122,7 +117,11 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - install_packages
+      - node/install
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v2
+          override-ci-command: yarn install --immutable
       - run:
           name: Run tests
           command: yarn test:lib

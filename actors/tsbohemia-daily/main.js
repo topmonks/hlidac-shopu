@@ -199,7 +199,7 @@ Apify.main(async function main() {
         // Enqueue pagination pages
         try {
           const paginationCount = Math.ceil(
-            parseInt($("p.reccount").eq(0).text()) / 24
+            parseInt($("p.reccount").first().text()) / 24
           );
           for (let i = 2; i <= paginationCount; i++) {
             await requestQueue.addRequest(
@@ -237,13 +237,13 @@ Apify.main(async function main() {
         try {
           const itemId = $(this).attr("data-stiid");
           const oPriceElem = $(this).find(".price .mc");
-          const img = $(this).find(".img img").eq(0).attr("data-src");
+          const img = $(this).find(".img img").first().attr("data-src");
           const link = `https://www.tsbohemia.cz/${$(this)
             .find("h2 a")
-            .eq(0)
+            .first()
             .attr("href")}`;
-          const name = $(this).find("h2 a").eq(0).text().trim();
-          const price = $(this).find(".price .wvat").eq(0).text().trim();
+          const name = $(this).find("h2 a").first().text().trim();
+          const price = $(this).find(".price .wvat").first().text().trim();
           const dataItem = {
             img,
             itemId,

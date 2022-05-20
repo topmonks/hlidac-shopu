@@ -30,11 +30,11 @@ export async function extractItems(
     if ($(this).find("a.name.browsinglink").length !== 0) {
       result.itemUrl = `${domain.baseUrl}${$(this)
         .find("a.name.browsinglink")
-        .eq(0)
+        .first()
         .attr("href")}`;
       result.itemName = $(this)
         .find("a.name.browsinglink")
-        .eq(0)
+        .first()
         .text()
         .replace(/(\n|\r)/g, "")
         .trim();

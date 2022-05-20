@@ -3,11 +3,7 @@ import endOfToday from "date-fns/esm/endOfToday/index.js";
 import isAfter from "date-fns/esm/isAfter/index.js";
 import isWithinInterval from "date-fns/esm/isWithinInterval/index.js";
 import subDays from "date-fns/esm/subDays/index.js";
-import drop from "ramda/es/drop.js";
-import groupBy from "ramda/es/groupBy.js";
-import head from "ramda/es/head.js";
-import last from "ramda/es/last.js";
-import zipWith from "ramda/es/zipWith.js";
+import { drop, groupBy, head, last, zipWith } from "ramda";
 
 /**
  * @typedef { import("./types").DataRow } DataRow

@@ -19,13 +19,14 @@ export async function extractItems($, request, web) {
         $(this).find("span.availability-state-on-stock").length > 0;
 
       if (
-        $(this).find("div.price-wrapper").eq(0).find("span.alone").length !== 0
+        $(this).find("div.price-wrapper").first().find("span.alone").length !==
+        0
       ) {
         const priceText = $(this)
           .find("div.price-wrapper")
-          .eq(0)
+          .first()
           .find("span.alone")
-          .eq(0)
+          .first()
           .find("span.price-vatin")
           .text()
           .replace(/\s+/g, "")
@@ -36,17 +37,17 @@ export async function extractItems($, request, web) {
           result.currentPrice = priceText;
         }
       } else if (
-        $(this).find("div.price-wrapper").eq(0).find("span.price.action")
+        $(this).find("div.price-wrapper").first().find("span.price.action")
           .length !== 0 &&
-        $(this).find("div.price-wrapper").eq(0).find("span.price-before")
+        $(this).find("div.price-wrapper").first().find("span.price-before")
           .length !== 0
       ) {
         result.currentPrice = parseFloat(
           $(this)
             .find("div.price-wrapper")
-            .eq(0)
+            .first()
             .find("span.price.action")
-            .eq(0)
+            .first()
             .find("span.price-vatin")
             .text()
             .replace(/\s+/g, "")
@@ -56,9 +57,9 @@ export async function extractItems($, request, web) {
         result.originalPrice = parseFloat(
           $(this)
             .find("div.price-wrapper")
-            .eq(0)
+            .first()
             .find("span.price-before")
-            .eq(0)
+            .first()
             .find("span.price-vatin")
             .text()
             .replace(/\s+/g, "")

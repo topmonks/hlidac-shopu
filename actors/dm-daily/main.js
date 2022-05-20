@@ -8,12 +8,12 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import Apify from "apify";
-import { URL, URLSearchParams } from "url";
-import { gotScraping } from "got-scraping";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
+import Apify from "apify";
+import { gotScraping } from "got-scraping";
+import { URL, URLSearchParams } from "url";
 
 const { log } = Apify.utils;
 

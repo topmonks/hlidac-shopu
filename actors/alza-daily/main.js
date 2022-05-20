@@ -714,7 +714,7 @@ Apify.main(async function main() {
               throw new Error("Captcha Encountered");
             }
 
-            if ($("h1").eq(0).text() === "403 Forbidden") {
+            if ($("h1").first().text() === "403 Forbidden") {
               await Apify.utils.sleep(5000);
               stats.inc("denied");
               request.retryCount--;

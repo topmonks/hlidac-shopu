@@ -28,7 +28,7 @@ export function parseItems($, request) {
     const currentPriceText =
       priceElement.length !== 0
         ? priceElement
-            .eq(0)
+            .first()
             .text()
             .replace(/(\s)/g, "")
             .replace(/,/, ".")
