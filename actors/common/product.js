@@ -117,6 +117,7 @@ export function currencyToISO4217(currency) {
 }
 
 export function cleanPrice(s) {
+  if (!s) return null;
   const price = cleanPriceText(s);
   if (!price) return null;
   const number = parseFloat(price);

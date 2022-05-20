@@ -1,5 +1,5 @@
 import Apify from "apify";
-import { fetch } from "@adobe/helix-fetch";
+import { timeoutSignal, context } from "@adobe/helix-fetch";
 import { parseHTML } from "linkedom";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -12,10 +12,17 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import UserAgent from "user-agents";
 
 /** @typedef { import("apify").Request } RequestLike */
+
+const userAgent = new UserAgent();
+const { fetch } = context({
+  userAgent: userAgent().toString(),
+  rejectUnauthorized: false
+});
 
 const Type = {
   DAILY: "DAILY",
@@ -167,6 +174,10 @@ async function handleResponse({
   country,
   stats
 }) {
+  Apify.utils.log.debug("handling request", {
+    url: request.url,
+    label: request.userData.label
+  });
   switch (request.userData.label) {
     case Label.START:
       return processTotalCount(response, totalCount, requestQueue, country);
@@ -175,18 +186,6 @@ async function handleResponse({
     case Label.DETAIL:
       return processDetail(request, response, stats);
   }
-
-  // COUNT
-  // push totalCount to dataset
-
-  // DAILY
-  // start scraping index in loop
-  // push data to DataSet
-  // upload to Keboola
-
-  // LINKED_DATA
-  // start scraping index in loop
-  // upload to S3 and invalidate CDN
 }
 
 function processResult(type, stats, startUrl) {
@@ -242,7 +241,8 @@ async function main() {
   }
 
   const stats = await withPersistedStats(x => x, {
-    items: 0
+    items: 0,
+    errors: 0
   });
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
@@ -256,20 +256,21 @@ async function main() {
   const requestList = await Apify.openRequestList("ikea-start", sources);
   const requestQueue = await Apify.openRequestQueue();
   const totalCount = defAtom(null);
+  const processData = processResult(type, stats, startUrl(country));
 
   const crawler = new Apify.BasicCrawler({
     requestList,
     requestQueue,
-    proxyConfiguration,
     maxConcurrency,
     maxRequestRetries,
-    handlePageTimeoutSecs: 360,
-    requestTimeoutSecs: 240,
     async handleRequestFunction({ request }) {
       const { url, userData } = request;
-      const response = await fetch(url);
-      const process = processResult(type, stats, startUrl(country));
-      const result = handleResponse({
+      const response = await fetch(url, { signal: timeoutSignal(30000) });
+      if (!response.ok) {
+        stats.inc("errors");
+        Apify.utils.log.error("failed request", await response.json());
+      }
+      const result = await handleResponse({
         request,
         response,
         totalCount,
@@ -277,7 +278,7 @@ async function main() {
         country,
         stats
       });
-      return process(userData.label, result);
+      return processData(userData.label, result);
     }
   });
 
@@ -286,7 +287,7 @@ async function main() {
 
   await Promise.allSettled([
     stats.save(),
-    uploadToKeboola(shopName(detailUrl.deref()))
+    uploadToKeboola(shopName(startUrl(country)))
   ]);
 
   Apify.utils.log.info("Finished.");
