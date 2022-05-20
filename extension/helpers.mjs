@@ -1,5 +1,8 @@
 import { shops as shops_lib, shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { cleanPriceText, cleanUnitPriceText } from "@hlidac-shopu/lib/parse.mjs";
+import {
+  cleanPriceText,
+  cleanUnitPriceText
+} from "@hlidac-shopu/lib/parse.mjs";
 
 export function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
@@ -38,3 +41,8 @@ export function getItemIdFromUrl(url) {
   const shop = shops_lib.get(shopName(url));
   return shop.parse(url).itemId;
 }
+
+export {
+  cleanPriceText,
+  cleanUnitPriceText
+} from "@hlidac-shopu/lib/parse.mjs";
