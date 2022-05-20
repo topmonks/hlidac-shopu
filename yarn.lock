@@ -3324,6 +3324,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@esm-bundle/chai@npm:4.3.4-fix.0":
+  version: 4.3.4-fix.0
+  resolution: "@esm-bundle/chai@npm:4.3.4-fix.0"
+  dependencies:
+    "@types/chai": ^4.2.12
+  checksum: 565b0a92775bb277726fbd687826157596325f7a38fc51baa695e9adc13f629be3b76a2a38830781b238acce469e49f729ff7b4dc886e9a2dc6ecbdb82227693
+  languageName: node
+  linkType: hard
+
 "@esm-bundle/chai@npm:^4.3.4-fix.0":
   version: 4.3.4
   resolution: "@esm-bundle/chai@npm:4.3.4"
@@ -3724,12 +3733,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
-    "@esm-bundle/chai": ^4.3.4-fix.0
+    "@esm-bundle/chai": 4.3.4-fix.0
     "@lit/reactive-element": 1.3.2
     "@open-wc/testing": 3.1.5
     "@web/test-runner": ^0.13.27
     "@web/test-runner-junit-reporter": ^0.4.11
-    chai: 4.3.6
     chart.js: ^3.7.1
     chartjs-adapter-date-fns: 2.0.0
     lit: 2.2.4
