@@ -7,10 +7,14 @@
   "type": "module",
   "main": "index.js",
   "dependencies": {
+    "@adobe/helix-fetch": "3.0.10",
     "@aws-sdk/client-cloudfront": "3.95.0",
     "@aws-sdk/client-s3": "3.95.0",
     "@hlidac-shopu/actors-common": "1.2.7",
+    "@hlidac-shopu/lib": "1.3.1",
+    "@thi.ng/atom": "5.1.6",
     "apify": "^2.3.2",
+    "linkedom": "0.14.9",
     "user-agents": "1.0.4"
   },
   "devDependencies": {
@@ -19,8 +23,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
-    "lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
+    "lint": "eslint ./src --ext .js,.jsx",
+    "lint:fix": "eslint ./src --ext .js,.jsx --fix",
     "test": "../../scripts/test-actor.sh"
   }
 }

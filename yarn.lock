@@ -3653,12 +3653,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/ikea-scraper@workspace:actors/ikea-daily"
   dependencies:
+    "@adobe/helix-fetch": 3.0.10
     "@aws-sdk/client-cloudfront": 3.95.0
     "@aws-sdk/client-s3": 3.95.0
     "@hlidac-shopu/actors-common": 1.2.7
+    "@hlidac-shopu/lib": 1.3.1
+    "@thi.ng/atom": 5.1.6
     "@types/node": ^16.11.36
     apify: ^2.3.2
     apify-cli: ^0.7.2
+    linkedom: 0.14.9
     user-agents: 1.0.4
   languageName: unknown
   linkType: soft
@@ -3730,7 +3734,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@^1.3.1, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@1.3.1, @hlidac-shopu/lib@^1.3.1, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -15243,7 +15247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:^0.14.9":
+"linkedom@npm:0.14.9, linkedom@npm:^0.14.9":
   version: 0.14.9
   resolution: "linkedom@npm:0.14.9"
   dependencies:
