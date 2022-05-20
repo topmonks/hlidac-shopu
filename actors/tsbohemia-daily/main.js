@@ -32,30 +32,163 @@ let stats = {
 };
 const processedIds = new Set();
 
-Apify.main(async function main() {
-  rollbar.init();
+async function handleStart($, proxyConfiguration, requestQueue) {
+  const categoryIds = [];
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
+  $("a[data-strid]").each(function () {
+    categoryIds.push({
+      id: $(this).data("strid"),
+      name: $(this).text()
+    });
   });
 
-  log.info("ACTOR - Start");
-  const input = await Apify.getInput();
-  const {
-    development = false,
-    debug = false,
-    maxRequestRetries = 3,
-    maxConcurrency = 6,
-    proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
-    feedUrl = ""
-  } = input ?? {};
+  for (const category of categoryIds) {
+    const responseCheerio = await getCheerioObject(
+      {
+        url: `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
+      },
+      proxyConfiguration
+    );
+    responseCheerio(".level6 > li > a").each(async function () {
+      stats.categories++;
+      const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
+      const finalUrl =
+        subCatUrl.indexOf("https") === -1
+          ? `https://www.tsbohemia.cz/${subCatUrl}`
+          : subCatUrl;
+      const subCategoryId = finalUrl.match("_c(.*).html")[1];
+      await requestQueue.addRequest({
+        url: `${finalUrl}`,
+        userData: {
+          label: LABELS.PAGE,
+          categoryName: category.name,
+          strid: subCategoryId
+        },
+        uniqueKey: Math.random().toString()
+      });
+    });
+  }
+}
 
-  log.info(`ACTOR - input: ${JSON.stringify(input)}`);
-  const requestQueue = await Apify.openRequestQueue();
+async function handleBlackFriday($, requestQueue) {
+  log.info("START BLACK FRIDAY");
+  const categories = [];
+  const tcs = $("ul.level9 a");
+  for (let i = 0; i < tcs.length; i++) {
+    const link = tcs[i];
+    categories.push($(link).attr("href"));
+  }
+  stats.categories += categories.length;
+  // Enqueue category links
+  for (const cat of categories) {
+    log.info(`Adding to the queue ${cat}`);
+    await requestQueue.addRequest({
+      url: cat.indexOf("https") === -1 ? `https://www.tsbohemia.cz${cat}` : cat,
+      userData: {
+        label: LABELS.PAGE,
+        name: "BF"
+      }
+    });
+  }
+}
 
+async function handleDetail($, requestQueue, request, s3) {
+  // Check for subcategories
+  const subcategories = $("div.strcont > div.subcats").find("a");
+  if (subcategories.length > 0) {
+    for (const subcat of subcategories) {
+      const link = $(subcat).attr("href");
+      console.log(`${BASE_URL}${link}`);
+      await requestQueue.addRequest({
+        url: `${BASE_URL}${link}`,
+        userData: {
+          label: LABELS.PAGE
+        }
+      });
+    }
+    log.info(`Adding to the queue ${subcategories.length} subcategories`);
+  } else if (!request.url.includes("page") && $("p.reccount").length !== 0) {
+    // Enqueue pagination pages
+    try {
+      const paginationCount = Math.ceil(
+        parseInt($("p.reccount").first().text()) / 24
+      );
+      for (let i = 2; i <= paginationCount; i++) {
+        await requestQueue.addRequest(
+          {
+            url: `${request.url}?page=${i}#prodlistanchor`,
+            userData: {
+              label: LABELS.PAGE,
+              name: request.userData.name
+            },
+            uniqueKey: Math.random().toString()
+          },
+          { forefront: true }
+        );
+      }
+      log.info(`Adding to the queue ${paginationCount - 1} pagination`);
+      stats.pagination += paginationCount;
+    } catch (e) {
+      log.error(e.message);
+    }
+  }
+
+  const category = $(".navbar li.active a")
+    .map(() => $(this).text())
+    .join(" > ");
+
+  const products = $(".prodbox").map(function () {
+    try {
+      let $product = $(this);
+      const itemId = $product.data("stiid");
+      const img = $product.find(".img img").first().data("src");
+      const itemUrl = new URL(
+        $product.find("h2 a").first().attr("href"),
+        "https://www.tsbohemia.cz/"
+      ).href;
+      const itemName = $product.find("h2 a").first().text().trim();
+      const priceData = JSON.parse($product.find(".price").data("price"));
+      // Save data to dataset
+      return {
+        itemId,
+        itemUrl,
+        itemName,
+        img,
+        category,
+        currentPrice: priceData.ActualPrice,
+        originalPrice: priceData.OriginalPrice ?? null,
+        discounted: priceData.discount !== null,
+        currency: priceData.CurCode
+      };
+    } catch (e) {
+      log.error(e);
+    }
+  });
+
+  // we don't need to block pushes, we will await them all at the end
+  const requests = [];
+  for (const product of products) {
+    // Save data to dataset
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3v2(s3, product, { priceCurrency: "CZK" })
+      );
+      stats.items++;
+    } else {
+      stats.itemsDuplicity++;
+    }
+  }
+  log.info(`Found ${requests.length} unique products`);
+
+  // await all requests, so we don't end before they end
+  await Promise.allSettled(requests);
+  // Iterate all products and extract data
+  await Apify.utils.sleep(getRandomInt(250, 950));
+}
+
+async function prepareStartURLs(type, requestQueue, feedUrl) {
   let requestListSources = [];
   if (type === ActorType.BF) {
     await requestQueue.addRequest({
@@ -106,191 +239,39 @@ Apify.main(async function main() {
       }
     });
   }
+  return requestListSources;
+}
+
+Apify.main(async function main() {
+  rollbar.init();
+
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
+
+  log.info("ACTOR - Start");
+  const input = await Apify.getInput();
+  const {
+    development = false,
+    debug = false,
+    maxRequestRetries = 3,
+    maxConcurrency = 6,
+    proxyGroups = ["CZECH_LUMINATI"],
+    type = ActorType.FULL,
+    feedUrl = ""
+  } = input ?? {};
+
+  log.info(`ACTOR - input: ${JSON.stringify(input)}`);
+  const requestQueue = await Apify.openRequestQueue();
+  const requestListSources = await prepareStartURLs(
+    type,
+    requestQueue,
+    feedUrl
+  );
   const requestList = await Apify.openRequestList("LIST", requestListSources);
   // Handle page context
-  const handlePageFunction = async ({ page, request }) => {
-    log.info(
-      `Handling page ${request.url} with label ${request.userData.label}`
-    );
-    const content = await page.content();
-    const $ = cheerio.load(content);
-    // This is the start page
-    if (request.userData.label === LABELS.START) {
-      const categoryIds = [];
-
-      $("a[data-strid]").each(function () {
-        categoryIds.push({
-          id: $(this).attr("data-strid"),
-          name: $(this).text()
-        });
-      });
-
-      for (const category of categoryIds) {
-        const responseCheerio = await getCheerioObject(
-          {
-            url: `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
-          },
-          proxyConfiguration
-        );
-        responseCheerio(".level6 > li > a").each(async function () {
-          stats.categories++;
-          const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
-          const finalUrl =
-            subCatUrl.indexOf("https") === -1
-              ? `https://www.tsbohemia.cz/${subCatUrl}`
-              : subCatUrl;
-          const subCategoryId = finalUrl.match("_c(.*).html")[1];
-          await requestQueue.addRequest({
-            url: `${finalUrl}`,
-            userData: {
-              label: LABELS.PAGE,
-              categoryName: category.name,
-              strid: subCategoryId
-            },
-            uniqueKey: Math.random().toString()
-          });
-        });
-      }
-    } else if (request.userData.label === LABELS.BF) {
-      log.info("START BLACK FRIDAY");
-      const categories = [];
-      const tcs = $("ul.level9 a");
-      for (let i = 0; i < tcs.length; i++) {
-        const link = tcs[i];
-        categories.push($(link).attr("href"));
-      }
-      stats.categories += categories.length;
-      // Enqueue category links
-      for (const cat of categories) {
-        log.info(`Adding to the queue ${cat}`);
-        await requestQueue.addRequest({
-          url:
-            cat.indexOf("https") === -1
-              ? `https://www.tsbohemia.cz${cat}`
-              : cat,
-          userData: {
-            label: LABELS.PAGE,
-            name: "BF"
-          }
-        });
-      }
-    }
-
-    // This is the category page
-    else if (request.userData.label === LABELS.PAGE) {
-      // Check for subcategories
-      const subcategories = $("div.strcont > div.subcats").find("a");
-      if (subcategories.length > 0) {
-        for (const subcat of subcategories) {
-          const link = $(subcat).attr("href");
-          console.log(`${BASE_URL}${link}`);
-          await requestQueue.addRequest({
-            url: `${BASE_URL}${link}`,
-            userData: {
-              label: LABELS.PAGE
-            }
-          });
-        }
-        log.info(`Adding to the queue ${subcategories.length} subcategories`);
-      } else if (
-        !request.url.includes("page") &&
-        $("p.reccount").length !== 0
-      ) {
-        // Enqueue pagination pages
-        try {
-          const paginationCount = Math.ceil(
-            parseInt($("p.reccount").first().text()) / 24
-          );
-          for (let i = 2; i <= paginationCount; i++) {
-            await requestQueue.addRequest(
-              {
-                url: `${request.url}?page=${i}#prodlistanchor`,
-                userData: {
-                  label: LABELS.PAGE,
-                  name: request.userData.name
-                },
-                uniqueKey: Math.random().toString()
-              },
-              { forefront: true }
-            );
-          }
-          log.info(`Adding to the queue ${paginationCount - 1} pagination`);
-          stats.pagination += paginationCount;
-        } catch (e) {
-          log.error(e.message);
-        }
-      }
-
-      const products = [];
-      const toNumber = p => p.replace(/\s/g, "").match(/\d+/)[0];
-      const navbar = $(".navbar ul > li");
-      const category = [];
-      if (navbar.length !== 0) {
-        navbar.each(function () {
-          const bs = $(this);
-          if (!bs.hasClass("hp")) {
-            category.push(bs.text().trim());
-          }
-        });
-      }
-      $(".prodbox").each(function () {
-        try {
-          const itemId = $(this).attr("data-stiid");
-          const oPriceElem = $(this).find(".price .mc");
-          const img = $(this).find(".img img").first().attr("data-src");
-          const link = `https://www.tsbohemia.cz/${$(this)
-            .find("h2 a")
-            .first()
-            .attr("href")}`;
-          const name = $(this).find("h2 a").first().text().trim();
-          const price = $(this).find(".price .wvat").first().text().trim();
-          const dataItem = {
-            img,
-            itemId,
-            itemUrl: link,
-            itemName: name,
-            discounted: false,
-            currentPrice: price ? parseFloat(toNumber(price)) : null,
-            category,
-            menuCat: request.userData.name
-          };
-          if (oPriceElem.length !== 0) {
-            const oPrice = oPriceElem.text().trim();
-            dataItem.originalPrice = parseFloat(toNumber(oPrice));
-            dataItem.discounted = true;
-          }
-
-          // Save data to dataset
-          products.push(dataItem);
-        } catch (e) {
-          log.error(e);
-        }
-      });
-
-      // we don't need to block pushes, we will await them all at the end
-      const requests = [];
-      for (const product of products) {
-        // Save data to dataset
-        if (!processedIds.has(product.itemId)) {
-          processedIds.add(product.itemId);
-          requests.push(
-            Apify.pushData(product),
-            uploadToS3v2(s3, product, { priceCurrency: "CZK" })
-          );
-          stats.items++;
-        } else {
-          stats.itemsDuplicity++;
-        }
-      }
-      log.info(`Found ${requests.length} unique products`);
-
-      // await all requests, so we don't end before they end
-      await Promise.allSettled(requests);
-      // Iterate all products and extract data
-      await Apify.utils.sleep(getRandomInt(250, 950));
-    }
-  };
-
   const persistState = async () => {
     await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
     log.info(JSON.stringify(stats));
@@ -466,9 +447,24 @@ Apify.main(async function main() {
         }
       ]
     },
-    handlePageFunction,
+    async handlePageFunction({ page, request }) {
+      log.info(
+        `Handling page ${request.url} with label ${request.userData.label}`
+      );
+      const content = await page.content();
+      const $ = cheerio.load(content);
+
+      switch (request.userData.label) {
+        case LABELS.START:
+          return handleStart($, proxyConfiguration, requestQueue);
+        case LABELS.BF:
+          return handleBlackFriday($, requestQueue);
+        case LABELS.PAGE:
+          return handleDetail($, requestQueue, request, s3);
+      }
+    },
     // This function is called if the page processing failed more than maxRequestRetries+1 times.
-    handleFailedRequestFunction: async ({ request }) => {
+    async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
     }
   });
@@ -477,7 +473,7 @@ Apify.main(async function main() {
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
-    handleRequestFunction: async context => {
+    async handleRequestFunction(context) {
       const { request } = context;
       const { ids } = request.userData;
       const bodyList = "stiidlist=" + ids.join(",");
@@ -532,7 +528,7 @@ Apify.main(async function main() {
         stats.items += prices.length;
       }
     },
-    handleFailedRequestFunction: async ({ request }) => {
+    async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
