@@ -157,7 +157,7 @@ async function handleDetail($, requestQueue, request, s3) {
         category,
         currentPrice: priceData.ActualPrice,
         originalPrice: priceData.OriginalPrice ?? null,
-        discounted: priceData.discount !== null,
+        discounted: priceData.discount != null,
         currency: priceData.CurCode
       };
     } catch (e) {
