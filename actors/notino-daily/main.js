@@ -93,7 +93,7 @@ async function getReviews({ sku, token, proxyConfiguration }) {
   return reviews;
 }
 
-async function pushProducts(products, country, stats, processedIds, s3) {
+async function pushProducts(products, country, stats, processedIds, s3, input) {
   const requests = [];
   let count = 0;
   // we don't need to block pushes, we will await them all at the end
@@ -579,10 +579,10 @@ const handleProductInDetailPage = async (
           }
         }
       }
-      await pushProducts(variantList, country, stats, processedIds, s3);
+      await pushProducts(variantList, country, stats, processedIds, s3, input);
     }
   } else {
-    await pushProducts(results, country, stats, processedIds, s3);
+    await pushProducts(results, country, stats, processedIds, s3, input);
   }
 };
 
