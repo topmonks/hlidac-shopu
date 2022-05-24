@@ -5,13 +5,8 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-
 import { S3Client } from "@aws-sdk/client-s3";
-
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
-import { gotScraping } from "got-scraping";
-import cheerio from "cheerio";
 
 const HOME_PAGE = "HOME_PAGE";
 const CATEGORY_PAGE = "CATEGORY_PAGE";
@@ -821,7 +816,7 @@ Apify.main(async function main() {
   log.info("Crawling finished.");
 
   const tableName = `notino${
-    country === COUNTRY.CZ ? "" : "_" + country.toLowerCase()
+    country === COUNTRY.CZ ? "" : `_${country.toLowerCase()}`
   }${type === ActorType.BF ? "_bf" : ""}`;
 
   await stats.save();
@@ -829,14 +824,12 @@ Apify.main(async function main() {
   // TODO: check if type=CZECHITAS is still relevant
   if (!development && type !== "CZECHITAS" && type !== ActorType.COUNT) {
     await Promise.allSettled([
-      //invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),  // TODO: test it
       invalidateCDN(
         cloudfront,
         "EQYSHWUECAQC9",
         `notino.${country.toLowerCase()}`
       ),
 
-      // uploadToKeboola(shopName(detailUrl.deref())) // TODO: test it
       uploadToKeboola(tableName)
     ]);
   }
