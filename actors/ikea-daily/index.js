@@ -121,8 +121,12 @@ async function processIndex(response, requestQueue) {
           product: Object.assign({}, data, {
             itemId: variant.itemNoGlobal,
             itemUrl: variant.pipUrl,
-            itemName: variant.imageAlt,
-            img: variant.imageUrl
+            itemName: variant.imageAlt ?? data.itemName,
+            img: variant.imageUrl ?? data.imageUrl,
+            currentPrice: cleanPrice(variant.price?.wholeNumber),
+            originalPrice: cleanPrice(variant.prevPrice?.wholeNumber),
+            discounted: Boolean(variant.prevPrice),
+            inStock: variant.onlineSellable
           })
         }
       });
