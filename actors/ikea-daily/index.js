@@ -88,7 +88,7 @@ async function html(response) {
 function parseProduct(x) {
   return {
     itemId: x.itemNoGlobal,
-    itemName: xmainImageAlt ?? x.imageAlt,
+    itemName: x.mainImageAlt ?? x.imageAlt,
     itemUrl: x.pipUrl,
     img: x.mainImageUrl,
     inStock: x.onlineSellable,
@@ -121,7 +121,7 @@ async function processIndex(response, requestQueue) {
           product: Object.assign({}, data, {
             itemId: variant.itemNoGlobal,
             itemUrl: variant.pipUrl,
-            itemName: variant.imageAlt || data.itemName,
+            itemName: variant.mainImageAlt ?? variant.imageAlt ?? data.itemName,
             img: variant.imageUrl ?? data.imageUrl,
             currentPrice: cleanPrice(variant.price?.wholeNumber),
             originalPrice: cleanPrice(variant.prevPrice?.wholeNumber),
