@@ -133,8 +133,10 @@ async function handleDetail($, requestQueue, request, s3) {
     }
   }
 
-  const category = $(".navbar li.active a")
-    .map(() => $(this).text())
+  const category = $(".navbar li a")
+    .get()
+    .map(x => $(x).text())
+    .splice(1)
     .join(" > ");
 
   const products = $(".prodbox").map(function () {
