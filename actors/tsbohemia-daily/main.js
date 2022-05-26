@@ -350,7 +350,8 @@ Apify.main(async function main() {
           // solve using captcha solver .
           const [, recaptchaFrame] = await page.frames();
           await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
-            state: "attached"
+            state: "attached",
+            timeout: 0
           });
           const findSiteKey = () => {
             const bframe = document.querySelector("iframe[src*='/bframe']");
