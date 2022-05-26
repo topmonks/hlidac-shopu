@@ -149,7 +149,11 @@ async function handleDetail($, requestQueue, request, s3) {
         "https://www.tsbohemia.cz/"
       ).href;
       const itemName = $product.find("h2 a").first().text().trim();
-      const priceData = JSON.parse($product.find(".price").data("price"));
+      const sourcePriceData = $product.find(".price").data("price");
+      const priceData =
+        typeof sourcePriceData === "object"
+          ? sourcePriceData
+          : JSON.parse(sourcePriceData);
       // Save data to dataset
       return {
         itemId,
