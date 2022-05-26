@@ -140,6 +140,7 @@ async function handleDetail($, requestQueue, request, s3) {
     .join(" > ");
 
   const products = $(".prodbox").map(function () {
+    let priceData = null;
     try {
       let $product = $(this);
       const itemId = $product.data("stiid");
@@ -150,7 +151,7 @@ async function handleDetail($, requestQueue, request, s3) {
       ).href;
       const itemName = $product.find("h2 a").first().text().trim();
       const sourcePriceData = $product.find(".price").data("price");
-      const priceData =
+      priceData =
         typeof sourcePriceData === "object"
           ? sourcePriceData
           : JSON.parse(sourcePriceData);
@@ -168,6 +169,8 @@ async function handleDetail($, requestQueue, request, s3) {
       };
     } catch (e) {
       log.error(e);
+      log.error("request.url", request.url);
+      console.log(priceData);
     }
   });
 
@@ -351,7 +354,7 @@ Apify.main(async function main() {
           const [, recaptchaFrame] = await page.frames();
           await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
             state: "attached",
-            timeout: 0
+            timeout: 60
           });
           const findSiteKey = () => {
             const bframe = document.querySelector("iframe[src*='/bframe']");
