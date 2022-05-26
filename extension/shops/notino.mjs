@@ -9,7 +9,7 @@ export class Notino extends Shop {
   }
 
   get injectionPoint() {
-    return ["beforebegin", "a[class^='styled__StyledAddToWishlist']"];
+    return ["afterbegin", "#pdAddToCart"];
   }
 
   async scheduleRendering({ render, cleanup, fetchData }) {
@@ -56,11 +56,11 @@ export class Notino extends Shop {
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#pd-price");
     const originalPrice = cleanPrice(
-      "[class^='styled__DiscountWrapper'] span[content]"
+      ":not(#pd-price) > span[content]:first-of-type"
     );
-    const imageUrl = document.querySelector(
-      "[class^='styled__ImgWrapper'] img"
-    ).src;
+    const imageUrl = document.getElementById(
+      "pd-image-main"
+    )?.src;
     let itemId = (() => {
       const match = window.location.pathname.match(/\/p-(\d+)\//);
       return match ? match[1] : null;
