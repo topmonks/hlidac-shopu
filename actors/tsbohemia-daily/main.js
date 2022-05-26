@@ -140,7 +140,7 @@ async function handleDetail($, requestQueue, request, s3) {
     .join(" > ");
 
   const products = $(".prodbox").map(function () {
-    let priceData = null;
+    let sourcePriceData = null;
     try {
       let $product = $(this);
       const itemId = $product.data("stiid");
@@ -150,11 +150,16 @@ async function handleDetail($, requestQueue, request, s3) {
         "https://www.tsbohemia.cz/"
       ).href;
       const itemName = $product.find("h2 a").first().text().trim();
-      const sourcePriceData = $product.find(".price").data("price");
-      priceData =
-        typeof sourcePriceData === "object"
-          ? sourcePriceData
-          : JSON.parse(sourcePriceData);
+      sourcePriceData = $product.find(".price").data("price");
+      let priceData = null;
+      if (typeof sourcePriceData === "object") {
+        priceData = sourcePriceData;
+      } else if (typeof sourcePriceData === "string") {
+        priceData = JSON.parse(sourcePriceData);
+      } else {
+        log.error(typeof sourcePriceData);
+        log.error(sourcePriceData);
+      }
       // Save data to dataset
       return {
         itemId,
@@ -170,7 +175,7 @@ async function handleDetail($, requestQueue, request, s3) {
     } catch (e) {
       log.error(e);
       log.error("request.url", request.url);
-      console.log(priceData);
+      console.log(sourcePriceData);
     }
   });
 
