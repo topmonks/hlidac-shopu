@@ -153,6 +153,11 @@ async function handleDetail($, requestQueue, request, s3) {
       let priceData = null;
       if (typeof sourcePriceData === "object") {
         priceData = sourcePriceData;
+      } else if (
+        typeof sourcePriceData === "string" &&
+        sourcePriceData.length > 0
+      ) {
+        priceData = JSON.parse(sourcePriceData);
       } else {
         log.error(typeof sourcePriceData);
         log.error(sourcePriceData);
@@ -462,6 +467,11 @@ Apify.main(async function main() {
       log.info(
         `Handling page ${request.url} with label ${request.userData.label}`
       );
+      if (request.userData.label === LABELS.PAGE) {
+        console.time("is-loaded");
+        await page.waitForSelector(".prodbox .price.is-loaded");
+        console.timeEnd("is-loaded");
+      }
       const content = await page.content();
       const $ = cheerio.load(content);
 
