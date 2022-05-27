@@ -7,4 +7,4 @@ Komentář Hlídače...
 
 Slovy e-shopu:
 
-> "..."
+> "...", viz https://www.hornbach.cz/sluzby/podrobnosti-o-cenove-zaruce/
