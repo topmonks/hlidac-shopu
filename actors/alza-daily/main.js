@@ -729,7 +729,7 @@ Apify.main(async function main() {
       }
 
       switch (label) {
-        case LABEL.LEFTMENU:
+        case LABEL.LEFT_MENU:
           return handleLeftMenu(context, domain, requestQueue, stats);
         case LABEL.PAGE:
           return handlePage(
