@@ -274,7 +274,7 @@ async function handleAPIList(context, stats, crawlContext) {
             uploadToS3v2(crawlContext.s3, product)
           );
 
-          await Promise.allSettled(requests);
+          await Promise.all(requests);
         } else {
           stats.inc("missingUrl");
         }
@@ -512,7 +512,7 @@ Apify.main(async function main() {
   await crawler.run();
 
   if (!development) {
-    await Promise.allSettled([
+    await Promise.all([
       stats.save(),
 
       // TODO: fix it - TypeError [ERR_INVALID_URL]: Invalid URL

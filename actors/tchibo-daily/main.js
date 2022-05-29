@@ -354,7 +354,7 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("crawler finished");
 
-  await Promise.allSettled([
+  await Promise.all([
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`),
     uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`)
   ]);

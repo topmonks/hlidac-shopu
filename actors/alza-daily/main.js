@@ -419,7 +419,7 @@ async function handleFeed(items, stats, s3, options = {}) {
     pushedItemsCount += formattedItems.length;
     await Apify.setValue(kvRecordName, pushedItemsCount);
     await Promise.all(pushPromises);
-    await Promise.allSettled(s3Requests);
+    await Promise.all(s3Requests);
     stats.add("items", formattedItems.length);
     await Apify.utils.sleep(uploadSleepMs);
   }
@@ -788,7 +788,7 @@ Apify.main(async function main() {
   await stats.save();
   if (!development) {
     log.info("Crawler finished, calling upload.");
-    await Promise.allSettled([
+    await Promise.all([
       invalidateCDN(
         cloudfront,
         "EQYSHWUECAQC9",

@@ -164,7 +164,7 @@ async function scrapeProductListPage($, crawlContext) {
   }
   console.log(`Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 async function handleSubCategoryPage($, crawlContext) {

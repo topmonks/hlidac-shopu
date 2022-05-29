@@ -197,7 +197,7 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("crawler finished");
 
-  await Promise.allSettled([
+  await Promise.all([
     stats.save(),
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
     uploadToKeboola(shopName(detailUrl.deref()))

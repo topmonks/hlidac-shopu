@@ -217,7 +217,7 @@ async function scrapeShopCategory(
     }
   }
   log.info(`Found ${requests.length / 2} unique products`);
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 Apify.main(async function main() {

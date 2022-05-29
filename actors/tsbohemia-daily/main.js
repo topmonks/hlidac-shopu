@@ -198,7 +198,7 @@ async function handleDetail($, requestQueue, request, s3) {
   log.info(`Found ${requests.length} unique products`);
 
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
   // Iterate all products and extract data
   await Apify.utils.sleep(getRandomInt(250, 950));
 }
@@ -576,7 +576,7 @@ Apify.main(async function main() {
     } else if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
     }
-    await Promise.allSettled([
+    await Promise.all([
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tsbohemia.cz"),
       uploadToKeboola(tableName)
     ]);

@@ -149,7 +149,7 @@ async function handleCollection(
   }
   log.info(`Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 
   if (paginationCount > 1 && params.page === 1) {
     log.info(`Adding ${paginationCount - 1}x pagination pages `);
@@ -350,7 +350,7 @@ Apify.main(async function main() {
   if (!development) {
     const suffix = type === ActorType.BF ? "_bf" : "";
     const tableName = customTableName ?? `${shopName(rootUrl)}${suffix}`;
-    await Promise.allSettled([
+    await Promise.all([
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(rootUrl)),
       uploadToKeboola(tableName)
     ]);

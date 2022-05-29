@@ -72,7 +72,7 @@ async function extractItems({ $, $products, s3, userInput }) {
         : null
     );
   }
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 export async function scrapProducts({ $, s3, userInput }) {

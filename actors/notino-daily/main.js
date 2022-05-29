@@ -364,7 +364,7 @@ const handleCategoryPage = async (
         }
       }
       // await all requests, so we don't end before they end
-      await Promise.allSettled(requests);
+      await Promise.all(requests);
       log.debug(
         `${products.length}/${productsUrls.length} unique products parsed on page number ${page}`
       );
@@ -823,7 +823,7 @@ Apify.main(async function main() {
 
   // TODO: check if type=CZECHITAS is still relevant
   if (!development && type !== "CZECHITAS" && type !== ActorType.COUNT) {
-    await Promise.allSettled([
+    await Promise.all([
       invalidateCDN(
         cloudfront,
         "EQYSHWUECAQC9",

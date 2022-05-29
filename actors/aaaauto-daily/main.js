@@ -122,7 +122,7 @@ Apify.main(async function main() {
         });
       } else if (request.userData.label === "PAGE") {
         const offers = $(".card");
-        const products = await Promise.allSettled(
+        const products = await Promise.all(
           offers.map(async function () {
             try {
               const item = $(this);
@@ -191,7 +191,7 @@ Apify.main(async function main() {
         sleepTotal += getHumanDelayMillis(250, 950);
         log.debug(`Found ${allFulfilledProducts.length} cars, ${request.url}`);
         // await all requests, so we don't end before they end
-        await Promise.allSettled(requests);
+        await Promise.all(requests);
         await Apify.utils.sleep(sleepTotal);
       }
     },

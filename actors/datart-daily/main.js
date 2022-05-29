@@ -367,7 +367,7 @@ Apify.main(async function main() {
             `${request.url} Found ${requests.length / 2} unique products`
           );
           // await all requests, so we don't end before they end
-          await Promise.allSettled(requests);
+          await Promise.all(requests);
         } catch (e) {
           console.log(`Failed to get products from page ${request.url}`);
           await Apify.pushData({

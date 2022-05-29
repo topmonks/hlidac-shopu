@@ -24,7 +24,7 @@ export async function scrapeProducts($, category, stats, processedIds) {
   }
   console.log(`Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 function scrapeOneProduct(product, category) {

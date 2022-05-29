@@ -178,7 +178,7 @@ async function handleList({ request, $ }, crawlContext) {
     }
     log.info(`Found ${requests.length / 2} unique products`);
     // await all requests, so we don't end before they end
-    await Promise.allSettled(requests);
+    await Promise.all(requests);
   } catch (e) {
     console.error(e);
     console.log(`Failed extraction of items. ${request.url}`);

@@ -103,7 +103,7 @@ async function handleItems($, request, processedIds, stats, s3) {
   }
   console.log(`${request.url} Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 Apify.main(async function main() {

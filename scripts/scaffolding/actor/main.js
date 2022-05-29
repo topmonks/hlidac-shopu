@@ -160,7 +160,7 @@ async function handleProducts(
   //   log.debug(`Found ${requests.length / 2} unique products at ${request.url}`);
 
   //   // await all requests, so we don't end before they end
-  //   await Promise.allSettled(requests);
+  //   await Promise.all(requests);
   // }
 }
 
@@ -328,7 +328,7 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("crawler finished");
 
-  await Promise.allSettled([
+  await Promise.all([
     stats.save(),
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
     uploadToKeboola(shopName(detailUrl.deref()))

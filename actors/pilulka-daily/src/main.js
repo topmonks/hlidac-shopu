@@ -216,7 +216,7 @@ async function fetchProductBase(
   }
   console.log(`Found ${allFulfilledProducts.length} products`);
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 // fetch product details URLs

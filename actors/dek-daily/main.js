@@ -134,7 +134,7 @@ async function scrapeCategory({ $, request, crawler }, { s3, userInput }) {
         : null
     );
   }
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 Apify.main(async function main() {

@@ -232,8 +232,7 @@ async function handleDetail(
   }
   stats.totalItems += 1;
   if (pushList.length > 70) {
-    // await Promise.all(pushList);
-    await Promise.allSettled(pushList);
+    await Promise.all(pushList);
     pushList = [];
   }
 

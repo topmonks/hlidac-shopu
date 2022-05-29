@@ -286,7 +286,7 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("crawler finished");
 
-  await Promise.allSettled([
+  await Promise.all([
     stats.save(),
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
     uploadToKeboola(type === ActorType.BF ? "benu_cz_bf" : "benu_cz")

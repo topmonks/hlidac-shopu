@@ -213,7 +213,7 @@ async function handleAPIList(context, stats, crawlContext) {
   */
 
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 
   /*
   Prepared code to request product detail if more product data will be needed

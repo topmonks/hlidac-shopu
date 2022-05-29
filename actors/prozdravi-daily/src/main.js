@@ -118,7 +118,7 @@ async function scrapeProducts({ processedIds, stats, development, $, s3 }) {
     }
   }
   // await all requests, so we don't end before they end
-  await Promise.allSettled(requests);
+  await Promise.all(requests);
 }
 
 Apify.main(async function main() {

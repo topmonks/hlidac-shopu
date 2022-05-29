@@ -12,7 +12,7 @@ const revManifest = JSON.parse(
   fs.readFileSync(revManifestPath).toString("utf-8")
 );
 
-Promise.allSettled(
+Promise.all(
   Object.entries(revManifest)
     .filter(([file]) => file.endsWith(".js"))
     .map(entry => uploadSourceMap(entry))

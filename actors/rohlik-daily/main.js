@@ -239,7 +239,7 @@ Apify.main(async function main() {
   log.info("crawler finished");
 
   try {
-    await Promise.allSettled([
+    await Promise.all([
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
       uploadToKeboola("rohlik")
     ]);

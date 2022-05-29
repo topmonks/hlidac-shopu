@@ -238,7 +238,7 @@ Apify.main(async function main() {
             `Found ${requests.length / 2} unique products, ${request.url}`
           );
           // await all requests, so we don't end before they end
-          await Promise.allSettled(requests);
+          await Promise.all(requests);
         } catch (e) {
           log.error(e);
           log.info(`Failed extraction of items. ${request.url}`);

@@ -224,7 +224,7 @@ Apify.main(async function main() {
         }
 
         for (const product of products) {
-          await Promise.allSettled([
+          await Promise.all([
             Apify.pushData(product),
             uploadToS3v2(s3, product, { priceCurrency: "CZK" })
           ]);
@@ -307,7 +307,7 @@ Apify.main(async function main() {
   // Run crawler.
   await crawler.run();
 
-  await Promise.allSettled([
+  await Promise.all([
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", "sleky.cz"),
     uploadToKeboola("sleky_cz")
   ]);

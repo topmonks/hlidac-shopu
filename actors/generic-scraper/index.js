@@ -255,7 +255,7 @@ Apify.main(async () => {
 
     await crawler.run();
     await stats.save(true);
-    await Promise.allSettled(actions);
+    await Promise.all(actions);
   } catch (e) {
     rollbar.error(e);
     throw e;

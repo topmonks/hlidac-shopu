@@ -289,7 +289,7 @@ async function main() {
   await crawler.run();
   Apify.utils.log.info("crawler finished");
 
-  await Promise.allSettled([
+  await Promise.all([
     stats.save(),
     uploadToKeboola(shopName(startUrl(country)))
   ]);
