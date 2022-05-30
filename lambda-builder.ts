@@ -7,7 +7,7 @@ function build(entrypoint: string, minify: boolean) {
     minify,
     charset: "utf8",
     platform: "node",
-    target: "node14",
+    target: "node16.14",
     mainFields: ["module", "main"],
     external: ["aws-sdk"],
     entryPoints: [entrypoint],
