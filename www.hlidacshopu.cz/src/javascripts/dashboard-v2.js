@@ -55,16 +55,16 @@ function cardTemplate({
             <dt>produktů ve slevě</dt>
             <dd>
               <data value="${inSale}"
-                >${radialProgress({ ratio: inSale })}</data
-              >
+                >${radialProgress({ ratio: inSale })}
+              </data>
             </dd>
           </dl>
           <dl class="hs-metrics__item">
             <dt>slevy nesedí</dt>
             <dd>
               <data value="${weDontAgree}"
-                >${radialProgress({ ratio: weDontAgree })}</data
-              >
+                >${radialProgress({ ratio: weDontAgree })}
+              </data>
             </dd>
           </dl>
         </div>
@@ -115,11 +115,15 @@ function shopTemplate({
       <td>${formatPercents(avgRealDiscount) ?? "-"}</td>
       <td>${formatNumber(misleadingCount) ?? "-"}</td>
       <td>${formatNumber(manipulatedCount) ?? "-"}</td>
-      <td>${formatShortDate(updatedAt) ?? "-"}</td>
+      <td>
+        <time datetime="${updatedAt.toISOString()}"
+          >${formatShortDate(updatedAt) ?? "-"}
+        </time>
+      </td>
       <td>${rating(ratingValue, { maxValue: 3 }) ?? "-"}</td>
       <td>
-        <a href="${link}" target="sheets" title="Otevřít data v Google Sheets"
-          ><svg
+        <a href="${link}" target="sheets" title="Otevřít data v Google Sheets">
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             style="width: 24px"
@@ -127,8 +131,9 @@ function shopTemplate({
             <path fill="none" d="M0 0h24v24H0z" />
             <path
               d="M19 7H9a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm0 2v2H9V9h10zm-6 6v-2h2v2h-2zm2 2v2h-2v-2h2zm-4-2H9v-2h2v2zm6-2h2v2h-2v-2zm-8 4h2v2H9v-2zm8 2v-2h2v2h-2zM6 17H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v1h-2V5H5v10h1v2z"
-            /></svg
-        ></a>
+            />
+          </svg>
+        </a>
       </td>
     </tr>
   `;
@@ -142,20 +147,16 @@ function tableTemplate(data) {
     .map(shopTemplate);
 }
 
-export function main({ tableRoot, shopCards, extraData }) {
+export async function main({ tableRoot, shopCards, extraData }) {
   rollbar.init();
 
-  addEventListener("DOMContentLoaded", async e => {
-    try {
-      const data = await fetchDashboardV2Data(
-        new Map(Object.entries(extraData))
-      );
-      tableRoot.innerHTML = null;
-      console.log(data);
-      render(tableTemplate(data), tableRoot);
-      render(cardsTemplate(data), shopCards);
-    } catch (ex) {
-      console.error(ex);
-    }
-  });
+  try {
+    const data = await fetchDashboardV2Data(new Map(Object.entries(extraData)));
+    tableRoot.innerHTML = null;
+    console.log(data);
+    render(tableTemplate(data), tableRoot);
+    render(cardsTemplate(data), shopCards);
+  } catch (ex) {
+    console.error(ex);
+  }
 }
