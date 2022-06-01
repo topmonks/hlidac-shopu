@@ -26,7 +26,7 @@ function getDetailInfo() {
       `);
   const originalPrice = cleanPrice(`
         #prices .price_compare,
-        .pricenormal .pricecatalog,
+        .pricenormal .pricecatalog span,
         .comparePrice .crossPrice,
         .priceCompare .c2,
         .pricecatalog1 .c2
