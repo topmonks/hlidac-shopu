@@ -2,13 +2,16 @@ export function itescoValidator(item) {
   const updated = Object.assign({}, item);
   const attributes = [
     "currentPrice",
+    "currentUnitPrice",
     "discounted",
     "itemId",
     "itemName",
     "itemUrl",
     "originalPrice",
+    "originalUnitPrice",
     "breadCrumbs",
-    "unitOfMeasure"
+    "unitOfMeasure",
+    "useUnitPrice"
   ];
   for (const attr of attributes) {
     if (updated[attr] === undefined) {
