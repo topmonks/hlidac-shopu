@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class Ikea extends Shop {
   get injectionPoint() {
-    return ["beforebegin", ".pip-product-summary"];
+    return ["beforebegin", ".js-instore-under-buy-module"];
   }
 
   async scrape() {
