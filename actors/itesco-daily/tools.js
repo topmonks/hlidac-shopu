@@ -164,6 +164,14 @@ export async function extractItems({
           }
           result.discounted = result.originalPrice !== undefined;
         }
+        result.currentUnitPrice = cleanPrice(
+          $(this).find(".beans-price__subtext").text()
+        );
+        result.useUnitPrice =
+          $(this).find(".beans-radio-button-with-label__label").length !== 0;
+        result.originalUnitPrice = result.useUnitPrice
+          ? result.originalPrice
+          : null;
       }
 
       result.img = productRedux.defaultImageUrl;
