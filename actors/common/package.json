@@ -1,6 +1,6 @@
 {
   "name": "@hlidac-shopu/actors-common",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
   "license": "EPL-2.0",
   "type": "module",
@@ -10,8 +10,8 @@
     "rollbar": "^2.25.0"
   },
   "peerDependencies": {
-    "@aws-sdk/client-cloudfront": "3.95.0",
-    "@aws-sdk/client-s3": "3.95.0",
+    "@aws-sdk/client-cloudfront": "3.100.0",
+    "@aws-sdk/client-s3": "3.100.0",
     "apify": "^2.2.1"
   },
   "devDependencies": {
