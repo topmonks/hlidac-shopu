@@ -312,7 +312,7 @@ Apify.main(async function main() {
           }
           //No more categories and subcategories continue with find maxPaginationPage
           let lastPagination = 0;
-          $("div.category-actions ul.pagination")
+          $("div.pagination-wrapper ul.pagination")
             .find("a")
             .each(function () {
               const page = parseInt($(this).text());
