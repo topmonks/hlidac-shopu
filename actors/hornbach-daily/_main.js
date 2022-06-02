@@ -1,4 +1,3 @@
-
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
@@ -15,13 +14,13 @@ import { gotScraping } from "got-scraping";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
-import { DOMParser, parseHTML } from 'linkedom';
+import { DOMParser, parseHTML } from "linkedom";
 
 const { log } = Apify.utils;
 
 const COUNTRY = {
   CZ: "CZ",
-  SK: "SK",
+  SK: "SK"
 };
 
 const LABELS = {
@@ -29,11 +28,9 @@ const LABELS = {
   CATEGORY: "CATEGORY"
 };
 
-
 function makeListingUrl() {
   throw new Error("Not implemented");
 }
-
 
 function parseItem(p, country, category) {
   throw new Error("Not implemented");
@@ -61,7 +58,9 @@ async function handleCategory(body, requestQueue, country, category) {
 
 async function handleStart(type, stats, requestQueue, country) {
   log.info("Pagination info", type);
-  const topCategoryHeadlines = document.querySelectorAll(`[data-testid="product-category"] h2`);
+  const topCategoryHeadlines = document.querySelectorAll(
+    `[data-testid="product-category"] h2`
+  );
 
   for (const headline of topCategoryHeadlines) {
     const title = headline.innerText;
@@ -129,11 +128,8 @@ Apify.main(async () => {
     requestQueue,
     maxConcurrency: 10,
     maxRequestRetries: 1,
-    async handleRequestFunction(context) {
-    },
-    async handleFailureFunction(context) {
-    },
-
+    async handleRequestFunction(context) {},
+    async handleFailureFunction(context) {}
   });
 
   await crawler.run();
