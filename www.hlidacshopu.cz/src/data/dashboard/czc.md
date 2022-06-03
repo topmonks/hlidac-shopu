@@ -1,6 +1,7 @@
 ---
 shop: czc.cz
 link: https://docs.google.com/spreadsheets/d/1lrTbUaRt80-YCgxEjmK-mQbOwjlKiWdPyJczvVODUB8
+rating: 3
 ---
 
 CZC jako jeden z prvnich ceskych e-shopu presel na vypocet realnych slev splnujici
