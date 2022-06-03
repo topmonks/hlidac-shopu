@@ -1,6 +1,7 @@
 ---
-shop: alza.cz - 3
+shop: alza.cz
 link: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq6ON6h_wsU
+rating: 3
 ---
 
 Alza lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,...
