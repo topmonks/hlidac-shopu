@@ -6,7 +6,7 @@ import {
   formatShortDate
 } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardV2Data } from "@hlidac-shopu/lib/remoting.mjs";
-import { rating } from "@hlidac-shopu/lib/templates.mjs";
+import { rating, ratingStyles } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
 function logoTemplate({ logo, name, url, viewBox }) {
@@ -75,19 +75,22 @@ function cardTemplate({
 }
 
 function cardsTemplate(data) {
-  return data
-    .filter(x => x.allProducts && !x.hidden)
-    .map(x =>
-      Object.assign({}, x, {
-        inSale: x.bfProducts / x.allProducts,
-        weDontAgree:
-          x.bfProducts !== 0
-            ? (x.misleadingCount + x.manipulatedCount) / x.bfProducts
-            : 0
-      })
-    )
-    .sort((a, b) => a.sortKey - b.sortKey)
-    .map(cardTemplate);
+  return html`<style>
+      ${ratingStyles()}
+    </style>
+    ${data
+      .filter(x => x.allProducts && !x.hidden)
+      .map(x =>
+        Object.assign({}, x, {
+          inSale: x.bfProducts / x.allProducts,
+          weDontAgree:
+            x.bfProducts !== 0
+              ? (x.misleadingCount + x.manipulatedCount) / x.bfProducts
+              : 0
+        })
+      )
+      .sort((a, b) => a.sortKey - b.sortKey)
+      .map(cardTemplate)}`;
 }
 
 function shopTemplate({
@@ -143,6 +146,10 @@ function tableTemplate(data) {
   return data
     .filter(x => x.allProducts && !x.hidden)
     .sort((a, b) => a.sortKey - b.sortKey)
+    .map(x => {
+      console.log(x);
+      return x;
+    })
     .map(x => Object.assign({}, x, { updatedAt: new Date(x.updatedAt) }))
     .map(shopTemplate);
 }

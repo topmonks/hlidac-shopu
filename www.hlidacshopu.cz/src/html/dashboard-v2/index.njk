@@ -54,8 +54,9 @@
       border-bottom-right-radius: 6px;
     }
   </style>
+
   <style>
-    .review__rating {
+    .hc-rating.hc-rating {
       padding-right: 0;
     }
 
@@ -105,6 +106,7 @@
     .dashboard-row:target {
       scroll-margin-top: 100px;
     }
+
     .dashboard-row:target th,
     .dashboard-row:target td {
       border-color: #1d3650;
@@ -126,7 +128,7 @@
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
               <colgroup>
-                <col width="150"/>
+                <col width="150" />
               </colgroup>
               <thead>
               <tr>
@@ -164,8 +166,9 @@
             <h2>Naše analýzy</h2>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <a href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08"
-                        title="Přečtě si výsledky Analýzy Black Friday 2021">
+            <a
+              href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08"
+              title="Přečtě si výsledky Analýzy Black Friday 2021">
               <picture>
                 {% set mobileBanner = images["mobile-banner-2021.png"]["public_id"] %}
                 {% set desktopBanner = images["desktop-banner-2021.png"]["public_id"] %}
@@ -173,24 +176,24 @@
                   media="screen and (max-width: 360px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 361px) and (max-width: 479px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 480px) and (max-width: 839px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 840px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x" />
                 <img alt="Analýza Black Friday 2021" class="responsive"
-                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
+                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} " />
               </picture>
             </a>
           </div>
@@ -198,18 +201,19 @@
           <link rel="stylesheet" href="/assets/css/cards.css" />
           <div class="mdc-layout-grid__cell">
             <div class="hs-card">
-              <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
+              <a
+                href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
                 {% set analyza2020 = images["analyza-2020.png"]["public_id"] %}
                 <img alt="Analýza 2020"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2020</h3>
                 <p>Letošní Black Friday byl na největších českých e-shopech co do počtu nabízených produktů a velikosti&hellip;</p>
               </a>
@@ -220,15 +224,15 @@
               <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
                 {% set analyza2019 = images["analyza-2019.png"]["public_id"] %}
                 <img alt="Analýza 2019"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2019</h3>
                 <p>V letošním Black Friday bylo na největších českých eshopech dvakrát více produktů&hellip;</p>
               </a>
@@ -239,15 +243,15 @@
               <a href="https://jakubbalada.medium.com/black-friday-po%C4%8Desku-kouzla-se-slevami-po-roce-cf48de109ba">
                 {% set analyza2018 = images["analyza-2018.png"]["public_id"] %}
                 <img alt="Analýza 2018"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2018</h3>
                 <p>Letošní analýzu jsme nedělali sami v Apify, ale v rámci hackathonu na Data fesťáku&hellip;</p>
               </a>
@@ -261,7 +265,8 @@
             <p>
               Otevíráme
               <a
-                href="https://console.cloud.google.com/bigquery?p=hlidacshopu&d=hlidacshopu&t=allshops&page=table" target="tableau"
+                href="https://console.cloud.google.com/bigquery?p=hlidacshopu&d=hlidacshopu&t=allshops&page=table"
+                target="tableau"
               >naše data pro vaše analýzy</a>. Přístup k datům je zdarma,
               avšak potřebujete mít vytvořený účet na
               <a href="https://cloud.google.com/free/" target="tableau">Google Cloud Platform</a>
