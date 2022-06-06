@@ -13,7 +13,7 @@ const didRenderDetail = mutations =>
 
 export class Kosik extends StatefulShop {
   get injectionPoint() {
-    return ["afterend", ".product-header-box"];
+    return ["afterend", ".product-header-box:last-of-type"];
   }
 
   get detailSelector() {
