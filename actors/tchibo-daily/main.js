@@ -288,18 +288,29 @@ Apify.main(async function main() {
   });
 
   const userInput = await Apify.getInput();
-  const { country } = userInput;
+  const { country, type } = userInput;
   const currency = getCurrencyISO(country);
 
   const requestQueue = await Apify.openRequestQueue();
-  const requestList = await Apify.openRequestList("start-categories", [
-    {
-      url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
+  let requestList = await Apify.openRequestList("", []);
+  if (type === "test") {
+    await requestQueue.addRequest({
+      url: "https://www.tchibo.cz/lozni-pradlo-c400118928.html",
       userData: {
-        label: LABELS.NAVIGATION
+        label: LABELS.LIST,
+        page: 0
       }
-    }
-  ]);
+    });
+  } else {
+    requestList = await Apify.openRequestList("start-categories", [
+      {
+        url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
+        userData: {
+          label: LABELS.NAVIGATION
+        }
+      }
+    ]);
+  }
 
   const handledIds = (await Apify.getValue("HANDLED_PRODUCT_IDS")) || [];
   const handledIdsSet = new Set(handledIds);
