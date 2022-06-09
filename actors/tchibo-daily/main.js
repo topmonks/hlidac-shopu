@@ -225,6 +225,7 @@ async function scrapeCoffeeCategory(
     handledIdsSet.add(itemId);
     const title = titleObject.find("a").attr("title");
     const itemUrl = titleObject.find("a").attr("href");
+    if (itemUrl === undefined) break;
     const topLineText = $(p)
       .find(".m-tp-productbox002-topline-text")
       .text()
@@ -245,12 +246,12 @@ async function scrapeCoffeeCategory(
       originalPrice: null,
       discounted: false,
       currency,
-      currentPrice: parsePrice(currentPrice),
+      currentPrice: parsePrice(currentPrice, userInput),
       category: getCoffeeCategory(userInput)
     };
     if (oldPrice && oldPrice.length > 0) {
       result.discounted = true;
-      result.originalPrice = parsePrice(oldPrice);
+      result.originalPrice = parsePrice(oldPrice, userInput);
     }
     promises.push(
       Apify.pushData(result),
