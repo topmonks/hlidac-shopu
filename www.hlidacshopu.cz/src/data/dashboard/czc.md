@@ -4,9 +4,9 @@ link: https://docs.google.com/spreadsheets/d/1lrTbUaRt80-YCgxEjmK-mQbOwjlKiWdPyJ
 rating: 3
 ---
 
-CZC jako jeden z prvnich ceskych e-shopu presel na vypocet realnych slev splnujici
-novou EU smernici. Plati pro vsechny produkty v nabidce. Kdyz narazime na nejake
-nesrovnalosti, vzdy se jedna o chyby, ktere CZC ihned napravuje.
+CZC.cz jako jeden z prvních českých e-shopů přešel na výpočet reálných slev splňující
+novou EU směrnici. Platí pro všechny produkty v nabídce. Když narazíme na nějaké
+nesrovnalosti, vždy se jedná o chyby, které CZC.cz ihned napravuje. Odlišnost od naší metodiky je v tom, že CZC.cz počítá období pro referenční cenu vždy posledních 30 dní od aktuálního data.
 
 Slovy e-shopu:
 
