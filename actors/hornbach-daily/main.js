@@ -106,7 +106,8 @@ async function scrapeSubCategories({
         url: category.url,
         userData: {
           label: LABELS.CAT_PRODUCTS,
-          category
+          category,
+          page: 1,
         }
       });
       log.debug(`Queued products of very bottom category "${category.title}"`);
@@ -139,7 +140,31 @@ async function scrapeCatProducts({
     stats.add("variants", variantsCount);
   }
 
-  const products = document.querySelectorAll(`[data-testid="article-card"]`);
+
+  if (request.userData.page === 1) {
+    const { category } = request.userData;
+    log.debug(`Category URL is ${category.url}`);
+    const totalPages = Math.ceil(totalCount / 72);
+    log.debug(`Category has ${totalPages} pages`);
+
+    for (let page = 2; page <= totalPages; page++) {
+      await requestQueue.addRequest({
+        uniqueKey: `products in ${category.title} on ${page}. page`,
+        url: `${category.url}?page=${page}`,
+        userData: {
+          label: LABELS.CAT_PRODUCTS,
+          category,
+          page,
+        }
+      });
+    }
+  } else {
+    log.debug(`Scraping ${request.userData.page}. page on ${request.url}`);
+  }
+
+  const products = document.querySelectorAll(
+    `[data-testid="article-card"]`
+  );
 
   for (const item of products) {
     if (
