@@ -254,8 +254,14 @@ Apify.main(async () => {
     log.setLevel(log.LEVELS.DEBUG);
   }
 
-  if (input.type === ActorType.TEST) {
-    log.debug("Running in TEST mode");
+  log.debug(`Running in ${input.type} mode`);
+
+  if ([
+    ActorType.TEST,
+    ActorType.FULL,
+  ].includes(input.type) === false) {
+    debug.error(`Actor type ${input.type} not yet implemented`);
+    return;
   }
 
   const requestQueue = await Apify.openRequestQueue();
