@@ -1,10 +1,11 @@
 ---
 shop: mall.cz
 link: https://docs.google.com/spreadsheets/d/1Ts9yt1rXdzTQqKi6Wm2wnkY5P0OAEf3t8-YxoG2momI/edit?usp=sharing
+rating: 2
 ---
 
-Komentář Hlídače...
+Mall.cz zatím novou EU směrnici neimplementoval a většinou počítá slevy z maloobchodních cen. Na problematické produkty s navýšenou referenční cenou (typicky u partnerského prodeje) rychle reaguje a opravuje.
 
 Slovy e-shopu:
 
-> "..."
+> "Evropské směrnice pro svou účinnost v jednotlivých zemích musejí být nejdříve implementovány členskými zeměmi do jejich právních řádů. Česká republika tuto směrnici ve stanovených lhůtách neimplementovala, tedy k 28. 5. 2022, které bylo předvídané jako mezní datum účinnosti, účinnost v České republice nenastala. Mall.cz má implementaci technického řešení reflektující pravidla stanovená směrnicí připravenou a pustí ji v nejbližších měsících."
