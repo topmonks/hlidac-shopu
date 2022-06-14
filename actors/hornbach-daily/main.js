@@ -31,9 +31,8 @@ const LABELS = {
 
 const { log } = Apify.utils;
 
-const completeUrl = (country, path) => (
-  `https://www.hornbach.${country.toLowerCase()}${path}`
-);
+const completeUrl = (country, path) =>
+  `https://www.hornbach.${country.toLowerCase()}${path}`;
 
 async function scrapeTopCategories({ dom: { document }, requestQueue, input }) {
   const links = document.querySelectorAll(
@@ -48,11 +47,11 @@ async function scrapeTopCategories({ dom: { document }, requestQueue, input }) {
       url: completeUrl(input.country, href),
       userData: {
         label: LABELS.SUB_CATEGORIES,
-        crumbs: [],
+        crumbs: []
       }
     });
 
-    log.debug(`Queued top lvl categpry "${link.getAttribute('title')}"`);
+    log.debug(`Queued top lvl categpry "${link.getAttribute("title")}"`);
   }
 }
 
@@ -61,7 +60,7 @@ async function scrapeSubCategories({
   requestQueue,
   input,
   request,
-  stats,
+  stats
 }) {
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell-card"] a`
@@ -77,14 +76,14 @@ async function scrapeSubCategories({
       }
       const crumb = {
         url: completeUrl(input.country, link.getAttribute("href")),
-        title: link.getAttribute("title"),
+        title: link.getAttribute("title")
       };
 
       await requestQueue.addRequest({
         url: crumb.url,
         userData: {
           label: LABELS.SUB_CATEGORIES,
-          crumbs: [...request.userData.crumbs, crumb],
+          crumbs: [...request.userData.crumbs, crumb]
         }
       });
 
@@ -107,7 +106,7 @@ async function scrapeSubCategories({
         url: category.url,
         userData: {
           label: LABELS.CAT_PRODUCTS,
-          category,
+          category
         }
       });
       log.debug(`Queued products of very bottom category "${category.title}"`);
@@ -120,7 +119,6 @@ function parseCategoryProductsCount(str) {
   return Number(countStr);
 }
 
-
 async function scrapeCatProducts({
   dom: { document, window },
   requestQueue,
@@ -128,14 +126,13 @@ async function scrapeCatProducts({
   request,
   stats,
   processedIds,
-  detailUrl,
+  detailUrl
 }) {
-  const [
-    totalCount,
-    variantsCount
-  ] = Array.from(
+  const [totalCount, variantsCount] = Array.from(
     document.querySelectorAll(`[data-testid="result-count"] span`)
-  ).map(node => node.textContent).map(parseCategoryProductsCount);
+  )
+    .map(node => node.textContent)
+    .map(parseCategoryProductsCount);
 
   stats.add("items", totalCount);
   if (variantsCount) {
@@ -155,16 +152,15 @@ async function scrapeCatProducts({
     if (processedIds.has(item.id)) {
       stats.inc("itemsDuplicity");
       continue;
-    } 
+    }
 
     processedIds.add(item.gtin);
     stats.inc("itemsUnique");
 
-
     const href = item.querySelector("a").getAttribute("href");
     const detail = {
       itemUrl: completeUrl(input.country, href),
-      itemId: href.split("/").filter(Boolean).reverse()[0],
+      itemId: href.split("/").filter(Boolean).reverse()[0]
       // TODO moooore
     };
 
@@ -173,10 +169,7 @@ async function scrapeCatProducts({
     if (!detailUrl.deref()) {
       detailUrl.reset(detail.itemUrl);
     }
- 
   }
-
-
 }
 
 Apify.main(async () => {
@@ -193,16 +186,19 @@ Apify.main(async () => {
     items: 0,
     itemsUnique: 0,
     itemsDuplicity: 0,
-    variants: 0,
+    variants: 0
   });
   const processedIds = new Set();
   const detailUrl = defAtom(null);
 
-  const input = Object.assign({}, (await Apify.getInput()), {
-    type: ActorType.FULL,
-    country: COUNTRY.CZ,
-    debug: false,
-  });
+  const input = Object.assign(
+    {
+      type: ActorType.FULL,
+      country: COUNTRY.CZ,
+      debug: false
+    },
+    await Apify.getInput()
+  );
 
   if (input.debug) {
     log.setLevel(log.LEVELS.DEBUG);
@@ -217,8 +213,8 @@ Apify.main(async () => {
   await requestQueue.addRequest({
     url: completeUrl(input.country, "/c/"),
     userData: {
-      label: LABELS.TOP_CATEGORIES,
-    },
+      label: LABELS.TOP_CATEGORIES
+    }
   });
 
   const crawler = new Apify.BasicCrawler({
@@ -239,7 +235,6 @@ Apify.main(async () => {
       };
 
       switch (request.userData.label) {
-
         case LABELS.TOP_CATEGORIES: // 1.
           await scrapeTopCategories(scraperArguments);
           break;
