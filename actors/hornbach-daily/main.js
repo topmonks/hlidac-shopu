@@ -30,16 +30,17 @@ const completeUrl = (country, path) => (
   `https://www.hornbach.${country.toLowerCase()}${path}`
 );
 
-async function scrapeTopCategories({ document, requestQueue, country }) {
+async function scrapeTopCategories({ document, requestQueue, input }) {
   const links = document.querySelectorAll(
     `[data-testid="product-category"] h2 a`
   );
   for (let link of links) {
     const href = link.getAttribute("href");
     await requestQueue.addRequest({
-      url: completeUrl(country, href),
+      url: completeUrl(input.country, href),
       userData: {
         label: LABELS.SUB_CATEGORIES,
+        crumbs: [],
       }
     });
   }
@@ -48,9 +49,8 @@ async function scrapeTopCategories({ document, requestQueue, country }) {
 async function scrapeSubCategories({
   document,
   requestQueue,
-  country,
-  url,
-  userData,
+  input,
+  request,
 }) {
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell-card"] a`
@@ -59,54 +59,56 @@ async function scrapeSubCategories({
     `[data-testid="category-page-header"] h1`
   );
 
-  const category = userData.category
-    ? `${userData.category} > ${categoryTitle}`
-    : categoryTitle;
-
   if (links.length) {
     for (let link of links) {
-      const href = link.getAttribute("href");
+      const crumb = {
+        url: completeUrl(input.country, link.getAttribute("href")),
+        title: link.getAttribute("title"),
+      };
+
       await requestQueue.addRequest({
-        url: completeUrl(country, href),
+        url: crumb.url,
         userData: {
           label: LABELS.SUB_CATEGORIES,
-          category,
+          crumbs: [...request.userData.crumbs, crumb],
         }
       });
     }
   } else {
-    await requestQueue.addRequest({
-      uniqueKey: category,
-      url,
-      userData: {
-        label: LABELS.CAT_PRODUCTS,
-        category,
-      }
-    });
+    const fromSubToTopCategories = request.userData.crumbs.reverse();
+
+    for (let category of fromSubToTopCategories) {
+      await requestQueue.addRequest({
+        uniqueKey: `products in ${category.title}`,
+        url: category.url,
+        userData: {
+          label: LABELS.CAT_PRODUCTS,
+          category,
+        }
+      });
+    }
   }
 }
 
 async function scrapeCatProducts({
   document,
   requestQueue,
-  country,
-  url,
-  userData,
+  input,
+  request,
 }) {
-  const { category } = userData;
-  console.warn("product scraper not yet implemented", { url, category });
+  console.warn(`TODO scrape products in ${request.userData.category.title} at ${request.userData.category.url}`);
 }
 
 main(async () => {
-  const {
-    type = ActorType.FULL,
-    country = COUNTRY.CZ,
-  } = (await getInput()) ?? {};
+  const input = Object.assign({}, (await getInput()), {
+    type: ActorType.FULL,
+    country: COUNTRY.CZ,
+  });
 
   const requestQueue = await openRequestQueue();
 
   await requestQueue.addRequest({
-    url: completeUrl(country, "/c/"),
+    url: completeUrl(input.country, "/c/"),
     userData: {
       label: LABELS.TOP_CATEGORIES,
     },
@@ -115,23 +117,22 @@ main(async () => {
   const crawler = new BasicCrawler({
     requestQueue,
     async handleRequestFunction({ request }) {
-      const { url, userData } = request;
-      const resp = await fetch(url);
+      const resp = await fetch(request.url);
       const body = await resp.text();
       const { document } = parseHTML(body);
 
-      switch (userData.label) {
+      switch (request.userData.label) {
 
         case LABELS.TOP_CATEGORIES:
-          await scrapeTopCategories({ document, requestQueue, country });
+          await scrapeTopCategories({ document, requestQueue, input });
           break;
 
         case LABELS.SUB_CATEGORIES:
-          await scrapeSubCategories({ document, requestQueue, country, url, userData });
+          await scrapeSubCategories({ document, requestQueue, input, request });
           break;
 
         case LABELS.CAT_PRODUCTS:
-          await scrapeCatProducts({ document, requestQueue, country, url, userData });
+          await scrapeCatProducts({ document, requestQueue, input, request });
           break;
       }
 
