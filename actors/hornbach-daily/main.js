@@ -8,7 +8,11 @@ import { parseHTML } from "linkedom";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import {
+  cleanPriceText,
+  cleanUnitPriceText,
+  uploadToS3v2
+} from "@hlidac-shopu/actors-common/product.js";
 import {
   invalidateCDN,
   currencyToISO4217
@@ -17,10 +21,16 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
 const COUNTRY = {
   CZ: "CZ",
   SK: "SK"
+};
+
+const CURRENCY = {
+  CZ: "CZK",
+  SK: "EUR",
 };
 
 const LABELS = {
@@ -75,12 +85,12 @@ async function scrapeSubCategories({
         continue;
       }
       const crumb = {
-        url: completeUrl(input.country, link.getAttribute("href")),
+        link: completeUrl(input.country, link.getAttribute("href")),
         title: link.getAttribute("title")
       };
 
       await requestQueue.addRequest({
-        url: crumb.url,
+        url: crumb.link,
         userData: {
           label: LABELS.SUB_CATEGORIES,
           crumbs: [...request.userData.crumbs, crumb]
@@ -103,7 +113,7 @@ async function scrapeSubCategories({
       }
       await requestQueue.addRequest({
         uniqueKey: `products in ${category.title}`,
-        url: category.url,
+        url: category.link,
         userData: {
           label: LABELS.CAT_PRODUCTS,
           category,
@@ -140,17 +150,17 @@ async function scrapeCatProducts({
     stats.add("variants", variantsCount);
   }
 
+  const { category } = request.userData;
 
   if (request.userData.page === 1) {
-    const { category } = request.userData;
-    log.debug(`Category URL is ${category.url}`);
+    log.debug(`Category URL is ${category.link}`);
     const totalPages = Math.ceil(totalCount / 72);
     log.debug(`Category has ${totalPages} pages`);
 
     for (let page = 2; page <= totalPages; page++) {
       await requestQueue.addRequest({
         uniqueKey: `products in ${category.title} on ${page}. page`,
-        url: `${category.url}?page=${page}`,
+        url: `${category.link}?page=${page}`,
         userData: {
           label: LABELS.CAT_PRODUCTS,
           category,
@@ -183,10 +193,25 @@ async function scrapeCatProducts({
     stats.inc("itemsUnique");
 
     const href = item.querySelector("a").getAttribute("href");
+
     const detail = {
       itemUrl: completeUrl(input.country, href),
-      itemId: href.split("/").filter(Boolean).reverse()[0]
-      // TODO moooore
+      itemId: href.split("/").filter(Boolean).reverse()[0],
+      itemName: item.querySelector(
+        `[data-testid="article-title"]`
+      ).textContent,
+      img: item.querySelector(`picture img`).getAttribute("src"),
+      currentPrice: cleanPriceText(
+        item.querySelector(`[class*="display_price"]`).textContent
+      ),
+      currentUnitPrice: cleanUnitPriceText(
+        item.querySelector(`[class*="bracket_price"]`).textContent
+      ),
+      category: {
+        link: category.link,
+        title: category.title,
+      },
+      currency: CURRENCY[input.country],
     };
 
     log.debug("Got product detail", detail);
