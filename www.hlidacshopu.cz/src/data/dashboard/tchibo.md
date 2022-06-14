@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/15ZWevWCH7VJyZ7M3gdlcsm6dKHSs3ghhir
 rating: 2
 ---
 
-Tchibo.cz stále referuje k maloobchodním cenám, v některých případech jsme narazili také na navýšení referenční ceny.
+Tchibo.cz stále referuje k maloobchodním cenám.
 
 Slovy e-shopu:
 
