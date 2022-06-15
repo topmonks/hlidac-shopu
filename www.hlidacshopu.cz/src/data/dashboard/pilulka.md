@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1Bls433IWr8b6at1gEuEClVZniTNVpUpCZ5
 rating: 2
 ---
 
-Pilulka.cz se snaží upravit svojí metodiku podle nové EU směrnice, nicméně stále nacházíme stovky produktů, kde výpočet slevy neodpovídá. A to nejen u druhé jakosti.
+Pilulka.cz se snaží upravit svojí metodiku podle nové EU směrnice, nicméně stále nacházíme stovky produktů, kde výpočet slevy neodpovídá. A to nejen u zboží druhé jakosti.
 
 Slovy e-shopu:
 
