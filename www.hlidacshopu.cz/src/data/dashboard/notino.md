@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1Lg0_OmRdZvNbQY6nPfdRVwHL1xP7K52ake
 rating: 2
 ---
 
-Notino.cz se na novou směrnici připravilo a výpočet slev u části zlevněných produktů (u kterých je uvedeno "ušetříte") je proveden správně podle nové směrnice. Ovšem u další časti produktů uvádí také referenční cenu a zní vypočítanou _slevu_ s dovětkem "výhodněji". Ta už je počítána po staru vůči maloobchodním cenám. Na první pohled vypadají oba typy _slev_ stejně, navíc jsou oba zařazeny v kategorii Akce.
+Notino.cz se na novou směrnici připravilo a výpočet slev u části zlevněných produktů (u kterých je uvedeno "ušetříte") je proveden správně podle nové směrnice. Ovšem u další časti produktů uvádí také _slevu_ s dovětkem "výhodněji" a k ní referenční cenu. Ta už po staru odpovídá maloobchodním cenám. Na první pohled vypadají oba typy _slev_ stejně, navíc jsou oba zařazeny v kategorii Akce.
 
 Slovy e-shopu:
 
