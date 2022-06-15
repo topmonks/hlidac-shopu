@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq
 rating: 3
 ---
 
-Alza.cz se připravovala na novou EU směrnici již v průběhu loňského roku a otestovala svoji metodiku v přůběhu Black Friday 2021. Nyní již počítá slevy v souladu s EU s měrnicí pro všechny nabízené produkty, nejen v ČR. Aktuální, celkem překvapivý, poměr neshod ve slevách s Hlídačem shopů je způsobený dílčími nesrovnalostmi ve feedu cen od Alza.cz a menšími rozdíly v metodice (postupné zlěvňování a drobné slevy, které Alza.cz neukazuje vůbec)
+Alza.cz se připravovala na novou EU směrnici již v průběhu loňského roku a otestovala svoji metodiku v přůběhu Black Friday 2021. Nyní počítá slevy v souladu s EU s měrnicí pro všechny nabízené produkty, nejen v ČR. Aktuální, celkem překvapivý, počet neshod ve slevách s Hlídačem shopů je způsobený dílčími nesrovnalostmi ve feedu cen od Alza.cz a menšími rozdíly v metodice (postupné zlěvňování a drobné slevy, které Alza.cz neukazuje vůbec)
 
 Slovy e-shopu:
 
