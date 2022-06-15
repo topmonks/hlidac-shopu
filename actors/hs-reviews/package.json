@@ -8,18 +8,18 @@
   "main": "main.js",
   "dependencies": {
     "@adobe/helix-fetch": "^3.0.10",
-    "@aws-sdk/client-cloudfront": "3.100.0",
-    "@aws-sdk/client-s3": "3.100.0",
+    "@aws-sdk/client-cloudfront": "3.110.0",
+    "@aws-sdk/client-s3": "3.110.0",
     "@hlidac-shopu/actors-common": "^1.2.8",
     "@types/cheerio": "^0.22.31",
-    "@types/node": "^16.11.36",
+    "@types/node": "^16.11.40",
     "apify": "^2.3.2",
     "cheerio": "^1.0.0-rc.11",
-    "csv-parse": "^5.1.0",
+    "csv-parse": "^5.2.0",
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
-    "apify-cli": "^0.7.2"
+    "apify-cli": "^0.7.4"
   },
   "scripts": {
     "start": "node main.js",

@@ -1,4 +1,3 @@
-const babel = require("gulp-babel");
 const esbuild = require("gulp-esbuild");
 const mode = require("gulp-mode")();
 const cssvariables = require("postcss-css-variables");
@@ -101,19 +100,6 @@ const config = {
     }
   },
 
-  "esbuild-legacy": {
-    extensions: ["js", "mjs"],
-    watch: "../../../lib/**/*.mjs",
-    options: {
-      bundle: true,
-      splitting: false,
-      minify: mode.production(),
-      platform: "browser",
-      target: ["es6"],
-      charset: "utf8"
-    }
-  },
-
   additionalTasks: {
     initialize(gulp, pathConfig, taskConfig) {
       const { src, task, dest } = gulp;
@@ -134,18 +120,6 @@ const config = {
           .pipe(esbuild(taskConfig.esbuild.options))
           .pipe(dest(paths.dest))
       );
-      task("esbuild-legacy", () =>
-        src(legacyPaths.src)
-          .pipe(esbuild(taskConfig["esbuild-legacy"].options))
-          .pipe(
-            babel({
-              presets: [["@babel/preset-env"]],
-              browserslistEnv: "legacy",
-              minified: true
-            })
-          )
-          .pipe(dest(legacyPaths.dest))
-      );
       const gulpEsbuild = esbuild.createGulpEsbuild({ incremental: true });
       task("esbuild", () =>
         src(paths.src)
@@ -154,7 +128,7 @@ const config = {
       );
     },
     development: { code: ["esbuild"] },
-    production: { code: ["esbuild-prod", "esbuild-legacy"] }
+    production: { code: ["esbuild-prod"] }
   },
 
   watch: { tasks: ["esbuild"] },
