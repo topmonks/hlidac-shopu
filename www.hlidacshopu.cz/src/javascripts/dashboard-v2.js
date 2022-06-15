@@ -120,7 +120,6 @@ function shopTemplate({
       <td>${formatPercents(avgClaimedDiscount) ?? "-"}</td>
       <td>${formatPercents(avgRealDiscount) ?? "-"}</td>
       <td>${formatNumber(misleadingCount) ?? "-"}</td>
-      <td>${formatNumber(manipulatedCount) ?? "-"}</td>
       <td>
         <time datetime="${updatedAt.toISOString()}"
           >${formatShortDate(updatedAt) ?? "-"}
