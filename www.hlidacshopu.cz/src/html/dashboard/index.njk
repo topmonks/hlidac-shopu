@@ -1,11 +1,12 @@
 {% extends 'layouts/master.njk' %}
 {% from 'macros/helpers.njk' import sprite %}
-{% block title %}Přehled Black Friday 2021 na Hlídači shopů{% endblock %}
+{% block title %}Přehled připravenostu e-shopů na směrnici EU ohledně udávaných slev podle Hlídači shopů{% endblock %}
 
 {% block preload %}
 {% endblock %}
 
 {% block styles %}
+  <link rel="stylesheet" href="/assets/css/dashboard.css">
   <style>
     .shops-stats {
       border-spacing: 0 12px;
@@ -53,10 +54,63 @@
       border-bottom-right-radius: 6px;
     }
   </style>
-  <link rel="stylesheet" href="/assets/css/reviews.css">
+
   <style>
-    .review__rating {
+    .hc-rating.hc-rating {
       padding-right: 0;
+      float: right;
+    }
+
+    .hs-metrics {
+      display: flex;
+      margin: 0 24px;
+      justify-content: space-evenly;
+    }
+
+    .hs-metrics__item {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .hs-metrics__item dt,
+    .hs-metrics__item dd {
+      margin: 0;
+      text-align: center;
+    }
+
+    .radial-progress {
+      height: auto;
+      max-width: 120px;
+      transform: rotate(-90deg);
+      width: 100%;
+    }
+
+    .radial-progress circle {
+      fill: transparent;
+      stroke: #EBEEF2;
+      stroke-dashoffset: 219.91148575129;
+      stroke-linecap: round;
+      /*stroke-width: 10;*/
+    }
+
+    .radial-progress .incomplete {
+      stroke: #EBEEF2;
+      stroke-width: 4px;
+    }
+
+    .radial-progress .complete {
+      stroke: var(--stroke-color);
+      stroke-dasharray: 219.91148575129;
+      stroke-width: 10px;
+    }
+
+    .dashboard-row:target {
+      scroll-margin-top: 100px;
+    }
+
+    .dashboard-row:target th,
+    .dashboard-row:target td {
+      border-color: #1d3650;
     }
   </style>
 {% endblock %}
@@ -67,23 +121,28 @@
       <div class="layout-wrapper">
         <div class="mdc-layout-grid__inner">
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <h2>Black Friday 2021 v číslech</h2>
+            <h2>Sledované e-shopy v číslech</h2>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+            <div id="shop-cards" class="mdc-layout-grid__inner"></div>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
               <colgroup>
-                <col width="150"/>
+                <col width="150" />
               </colgroup>
               <thead>
               <tr>
                 <th scope="col">E-shop</th>
                 <th scope="col">Produktů celkem</th>
-                <th scope="col">Produktů v Black Friday</th>
+                <th scope="col">Produktů ve slevě</th>
                 <th scope="col">Průměrná uváděná sleva</th>
                 <th scope="col">Průměrná reálná sleva</th>
-                <th scope="col">Začátek akce</th>
-                <th scope="col">Konec akce</th>
+                <th scope="col">Kde se neshodneme</th>
+                <th scope="col">Zvýšení referenční ceny</th>
+                <th scope="col">Poslední aktualizace</th>
                 <th scope="col">Rating</th>
+                <th scope="col">Detail</th>
               </tr>
               </thead>
               <tbody id="table-root">
@@ -108,8 +167,9 @@
             <h2>Naše analýzy</h2>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <a href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08"
-                        title="Přečtě si výsledky Analýzy Black Friday 2021">
+            <a
+              href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08"
+              title="Přečtě si výsledky Analýzy Black Friday 2021">
               <picture>
                 {% set mobileBanner = images["mobile-banner-2021.png"]["public_id"] %}
                 {% set desktopBanner = images["desktop-banner-2021.png"]["public_id"] %}
@@ -117,24 +177,24 @@
                   media="screen and (max-width: 360px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 361px) and (max-width: 479px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x"/>
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 480px) and (max-width: 839px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x" />
                 <source
                   media="screen and (min-width: 840px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x"/>
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x" />
                 <img alt="Analýza Black Friday 2021" class="responsive"
-                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} "/>
+                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} " />
               </picture>
             </a>
           </div>
@@ -142,18 +202,19 @@
           <link rel="stylesheet" href="/assets/css/cards.css" />
           <div class="mdc-layout-grid__cell">
             <div class="hs-card">
-              <a href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
+              <a
+                href="https://blog.apify.com/black-friday-2020-bl%C3%BDsk%C3%A1-se-na-lep%C5%A1%C3%AD-%C4%8Dasy-749f4ec909be">
                 {% set analyza2020 = images["analyza-2020.png"]["public_id"] %}
                 <img alt="Analýza 2020"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2020 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2020</h3>
                 <p>Letošní Black Friday byl na největších českých e-shopech co do počtu nabízených produktů a velikosti&hellip;</p>
               </a>
@@ -164,15 +225,15 @@
               <a href="https://medium.com/@jakubbalada/black-friday-2019-s-hl%C3%ADda%C4%8Dem-shop%C5%AF-9a3ddd352a8c">
                 {% set analyza2019 = images["analyza-2019.png"]["public_id"] %}
                 <img alt="Analýza 2019"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2019 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2019</h3>
                 <p>V letošním Black Friday bylo na největších českých eshopech dvakrát více produktů&hellip;</p>
               </a>
@@ -183,39 +244,21 @@
               <a href="https://jakubbalada.medium.com/black-friday-po%C4%8Desku-kouzla-se-slevami-po-roce-cf48de109ba">
                 {% set analyza2018 = images["analyza-2018.png"]["public_id"] %}
                 <img alt="Analýza 2018"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                     width="340"
+                     height="170"
+                     class="responsive"
+                     src="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                     srcset="{{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
                           {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
                           {{ analyza2018 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
+                     loading="lazy"
+                     role="presentation">
                 <h3>BLACK FRIDAY ANALÝZA 2018</h3>
                 <p>Letošní analýzu jsme nedělali sami v Apify, ale v rámci hackathonu na Data fesťáku&hellip;</p>
               </a>
             </div>
           </div>
-          <div class="mdc-layout-grid__cell">
-            <div class="hs-card">
-              <a href="https://blog.apify.com/black-friday-po-%C4%8Desku-kouzla-se-slevami-c7c0d2e7eeaa">
-                {% set analyza2017 = images["analyza-2017.png"]["public_id"] %}
-                <img alt="Analýza 2017"
-                  width="340"
-                  height="170"
-                  class="responsive"
-                  src="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
-                  srcset="{{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
-                          {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
-                          {{ analyza2017 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
-                  loading="lazy"
-                  role="presentation">
-                <h3>BLACK FRIDAY ANALÝZA 2017</h3>
-                <p>Máte český e-shop a jdete se svézt na vlně Black Friday? Vezměte dvě procenta produktů&hellip;</p>
-              </a>
-            </div>
-          </div>
+
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12" style="height: 48px"></div>
 
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -223,7 +266,8 @@
             <p>
               Otevíráme
               <a
-                href="https://console.cloud.google.com/bigquery?p=hlidacshopu&d=hlidacshopu&t=allshops&page=table" target="tableau"
+                href="https://console.cloud.google.com/bigquery?p=hlidacshopu&d=hlidacshopu&t=allshops&page=table"
+                target="tableau"
               >naše data pro vaše analýzy</a>. Přístup k datům je zdarma,
               avšak potřebujete mít vytvořený účet na
               <a href="https://cloud.google.com/free/" target="tableau">Google Cloud Platform</a>
@@ -247,8 +291,14 @@
 {% endblock %}
 
 {% block scripts %}
-  <script type="module" src="/assets/esm/dashboard.js"></script>
+  <script type="module">
+    import { main } from "/assets/esm/dashboard-v2.js";
+
+    const tableRoot = document.getElementById("table-root");
+    const shopCards = document.getElementById("shop-cards");
+    main({ tableRoot, shopCards, extraData: {{ dashboard | dump | safe }} });
+  </script>
   <script nomodule src="https://polyfill.io/v3/polyfill.min.js?features=globalThis%2Cdefault"></script>
   <script nomodule src="https://unpkg.com/regenerator-runtime@0.13.7/runtime.js"></script>
-  <script nomodule src="/assets/js/dashboard.js"></script>
+  <script nomodule src="/assets/js/dashboard-v2.js"></script>
 {% endblock %}

@@ -21,13 +21,19 @@ function logoTemplate({ logo, name, url, viewBox }) {
   `;
 }
 
-function radialProgress({ ratio }) {
+function radialProgress({ ratio, isMonochrome }) {
   const circumference = 2 * Math.PI * 35;
   const strokeDashOffset = circumference - ratio * circumference;
+  const color =
+    ratio <= 0.1 && !isMonochrome
+      ? "#27AE60"
+      : ratio >= 0.7 && !isMonochrome
+      ? "#C62828"
+      : "#5C62CD";
   return svg`
     <svg class="radial-progress" viewBox="0 0 80 80">
       <circle class="incomplete" cx="40" cy="40" r="35"></circle>
-      <circle class="complete" cx="40" cy="40" r="35" style="stroke-dashoffset: ${strokeDashOffset}"></circle>
+      <circle class="complete" cx="40" cy="40" r="35" style="stroke-dashoffset: ${strokeDashOffset}; --stroke-color: ${color}"></circle>
       <text class="percentage" x="50%" y="57%" transform="matrix(0, 1, -1, 0, 80, 0)">
         ${formatPercents(ratio) ?? "-"}
       </text>
@@ -55,7 +61,7 @@ function cardTemplate({
             <dt>produktů ve slevě</dt>
             <dd>
               <data value="${inSale}"
-                >${radialProgress({ ratio: inSale })}
+                >${radialProgress({ ratio: inSale, isMonochrome: true })}
               </data>
             </dd>
           </dl>
@@ -83,10 +89,7 @@ function cardsTemplate(data) {
       .map(x =>
         Object.assign({}, x, {
           inSale: x.bfProducts / x.allProducts,
-          weDontAgree:
-            x.bfProducts !== 0
-              ? (x.misleadingCount + x.manipulatedCount) / x.bfProducts
-              : 0
+          weDontAgree: x.bfProducts !== 0 ? x.misleadingCount / x.bfProducts : 0
         })
       )
       .sort((a, b) => a.sortKey - b.sortKey)
@@ -146,10 +149,6 @@ function tableTemplate(data) {
   return data
     .filter(x => x.allProducts && !x.hidden)
     .sort((a, b) => a.sortKey - b.sortKey)
-    .map(x => {
-      console.log(x);
-      return x;
-    })
     .map(x => Object.assign({}, x, { updatedAt: new Date(x.updatedAt) }))
     .map(shopTemplate);
 }
@@ -160,7 +159,6 @@ export async function main({ tableRoot, shopCards, extraData }) {
   try {
     const data = await fetchDashboardV2Data(new Map(Object.entries(extraData)));
     tableRoot.innerHTML = null;
-    console.log(data);
     render(tableTemplate(data), tableRoot);
     render(cardsTemplate(data), shopCards);
   } catch (ex) {

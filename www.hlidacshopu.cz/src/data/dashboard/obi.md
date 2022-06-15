@@ -5,7 +5,3 @@ rating: 2
 ---
 
 Obi.cz nabízí ve slevě pouze desítky produktů a referuje k maloobchodním cenám. Novou EU směrnici tedy nereflektuje.
-
-Slovy e-shopu:
-
->

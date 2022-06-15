@@ -5,7 +5,3 @@ rating: 2
 ---
 
 sLeky.cz většinou počítají slevy z ceny před zlevněním. Nicméně těsně před zlevněním dochází ke zdražení třeba na jeden den. Pravidlo EU směrnice o použití minimální ceny za posledních 30 dní tedy nedodržují.
-
-Slovy e-shopu:
-
->

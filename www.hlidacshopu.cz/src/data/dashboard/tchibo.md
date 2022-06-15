@@ -5,7 +5,3 @@ rating: 2
 ---
 
 Tchibo.cz stále referuje k maloobchodním cenám.
-
-Slovy e-shopu:
-
->

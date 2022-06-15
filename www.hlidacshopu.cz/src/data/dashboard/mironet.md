@@ -5,7 +5,3 @@ rating: 3
 ---
 
 Mironet.cz měl ještě 27. 5. 2022 devět tisíc produktů ve slevě. V den "platnosti" nové EU směrnice všechny slevy zmizely a aktuálně na e-shopu žádné neevidujeme. Což je za nás v pořádku a rádi e-shop zkontrolujeme při vyhlášení nějaké další slevové akce.
-
-Slovy e-shopu:
-
->

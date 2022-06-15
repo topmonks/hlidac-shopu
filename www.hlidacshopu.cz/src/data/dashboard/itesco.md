@@ -5,7 +5,3 @@ rating: 2
 ---
 
 iTesco.cz slevy stále počítá vůči maloobchodním cenám.
-
-Slovy e-shopu:
-
->

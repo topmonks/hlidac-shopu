@@ -6,6 +6,3 @@ rating: 2
 
 Kosik.cz stále referuje k maloobchodním cenám, v některých případech jsme narazili také na navýšení referenční ceny.
 
-Slovy e-shopu:
-
->
