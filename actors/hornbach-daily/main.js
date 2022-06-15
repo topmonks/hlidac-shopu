@@ -30,7 +30,7 @@ const COUNTRY = {
 
 const CURRENCY = {
   CZ: "CZK",
-  SK: "EUR",
+  SK: "EUR"
 };
 
 const LABELS = {
@@ -117,7 +117,7 @@ async function scrapeSubCategories({
         userData: {
           label: LABELS.CAT_PRODUCTS,
           category,
-          page: 1,
+          page: 1
         }
       });
       log.debug(`Queued products of very bottom category "${category.title}"`);
@@ -164,7 +164,7 @@ async function scrapeCatProducts({
         userData: {
           label: LABELS.CAT_PRODUCTS,
           category,
-          page,
+          page
         }
       });
     }
@@ -172,9 +172,7 @@ async function scrapeCatProducts({
     log.debug(`Scraping ${request.userData.page}. page on ${request.url}`);
   }
 
-  const products = document.querySelectorAll(
-    `[data-testid="article-card"]`
-  );
+  const products = document.querySelectorAll(`[data-testid="article-card"]`);
 
   for (const item of products) {
     if (
@@ -197,9 +195,7 @@ async function scrapeCatProducts({
     const detail = {
       itemUrl: completeUrl(input.country, href),
       itemId: href.split("/").filter(Boolean).reverse()[0],
-      itemName: item.querySelector(
-        `[data-testid="article-title"]`
-      ).textContent,
+      itemName: item.querySelector(`[data-testid="article-title"]`).textContent,
       img: item.querySelector(`picture img`).getAttribute("src"),
       currentPrice: cleanPriceText(
         item.querySelector(`[class*="display_price"]`).textContent
@@ -209,9 +205,9 @@ async function scrapeCatProducts({
       ),
       category: {
         link: category.link,
-        title: category.title,
+        title: category.title
       },
-      currency: CURRENCY[input.country],
+      currency: CURRENCY[input.country]
     };
 
     log.debug("Got product detail", detail);
@@ -256,10 +252,7 @@ Apify.main(async () => {
 
   log.debug(`Running in ${input.type} mode`);
 
-  if ([
-    ActorType.TEST,
-    ActorType.FULL,
-  ].includes(input.type) === false) {
+  if ([ActorType.TEST, ActorType.FULL].includes(input.type) === false) {
     debug.error(`Actor type ${input.type} not yet implemented`);
     return;
   }
