@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1nvkRJDiCxs64d6f8wYSDvR1wGsU7tYHiyG
 rating: 1
 ---
 
-Elektroworld.cz zatím novu EU směrnici vůbec nereflektuje. Navíc jsme během aktuální analýzy narazili na různé typy v některých případech až klamavých slev. Jedná se o referování k maloobchodním cenám, navyšování referenčních cen (i ve stejný den, kdy dojde ke zdražení) a navýšení prodejní ceny v okamžiku zařazení zboží do výprodeje.
+Elektroworld.cz zatím novu EU směrnici vůbec nereflektuje. Navíc jsme během aktuální analýzy narazili na různé typy v některých případech až klamavých slev. Jedná se o referování k maloobchodním cenám, navyšování referenčních cen (i ve stejný den, kdy dojde ke zlevnění) a navýšení prodejní ceny v okamžiku zařazení zboží do výprodeje.
 
 Slovy e-shopu:
 
