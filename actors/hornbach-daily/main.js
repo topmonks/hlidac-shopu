@@ -126,6 +126,7 @@ async function scrapeSubCategories({
 }
 
 function parseCategoryProductsCount(str) {
+  if (!str) return 0;
   const [countStr] = str.match(/\d+/g);
   return Number(countStr);
 }
@@ -139,25 +140,25 @@ async function scrapeCatProducts({
   processedIds,
   detailUrl
 }) {
-  const [totalCount, variantsCount] = Array.from(
-    document.querySelectorAll(`[data-testid="result-count"] span`)
-  )
-    .map(node => node.textContent)
-    .map(parseCategoryProductsCount);
-
-  stats.add("items", totalCount);
-  if (variantsCount) {
-    stats.add("variants", variantsCount);
+  const categoryProductsCountNode = document.querySelector(
+    `[data-testid="result-count"]`
+  );
+  if (!categoryProductsCountNode) {
+    log.error(`No products count node found in ${request.url}`);
+    return;
   }
+  const categoryProductsCount = parseCategoryProductsCount(
+    categoryProductsCountNode?.textContent
+  );
 
   const { category } = request.userData;
 
   if (request.userData.page === 1) {
     log.debug(`Category URL is ${category.link}`);
-    const totalPages = Math.ceil(totalCount / 72);
-    log.debug(`Category has ${totalPages} pages`);
+    const pagesCount = Math.ceil(categoryProductsCount / 72);
+    log.debug(`Category has ${pagesCount} pages`);
 
-    for (let page = 2; page <= totalPages; page++) {
+    for (let page = 2; page <= pagesCount; page++) {
       await requestQueue.addRequest({
         uniqueKey: `products in ${category.title} on ${page}. page`,
         url: `${category.link}?page=${page}`,
@@ -172,36 +173,40 @@ async function scrapeCatProducts({
     log.debug(`Scraping ${request.userData.page}. page on ${request.url}`);
   }
 
-  const products = document.querySelectorAll(`[data-testid="article-card"]`);
+  const productNodes = document.querySelectorAll(
+    `[data-testid="article-card"]`
+  );
 
-  for (const item of products) {
+  for (const itemNode of productNodes) {
     if (
       input.type === ActorType.TEST &&
-      Array.from(products).indexOf(item) > 2
+      Array.from(products).indexOf(itemNode) > 2
     ) {
       continue;
     }
 
-    if (processedIds.has(item.id)) {
+    const href = itemNode.querySelector("a").getAttribute("href");
+    const itemId = href.split("/").filter(Boolean).reverse()[0];
+
+    stats.inc("items");
+    if (processedIds.has(itemId)) {
       stats.inc("itemsDuplicity");
       continue;
     }
-
-    processedIds.add(item.gtin);
+    processedIds.add(itemId);
     stats.inc("itemsUnique");
-
-    const href = item.querySelector("a").getAttribute("href");
 
     const detail = {
       itemUrl: completeUrl(input.country, href),
-      itemId: href.split("/").filter(Boolean).reverse()[0],
-      itemName: item.querySelector(`[data-testid="article-title"]`).textContent,
-      img: item.querySelector(`picture img`).getAttribute("src"),
+      itemId,
+      itemName: itemNode.querySelector(`[data-testid="article-title"]`)
+        .textContent,
+      img: itemNode.querySelector(`picture img`).getAttribute("src"),
       currentPrice: cleanPriceText(
-        item.querySelector(`[class*="display_price"]`).textContent
+        itemNode.querySelector(`[class*="display_price"]`).textContent
       ),
       currentUnitPrice: cleanUnitPriceText(
-        item.querySelector(`[class*="bracket_price"]`).textContent
+        itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""
       ),
       category: {
         link: category.link,
@@ -231,8 +236,7 @@ Apify.main(async () => {
     categories: 0,
     items: 0,
     itemsUnique: 0,
-    itemsDuplicity: 0,
-    variants: 0
+    itemsDuplicity: 0
   });
   const processedIds = new Set();
   const detailUrl = defAtom(null);
