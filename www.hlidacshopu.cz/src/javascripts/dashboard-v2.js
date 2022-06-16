@@ -51,7 +51,7 @@ function cardTemplate({
 }) {
   return html`
     <div
-      class="hs-card mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+      class="hs-card hs-card--with-metrics mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       id="summary-${shop}"
     >
       <a href="#row-${shop}" title="Zobrazit detail v tabulce">
