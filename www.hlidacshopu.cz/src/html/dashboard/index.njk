@@ -104,6 +104,7 @@
       stroke-width: 10px;
     }
 
+    .shops-stats:target,
     .dashboard-row:target {
       scroll-margin-top: 100px;
     }
@@ -131,13 +132,15 @@
               začne platit až v&nbsp;roce 2023, i&nbsp;když podle některých právních výkladů
               by ji čeští spotřebitelé mohli vyžadovat již nyní. Podívejte se, jak
               jsou na ni české e-shopy připravené:</p>
-
+            <p class="explanation">
+              Můžete také rovnou přeskočit na <a href="#tabulka">přehledovou tabulku</a>.
+            </p>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <div id="shop-cards" class="mdc-layout-grid__inner"></div>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <table class="shops-stats">
+            <table id="tabulka" class="shops-stats">
               <colgroup>
                 <col width="150" />
               </colgroup>
@@ -177,38 +180,60 @@
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <a
-              href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08"
-              title="Přečtě si výsledky Analýzy Black Friday 2021">
+              href="https://jakubbalada.medium.com/za%C4%8Dala-n%C3%A1m-platit-nov%C3%A1-eu-sm%C4%9Brnice-o-ochran%C4%9B-spot%C5%99ebitele-jak-se-na-ni-p%C5%99ipravily-%C4%8Desk%C3%A9-e-shopy-16d046feedb0"
+              title="Přečtě si výsledky Analýzy připravenosti e-shopů na novou směrnici EU">
               <picture>
-                {% set mobileBanner = images["mobile-banner-2021.png"]["public_id"] %}
-                {% set desktopBanner = images["desktop-banner-2021.png"]["public_id"] %}
+                {% set mobileBanner = images["mobile-banner-eu.png"]["public_id"] %}
+                {% set desktopBanner = images["desktop-banner-eu.png"]["public_id"] %}
                 <source
                   media="screen and (max-width: 360px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x" />
+                        {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x">
                 <source
                   media="screen and (min-width: 361px) and (max-width: 479px)"
                   srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
                         {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
-                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x" />
+                        {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x">
                 <source
                   media="screen and (min-width: 480px) and (max-width: 839px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x" />
+                        {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x">
                 <source
                   media="screen and (min-width: 840px)"
                   srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
                         {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
-                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x" />
-                <img alt="Analýza Black Friday 2021" class="responsive"
-                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} " />
+                        {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+                <img alt="Analýza připravenosti e-shopů na novou směrnici EU" class="responsive"
+                     src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} ">
               </picture>
             </a>
           </div>
 
           <link rel="stylesheet" href="/assets/css/cards.css" />
+          <div class="mdc-layout-grid__cell">
+            <div class="hs-card">
+              <a
+                href="https://jakubbalada.medium.com/black-friday-2021-nov%C3%A9-re%C3%A1ln%C3%A9-slevy-a-star%C3%A9-triky-45d93d4ace08">
+                {% set analyza2021 = images["analyza-2021.png"]["public_id"] %}
+                <img
+                  alt=""
+                  width="340"
+                  height="170"
+                  class="responsive"
+                  src="{{ analyza2021 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+                  srcset="{{ analyza2021 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                          {{ analyza2021 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                          {{ analyza2021 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+                  loading="lazy"
+                  role="presentation">
+                <h3>BLACK FRIDAY ANALÝZA 2021</h3>
+                <p>Jako každý rok monitorujeme slevy na největších českých e-shopech, zejména během Black Friday (BF).
+                  A na konci této největší slevové akce přichází&hellip;</p>
+              </a>
+            </div>
+          </div>
           <div class="mdc-layout-grid__cell">
             <div class="hs-card">
               <a
