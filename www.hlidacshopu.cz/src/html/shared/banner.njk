@@ -1,0 +1,30 @@
+<a
+  href="https://jakubbalada.medium.com/za%C4%8Dala-n%C3%A1m-platit-nov%C3%A1-eu-sm%C4%9Brnice-o-ochran%C4%9B-spot%C5%99ebitele-jak-se-na-ni-p%C5%99ipravily-%C4%8Desk%C3%A9-e-shopy-16d046feedb0"
+  title="Přečtě si výsledky Analýzy připravenosti e-shopů na novou směrnici EU">
+  <picture>
+    {% set mobileBanner = images["mobile-banner-eu.png"]["public_id"] %}
+    {% set desktopBanner = images["desktop-banner-eu.png"]["public_id"] %}
+    <source
+      media="screen and (max-width: 360px)"
+      srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
+              {{ mobileBanner | cloudinaryUrl(width=328,dpr=1.5) }} 1.5x,
+              {{ mobileBanner | cloudinaryUrl(width=328,dpr=2) }} 2x">
+    <source
+      media="screen and (min-width: 361px) and (max-width: 479px)"
+      srcset="{{ mobileBanner | cloudinaryUrl(width=480) }} 1x,
+              {{ mobileBanner | cloudinaryUrl(width=480,dpr=1.5) }} 1.5x,
+              {{ mobileBanner | cloudinaryUrl(width=480,dpr=2) }} 2x">
+    <source
+      media="screen and (min-width: 480px) and (max-width: 839px)"
+      srcset="{{ desktopBanner | cloudinaryUrl(width=840) }} 1x,
+              {{ desktopBanner | cloudinaryUrl(width=840,dpr=1.5) }} 1.5x,
+              {{ desktopBanner | cloudinaryUrl(width=840,dpr=2) }} 2x">
+    <source
+      media="screen and (min-width: 840px)"
+      srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
+              {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
+              {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x">
+    <img alt="Analýza připravenosti e-shopů na novou směrnici EU" class="responsive"
+         src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} ">
+  </picture>
+</a>
