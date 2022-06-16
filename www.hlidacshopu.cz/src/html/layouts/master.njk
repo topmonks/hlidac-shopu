@@ -88,6 +88,12 @@
       margin: 0;
       padding: 0;
     }
+    @media only screen and (-webkit-min-device-pixel-ratio: 1),
+      only screen and (max-resolution: 96dpi) {
+      body {
+        font-family: Verdana, Arial, sans-serif;
+      }
+    }
   </style>
   <link rel="stylesheet" href="/assets/css/main.css">
   {% block styles %}{% endblock %}
