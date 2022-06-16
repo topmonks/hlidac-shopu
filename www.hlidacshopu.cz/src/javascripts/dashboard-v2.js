@@ -115,11 +115,25 @@ function shopTemplate({
   return html`
     <tr class="dashboard-row" id="row-${shop}">
       <th scope="row">${logoTemplate({ name, url, logo, viewBox })}</th>
-      <td>${formatNumber(allProducts)}</td>
-      <td>${formatNumber(bfProducts) ?? "-"}</td>
-      <td>${formatPercents(avgClaimedDiscount) ?? "-"}</td>
-      <td>${formatPercents(avgRealDiscount) ?? "-"}</td>
-      <td>${formatNumber(misleadingCount) ?? "-"}</td>
+      <td><data value="${allProducts}">${formatNumber(allProducts)}</data></td>
+      <td>
+        <data value="${bfProducts}">${formatNumber(bfProducts) ?? "-"}</data>
+      </td>
+      <td>
+        <data value="${avgClaimedDiscount}"
+          >${formatPercents(avgClaimedDiscount) ?? "-"}</data
+        >
+      </td>
+      <td>
+        <data value="${avgRealDiscount}"
+          >${formatPercents(avgRealDiscount) ?? "-"}</data
+        >
+      </td>
+      <td>
+        <data value="${misleadingCount}"
+          >${formatNumber(misleadingCount) ?? "-"}</data
+        >
+      </td>
       <td>
         <time datetime="${updatedAt.toISOString()}"
           >${formatShortDate(updatedAt) ?? "-"}
