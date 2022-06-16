@@ -5,7 +5,6 @@
     "schedule:daily",
     "group:aws-sdk-js-v3Monorepo",
     "group:postcss",
-    ":preserveSemverRanges",
     ":dependencyDashboard"
   ],
   "packageRules": [
