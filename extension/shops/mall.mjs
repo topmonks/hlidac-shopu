@@ -28,7 +28,8 @@ export class Mall extends Shop {
     const elem = document.querySelector(
       `.price-wrapper,
       .prices-wrapper,
-      .price__wrap`
+      .price__wrap,
+       #stickyInfoboxPriceSection`
     );
     if (!elem) return null;
 
@@ -42,14 +43,14 @@ export class Mall extends Shop {
     const title = document.querySelector("h1.detail__title").innerText.trim();
     const currentPrice = cleanPrice(
       `[itemprop=price],
-       .price__wrap__box__final`
+       .price__wrap__box__final, .price-section-redesign__price span`
     );
     if (!currentPrice) return null;
 
     const originalPrice = cleanPrice(
       `.old-new-price .rrp-price,
        .old-price > del:nth-child(1),
-        .price__wrap__box__old`
+        .price__wrap__box__old,.price-section-redesign__price-old span`
     );
     const imageUrl = document.querySelector(".gallery-magnifier__normal")?.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
