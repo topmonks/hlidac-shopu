@@ -1,9 +1,9 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Hornbach extends Shop {
   get injectionPoint() {
-    return ["afterend", "#product-information"];
+    return ["afterend", `section[data-testid="product-informations"]`];
   }
 
   async scrape() {
@@ -11,23 +11,16 @@ export class Hornbach extends Shop {
       'script[type="application/ld+json"]'
     );
     if (!elems) return;
-    const itemUrl = document.location.href;
-    const itemId = itemUrl.match(/(\d+)\/artik[e]?l.html/)?.[1];
-    const scripts = document.querySelectorAll("script");
+    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
     for (const script of scripts) {
-      if (script.textContent.includes("window.__ARTICLE_DETAIL_STATE__")) {
-        const start =
-          script.textContent.indexOf("window.__ARTICLE_DETAIL_STATE__ = ") +
-          "window.__ARTICLE_DETAIL_STATE__ = ".length;
-        const end = script.textContent.indexOf("window.pushTrackingInfo");
-        const rawJson = script.textContent.substring(start, end).trim();
-        const { article } = JSON.parse(rawJson);
+      if (script.textContent.includes(`"@type":"Product"`)) {
+        const article = JSON.parse(script.textContent);
         return {
-          itemId,
-          title: article.title,
-          currentPrice: article.displayPrice?.price,
-          originalPrice: article.guidingPrice?.price,
-          imageUrl: article.metaImage.url
+          itemId: article.sku,
+          title: article.name,
+          currentPrice: parseFloat(article.offers[0]?.price),
+          originalPrice: null,
+          imageUrl: article.image[0].url
         };
       }
     }
