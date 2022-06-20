@@ -177,6 +177,8 @@ async function scrapeCatProducts({
     `[data-testid="article-card"]`
   );
 
+  const promises = [];
+
   for (const itemNode of productNodes) {
     if (
       input.type === ActorType.TEST &&
@@ -215,12 +217,16 @@ async function scrapeCatProducts({
       currency: CURRENCY[input.country]
     };
 
+    promises.push(Apify.pushData(detail));
     log.debug("Got product detail", detail);
 
     if (!detailUrl.deref()) {
       detailUrl.reset(detail.itemUrl);
     }
   }
+
+  // Wait for all promises to finish
+  await Promise.all(promises);
 }
 
 Apify.main(async () => {
