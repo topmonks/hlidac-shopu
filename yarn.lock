@@ -3519,8 +3519,8 @@ __metadata:
     "@types/node": ^16.11.41
     rollbar: ^2.25.0
   peerDependencies:
-    "@aws-sdk/client-cloudfront": 3.110.0
-    "@aws-sdk/client-s3": 3.110.0
+    "@aws-sdk/client-cloudfront": ^3.112.0
+    "@aws-sdk/client-s3": ^3.112.0
     apify: ^2.2.1
   languageName: unknown
   linkType: soft
@@ -13800,7 +13800,7 @@ __metadata:
     formdata-node: ^4.3.3
     gulp-esbuild: ^0.10.3
     gulp-mode: ^1.1.0
-    linkedom: ^0.14.11
+    linkedom: 0.14.12
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.18.0
     prettier: ^2.7.1
@@ -15723,19 +15723,6 @@ __metadata:
     htmlparser2: ^8.0.1
     uhyphen: ^0.1.0
   checksum: b5d5df992d11a41661613cffad5fb60c9929a9c057af07af282e49a6a2531e6b7afbd5de7af1a13d2ebc0e84d13f9ff6a2269131d7fd156a1f984caa49eb2fa4
-  languageName: node
-  linkType: hard
-
-"linkedom@npm:^0.14.11":
-  version: 0.14.11
-  resolution: "linkedom@npm:0.14.11"
-  dependencies:
-    css-select: ^5.1.0
-    cssom: ^0.5.0
-    html-escaper: ^3.0.3
-    htmlparser2: ^8.0.1
-    uhyphen: ^0.1.0
-  checksum: c4193fb143318888be12af722c5d843fd667aa2d4f2095e91f86ff57a774206d06866540da3c13f8abea383d8a01ccd871e94d62512492e1ee382404c9d09b7d
   languageName: node
   linkType: hard
 
