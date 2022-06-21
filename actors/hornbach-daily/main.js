@@ -145,6 +145,7 @@ async function scrapeCatProducts({
   );
 
   const { category } = request.userData;
+  const currency = CURRENCY[input.country.toUpperCase()];
 
   if (request.userData.page === 1) {
     log.debug(`Category URL is ${category.link}`);
@@ -205,7 +206,7 @@ async function scrapeCatProducts({
         link: category.link,
         title: category.title
       },
-      currency: CURRENCY[input.country]
+      currency
     };
 
     await Apify.pushData(detail);
@@ -217,7 +218,7 @@ async function scrapeCatProducts({
   }
 }
 
-Apify.main(async () => {
+Apify.main(async function main() {
   rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
