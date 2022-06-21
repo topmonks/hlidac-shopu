@@ -11,6 +11,7 @@ const { log } = Apify.utils;
  */
 export async function uploadToKeboola(tableName) {
   if (process.env.TEST) return;
+  log.info(`Keboola: Uploading to ${tableName}`);
   /** @type {ApifyEnv} */
   const env = await Apify.getEnv();
   /** @type {ActorRun} */

@@ -319,10 +319,7 @@ Apify.main(async () => {
 
   await Promise.all([
     stats.save(),
-    invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
     uploadToKeboola(shopName(detailUrl.deref()))
   ]);
-
-  log.info("invalidated Data CDN");
   log.info("Finished.");
 });
