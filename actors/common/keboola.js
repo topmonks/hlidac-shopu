@@ -27,5 +27,6 @@ export async function uploadToKeboola(tableName) {
       waitSecs: 60
     }
   );
-  log.info(`Keboola upload called: ${run.id}`);
+
+  log.info(`Keboola upload called: ${run.id}`, { run });
 }
