@@ -202,10 +202,10 @@ async function scrapeCatProducts({
       itemUrl: completeUrl(input.country, href),
       itemId,
       itemName: itemNode.querySelector(`[data-testid="article-title"]`)
-        .textContent,
+        ?.textContent,
       img: itemNode.querySelector(`picture img`).getAttribute("src"),
       currentPrice: cleanPriceText(
-        itemNode.querySelector(`[class*="display_price"]`).textContent
+        itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""
       ),
       currentUnitPrice: cleanUnitPriceText(
         itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""
