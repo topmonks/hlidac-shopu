@@ -241,6 +241,7 @@ async function processItems(
         item = rozetkaValidator(item);
         break;
       case "hornbach":
+      case "hornbach_cz":
       case "hornbach_sk":
         item = hornbachValidator(item);
         break;

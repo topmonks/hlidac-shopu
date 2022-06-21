@@ -1,13 +1,11 @@
 /**
- * Scrape categories and products from Hronbach HORNBACH
+ * Scrape categories and products from Hornbach
  */
 
 import { fetch } from "@adobe/helix-fetch";
 import Apify from "apify";
 import { parseHTML } from "linkedom";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   cleanPriceText,
   cleanUnitPriceText
@@ -56,7 +54,7 @@ async function scrapeTopCategories({ dom: { document }, requestQueue, input }) {
       }
     });
 
-    log.debug(`Queued top lvl categpry "${link.getAttribute("title")}"`);
+    log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
   }
 }
 
@@ -93,7 +91,7 @@ async function scrapeSubCategories({
       });
 
       stats.inc("categories");
-      log.debug(`Scraped categpry "${crumb.title}"`);
+      log.debug(`Scraped category "${crumb.title}"`);
     }
   } else {
     const categoriesFromBottomToTop = request.userData.crumbs.reverse();
@@ -127,7 +125,7 @@ function parseCategoryProductsCount(str) {
 }
 
 async function scrapeCatProducts({
-  dom: { document, window },
+  dom: { document },
   requestQueue,
   input,
   request,
@@ -165,19 +163,17 @@ async function scrapeCatProducts({
       });
     }
   } else {
-    log.debug(`Scraping ${request.userData.page}. page on ${request.url}`);
+    log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
   }
 
   const productNodes = document.querySelectorAll(
     `[data-testid="article-card"]`
   );
 
-  const promises = [];
-
   for (const itemNode of productNodes) {
     if (
       input.type === ActorType.TEST &&
-      Array.from(products).indexOf(itemNode) > 2
+      Array.from(productNodes).indexOf(itemNode) > 2
     ) {
       continue;
     }
@@ -194,8 +190,8 @@ async function scrapeCatProducts({
     stats.inc("itemsUnique");
 
     const detail = {
-      itemUrl: completeUrl(input.country, href),
       itemId,
+      itemUrl: completeUrl(input.country, href),
       itemName: itemNode.querySelector(`[data-testid="article-title"]`)
         ?.textContent,
       img: itemNode.querySelector(`picture img`).getAttribute("src"),
@@ -212,26 +208,17 @@ async function scrapeCatProducts({
       currency: CURRENCY[input.country]
     };
 
-    promises.push(Apify.pushData(detail));
+    await Apify.pushData(detail);
     log.debug("Got product detail", detail);
 
     if (!detailUrl.deref()) {
       detailUrl.reset(detail.itemUrl);
     }
   }
-
-  // Wait for all promises to finish
-  await Promise.all(promises);
 }
 
 Apify.main(async () => {
   rollbar.init();
-
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -290,16 +277,13 @@ Apify.main(async () => {
 
       switch (request.userData.label) {
         case LABELS.TOP_CATEGORIES: // 1.
-          await scrapeTopCategories(scraperArguments);
-          break;
+          return scrapeTopCategories(scraperArguments);
 
         case LABELS.SUB_CATEGORIES: // 2.
-          await scrapeSubCategories(scraperArguments);
-          break;
+          return scrapeSubCategories(scraperArguments);
 
         case LABELS.CAT_PRODUCTS: // 3.
-          await scrapeCatProducts(scraperArguments);
-          break;
+          return scrapeCatProducts(scraperArguments);
       }
     },
     async handleFailedRequestFunction({ request }) {
