@@ -240,7 +240,8 @@ async function processItems(
       case "rozetka_ua":
         item = rozetkaValidator(item);
         break;
-      case "hornbach_cz":
+      case "hornbach":
+      case "hornbach_sk":
         item = hornbachValidator(item);
         break;
       case "electroworld_cz":

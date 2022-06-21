@@ -6,7 +6,8 @@ export function hornbachValidator(item) {
     "itemId",
     "itemName",
     "itemUrl",
-    "originalPrice"
+    "originalPrice",
+    "currentUnitPrice"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {
