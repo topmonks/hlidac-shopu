@@ -10,16 +10,11 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   cleanPriceText,
-  cleanUnitPriceText,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
-import {
-  invalidateCDN,
-  currencyToISO4217
+  cleanUnitPriceText
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
@@ -263,7 +258,7 @@ Apify.main(async () => {
   log.debug(`Running in ${input.type} mode`);
 
   if ([ActorType.TEST, ActorType.FULL].includes(input.type) === false) {
-    debug.error(`Actor type ${input.type} not yet implemented`);
+    log.error(`Actor type ${input.type} not yet implemented`);
     return;
   }
 
@@ -306,8 +301,6 @@ Apify.main(async () => {
           await scrapeCatProducts(scraperArguments);
           break;
       }
-
-      stats.log();
     },
     async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed multiple times`, request);
