@@ -6,10 +6,13 @@ const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
 
 const config = {
   images: true,
-  cloudinary: true,
   fonts: true,
   static: true,
   javascripts: false,
+
+  cloudinary: {
+    extensions: ["jpg", "jpeg", "png", "gif", "svg", "webp"]
+  },
 
   workboxBuild: {
     swSrc: projectPath(pathConfig.src, pathConfig.esbuild.src, "sw.js"),

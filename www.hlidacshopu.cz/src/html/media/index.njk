@@ -8,11 +8,13 @@
 
 {% macro mediaImage(path) %}
   {% set publicId = images["media/" + path]["public_id"] %}
+  {% if publicId %}
   <img alt="" width="250" height="142" role="presentation"
        src="{{ publicId | cloudinaryUrl(width=250,height=142,dpr="auto") }}"
        srcset="{{ publicId | cloudinaryUrl(width=250,height=142,dpr=1) }} 1x,
                {{ publicId | cloudinaryUrl(width=250,height=142,dpr=1.5) }} 1.5x,
                {{ publicId | cloudinaryUrl(width=250,height=142,dpr=2) }} 2x">
+  {% endif %}
 {% endmacro %}
 
 {% macro mediaArticle(article) %}
@@ -23,9 +25,7 @@
       </a>
     </div>
     <div class="media__body">
-      <h3>
-        <a href="{{ article.url }}">{{ article.title }}</a>
-      </h3>
+      <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
       <time datetime="{{ article.published }}" class="media__date">{{ article.published | longDate }}</time>
       <div class="media__description">{{ article.body | safe }}</div>
     </div>
