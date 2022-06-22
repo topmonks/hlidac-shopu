@@ -3541,7 +3541,7 @@ __metadata:
     modern-random-ua: ^1.0.3
     parsecurrency: ^1.0.1
     request-fixed-tunnel-agent: ^2.88.3
-    user-agents: 1.0.1054
+    user-agents: 1.0.1055
   languageName: unknown
   linkType: soft
 
@@ -3779,7 +3779,7 @@ __metadata:
     apify: ^2.3.2
     apify-cli: ^0.7.4
     linkedom: 0.14.12
-    user-agents: 1.0.1054
+    user-agents: 1.0.1055
   languageName: unknown
   linkType: soft
 
@@ -3919,7 +3919,7 @@ __metadata:
     modern-random-ua: ^1.0.3
     parsecurrency: ^1.0.1
     request-fixed-tunnel-agent: ^2.88.3
-    user-agents: 1.0.1054
+    user-agents: 1.0.1055
   languageName: unknown
   linkType: soft
 
@@ -3935,7 +3935,7 @@ __metadata:
     apify-cli: ^0.7.4
     cheerio: ^1.0.0-rc.11
     puppeteer: ^14.4.1
-    user-agents: 1.0.1054
+    user-agents: 1.0.1055
   languageName: unknown
   linkType: soft
 
@@ -4531,6 +4531,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mdn/browser-compat-data@npm:5.1.1":
+  version: 5.1.1
+  resolution: "@mdn/browser-compat-data@npm:5.1.1"
+  checksum: 6a23f9d7727e14c0a7791dc2dfbbcfc7586e0fcd512a6fb30f8b7fd5e11c4fb5e54a46838235d807033da111a7214f23a7f4a340d56dc5a86f7f2069480ece87
+  languageName: node
+  linkType: hard
+
 "@mdn/browser-compat-data@npm:^3.3.14":
   version: 3.3.14
   resolution: "@mdn/browser-compat-data@npm:3.3.14"
@@ -4892,9 +4899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^5.9.0":
-  version: 5.9.0
-  resolution: "@pulumi/aws@npm:5.9.0"
+"@pulumi/aws@npm:^5.9.1":
+  version: 5.9.1
+  resolution: "@pulumi/aws@npm:5.9.1"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -4902,7 +4909,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: caa8ac071770e3198fc9a8c3e724b245aab63bfb0b10e5f34777406b1c19f5d2a9571a36c3383d8d8b18fa1d2e29722cfa94d0060dcdee69b4432c7841378f6b
+  checksum: 6bb9a2cd1583c538f4efd10b78c8c779703c9f39c47520dd5b9b25323f8ba7910c189d3bf483fcef9e2c33b1df9dd963d51992fbc3d240a17c9557373df94068
   languageName: node
   linkType: hard
 
@@ -5822,13 +5829,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:^8.2.1":
-  version: 8.2.1
-  resolution: "@types/whatwg-url@npm:8.2.1"
+"@types/whatwg-url@npm:^8.2.2":
+  version: 8.2.2
+  resolution: "@types/whatwg-url@npm:8.2.2"
   dependencies:
     "@types/node": "*"
     "@types/webidl-conversions": "*"
-  checksum: 975987a9ca14a8d5a883523acb4fa0df7760cd8ca8dee56cd57753821e56060bfbead94df84f4504fe0b4270776d81cbb40fcd1f8643dab86da3a9abe926fb5c
+  checksum: 5dc5afe078dfa1a8a266745586fa3db9baa8ce7cc904789211d1dca1d34d7f3dd17d0b7423c36bc9beab9d98aa99338f1fc60798c0af6cbb8356f20e20d9f243
   languageName: node
   linkType: hard
 
@@ -6370,6 +6377,47 @@ __metadata:
   bin:
     addons-linter: bin/addons-linter
   checksum: f1a6f13876c39c13e7aa1654ce75baca4201f31acbcd0d9f566ac0346260d59d7d0b3ba9e596b53f23ed3bd5597744bdc338cf806ebbea3e1249a060ae150f8f
+  languageName: node
+  linkType: hard
+
+"addons-linter@npm:5.9.0":
+  version: 5.9.0
+  resolution: "addons-linter@npm:5.9.0"
+  dependencies:
+    "@mdn/browser-compat-data": 5.1.1
+    addons-moz-compare: 1.2.0
+    addons-scanner-utils: 7.0.0
+    ajv: 8.11.0
+    ajv-merge-patch: 5.0.1
+    chalk: 4.1.2
+    cheerio: 1.0.0-rc.11
+    columnify: 1.6.0
+    common-tags: 1.8.2
+    deepmerge: 4.2.2
+    eslint: 8.18.0
+    eslint-plugin-no-unsanitized: 4.0.1
+    eslint-visitor-keys: 3.3.0
+    espree: 9.3.2
+    esprima: 4.0.1
+    fluent-syntax: 0.13.0
+    glob: 8.0.3
+    image-size: 1.0.1
+    is-mergeable-object: 1.1.1
+    jed: 1.1.1
+    os-locale: 5.0.0
+    pino: 8.0.0
+    postcss: 8.4.14
+    relaxed-json: 1.0.3
+    semver: 7.3.7
+    sha.js: 2.4.11
+    source-map-support: 0.5.21
+    tosource: 1.0.0
+    upath: 2.0.1
+    yargs: 17.5.1
+    yauzl: 2.10.0
+  bin:
+    addons-linter: bin/addons-linter
+  checksum: 6d15833458700029492ab36c728172acc47a5d6cbd43ecc18187423a7def28f3670e00be5c936440e3a39f12a96c6c62aa69e76751f0209cc38b1ea5bc96fd51
   languageName: node
   linkType: hard
 
@@ -13768,7 +13816,7 @@ __metadata:
     "@babel/core": ^7.18.5
     "@babel/preset-env": ^7.18.2
     "@esm-bundle/chai": ^4.3.4-fix.0
-    "@pulumi/aws": ^5.9.0
+    "@pulumi/aws": ^5.9.1
     "@pulumi/awsx": ^0.40.0
     "@pulumi/pulumi": ^3.34.1
     "@rollup/plugin-alias": ^3.1.9
@@ -13779,7 +13827,7 @@ __metadata:
     "@types/firefox-webext-browser": ^94.0.1
     "@types/node": ^18.0.0
     "@types/ramda": ^0.28.14
-    "@types/whatwg-url": ^8.2.1
+    "@types/whatwg-url": ^8.2.2
     "@typescript-eslint/eslint-plugin": ^5.29.0
     "@typescript-eslint/parser": ^5.29.0
     abort-controller: ^3.0.0
@@ -13810,7 +13858,7 @@ __metadata:
     source-map-explorer: ^2.5.2
     stylelint: ^14.9.1
     stylelint-config-prettier: ^9.0.3
-    web-ext: ^7.0.0
+    web-ext: ^7.1.0
     web-ext-submit: ^7.0.0
   languageName: unknown
   linkType: soft
@@ -17519,6 +17567,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"on-exit-leak-free@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "on-exit-leak-free@npm:1.0.0"
+  checksum: 813adf176cf95500c0e5cfef2c82f8c92969692c3837b7b939519c31aab3866e856a30254184a347c5da0c885b2a840e37ee44cc72f6432a2284525db6a8ce7f
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:^2.3.0":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
@@ -18377,6 +18432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pino-std-serializers@npm:^5.0.0":
+  version: 5.6.0
+  resolution: "pino-std-serializers@npm:5.6.0"
+  checksum: aaea5bdb99b45889a370a1f8de316343be6a65a528ba3a0a989522a0d265197d71991659456d8df140017669cbc4466cae53c399a7f15e1c287e8e4bdf8f2fe5
+  languageName: node
+  linkType: hard
+
 "pino@npm:7.11.0":
   version: 7.11.0
   resolution: "pino@npm:7.11.0"
@@ -18395,6 +18457,27 @@ __metadata:
   bin:
     pino: bin.js
   checksum: b919e7dbe41de978bb050dcef94fd687c012eb78d344a18f75f04ce180d5810fc162be1f136722d70cd005ed05832c4023a38b9acbc1076ae63c9f5ec5ca515c
+  languageName: node
+  linkType: hard
+
+"pino@npm:8.0.0":
+  version: 8.0.0
+  resolution: "pino@npm:8.0.0"
+  dependencies:
+    atomic-sleep: ^1.0.0
+    fast-redact: ^3.0.0
+    on-exit-leak-free: ^1.0.0
+    pino-abstract-transport: v0.5.0
+    pino-std-serializers: ^5.0.0
+    process-warning: ^2.0.0
+    quick-format-unescaped: ^4.0.3
+    real-require: ^0.1.0
+    safe-stable-stringify: ^2.1.0
+    sonic-boom: ^3.0.0
+    thread-stream: ^1.0.0
+  bin:
+    pino: bin.js
+  checksum: 68b0e62e3b4f54a848f3aaf3915913f0551ea76214080bbfd12d688608beb408e3c6c12c1389a6dfcba1fdae517b6f0d61a29f2ce3f2dcb2e9b98e2383a7d2d2
   languageName: node
   linkType: hard
 
@@ -19027,6 +19110,13 @@ __metadata:
   version: 1.0.0
   resolution: "process-warning@npm:1.0.0"
   checksum: c708a03241deec3cabaeee39c4f9ee8c4d71f1c5ef9b746c8252cdb952a6059068cfcdaf348399775244cbc441b6ae5e26a9c87ed371f88335d84f26d19180f9
+  languageName: node
+  linkType: hard
+
+"process-warning@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "process-warning@npm:2.0.0"
+  checksum: a2bb299835bced58e63cbe06a8fd6e048a648d3649e81b62c442b63112a3f0a86912e7b1a9c557daca30652232d3b0a7f1972fb87c36334e2a5a6f3d5c4a76c9
   languageName: node
   linkType: hard
 
@@ -20970,6 +21060,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sonic-boom@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "sonic-boom@npm:3.0.0"
+  dependencies:
+    atomic-sleep: ^1.0.0
+  checksum: fdab09872bd2d0bdaaa974841a719820cbc50d9db4a620ce46da159efe19d0b6cf1e450b51a28e65d9cbf910d15d1f259d5c247a7c51912cf287048bd35525b4
+  languageName: node
+  linkType: hard
+
 "sort-keys@npm:^2.0.0":
   version: 2.0.0
   resolution: "sort-keys@npm:2.0.0"
@@ -22063,6 +22162,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"thread-stream@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "thread-stream@npm:1.0.0"
+  dependencies:
+    real-require: ^0.1.0
+  checksum: 34dd0a4a1afcf5cea8e9789c40302f225bf4c60d16a2ed35413fac3df2944f95d26e4f02c4362c43b38cf5997130bbaced23bd5585857bb549fe9130197ff246
+  languageName: node
+  linkType: hard
+
 "through2-filter@npm:^3.0.0":
   version: 3.0.0
   resolution: "through2-filter@npm:3.0.0"
@@ -22985,13 +23093,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"user-agents@npm:1.0.1054":
-  version: 1.0.1054
-  resolution: "user-agents@npm:1.0.1054"
+"user-agents@npm:1.0.1055":
+  version: 1.0.1055
+  resolution: "user-agents@npm:1.0.1055"
   dependencies:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
-  checksum: f7c1346a29c0535c0d488b4cd4b58d10e8dc47c25fb4ac5284e4886a267c438266b409e5c2e66050fe8ee2bc40962a2074f3fb70fe92482e1942dd56187f1215
+  checksum: ddcb56b78ce6c0217aa8038704f752d0746993f2917a0a736866cba6713c751b2d1f3156534b19ab06103eba0bd03f111e025f615d8ac6d0be24778381b768e5
   languageName: node
   linkType: hard
 
@@ -23304,6 +23412,46 @@ __metadata:
   bin:
     web-ext: bin/web-ext.js
   checksum: e2f753ca2d9222c111e2b3d60db7f60366d32622d169351409b576b5fa1f616f3a6d0e8a57e45d8f301436664d7ad185eb1f286fde0715cbbe4784e1b9ca961b
+  languageName: node
+  linkType: hard
+
+"web-ext@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "web-ext@npm:7.1.0"
+  dependencies:
+    "@babel/runtime": 7.18.3
+    "@devicefarmer/adbkit": 3.2.3
+    addons-linter: 5.9.0
+    bunyan: 1.8.15
+    camelcase: 7.0.0
+    chrome-launcher: 0.15.1
+    debounce: 1.2.1
+    decamelize: 6.0.0
+    es6-error: 4.1.1
+    firefox-profile: 4.2.2
+    fs-extra: 10.1.0
+    fx-runner: 1.2.0
+    import-fresh: 3.3.0
+    mkdirp: 1.0.4
+    multimatch: 6.0.0
+    mz: 2.7.0
+    node-notifier: 10.0.1
+    open: 8.4.0
+    parse-json: 6.0.2
+    promise-toolbox: 0.21.0
+    sign-addon: 5.0.0
+    source-map-support: 0.5.21
+    strip-bom: 5.0.0
+    strip-json-comments: 4.0.0
+    tmp: 0.2.1
+    update-notifier: 5.1.0
+    watchpack: 2.4.0
+    ws: 8.8.0
+    yargs: 17.5.1
+    zip-dir: 2.0.0
+  bin:
+    web-ext: bin/web-ext.js
+  checksum: f7511ab1e2cfee1df2cfd4a1ba275c527f6a936f0ecdebd0eff10ffbd3e9d17a31c7fffc0eb769b7db81467b75f5427572c84646a1cb31bb09d15cb5229e5a4e
   languageName: node
   linkType: hard
 
@@ -23792,6 +23940,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 078fa2dbc06b31a45e0057b19e2930d26c222622e355955afe019c9b9b25f62eb2a8eff7cceabdad04910ecd2bd6ef4fa48e6f3673f2fdddff02a6e4c2459584
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.8.0":
+  version: 8.8.0
+  resolution: "ws@npm:8.8.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 6ceed1ca1cb800ef60c7fc8346c7d5d73d73be754228eb958765abf5d714519338efa20ffe674167039486eb3a813aae5a497f8d319e16b4d96216a31df5bd95
   languageName: node
   linkType: hard
 

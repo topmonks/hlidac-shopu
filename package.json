@@ -17,7 +17,7 @@
   "packageManager": "yarn@3.2.0",
   "dependencies": {
     "@adobe/helix-fetch": "^3.0.11",
-    "@pulumi/aws": "^5.9.0",
+    "@pulumi/aws": "^5.9.1",
     "@pulumi/awsx": "^0.40.0",
     "@pulumi/pulumi": "^3.34.1",
     "@topmonks/pulumi-aws": "^2.2.4",
@@ -38,7 +38,7 @@
     "@types/firefox-webext-browser": "^94.0.1",
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.28.14",
-    "@types/whatwg-url": "^8.2.1",
+    "@types/whatwg-url": "^8.2.2",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "ava": "^4.3.0",
@@ -64,7 +64,7 @@
     "source-map-explorer": "^2.5.2",
     "stylelint": "^14.9.1",
     "stylelint-config-prettier": "^9.0.3",
-    "web-ext": "^7.0.0",
+    "web-ext": "^7.1.0",
     "web-ext-submit": "^7.0.0"
   },
   "resolutions": {
