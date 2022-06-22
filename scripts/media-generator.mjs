@@ -8,8 +8,11 @@ import { URL } from "url";
 
 const test = true;
 const urls = [
-  "https://www.lupa.cz/clanky/black-friday-2020-blyska-se-na-lepsi-casy/",
-  "https://www.penize.cz/slevy/422584-pravda-o-slevach-nove-dukazy-jak-e-shopy-caruji-s-cenou"
+  "https://www.seznamzpravy.cz/clanek/ekonomika-byznys-trendy-analyzy-konec-slev-ktere-nikdy-nebyly-e-shopy-je-musi-zacit-pocitat-jinak-186075",
+  "https://www.mesec.cz/clanky/zakaz-falesnych-slev-novela-zakona-ma-zabranit-dalsim-podvodum-na-spotrebitele/",
+  "https://www.reflex.cz/clanek/zajimavosti/112941/nova-evropska-smernice-zmeni-pravidla-o-slevach-kde-a-jake-slevy-cesi-vyhledavaji.html",
+  "https://cc.cz/komunikuji-e-shopy-slevy-ferove-hlidac-shopu-kontroluje-jestli-obchody-nebalamuti-zakazniky/",
+  "https://connect.zive.cz/clanky/pochvalu-za-ferove-slevy-zaslouzi-alza-a-czc-odstrasujicimi-priklady-jsou-mountfield-a-aaaauto/sc-320-a-217052/default.aspx",
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
