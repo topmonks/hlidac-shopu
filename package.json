@@ -80,6 +80,7 @@
     "test:lib": "yarn workspace @hlidac-shopu/lib test",
     "test:api": "ava api.hlidacshopu.cz/**/*.test.mjs",
     "test:actors": "ava actors/**/*.test.mjs",
+    "test:extension": "node scripts/test-extension.mjs",
     "lint": "run-p 'lint:*'",
     "lint:actors": "eslint ./actors",
     "lint:website": "eslint ./www.hlidacshopu.cz",
