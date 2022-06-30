@@ -13,7 +13,6 @@ const urlSet = [
   "https://www.benu.cz/indulona-original-85ml",
   "https://www.czc.cz/max-vysuvny-polohovatelny-drzak-mtm9335t-pro-tv-37-70-cerna/309098/produkt",
   "https://www.datart.cz/iphone-11-64gb-white-mwlu2cn-a.html",
-  "https://www.dek.cz/produkty/detail/4480000018-port-smesny-cement-cem-ii-b-m-s-ll-32-5-r-dek",
   "https://www.dm.cz/indulona-krem-na-ruce-original-p8586017550476.html",
   "https://www.electroworld.cz/xerox-performer-a4-80g-m2-500ks",
   "https://www.eva.cz/zbozi/DRO00845/krtek-na-odpady-900-g/",

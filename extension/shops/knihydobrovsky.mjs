@@ -8,7 +8,11 @@ import { Shop } from "./shop.mjs";
 
 export class Knihydobrovsky extends Shop {
   get injectionPoint() {
-    return ["afterend", "#snippet--deliveryInfo .variants"];
+    const elem = document.querySelector("#snippet--deliveryInfo .variants");
+    if(elem){
+      return ["afterend", "#snippet--deliveryInfo .variants"];
+    }
+      return ["afterend", "#snippet--deliveryInfo .b-gift"];
   }
 
   async scrape() {
