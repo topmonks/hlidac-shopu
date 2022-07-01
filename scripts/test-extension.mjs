@@ -34,6 +34,7 @@ const urlSet = [
   "https://www.prozdravi.cz/zdravi/vaha-kuchynska-digitalni-white-vk5711.html",
   "https://www.rohlik.cz/1302693-merhautovo-pekarstvi-houska-razena-bez-posypu",
   "https://www.tchibo.cz/jemna-kava-10-kapsli-p400166981.html?dim1=10Ka",
+  "https://www.tchibo.cz/boxerky-5-ks-cerne-p402054064.html?dim2=01&dim1=L364",
   "https://www.tetadrogerie.cz/eshop/katalog/indulona-85ml-original",
   "https://www.tsbohemia.cz/xerox-papir-performer-a4-80g-500listu_d46562.html"
 ];
@@ -45,7 +46,11 @@ async function main(puppeteer) {
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
       "--lang=cs-CZ,cs"
-    ]
+    ],
+    defaultViewport: {
+      width: 1920,
+      height: 1200
+    }
   });
   const page = await browser.newPage();
   for (const url of urlSet) {

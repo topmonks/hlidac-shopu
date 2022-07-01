@@ -1,29 +1,30 @@
-import { registerShop } from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Prozdravi extends Shop {
   get injectionPoint() {
-    return ["afterend", "#product-prices-block"];
+    return ["afterend", ".justify-content-end"];
   }
 
   async scrape() {
-    const data = JSON.parse(document.querySelector("#gtm-data input").value);
-    const masterData = document.querySelector(".product-master-data");
-
-    const title = data.name;
-    const itemId = data.id;
-
-    const { value: originalPrice } = JSON.parse(
-      masterData.querySelector("input[name=backupPrice]").value
-    );
-    const { value: currentPrice } = JSON.parse(
-      masterData.querySelector("input[name=price]").value
-    );
-    const imageUrl = document.querySelector(
-      "meta[property='og:image']"
-    ).content;
-
-    return { itemId, title, currentPrice, originalPrice, imageUrl };
+    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[0];
+    if (!jsonld)
+      return null;
+    try {
+      const data = JSON.parse(jsonld.innerText)[0];
+      if (data["@type"] !== "Product")
+        return null;
+      const originalPrice = cleanPrice(".old-price span");
+      return {
+        itemId: null,
+        title: data.name,
+        currentPrice: parseFloat(data.offers.price),
+        originalPrice: cleanPrice(".old-price span") ? parseFloat(cleanPrice(".old-price span")) : null,
+        imageUrl: data.image
+      };
+    } catch (e11) {
+      console.error("Could not find product info", e11);
+    }
   }
 }
 
