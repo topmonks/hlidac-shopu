@@ -19,7 +19,7 @@ export class Prozdravi extends Shop {
         itemId: null,
         title: data.name,
         currentPrice: parseFloat(data.offers.price),
-        originalPrice: cleanPrice(".old-price span") ? parseFloat(cleanPrice(".old-price span")) : null,
+        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
         imageUrl: data.image
       };
     } catch (e11) {
