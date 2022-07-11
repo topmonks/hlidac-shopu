@@ -75,9 +75,23 @@ function getArchiveInfo() {
   return { itemId, title, currentPrice, originalPrice };
 }
 
+function getDetailItemInfo() {
+  const elem = document.querySelector(".detail-page");
+  if (!elem) return;
+
+  const itemId = elem.dataset.id;
+  const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
+  const currentPrice = cleanPrice(".price-box__price");
+  const originalPrice = cleanPrice(".price-box__compare-price");
+  const imageUrl = document.querySelector("#imgMain").dataset["src"];
+
+  return { itemId, title, currentPrice, originalPrice, imageUrl };
+}
+
 export class Alza extends Shop {
   async scrape() {
     return (
+      getDetailItemInfo() ||
       getDetailInfo() ||
       getMobileDetailInfo() ||
       getDailySlasherInfo() ||
@@ -136,17 +150,28 @@ export class Alza extends Shop {
     this.element.insertAdjacentElement("afterend", renderMarkup());
   }
 
+  isDetailItemPage() {
+    this.element = document.querySelector(".detail-page .price-detail__row");
+    return Boolean(this.element);
+  }
+
+  injectOnDetailItemPage(renderMarkup) {
+    this.element.insertAdjacentElement(
+      "afterend",
+      renderMarkup({ "margin": "0 0 20px" })
+    );
+  }
+
   inject(renderMarkup) {
-    if (this.isDetailPage()) {
+    if (this.isDetailItemPage()) {
+      return this.injectOnDetailItemPage(renderMarkup);
+    } else if (this.isDetailPage()) {
       return this.injectOnDetailPage(renderMarkup);
-    }
-    if (this.isMobileDetailPage()) {
+    } else if (this.isMobileDetailPage()) {
       return this.injectOnMobileDetailPage(renderMarkup);
-    }
-    if (this.isDailySlasherPage()) {
+    } else if (this.isDailySlasherPage()) {
       return this.injectOnDailySlasherPage(renderMarkup);
-    }
-    if (this.isArchive()) {
+    } else if (this.isArchive()) {
       return this.injectOnArchive(renderMarkup);
     }
     throw new Error("Element to add chart not found");
