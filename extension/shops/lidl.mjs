@@ -6,7 +6,7 @@ export class Lidl extends Shop {
     if (this.isMobileDetailPage()) {
       return ["beforebegin", ".buybox__bottom"];
     } else {
-      return ["afterend", ".keyfacts"];
+      return ["beforeend", ".detail__column--keyfacts"];
     }
   }
 
