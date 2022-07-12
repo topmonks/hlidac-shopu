@@ -5,7 +5,7 @@ orbs:
   aws-s3: circleci/aws-s3@3.0.0
   browser-tools: circleci/browser-tools@1.2.4
   codecov: codecov/codecov@3.2.2
-  github: topmonks/github@1.1.0
+  github: topmonks/github@1.2.0
   node: circleci/node@5.0.1
   pulumi: pulumi/pulumi@2.0.0
   rollbar: rollbar/deploy@1.0.1
@@ -333,7 +333,7 @@ jobs:
 
   merge_pr:
     docker:
-      - image: cimg/base:2022.03
+      - image: cimg/base:current
     steps:
       - checkout
       - github/install
@@ -346,7 +346,7 @@ jobs:
 
   github_release:
     docker:
-      - image: cimg/base:2022.03
+      - image: cimg/base:current
     steps:
       - checkout
       - attach_workspace:
@@ -355,6 +355,7 @@ jobs:
       - github/release:
           tag: "$CIRCLE_TAG"
           files: dist/*.zip
+          generate_notes: true
 
 workflows:
   ci:
