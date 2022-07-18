@@ -61,7 +61,9 @@ function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
           >${formatDate(date)}
         </time>
         <br />
-        ${rating(reviewRating)}
+        ${rating(reviewRating.ratingValue, {
+          maxValue: reviewRating.bestRating
+        })}
       </div>
       <div class="review__content" property="reviewBody">
         <p>${reviewBody}</p>
