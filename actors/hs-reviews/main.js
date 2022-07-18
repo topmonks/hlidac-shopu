@@ -352,6 +352,23 @@ async function firefoxReviews(request, json, requestQueue) {
 }
 
 /**
+ * @param {S3Client} s3
+ * @param {string} fileName
+ * @param {string} ext
+ * @param {*} data
+ */
+async function uploadToS3(s3, fileName, ext, data) {
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: "data.hlidacshopu.cz",
+      Key: `app/${fileName}.${ext}`,
+      ContentType: `application/${ext}`,
+      Body: JSON.stringify(data)
+    })
+  );
+}
+
+/**
  *
  * @param {CloudFrontClient} cloudfront
  * @param {string} distributionId
@@ -374,8 +391,8 @@ async function saveData({ reviews, stats }) {
 
   log.info("S3: starting upload of data");
   const s3 = new S3Client(configuration);
-  await uploadToS3v2(s3, reviews);
-  await uploadToS3v2(s3, stats);
+  await uploadToS3(s3, "reviews", "jsonld", reviews);
+  await uploadToS3(s3, "stats", "jsonld", stats);
   log.info("S3: done");
 
   log.info("CloudFront: invalidating data in CDN");
