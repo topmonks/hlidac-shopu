@@ -4,16 +4,16 @@
   "description": "Lambdas for handling API Gateway endpoints",
   "type": "module",
   "dependencies": {
-    "@adobe/helix-fetch": "3.0.11",
-    "@aws-sdk/client-dynamodb": "3.113.0",
-    "@aws-sdk/client-s3": "3.113.0",
-    "@aws-sdk/util-dynamodb": "3.113.0",
+    "@adobe/helix-fetch": "3.1.1",
+    "@aws-sdk/client-dynamodb": "3.131.0",
+    "@aws-sdk/client-s3": "3.131.0",
+    "@aws-sdk/util-dynamodb": "3.131.0",
     "@hlidac-shopu/lib": "^1.3.7",
     "date-fns": "2.28.0",
     "ramda": "0.28.0"
   },
   "devDependencies": {
-    "ava": "4.3.0",
+    "ava": "4.3.1",
     "c8": "7.11.3",
     "chai": "4.3.6"
   },

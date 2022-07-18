@@ -6,9 +6,9 @@
   "description": "This is the iGlobus actor.",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.112.0",
-    "@aws-sdk/client-s3": "3.113.0",
-    "@hlidac-shopu/actors-common": "1.2.15",
+    "@aws-sdk/client-cloudfront": "3.131.0",
+    "@aws-sdk/client-s3": "3.131.0",
+    "@hlidac-shopu/actors-common": "1.2.17",
     "apify": "^2.3.2"
   },
   "devDependencies": {
