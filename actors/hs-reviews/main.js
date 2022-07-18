@@ -5,7 +5,6 @@ import {
   CloudFrontClient,
   CreateInvalidationCommand
 } from "@aws-sdk/client-cloudfront";
-import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import cheerio from "cheerio";
 import * as csv from "csv-parse/sync";
