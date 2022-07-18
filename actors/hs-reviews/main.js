@@ -165,14 +165,12 @@ function appleReviews(request, document) {
 function googleStats(request, document) {
   const downloads = parseInt(
     document
-      .querySelector(".left-panel > div:nth-child(2) > .value")
+      .querySelector(".left-panel > div+div > .value")
       .textContent.replace(",", "")
   );
   const reviews = parseInt(
     document
-      .querySelector(
-        ".left-panel > div:nth-child(3) > div:first-child > .value"
-      )
+      .querySelector(".left-panel > div+div+div > div:first-child > .value")
       .textContent.match(/\d+/g)
       .pop()
   );
