@@ -1,6 +1,6 @@
 import Apify from "apify";
 import { fetch } from "@adobe/helix-fetch";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
   CreateInvalidationCommand
