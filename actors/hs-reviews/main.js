@@ -221,7 +221,7 @@ function googleReview(review) {
     "author": {
       "@type": "Person",
       "name": review.querySelector(".reviewer-name").textContent,
-      "image": review.querySelector("img").getAttribute("src")
+      "image": review.querySelector("img[loading]").getAttribute("src")
     },
     "datePublished": review.querySelector("td:first-child").textContent,
     "reviewBody": review.querySelector(".review-body").textContent,
