@@ -165,15 +165,13 @@ function appleReviews(request, document) {
 function googleStats(request, document) {
   const downloads = parseInt(
     document
-      .querySelector(
-        ".left-panel > div:nth-child(2) > div:nth-child(2) > .value"
-      )
+      .querySelector(".left-panel > div:nth-child(2) > .value")
       .textContent.replace(",", "")
   );
   const reviews = parseInt(
     document
       .querySelector(
-        ".left-panel > div:nth-child(2) > div:nth-child(1) > .value"
+        ".left-panel > div:nth-child(3) > div:first-child > .value"
       )
       .textContent.match(/\d+/g)
       .pop()
@@ -224,19 +222,15 @@ function googleReview(review) {
     "@type": "UserReview",
     "author": {
       "@type": "Person",
-      "name": review.querySelector("[itemprop=author] [itemprop=name]")
-        .textContent,
-      "image": review.querySelector("[itemprop=author] img").getAttribute("src")
+      "name": review.querySelector(".reviewer-name").textContent,
+      "image": review.querySelector("img").getAttribute("src")
     },
-    "datePublished": review.querySelector("[itemprop=datePublished]")
-      .textContent,
-    "reviewBody": review.querySelector("[itemprop=reviewBody]").textContent,
+    "datePublished": review.querySelector("td:first-child").textContent,
+    "reviewBody": review.querySelector(".review-body").textContent,
     "reviewRating": {
       "@type": "Rating",
       "bestRating": 5,
-      "ratingValue": review
-        .querySelector("[itemprop=reviewRating]")
-        .getAttribute("content"),
+      "ratingValue": review.querySelector("meta").getAttribute("content"),
       "worstRating": 1
     },
     "url":
