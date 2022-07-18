@@ -82,7 +82,9 @@ addEventListener("DOMContentLoaded", async e => {
     const client = await import(installationGuideUrl);
     render(client.installationGuide(), installationGuide);
   }
-  eShopsCount.innerText = shops.size.toLocaleString("cs");
+  eShopsCount.innerText = Math.round(
+    parseInt(shops.size.toLocaleString("cs"), 10) / 2
+  );
   const stats = await fetchStats();
   installsCount.innerText = `${countInstalls(stats).toLocaleString("cs")}+`;
   installsCount.setAttribute("title", "Chrome udává jen přibližné statistiky");
