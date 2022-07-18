@@ -6,7 +6,7 @@ import {
   CreateInvalidationCommand
 } from "@aws-sdk/client-cloudfront";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import cheerio from "cheerio";
+import { parseHTML } from "linkedom";
 import * as csv from "csv-parse/sync";
 import jwt from "jsonwebtoken";
 import { URLSearchParams } from "url";
@@ -16,20 +16,23 @@ import zlib from "zlib";
 /** @typedef { import("apify").RequestQueue } RequestQueue */
 /** @typedef { import("apify").RequestList } RequestList */
 /** @typedef { import("apify").HandleRequest } HandleRequest */
-/** @typedef { import("schema-dts").UserReview} UserReview */
-/** @typedef { import("schema-dts").InteractionCounter} InteractionCounter */
+/** @typedef { import("schema-dts").UserReview } UserReview */
+/** @typedef { import("schema-dts").InteractionCounter } InteractionCounter */
 
 const gunzip = promisify(zlib.gunzip);
-const { log, requestAsBrowser } = Apify.utils;
+const { log } = Apify.utils;
 
 /**
  * @param {Request} request
- * @param {cheerio.Root} $
+ * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function appleStats(request, $) {
+function appleStats(request, document) {
   const reviews = parseInt(
-    $(".we-customer-ratings__count").text().match(/\d+/g).pop()
+    document
+      .querySelector(".we-customer-ratings__count")
+      .textContent.match(/\d+/g)
+      .pop()
   );
   return [
     {
@@ -109,67 +112,70 @@ async function appleDownloads(request, resp, requestQueue) {
 }
 
 /**
- * @param {cheerio.Root} $
+ * @param {Element} review
+ * @returns {UserReview}
  */
-function appleReview($) {
-  return factory;
-
-  /** @returns {UserReview} */
-  function factory() {
-    const $review = $(this);
-    return {
-      "@context": "https://schema.org",
-      "@type": "UserReview",
-      "author": {
-        "@type": "Person",
-        "name": $review.find(".we-customer-review__user").text().trim()
-      },
-      "datePublished": $review.find("time").attr("datetime"),
-      "reviewBody": $review.find("blockquote").text().trim(),
-      "reviewRating": {
-        "@type": "Rating",
-        "bestRating": 5,
-        "ratingValue": parseInt(
-          $review.find(".we-customer-review__rating").attr("aria-label")[0],
-          10
-        ),
-        "worstRating": 1
-      },
-      "url":
-        "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac",
-      "itemReviewed": {
-        "@type": "WebApplication",
-        "url": "https://www.hlidacshopu.cz/"
-      }
-    };
-  }
+function appleReview(review) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "UserReview",
+    "author": {
+      "@type": "Person",
+      "name": review
+        .querySelector(".we-customer-review__user")
+        .textContent.trim()
+    },
+    "datePublished": review.querySelector("time").getAttribute("datetime"),
+    "reviewBody": review.querySelector("blockquote").textContent.trim(),
+    "reviewRating": {
+      "@type": "Rating",
+      "bestRating": 5,
+      "ratingValue": parseInt(
+        review
+          .querySelector(".we-customer-review__rating")
+          .getAttribute("aria-label")[0],
+        10
+      ),
+      "worstRating": 1
+    },
+    "url":
+      "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac",
+    "itemReviewed": {
+      "@type": "WebApplication",
+      "url": "https://www.hlidacshopu.cz/"
+    }
+  };
 }
 
 /**
  * @param {Request} request
- * @param {cheerio.Root} $
+ * @param {Document} document
  * @returns {UserReview[]}
  */
-function appleReviews(request, $) {
-  const $reviews = $(".we-customer-review");
-  return $reviews.map(appleReview($)).toArray();
+function appleReviews(request, document) {
+  const reviews = document.querySelectorAll(".we-customer-review");
+  return Array.from(reviews).map(appleReview);
 }
 
 /**
  * @param {Request} request
- * @param {cheerio.Root} $
+ * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function googleStats(request, $) {
+function googleStats(request, document) {
   const downloads = parseInt(
-    $(".left-panel > div:nth-child(2) > div:nth-child(2) > .value")
-      .text()
-      .replace(",", "")
+    document
+      .querySelector(
+        ".left-panel > div:nth-child(2) > div:nth-child(2) > .value"
+      )
+      .textContent.replace(",", "")
   );
   const reviews = parseInt(
-    $(".left-panel > div:nth-child(2) > div:nth-child(1) > .value")
-      .text()
-      .match(/\d+/g)
+    document
+      .querySelector(
+        ".left-panel > div:nth-child(2) > div:nth-child(1) > .value"
+      )
+      .textContent.match(/\d+/g)
       .pop()
   );
   return [
@@ -209,64 +215,63 @@ function googleStats(request, $) {
 }
 
 /**
- * @param {cheerio.Root} $
+ * @param {Element} review
+ * @returns {UserReview}
  */
-function googleReview($) {
-  return factory;
-
-  /** @returns {UserReview} */
-  function factory() {
-    const $review = $(this);
-    return {
-      "@context": "https://schema.org",
-      "@type": "UserReview",
-      "author": {
-        "@type": "Person",
-        "name": $review.find("[itemprop=author] [itemprop=name]").text(),
-        "image": $review.find("[itemprop=author] img").attr("src")
-      },
-      "datePublished": $review.find("[itemprop=datePublished]").text(),
-      "reviewBody": $review.find("[itemprop=reviewBody]").text(),
-      "reviewRating": {
-        "@type": "Rating",
-        "bestRating": 5,
-        "ratingValue": $review.find("[itemprop=reviewRating]").attr("content"),
-        "worstRating": 1
-      },
-      "url":
-        "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk",
-      "itemReviewed": {
-        "@type": "WebApplication",
-        "url": "https://www.hlidacshopu.cz/"
-      }
-    };
-  }
+function googleReview(review) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "UserReview",
+    "author": {
+      "@type": "Person",
+      "name": review.querySelector("[itemprop=author] [itemprop=name]")
+        .textContent,
+      "image": review.querySelector("[itemprop=author] img").getAttribute("src")
+    },
+    "datePublished": review.querySelector("[itemprop=datePublished]")
+      .textContent,
+    "reviewBody": review.querySelector("[itemprop=reviewBody]").textContent,
+    "reviewRating": {
+      "@type": "Rating",
+      "bestRating": 5,
+      "ratingValue": review
+        .querySelector("[itemprop=reviewRating]")
+        .getAttribute("content"),
+      "worstRating": 1
+    },
+    "url":
+      "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk",
+    "itemReviewed": {
+      "@type": "WebApplication",
+      "url": "https://www.hlidacshopu.cz/"
+    }
+  };
 }
 
 /**
  * @param {Request} request
- * @param {cheerio.Root} $
+ * @param {Document} document
  * @returns {UserReview[]}
  */
-function googleReviews(request, $) {
-  const $reviews = $("table.table tbody tr");
-  return $reviews.map(googleReview($)).toArray();
+function googleReviews(request, document) {
+  const reviews = document.querySelectorAll("table.table tbody tr");
+  return Array.from(reviews).map(googleReview);
 }
 
 /**
  * @param {Request} request
- * @param {cheerio.Root} $
+ * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function firefoxStats(request, $) {
-  const meta = $(".MetadataCard > dl");
+function firefoxStats(request, document) {
+  const meta = document.querySelectorAll(".MetadataCard > dl");
   if (!meta.length) return [];
   const downloads = parseInt(
-    $(meta[0]).find("dd").text().replace(/\s/g, "").replace(",", ""),
+    meta[0].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""),
     10
   );
   const reviews = parseInt(
-    $(meta[1]).find("dd").text().replace(/\s/g, "").replace(",", ""),
+    meta[1].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""),
     10
   );
   return [
@@ -459,9 +464,9 @@ function createHandlePageFunction(requestQueue, token) {
     log.info(`Handling page ${request.url}`);
     switch (request.userData.label) {
       case APPLE: {
-        const response = await requestAsBrowser({ url: request.url });
-        const $ = cheerio.load(response.body);
-        const result = appleStats(request, $);
+        const response = await fetch(request.url);
+        const { document } = parseHTML(await response.text());
+        const result = appleStats(request, document);
         await Apify.pushData(result);
         stats.push(...result);
         break;
@@ -479,42 +484,42 @@ function createHandlePageFunction(requestQueue, token) {
         break;
       }
       case APPLE_REVIEWS: {
-        const response = await requestAsBrowser({ url: request.url });
-        const $ = cheerio.load(response.body);
-        const result = appleReviews(request, $);
+        const response = await fetch(request.url);
+        const { document } = parseHTML(await response.text());
+        const result = appleReviews(request, document);
         await Apify.pushData(result);
         reviews.push(...result);
         break;
       }
       case GOOGLE: {
-        const response = await requestAsBrowser({ url: request.url });
-        const $ = cheerio.load(response.body);
-        const result = googleStats(request, $);
+        const response = await fetch(request.url);
+        const { document } = parseHTML(await response.text());
+        const result = googleStats(request, document);
         await Apify.pushData(result);
         stats.push(...result);
         break;
       }
       case GOOGLE_REVIEWS: {
-        const response = await requestAsBrowser({ url: request.url });
-        const $ = cheerio.load(response.body);
-        const result = googleReviews(request, $);
+        const response = await fetch(request.url);
+        const { document } = parseHTML(await response.text());
+        const result = googleReviews(request, document);
         await Apify.pushData(result);
         reviews.push(...result);
         break;
       }
       case FIREFOX: {
-        const response = await requestAsBrowser({ url: request.url });
-        const $ = cheerio.load(response.body);
-        const result = firefoxStats(request, $);
+        const response = await fetch(request.url);
+        const { document } = parseHTML(await response.text());
+        const result = firefoxStats(request, document);
         await Apify.pushData(result);
         stats.push(...result);
         break;
       }
       case FIREFOX_REVIEWS: {
-        const response = await requestAsBrowser({ url: request.url });
+        const response = await fetch(request.url);
         const result = await firefoxReviews(
           request,
-          JSON.parse(response.body),
+          await response.json(),
           requestQueue
         );
         await Apify.pushData(result);
