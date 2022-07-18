@@ -356,7 +356,7 @@ jobs:
           tag: "$CIRCLE_TAG"
           files: dist/*.zip
           generate_notes: true
-
+          notes_file: CHANGELOG.md
 workflows:
   ci:
     jobs:
