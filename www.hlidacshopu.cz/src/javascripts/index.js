@@ -84,7 +84,8 @@ addEventListener("DOMContentLoaded", async e => {
   }
   eShopsCount.innerText = shops.size.toLocaleString("cs");
   const stats = await fetchStats();
-  installsCount.innerText = countInstalls(stats).toLocaleString("cs");
+  installsCount.innerText = `${countInstalls(stats).toLocaleString("cs")}+`;
+  installsCount.setAttribute("title", "Chrome udává jen přibližné statistiky");
   reviewsCount.innerText = countReviews(stats).toLocaleString("cs");
 
   fetchShopsStats()
