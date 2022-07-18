@@ -228,7 +228,10 @@ function googleReview(review) {
     "reviewRating": {
       "@type": "Rating",
       "bestRating": 5,
-      "ratingValue": review.querySelector("meta").getAttribute("content"),
+      "ratingValue": parseInt(
+        review.querySelector("meta").getAttribute("content"),
+        10
+      ),
       "worstRating": 1
     },
     "url":
