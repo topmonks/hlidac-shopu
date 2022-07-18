@@ -5,12 +5,14 @@ const { log } = Apify.utils;
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 
+const isDisabled = process.env.DISABLE_KEBOOLA_UPLOAD || process.env.TEST;
+
 /**
  * @param {string} tableName
  * @returns {Promise<void>}
  */
 export async function uploadToKeboola(tableName) {
-  if (process.env.TEST) return;
+  if (isDisabled) return;
   log.info(`Keboola: Uploading to ${tableName}`);
   /** @type {ApifyEnv} */
   const env = await Apify.getEnv();

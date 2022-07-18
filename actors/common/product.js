@@ -7,6 +7,8 @@ import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 /** @typedef { import("@aws-sdk/client-cloudfront").CloudFrontClient } CloudFrontClient */
 /** @typedef { import("schema-dts").Product} Product */
 
+const isDisabled = process.env.DISABLE_LINKED_DATA || process.env.TEST;
+
 /**
  *
  * @param detail
@@ -48,7 +50,7 @@ export function toProduct(detail, { priceCurrency, ...additionalData } = {}) {
  * @returns {Promise<void>}
  */
 async function uploadToS3(s3, shop, fileName, ext, data) {
-  if (process.env.TEST) return;
+  if (isDisabled) return;
   await s3.send(
     new PutObjectCommand({
       Bucket: "data.hlidacshopu.cz",
@@ -85,7 +87,7 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
  * @returns {Promise<void>}
  */
 export async function invalidateCDN(cloudfront, distributionId, shop) {
-  if (process.env.TEST) return;
+  if (isDisabled) return;
   await cloudfront.send(
     new CreateInvalidationCommand({
       DistributionId: distributionId,
