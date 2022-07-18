@@ -6,13 +6,9 @@ import fs from "fs";
 import path from "path";
 import { URL } from "url";
 
-const test = true;
+const test = false;
 const urls = [
-  "https://www.seznamzpravy.cz/clanek/ekonomika-byznys-trendy-analyzy-konec-slev-ktere-nikdy-nebyly-e-shopy-je-musi-zacit-pocitat-jinak-186075",
-  "https://www.mesec.cz/clanky/zakaz-falesnych-slev-novela-zakona-ma-zabranit-dalsim-podvodum-na-spotrebitele/",
-  "https://www.reflex.cz/clanek/zajimavosti/112941/nova-evropska-smernice-zmeni-pravidla-o-slevach-kde-a-jake-slevy-cesi-vyhledavaji.html",
-  "https://cc.cz/komunikuji-e-shopy-slevy-ferove-hlidac-shopu-kontroluje-jestli-obchody-nebalamuti-zakazniky/",
-  "https://connect.zive.cz/clanky/pochvalu-za-ferove-slevy-zaslouzi-alza-a-czc-odstrasujicimi-priklady-jsou-mountfield-a-aaaauto/sc-320-a-217052/default.aspx",
+  "https://tech.hn.cz/c1-67092220-nakupni-svatek-na-48-hodin-nemecky-prime-day-proti-brutalnimu-vyprodeji-a-cenovym-bombam"
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
@@ -65,11 +61,25 @@ function readLinkedData(document) {
   }
 }
 
+/**
+ * Reads the response text in given text encoding.
+ * When charset isn't defined on `content-type` header it falls back to `utf-8`.
+ * @param {Response} resp
+ * @returns {string}
+ */
+async function readTextResponse(resp) {
+  const contentType = resp.headers.get("content-type");
+  const [, charset] = contentType?.split("charset=");
+  const decoder = new TextDecoder(charset ?? "utf-8");
+  const buffer = await resp.arrayBuffer();
+  return decoder.decode(buffer);
+}
+
 async function main() {
   for (let url of urls) {
     console.log(url);
     const resp = await fetch(url, {});
-    const { document } = parseHTML(await resp.text());
+    const { document } = parseHTML(await readTextResponse(resp));
     const ld = readLinkedData(document);
     const title = (
       ld.headline ??
