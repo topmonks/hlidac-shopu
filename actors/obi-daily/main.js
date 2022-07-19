@@ -137,7 +137,6 @@ async function handleList({ $, requestQueue, request }, { stats }) {
     url: request.url,
     productLinkList
   });
-  console.log(productLinkList);
   const requestList = productLinkList.map(url =>
     requestQueue.addRequest({
       url: new URL(url, request.url).href,
