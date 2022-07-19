@@ -2,54 +2,40 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  uploadToS3v2,
-  invalidateCDN
+  invalidateCDN,
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import zlib from "zlib";
-import cheerio from "cheerio";
+import { fetch } from "@adobe/helix-fetch";
+import { DOMParser } from "linkedom";
 import Apify from "apify";
+import zlib from "zlib";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { shopName, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
-const { log, requestAsBrowser } = Apify.utils;
+const { log } = Apify.utils;
 const processedIds = new Set();
 
-/**
- * Gets attribute as text from a ElementHandle.
- * @param {ElementHandle} element - The element to get attribute from.
- * @param {string} attr - Name of the attribute to get.
- */
 const WEB = "https://www.mironet.cz";
-const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
-
-function streamToBuffer(stream) {
-  const chunks = [];
-  return new Promise((resolve, reject) => {
-    stream.on("data", chunk => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
-  });
-}
 
 async function getAllCategories() {
-  const stream = await requestAsBrowser({ url: SITEMAP_URL, stream: true });
-  const buffer = await streamToBuffer(stream);
-  const xmlString = zlib.unzipSync(buffer).toString();
-  const $ = cheerio.load(xmlString, { xmlMode: true });
-  return $("url")
-    .map(function () {
-      const url = $(this).find("loc").text().trim();
-      return {
-        url,
-        userData: {
-          label: "page",
-          baseUrl: url
-        }
-      };
-    })
-    .toArray();
+  const resp = await fetch(
+    "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz"
+  );
+  const buffer = await resp.buffer();
+  const markup = zlib.unzipSync(buffer).toString();
+  const document = new DOMParser().parseFromString(markup, "text/xml");
+  return Array.from(document.getElementsByTagNameNS("", "url"))
+    .flatMap(x => Array.from(x.getElementsByTagNameNS("", "loc")))
+    .map(x => x.textContent.trim())
+    .map(url => ({
+      url,
+      userData: {
+        label: "page",
+        baseUrl: url
+      }
+    }));
 }
 
 async function createRequestList({ type, bfUrl }) {
@@ -74,7 +60,8 @@ async function createRequestList({ type, bfUrl }) {
         }
       ]);
     case ActorType.FULL:
-      return Apify.openRequestList("sitemap", getAllCategories());
+      const categories = await getAllCategories();
+      return Apify.openRequestList("sitemap", categories);
     default:
       throw new Error("Unknown actor type: " + type);
   }
