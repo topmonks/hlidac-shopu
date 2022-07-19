@@ -67,7 +67,7 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
   );
 
   if (productCount) {
-    await handleLastSubCategory(context, { inputData });
+    await handleLastSubCategory(context, { inputData, stats });
   } else {
     let subCategoryList = $('a[wt_name="assortment_menu.level2"]')
       .map(function () {
@@ -92,7 +92,7 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
   }
 }
 
-async function handleLastSubCategory(context, { inputData }) {
+async function handleLastSubCategory(context, { inputData, stats }) {
   const { $, requestQueue, request } = context;
   const productCount = parseInt($($("div.variants")).attr("data-productcount"));
   log.debug(
