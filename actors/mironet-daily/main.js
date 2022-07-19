@@ -67,12 +67,12 @@ async function createRequestList({ type, bfUrl }) {
   }
 }
 
-async function handleSelout($, requestQueue) {
+async function handleSelout($, requestQueue, stats) {
   const categories = [];
   let onclickUrl;
   $(".vyprodej_category_head").each(function () {
     const moreBox = $(this).find(".bpMoreBox");
-    if (moreBox.length !== 0) {
+    if (moreBox.length) {
       moreBox.find("a").each(function () {
         categories.push({
           url: `${WEB}${$(this).attr("href")}`,
@@ -86,8 +86,11 @@ async function handleSelout($, requestQueue) {
       onclickUrl = onClick.replace("location.href=", "").replace(/'/g, "");
     }
   });
-  if (categories.length !== 0) {
-    await enqueueRequests(requestQueue, categories);
+  if (categories.length) {
+    for (const category of categories) {
+      await requestQueue.addRequest(category);
+      stats.inc("urls");
+    }
   } else if (onclickUrl) {
     await requestQueue.addRequest({
       url: new URL(onclickUrl, WEB).href,
@@ -95,37 +98,38 @@ async function handleSelout($, requestQueue) {
         label: "category"
       }
     });
+    stats.inc("urls");
   }
 }
 
 async function handleCategory($, stats, request, requestQueue) {
-  const pages = [];
-  const browseSubCategories = $("div#BrowseSubCategories > a");
-  if (browseSubCategories.length > 0) {
-    browseSubCategories.each(function () {
-      const url1 = new URL($(this).attr("href"), WEB).href;
-      pages.push({
-        url: url1,
+  const browseSubCategories = $("div#BrowseSubCategories > a")
+    .map(function () {
+      return $(this).attr("href");
+    })
+    .toArray();
+  if (browseSubCategories.length) {
+    for (const categoryUrl of browseSubCategories) {
+      const url = new URL(categoryUrl, WEB).href;
+      await requestQueue.addRequest({
+        url: url,
         userData: {
           label: "page",
-          baseUrl: url1
+          baseUrl: url
         }
       });
-    });
-    stats.add("urls", pages.length);
-    log.debug(`Found ${pages.length} valid urls by ${request.url}`);
-    await enqueueRequests(requestQueue, pages, false);
+      stats.inc("urls");
+    }
   } else {
     log.debug(`Enqueue ${request.url} as a page`);
-    await requestQueue.addRequest(
-      new Apify.Request({
-        url: request.url,
-        userData: {
-          label: "page",
-          baseUrl: new URL($(this).attr("href"), WEB).href
-        }
-      })
-    );
+    await requestQueue.addRequest({
+      url: request.url,
+      userData: {
+        label: "page",
+        baseUrl: request.url
+      }
+    });
+    stats.inc("urls");
   }
 }
 
@@ -136,7 +140,6 @@ async function handlePage($, stats, request, requestQueue) {
       pageNum < parseInt($(this).text().trim())
         ? parseInt($(this).text().trim())
         : pageNum;
-    // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
   });
   if (pageNum > 0) {
     stats.add("pages", pageNum);
@@ -226,9 +229,9 @@ Apify.main(async function main() {
       }
 
       if (request.userData.label === "category_vyprodej") {
-        await handleSelout($, requestQueue);
+        await handleSelout($, requestQueue, stats);
       } else if (request.userData.label === "category") {
-        await handleCategory.call(this, $, stats, request, requestQueue);
+        await handleCategory($, stats, request, requestQueue);
       }
       // This is the category page
       else if (
