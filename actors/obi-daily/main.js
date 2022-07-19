@@ -8,6 +8,7 @@ import {
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { URL } from "url";
 
 const { log } = Apify.utils;
 
@@ -121,13 +122,10 @@ async function handleLastSubCategory(context, { inputData, stats }) {
     await Promise.all(requestList);
     stats.add("urls", requestList.length);
   }
-  await handleList(context, { inputData, stats });
+  await handleList(context, { stats });
 }
 
-async function handleList(
-  { $, requestQueue, request },
-  { homePageUrl, stats }
-) {
+async function handleList({ $, requestQueue, request }, { stats }) {
   let productLinkList = $("li.product > a")
     .map(function () {
       if ($(this).attr("data-ui-name")) {
@@ -137,12 +135,12 @@ async function handleList(
     .toArray();
   log.debug(`[handleList] label: ${request.userData.label}`, {
     url: request.url,
-    homePageUrl,
     productLinkList
   });
+  console.log(productLinkList);
   const requestList = productLinkList.map(url =>
     requestQueue.addRequest({
-      url: new URL(url, homePageUrl).href,
+      url: new URL(url, request.url).href,
       userData: { label: "DETAIL" }
     })
   );
@@ -377,7 +375,7 @@ Apify.main(async function main() {
       } else if (label === "SUBCAT") {
         await handleSubCategory(context, { homePageUrl, inputData, stats });
       } else if (label === "LIST") {
-        await handleList(context, { homePageUrl, stats });
+        await handleList(context, { stats });
       } else if (label === "DETAIL") {
         await handleDetail(context, {
           dataset,
