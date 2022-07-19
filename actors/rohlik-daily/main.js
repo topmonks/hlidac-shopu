@@ -8,15 +8,21 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import Apify from "apify";
 import CloudFlareUnBlocker from "./cloudflare-unblocker.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 /** @typedef { import("./apify.json").ApifyEnv } ApifyEnv */
 /** @typedef { import("./apify.json").ActorRun } ActorRun */
-/** @typedef { import("./apify.json").CheerioHandlePageInputs } CheerioHandlePageInputs */
 /** @typedef { import("./apify.json").RequestQueue } RequestQueue */
 /** @typedef { import("./apify.json").RequestList } RequestList */
 /** @typedef { import("./apify.json").ProxyConfiguration } ProxyConfiguration */
 
-const { log } = Apify.utils;
+const { log, requestAsBrowser } = Apify.utils;
+
+const Label = {
+  MAIN: "main",
+  LIST: "list",
+  DETAIL: "PAGE"
+};
 
 let jsonCategories = {};
 const firstPage =
@@ -71,11 +77,12 @@ export default function getItems(items, jsonCategories) {
   return results;
 }
 
-async function processItem(s3, products) {
+async function processItem(s3, products, stats) {
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
   const unprocessedProducts = products.filter(p => !processedIds.has(p.itemId));
   for (const item of unprocessedProducts) {
+    stats.inc("items");
     const product = {
       ...item,
       category: item.breadcrumbs.join(" > ")
@@ -92,6 +99,84 @@ async function processItem(s3, products) {
   await Promise.all(requests);
 }
 
+async function processMain(body, stats, requestQueue) {
+  const categories = Object.keys(body.navigation);
+  jsonCategories = body.navigation;
+  if (categories.length) {
+    log.debug(`Adding to the queue ${categories.length} of categories`);
+    for (const category of categories) {
+      stats.inc("categories");
+      await requestQueue.addRequest(
+        new Apify.Request({
+          url: `https://www.rohlik.cz/services/frontend-service/products/${category}?offset=0&limit=25`,
+          userData: {
+            label: Label.LIST,
+            categoryId: category
+          },
+          uniqueKey: category.toString()
+        })
+      );
+      const subCategories = body.navigation[category].children;
+      if (subCategories.length) {
+        log.debug(
+          `Adding to the queue ${subCategories.length} of subCategories`
+        );
+      }
+      for (const subCategory of subCategories) {
+        stats.inc("subCategories");
+        await requestQueue.addRequest(
+          new Apify.Request({
+            url: `https://www.rohlik.cz/services/frontend-service/products/${subCategory}?offset=0&limit=25`,
+            userData: {
+              label: Label.LIST,
+              categoryId: subCategory
+            },
+            uniqueKey: subCategory.toString()
+          })
+        );
+      }
+    }
+  }
+}
+
+async function processList(body, request, stats, requestQueue, s3) {
+  const max = Math.ceil(body.data.totalHits / 25) * 25;
+  const { categoryId } = request.userData;
+  max !== 0 &&
+    log.debug(
+      `Adding to the queue ${max} for https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=0&limit=25`
+    );
+  for (let i = 25; i <= max; i += 25) {
+    await requestQueue.addRequest(
+      new Apify.Request({
+        url: `https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=${i}&limit=25`,
+        userData: {
+          label: Label.DETAIL,
+          categoryId
+        }
+      })
+    );
+  }
+  if (body.data?.productList?.length) {
+    log.debug(
+      `Stroring ${body.data.productList.length} items for category ${categoryId}`
+    );
+    const products = getItems(body.data.productList, jsonCategories);
+    await processItem(s3, products, stats);
+  }
+}
+
+async function processDetail(request, body, s3, stats) {
+  const { categoryId } = request.userData;
+  if (body.data?.productList?.length) {
+    log.debug(
+      `Storing ${body.data.productList.length} items for category ${categoryId}`
+    );
+    const products = getItems(body.data.productList, jsonCategories);
+    await processItem(s3, products, stats);
+  }
+}
+
 Apify.main(async function main() {
   rollbar.init();
 
@@ -105,16 +190,22 @@ Apify.main(async function main() {
 
   const {
     country = "cz",
-    maxConcurrency = 10,
+    maxConcurrency = 5,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input ?? {};
+
+  const stats = await withPersistedStats(x => x, {
+    categories: 0,
+    subCategories: 0,
+    items: 0
+  });
 
   // Get queue and enqueue first url.
   const requestQueue = await Apify.openRequestQueue();
   await requestQueue.addRequest(
     new Apify.Request({
       url: firstPage,
-      userData: { label: "main" }
+      userData: { label: Label.MAIN }
     })
   );
   /** @type {ProxyConfiguration} */
@@ -130,94 +221,36 @@ Apify.main(async function main() {
   // Create crawler.
   const crawler = new Apify.BasicCrawler({
     requestQueue,
-    maxConcurrency: 5,
+    maxConcurrency,
     useSessionPool: true,
-    async handleRequestFunction({ request, session }) {
-      const response = await Apify.utils.requestAsBrowser({
+    handleRequestFunction: async function ({ request, session }) {
+      const response = await requestAsBrowser({
         url: request.url,
         json: true,
         ...cloudFlareUnBlocker.getRequestOptions(session)
       });
       session.setCookiesFromResponse(response);
       const { statusCode, body } = response;
+
       if (statusCode !== 200 && statusCode !== 404) {
         session.retire();
-        // dont mark this request as bad, it is probably looking for working session
+        // don't mark this request as bad, it is probably looking for working session
         request.retryCount--;
-        // dont retry the request right away, wait a little bit
+        // don't retry the request right away, wait a little bit
         await Apify.utils.sleep(5000);
         throw new Error("Session blocked, retiring.");
       }
 
-      if (request.userData.label === "main") {
-        const categories = Object.keys(body.navigation);
-        jsonCategories = body.navigation;
-        if (categories.length !== 0) {
-          console.log(`Adding to the queue ${categories.length} of categories`);
-          for (const category of categories) {
-            await requestQueue.addRequest(
-              new Apify.Request({
-                url: `https://www.rohlik.cz/services/frontend-service/products/${category}?offset=0&limit=25`,
-                userData: {
-                  label: "list",
-                  categoryId: category
-                },
-                uniqueKey: category.toString()
-              })
-            );
-            const subCategories = body.navigation[category].children;
-            subCategories.length &&
-              console.log(
-                `Adding to the queue ${subCategories.length} of subCategories`
-              );
-            for (const subCategory of subCategories) {
-              await requestQueue.addRequest(
-                new Apify.Request({
-                  url: `https://www.rohlik.cz/services/frontend-service/products/${subCategory}?offset=0&limit=25`,
-                  userData: {
-                    label: "list",
-                    categoryId: subCategory
-                  },
-                  uniqueKey: subCategory.toString()
-                })
-              );
-            }
-          }
-        }
-      } else if (request.userData.label === "list") {
-        const max = Math.ceil(body.data.totalHits / 25) * 25;
-        const { categoryId } = request.userData;
-        max !== 0 &&
-          console.log(
-            `Adding to the queue ${max} for https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=0&limit=25`
-          );
-        for (let i = 25; i <= max; i += 25) {
-          await requestQueue.addRequest(
-            new Apify.Request({
-              url: `https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=${i}&limit=25`,
-              userData: {
-                label: "PAGE",
-                categoryId
-              }
-            })
-          );
-        }
-        if (body.data?.productList?.length !== 0) {
-          console.log(
-            `Stroring ${body.data.productList.length} items for category ${categoryId}`
-          );
-          const products = getItems(body.data.productList, jsonCategories);
-          await processItem(s3, products);
-        }
-      } else if (request.userData.label === "PAGE") {
-        const { categoryId } = request.userData;
-        if (body.data?.productList?.length !== 0) {
-          console.log(
-            `Storing ${body.data.productList.length} items for category ${categoryId}`
-          );
-          const products = getItems(body.data.productList, jsonCategories);
-          await processItem(s3, products);
-        }
+      switch (request.userData.label) {
+        case Label.MAIN:
+          await processMain(body, stats, requestQueue);
+          break;
+        case Label.LIST:
+          await processList(body, request, stats, requestQueue, s3);
+          break;
+        case Label.DETAIL:
+          await processDetail(request, body, s3, stats);
+          break;
       }
 
       await Apify.utils.sleep(1000);
@@ -230,7 +263,7 @@ Apify.main(async function main() {
 
     // If request failed 4 times then this function is executed.
     async handleFailedRequestFunction({ request }) {
-      console.log(`Request ${request.url} failed 4 times`);
+      log.info(`Request ${request.url} failed 4 times`);
     }
   });
 
@@ -240,6 +273,7 @@ Apify.main(async function main() {
 
   try {
     await Promise.all([
+      stats.save(),
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
       uploadToKeboola("rohlik")
     ]);

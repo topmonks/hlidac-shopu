@@ -1,7 +1,7 @@
 import Apify from "apify";
 import { defAtom } from "@thi.ng/atom";
 
-// TODO: make this lowes common denominator
+// TODO: make this lowest common denominator
 const defaultStats = {
   urls: 0,
   items: 0,
@@ -14,7 +14,6 @@ const defaultStats = {
 const inc = x => x + 1;
 const dec = x => x - 1;
 
-// TODO: stats should be in atom and updated via swap function atomically
 class Stats {
   constructor(init) {
     this.stats = defAtom(init);
@@ -74,8 +73,6 @@ export async function withPersistedStats(fn, init) {
 
   Apify.events.on("persistState", persistState);
   Apify.events.on("migrating", persistState);
-
-  //setInterval(() => state.log(), 20 * 1000);
 
   return state;
 }
