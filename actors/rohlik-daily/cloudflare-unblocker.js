@@ -4,6 +4,8 @@ import CrawlerExtension from "apify/build/crawlers/crawler_extension.js";
 import { BrowserPool, PlaywrightPlugin } from "browser-pool";
 import playwright from "playwright";
 
+console.log(CrawlerExtension);
+
 const {
   utils: {
     log,
