@@ -2,8 +2,8 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  uploadToS3v2,
-  invalidateCDN
+  invalidateCDN,
+  uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -74,18 +74,16 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
         return $(this).attr("href");
       })
       .get();
-    log.debug(`${label}I ${JSON.stringify(subCategoryList)}`);
+    log.debug(`${label}`, { subCategoryList });
     if (inputData.development) {
       subCategoryList = subCategoryList.slice(0, 1);
-      log.debug(
-        `development mode, ${label}I is ${JSON.stringify(subCategoryList)}`
-      );
+      log.debug(`development mode, ${label} is`, subCategoryList);
     }
     for (const subcategoryLink of subCategoryList) {
       const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
       await requestQueue.addRequest({
         url: subcategoryUrl,
-        userData: { label: label + "I" }
+        userData: { label: label }
       });
       stats.inc("urls");
     }
@@ -136,19 +134,18 @@ async function handleList(
         return $(this).attr("href");
       }
     })
-    .get();
-  log.debug(
-    `[handleList] label: ${request.userData.label}, url: ${
-      request.url
-    }, productLinkList: ${JSON.stringify(productLinkList)}`
-  );
-  const requestList = productLinkList.map(url => {
-    const productDetailUrl = new URL(url, homePageUrl).href;
-    return requestQueue.addRequest({
-      url: productDetailUrl,
-      userData: { label: "DETAIL" }
-    });
+    .toArray();
+  log.debug(`[handleList] label: ${request.userData.label}`, {
+    url: request.url,
+    homePageUrl,
+    productLinkList
   });
+  const requestList = productLinkList.map(url =>
+    requestQueue.addRequest({
+      url: new URL(url, homePageUrl).href,
+      userData: { label: "DETAIL" }
+    })
+  );
   await Promise.all(requestList);
   stats.add("urls", requestList.length);
 }
@@ -308,11 +305,13 @@ Apify.main(async function main() {
   log.info("Actor starts.");
 
   rollbar.init();
+
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
     region: "eu-central-1",
     maxAttempts: 3
   });
+
   const processedIds = new Set();
   const variantIds = new Set();
   let stats = await withPersistedStats(x => x, {
@@ -375,7 +374,7 @@ Apify.main(async function main() {
       context.requestQueue = requestQueue;
       if (label === "START") {
         await handleStart(context, { homePageUrl, inputData, stats });
-      } else if (label.includes("SUBCAT")) {
+      } else if (label === "SUBCAT") {
         await handleSubCategory(context, { homePageUrl, inputData, stats });
       } else if (label === "LIST") {
         await handleList(context, { homePageUrl, stats });
