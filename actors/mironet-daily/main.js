@@ -24,16 +24,7 @@ const processedIds = new Set();
 const WEB = "https://www.mironet.cz";
 const SITEMAP_URL = "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz";
 
-async function enqueueRequests(requestQueue, items) {
-  log.info(
-    `Waiting for ${items.length} categories add to request queue. It will takes some time.`
-  );
-  for (const item of items) {
-    await requestQueue.addRequest(item);
-  }
-}
-
-async function streamToBuffer(stream) {
+function streamToBuffer(stream) {
   const chunks = [];
   return new Promise((resolve, reject) => {
     stream.on("data", chunk => chunks.push(chunk));
@@ -42,37 +33,152 @@ async function streamToBuffer(stream) {
   });
 }
 
-async function enqueueAllCategories(requestQueue) {
+async function getAllCategories() {
   const stream = await requestAsBrowser({ url: SITEMAP_URL, stream: true });
   const buffer = await streamToBuffer(stream);
   const xmlString = zlib.unzipSync(buffer).toString();
   const $ = cheerio.load(xmlString, { xmlMode: true });
-  const categoryUrls = [];
-
-  // Pick all urls from sitemap
-  $("url").each(function () {
-    const url = $(this).find("loc").text().trim();
-    categoryUrls.push({
-      url,
-      userData: {
-        label: "page",
-        baseUrl: url
-      }
-    });
-  });
-  await enqueueRequests(requestQueue, categoryUrls);
-  log.info(`Enqueued ${categoryUrls.length} categories`);
+  return $("url")
+    .map(function () {
+      const url = $(this).find("loc").text().trim();
+      return {
+        url,
+        userData: {
+          label: "page",
+          baseUrl: url
+        }
+      };
+    })
+    .toArray();
 }
 
-/** Main function */
+async function createRequestList({ type, bfUrl }) {
+  switch (type) {
+    case ActorType.BF:
+      return Apify.openRequestList("black-friday", [
+        {
+          url: bfUrl,
+          userData: {
+            label: "category_vyprodej"
+          }
+        }
+      ]);
+    case ActorType.TEST:
+      return Apify.openRequestList("test", [
+        {
+          url: "https://www.mironet.cz/graficke-karty+c14402/",
+          userData: {
+            label: "page",
+            baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
+          }
+        }
+      ]);
+    case ActorType.FULL:
+      return Apify.openRequestList("sitemap", getAllCategories());
+    default:
+      throw new Error("Unknown actor type: " + type);
+  }
+}
+
+async function handleSelout($, requestQueue) {
+  const categories = [];
+  let onclickUrl;
+  $(".vyprodej_category_head").each(function () {
+    const moreBox = $(this).find(".bpMoreBox");
+    if (moreBox.length !== 0) {
+      moreBox.find("a").each(function () {
+        categories.push({
+          url: `${WEB}${$(this).attr("href")}`,
+          userData: {
+            label: "category"
+          }
+        });
+      });
+    } else {
+      const onClick = $(this).attr("onclick");
+      onclickUrl = onClick.replace("location.href=", "").replace(/'/g, "");
+    }
+  });
+  if (categories.length !== 0) {
+    await enqueueRequests(requestQueue, categories);
+  } else if (onclickUrl) {
+    await requestQueue.addRequest({
+      url: new URL(onclickUrl, WEB).href,
+      userData: {
+        label: "category"
+      }
+    });
+  }
+}
+
+async function handleCategory($, stats, request, requestQueue) {
+  const pages = [];
+  const browseSubCategories = $("div#BrowseSubCategories > a");
+  if (browseSubCategories.length > 0) {
+    browseSubCategories.each(function () {
+      const url1 = new URL($(this).attr("href"), WEB).href;
+      pages.push({
+        url: url1,
+        userData: {
+          label: "page",
+          baseUrl: url1
+        }
+      });
+    });
+    stats.add("urls", pages.length);
+    log.debug(`Found ${pages.length} valid urls by ${request.url}`);
+    await enqueueRequests(requestQueue, pages, false);
+  } else {
+    log.debug(`Enqueue ${request.url} as a page`);
+    await requestQueue.addRequest(
+      new Apify.Request({
+        url: request.url,
+        userData: {
+          label: "page",
+          baseUrl: new URL($(this).attr("href"), WEB).href
+        }
+      })
+    );
+  }
+}
+
+async function handlePage($, stats, request, requestQueue) {
+  let pageNum = 0;
+  $("a.PageNew").each(function () {
+    pageNum =
+      pageNum < parseInt($(this).text().trim())
+        ? parseInt($(this).text().trim())
+        : pageNum;
+    // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
+  });
+  if (pageNum > 0) {
+    stats.add("pages", pageNum);
+    log.debug(`Found ${pageNum} pages on ${request.url}`);
+    const { baseUrl } = request.userData;
+    const url = baseUrl.includes("?") ? `${baseUrl}&PgID=` : `${baseUrl}?PgID=`;
+    for (let i = 2; i <= pageNum; i++) {
+      await requestQueue.addRequest(
+        new Apify.Request({
+          userData: {
+            label: "pages",
+            baseUrl: request.userData.baseUrl
+          },
+          url: `${url}${i}`
+        })
+      );
+    }
+  }
+}
+
 Apify.main(async function main() {
   rollbar.init();
+
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
     region: "eu-central-1",
     maxAttempts: 3
   });
-  const input = await Apify.getInput();
+
   const stats = await withPersistedStats(x => x, {
     urls: 0,
     pages: 0,
@@ -80,6 +186,8 @@ Apify.main(async function main() {
     itemsDuplicity: 0,
     failed: 0
   });
+
+  const input = await Apify.getInput();
   const {
     development = false,
     debug = false,
@@ -95,27 +203,10 @@ Apify.main(async function main() {
   if (development || debug) {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
+
   // Open request queue and add statrUrl
   const requestQueue = await Apify.openRequestQueue();
-  if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: bfUrl,
-      userData: {
-        label: "category_vyprodej"
-      }
-    });
-  } else {
-    await enqueueAllCategories(requestQueue);
-
-    // for testing of single page
-    /*await requestQueue.addRequest({
-      url: "https://www.mironet.cz/graficke-karty+c14402/",
-      userData: {
-        label: "page",
-        baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
-      }
-    });*/
-  }
+  const requestList = await createRequestList({ type, bfUrl });
 
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
@@ -126,6 +217,7 @@ Apify.main(async function main() {
 
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
+    requestList,
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
@@ -147,65 +239,9 @@ Apify.main(async function main() {
       }
 
       if (request.userData.label === "category_vyprodej") {
-        const categories = [];
-        let onclickUrl;
-        $(".vyprodej_category_head").each(function () {
-          const moreBox = $(this).find(".bpMoreBox");
-          if (moreBox.length !== 0) {
-            moreBox.find("a").each(function () {
-              categories.push({
-                url: `${WEB}${$(this).attr("href")}`,
-                userData: {
-                  label: "category"
-                }
-              });
-            });
-          } else {
-            const onClick = $(this).attr("onclick");
-            onclickUrl = onClick
-              .replace("location.href=", "")
-              .replace(/'/g, "");
-          }
-        });
-        if (categories.length !== 0) {
-          await enqueueRequests(requestQueue, categories);
-        } else if (onclickUrl) {
-          await requestQueue.addRequest({
-            url: new URL(onclickUrl, WEB).href,
-            userData: {
-              label: "category"
-            }
-          });
-        }
+        await handleSelout($, requestQueue);
       } else if (request.userData.label === "category") {
-        const pages = [];
-        const browseSubCategories = $("div#BrowseSubCategories > a");
-        if (browseSubCategories.length > 0) {
-          browseSubCategories.each(function () {
-            const url1 = new URL($(this).attr("href"), WEB).href;
-            pages.push({
-              url: url1,
-              userData: {
-                label: "page",
-                baseUrl: url1
-              }
-            });
-          });
-          stats.add("urls", pages.length);
-          log.debug(`Found ${pages.length} valid urls by ${request.url}`);
-          await enqueueRequests(requestQueue, pages, false);
-        } else {
-          log.debug(`Enqueue ${request.url} as a page`);
-          await requestQueue.addRequest(
-            new Apify.Request({
-              url: request.url,
-              userData: {
-                label: "page",
-                baseUrl: new URL($(this).attr("href"), WEB).href
-              }
-            })
-          );
-        }
+        await handleCategory.call(this, $, stats, request, requestQueue);
       }
       // This is the category page
       else if (
@@ -214,33 +250,7 @@ Apify.main(async function main() {
       ) {
         try {
           if (request.userData.label === "page") {
-            let pageNum = 0;
-            $("a.PageNew").each(function () {
-              pageNum =
-                pageNum < parseInt($(this).text().trim())
-                  ? parseInt($(this).text().trim())
-                  : pageNum;
-              // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
-            });
-            if (pageNum > 0) {
-              stats.add("pages", pageNum);
-              log.debug(`Found ${pageNum} pages on ${request.url}`);
-              const { baseUrl } = request.userData;
-              const url = baseUrl.includes("?")
-                ? `${baseUrl}&PgID=`
-                : `${baseUrl}?PgID=`;
-              for (let i = 2; i <= pageNum; i++) {
-                await requestQueue.addRequest(
-                  new Apify.Request({
-                    userData: {
-                      label: "pages",
-                      baseUrl: request.userData.baseUrl
-                    },
-                    url: `${url}${i}`
-                  })
-                );
-              }
-            }
+            await handlePage($, stats, request, requestQueue);
           }
           const breadCrumbs = [];
           $("div#displaypath > a.CatParent").each(function () {
@@ -324,6 +334,7 @@ Apify.main(async function main() {
   log.info("ACTOR - run crawler");
   // Run crawler
   await crawler.run();
+
   log.info("ACTOR - crawler end");
   await stats.save();
 
