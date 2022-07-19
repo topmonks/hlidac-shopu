@@ -7,12 +7,13 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const { log } = Apify.utils;
 
 async function handleStart(
   { $, requestQueue, request },
-  { homePageUrl, inputData }
+  { homePageUrl, inputData, stats }
 ) {
   let categoryLinkList = $(
     "div.headr__nav-cat-col-inner > div.headr__nav-cat-row > a.headr__nav-cat-link"
@@ -52,12 +53,12 @@ async function handleStart(
         url: categoryUrl,
         userData: { label: "SUBCAT" }
       });
-      stats.urls += 1;
+      stats.inc("urls");
     }
   }
 }
 
-async function handleSubCategory(context, { homePageUrl, inputData }) {
+async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
   const { $, requestQueue, request } = context;
   const productCount = $($("div.variants")).attr("data-productcount");
   const label = request.userData.label;
@@ -86,7 +87,7 @@ async function handleSubCategory(context, { homePageUrl, inputData }) {
         url: subcategoryUrl,
         userData: { label: label + "I" }
       });
-      stats.urls += 1;
+      stats.inc("urls");
     }
   }
 }
@@ -120,12 +121,15 @@ async function handleLastSubCategory(context, { inputData }) {
         });
       });
     await Promise.all(requestList);
-    stats.urls += requestList.length;
+    stats.add("urls", requestList.length);
   }
-  await handleList(context, { inputData });
+  await handleList(context, { inputData, stats });
 }
 
-async function handleList({ $, requestQueue, request }, { homePageUrl }) {
+async function handleList(
+  { $, requestQueue, request },
+  { homePageUrl, stats }
+) {
   let productLinkList = $("li.product > a")
     .map(function () {
       if ($(this).attr("data-ui-name")) {
@@ -146,12 +150,12 @@ async function handleList({ $, requestQueue, request }, { homePageUrl }) {
     });
   });
   await Promise.all(requestList);
-  stats.urls += requestList.length;
+  stats.add("urls", requestList.length);
 }
 
 async function handleDetail(
   context,
-  { dataset, s3, processedIds, pushList, variantIds }
+  { dataset, s3, processedIds, pushList, variantIds, stats }
 ) {
   // log.debug(
   //   `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
@@ -226,11 +230,11 @@ async function handleDetail(
       uploadToS3v2(s3, result)
     );
     processedIds.add(result.itemId);
-    stats.items += 1;
+    stats.inc("items");
   } else {
-    stats.itemsDuplicity += 1;
+    stats.inc("itemsDuplicity");
   }
-  stats.totalItems += 1;
+  stats.inc("totalItems");
   if (pushList.length > 70) {
     await Promise.all(pushList);
     pushList = [];
@@ -287,7 +291,7 @@ async function handleVariant(
     });
   });
   await Promise.all(requestList);
-  stats.urls += requestList.length;
+  stats.add("urls", requestList.length);
 }
 
 function parsePrice(text) {
@@ -311,7 +315,12 @@ Apify.main(async function main() {
   });
   const processedIds = new Set();
   const variantIds = new Set();
-  let stats = {};
+  let stats = await withPersistedStats(x => x, {
+    urls: 0,
+    items: 0,
+    itemsDuplicity: 0,
+    totalItems: 0
+  });
   let pushList = [];
 
   const input = await Apify.getInput();
@@ -331,12 +340,6 @@ Apify.main(async function main() {
     log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
-  stats = (await Apify.getValue("STATS")) || {
-    urls: 0,
-    items: 0,
-    itemsDuplicity: 0,
-    totalItems: 0
-  };
   const dataset = await Apify.openDataset();
 
   const requestQueue = await Apify.openRequestQueue();
@@ -367,26 +370,27 @@ Apify.main(async function main() {
     proxyConfiguration,
     maxConcurrency,
     maxRequestRetries,
-    handlePageFunction: async context => {
+    async handlePageFunction(context) {
       const { label } = context.request.userData;
       context.requestQueue = requestQueue;
       if (label === "START") {
-        await handleStart(context, { homePageUrl, inputData });
+        await handleStart(context, { homePageUrl, inputData, stats });
       } else if (label.includes("SUBCAT")) {
-        await handleSubCategory(context, { homePageUrl, inputData });
+        await handleSubCategory(context, { homePageUrl, inputData, stats });
       } else if (label === "LIST") {
-        await handleList(context, { homePageUrl });
+        await handleList(context, { homePageUrl, stats });
       } else if (label === "DETAIL") {
         await handleDetail(context, {
           dataset,
           s3,
           processedIds,
           pushList,
-          variantIds
+          variantIds,
+          stats
         });
       }
     },
-    handleFailedRequestFunction: async ({ request }) => {
+    async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
@@ -395,8 +399,7 @@ Apify.main(async function main() {
   await crawler.run();
   log.info("crawler finished");
 
-  await Apify.setValue("STATS", stats);
-  log.info(JSON.stringify(stats));
+  await stats.save();
 
   const directoryName = `obi${country === "it" ? "-italia" : ""}.${country}`;
   await invalidateCDN(cloudfront, "EQYSHWUECAQC9", directoryName);
