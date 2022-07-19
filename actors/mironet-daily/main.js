@@ -38,6 +38,11 @@ async function getAllCategories() {
     }));
 }
 
+/**
+ * @param {string} type
+ * @param {string} bfUrl
+ * @returns {Promise<RequestList>}
+ */
 async function createRequestList({ type, bfUrl }) {
   switch (type) {
     case ActorType.BF:
@@ -194,11 +199,10 @@ Apify.main(async function main() {
     Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
-  // Open request queue and add statrUrl
   const requestQueue = await Apify.openRequestQueue();
   const requestList = await createRequestList({ type, bfUrl });
+  stats.add("urls", requestList.length());
 
-  log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
@@ -329,7 +333,7 @@ Apify.main(async function main() {
   await stats.save();
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "mironet.cz");
+    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shop);
     log.info("invalidated Data CDN");
     await uploadToKeboola(type !== ActorType.FULL ? "mironet_bf" : "mironet");
     log.info("upload to Keboola finished");
