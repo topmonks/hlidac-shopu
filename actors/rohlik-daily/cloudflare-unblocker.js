@@ -4,9 +4,7 @@ import * as ce from "apify/build/crawlers/crawler_extension.js";
 import { BrowserPool, PlaywrightPlugin } from "browser-pool";
 import playwright from "playwright";
 
-console.log(ce);
-
-const CrawlerExtension = ce.default;
+const CrawlerExtension = ce.default.default;
 
 const {
   utils: {
