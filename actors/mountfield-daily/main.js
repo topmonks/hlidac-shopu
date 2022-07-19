@@ -38,7 +38,7 @@ function parsePrice(text) {
   );
 }
 
-async function extractItems({ $, $products, s3, userInput }) {
+async function extractItems({ $, $products, s3, userInput, stats }) {
   const { country = COUNTRY.CZ } = userInput;
   const category = [];
   $(".box-breadcrumb__item").each(function () {
@@ -99,11 +99,11 @@ async function extractItems({ $, $products, s3, userInput }) {
   await Promise.all(requests);
 }
 
-async function scrapeProducts({ $, s3, userInput }) {
+async function scrapeProducts({ $, s3, userInput, stats }) {
   const $products = $(".list-products__item__in");
   if (!$products.length) return;
 
-  await extractItems({ $, $products, s3, userInput });
+  await extractItems({ $, $products, s3, userInput, stats });
 }
 
 /**
