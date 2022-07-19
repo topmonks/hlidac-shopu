@@ -17,7 +17,7 @@ async function handleStart(
   { homePageUrl, inputData, stats }
 ) {
   let categoryLinkList = $(
-    "div.headr__nav-cat-col-inner > div.headr__nav-cat-row > a.headr__nav-cat-link"
+    ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
   )
     .map(function () {
       return {
@@ -35,16 +35,13 @@ async function handleStart(
       })
       .get();
   }
-  log.debug(
-    `[handleStart] label: ${request.userData.label}, url: ${
-      request.url
-    }, subcategories: ${JSON.stringify(categoryLinkList)}`
-  );
+  log.debug(`[handleStart] label: ${request.userData.label}`, {
+    url: request.url,
+    categoryLinkList
+  });
   if (inputData.development) {
     categoryLinkList = categoryLinkList.slice(0, 1);
-    log.debug(
-      `development mode, subcategory is ${JSON.stringify(categoryLinkList)}`
-    );
+    log.debug(`development mode, subcategory is`, { categoryLinkList });
   }
 
   for (const categoryObject of categoryLinkList) {
@@ -61,11 +58,12 @@ async function handleStart(
 
 async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
   const { $, requestQueue, request } = context;
-  const productCount = $($("div.variants")).attr("data-productcount");
+  const productCount = parseInt($(".variants").data("productcount"), 10);
   const label = request.userData.label;
-  log.debug(
-    `[handleSubCategory] label: ${label}, url: ${request.url}, productCount ${productCount}`
-  );
+  log.debug(`[handleSubCategory] label: ${label}`, {
+    url: request.url,
+    productCount
+  });
 
   if (productCount) {
     await handleLastSubCategory(context, { inputData, stats });
@@ -74,7 +72,7 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
       .map(function () {
         return $(this).attr("href");
       })
-      .get();
+      .toArray();
     log.debug(`${label}`, { subCategoryList });
     if (inputData.development) {
       subCategoryList = subCategoryList.slice(0, 1);
@@ -84,7 +82,7 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
       const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
       await requestQueue.addRequest({
         url: subcategoryUrl,
-        userData: { label: label }
+        userData: { label }
       });
       stats.inc("urls");
     }
@@ -93,10 +91,11 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
 
 async function handleLastSubCategory(context, { inputData, stats }) {
   const { $, requestQueue, request } = context;
-  const productCount = parseInt($($("div.variants")).attr("data-productcount"));
-  log.debug(
-    `[handleLastSubCategory] label: ${request.userData.label}, url: ${request.url}, productCount ${productCount}`
-  );
+  const productCount = parseInt($(".variants").data("productcount"), 10);
+  log.debug(`[handleLastSubCategory] label: ${request.userData.label}`, {
+    url: request.url,
+    productCount
+  });
   const productPerPageCount = $("li.product > a")
     .map(function () {
       if ($(this).attr("data-ui-name")) {
@@ -151,9 +150,6 @@ async function handleDetail(
   context,
   { dataset, s3, processedIds, pushList, variantIds, stats }
 ) {
-  // log.debug(
-  //   `[handleDetail] label: ${request.userData.label}, url: ${request.url}`
-  // );
   const { request, $ } = context;
   const itemName = $(".overview__description >.overview__heading")
     .text()
@@ -187,13 +183,13 @@ async function handleDetail(
     originalPrice = parsePrice(originalPrice);
     discountedPrice = originalPrice - currentPrice;
   }
-  const discounted = !!discountedPrice;
-  const inStock = !!$("div.marg_b5").text().match(/(\d+)/);
+  const discounted = Boolean(discountedPrice);
+  const inStock = Boolean($("div.marg_b5").text().match(/(\d+)/));
   let img = $(".ads-slider__link").attr("href");
   if (!img) {
     img = $(".ads-slider__image")
       .map(function () {
-        return $(this).attr("data-src");
+        return $(this).data("src");
       })
       .get(0);
   }
@@ -202,7 +198,7 @@ async function handleDetail(
     .map(function () {
       return $(this).text();
     })
-    .get()
+    .toArray()
     .join("/");
   const result = {
     itemUrl: request.url,
@@ -234,7 +230,7 @@ async function handleDetail(
     pushList = [];
   }
 
-  await handleVariant(context, { variantIds, processedIds });
+  await handleVariant(context, { variantIds, processedIds, stats });
 }
 
 function getItemIdFromUrl(url) {
@@ -243,12 +239,12 @@ function getItemIdFromUrl(url) {
 
 async function handleVariant(
   { $, requestQueue, request },
-  { variantIds, processedIds }
+  { variantIds, processedIds, stats }
 ) {
   let crawledItemId = getItemIdFromUrl(request.url);
   let productLinkList = $(
-    '.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"], ' +
-      '.selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]'
+    `.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"],
+    .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
   )
     .map(function () {
       let productUrl = $(this).attr("href");
@@ -266,17 +262,14 @@ async function handleVariant(
       variantIds.add(itemId);
       return productUrl;
     })
-    .get();
+    .toArray();
 
-  if (!(productLinkList.length > 0)) {
-    return;
-  }
+  if (!productLinkList.length) return;
 
-  log.debug(
-    `[handleVariant] label: ${request.userData.label}, url: ${
-      request.url
-    }, productLinkList: ${JSON.stringify(productLinkList)}`
-  );
+  log.debug(`[handleVariant] label: ${request.userData.label}`, {
+    url: request.url,
+    productLinkList
+  });
 
   const requestList = productLinkList.map(url => {
     return requestQueue.addRequest({
@@ -328,8 +321,7 @@ Apify.main(async function main() {
     maxRequestRetries = 3,
     maxConcurrency = 10
   } = input ?? {};
-  const country =
-    (input && input.country && input.country.toLowerCase()) || "cz";
+  const country = input?.country?.toLowerCase() ?? "cz";
   const inputData = { country, development, debug };
 
   if (development || debug) {
@@ -344,17 +336,8 @@ Apify.main(async function main() {
   }.${country}`;
   await requestQueue.addRequest({
     url: homePageUrl,
-    userData: {
-      label: "START"
-    }
+    userData: { label: "START" }
   });
-
-  // await requestQueue.addRequest({
-  //   url: 'https://www.obi.de/leisten/endkappe-fuer-sockelleiste-ahorn-22-mm-x-40-mm/p/9124561#/',
-  //   userData: {
-  //     label: "DETAIL"
-  //   }
-  // });
 
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups,
