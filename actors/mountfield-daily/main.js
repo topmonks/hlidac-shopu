@@ -9,6 +9,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const COUNTRY = {
   CZ: "CZ",
@@ -93,15 +94,16 @@ async function extractItems({ $, $products, s3, userInput }) {
           })
         : null
     );
+    stats.inc("items");
   }
   await Promise.all(requests);
 }
 
-async function scrapProducts({ $, s3, userInput }) {
+async function scrapeProducts({ $, s3, userInput }) {
   const $products = $(".list-products__item__in");
-  if ($products.length > 0) {
-    await extractItems({ $, $products, s3, userInput });
-  }
+  if (!$products.length) return;
+
+  await extractItems({ $, $products, s3, userInput });
 }
 
 /**
@@ -117,10 +119,11 @@ export const getTableName = userInput => {
   return tableName;
 };
 
-async function scrapeCategoryItems({ $, crawler }) {
+async function scrapeCategoryItems({ $, crawler }, { stats }) {
   const categoryItems = $(".list-categories__item__block").toArray();
   for (const cat of categoryItems) {
     const url = $(cat).attr("href");
+    stats.inc("categories");
     await crawler.requestQueue.addRequest({
       url,
       userData: {
@@ -131,7 +134,10 @@ async function scrapeCategoryItems({ $, crawler }) {
   }
 }
 
-async function scrapeCategory({ $, request, crawler }, { userInput, s3 }) {
+async function scrapeCategory(
+  { $, request, crawler },
+  { userInput, s3, stats }
+) {
   const { mainCategory } = request.userData;
   const categories = $(
     `.list-categories__item__block,
@@ -140,6 +146,7 @@ async function scrapeCategory({ $, request, crawler }, { userInput, s3 }) {
   if (categories.length) {
     for (const cat of categories) {
       const url = $(cat).attr("href");
+      stats.inc("categories");
       await crawler.requestQueue.addRequest({
         url,
         userData: {
@@ -150,7 +157,7 @@ async function scrapeCategory({ $, request, crawler }, { userInput, s3 }) {
     }
     log.debug(`Found categories ${categories.length}`);
   } else {
-    await scrapProducts({ $, s3, userInput });
+    await scrapeProducts({ $, s3, userInput, stats });
     const href = $("a.in-paging__control__item--arrow-next").attr("href");
     if (!href) return;
 
@@ -168,6 +175,11 @@ async function scrapeCategory({ $, request, crawler }, { userInput, s3 }) {
 
 Apify.main(async function main() {
   rollbar.init();
+
+  const stats = await withPersistedStats(x => x, {
+    categories: 0,
+    items: 0
+  });
 
   const userInput = await Apify.getInput();
   const {
@@ -237,9 +249,9 @@ Apify.main(async function main() {
 
       switch (label) {
         case LABELS.START:
-          return scrapeCategoryItems(context);
+          return scrapeCategoryItems(context, { stats });
         case LABELS.CATEGORY:
-          return scrapeCategory(context, { userInput, s3 });
+          return scrapeCategory(context, { userInput, s3, stats });
       }
     },
     // If request failed 4 times then this function is executed
@@ -250,6 +262,8 @@ Apify.main(async function main() {
 
   await crawler.run();
   log.info("crawler finished");
+
+  await stats.save();
 
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopName(rootUrl));
