@@ -1,6 +1,6 @@
 import Apify from "apify";
 import { Session } from "apify/build/session_pool/session.js";
-import CrawlerExtension from "apify/build/crawlers/crawler_extension.js";
+import { default as CrawlerExtension } from "apify/build/crawlers/crawler_extension.js";
 import { BrowserPool, PlaywrightPlugin } from "browser-pool";
 import playwright from "playwright";
 
