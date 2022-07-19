@@ -63,12 +63,13 @@ async function handleCollections(
   country,
   requestQueue,
   params,
-  defaultUrl
+  defaultUrl,
+  stats
 ) {
   if (responseData.collections.length <= 0) return;
   const shop = getShopUri(country);
   for (const collection of responseData.collections) {
-    const newParams = {
+    const filters = new URLSearchParams({
       shop,
       page: 1,
       limit: 50,
@@ -78,28 +79,27 @@ async function handleCollections(
       variant_available: false,
       check_cache: false,
       sort_first: "available"
-    };
-    const url = `https://services.mybcapps.com/bc-sf-filter/filter?${new URLSearchParams(
-      newParams
-    )}`;
+    });
+    const url = `https://services.mybcapps.com/bc-sf-filter/filter?${filters}`;
     await requestQueue.addRequest({
       url,
       userData: {
         label: "COLLECTION",
         title: collection.title,
-        params: newParams
+        params: filters
       }
     });
   }
-  log.info(`Found ${responseData.collections.length}x collections`);
-  params.page += 1;
+  log.debug(`Found ${responseData.collections.length}x collections`);
+  stats.add("collections", responseData.collections.length);
+  const nextParams = Object.assign({}, params, { page: params.page + 1 });
   await requestQueue.addRequest(
     {
-      url: `${defaultUrl}?${new URLSearchParams(params)}`,
+      url: `${defaultUrl}?${new URLSearchParams(nextParams)}`,
       userData: {
         label: LABEL.COLLECTIONS,
         defaultUrl,
-        params
+        params: nextParams
       }
     },
     { forefront: false }
@@ -111,17 +111,17 @@ async function handleCollection(
   params,
   rootUrl,
   country,
-  crawlContext,
   s3,
   requestQueue,
-  title
+  title,
+  stats
 ) {
   const paginationCount = Math.ceil(responseData.total_product / params.limit);
-  log.info(`Found ${responseData.products.length}x products`);
+  log.debug(`Found ${responseData.products.length}x products`);
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
-  for (const product of responseData.products) {
-    if (!product.id || !product.price_max) continue;
+  const products = responseData.products.filter(p => p.id && p.price_max);
+  for (const product of products) {
     const item = {
       itemId: product.id,
       itemUrl: `${rootUrl}/products/${product.handle}`,
@@ -138,25 +138,25 @@ async function handleCollection(
       inStock: product.available
     };
 
-    crawlContext.stats.totalItems += 1;
+    stats.inc("totalItems");
     if (!processedIds.has(item.itemId)) {
       processedIds.add(item.itemId);
       requests.push(Apify.pushData(item), uploadToS3v2(s3, item));
-      crawlContext.stats.items += 1;
+      stats.inc("items");
     } else {
-      crawlContext.stats.itemsDuplicity += 1;
+      stats.inc("itemsDuplicity");
     }
   }
-  log.info(`Found ${requests.length / 2} unique products`);
+  log.debug(`Found ${requests.length / 2} unique products`);
   // await all requests, so we don't end before they end
   await Promise.all(requests);
 
   if (paginationCount > 1 && params.page === 1) {
     log.info(`Adding ${paginationCount - 1}x pagination pages `);
-    for (let i = 2; i <= paginationCount; i++) {
-      params.page = i;
+    for (let page = 2; page <= paginationCount; page++) {
+      const nextParams = Object.assign({}, params, { page });
       const url = `https://services.mybcapps.com/bc-sf-filter/filter?${new URLSearchParams(
-        params
+        nextParams
       )}`;
       await requestQueue.addRequest(
         {
@@ -164,7 +164,7 @@ async function handleCollection(
           userData: {
             label: LABEL.COLLECTION,
             title,
-            params
+            params: nextParams
           }
         },
         { forefront: true }
@@ -173,13 +173,7 @@ async function handleCollection(
   }
 }
 
-async function enqueueRequests(
-  requestQueue,
-  type,
-  rootUrl,
-  bfUrls,
-  crawlContext
-) {
+async function enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats) {
   switch (type) {
     case ActorType.BF:
       for (const url of bfUrls) {
@@ -187,7 +181,7 @@ async function enqueueRequests(
           url,
           userData: { label: LABEL.LIST }
         });
-        crawlContext.stats.urls += 1;
+        stats.inc("urls");
       }
       break;
     case ActorType.TEST:
@@ -219,9 +213,9 @@ async function processData(
   params,
   defaultUrl,
   rootUrl,
-  crawlContext,
   s3,
-  title
+  title,
+  stats
 ) {
   switch (label) {
     case "COLLECTIONS":
@@ -230,7 +224,8 @@ async function processData(
         country,
         requestQueue,
         params,
-        defaultUrl
+        defaultUrl,
+        stats
       );
     case "COLLECTION":
       return await handleCollection(
@@ -238,10 +233,10 @@ async function processData(
         params,
         rootUrl,
         country,
-        crawlContext,
         s3,
         requestQueue,
-        title
+        title,
+        stats
       );
   }
 }
@@ -255,6 +250,14 @@ Apify.main(async function main() {
   const cloudfront = new CloudFrontClient({
     region: "eu-central-1",
     maxAttempts: 3
+  });
+
+  const stats = await withPersistedStats(x => x, {
+    collections: 0,
+    urls: 0,
+    totalItems: 0,
+    items: 0,
+    itemsDuplicity: 0
   });
 
   const input = await Apify.getInput();
@@ -276,15 +279,8 @@ Apify.main(async function main() {
 
   const requestQueue = await Apify.openRequestQueue();
   const rootUrl = getBaseUrl(country);
-  const crawlContext = await withPersistedStats(stats => ({
-    requestQueue,
-    baseUrl: rootUrl,
-    development,
-    stats,
-    country
-  }));
 
-  await enqueueRequests(requestQueue, type, rootUrl, bfUrls, crawlContext);
+  await enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats);
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
@@ -298,8 +294,8 @@ Apify.main(async function main() {
       const { request, session } = context;
       const { defaultUrl, label, title, params } = request.userData;
 
-      log.info(`Processing ${label}: ${request.url}`);
-      const requestOptions = {
+      log.debug(`Processing ${label}: ${request.url}`);
+      const response = await gotScraping({
         url: request.url,
         proxyUrl: proxyConfiguration.newUrl(session.id),
         throwHttpErrors: false,
@@ -308,11 +304,9 @@ Apify.main(async function main() {
           "Accept": "application/json",
           // If you want to use the cookieJar.
           // This way you get the Cookie headers string from session.
-          Cookie: session.getCookieString()
+          "Cookie": session.getCookieString()
         }
-      };
-
-      const response = await gotScraping(requestOptions);
+      });
 
       // Status code check
       if (![200, 404].includes(response.statusCode)) {
@@ -322,7 +316,7 @@ Apify.main(async function main() {
       }
 
       const responseData = JSON.parse(response.body);
-      return await processData(
+      return processData(
         label,
         responseData,
         country,
@@ -330,9 +324,9 @@ Apify.main(async function main() {
         params,
         defaultUrl,
         rootUrl,
-        crawlContext,
         s3,
-        title
+        title,
+        stats
       );
     },
     async handleFailedRequestFunction({ request }) {
@@ -345,12 +339,11 @@ Apify.main(async function main() {
 
   log.info("Crawl finished.");
 
-  await crawlContext.stats.save();
-
   if (!development) {
     const suffix = type === ActorType.BF ? "_bf" : "";
     const tableName = customTableName ?? `${shopName(rootUrl)}${suffix}`;
     await Promise.all([
+      stats.save(),
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(rootUrl)),
       uploadToKeboola(tableName)
     ]);
