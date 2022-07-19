@@ -11,9 +11,9 @@ import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { shopName, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const { log, requestAsBrowser } = Apify.utils;
-let stats = {};
 const processedIds = new Set();
 
 /**
@@ -73,13 +73,13 @@ Apify.main(async function main() {
     maxAttempts: 3
   });
   const input = await Apify.getInput();
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = await withPersistedStats(x => x, {
     urls: 0,
     pages: 0,
     items: 0,
     itemsDuplicity: 0,
     failed: 0
-  };
+  });
   const {
     development = false,
     debug = false,
@@ -124,12 +124,6 @@ Apify.main(async function main() {
     useApifyProxy: !development
   });
 
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
-
   // Create crawler
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
@@ -143,10 +137,13 @@ Apify.main(async function main() {
       maxPoolSize: 200
     },
     // Handle page context
-    handlePageFunction: async ({ $, request, session, response }) => {
+    async handlePageFunction({ $, request, session, response }) {
       if (response.statusCode !== 200 && response.statusCode !== 404) {
-        log.info(`${request.url} -> Bad response code: ${response.statusCode}`);
+        log.debug(
+          `${request.url} -> Bad response code: ${response.statusCode}`
+        );
         session.retire();
+        stats.inc("failed");
       }
 
       if (request.userData.label === "category_vyprodej") {
@@ -174,7 +171,7 @@ Apify.main(async function main() {
           await enqueueRequests(requestQueue, categories);
         } else if (onclickUrl) {
           await requestQueue.addRequest({
-            url: `${WEB}${onclickUrl}`,
+            url: new URL(onclickUrl, WEB).href,
             userData: {
               label: "category"
             }
@@ -185,25 +182,26 @@ Apify.main(async function main() {
         const browseSubCategories = $("div#BrowseSubCategories > a");
         if (browseSubCategories.length > 0) {
           browseSubCategories.each(function () {
+            const url1 = new URL($(this).attr("href"), WEB).href;
             pages.push({
-              url: `${WEB}${$(this).attr("href")}`,
+              url: url1,
               userData: {
                 label: "page",
-                baseUrl: `${WEB}${$(this).attr("href")}`
+                baseUrl: url1
               }
             });
           });
-          stats.urls += pages.length;
-          log.info(`Found ${pages.length} valid urls by ${request.url}`);
+          stats.add("urls", pages.length);
+          log.debug(`Found ${pages.length} valid urls by ${request.url}`);
           await enqueueRequests(requestQueue, pages, false);
         } else {
-          log.info(`Enqueue ${request.url} as a page`);
+          log.debug(`Enqueue ${request.url} as a page`);
           await requestQueue.addRequest(
             new Apify.Request({
               url: request.url,
               userData: {
                 label: "page",
-                baseUrl: `${WEB}${$(this).attr("href")}`
+                baseUrl: new URL($(this).attr("href"), WEB).href
               }
             })
           );
@@ -225,8 +223,8 @@ Apify.main(async function main() {
               // pageItems.push(`${request.userData.baseUrl}${$(this).attr('href')}`);
             });
             if (pageNum > 0) {
-              stats.pages += pageNum;
-              log.info(`Found ${pageNum} pages on ${request.url}`);
+              stats.add("pages", pageNum);
+              log.debug(`Found ${pageNum} pages on ${request.url}`);
               const { baseUrl } = request.userData;
               const url = baseUrl.includes("?")
                 ? `${baseUrl}&PgID=`
@@ -286,7 +284,7 @@ Apify.main(async function main() {
             // Save data to dataset
             if (!processedIds.has(dataItem.itemId)) {
               processedIds.add(dataItem.itemId);
-              const slug = itemSlug(dataItem);
+              const slug = itemSlug(dataItem.itemUrl);
               requests.push(
                 Apify.pushData({
                   ...dataItem,
@@ -300,17 +298,17 @@ Apify.main(async function main() {
                 })
               );
             } else {
-              stats.itemsDuplicity++;
+              stats.inc("itemsDuplicity");
             }
           }
-          stats.items += requests.length;
-          log.info(
+          stats.add("items", requests.length);
+          log.debug(
             `Found ${requests.length} items, storing them. ${request.url}`
           );
           // await all requests, so we don't end before they end
           await Promise.all(requests);
         } catch (e) {
-          stats.failed++;
+          stats.inc("failed");
           log.error(e);
           console.log(`Failed extraction of items. ${request.url}`);
           console.error(e);
@@ -318,7 +316,7 @@ Apify.main(async function main() {
       }
     },
     // If request failed 4 times then this function is executed
-    handleFailedRequestFunction: async ({ request }) => {
+    async handleFailedRequestFunction({ request }) {
       log.error(`Request ${request.url} failed 4 times`);
     }
   });
@@ -327,8 +325,8 @@ Apify.main(async function main() {
   // Run crawler
   await crawler.run();
   log.info("ACTOR - crawler end");
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
+  await stats.save();
+
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "mironet.cz");
     log.info("invalidated Data CDN");
