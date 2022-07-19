@@ -139,12 +139,12 @@ async function handleCollection(
     };
 
     stats.inc("totalItems");
-    if (!processedIds.has(item.itemId)) {
+    if (processedIds.has(item.itemId)) {
+      stats.inc("itemsDuplicity");
+    } else {
       processedIds.add(item.itemId);
       requests.push(Apify.pushData(item), uploadToS3v2(s3, item));
       stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
     }
   }
   log.debug(`Found ${requests.length / 2} unique products`);
