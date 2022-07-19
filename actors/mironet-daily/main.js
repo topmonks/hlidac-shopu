@@ -20,6 +20,7 @@ const processedIds = new Set();
 const WEB = "https://www.mironet.cz";
 
 async function getAllCategories() {
+  log.info("Loading Sitemap");
   const resp = await fetch(
     "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz"
   );
