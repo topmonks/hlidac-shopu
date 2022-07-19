@@ -8,7 +8,7 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 /** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
 /** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */

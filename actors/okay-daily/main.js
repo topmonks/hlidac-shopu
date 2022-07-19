@@ -11,7 +11,7 @@ import {
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 const {
   utils: { log }

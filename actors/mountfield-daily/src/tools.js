@@ -1,6 +1,7 @@
 import Apify from "apify";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
-import { COUNTRY, WEB, WEB_SK, BF } from "./const.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { COUNTRY, WEB, WEB_SK } from "./const.js";
 
 const { log } = Apify.utils;
 
@@ -98,7 +99,7 @@ export const getRootUrl = userInput => {
 export const getTableName = userInput => {
   const { type, country = COUNTRY.CZ } = userInput;
   let tableName = `mountfield_${country.toLowerCase()}`;
-  if (type === BF) {
+  if (type === ActorType.BF) {
     tableName = `${tableName}_bf`;
   }
   return tableName;
