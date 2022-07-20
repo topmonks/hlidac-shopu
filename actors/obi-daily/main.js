@@ -163,8 +163,7 @@ async function handleDetail(
   if (currency === "SKK") {
     currency = "EUR";
   }
-  let currentPrice = $('[data-ui-name="ads.price.strong"]').text();
-  currentPrice = parsePrice(currentPrice);
+  let currentPrice = parsePrice($('[data-ui-name="ads.price.strong"]').text());
   let discountedPrice = $(".saving").get(0);
   let originalPrice = null;
   if (discountedPrice) {
@@ -282,13 +281,12 @@ async function handleVariant(
 }
 
 function parsePrice(text) {
-  let price = text
+  const price = text
     .trim()
     .replace(/\s|'/g, "")
     .replace(/,/, ".")
-    .match(/(\d+(.\d+)?)/)[0];
-  price = parseFloat(price);
-  return price;
+    .match(/(\d+(.\d+)?)/)?.[0];
+  return price ? parseFloat(price) : null;
 }
 
 Apify.main(async function main() {
