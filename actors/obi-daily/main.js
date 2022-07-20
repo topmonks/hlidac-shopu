@@ -343,6 +343,7 @@ Apify.main(async function main() {
   });
 
   const crawler = new Apify.CheerioCrawler({
+    requestTimeoutSecs: 60,
     requestQueue,
     proxyConfiguration,
     maxConcurrency,
