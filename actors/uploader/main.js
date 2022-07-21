@@ -305,6 +305,8 @@ async function processItems(
         item.breadCrumbs = Array.isArray(item.category)
           ? item.category.toString()
           : item.category;
+      } else if (typeof item.category === "string" && item.category === "") {
+        item.breadCrumbs = "";
       }
 
       // TODO: do it in actors
