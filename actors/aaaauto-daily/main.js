@@ -90,6 +90,80 @@ Apify.main(async function main() {
     groups: proxyGroups,
     useApifyProxy: !development
   });
+
+  async function parseProducts(request, $) {
+    const offers = $(".card");
+    const products = await Promise.all(
+      offers.map(async function () {
+        try {
+          const item = $(this);
+          const link = item.find("a.fullSizeLink").attr("href");
+          const figure = item.find("figure");
+          const url = new URL(link);
+          const itemId = url.searchParams.get("id");
+          const itemName = item.find("h2 a").text().trim();
+          const arr = itemName.split(",");
+
+          const currentPrice = item
+            .find("span[id*=garageHeart]")
+            .attr("data-price");
+          const actionPrice = extractPrice(
+            item.find(".carPrice h3.error:not(.hide)").text()
+          );
+          let originalPrice = extractPrice(
+            item.find(".carPrice .darkGreyAlt").text()
+          );
+          const description = item.find(".carFeatures p").text().trim();
+          const carFeatures = item
+            .find(".carFeaturesList li")
+            .toArray()
+            .map(feature => {
+              return $(feature).text();
+            });
+
+          const [km, transmission, fuelType, engine] = carFeatures;
+          return {
+            itemUrl: link,
+            itemId,
+            description,
+            img: figure.length > 0 ? figure.find("img").attr("src") : null,
+            itemName: arr[0],
+            currentPrice,
+            originalPrice,
+            currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
+            actionPrice,
+            discounted: !!originalPrice,
+            year: arr[1] ? arr[1] : undefined,
+            km,
+            transmission,
+            fuelType,
+            engine
+          };
+        } catch (e) {
+          log.error(e.message);
+          log.error(`Products extraction failed on url: ${request.url}`);
+        }
+      })
+    );
+
+    const requests = [];
+    let sleepTotal = 0;
+    for (const product of products) {
+      sleepTotal += getHumanDelayMillis(250, 950);
+      requests.push(
+        Apify.pushData(product),
+        uploadToS3v2(s3, product, {
+          category: "",
+          inStock: true
+        })
+      );
+    }
+    // await all requests, so we don't end before they end
+    await Promise.all(requests);
+    log.debug(`Found ${requests.length / 2} cars, ${request.url}`);
+    await Apify.utils.sleep(sleepTotal);
+  }
+
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
@@ -103,7 +177,9 @@ Apify.main(async function main() {
     requestTimeoutSecs: 300,
     handlePageTimeoutSecs: 300,
     handlePageFunction: async ({ request, $ }) => {
-      log.info(`Scraping page ${request.url}`);
+      log.info(
+        `Label: ${request.userData.label} - Scraping page ${request.url}`
+      );
       if (request.userData.label === "START") {
         const pages = $("nav.pagenav li");
         const lastPage = pages
@@ -120,79 +196,9 @@ Apify.main(async function main() {
             userData: { label: LABELS.PAGE, pageNumber }
           });
         });
+        await parseProducts(request, $);
       } else if (request.userData.label === "PAGE") {
-        const offers = $(".card");
-        const products = await Promise.all(
-          offers.map(async function () {
-            try {
-              const item = $(this);
-              const link = item.find("a.fullSizeLink").attr("href");
-              const figure = item.find("figure");
-              const url = new URL(link);
-              const itemId = url.searchParams.get("id");
-              const itemName = item.find("h2 a").text().trim();
-              const arr = itemName.split(",");
-
-              const currentPrice = item
-                .find("span[id*=garageHeart]")
-                .attr("data-price");
-              const actionPrice = extractPrice(
-                item.find(".carPrice h3.error:not(.hide)").text()
-              );
-              let originalPrice = extractPrice(
-                item.find(".carPrice .darkGreyAlt").text()
-              );
-              const description = item.find(".carFeatures p").text().trim();
-              const carFeatures = item
-                .find(".carFeaturesList li")
-                .toArray()
-                .map(feature => {
-                  return $(feature).text();
-                });
-
-              const [km, transmission, fuelType, engine] = carFeatures;
-              return {
-                itemUrl: link,
-                itemId,
-                description,
-                img: figure.length > 0 ? figure.find("img").attr("src") : null,
-                itemName: arr[0],
-                currentPrice,
-                originalPrice,
-                currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
-                actionPrice,
-                discounted: !!originalPrice,
-                year: arr[1] ? arr[1] : undefined,
-                km,
-                transmission,
-                fuelType,
-                engine
-              };
-            } catch (e) {
-              log.error(e.message);
-              log.error(`Products extraction failed on url: ${request.url}`);
-            }
-          })
-        );
-        // we don't need to block pushes, we will await them all at the end
-        const allFulfilledProducts = products
-          .filter(p => p.status === "fulfilled")
-          .map(p => p.value);
-        const requests = [Apify.pushData(allFulfilledProducts)];
-        let sleepTotal = 0;
-        for (const product of allFulfilledProducts) {
-          requests.push(
-            uploadToS3v2(s3, product, {
-              category: "",
-              inStock: true
-            })
-          );
-        }
-        sleepTotal += getHumanDelayMillis(250, 950);
-        log.debug(`Found ${allFulfilledProducts.length} cars, ${request.url}`);
-        // await all requests, so we don't end before they end
-        await Promise.all(requests);
-        await Apify.utils.sleep(sleepTotal);
+        await parseProducts(request, $);
       }
     },
     handleFailedRequestFunction: async ({ error, request, body }) => {
