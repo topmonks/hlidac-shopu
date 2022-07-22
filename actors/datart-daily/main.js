@@ -118,22 +118,26 @@ async function extractItems($, rootUrl, country) {
           .find("div.item-thumbnail img")
           .attr("src");
 
-        result.currentPrice = productBoxBuyInfoCart
-          .find("div.item-price span.actual")
-          .text()
-          .trim()
-          .replace(/[^\d,]+/g, "")
-          .replace(",", ".");
+        result.currentPrice = parseFloat(
+          productBoxBuyInfoCart
+            .find("div.item-price div.actual")
+            .text()
+            .trim()
+            .replace(/[^\d,]+/g, "")
+            .replace(",", ".")
+        );
         const cutPrice = productBoxBuyInfoCart.find(
           "div.item-price span.cut-price del"
         );
 
         if (cutPrice.length > 0) {
-          result.originalPrice = cutPrice
-            .text()
-            .trim()
-            .replace(/[^\d,]+/g, "")
-            .replace(",", ".");
+          result.originalPrice = parseFloat(
+            cutPrice
+              .text()
+              .trim()
+              .replace(/[^\d,]+/g, "")
+              .replace(",", ".")
+          );
           result.discounted = true;
         } else {
           result.originalPrice = null;
