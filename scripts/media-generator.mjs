@@ -8,7 +8,7 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://tech.hn.cz/c1-67092220-nakupni-svatek-na-48-hodin-nemecky-prime-day-proti-brutalnimu-vyprodeji-a-cenovym-bombam"
+  "https://www.zive.cz/clanky/vy-a-pocitac-nakupujete-na-internetu-podle-srovnavacu-cen/sc-3-a-217487/default.aspx"
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
