@@ -190,9 +190,9 @@ async function extractItems($, $products, category) {
   $products.each(function () {
     const result = { inStock: true };
     result.itemId = $(this).find(".add-to-cart-btn a").attr("data-product-id");
-    result.itemName = $(this).find(".product-item__name").text().trim();
+    result.itemName = $(this).find("div.product-item__info > a").text().trim();
     result.itemUrl = extractProductUrl(
-      $(this).find(".product-item__name").attr("onclick")
+      $(this).find("div.product-item__info > a").attr("onclick")
     );
     result.img = $(this).find(".image-link img").attr("src");
 
