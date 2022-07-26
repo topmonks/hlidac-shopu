@@ -16,7 +16,13 @@ const { log } = Apify.utils;
 const ROOT_URL = "https://shop.iglobus.cz";
 const LABELS = {
   START: "START",
-  LIST: "LIST"
+  LIST: "LIST",
+  COUNT: "COUNT"
+};
+// create object TYPE cofied from LABERLS
+const TYPE = {
+  FULL: "FULL",
+  COUNT: "COUNT"
 };
 const STORES = {
   ZLI: "ZLI",
@@ -42,7 +48,8 @@ Apify.main(async function main() {
     maxRequestRetries = 3,
     maxConcurrency = 50,
     proxyGroups = ["CZECH_LUMINATI"],
-    store = STORES.OST
+    store = STORES.OST,
+    type = TYPE.FULL
   } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
 
@@ -50,12 +57,14 @@ Apify.main(async function main() {
     categories: 0,
     pages: 0,
     items: 0,
-    itemsDuplicity: 0
+    itemsDuplicity: 0,
+    countItems: 0
   };
 
   const crawlContext = {
     requestQueue,
     development,
+    type,
     stats,
     processedIds,
     s3
@@ -86,6 +95,8 @@ Apify.main(async function main() {
           return handleStart(context, crawlContext);
         case LABELS.LIST:
           return handleList(context, crawlContext);
+        case LABELS.COUNT:
+          return handleCount(context, crawlContext);
         default:
           log.error(`Unknown label ${label}`);
       }
@@ -119,19 +130,48 @@ async function handleStart({ request, $ }, crawlContext) {
     .map(selector => $(selector).get())
     .flat();
 
-  for (const link of listLinks) {
-    const url = new URL($(link).attr("href"), ROOT_URL);
-    await requestQueue.addRequest({
-      url: `${url.href}?ipp=72`,
-      userData: {
-        label: LABELS.LIST,
-        page: 0,
-        category: $(link).text().trim()
+  const countLinks = ["a.navigation-multilevel-node__link-inner--lvl-2"]
+    .map(selector => $(selector).get())
+    .flat();
+  if (crawlContext.type === TYPE.COUNT) {
+    for (const countLink of countLinks) {
+      const url = new URL($(countLink).attr("href"), ROOT_URL);
+      if (!url.toString().includes("novinky")) {
+        await requestQueue.addRequest({
+          url: `${url.href}`,
+          userData: {
+            label: LABELS.COUNT,
+            category: $(countLink).text().trim()
+          }
+        });
       }
-    });
+    }
+  } else {
+    for (const link of listLinks) {
+      const url = new URL($(link).attr("href"), ROOT_URL);
+      await requestQueue.addRequest({
+        url: `${url.href}?ipp=72`,
+        userData: {
+          label: LABELS.LIST,
+          page: 0,
+          category: $(link).text().trim()
+        }
+      });
+    }
+    stats.categories = listLinks.length;
+    log.info(`Found ${listLinks.length}x categories`);
   }
-  stats.categories = listLinks.length;
-  log.info(`Found ${listLinks.length}x categories`);
+}
+
+// create function handleCount copied from handleList
+async function handleCount({ request, $ }, crawlContext) {
+  const { requestQueue, stats } = crawlContext;
+  const count = $("span.category-number-of-products")
+    .text()
+    .trim()
+    .match(/\d+/)[0];
+  stats.countItems += parseInt(count);
+  log.info(`Found ${count} items in category ${request.userData.category}`);
 }
 
 async function handleList({ request, $ }, crawlContext) {
