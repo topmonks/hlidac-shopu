@@ -222,48 +222,6 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
   await links.forEach(async l => await requestQueue.addRequest(l));
 };
 
-/**
- *
- * @param {cheerio} $
- * @returns {{nextPages: Array, currentPage: number}}
- */
-const getCategoryPages = $ => {
-  const paging = $(".paging .pages").first();
-  const pages = {
-    currentPage: parseInt(paging.find("strong").text(), 10),
-    nextPages: []
-  };
-  const aLotOfPages = paging.find(".dots").get().length > 0;
-  const $nextPages = paging.find("a");
-
-  const nextPagesLength = $nextPages.get().length;
-  if (nextPagesLength === 0) return pages;
-
-  // remove first (Previous) and last (Next) elements,
-  // then extract all pages urls
-  if (aLotOfPages) {
-    const first = parseInt($($nextPages.get(1)).text(), 10);
-    const last = parseInt($($nextPages.get(nextPagesLength - 2)).text(), 10);
-    const urlExample = $($nextPages.get(1)).attr("href");
-    if (pages.currentPage === 1)
-      log.debug(
-        `a lot of pages in this category: ${first} => ${last}; ${urlExample}`
-      );
-    for (let i = first - 1; i <= last; i++) {
-      pages.nextPages.push({
-        id: i,
-        url: `${urlExample.replace(/\?f=(\d*)-(\d*)/g, `?f=${i}-${3}`)}&ac=${i}`
-      });
-    }
-  } else {
-    $nextPages.slice(1, nextPagesLength - 1).each((index, a) => {
-      pages.nextPages.push({ id: index + 1, url: $(a).attr("href") });
-    });
-  }
-
-  return pages;
-};
-
 const handleCategoryPage = async (
   requestQueue,
   request,
@@ -273,104 +231,39 @@ const handleCategoryPage = async (
   queueIds,
   s3
 ) => {
-  const { page } = request.userData;
-  const categoryPages = getCategoryPages($);
-  if (categoryPages.currentPage === 1) {
-    log.debug("Processing pagination in category page");
-    log.debug(`Total pages number: ${categoryPages.nextPages.length + 1}`);
-    for (const nextPage of categoryPages.nextPages) {
-      await requestQueue.addRequest(
-        {
-          url: nextPage.url,
-          userData: { label: CATEGORY_PAGE, page: nextPage.id }
-        },
-        { forefront: true }
-      );
-      stats.inc("pages");
-    }
+  const paginationNext = $('[rel="next"]').attr("href");
+  // if paginationNext is undefined, then there are no more pages
+  if (paginationNext) {
+    await requestQueue.addRequest(
+      {
+        url: paginationNext,
+        userData: {
+          label: CATEGORY_PAGE
+        }
+      },
+      { forefront: true }
+    );
+    log.debug(`Found next pagination page ${paginationNext}`);
+    stats.inc("pages");
   }
-  if (page) {
-    const rootUrl = getRootUrl(input);
-    const productsUrls = $("li.item");
-    const requests = [];
-    const products = [];
-    const productsDetail = [];
-    productsUrls.each(function () {
-      const id = $(this).attr("data-product-code");
-      if (!queueIds.has(id)) {
-        queueIds.add(id);
-        const url = $(this).find("a").attr("href");
 
-        if ($(this).find("a").attr("data-datalayer")) {
-          const jsonData = JSON.parse($(this).find("a").attr("data-datalayer"));
-          if (!jsonData.ecommerce.click.products[0].inAction) {
-            //Product is not in action, we have all information what we need
-            const item = {};
-            item.itemId = id;
-            item.itemUrl =
-              url.search(/notino\.[cz|sk]/) < 0 ? `${rootUrl}${url}` : url;
-            item.itemName = jsonData.ecommerce.click.products[0].name;
-            item.img = $(this).find("img").attr("data-src");
-            item.originalPrice = jsonData.ecommerce.click.products[0].fullPrice;
-            item.currentPrice = jsonData.ecommerce.click.products[0].fullPrice;
-            item.currency = jsonData.ecommerce.currencyCode;
-            item.discounted = false;
-            item.inStock = true;
-            item.category = jsonData.ecommerce.click.products[0].type;
-            stats.inc("items");
-            products.push(item);
-          } else {
-            //Product missing jsonData, we need scrape detail
-            productsDetail.push(url);
-          }
-        } else {
-          //Product is in action, we need scrape detail for original price
-          productsDetail.push(url);
-        }
-      } else {
-        stats.inc("itemsDuplicity");
-      }
-    });
-    // if ((await inputPromise).testMode) {
-    //     return;
-    // }
-    //  const rootUrl = input.country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
-    if (productsDetail.length > 0) {
-      log.debug(
-        `${productsDetail.length}/${productsUrls.length} unique products requested for detail on page number ${page}`
-      );
-      for (let productDetail of productsDetail) {
-        const productUrl =
-          productDetail.search(/notino\.[cz|sk]/) < 0
-            ? `${rootUrl}${productDetail}`
-            : productDetail;
-        //    stats.items++;
-        stats.inc("pages");
-        await requestQueue.addRequest(
-          {
-            url: productUrl,
-            userData: { label: DETAIL_PAGE }
-          },
-          { forefront: false }
-        );
-      }
-    }
-    if (products.length > 0) {
-      for (const product of products) {
-        if (input.development) {
-          requests.push(Apify.pushData(product));
-        } else {
-          requests.push(Apify.pushData(product), uploadToS3v2(s3, product));
-        }
-      }
-      // await all requests, so we don't end before they end
-      await Promise.all(requests);
-      log.debug(
-        `${products.length}/${productsUrls.length} unique products parsed on page number ${page}`
-      );
-    }
-    stats.inc("categoriesDone");
+  const productsUrls = $("div[data-product] a")
+    .map(function () {
+      const url = new URL(request.url);
+      return `${url.origin}` + $(this).attr("href");
+    })
+    .get();
+  for (const productUrl of productsUrls) {
+    await requestQueue.addRequest(
+      {
+        url: productUrl,
+        userData: { label: DETAIL_PAGE }
+      },
+      { forefront: true }
+    );
   }
+  log.debug(`Queued ${productsUrls.length}x products detail`);
+  stats.add("pages", productsUrls.length);
 };
 
 /**
@@ -479,7 +372,7 @@ const handleProductInDetailPage = async (
       product.originalPrice = product.discounted ? originalPrice : null;
       product.currency =
         variantGeneralData.price && variantGeneralData.price.currency;
-      if (isDebugMode()) product["#debug"] = { productData };
+      //if (isDebugMode()) product["#debug"] = { productData };
       if (product.currentPrice === null) {
         product.currentPrice = "Price not defined.";
       }
@@ -526,14 +419,35 @@ const handleProductInDetailPage = async (
       product.currentPrice = currentPrice;
       product.originalPrice = product.discounted ? originalPrice : null;
 
-      if (isDebugMode()) product["#debugData"] = {};
+      //if (isDebugMode()) product["#debugData"] = {};
       if (product.currentPrice === null) {
         product.currentPrice = "Price not defined.";
       }
       product.inStock = true;
       results.push(product);
-      crawledProducts++;
+      crawledPłroducts++;
     }
+  }
+
+  if ($("div#pdVariantsTile").exists()) {
+    //find all variants
+    const productVariants = $("div#pdVariantsTile li a")
+      .map(function () {
+        const url = new URL(request.url);
+        return url.origin + $(this).attr("href");
+      })
+      .get();
+    for (const variant of productVariants) {
+      await requestQueue.addRequest(
+        {
+          url: variant,
+          userData: { label: DETAIL_PAGE }
+        },
+        { forefront: true }
+      );
+    }
+    log.debug(`Queued ${productVariants.length}x products detail variants`);
+    stats.add("pages", productVariants.length);
   }
 
   if ($.html().includes('id="__APOLLO_STATE__"')) {
@@ -717,8 +631,8 @@ Apify.main(async function main() {
     maxRequestRetries = 3
   } = input ?? {};
 
-  if (debug) {
-    log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  if (development || debug) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
   }
 
   console.log("input", input);
