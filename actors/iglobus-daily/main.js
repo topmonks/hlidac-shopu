@@ -30,8 +30,8 @@ const STORES = {
   OST: "OST"
 };
 
-const rootUrl = ({ store = STORES.OST } = {}) =>
-  `${ROOT_URL}/store/switch?store=${store}&referer-url=/cs/outlet?ipp=72`;
+const rootUrl = ({ store = STORES.ZLI } = {}) =>
+  `${ROOT_URL}/store/switch?store=${store}&referer-url=/cs/outlet`;
 
 Apify.main(async function main() {
   rollbar.init();
@@ -47,9 +47,9 @@ Apify.main(async function main() {
   const {
     development = false,
     maxRequestRetries = 3,
-    maxConcurrency = 50,
+    maxConcurrency = 20,
     proxyGroups = ["CZECH_LUMINATI"],
-    store = STORES.OST,
+    store = STORES.ZLI,
     type = TYPE.FULL
   } = input ?? {};
   const requestQueue = await Apify.openRequestQueue();
@@ -61,6 +61,10 @@ Apify.main(async function main() {
     itemsDuplicity: 0,
     countItems: 0
   };
+
+  if (development) {
+    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+  }
 
   const crawlContext = {
     requestQueue,
@@ -82,7 +86,11 @@ Apify.main(async function main() {
   } else if (type === TYPE.TEST) {
     await requestQueue.addRequest({
       url: `https://shop.iglobus.cz/cs/sv%C4%9Bt-d%C4%9Bt%C3%AD/d%C4%9Btsk%C3%A1-v%C3%BD%C5%BEiva/p%C5%99%C3%ADkrmy/ovocn%C3%A9`,
-      userData: { label: LABELS.LIST }
+      userData: {
+        label: LABELS.LIST,
+        page: 0,
+        category: "Ovocné"
+      }
     });
   }
   const crawler = new Apify.CheerioCrawler({
@@ -94,9 +102,9 @@ Apify.main(async function main() {
     handlePageFunction: async context => {
       const {
         url,
-        userData: { label }
+        userData: { label, category }
       } = context.request;
-      log.info("Page opened.", { label, url });
+      log.info("Page opened.", { label, category, url });
       switch (label) {
         case LABELS.START:
           return handleStart(context, crawlContext);
@@ -130,13 +138,13 @@ Apify.main(async function main() {
 async function handleStart({ request, $ }, crawlContext) {
   const { requestQueue, stats } = crawlContext;
   const listLinks = [
-    "#product-category-list .navigation-multilevel-node--lvl-3 a",
-    "#product-category-list .navigation-multilevel-node--lvl-2 a",
-    "#product-category-list .navigation-multilevel-node--lvl-1 a"
+    ".menu > li.filter-category__item--level-2 > button.filter-category__link",
+    ".menu > li.filter-category__item--level-2 > div > div > button.filter-category__link",
+    ".menu > li.filter-category__item--level-3 > button.filter-category__link",
+    ".menu > li.filter-category__item--level-3 > div > div > button.filter-category__link"
   ]
     .map(selector => $(selector).get())
     .flat();
-
   const countLinks = ["a.navigation-multilevel-node__link-inner--lvl-2"]
     .map(selector => $(selector).get())
     .flat();
@@ -155,9 +163,9 @@ async function handleStart({ request, $ }, crawlContext) {
     }
   } else {
     for (const link of listLinks) {
-      const url = new URL($(link).attr("href"), ROOT_URL);
+      const url = new URL($(link).attr("data-url"), ROOT_URL);
       await requestQueue.addRequest({
-        url: `${url.href}?ipp=72`,
+        url: `${url.href}`,
         userData: {
           label: LABELS.LIST,
           page: 0,
@@ -187,21 +195,25 @@ async function handleList({ request, $ }, crawlContext) {
   const { requestQueue, processedIds, stats, s3 } = crawlContext;
   stats.pages++;
   if (userData.page === 0) {
-    const pagesTotal = parseInt(
-      $(".pagination .pagination__step:not(.pagination__step--next)")
-        .last()
-        .text()
-        .trim()
-    );
+    const lastPageLink = $(
+      ".pagination .pagination__step-cz:not(.pagination__step--next-cz)"
+    )
+      .last()
+      .attr("href");
+
+    const paginationLink = new URL(lastPageLink, ROOT_URL);
+
+    // get total pagination pages in current category
+    const pagesTotal = paginationLink.searchParams.get("page");
 
     //get last pagination page
-    for (let i = 1; i <= pagesTotal; i++) {
-      const newUrl = new URL(url, ROOT_URL);
-      newUrl.searchParams.set("page", i.toString());
+    for (let i = 2; i <= pagesTotal; i++) {
+      paginationLink.searchParams.set("sort", "price_asc");
+      paginationLink.searchParams.set("page", i.toString());
       userData.page = i;
       await requestQueue.addRequest(
         {
-          url: newUrl.href,
+          url: paginationLink.href,
           userData
         },
         { forefront: true }
