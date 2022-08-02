@@ -22,6 +22,7 @@ const LABELS = {
 // create object TYPE cofied from LABERLS
 const TYPE = {
   FULL: "FULL",
+  TEST: "TEST",
   COUNT: "COUNT"
 };
 const STORES = {
@@ -73,11 +74,17 @@ Apify.main(async function main() {
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
-
-  await requestQueue.addRequest({
-    url: rootUrl({ store }),
-    userData: { label: LABELS.START }
-  });
+  if (type === TYPE.FULL) {
+    await requestQueue.addRequest({
+      url: rootUrl({ store }),
+      userData: { label: LABELS.START }
+    });
+  } else if (type === TYPE.TEST) {
+    await requestQueue.addRequest({
+      url: `https://shop.iglobus.cz/cs/sv%C4%9Bt-d%C4%9Bt%C3%AD/d%C4%9Btsk%C3%A1-v%C3%BD%C5%BEiva/p%C5%99%C3%ADkrmy/ovocn%C3%A9`,
+      userData: { label: LABELS.LIST }
+    });
+  }
   const crawler = new Apify.CheerioCrawler({
     requestQueue,
     proxyConfiguration,
@@ -236,14 +243,20 @@ async function extractItems($, $products, category) {
     );
     result.img = $(this).find(".image-link img").attr("src");
 
-    result.currentPrice = cleanPriceText(
-      $(this).find(".money-price__amount:last-child").text().trim()
+    result.currentPrice = parseFloat(
+      cleanPriceText(
+        $(this).find(".money-price > span:last-child").text().trim()
+      )
     );
-    result.originalPrice = cleanPriceText(
-      $(this).find(".money-price__amount:first-child").text().trim()
+    result.originalPrice = parseFloat(
+      cleanPriceText(
+        $(this).find(".money-price__amount--original").text().trim()
+      )
     );
-    result.currentUnitPrice = cleanUnitPriceText(
-      $(this).find(".product-item__sale-volume").text().trim()
+    result.currentUnitPrice = parseFloat(
+      cleanUnitPriceText(
+        $(this).find(".product-item__sale-volume").text().trim()
+      )
     );
     result.useUnitPrice = $(this)
       .find(".product-item__info")
