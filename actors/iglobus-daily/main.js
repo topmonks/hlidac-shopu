@@ -47,7 +47,7 @@ Apify.main(async function main() {
   const {
     development = false,
     maxRequestRetries = 3,
-    maxConcurrency = 20,
+    maxConcurrency = 25,
     proxyGroups = ["CZECH_LUMINATI"],
     store = STORES.ZLI,
     type = TYPE.FULL
@@ -208,7 +208,6 @@ async function handleList({ request, $ }, crawlContext) {
 
     //get last pagination page
     for (let i = 2; i <= pagesTotal; i++) {
-      paginationLink.searchParams.set("sort", "price_asc");
       paginationLink.searchParams.set("page", i.toString());
       userData.page = i;
       await requestQueue.addRequest(
