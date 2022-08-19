@@ -128,7 +128,7 @@ async function extractItems($, $products, breadCrumbs) {
       const itemImgUrl = $item.find("picture source").last().attr("srcset");
       result.itemId = id;
       result.itemName = name;
-      result.itemUrl = itemUrl;
+      result.itemUrl = itemUrl.includes("https") ? itemUrl : `${web}${itemUrl}`;
       result.img = itemImgUrl;
       result.category = breadCrumbs;
       result.currentPrice = parseFloat($actualPriceSpan.attr("content"));
@@ -368,7 +368,7 @@ Apify.main(async function main() {
     });
   } else if (type === ActorType.FULL && test) {
     await requestQueue.addRequest({
-      url: "https://www.lekarna.cz/masazni-gely-roztoky/",
+      url: "https://www.lekarna.cz/masazni-pripravky/",
       userData: {
         label: "SUB_CATEGORY"
       }
