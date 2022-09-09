@@ -1,7 +1,6 @@
 import { LABELS, MAIN_URL } from "./const.js";
 
-export function createInitRequests() {
-  const sources = [];
+export async function createInitRequests(requestQueue) {
   /*sources.push({
     url: "https://www.lidl.cz/aktualni-nabidka",
     userData: {
@@ -38,20 +37,19 @@ export function createInitRequests() {
       label: LABELS.LIDL_SHOP_DETAIL
     }
   });*/
-  sources.push({
+  await requestQueue.addRequest({
     url: "https://www.lidl.cz/q/query/Slevy?offset=0&sort=Price-asc",
     userData: {
       label: LABELS.LIDL_SHOP_CAT
     }
   });
-  sources.push({
+  await requestQueue.addRequest({
     url: "https://www.lidl.cz/c/kategorie/s10004543",
     userData: {
       label: LABELS.LIDL_SHOP_SECTION,
       level: 1
     }
   });
-  return sources;
 }
 
 export function getItemId(url) {

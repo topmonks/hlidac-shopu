@@ -10,8 +10,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Apify from "apify";
 import { createInitRequests, getBaseProducts } from "./tools.js";
 import { LABELS, MAIN_URL } from "./const.js";
-import { URL } from "url";
-import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import cheerio from "cheerio";
 
 const { log } = Apify.utils;
 
@@ -109,7 +108,6 @@ async function scrapeShopMainCategory({ $, request, crawler }) {
 
 async function scrapeShopDetail({ $ }) {
   const detail = $("body").html();
-  console.log(detail);
 }
 
 async function scrapeShopSection({ $, request, crawler }, { stats }) {
@@ -142,6 +140,27 @@ async function scrapeShopSection({ $, request, crawler }, { stats }) {
   log.info(`Found ${sections.length}x categories in ${request.url}`);
 }
 
+const slug = function (str) {
+  str = str.replace(/^\s+|\s+$/g, ""); // trim
+  str = str.toLowerCase();
+
+  // remove accents, swap ñ for n, etc
+  const from =
+    "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
+  const to =
+    "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
+  for (var i = 0, l = from.length; i < l; i++) {
+    str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
+  }
+
+  str = str
+    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+    .replace(/\s+/g, "-") // collapse whitespace and replace by -
+    .replace(/-+/g, "-"); // collapse dashes
+
+  return str;
+};
+
 async function scrapeShopCategory(
   { $, crawler },
   { s3, stats, processedIds, input }
@@ -149,14 +168,17 @@ async function scrapeShopCategory(
   const { type = ActorType.FULL } = input;
   const nextButton = $("a.s-load-more__button");
   if (nextButton && nextButton.length > 0) {
-    await crawler.requestQueue.addRequest({
-      url: `https://www.lidl.cz${nextButton.attr("href")}`,
-      userData: {
-        label: LABELS.LIDL_SHOP_CAT
-      }
-    });
+    await crawler.requestQueue.addRequest(
+      {
+        url: `https://www.lidl.cz${nextButton.attr("href")}`,
+        userData: {
+          label: LABELS.LIDL_SHOP_CAT
+        }
+      },
+      { forefront: true }
+    );
   }
-  let products = $("#s-results .s-grid__item > a").toArray();
+  let products = $("#s-results .s-grid__item > div").toArray();
   if (type === ActorType.BF) {
     products = $(".product-grid-box").toArray();
   }
@@ -166,14 +188,17 @@ async function scrapeShopCategory(
   const heading = $(".s-page-heading").find("h1").text().trim();
   for (let product of products) {
     product = $(product);
-    const a = product.attr("href");
-    const url = new URL(`https://www.lidl.cz${a}`);
-    const itemUrl = `https://www.lidl.cz${url.pathname}`;
-    const itemId = itemSlug(itemUrl);
+    const dataQaLabel = product.attr("data-qa-label");
+    if (!dataQaLabel) {
+      continue;
+    }
+    const itemId = dataQaLabel.split("-").pop();
     stats.items++;
     if (!processedIds.has(itemId)) {
       processedIds.add(itemId);
       const title = product.find("h2").text().trim();
+
+      const itemUrl = `https://www.lidl.cz/p/${slug(title)}/p${itemId}`;
       const imageSource = product.find("img.product-grid-box__image");
       const price = product.find(
         "> .product-grid-box__price .m-price__bottom .m-price__price"
@@ -244,11 +269,10 @@ Apify.main(async function main() {
   };
 
   const requestQueue = await Apify.openRequestQueue();
-  let sources = [];
   if (type !== ActorType.BF) {
-    sources = createInitRequests();
+    await createInitRequests(requestQueue);
   } else {
-    sources.push({
+    await requestQueue.addRequest({
       url: "https://www.lidl.cz/c/black-friday/a10010065",
       userData: {
         label: LABELS.LIDL_SHOP_CAT,
@@ -256,7 +280,6 @@ Apify.main(async function main() {
       }
     });
   }
-  const requestList = await Apify.openRequestList("start-categories", sources);
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
@@ -267,16 +290,23 @@ Apify.main(async function main() {
     groups: proxyGroups
   });
 
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new Apify.PlaywrightCrawler({
     requestQueue,
-    requestList,
     proxyConfiguration,
-    maxRequestRetries,
     maxConcurrency,
-    requestTimeoutSecs: 600,
-    handlePageTimeoutSecs: 600,
+    maxRequestRetries,
+    navigationTimeoutSecs: 120,
+    launchContext: {
+      useChrome: true,
+      launchOptions: {
+        headless: true
+      }
+    },
     handlePageFunction: async context => {
-      const { request } = context;
+      const { request, page } = context;
+      await page.waitForLoadState("networkidle", { timeout: 0 });
+      const text = await page.content();
+      const $ = cheerio.load(text);
       const {
         userData: { label }
       } = request;
@@ -284,31 +314,34 @@ Apify.main(async function main() {
 
       switch (label) {
         case LABELS.DETAIL:
-          return scrapeDetail(context, { s3 });
+          return scrapeDetail({ ...context, $ }, { s3 });
         case LABELS.LIDL_SHOP:
-          return scrapeShop(context);
+          return scrapeShop({ ...context, $ });
         case LABELS.LIDL_SHOP_CAT:
-          return scrapeShopCategory(context, {
-            s3,
-            stats,
-            processedIds,
-            input
-          });
+          return scrapeShopCategory(
+            { ...context, $ },
+            {
+              s3,
+              stats,
+              processedIds,
+              input
+            }
+          );
         case LABELS.LIDL_SHOP_DETAIL:
-          return scrapeShopDetail(context);
+          return scrapeShopDetail({ ...context, $ });
         case LABELS.LIDL_SHOP_MAIN_CAT:
-          return scrapeShopMainCategory(context);
+          return scrapeShopMainCategory({ ...context, $ });
         case LABELS.LIDL_SHOP_SECTION:
-          return scrapeShopSection(context, { stats });
+          return scrapeShopSection({ ...context, $ }, { stats });
         case LABELS.MAIN_NABIDKA:
-          return scrapeMainMenu(context);
+          return scrapeMainMenu({ ...context, $ });
         case LABELS.MAIN_NABIDKA_CAT:
-          return scrapeMainMenuCategory(context);
+          return scrapeMainMenuCategory({ ...context, $ });
       }
     },
-    // If request failed 4 times then this function is executed
     handleFailedRequestFunction: async ({ request }) => {
-      log.info(`Request ${request.url} failed ${maxRequestRetries} times`);
+      stats.failed++;
+      log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
 
