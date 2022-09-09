@@ -4127,6 +4127,7 @@ __metadata:
     apify: ^2.3.2
     apify-cli: ^0.7.4
     cheerio: ^1.0.0-rc.12
+    playwright: ^1.25.2
     underscore: ^1.13.4
   languageName: unknown
   linkType: soft
@@ -18703,6 +18704,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.25.2":
+  version: 1.25.2
+  resolution: "playwright-core@npm:1.25.2"
+  bin:
+    playwright: cli.js
+  checksum: 24ada61e2132bd7278cf0aa0ef711280e1519c437efa0088a99c47ef994202f4c9880521d8c0c51ab854bef08806f372477d754aac1e790ea64f18cd346b5b2f
+  languageName: node
+  linkType: hard
+
 "playwright@npm:^1.23.4":
   version: 1.23.4
   resolution: "playwright@npm:1.23.4"
@@ -18711,6 +18721,17 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: a646b08ceecba56b1bb69125e26dc487260fb1ccbb32e516451b0e85387e3118fd38d68d9c43abe8a81558be992cf86a2f652e926a534e8f42ca0a11dd626918
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.25.2":
+  version: 1.25.2
+  resolution: "playwright@npm:1.25.2"
+  dependencies:
+    playwright-core: 1.25.2
+  bin:
+    playwright: cli.js
+  checksum: e500b45c2961140fdae665331d357ecf1cc308041e0fd8e6765b4da2195600a8a358d3e723bac6215bd9135979f7e7a350cdb1347f6cefa3773e85aa262ce879
   languageName: node
   linkType: hard
 
