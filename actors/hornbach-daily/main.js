@@ -68,9 +68,8 @@ async function scrapeSubCategories({
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell"] [data-testid="categories-rondell-card"] a`
   );
-  const { innerText: categoryTitle } = document.querySelector(
-    `[data-testid="category-page-header"] h1`
-  );
+  const { innerText: categoryTitle } =
+    document.querySelector(`[data-testid="category-page-header"] h1`) || {};
 
   if (links.length) {
     for (let link of links) {
