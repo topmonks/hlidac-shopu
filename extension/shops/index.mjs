@@ -23,6 +23,7 @@ export * from "./okay.mjs";
 export * from "./pilulka.mjs";
 export * from "./prozdravi.mjs";
 export * from "./rohlik.mjs";
+export * from "./siko.mjs";
 export * from "./sleky.mjs";
 export * from "./tetadrogerie.mjs";
 export * from "./tsbohemia.mjs";
