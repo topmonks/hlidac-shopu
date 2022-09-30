@@ -17,7 +17,7 @@ export class Dm extends StatefulShop {
   get injectionPoint() {
     return [
       "afterend",
-      "div[data-dmid='detail-page-base-price-and-availability-container']"
+      "div[data-dmid='detail-page-buy-container']"
     ];
   }
 
