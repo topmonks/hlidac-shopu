@@ -14,8 +14,6 @@ orbs:
 commands:
   install_packages:
     steps:
-      - pulumi/login:
-          cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install
       - node/install-packages:
           pkg-manager: yarn-berry
@@ -278,6 +276,8 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
+      - pulumi/login:
+          cloud-url: s3://pulumi.hlidacshopu.cz
       - install_packages
       - run:
           name: Lint API
