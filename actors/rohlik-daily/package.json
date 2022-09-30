@@ -6,21 +6,21 @@
   "description": "This is the rohlik.cz actor.",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.131.0",
-    "@aws-sdk/client-s3": "3.131.0",
+    "@aws-sdk/client-cloudfront": "3.181.0",
+    "@aws-sdk/client-s3": "3.181.0",
     "@hlidac-shopu/actors-common": "1.2.17",
-    "apify": "^2.3.2",
+    "apify": "2.3.2",
     "browser-pool": "^3.1.4",
-    "got": "^12.1.0",
-    "playwright": "^1.23.4",
+    "got": "^12.5.1",
+    "playwright": "^1.26.1",
     "proxy-agent": "^5.0.0",
     "random-mua": "^0.5.0",
-    "tough-cookie": "^4.0.0",
-    "uuid": "^8.3.2"
+    "tough-cookie": "^4.1.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "apify-cli": "^0.7.4"
+    "@types/node": "18.7.23",
+    "apify-cli": "0.8.1"
   },
   "scripts": {
     "start": "node main.js",
