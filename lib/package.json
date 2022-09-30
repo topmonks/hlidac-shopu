@@ -6,15 +6,15 @@
   "types": "types.d.ts",
   "dependencies": {
     "@lit/reactive-element": "1.4.1",
-    "chart.js": "^3.9.1",
+    "chart.js": "3.8.2",
     "chartjs-adapter-date-fns": "2.0.0",
     "lit": "2.3.1"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@open-wc/testing": "3.1.6",
-    "@web/test-runner": "^0.14.0",
-    "@web/test-runner-junit-reporter": "^0.4.11"
+    "@web/test-runner": "0.14.0",
+    "@web/test-runner-junit-reporter": "0.4.11"
   },
   "scripts": {
     "test": "wtr **/*.test.mjs --coverage --node-resolve"

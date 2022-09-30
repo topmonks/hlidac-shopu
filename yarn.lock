@@ -4388,9 +4388,9 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@lit/reactive-element": 1.4.1
     "@open-wc/testing": 3.1.6
-    "@web/test-runner": ^0.14.0
-    "@web/test-runner-junit-reporter": ^0.4.11
-    chart.js: ^3.9.1
+    "@web/test-runner": 0.14.0
+    "@web/test-runner-junit-reporter": 0.4.11
+    chart.js: 3.8.2
     chartjs-adapter-date-fns: 2.0.0
     lit: 2.3.1
   languageName: unknown
@@ -6954,7 +6954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:^0.4.11":
+"@web/test-runner-junit-reporter@npm:0.4.11":
   version: 0.4.11
   resolution: "@web/test-runner-junit-reporter@npm:0.4.11"
   dependencies:
@@ -6976,7 +6976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:^0.14.0":
+"@web/test-runner@npm:0.14.0":
   version: 0.14.0
   resolution: "@web/test-runner@npm:0.14.0"
   dependencies:
@@ -9204,10 +9204,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.9.1":
-  version: 3.9.1
-  resolution: "chart.js@npm:3.9.1"
-  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
+"chart.js@npm:3.8.2":
+  version: 3.8.2
+  resolution: "chart.js@npm:3.8.2"
+  checksum: a60fef3c98ed6890ce0e1e094900aa573aa1f5fa2edc7363f52efb6850730666ac479a193e86fba17dc340a1651d6b273fac7632c3e0c40c9ed5a70d09b118da
   languageName: node
   linkType: hard
 
