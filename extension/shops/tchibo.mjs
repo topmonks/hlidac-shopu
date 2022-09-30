@@ -6,7 +6,7 @@ export class Tchibo extends Shop {
     const elem = document.querySelector(".c-tp-simplebutton--order");
     if (!elem) return;
     const itemUrl = document.location.href;
-    const itemId = itemUrl.match(/\/p(\d+)/)?.[1];
+    const itemId = itemUrl.match(/-p(\d+)\.html/)?.[1];
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice(".c-tp-price-currentprice");
     const originalPrice = cleanPrice(".c-tp-price-oldprice .c-tp-price-output");
