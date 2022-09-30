@@ -15,10 +15,7 @@ const didMutate = mutations =>
 
 export class Dm extends StatefulShop {
   get injectionPoint() {
-    return [
-      "afterend",
-      "div[data-dmid='detail-page-buy-container']"
-    ];
+    return ["afterend", "div[data-dmid='detail-page-buy-container']"];
   }
 
   get detailSelector() {
