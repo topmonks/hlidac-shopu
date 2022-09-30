@@ -25,7 +25,7 @@ export class Eva extends Shop {
       elem.querySelector("meta[itemprop=price]").content.trim()
     );
     const originalPrice = null;
-    const imageUrl = elem.querySelector("div.imabx > a > img").src;
+    const imageUrl = elem.querySelector("div#icontainer_in img").src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
