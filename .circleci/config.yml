@@ -471,4 +471,6 @@ workflows:
             - preview-provision
           filters:
             branches:
-              only: /renovate\/.*/
+              only:
+                - trunk-cf-autofix
+                - /renovate\/.*/
