@@ -27,4 +27,4 @@ export class Hornbach extends Shop {
   }
 }
 
-registerShop(new Hornbach(), "hornbach", "hornbach_sk");
+registerShop(new Hornbach(), "hornbach_cz", "hornbach_sk");
