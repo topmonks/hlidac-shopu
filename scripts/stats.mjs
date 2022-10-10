@@ -33,9 +33,9 @@ function getArgs() {
 const args = getArgs();
 
 function prepareDir(dir) {
-  if (fs.existsSync(dir))
-    fs.rmdirSync(dir, { recursive: true });
-  fs.mkdirSync(dir);
+  if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+  }
 }
 
 //Get all items from DynamoDB paginated to save Provisioned read capacity
