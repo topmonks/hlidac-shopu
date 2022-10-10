@@ -16,16 +16,33 @@ To get hits from specific date to now, use `--from` argument.
 $  yarn stats --from='2022-06'
 ```
 
-Results is parsed from JSON to csv and saved as `$ date[interval]-timestamp[createdAt].csv` in `./scripts/statistics` folder.
+Results is parsed from JSON to csv and saved as `$ date[interval]-timestamp[createdAt].csv` in `./scripts/statistics`
+folder.
 
 ## Example console OUTPUT
+
 ```json
 [
-  { name: 'shopname', hits: 12345 },
-  { name: 'shopname2', hits: 1234 },
-  { name: 'shopname3', hits: 123 },
-  { name: 'shopname4', hits: 12 },
-  { name: 'shopname5', hits: 1 }
+  {
+    "name": "shopname",
+    "hits": 12345
+  },
+  {
+    "name": "shopname2",
+    "hits": 1234
+  },
+  {
+    "name": "shopname3",
+    "hits": 123
+  },
+  {
+    "name": "shopname4",
+    "hits": 12
+  },
+  {
+    "name": "shopname5",
+    "hits": 1
+  }
 ]
 ```
 
