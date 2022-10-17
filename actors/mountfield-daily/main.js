@@ -54,26 +54,38 @@ async function extractItems({ $, $products, s3, userInput, stats }) {
     const itemCode = splitUrl[splitUrl.length - 1];
     const name = $item.find("h2").text()?.trim();
 
-    const $actionPriceSpan = $item.find(
+    const $regularPriceSpan = $item.find(
       ".list-products__item__info__price__item--main"
     );
-    $actionPriceSpan.find("span").remove();
-    const actionPrice = $actionPriceSpan.text();
+    $regularPriceSpan.find("span").remove();
+    const regularPrice = $regularPriceSpan.text();
     const $retailPriceSpan = $item.find(
       ".list-products__item__info__price__item--old"
     );
     $retailPriceSpan.find("span").remove();
     const retailPrice = $retailPriceSpan.text();
 
-    result.currentPrice = parsePrice(actionPrice);
+    result.currentPrice = parsePrice(regularPrice);
     result.originalPrice = parsePrice(retailPrice);
-
     result.discounted = false;
+
     if (
       (result.originalPrice !== -1 || result.originalPrice !== null) &&
       result.originalPrice > result.currentPrice
     ) {
       result.discounted = true;
+    }
+
+    const $loyaltyPriceSpan = $item.find(
+      ".list-products__item__loyalty__link .in-loyalty__highlight"
+    );
+    const loyaltyPrice = $loyaltyPriceSpan.text();
+
+    if (!result.originalPrice && loyaltyPrice) {
+      result.originalPrice = parsePrice(regularPrice);
+      result.currentPrice = parsePrice(loyaltyPrice);
+      result.discounted = result.currentPrice < result.originalPrice;
+      result.loyalty = true;
     }
 
     result.id = itemCode;

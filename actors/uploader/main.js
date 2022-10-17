@@ -152,11 +152,7 @@ async function processItems(
         item = mallValidator(item);
         break;
       case "mountfield":
-        item = mountfieldValidator(item);
-        break;
       case "mountfield_sk":
-        item = mountfieldValidator(item);
-        break;
       case "mountfield_bf":
         item = mountfieldValidator(item);
         break;
