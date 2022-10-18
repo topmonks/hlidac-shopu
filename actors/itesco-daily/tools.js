@@ -145,9 +145,12 @@ export async function extractItems({
         const offer = promotionProduct.text();
         if (country === COUNTRY.CZ) {
           result.discounted = !!offer;
+          const currentPriceRaw = offer.includes("Clubcard")
+            ? offer.split("běžná cena")[0]
+            : offer.split("nyní")[1];
           result.currentPrice =
             offer !== ""
-              ? cleanPrice(offer.split("nyní")[1])
+              ? cleanPrice(currentPriceRaw)
               : cleanPrice($(this).find(".beans-price__text").text());
           result.originalPrice =
             offer !== ""
