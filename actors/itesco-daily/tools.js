@@ -145,12 +145,13 @@ export async function extractItems({
         const offer = promotionProduct.text();
         if (country === COUNTRY.CZ) {
           result.discounted = !!offer;
-          const currentPriceRaw = offer.includes("Clubcard")
-            ? offer.split("běžná cena")[0]
-            : offer.split("nyní")[1];
           result.currentPrice =
             offer !== ""
-              ? cleanPrice(currentPriceRaw)
+              ? cleanPrice(
+                  offer.includes("Clubcard")
+                    ? offer.split("běžná cena")[0]
+                    : offer.split("nyní")[1]
+                )
               : cleanPrice($(this).find(".beans-price__text").text());
           result.originalPrice =
             offer !== ""
@@ -159,9 +160,15 @@ export async function extractItems({
         } else {
           result.currentPrice =
             offer !== ""
-              ? cleanPrice(offer.split("teraz")[1])
+              ? cleanPrice(
+                  offer.includes("Clubcard")
+                    ? offer.split("běžná cena")[0]
+                    : offer.split("teraz")[1]
+                )
               : cleanPrice($(this).find(".beans-price__text").text());
-          const match = offer.match(/(predtým) ([\d+|,]+)/);
+          const match = offer.includes("Clubcard")
+            ? offer.match(/(cena) ([\d+|.]+)/)
+            : offer.match(/(predtým) ([\d+|,]+)/);
           if (match && match.length === 3) {
             result.originalPrice = cleanPrice(match[2]);
           }
