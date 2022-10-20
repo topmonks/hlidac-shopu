@@ -28,7 +28,6 @@ import { luxorValidator } from "./src/validators/luxoeValidator.js";
 import { kasaczValidator } from "./src/validators/kasaczValidator.js";
 import { kasaczValidatorBf } from "./src/validators/kasaczValidatorBf.js";
 import { datartValidatorBf } from "./src/validators/datartValidatorBf.js";
-import { slekyczValidator } from "./src/validators/slekyczValidator.js";
 import { pilulkaczValidator } from "./src/validators/pilulkaczValidator.js";
 import { benuczValidator } from "./src/validators/benuczValidator.js";
 import { prozdraviczValidator } from "./src/validators/prozdraviczValidator.js";
@@ -180,9 +179,6 @@ async function processItems(
         break;
       case "kosik_bf":
         item = kosikValidator(item);
-        break;
-      case "sleky_cz":
-        item = slekyczValidator(item);
         break;
       case "pilulka_cz":
         item = pilulkaczValidator(item);
