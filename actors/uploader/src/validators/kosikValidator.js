@@ -8,7 +8,10 @@ export function kosikValidator(item) {
     "itemUrl",
     "originalPrice",
     "breadCrumbs",
-    "inStock"
+    "inStock",
+    "currentUnitPrice",
+    "useUnitPrice",
+    "quantity"
   ];
   for (const attr of attributes) {
     if (updated[attr] === undefined) {

@@ -80,7 +80,10 @@ const parseItem = (item, breadcrumbs) => {
     img: item.image,
     shop: shopName(itemUrl),
     slug: itemSlug(itemUrl),
-    shopOrigin: shopOrigin(itemUrl)
+    shopOrigin: shopOrigin(itemUrl),
+    currentUnitPrice: item.pricePerUnit?.price ?? null,
+    useUnitPrice: item.productQuantity?.prefix === "cca",
+    quantity: item.productQuantity?.value
   };
 };
 
