@@ -2,10 +2,7 @@ import AWS from "aws-sdk";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import https from "https";
 import fs from "fs";
-
-import pkg from "json-2-csv";
 import path from "path";
-const { json2csv } = pkg;
 
 //Parse arguments from command line
 function getArgs() {
@@ -81,21 +78,25 @@ const ddbDocumentClient = new AWS.DynamoDB.DocumentClient();
 // use argument "from" from commandline or set current month
 const now = new Date();
 const currentDate = `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(-2)}`;
-const fromDate = args.from ?? currentDate;
-console.log("fromDate:", fromDate);
+const fromDate = args.from ?? null;
+console.log("Start counting extension hits for shops from", fromDate ? `date: ${fromDate}` : "beginning");
 
 const dbQueryParams = {
   TableName: "api_hit_counter",
   ExpressionAttributeValues: {
-    ":v1": "alza.cz", ":v2": fromDate
+    ":v1": "alza.cz"
   },
   ExpressionAttributeNames: {
-    "#shop": "shop",
-    "#date": "date"
+    "#shop": "shop"
   },
-  KeyConditionExpression: "#shop = :v1 AND #date >= :v2"
+  KeyConditionExpression: "#shop = :v1"
 };
-const shopHits = [];
+if(fromDate !== null) {
+  dbQueryParams.ExpressionAttributeValues[":v2"] = fromDate;
+  dbQueryParams.ExpressionAttributeNames["#date"] = "date";
+  dbQueryParams.KeyConditionExpression = "#shop = :v1 AND #date >= :v2";
+}
+const shopHits = {};
 
 async function queryDatabase() {
   return await getPaginatedResults(async (ExclusiveStartKey) => {
@@ -112,26 +113,39 @@ async function queryDatabase() {
 for (const shop of shops) {
   if (shop[0].includes(".")) {
     dbQueryParams.ExpressionAttributeValues[":v1"] = shop[0];
-    shopHits.push({ name: shop[0], hits: 0 });
-    const shopIndex = shopHits.length - 1;
+
     const items = await queryDatabase();
     for (const item of items) {
-      shopHits[shopIndex].hits += item.hits;
+      //Parse date from item
+      const itemDate = new Date(item.date);
+      //Get month and year from date
+      const itemMonth = ("0" + (itemDate.getMonth() + 1)).slice(-2);
+      const itemYear = itemDate.getFullYear();
+      //Create key for shopHits object
+      const groupDate = `${itemYear}-${itemMonth}`
+      if(!shopHits[groupDate]) {
+        shopHits[groupDate] = [];
+      }
+      let shopIndex = shopHits[groupDate].findIndex(x => x.name === shop[0]);
+      if(shopIndex === -1){
+        shopHits[groupDate].push({ name: shop[0], hits: 0 });
+        shopIndex = 0;
+      }
+      shopHits[groupDate][shopIndex].hits += item.hits;
     }
   }
 }
-shopHits.sort((a, b) => b.hits - a.hits);
-
-// convert JSON to CSV string
-json2csv(shopHits, (err, csv) => {
-  if (err) {
-    throw err;
-  }
-  const fileName = fromDate === currentDate ? fromDate : `${fromDate}-${currentDate}`;
-  const dirPath = './scripts/stats'
-  prepareDir(dirPath);
-  const filePath = path.resolve(dirPath, `extension-hits-${fileName}-${Date.now()}.csv`);
-  // write CSV to a file
-  fs.writeFileSync(filePath, csv);
-});
-console.log(shopHits);
+//Loop every groupDate in shopHits and sort hits for each shop
+for (const groupDate in shopHits) {
+  shopHits[groupDate].sort((a, b) => b.hits - a.hits);
+}
+//Create directory for output
+const dirPath = './scripts/stats'
+prepareDir(dirPath);
+//Create file path
+const fileDate = `${Object.keys(shopHits)[0]}-${currentDate}`;
+const fileName = `extension-hits-${fileDate}-${Date.now()}.json`
+const filePath = path.resolve(dirPath, fileName);
+//Write JSON to a file
+fs.writeFileSync(filePath, JSON.stringify(shopHits, null, 2), "utf8");
+console.log(`Done: ${filePath.toString()}`);

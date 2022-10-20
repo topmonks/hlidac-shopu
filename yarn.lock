@@ -10699,13 +10699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deeks@npm:2.5.1":
-  version: 2.5.1
-  resolution: "deeks@npm:2.5.1"
-  checksum: 0f0943829dcc4367bfe8b308ade05e5b781a3e3f11bf1b0a8287f13ac9f7cddd525a936b20b660bc26503167572b8c224a89cbf197bd39b254d78f93a4fb7f64
-  languageName: node
-  linkType: hard
-
 "deep-eql@npm:^3.0.1":
   version: 3.0.1
   resolution: "deep-eql@npm:3.0.1"
@@ -11046,13 +11039,6 @@ __metadata:
   dependencies:
     dns-packet: ^5.2.4
   checksum: d02b83ecc9b0f1d2fc459f93c6390c768a8805002637d1f74113d623fa7b2478a695ade7761a0a847622781f5e6dd008a9a1469ac75a617bdf1b775f2156943c
-  languageName: node
-  linkType: hard
-
-"doc-path@npm:3.0.2":
-  version: 3.0.2
-  resolution: "doc-path@npm:3.0.2"
-  checksum: 2e27a8887edffaa14518cdaea93d49f1be7f7c8f5661997e374c7d5814de1e1be6fcb121f890b1c46c3254b45385fc88288903d45de24d368e8b505443514f6e
   languageName: node
   linkType: hard
 
@@ -14631,7 +14617,6 @@ __metadata:
     formdata-node: 4.4.1
     gulp-esbuild: 0.10.5
     gulp-mode: 1.1.0
-    json-2-csv: ^3.17.2
     linkedom: 0.14.16
     npm-run-all: 4.1.5
     postcss-css-variables: 0.18.0
@@ -16092,16 +16077,6 @@ __metadata:
   bin:
     jsesc: bin/jsesc
   checksum: b8b44cbfc92f198ad972fba706ee6a1dfa7485321ee8c0b25f5cedd538dcb20cde3197de16a7265430fce8277a12db066219369e3d51055038946039f6e20e17
-  languageName: node
-  linkType: hard
-
-"json-2-csv@npm:^3.17.2":
-  version: 3.17.2
-  resolution: "json-2-csv@npm:3.17.2"
-  dependencies:
-    deeks: 2.5.1
-    doc-path: 3.0.2
-  checksum: 69536798dae42702e87fc7352941021c4677b65b2e3795c8d017283826f609a94fa9453a8ec77432fb7027860882a2310296c74adb0dcc242a11816255afd02c
   languageName: node
   linkType: hard
 
