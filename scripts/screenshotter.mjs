@@ -34,7 +34,6 @@ const urlSet = [
   "https://www.pilulka.sk/yves-rocher-sviezi-sampon-na-mastne-vlasy",
   "https://www.prozdravi.cz/zdravi/areko-ovosan-90-kapsli.html",
   "https://www.rohlik.cz/cenove-trhaky?productPopup=1338819-gurmet-rump-steak-kvetova-spicka", // !
-  "https://www.sleky.cz/gs-echinacea-forte-600-tbl-70-20-zdarma",
   "https://nakup.itesco.cz/groceries/en-GB/products/2001019467158",
   "https://potravinydomov.itesco.sk/groceries/en-GB/products/2002006194330",
   "https://www.tsbohemia.cz/concept-zk4000_d367355.html"
