@@ -16,12 +16,19 @@ export class Mountfield extends Shop {
     const title = elem
       .querySelector("h1.box-detail__heading")
       .textContent.trim();
-    const currentPrice = elem
+    let currentPrice = elem
       .querySelector("meta[itemprop=price]")
       .content.trim();
-    const originalPrice = cleanPrice(
+    let originalPrice = cleanPrice(
       ".box-detail-add__prices__item__text__price"
     );
+
+    const loyaltyPrice = cleanPrice(".box-detail-add__prices__item__club");
+    if (!originalPrice && loyaltyPrice) {
+      originalPrice = currentPrice;
+      currentPrice = loyaltyPrice;
+    }
+
     const imageUrl = elem.querySelector("img[itemprop=image]").src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
