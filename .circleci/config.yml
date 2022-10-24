@@ -264,8 +264,9 @@ jobs:
             ruby --version
             bundle --version
             fastlane --version
-            # echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
-            # bundle exec fastlane release
+            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/ApiKey.json
+            fastlane mac release
+            fastlane ios release
       - slack/notify:
           event: fail
           template: basic_fail_1
