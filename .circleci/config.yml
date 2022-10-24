@@ -449,6 +449,19 @@ workflows:
               ignore: /.*/
             tags:
               only: /^extension-.*/
+      - publish-apple-apps-manually:
+          type: approval
+      - publish-apple-apps:
+          context:
+            - org-global
+            - org-fastlane
+          requires:
+            - test-lib
+            - build-web-extension
+            - publish-apple-apps-manually
+          filters:
+            branches:
+              only: /.*/
       - build-website:
           context: org-global
           requires:
