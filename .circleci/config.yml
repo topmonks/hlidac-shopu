@@ -246,9 +246,9 @@ jobs:
           mentions: "@here"
           channel: ntf-hlidac-shopu
 
-  build-apple-apps:
+  publish-apple-apps:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.0.0"
     steps:
       - checkout
       - attach_workspace:
@@ -260,7 +260,10 @@ jobs:
           name: Build and Release Apple apps
           working_directory: "apple"
           command: |
-            echo tbd
+            echo $PWD
+            ruby --version
+            bundle --version
+            fastlane --version
             # echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/NWBNM44ASY.json
             # bundle exec fastlane release
       - slack/notify:
@@ -434,7 +437,7 @@ workflows:
 #              ignore: /.*/
 #            tags:
 #              only: /^extension-.*/
-      - build-apple-apps:
+      - publish-apple-apps:
           context:
             - org-global
             - org-fastlane
