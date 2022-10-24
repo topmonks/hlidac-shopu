@@ -22,6 +22,7 @@ platform :mac do
 
   desc "Push a new release build to the App Store"
   lane :release do
+    match(type: "appstore", readonly: is_ci)
     build_app(scheme: "App macOS", clean: true)
     upload_to_app_store(
       api_key_path: "fastlane/ApiKey.json",
@@ -45,6 +46,7 @@ platform :ios do
 
   desc "Push a new release build to the App Store"
   lane :release do
+    match(type: "appstore", readonly: is_ci)
     build_app(scheme: "App iOS", clean: true)
     upload_to_app_store(
       api_key_path: "fastlane/ApiKey.json",
