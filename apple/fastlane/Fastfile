@@ -18,11 +18,10 @@
 platform :mac do
   desc "Push a new release build to the App Store"
   lane :release do
-    increment_build_number(xcodeproj: "Hlídač Shopů.xcodeproj")
     build_app(scheme: "Hlídač Shopů (macOS)")
     upload_to_app_store(
       api_key_path: "fastlane/ApiKey.json",
-      # skip_metadata: true,
+      skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
       submit_for_review: true,
@@ -38,11 +37,10 @@ end
 platform :ios do
   desc "Push a new release build to the App Store"
   lane :release do
-    increment_build_number(xcodeproj: "Hlídač Shopů.xcodeproj")
     build_app(scheme: "Hlídač Shopů (iOS)")
     upload_to_app_store(
       api_key_path: "fastlane/ApiKey.json",
-      # skip_metadata: true,
+      skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
       submit_for_review: true,
