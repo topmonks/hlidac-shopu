@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1400"
-   version = "1.3">
+   wasCreatedForAppExtension = "YES"
+   version = "2.0">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -14,10 +15,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8291832227FF10E900CAFD3A"
+               BuildableName = "App ShareExtension.appex"
+               BlueprintName = "App ShareExtension"
+               ReferencedContainer = "container:App.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "82CC13F827FDB81B001A030F"
-               BuildableName = "Hli&#x301;dac&#x30c; Shopu&#x30a;.app"
-               BlueprintName = "Hli&#x301;dac&#x30c; Shopu&#x30a; (iOS)"
-               ReferencedContainer = "container:Hli&#x301;dac&#x30c; Shopu&#x30a;.xcodeproj">
+               BuildableName = "App.app"
+               BlueprintName = "iOS app"
+               ReferencedContainer = "container:App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,39 +47,47 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
+      askForAppToLaunch = "Yes"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      allowLocationSimulation = "YES"
+      launchAutomaticallySubstyle = "2">
+      <RemoteRunnable
+         runnableDebuggingMode = "1"
+         BundleIdentifier = "com.apple.mobilesafari"
+         RemotePath = "/Applications/MobileSafari.app">
+      </RemoteRunnable>
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "82CC13F827FDB81B001A030F"
-            BuildableName = "Hli&#x301;dac&#x30c; Shopu&#x30a;.app"
-            BlueprintName = "Hli&#x301;dac&#x30c; Shopu&#x30a; (iOS)"
-            ReferencedContainer = "container:Hli&#x301;dac&#x30c; Shopu&#x30a;.xcodeproj">
+            BuildableName = "App.app"
+            BlueprintName = "iOS app"
+            ReferencedContainer = "container:App.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES">
+      debugDocumentVersioning = "YES"
+      askForAppToLaunch = "Yes"
+      launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "82CC13F827FDB81B001A030F"
-            BuildableName = "Hli&#x301;dac&#x30c; Shopu&#x30a;.app"
-            BlueprintName = "Hli&#x301;dac&#x30c; Shopu&#x30a; (iOS)"
-            ReferencedContainer = "container:Hli&#x301;dac&#x30c; Shopu&#x30a;.xcodeproj">
+            BuildableName = "App.app"
+            BlueprintName = "iOS app"
+            ReferencedContainer = "container:App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

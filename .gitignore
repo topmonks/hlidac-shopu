@@ -24,12 +24,12 @@ stats/
 coverage/
 /test-results.xml
 
-apple/safari/build/
-apple/safari/fastlane/README.md
-apple/safari/fastlane/report.xml
-apple/safari/hlidac shopu.app.dSYM.zip
-apple/safari/hlidac shopu.app/
-apple/safari/hlidac shopu.pkg
+apple/build/
+apple/fastlane/README.md
+apple/fastlane/report.xml
+apple/App.app.dSYM.zip
+apple/App.app/
+apple/App.pkg
 apple/**/project.xcworkspace/
 apple/**/xcuserdata/
 apple/**/*.xcuserstate
