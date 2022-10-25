@@ -256,6 +256,9 @@ jobs:
       # - run:
       #     working_directory: "apple"
       #     command: bundle install
+      - restore_cache:
+          keys:
+            - v1-gem-cache-apple-{{ checksum "apple/Gemfile.lock" }}
       - run:
           name: Build and Release Apple apps
           working_directory: "apple"
@@ -272,6 +275,10 @@ jobs:
           event: fail
           template: basic_fail_1
           channel: ntf-hlidac-shopu
+      - save_cache:
+          paths:
+            - ~/.bundle
+          key: v1-gem-cache-apple-{{ checksum "apple/Gemfile.lock" }}
 
   provision:
     machine:
