@@ -5,11 +5,7 @@ storage_mode("git")
 
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
 
-app_identifier([
-  "com.topmonks.hlidac-shopu",
-  "com.topmonks.hlidac-shopu.Extension",
-  "com.topmonks.hlidac-shopu.ShareExtension"
-])
+app_identifier(["com.topmonks.hlidac-shopu"])
 
 team_id("8P5697C5H7")
 

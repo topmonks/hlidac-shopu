@@ -267,7 +267,6 @@ jobs:
             ruby --version
             bundle --version
             fastlane --version
-            echo $MATCH_PASSWORD | cut -c 1-3
             bundle install
             echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/ApiKey.json
             bundle exec fastlane mac release
