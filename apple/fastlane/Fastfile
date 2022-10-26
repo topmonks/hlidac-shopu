@@ -22,7 +22,7 @@ platform :mac do
 
   desc "Push a new release build to the App Store"
   lane :release do
-    get_certificates(development: false)
+    get_certificates(development: false, platform: "macos")
     build_mac_app(
       scheme: "App macOS",
       export_team_id: "8P5697C5H7",
