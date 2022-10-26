@@ -22,6 +22,7 @@ platform :mac do
 
   desc "Push a new release build to the App Store"
   lane :release do
+    get_certificates(development: false)
     build_mac_app(
       scheme: "App macOS",
       export_team_id: "8P5697C5H7",
@@ -30,7 +31,7 @@ platform :mac do
     upload_to_app_store(
       platform: "osx",
       api_key_path: "fastlane/ApiKey.json",
-      skip_metadata: true,
+      skip_metadata: false,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
       submit_for_review: true,
