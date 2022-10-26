@@ -959,7 +959,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.Extension";
 				PRODUCT_NAME = "App Extension";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "match AppStore com.topmonks.hlidac-shopu.Extension macos";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -996,7 +996,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu.Extension";
 				PRODUCT_NAME = "App Extension";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "match AppStore com.topmonks.hlidac-shopu.Extension macos";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
