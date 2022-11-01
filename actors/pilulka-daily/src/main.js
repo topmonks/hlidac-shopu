@@ -66,7 +66,7 @@ async function fetchCategories($, requestQueue, country, test) {
     log.info("TEST run");
   }
   log.info(`Found ${categories.length} categories.`);
-  await enqueuRequests(requestQueue, categories, false);
+  await enqueuRequests(requestQueue, categories);
 }
 
 async function fetchSubCategories($, requestQueue, request, country) {
@@ -83,7 +83,7 @@ async function fetchSubCategories($, requestQueue, request, country) {
     });
   });
   log.info(`Found ${categories.length} categories.`);
-  await enqueuRequests(requestQueue, categories, false);
+  await enqueuRequests(requestQueue, categories);
 }
 
 // generate category pages
@@ -111,7 +111,7 @@ async function generateCategoryPages($, requestQueue, request) {
   log.info(
     `Found ${pages.length} pages for category ${request.userData.category}.`
   );
-  await enqueuRequests(requestQueue, pages, false);
+  await enqueuRequests(requestQueue, pages);
 }
 
 function parsePrice(text, country) {
@@ -142,11 +142,9 @@ async function fetchProductBase(
   type,
   s3
 ) {
-  const productsCards =
-    type === ActorType.BF
-      ? $(".product-prev__content")
-      : $(".product-cards, .top-product-cards").find(".product-prev__content");
-
+  const productsCards = $(".product-cards, .top-product-cards").find(
+    ".product-prev__content"
+  );
   const products = await Promise.allSettled(
     productsCards.map(async function () {
       try {
@@ -341,7 +339,7 @@ Apify.main(async function main() {
     maxConcurrency = 20,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.FULL,
-    bfUrls = ["https://www.pilulka.cz/black-friday-2021"]
+    bfUrls = ["https://www.pilulka.cz/akce-a-slevy-black-friday"]
   } = input ?? {};
 
   const requestQueue = await Apify.openRequestQueue();
@@ -358,7 +356,7 @@ Apify.main(async function main() {
       await requestQueue.addRequest({
         url,
         headers: { userAgent: randomUA.generate() },
-        userData: { label: LABEL.CATEGORY_PAGE }
+        userData: { label: LABEL.CATEGORY }
       });
     }
   } else {
