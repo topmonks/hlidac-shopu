@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-INPUT_PATH="apify_storage/key_value_stores/default/INPUT.json"
+INPUT_PATH="storage/key_value_stores/default/INPUT.json"
 
 create_nested_file() { mkdir -p "$(dirname "$1")" && touch "$1" ; }
 

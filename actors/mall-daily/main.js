@@ -114,8 +114,7 @@ Apify.main(async function main() {
     country = "CZ",
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.BF,
-    debug = false,
-    test = false
+    debug = false
   } = input ?? {};
 
   if (debug) {
@@ -125,12 +124,13 @@ Apify.main(async function main() {
   stats = (await Apify.getValue("STATS")) || {
     // categories: 0,
     pages: 0,
-    items: 0
+    items: 0,
+    itemsDuplicity: 0
   };
 
   const requestQueue = await Apify.openRequestQueue();
 
-  if (type === ActorType.BF) {
+  if ([ActorType.BF, ActorType.TEST].includes(type)) {
     await requestQueue.addRequest({
       url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`
     });
@@ -208,7 +208,7 @@ Apify.main(async function main() {
       const hasMorePages = items.length === PAGE_LIMIT;
       log.debug(hasMorePages ? "Has more pages." : "That was last page");
 
-      if (hasMorePages) {
+      if (hasMorePages && type !== ActorType.TEST) {
         await requestQueue.addRequest({
           url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`,
           userData: {
@@ -279,7 +279,7 @@ Apify.main(async function main() {
     `mall.${country.toLowerCase()}`
   );
   log.info("invalidated Data CDN");
-  if (!test && !development) {
+  if (type !== ActorType.TEST && !development) {
     let tableName = country === "CZ" ? "mall" : "mall_sk";
     if (type === ActorType.BF) {
       tableName = `${tableName}_bf`;
