@@ -179,7 +179,7 @@ async function enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats) {
       for (const url of bfUrls) {
         await requestQueue.addRequest({
           url,
-          userData: { label: LABEL.LIST }
+          userData: { label: LABEL.COLLECTION }
         });
         stats.inc("urls");
       }

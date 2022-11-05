@@ -108,7 +108,8 @@ async function processMain(body, stats, requestQueue) {
       stats.inc("categories");
       await requestQueue.addRequest(
         new Apify.Request({
-          url: `https://www.rohlik.cz/services/frontend-service/products/${category}?offset=0&limit=25`,
+          // url: `https://www.rohlik.cz/services/frontend-service/products/${category}?offset=0&limit=25`,
+          url: `https://www.rohlik.cz/api/v1/categories/normal/${category}/products?page=0`,
           userData: {
             label: Label.LIST,
             categoryId: category
@@ -126,7 +127,8 @@ async function processMain(body, stats, requestQueue) {
         stats.inc("subCategories");
         await requestQueue.addRequest(
           new Apify.Request({
-            url: `https://www.rohlik.cz/services/frontend-service/products/${subCategory}?offset=0&limit=25`,
+            // url: `https://www.rohlik.cz/services/frontend-service/products/${subCategory}?offset=0&limit=25`,
+            url: `https://www.rohlik.cz/api/v1/categories/normal/${subCategory}/products?page=0`,
             userData: {
               label: Label.LIST,
               categoryId: subCategory
@@ -140,6 +142,7 @@ async function processMain(body, stats, requestQueue) {
 }
 
 async function processList(body, request, stats, requestQueue, s3) {
+  console.log({body})
   const max = Math.ceil(body.data.totalHits / 25) * 25;
   const { categoryId } = request.userData;
   max !== 0 &&

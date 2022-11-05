@@ -79,7 +79,10 @@ může nacházet ve více než jedné kategorii, je potřeba ukládat pouze jeho
   "currency": "",
   "currentPrice": 0,
   "category": "",
-  "inStock": true
+  "inStock": true,
+  "currentUnitPrice": 0,
+  "useUnitPrice": false,
+  "quantity": 0
 }
 ```
 
