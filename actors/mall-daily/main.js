@@ -6,9 +6,6 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import { gotScraping } from "got-scraping";
-// import { paginationParser } from "./paginationParser.js";
-// import { extractItems, extractBfItems } from "./detailParser.js";
-import cheerio from "cheerio";
 import Apify from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
