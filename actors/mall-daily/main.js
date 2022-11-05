@@ -197,10 +197,12 @@ Apify.main(async function main() {
         log.error("GraphQL errors", errors);
       }
 
-      const {
-        productCollection: { items }
-      } = data;
+      const { productCollection: { items = [] } = {}, ...rest } = data;
       log.debug(`Got ${items.length} items now`);
+
+      if (!items.length) {
+        log.warning("No items 🤔", rest);
+      }
 
       const hasMorePages = items.length === PAGE_LIMIT;
       log.debug(hasMorePages ? "Has more pages." : "That was last page");
@@ -256,7 +258,6 @@ Apify.main(async function main() {
           stats.itemsDuplicity++;
         }
       }
-      // await all requests, so we don't end before they end
       await Promise.all(promises);
     },
     handleFailedRequestFunction: async ({ request }) => {
