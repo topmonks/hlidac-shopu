@@ -1,4 +1,4 @@
-import Apify from "apify";
+import { getValue, setValue, events, utils } from "apify";
 import { defAtom } from "@thi.ng/atom";
 
 // TODO: make this lowest common denominator
@@ -38,7 +38,7 @@ class Stats {
 
   log() {
     const stats = this.stats.deref();
-    Apify.utils.log.info(`stats: ${JSON.stringify(stats)}`);
+    log.info(`stats: ${JSON.stringify(stats)}`);
   }
 
   /**
@@ -49,12 +49,10 @@ class Stats {
       clearInterval(this.interval);
     }
     const stats = this.stats.deref();
-    await Apify.setValue("STATS", this.get());
-    Apify.utils.log.info("STATS saved!");
+    await setValue("STATS", this.get());
+    utils.log.info("STATS saved!");
     if (stats.ok) {
-      Apify.utils.log.info(
-        `Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`
-      );
+      utils.log.info(`Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`);
     }
     this.log();
   }
@@ -67,12 +65,12 @@ class Stats {
  * @returns {Promise<Stats>}
  */
 export async function withPersistedStats(fn, init) {
-  const stats = (await Apify.getValue("STATS")) ?? init ?? defaultStats;
+  const stats = (await getValue("STATS")) ?? init ?? defaultStats;
   const state = new Stats(fn(stats));
   const persistState = () => state.save();
 
-  Apify.events.on("persistState", persistState);
-  Apify.events.on("migrating", persistState);
+  events.on("persistState", persistState);
+  events.on("migrating", persistState);
 
   return state;
 }
