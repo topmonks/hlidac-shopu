@@ -180,6 +180,7 @@ Apify.main(async function main() {
       };
 
       const {
+        statusCode,
         body: { data: { getCampaign: data } = {}, errors }
       } = await gotScraping(request.url, {
         responseType: "json",
@@ -193,11 +194,19 @@ Apify.main(async function main() {
           variables
         })
       });
+
+      // Status code check
+      if (![200, 404].includes(statusCode)) {
+        session.retire();
+        request.retryCount--;
+        throw new Error(`We got blocked by target on ${request.url}`);
+      }
+
       if (errors) {
         log.error("GraphQL errors", errors);
       }
 
-      const { productCollection: { items = [] } = {}, ...rest } = data;
+      const { productCollection: { items = [] } = {}, ...rest } = data || {};
       log.debug(`Got ${items.length} items now`);
 
       if (!items.length) {
