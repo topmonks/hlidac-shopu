@@ -4613,13 +4613,9 @@ __metadata:
     "@types/node": 18.7.23
     apify: 2.3.2
     apify-cli: 0.8.1
-    got-scraping: ^3.2.10
-    graphql: ^16.6.0
-    graphql-tag: ^2.12.6
-    modern-random-ua: ^1.0.3
-    parsecurrency: ^1.0.1
-    request-fixed-tunnel-agent: ^2.88.3
-    user-agents: 1.0.1154
+    got-scraping: 3.2.12
+    graphql: 16.6.0
+    graphql-tag: 2.12.6
   languageName: unknown
   linkType: soft
 
@@ -6642,7 +6638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/responselike@npm:*, @types/responselike@npm:^1.0.0":
+"@types/responselike@npm:*, @types/responselike@npm:1.0.0, @types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
   dependencies:
@@ -9165,6 +9161,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cacheable-lookup@npm:6.1.0":
+  version: 6.1.0
+  resolution: "cacheable-lookup@npm:6.1.0"
+  checksum: 4e37afe897219b1035335b0765106a2c970ffa930497b43cac5000b860f3b17f48d004187279fae97e2e4cbf6a3693709b6d64af65279c7d6c8453321d36d118
+  languageName: node
+  linkType: hard
+
 "cacheable-lookup@npm:^5.0.3":
   version: 5.0.4
   resolution: "cacheable-lookup@npm:5.0.4"
@@ -9186,6 +9189,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cacheable-request@npm:7.0.2, cacheable-request@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "cacheable-request@npm:7.0.2"
+  dependencies:
+    clone-response: ^1.0.2
+    get-stream: ^5.1.0
+    http-cache-semantics: ^4.0.0
+    keyv: ^4.0.0
+    lowercase-keys: ^2.0.0
+    normalize-url: ^6.0.1
+    responselike: ^2.0.0
+  checksum: 6152813982945a5c9989cb457a6c499f12edcc7ade323d2fbfd759abc860bdbd1306e08096916bb413c3c47e812f8e4c0a0cc1e112c8ce94381a960f115bc77f
+  languageName: node
+  linkType: hard
+
 "cacheable-request@npm:^10.2.1":
   version: 10.2.1
   resolution: "cacheable-request@npm:10.2.1"
@@ -9198,21 +9216,6 @@ __metadata:
     normalize-url: ^7.1.0
     responselike: ^3.0.0
   checksum: 11bcee52d676623fbfe4b02b9f30930457796a7320a5db25392238a92a98185ffa7e87619d82a472c411c7f48eada5ec182bab41e6d849a038e84774dcdbba7d
-  languageName: node
-  linkType: hard
-
-"cacheable-request@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "cacheable-request@npm:7.0.2"
-  dependencies:
-    clone-response: ^1.0.2
-    get-stream: ^5.1.0
-    http-cache-semantics: ^4.0.0
-    keyv: ^4.0.0
-    lowercase-keys: ^2.0.0
-    normalize-url: ^6.0.1
-    responselike: ^2.0.0
-  checksum: 6152813982945a5c9989cb457a6c499f12edcc7ade323d2fbfd759abc860bdbd1306e08096916bb413c3c47e812f8e4c0a0cc1e112c8ce94381a960f115bc77f
   languageName: node
   linkType: hard
 
@@ -13659,6 +13662,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"generative-bayesian-network@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "generative-bayesian-network@npm:2.1.1"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: cffc3eba5daf64ea2661236740517cd859c0e9ff1255283c3a5530f990450d1c138d78349fdf018a054f8e21aa626674dad47024ed7f1a9472077fa7a4754472
+  languageName: node
+  linkType: hard
+
 "gensync@npm:^1.0.0-beta.2":
   version: 1.0.0-beta.2
   resolution: "gensync@npm:1.0.0-beta.2"
@@ -14083,6 +14096,41 @@ __metadata:
   languageName: node
   linkType: hard
 
+"got-cjs@npm:12.5.4":
+  version: 12.5.4
+  resolution: "got-cjs@npm:12.5.4"
+  dependencies:
+    "@sindresorhus/is": 4.6.0
+    "@szmarczak/http-timer": 4.0.6
+    "@types/responselike": 1.0.0
+    cacheable-lookup: 6.1.0
+    cacheable-request: 7.0.2
+    decompress-response: ^6.0.0
+    form-data-encoder: 1.7.2
+    get-stream: ^6.0.1
+    http2-wrapper: ^2.1.10
+    lowercase-keys: 2.0.0
+    p-cancelable: 2.1.1
+    responselike: 2.0.1
+  checksum: 9babdcaaf68b3323537e731ff02c0d7380112f1d97d49923249b1bc0125401c02ed0034915edb4b6e1e7766627a97b91c226e2dcf76797b16e3cb9a51fb2c08e
+  languageName: node
+  linkType: hard
+
+"got-scraping@npm:3.2.12":
+  version: 3.2.12
+  resolution: "got-scraping@npm:3.2.12"
+  dependencies:
+    got-cjs: 12.5.4
+    header-generator: ^2.1.3
+    http2-wrapper: ^2.1.11
+    mimic-response: ^3.1.0
+    ow: ^0.28.1
+    quick-lru: ^5.1.1
+    tslib: ^2.4.0
+  checksum: 94fdd7251ed29636528c24d33ac6f82b16321956ed7732d92ed4b093f39c6970bb87749045cae481ac9e0078ac6148805245f49fead833be864302ef04e2ecb8
+  languageName: node
+  linkType: hard
+
 "got-scraping@npm:^3.2.10":
   version: 3.2.10
   resolution: "got-scraping@npm:3.2.10"
@@ -14193,7 +14241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.12.6":
+"graphql-tag@npm:2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
@@ -14204,7 +14252,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.6.0":
+"graphql@npm:16.6.0":
   version: 16.6.0
   resolution: "graphql@npm:16.6.0"
   checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
@@ -14825,6 +14873,18 @@ __metadata:
     generative-bayesian-network: 0.1.0-beta.1
     ow: ^0.23.0
   checksum: 36ea1781a38b822ce019f8483ff82b348f06d9f04aa99030543cfd45b95f161bcaafa1e03ec8997dff407f99c2171aeb7e15196e735c664dfee78bc540763673
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "header-generator@npm:2.1.3"
+  dependencies:
+    browserslist: ^4.21.1
+    generative-bayesian-network: ^2.1.1
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 6b17f36be77af6d5ebf67a2da647aef71527e0285b5b0f1d35addb4eb2d752568e1c8b45ffdfc5c8f0b6dcf6591dbe247a59305f0d501b15d632dfdf2d1b571a
   languageName: node
   linkType: hard
 
@@ -21339,6 +21399,15 @@ __metadata:
     debug: ^2.2.0
     minimatch: ^3.0.2
   checksum: b8403e16e8489723f87c8ca35288a0c688479b64ec5d1829ec74ccf63fa93ae55e0cb02db2ccd75a3c7c7edb9e024e9b8a3810a30c9f5398bb97f745031d22c0
+  languageName: node
+  linkType: hard
+
+"responselike@npm:2.0.1":
+  version: 2.0.1
+  resolution: "responselike@npm:2.0.1"
+  dependencies:
+    lowercase-keys: ^2.0.0
+  checksum: b122535466e9c97b55e69c7f18e2be0ce3823c5d47ee8de0d9c0b114aa55741c6db8bfbfce3766a94d1272e61bfb1ebf0a15e9310ac5629fbb7446a861b4fd3a
   languageName: node
   linkType: hard
 

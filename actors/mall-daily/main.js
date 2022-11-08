@@ -246,9 +246,9 @@ Apify.main(async function main() {
           "currentPrice": item.mainVariant.price,
           "inStock": item.mainVariant.isAvailable,
           "useUnitPrice":
-            item.mainVariant.pricePerUnit?.measure.includes("cca"),
-          "currentUnitPrice": item.mainVariant.pricePerUnit?.value,
-          "quantity": item.mainVariant.pricePerUnit?.measure
+            item.mainVariant.pricePerUnit?.measure.includes("cca") ?? false,
+          "currentUnitPrice": item.mainVariant.pricePerUnit?.value ?? null,
+          "quantity": item.mainVariant.pricePerUnit?.measure ?? null
         };
 
         if (!processedIds.has(product.itemId)) {
