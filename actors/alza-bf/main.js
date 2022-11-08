@@ -1,4 +1,4 @@
-import Apify, { Actor, KeyValueStore } from "apify";
+import { Actor, KeyValueStore } from "apify";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { BasicCrawler } from "@crawlee/basic";
