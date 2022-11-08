@@ -173,13 +173,56 @@ async function handleCollection(
   }
 }
 
+async function handleList(
+  responseData,
+  params,
+  rootUrl,
+  country,
+  s3,
+  requestQueue,
+  title,
+  stats
+) {
+  const shop = getShopUri(country);
+  const limit = 50;
+  const { collection } = responseData;
+  const filters = new URLSearchParams({
+    shop,
+    limit,
+    sort: "price-ascending",
+    collection_scope: collection.id,
+    product_available: false,
+    variant_available: false,
+    check_cache: false,
+    sort_first: "available"
+  });
+  const url = `https://services.mybcapps.com/bc-sf-filter/filter?${filters}`;
+
+  for (
+    let page = 1;
+    page <= Math.ceil(collection.products_count / limit);
+    page++
+  ) {
+    await requestQueue.addRequest({
+      url,
+      userData: {
+        label: "COLLECTION",
+        title: collection.title,
+        params: Object.assign(filters, { page })
+      }
+    });
+  }
+}
+
 async function enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats) {
   switch (type) {
     case ActorType.BF:
       for (const url of bfUrls) {
         await requestQueue.addRequest({
           url,
-          userData: { label: LABEL.COLLECTION }
+          userData: {
+            label: LABEL.LIST
+          }
         });
         stats.inc("urls");
       }
@@ -218,7 +261,7 @@ async function processData(
   stats
 ) {
   switch (label) {
-    case "COLLECTIONS":
+    case LABEL.COLLECTIONS:
       return await handleCollections(
         responseData,
         country,
@@ -227,8 +270,19 @@ async function processData(
         defaultUrl,
         stats
       );
-    case "COLLECTION":
+    case LABEL.COLLECTION:
       return await handleCollection(
+        responseData,
+        params,
+        rootUrl,
+        country,
+        s3,
+        requestQueue,
+        title,
+        stats
+      );
+    case LABEL.LIST:
+      return await handleList(
         responseData,
         params,
         rootUrl,
