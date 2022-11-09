@@ -293,14 +293,16 @@ export async function main() {
           });
           if (response.ok) stats.inc("ok");
           if (response.status === 403) stats.inc("denied");
+          const body = await response.text();
           try {
-            const { d } = await response.json();
+            const { d } = JSON.parse(body);
             const { document } = parseHTML(d.Boxes);
             await enqueueDetails(document, createUrl, enqueueLinks);
             stats.inc("pages");
           } catch (err) {
-            log.info(await response.text());
+            log.info(body);
             stats.inc("errors");
+            throw new Error("Unreadable JSON");
           }
           return;
         }
