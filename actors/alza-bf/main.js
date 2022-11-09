@@ -314,7 +314,7 @@ export async function main() {
 
   await crawler.addRequests(urls);
   await crawler.run();
-  await stats.save();
+  await stats.save(true);
 
   try {
     const countryCode = country.toLowerCase();
