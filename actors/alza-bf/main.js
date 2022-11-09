@@ -149,7 +149,13 @@ async function enqueueDetails(document, createUrl, enqueueLinks) {
 }
 
 function extractPaginationInfo(document) {
-  const categoryId = document.querySelector(".surveyInfoForm")?.dataset?.id;
+  if (!document.querySelector(".surveyInfoForm")) {
+    console.log(document.innerHTML);
+    return null;
+  }
+  const categoryId = cleanPrice(
+    document.querySelector(".surveyInfoForm")?.dataset?.id
+  );
   const itemsCount = cleanPrice(
     document.getElementById("lblNumberItem")?.textContent
   );
