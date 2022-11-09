@@ -317,7 +317,10 @@ export async function main() {
   await stats.save();
 
   try {
-    await uploadToKeboola("alza_cz_bf");
+    const countryCode = country.toLowerCase();
+    const postfix = type === ActorType.BlackFriday ? "_bf" : "";
+    const tableName = `alza_${countryCode}${postfix}`;
+    await uploadToKeboola(tableName);
   } catch (err) {
     log.error(err);
   }
