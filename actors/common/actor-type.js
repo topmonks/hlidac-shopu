@@ -1,7 +1,17 @@
 export const ActorType = {
+  /** @deprecated */
   BF: "BF",
+  BlackFriday: "BF",
+  /** @deprecated */
   FULL: "FULL",
+  Full: "FULL",
+  /** @deprecated */
   TEST: "TEST",
+  Test: "TEST",
+  /** @deprecated */
   COUNT: "COUNT",
-  LINKED_DATA: "LINKED_DATA"
+  Count: "COUNT",
+  /** @deprecated */
+  LINKED_DATA: "LINKED_DATA",
+  LinkedData: "LINKED_DATA"
 };

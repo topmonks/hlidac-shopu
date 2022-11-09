@@ -1,4 +1,4 @@
-import { getValue, setValue, events, utils } from "apify";
+import { Actor, log } from "apify";
 import { defAtom } from "@thi.ng/atom";
 
 // TODO: make this lowest common denominator
@@ -49,10 +49,10 @@ class Stats {
       clearInterval(this.interval);
     }
     const stats = this.stats.deref();
-    await setValue("STATS", this.get());
-    utils.log.info("STATS saved!");
+    await Actor.setValue("STATS", this.get());
+    log.info("STATS saved!");
     if (stats.ok) {
-      utils.log.info(`Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`);
+      log.info(`Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`);
     }
     this.log();
   }
@@ -65,12 +65,12 @@ class Stats {
  * @returns {Promise<Stats>}
  */
 export async function withPersistedStats(fn, init) {
-  const stats = (await getValue("STATS")) ?? init ?? defaultStats;
+  const stats = (await Actor.getValue("STATS")) ?? init ?? defaultStats;
   const state = new Stats(fn(stats));
   const persistState = () => state.save();
 
-  events.on("persistState", persistState);
-  events.on("migrating", persistState);
+  Actor.on("persistState", persistState);
+  Actor.on("migrating", persistState);
 
   return state;
 }

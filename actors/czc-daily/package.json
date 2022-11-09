@@ -9,8 +9,8 @@
   "dependencies": {
     "@aws-sdk/client-cloudfront": "3.204.0",
     "@aws-sdk/client-s3": "3.204.0",
-    "@hlidac-shopu/actors-common": "1.2.17",
-    "apify": "2.3.2"
+    "@hlidac-shopu/actors-common": "2.0.2",
+    "apify": "3.1.0"
   },
   "devDependencies": {
     "@types/node": "18.11.9",
