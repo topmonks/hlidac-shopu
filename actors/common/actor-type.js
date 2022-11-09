@@ -13,5 +13,6 @@ export const ActorType = {
   Count: "COUNT",
   /** @deprecated */
   LINKED_DATA: "LINKED_DATA",
-  LinkedData: "LINKED_DATA"
+  LinkedData: "LINKED_DATA",
+  Feed: "FEED"
 };

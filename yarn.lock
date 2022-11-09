@@ -4350,7 +4350,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/actors-common@2.0.4, @hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@2.0.5, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -4380,6 +4380,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hlidac-shopu/actors-common@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@hlidac-shopu/actors-common@npm:2.0.4"
+  dependencies:
+    "@hlidac-shopu/lib": 1.3.8
+    "@thi.ng/atom": 5.1.21
+    apify: 3.1.0
+    rollbar: 2.25.2
+  peerDependencies:
+    "@aws-sdk/client-cloudfront": ^3.112.0
+    "@aws-sdk/client-s3": ^3.112.0
+  checksum: 3b1e6de1b95e3370a135e839035e772f84b16bfaedaa6773aa1d85d5100c2eb54f2eff1d6b1625955004929da53cde722613c0afd6001e38eb6266da3c0c5771
+  languageName: node
+  linkType: hard
+
 "@hlidac-shopu/alza-bf@workspace:actors/alza-bf":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza-bf@workspace:actors/alza-bf"
@@ -4387,7 +4402,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.204.0
     "@aws-sdk/client-s3": 3.204.0
     "@crawlee/http": 3.1.1
-    "@hlidac-shopu/actors-common": 2.0.4
+    "@hlidac-shopu/actors-common": 2.0.5
     "@hlidac-shopu/lib": 1.3.8
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.11.9

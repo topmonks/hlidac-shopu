@@ -109,20 +109,22 @@ function extractDOM(document) {
 function extractDetail(document, structuredData) {
   const domParts = extractDOM(document);
   if (!domParts) return;
+
   const structuredParts = extractStructuredData(structuredData);
   return Object.assign({}, structuredParts, domParts, {
     category: decodeEntities(structuredParts.category)
   });
 }
 
+/**
+ * @param {Document} document
+ * @return {{pages: number, categoryId: number} | undefined}
+ */
 function extractPaginationInfo(document) {
-  if (!document.querySelector(".surveyInfoForm")) {
-    console.log(document.innerHTML);
-    return null;
-  }
-  const categoryId = cleanPrice(
-    document.querySelector(".surveyInfoForm")?.dataset?.id
-  );
+  const surveyInfoForm = document.querySelector(".surveyInfoForm");
+  if (!surveyInfoForm) return;
+
+  const categoryId = cleanPrice(surveyInfoForm?.dataset?.id);
   const itemsCount = cleanPrice(
     document.getElementById("lblNumberItem")?.textContent
   );
@@ -165,6 +167,82 @@ function createPaginationPayload({ categoryId, page }) {
   });
 }
 
+async function handleDetail(body, session, stats) {
+  const html = body.toString();
+  const { document } = parseHTML(html);
+  const structuredData = parseStructuredData(document);
+  const detail = extractDetail(document, structuredData);
+  if (detail) {
+    await Dataset.pushData(detail);
+    stats.inc("details");
+  } else {
+    stats.inc("zeroItems");
+  }
+}
+
+async function handlePagination(json, createUrl, enqueueLinks, stats) {
+  const { d } = json;
+  const { document } = parseHTML(d.Boxes);
+  const urls = Array.from(document.querySelectorAll(".browsinglink.name")).map(
+    x => createUrl(x.href)
+  );
+  await enqueueLinks({ label: Label.Detail, urls });
+  stats.inc("pages");
+}
+
+async function handleCategory(
+  body,
+  log,
+  session,
+  stats,
+  createUrl,
+  requestQueue
+) {
+  const html = body.toString();
+  const { document } = parseHTML(html);
+  const pagination = extractPaginationInfo(document);
+  if (!pagination) {
+    log.warning(document.innerHTML);
+    session.isBlocked();
+    stats.inc("errors");
+    throw new Error("Can't find pagination info");
+  }
+  const { categoryId, pages } = pagination;
+  log.info("Category pagination info", { categoryId, pages });
+  const url = createUrl("/Services/EShopService.svc/Filter");
+  for (let page = 0; page < pages; page++) {
+    await requestQueue.addRequest({
+      url,
+      uniqueKey: `${url}?page=${page}`,
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      payload: createPaginationPayload({ categoryId, page }),
+      userData: { label: Label.Pagination }
+    });
+  }
+  stats.inc("categories");
+}
+
+function getPostfix(type) {
+  switch (type) {
+    case ActorType.BlackFriday:
+      return "_bf";
+    case ActorType.Feed:
+      return "_feed";
+    default:
+      return "";
+  }
+}
+
+function getTableName(country, type) {
+  const countryCode = country.toLowerCase();
+  const postfix = getPostfix(type);
+  return `alza_${countryCode}${postfix}`;
+}
+
 export async function main() {
   const rollbar = Rollbar.init();
   const input = (await KeyValueStore.getInput()) ?? {};
@@ -188,10 +266,7 @@ export async function main() {
     duplicates: 0,
     pages: 0,
     items: 0,
-    target: 0,
-    targetPages: 0,
     denied: 0,
-    captchas: 0,
     ok: 0,
     zeroItems: 0,
     errors: 0
@@ -202,9 +277,7 @@ export async function main() {
       if (urls.length === 0) {
         await requestQueue.addRequest({
           url: `https://www.alza.${country.toLowerCase()}/black-friday`,
-          userData: {
-            label: Label.Category
-          }
+          userData: { label: Label.Category }
         });
       }
       break;
@@ -245,65 +318,19 @@ export async function main() {
       session.setCookiesFromResponse(response);
       const createUrl = s => new URL(s, request.url).href;
       switch (label) {
-        case Label.Category: {
-          const html = body.toString();
-          const { document } = parseHTML(html);
-          const pagination = extractPaginationInfo(document);
-          if (!pagination) {
-            log.info(document.innerHTML);
-            session.isBlocked();
-            stats.inc("errors");
-            throw new Error("Can't find pagination info");
-          }
-          const { categoryId, pages } = pagination;
-          console.log({ categoryId, pages });
-          const url = createUrl("/Services/EShopService.svc/Filter");
-          for (let page = 0; page < pages; page++) {
-            await requestQueue.addRequest({
-              url,
-              uniqueKey: `${url}?page=${page}`,
-              method: "POST",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              },
-              payload: createPaginationPayload({ categoryId, page }),
-              userData: { label: Label.Pagination }
-            });
-          }
-          stats.inc("categories");
-          return;
-        }
-        case Label.Pagination: {
-          try {
-            const { d } = json;
-            const { document } = parseHTML(d.Boxes);
-            const urls = Array.from(
-              document.querySelectorAll(".browsinglink.name")
-            ).map(x => createUrl(x.href));
-            await enqueueLinks({ label: Label.Detail, urls });
-            stats.inc("pages");
-          } catch (err) {
-            stats.inc("errors");
-            session.isBlocked();
-            throw new Error("Unreadable JSON");
-          }
-          return;
-        }
-        case Label.Detail: {
-          const html = body.toString();
-          const { document } = parseHTML(html);
-          const structuredData = parseStructuredData(document);
-          const detail = extractDetail(document, structuredData);
-          if (!detail) {
-            session.isBlocked();
-            stats.inc("zeroItems");
-            return;
-          }
-          await Dataset.pushData(detail);
-          stats.inc("details");
-          return;
-        }
+        case Label.Category:
+          return handleCategory(
+            body,
+            log,
+            session,
+            stats,
+            createUrl,
+            requestQueue
+          );
+        case Label.Pagination:
+          return handlePagination(json, createUrl, enqueueLinks, stats);
+        case Label.Detail:
+          return handleDetail(body, session, stats);
       }
     },
     async failedRequestHandler({ request, log }, error) {
@@ -317,9 +344,7 @@ export async function main() {
   await stats.save(true);
 
   try {
-    const countryCode = country.toLowerCase();
-    const postfix = type === ActorType.BlackFriday ? "_bf" : "";
-    const tableName = `alza_${countryCode}${postfix}`;
+    const tableName = getTableName(country, type);
     await uploadToKeboola(tableName);
   } catch (err) {
     log.error(err);
