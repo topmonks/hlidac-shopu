@@ -307,7 +307,8 @@ Apify.main(async function main() {
 
   const crawler = new Apify.BasicCrawler({
     requestQueue,
-    maxConcurrency: development ? 1 : maxConcurrency,
+    // maxConcurrency: development ? 1 : maxConcurrency,
+    maxConcurrency: 1,
     maxRequestRetries,
     useSessionPool: true,
     async handleRequestFunction(context) {
