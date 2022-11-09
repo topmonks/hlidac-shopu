@@ -96,7 +96,7 @@ function extractDOM(document) {
     itemId: detailPage.dataset.id,
     originalPrice: cleanPrice(
       document.querySelector("#detailText .price-box__compare-price")
-        .textContent
+        ?.textContent
     )
   };
 }
