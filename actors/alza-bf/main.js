@@ -1,5 +1,6 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -243,6 +244,7 @@ export async function main() {
         throw new Error("Access Denied");
       }
       if (response.statusCode === 200) stats.inc("ok");
+      session.setCookiesFromResponse(response);
       const createUrl = s => new URL(s, request.url).href;
       switch (label) {
         case Label.Category: {
@@ -310,6 +312,12 @@ export async function main() {
   await crawler.addRequests(urls);
   await crawler.run();
   await stats.save();
+
+  try {
+    await uploadToKeboola("alza_cz_bf");
+  } catch (err) {
+    log.error(err);
+  }
 }
 
 await Actor.main(main, { statusMessage: "DONE" });
