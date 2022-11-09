@@ -1,6 +1,4 @@
-import Apify from "apify";
-
-const { log } = Apify.utils;
+import { Actor, log } from "apify";
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
@@ -15,9 +13,9 @@ export async function uploadToKeboola(tableName) {
   if (isDisabled) return;
   log.info(`Keboola: Uploading to ${tableName}`);
   /** @type {ApifyEnv} */
-  const env = await Apify.getEnv();
+  const env = await Actor.getEnv();
   /** @type {ActorRun} */
-  const run = await Apify.call("blackfriday/uploader", {
+  const run = await Actor.call("blackfriday/uploader", {
     datasetId: env.defaultDatasetId,
     upload: true,
     actRunId: env.actorRunId,
