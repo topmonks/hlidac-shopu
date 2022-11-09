@@ -1,5 +1,5 @@
 import { keepAliveNoCache } from "@adobe/fetch";
-import { BasicCrawler } from "@crawlee/basic";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -7,34 +7,6 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { parseHTML } from "linkedom/cached";
-import UserAgent from "user-agents";
-import {
-  HttpProxyAgent,
-  HttpsProxyAgent
-} from "got-scraping/dist/agent/h1-proxy-agent.js";
-
-/** @typedef {import("apify").ProxyConfiguration} ProxyConfiguration */
-
-const userAgent = new UserAgent();
-
-/**
- * @param {ProxyConfiguration} proxyConfiguration
- * @param {string | null} sessionId
- */
-function createFetch(proxyConfiguration, sessionId) {
-  return keepAliveNoCache({
-    h1: {
-      rejectUnauthorized: false,
-      httpAgent: new HttpProxyAgent({
-        proxy: proxyConfiguration.newUrl(sessionId)
-      }),
-      httpsAgent: new HttpsProxyAgent({
-        proxy: proxyConfiguration.newUrl(sessionId)
-      })
-    },
-    userAgent: userAgent().toString()
-  });
-}
 
 export const Label = {
   Category: "CATEGORY",
@@ -141,13 +113,6 @@ function extractDetail(document, structuredData) {
   });
 }
 
-async function enqueueDetails(document, createUrl, enqueueLinks) {
-  const urls = Array.from(document.querySelectorAll(".browsinglink.name")).map(
-    x => createUrl(x.href)
-  );
-  await enqueueLinks({ label: Label.Detail, urls });
-}
-
 function extractPaginationInfo(document) {
   if (!document.querySelector(".surveyInfoForm")) {
     console.log(document.innerHTML);
@@ -248,26 +213,41 @@ export async function main() {
       }
   }
 
-  const crawler = new BasicCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 50,
       persistStateKeyValueStoreId: "alza-sessions"
     },
+    proxyConfiguration,
     maxConcurrency,
-    async requestHandler({ request, session, log, enqueueLinks }) {
-      const { label, categoryId, page } = request.userData;
+    async requestHandler({
+      request,
+      response,
+      body,
+      json,
+      session,
+      log,
+      enqueueLinks
+    }) {
+      const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
+      if (response.statusCode === 302) {
+        stats.inc("zeroItems");
+        return;
+      }
+      if (response.statusCode === 403) {
+        stats.inc("denied");
+        session.isBlocked();
+        throw new Error("Access Denied");
+      }
+      if (response.statusCode === 200) stats.inc("ok");
       const createUrl = s => new URL(s, request.url).href;
-      const { fetch } = createFetch(proxyConfiguration, session.id);
       switch (label) {
         case Label.Category: {
-          const response = await fetch(request.url);
-          if (response.ok) stats.inc("ok");
-          if (response.status === 403) stats.inc("denied");
-          const html = await response.text();
+          const html = body.toString();
           const { document } = parseHTML(html);
           const pagination = extractPaginationInfo(document);
           if (!pagination) {
@@ -283,28 +263,26 @@ export async function main() {
             await requestQueue.addRequest({
               url,
               uniqueKey: `${url}?page=${page}`,
-              userData: { label: Label.Pagination, categoryId, page }
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+              },
+              payload: createPaginationPayload({ categoryId, page }),
+              userData: { label: Label.Pagination }
             });
           }
           stats.inc("categories");
           return;
         }
         case Label.Pagination: {
-          const response = await fetch(request.url, {
-            method: "POST",
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-            body: createPaginationPayload({ categoryId, page })
-          });
-          if (response.ok) stats.inc("ok");
-          if (response.status === 403) stats.inc("denied");
-          const body = await response.text();
           try {
-            const { d } = JSON.parse(body);
+            const { d } = json;
             const { document } = parseHTML(d.Boxes);
-            await enqueueDetails(document, createUrl, enqueueLinks);
+            const urls = Array.from(
+              document.querySelectorAll(".browsinglink.name")
+            ).map(x => createUrl(x.href));
+            await enqueueLinks({ label: Label.Detail, urls });
             stats.inc("pages");
           } catch (err) {
             stats.inc("errors");
@@ -314,17 +292,7 @@ export async function main() {
           return;
         }
         case Label.Detail: {
-          const response = await fetch(request.url, { redirect: "manual" });
-          if (response.status === 302) {
-            stats.inc("zeroItems");
-            return;
-          }
-          if (response.status === 403) {
-            stats.inc("denied");
-            throw new Error("Access Denied");
-          }
-          if (response.ok) stats.inc("ok");
-          const html = await response.text();
+          const html = body.toString();
           const { document } = parseHTML(html);
           const structuredData = parseStructuredData(document);
           const detail = extractDetail(document, structuredData);
