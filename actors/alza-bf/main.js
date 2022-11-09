@@ -302,6 +302,7 @@ export async function main() {
           } catch (err) {
             log.info(body);
             stats.inc("errors");
+            session.retire();
             throw new Error("Unreadable JSON");
           }
           return;
