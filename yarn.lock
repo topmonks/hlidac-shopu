@@ -5,6 +5,17 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@adobe/fetch@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@adobe/fetch@npm:3.3.0"
+  dependencies:
+    debug: 4.3.4
+    http-cache-semantics: 4.1.0
+    lru-cache: 7.14.0
+  checksum: 137562fa3a703390f7057aefdcd8c2bd4bfe0b42178d2794da4545b7a3889335a19878b49031c5d4ff280f0e5d0ba6dd5aec6b90b75f2104ee5200d973b75d9b
+  languageName: node
+  linkType: hard
+
 "@adobe/helix-fetch@npm:3.1.2":
   version: 3.1.2
   resolution: "@adobe/helix-fetch@npm:3.1.2"
@@ -4314,6 +4325,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza-bf@workspace:actors/alza-bf"
   dependencies:
+    "@adobe/fetch": ^3.3.0
     "@aws-sdk/client-cloudfront": 3.204.0
     "@aws-sdk/client-s3": 3.204.0
     "@crawlee/basic": 3.1.1
@@ -4323,7 +4335,9 @@ __metadata:
     "@types/node": 18.11.9
     apify: 3.1.0
     apify-cli: 0.9.0
+    got-scraping: ^3.2.12
     linkedom: 0.14.19
+    user-agents: ^1.0.1194
   languageName: unknown
   linkType: soft
 
@@ -17386,6 +17400,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:7.14.0":
+  version: 7.14.0
+  resolution: "lru-cache@npm:7.14.0"
+  checksum: efdd329f2c1bb790b71d497c6c59272e6bc2d7dd060ba55fc136becd3dd31fc8346edb446275504d94cb60d3c8385dbf5267b79b23789e409b2bdf302d13f0d7
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^5.1.1":
   version: 5.1.1
   resolution: "lru-cache@npm:5.1.1"
@@ -24431,6 +24452,16 @@ __metadata:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
   checksum: 73c04e64f9e363b45c9a7d79739f13938a917aa44334e1cf95f7bbfe3ab64922642c360dbb4d57f1c611b9762152eb760decae278bb638a35654486e41de16e0
+  languageName: node
+  linkType: hard
+
+"user-agents@npm:^1.0.1194":
+  version: 1.0.1194
+  resolution: "user-agents@npm:1.0.1194"
+  dependencies:
+    dot-json: ^1.2.2
+    lodash.clonedeep: ^4.5.0
+  checksum: aedf37ba591efb34d5bd1fb74a528c98c6ab25ef7a5262637b65fdcbd79df0a5b196c988c0e32fb8bd33733e0df7b8a1cc705c6470c144c798b0dfdf9bb1b2c4
   languageName: node
   linkType: hard
 

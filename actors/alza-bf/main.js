@@ -1,3 +1,4 @@
+import { keepAliveNoCache } from "@adobe/fetch";
 import { BasicCrawler } from "@crawlee/basic";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
@@ -6,6 +7,34 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { parseHTML } from "linkedom/cached";
+import UserAgent from "user-agents";
+import {
+  HttpProxyAgent,
+  HttpsProxyAgent
+} from "got-scraping/dist/agent/h1-proxy-agent.js";
+
+/** @typedef {import("apify").ProxyConfiguration} ProxyConfiguration */
+
+const userAgent = new UserAgent();
+
+/**
+ * @param {ProxyConfiguration} proxyConfiguration
+ * @param {string | null} sessionId
+ */
+function createFetch(proxyConfiguration, sessionId) {
+  return keepAliveNoCache({
+    h1: {
+      rejectUnauthorized: false,
+      httpAgent: new HttpProxyAgent({
+        proxy: proxyConfiguration.newUrl(sessionId)
+      }),
+      httpsAgent: new HttpsProxyAgent({
+        proxy: proxyConfiguration.newUrl(sessionId)
+      })
+    },
+    userAgent: userAgent().toString()
+  });
+}
 
 export const Label = {
   Category: "CATEGORY",
@@ -223,6 +252,7 @@ export async function main() {
 
       log.info(`Visiting: ${request.url}, ${label}`);
       const createUrl = s => new URL(s, request.url).href;
+      const { fetch } = createFetch(proxyConfiguration, session.id);
       switch (label) {
         case Label.Category: {
           const response = await fetch(request.url);
