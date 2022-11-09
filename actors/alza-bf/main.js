@@ -269,7 +269,14 @@ export async function main() {
           if (response.status === 403) stats.inc("denied");
           const html = await response.text();
           const { document } = parseHTML(html);
-          const { categoryId, pages } = extractPaginationInfo(document);
+          const pagination = extractPaginationInfo(document);
+          if (!pagination) {
+            log.info(document.innerHTML);
+            session.isBlocked();
+            stats.inc("errors");
+            throw new Error("Can't find pagination info");
+          }
+          const { categoryId, pages } = pagination;
           console.log({ categoryId, pages });
           const url = createUrl("/Services/EShopService.svc/Filter");
           for (let page = 0; page < pages; page++) {
