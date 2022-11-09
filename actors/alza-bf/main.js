@@ -91,6 +91,7 @@ function decodeEntities(encodedString) {
  */
 function extractDOM(document) {
   const detailPage = document.querySelector(".detail-page");
+  if (!detailPage) return;
   return {
     itemId: detailPage.dataset.id,
     originalPrice: cleanPrice(
@@ -107,6 +108,7 @@ function extractDOM(document) {
  */
 function extractDetail(document, structuredData) {
   const domParts = extractDOM(document);
+  if (!domParts) return;
   const structuredParts = extractStructuredData(structuredData);
   return Object.assign({}, structuredParts, domParts, {
     category: decodeEntities(structuredParts.category)
@@ -234,10 +236,6 @@ export async function main() {
       const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
-      if (response.statusCode === 302) {
-        stats.inc("zeroItems");
-        return;
-      }
       if (response.statusCode === 403) {
         stats.inc("denied");
         session.isBlocked();
@@ -297,6 +295,11 @@ export async function main() {
           const { document } = parseHTML(html);
           const structuredData = parseStructuredData(document);
           const detail = extractDetail(document, structuredData);
+          if (!detail) {
+            session.isBlocked();
+            stats.inc("zeroItems");
+            return;
+          }
           await Dataset.pushData(detail);
           stats.inc("details");
           return;
