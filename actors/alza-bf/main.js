@@ -42,12 +42,14 @@ export const Label = {
   Pagination: "PAGINATION"
 };
 
+export const extractItem = item => (Array.isArray(item) ? item[0] : item);
+
 function getOffer(jsonld, microdata) {
-  const product = jsonld.get("Product")?.[0];
+  const product = extractItem(jsonld.get("Product"));
   const offers = product?.offers ?? microdata.get("offers");
   if (!offers) return new Map();
 
-  const firstOffer = Array.isArray(offers) ? offers[0] : offers;
+  const firstOffer = extractItem(offers);
   if (firstOffer instanceof Map) return firstOffer;
   return new Map(Object.entries(firstOffer));
 }
@@ -64,26 +66,26 @@ export function extractStructuredData(structuredData) {
   const offer = getOffer(jsonLd, microdata);
 
   const currentPrice =
-    metaTags.get("product:price:amount")?.[0] ??
-    offer.get("lowPrice") ??
-    offer.get("price");
+    extractItem(metaTags.get("product:price:amount")) ??
+    extractItem(offer.get("lowPrice")) ??
+    extractItem(offer.get("price"));
   const currency =
-    metaTags.get("product:price:currency")?.[0] ?? offer.get("priceCurrency");
+    extractItem(metaTags.get("product:price:currency")) ??
+    extractItem(offer.get("priceCurrency"));
   const referralPrice =
-    offer.get("lowPrice") != offer.get("highPrice")
-      ? offer.get("highPrice")
+    extractItem(offer.get("lowPrice")) != extractItem(offer.get("highPrice"))
+      ? extractItem(offer.get("highPrice"))
       : null;
 
   return {
-    itemName: metaTags.get("twitter:title")?.[0],
-    itemUrl: metaTags.get("og:url")?.[0],
-    img: metaTags.get("twitter:image")?.[0],
-    category: jsonLd
-      .get("BreadcrumbList")[0]
+    itemName: extractItem(metaTags.get("twitter:title")),
+    itemUrl: extractItem(metaTags.get("og:url")),
+    img: extractItem(metaTags.get("twitter:image")),
+    category: extractItem(jsonLd.get("BreadcrumbList"))
       .itemListElement.map(x => x.item.name)
       .join(" > "),
-    itemCode: jsonLd.get("Product")?.[0]?.sku,
-    rating: jsonLd.get("Product")?.[0]?.aggregateRating?.ratingValue,
+    itemCode: extractItem(jsonLd.get("Product"))?.sku,
+    rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
     inStock: offer?.availability === "http://schema.org/InStock",
     discontinued: offer?.availability === "http://schema.org/Discontinued",
     currentPrice: cleanPrice(currentPrice),
@@ -218,7 +220,8 @@ export async function main() {
     denied: 0,
     captchas: 0,
     ok: 0,
-    zeroItems: 0
+    zeroItems: 0,
+    errors: 0
   });
 
   switch (type) {
@@ -284,10 +287,15 @@ export async function main() {
           });
           if (response.ok) stats.inc("ok");
           if (response.status === 403) stats.inc("denied");
-          const { d } = await response.json();
-          const { document } = parseHTML(d.Boxes);
-          await enqueueDetails(document, createUrl, enqueueLinks);
-          stats.inc("pages");
+          try {
+            const { d } = await response.json();
+            const { document } = parseHTML(d.Boxes);
+            await enqueueDetails(document, createUrl, enqueueLinks);
+            stats.inc("pages");
+          } catch (err) {
+            log.info(await response.text());
+            stats.inc("errors");
+          }
           return;
         }
         case Label.Detail: {
