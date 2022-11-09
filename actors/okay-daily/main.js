@@ -64,7 +64,8 @@ async function handleCollections(
   requestQueue,
   params,
   defaultUrl,
-  stats
+  stats,
+  filterByTag
 ) {
   if (responseData.collections.length <= 0) return;
   const shop = getShopUri(country);
@@ -86,7 +87,8 @@ async function handleCollections(
       userData: {
         label: "COLLECTION",
         title: collection.title,
-        params: filters
+        params: filters,
+        filterByTag,
       }
     });
   }
@@ -114,13 +116,20 @@ async function handleCollection(
   s3,
   requestQueue,
   title,
-  stats
+  stats,
+  filterByTag
 ) {
   const paginationCount = Math.ceil(responseData.total_product / params.limit);
   log.debug(`Found ${responseData.products.length}x products`);
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
-  const products = responseData.products.filter(p => p.id && p.price_max);
+  let products = responseData.products.filter(p => p.id && p.price_max);
+  if (filterByTag) {
+    log.info(`Filtering products by tag ${filterByTag}`);
+    products = products.filter(p =>
+      p.tags.find(tag => tag.includes(filterByTag))
+    );
+  }
   for (const product of products) {
     const item = {
       itemId: product.id,
@@ -164,7 +173,8 @@ async function handleCollection(
           userData: {
             label: LABEL.COLLECTION,
             title,
-            params: nextParams
+            params: nextParams,
+            filterByTag
           }
         },
         { forefront: true }
@@ -173,69 +183,34 @@ async function handleCollection(
   }
 }
 
-async function handleList(
-  responseData,
-  params,
-  rootUrl,
-  country,
-  s3,
-  requestQueue,
-  title,
-  stats
-) {
-  const shop = getShopUri(country);
-  const limit = 50;
-  const { collection } = responseData;
-  const filters = new URLSearchParams({
-    shop,
-    limit,
-    sort: "price-ascending",
-    collection_scope: collection.id,
-    product_available: false,
-    variant_available: false,
-    check_cache: false,
-    sort_first: "available"
-  });
-  const url = `https://services.mybcapps.com/bc-sf-filter/filter?${filters}`;
+async function enqueueRequests(requestQueue, type, rootUrl, stats) {
+  const params = { page: 1 };
+  const url = `${rootUrl}/collections?${new URLSearchParams(params)}`;
 
-  for (
-    let page = 1;
-    page <= Math.ceil(collection.products_count / limit);
-    page++
-  ) {
-    await requestQueue.addRequest({
-      url,
-      userData: {
-        label: "COLLECTION",
-        title: collection.title,
-        params: Object.assign(filters, { page })
-      }
-    });
-  }
-}
-
-async function enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats) {
   switch (type) {
     case ActorType.BF:
-      for (const url of bfUrls) {
-        await requestQueue.addRequest({
-          url,
-          userData: {
-            label: LABEL.LIST
-          }
-        });
-        stats.inc("urls");
-      }
+      await requestQueue.addRequest({
+        url,
+        userData: {
+          label: LABEL.COLLECTIONS,
+          defaultUrl: `${rootUrl}/collections`,
+          params,
+          filterByTag: "BDT:Black Friday"
+        }
+      });
       break;
     case ActorType.TEST:
       await requestQueue.addRequest({
-        url: "https://www.okay.cz/tv-s-uhloprickou-55-139-cm/",
-        userData: { label: LABEL.LIST }
+        url,
+        userData: {
+          label: LABEL.COLLECTIONS,
+          defaultUrl: `${rootUrl}/collections`,
+          params,
+          filterByTag: "BAD:Akce"
+        }
       });
       break;
     case ActorType.FULL:
-      const params = { page: 1 };
-      const url = `${rootUrl}/collections?${new URLSearchParams(params)}`;
       await requestQueue.addRequest({
         url,
         userData: {
@@ -258,7 +233,8 @@ async function processData(
   rootUrl,
   s3,
   title,
-  stats
+  stats,
+  filterByTag = ""
 ) {
   switch (label) {
     case LABEL.COLLECTIONS:
@@ -268,7 +244,8 @@ async function processData(
         requestQueue,
         params,
         defaultUrl,
-        stats
+        stats,
+        filterByTag
       );
     case LABEL.COLLECTION:
       return await handleCollection(
@@ -279,18 +256,8 @@ async function processData(
         s3,
         requestQueue,
         title,
-        stats
-      );
-    case LABEL.LIST:
-      return await handleList(
-        responseData,
-        params,
-        rootUrl,
-        country,
-        s3,
-        requestQueue,
-        title,
-        stats
+        stats,
+        filterByTag
       );
   }
 }
@@ -323,7 +290,6 @@ Apify.main(async function main() {
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 5,
     maxRequestRetries = 3,
-    bfUrls = [],
     customTableName = null
   } = input ?? {};
 
@@ -334,7 +300,7 @@ Apify.main(async function main() {
   const requestQueue = await Apify.openRequestQueue();
   const rootUrl = getBaseUrl(country);
 
-  await enqueueRequests(requestQueue, type, rootUrl, bfUrls, stats);
+  await enqueueRequests(requestQueue, type, rootUrl, stats);
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
@@ -346,7 +312,8 @@ Apify.main(async function main() {
     useSessionPool: true,
     async handleRequestFunction(context) {
       const { request, session } = context;
-      const { defaultUrl, label, title, params } = request.userData;
+      const { defaultUrl, label, title, params, filterByTag } =
+        request.userData;
 
       log.debug(`Processing ${label}: ${request.url}`);
       const response = await gotScraping({
@@ -380,7 +347,8 @@ Apify.main(async function main() {
         rootUrl,
         s3,
         title,
-        stats
+        stats,
+        filterByTag
       );
     },
     async handleFailedRequestFunction({ request }) {
