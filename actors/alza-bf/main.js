@@ -300,9 +300,8 @@ export async function main() {
             await enqueueDetails(document, createUrl, enqueueLinks);
             stats.inc("pages");
           } catch (err) {
-            log.info(body);
             stats.inc("errors");
-            session.retire();
+            session.isBlocked();
             throw new Error("Unreadable JSON");
           }
           return;
