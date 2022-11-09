@@ -1,4 +1,3 @@
-import { keepAliveNoCache } from "@adobe/fetch";
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
