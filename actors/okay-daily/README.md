@@ -12,7 +12,7 @@ Example item:
   "currentPrice": 27150,
   "originalPrice": 44999,
   "discounted": true,
-  "breadcrumb": "ELEKTRO »Televize »Úhlopříčka TV »TV s úhlopříčkou 55\" (139 cm) »OLED televize Philips 55OLED754/12(2019) / 55\" (139cm)",
+  "category": "ELEKTRO »Televize »Úhlopříčka TV »TV s úhlopříčkou 55\" (139 cm) »OLED televize Philips 55OLED754/12(2019) / 55\" (139cm)",
   "currency": "CZK",
   "inStock": true,
   "img": "https://img.okay.cz/gal/tv-s-uhloprickou-55-139-cm-oled-televize-philips-55oled754-12-2019-55-139cm-original-1332693.jpg"

@@ -17,26 +17,17 @@ const {
   utils: { log }
 } = Apify;
 
-const BASE_URL_CZ = "https://www.okay.cz";
-const BASE_URL_SK = "https://www.okay.sk";
-
 const COUNTRY = {
   CZ: "CZ",
   SK: "SK"
 };
 
-const LABEL = {
-  COLLECTION: "COLLECTION",
-  COLLECTIONS: "COLLECTIONS",
-  LIST: "LIST"
-};
-
 function getBaseUrl(country) {
   switch (country) {
     case COUNTRY.CZ:
-      return BASE_URL_CZ;
+      return "https://www.okay.cz";
     case COUNTRY.SK:
-      return BASE_URL_SK;
+      return "https://www.okay.sk";
   }
 }
 
@@ -49,6 +40,25 @@ function getShopUri(country) {
   }
 }
 
+const INTERESTED_TAGS = {
+  [ActorType.TEST]: {
+    [COUNTRY.CZ]: ["COL1:1573"],
+    [COUNTRY.SK]: ["COL1:2102"]
+  },
+  [ActorType.BF]: {
+    [COUNTRY.CZ]: ["BDT:Black Friday#1{2512}", "BDT:Black Friday#1{2513}"],
+    [COUNTRY.SK]: ["BDT:Black Friday#1{2521}", "BDT:Black Friday#1{2520}"]
+  },
+  [ActorType.FULL]: {
+    [COUNTRY.CZ]: null,
+    [COUNTRY.SK]: null
+  }
+};
+
+function getInterestedTags(type, country) {
+  return INTERESTED_TAGS[type][country];
+}
+
 function getCurrency(country) {
   switch (country) {
     case COUNTRY.CZ:
@@ -58,82 +68,62 @@ function getCurrency(country) {
   }
 }
 
-async function handleCollections(
-  responseData,
-  country,
-  requestQueue,
-  params,
-  defaultUrl,
-  stats,
-  filterByTag
-) {
-  if (responseData.collections.length <= 0) return;
+async function enqueueRequests(requestQueue, country, stats, params) {
+  const endpointUrl = "https://services.mybcapps.com/bc-sf-filter/filter";
   const shop = getShopUri(country);
-  for (const collection of responseData.collections) {
-    const filters = new URLSearchParams({
-      shop,
-      page: 1,
-      limit: 50,
-      sort: "price-ascending",
-      collection_scope: collection.id,
-      product_available: false,
-      variant_available: false,
-      check_cache: false,
-      sort_first: "available"
-    });
-    const url = `https://services.mybcapps.com/bc-sf-filter/filter?${filters}`;
+
+  const nextParams = Object.assign({}, params, {
+    shop,
+    limit: 70,
+    sort: "price-ascending",
+    product_available: false,
+    variant_available: false,
+    check_cache: false,
+    sort_first: "available"
+  });
+
+  const { tag: tags, ...otherParams } = nextParams;
+  const searchParams = new URLSearchParams(otherParams);
+
+  if (Array.isArray(tags)) {
+    for (let tag of tags) {
+      await requestQueue.addRequest({
+        uniqueKey: `Products of "${tag}" tag on ${params.page}. page`,
+        url: `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(tag)}`,
+        userData: {
+          endpointUrl,
+          params: nextParams
+        }
+      });
+    }
+  } else {
     await requestQueue.addRequest({
-      url,
+      uniqueKey: `All products on ${params.page}. page`,
+      url: `${endpointUrl}?${searchParams}`,
       userData: {
-        label: "COLLECTION",
-        title: collection.title,
-        params: filters,
-        filterByTag,
-      }
-    });
-  }
-  log.debug(`Found ${responseData.collections.length}x collections`);
-  stats.add("collections", responseData.collections.length);
-  const nextParams = Object.assign({}, params, { page: params.page + 1 });
-  await requestQueue.addRequest(
-    {
-      url: `${defaultUrl}?${new URLSearchParams(nextParams)}`,
-      userData: {
-        label: LABEL.COLLECTIONS,
-        defaultUrl,
+        endpointUrl,
         params: nextParams
       }
-    },
-    { forefront: false }
-  );
+    });
+  }
 }
 
-async function handleCollection(
+const processedIds = new Set();
+
+async function handleResponse(
   responseData,
-  params,
-  rootUrl,
   country,
-  s3,
   requestQueue,
-  title,
+  params,
+  endpointUrl,
   stats,
-  filterByTag
+  s3
 ) {
-  const paginationCount = Math.ceil(responseData.total_product / params.limit);
-  log.debug(`Found ${responseData.products.length}x products`);
-  // we don't need to block pushes, we will await them all at the end
   const requests = [];
-  let products = responseData.products.filter(p => p.id && p.price_max);
-  if (filterByTag) {
-    log.info(`Filtering products by tag ${filterByTag}`);
-    products = products.filter(p =>
-      p.tags.find(tag => tag.includes(filterByTag))
-    );
-  }
-  for (const product of products) {
+  for (const product of responseData.products) {
     const item = {
       itemId: product.id,
-      itemUrl: `${rootUrl}/products/${product.handle}`,
+      itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
       itemName: product.title,
       originalPrice:
@@ -157,112 +147,21 @@ async function handleCollection(
     }
   }
   log.debug(`Found ${requests.length / 2} unique products`);
-  // await all requests, so we don't end before they end
   await Promise.all(requests);
 
+  const paginationCount = Math.ceil(responseData.total_product / params.limit);
   if (paginationCount > 1 && params.page === 1) {
     log.info(`Adding ${paginationCount - 1}x pagination pages `);
     for (let page = 2; page <= paginationCount; page++) {
-      const nextParams = Object.assign({}, params, { page });
-      const url = `https://services.mybcapps.com/bc-sf-filter/filter?${new URLSearchParams(
-        nextParams
-      )}`;
-      await requestQueue.addRequest(
-        {
-          url,
-          userData: {
-            label: LABEL.COLLECTION,
-            title,
-            params: nextParams,
-            filterByTag
-          }
-        },
-        { forefront: true }
+      await enqueueRequests(
+        requestQueue,
+        country,
+        stats,
+        Object.assign({}, params, { page })
       );
     }
   }
 }
-
-async function enqueueRequests(requestQueue, type, rootUrl, stats) {
-  const params = { page: 1 };
-  const url = `${rootUrl}/collections?${new URLSearchParams(params)}`;
-
-  switch (type) {
-    case ActorType.BF:
-      await requestQueue.addRequest({
-        url,
-        userData: {
-          label: LABEL.COLLECTIONS,
-          defaultUrl: `${rootUrl}/collections`,
-          params,
-          filterByTag: "BDT:Black Friday"
-        }
-      });
-      break;
-    case ActorType.TEST:
-      await requestQueue.addRequest({
-        url,
-        userData: {
-          label: LABEL.COLLECTIONS,
-          defaultUrl: `${rootUrl}/collections`,
-          params,
-          filterByTag: "BAD:Akce"
-        }
-      });
-      break;
-    case ActorType.FULL:
-      await requestQueue.addRequest({
-        url,
-        userData: {
-          label: LABEL.COLLECTIONS,
-          defaultUrl: `${rootUrl}/collections`,
-          params
-        }
-      });
-      break;
-  }
-}
-
-async function processData(
-  label,
-  responseData,
-  country,
-  requestQueue,
-  params,
-  defaultUrl,
-  rootUrl,
-  s3,
-  title,
-  stats,
-  filterByTag = ""
-) {
-  switch (label) {
-    case LABEL.COLLECTIONS:
-      return await handleCollections(
-        responseData,
-        country,
-        requestQueue,
-        params,
-        defaultUrl,
-        stats,
-        filterByTag
-      );
-    case LABEL.COLLECTION:
-      return await handleCollection(
-        responseData,
-        params,
-        rootUrl,
-        country,
-        s3,
-        requestQueue,
-        title,
-        stats,
-        filterByTag
-      );
-  }
-}
-
-const processedIds = new Set();
 
 Apify.main(async function main() {
   rollbar.init();
@@ -298,25 +197,26 @@ Apify.main(async function main() {
   }
 
   const requestQueue = await Apify.openRequestQueue();
-  const rootUrl = getBaseUrl(country);
 
-  await enqueueRequests(requestQueue, type, rootUrl, stats);
+  await enqueueRequests(requestQueue, country, stats, {
+    page: 1,
+    tag: getInterestedTags(type, country)
+  });
+
   const proxyConfiguration = await Apify.createProxyConfiguration({
     groups: proxyGroups
   });
 
   const crawler = new Apify.BasicCrawler({
     requestQueue,
-    // maxConcurrency: development ? 1 : maxConcurrency,
-    maxConcurrency: 1,
+    maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     async handleRequestFunction(context) {
       const { request, session } = context;
-      const { defaultUrl, label, title, params, filterByTag } =
-        request.userData;
+      const { endpointUrl, params } = request.userData;
 
-      log.debug(`Processing ${label}: ${request.url}`);
+      log.debug(`Processing ${params.page}. page: ${request.url}`);
       const response = await gotScraping({
         url: request.url,
         proxyUrl: proxyConfiguration.newUrl(session.id),
@@ -338,18 +238,14 @@ Apify.main(async function main() {
       }
 
       const responseData = JSON.parse(response.body);
-      return processData(
-        label,
+      return handleResponse(
         responseData,
         country,
         requestQueue,
         params,
-        defaultUrl,
-        rootUrl,
-        s3,
-        title,
+        endpointUrl,
         stats,
-        filterByTag
+        s3
       );
     },
     async handleFailedRequestFunction({ request }) {
@@ -363,6 +259,7 @@ Apify.main(async function main() {
   log.info("Crawl finished.");
 
   if (!development) {
+    const rootUrl = getBaseUrl(country);
     const suffix = type === ActorType.BF ? "_bf" : "";
     const tableName = customTableName ?? `${shopName(rootUrl)}${suffix}`;
     await Promise.all([
