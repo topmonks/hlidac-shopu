@@ -1,275 +1,282 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
-import { extractItems } from "./itemParser.js";
-import Apify from "apify";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { parseHTML } from "linkedom/cached";
 
-const { log } = Apify.utils;
+export const Label = {
+  Category: "CATEGORY",
+  Detail: "DETAIL",
+  Pagination: "PAGINATION"
+};
 
-Apify.main(async function main() {
-  rollbar.init();
-  const web = "https://www.czc.cz";
-  let stats = {};
-  const processedIds = new Set();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
+export const PRODUCTS_PER_PAGE = 27;
+
+/**
+ * @param {Document} document
+ * @return {{pages: number, category: string[], productsCount: number, currentPage: number} | undefined}
+ */
+function extractPaginationInfo(document) {
+  const category =
+    document
+      .querySelector("#breadcrumbs")
+      ?.textContent.trim()
+      .replaceAll(/[\n](\s)\1+/g, "")
+      .split("\n") || [];
+
+  const pages =
+    parseInt(
+      document.querySelector(".paging__item.last")?.textContent.trim(),
+      10
+    ) || 1;
+
+  const currentPage =
+    parseInt(
+      document.querySelector(".paging__item.active")?.textContent.trim(),
+      10
+    ) || 1;
+
+  const productsCount =
+    cleanPrice(
+      document
+        .querySelector("[role=navigation] .order-by-sum")
+        ?.textContent.trim()
+    ) || 0;
+
+  return { category, pages, productsCount, currentPage };
+}
+
+/**
+ * @param {Document} document
+ * @param {{ category: string[], paginationUrl: string }} pagination
+ * @param {(uri: string) => string} createUrl
+ * @returns {* | null}
+ */
+function extractCategoryProducts(
+  document,
+  { category, paginationUrl },
+  createUrl
+) {
+  const extract = element => ({
+    itemUrl: createUrl(element.querySelector(".tile-title a").href),
+    itemId: element
+      .querySelector("[data-product-code]")
+      .getAttribute("data-product-code"),
+    itemName: element.querySelector(".tile-title a").textContent.trim(),
+    inStock:
+      element
+        .querySelector(".btn.btn-buy")
+        .classList.has("item-not-on-stock") === false,
+    currentPrice: cleanPrice(
+      element.querySelector(".total-price .price .price-vatin")?.textContent
+    ),
+    originalPrice: cleanPrice(
+      element.querySelector(".total-price .price-before .price-vatin")
+        ?.textContent
+    ),
+    get discounted() {
+      return this.currentPrice < this.originalPrice;
+    },
+    img: element.querySelector(".img-wrapper img").src,
+    category,
+    paginationUrl
   });
-  // Get queue and enqueue first url.
-  const input = await Apify.getInput();
+
+  return Array.from(document.querySelectorAll("#tiles .new-tile")).map(extract);
+}
+
+/**
+ * @param {Document} document
+ * @param {(uri: string) => string} createUrl
+ * @returns {string[]} urls
+ */
+function extractCategorySubcategories(document, createUrl) {
+  return Array.from(document.querySelectorAll(".scards a.scard")).map(link =>
+    createUrl(link.href)
+  );
+}
+async function handleCategory(
+  body,
+  log,
+  session,
+  stats,
+  createUrl,
+  requestQueue,
+  enqueueLinks
+) {
+  const html = body.toString();
+  const { document } = parseHTML(html);
+
+  const pagination = extractPaginationInfo(document);
+  const { category, pages, currentPage, productsCount } = pagination;
+  log.info("Category pagination info", {
+    category,
+    pages,
+    currentPage,
+    productsCount
+  });
+
+  if (currentPage === 1) {
+    stats.inc("categories");
+    for (let page = 2; page <= pages; page++) {
+      const url = createUrl(`?q-first=${(page - 1) * PRODUCTS_PER_PAGE}`);
+      await requestQueue.addRequest({
+        url,
+        userData: { label: Label.Category }
+      });
+    }
+  } else {
+    stats.inc("pages");
+  }
+
+  const products = extractCategoryProducts(document, pagination, createUrl);
+  log.info(`Extracted ${products.length} products`);
+
+  for (let product of products) {
+    await Dataset.pushData(product);
+    stats.inc("items");
+
+    const [items] = stats.get();
+    if (items === productsCount) {
+      log.info("Collected all products");
+    } else if (items > productsCount) {
+      log.warn("Probably collecting duplicate products now");
+    }
+  }
+
+  // if (currentPage === 1) {
+  //   const subcategories = extractCategorySubcategories(document, createUrl);
+  //   log.info(`Found ${subcategories.length} subcategories`);
+
+  //   await enqueueLinks({
+  //     label: Label.Category,
+  //     urls: subcategories
+  //   });
+  // }
+}
+
+function getPostfix(type) {
+  switch (type) {
+    case ActorType.BlackFriday:
+      return "_bf";
+    case ActorType.Feed:
+      return "";
+    default:
+      return "";
+  }
+}
+
+function getTableName(type) {
+  const postfix = getPostfix(type);
+  return `czc${postfix}`;
+}
+
+export async function main() {
+  const rollbar = Rollbar.init();
+  const input = (await KeyValueStore.getInput()) ?? {};
+
   const {
-    development = false,
-    debug = false,
-    maxRequestRetries = 3,
     maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
-    bfURL = "https://www.czc.cz/blackfriday/produkty"
-  } = input ?? {};
+    type = ActorType.BlackFriday,
+    urls = []
+  } = input;
 
-  stats = (await Apify.getValue("STATS")) || {
+  const requestQueue = await Actor.openRequestQueue();
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups
+  });
+
+  const stats = await withPersistedStats(x => x, {
     categories: 0,
+    duplicates: 0,
     pages: 0,
     items: 0,
-    itemsSkipped: 0,
-    itemsDuplicity: 0,
-    failed: 0
-  };
-
-  const requestQueue = await Apify.openRequestQueue();
-
-  if (development || debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
-  }
-
-  if (type === ActorType.FULL) {
-    await requestQueue.addRequest({
-      url: "https://www.czc.cz/",
-      userData: {
-        label: "START"
-      }
-    });
-    /* await requestQueue.addRequest({
-            url: 'https://www.czc.cz/mesh/produkty',
-            userData: {
-                label: 'PAGE',
-                baseUrl: 'https://www.czc.cz/mesh/produkty',
-            },
-        }); */
-  } else if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: bfURL,
-      userData: {
-        label: ActorType.BF
-      }
-    });
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty",
-      userData: {
-        label: "PAGE",
-        baseUrl:
-          "https://www.czc.cz/bryle-pro-telefony-virtualni-realita/produkty"
-      }
-    });
-  }
-
-  log.info("ACTOR - setUp crawler");
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development
+    denied: 0,
+    ok: 0,
+    errors: 0
   });
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
-    proxyConfiguration,
-    maxRequestRetries,
-    maxConcurrency,
-    // Activates the Session pool.
-    useSessionPool: true,
-    // Overrides default Session pool configuration.
-    sessionPoolOptions: {
-      maxPoolSize: 200
-    },
-    handlePageTimeoutSecs: 60,
-    handlePageFunction: async ({ request, session, $, response }) => {
-      if (response.statusCode !== 200 && response.statusCode !== 404) {
-        log.info(`${request.url} -> Bad response code: ${response.statusCode}`);
-        session.retire();
-      }
-      if (request.userData.label === "START") {
-        const items = [];
-        $(".main-menu__category a").each(function () {
-          const categoryUrl = `${web}${$(this).attr("href")}`;
-          // they got sometime some fuckups in the urls
-          if (categoryUrl.indexOf("?/") !== -1) {
-            items.push(categoryUrl.split("?/")[0]);
-          } else {
-            items.push(categoryUrl);
-          }
+
+  switch (type) {
+    case ActorType.BlackFriday: {
+      if (urls.length === 0) {
+        await requestQueue.addRequest({
+          url: `https://czc.cz/black-friday/produkty`,
+          userData: { label: Label.Category }
         });
-        stats.categories += items.length;
-        console.log(`Found ${items.length} valid urls, going to enqueue them.`);
-        for (const categoryUrl of items) {
-          await requestQueue.addRequest({
-            url: categoryUrl,
-            userData: {
-              label: "PAGE",
-              baseUrl: categoryUrl
-            }
-          });
-        }
-      } else if (request.userData.label === ActorType.BF) {
-        try {
-          const items = await extractItems($, request, web);
-          console.log(`Found ${items.length} storing them, ${request.url}`);
-          await Apify.pushData(items);
-        } catch (e) {
-          console.log(e.message);
-          console.log(`Failed extraction of items. ${request.url}`);
-        }
-
-        if ($("div.order-by-sum").length !== 0) {
-          const max = parseInt(
-            $("div.order-by-sum").text().replace(/\s+/g, "").match(/\d+/)[0]
-          );
-          const paginationCount = Math.ceil(max / 27) * 27;
-          // https://www.czc.cz/black-friday-2019/produkty?q-first=99
-          for (let i = 27; i < paginationCount; i += 27) {
-            const paginationUrl = `${bfURL}?q-first=${i}`;
-            await requestQueue.addRequest({
-              url: paginationUrl,
-              userData: {
-                label: "PAGE"
-              }
-            });
-          }
-        }
-      } else if (request.userData.label === "PAGE") {
-        log.debug(`START with page ${request.url}`);
-        stats.pages++;
-        try {
-          // we don't want to enqueu pagination on every page
-          if (
-            request.url.indexOf("q-first=") === -1 &&
-            $("div.order-by-sum").length !== 0
-          ) {
-            const max = parseInt(
-              $("div.order-by-sum").text().replace(/\s+/g, "").match(/\d+/)[0]
-            );
-            const paginationCount = Math.ceil(max / 27) * 27;
-
-            console.log(
-              `Adding the pagination to the queue for the ${request.url} for max ${paginationCount}`
-            );
-            for (let i = 27; i < paginationCount; i += 27) {
-              const { baseUrl } = request.userData;
-              let paginationUrl = null;
-              if (baseUrl.indexOf("?") !== -1) {
-                paginationUrl = `${baseUrl}&q-first=${i}`;
-              } else {
-                paginationUrl = `${baseUrl}/?q-first=${i}`;
-              }
-              await requestQueue.addRequest({
-                url: paginationUrl,
-                userData: {
-                  label: "PAGE"
-                }
-              });
-            }
-          }
-        } catch (e) {
-          log.info(`Error on page ${request.url}`);
-          log.error(e);
-        }
-
-        // there are some kategorie urls with the rosters
-        try {
-          if (request.url.endsWith("kategorie")) {
-            const subCategoryUrls = [];
-            $("a.scard-anim").each(function () {
-              const subCategoryUrl =
-                $(this).attr("href").indexOf("https") !== -1
-                  ? $(this).attr("href")
-                  : `${web}${$(this).attr("href")}`;
-              console.log(subCategoryUrl);
-              subCategoryUrls.push({
-                url: subCategoryUrl,
-                userData: {
-                  label: "PAGE",
-                  baseUrl: subCategoryUrl
-                }
-              });
-            });
-            stats.categories += subCategoryUrls.length;
-            for (const item of subCategoryUrls) {
-              await requestQueue.addRequest(item);
-            }
-          }
-        } catch (e) {
-          log.info(e.message);
-        }
-
-        try {
-          const items = await extractItems($, request, web);
-          // we don't need to block pushes, we will await them all at the end
-          const requests = [];
-          for (const product of items) {
-            if (!processedIds.has(product.itemId)) {
-              // Save data to dataset
-              const s3item = { ...product };
-              //Keboola data structure fix
-              delete product.inStock;
-              processedIds.add(product.itemId);
-              requests.push(Apify.pushData(product), uploadToS3v2(s3, s3item));
-              stats.items++;
-            } else {
-              stats.itemsDuplicity++;
-            }
-          }
-          log.debug(
-            `Found ${requests.length / 2} unique products, ${request.url}`
-          );
-          // await all requests, so we don't end before they end
-          await Promise.all(requests);
-        } catch (e) {
-          log.error(e);
-          log.info(`Failed extraction of items. ${request.url}`);
-          stats.failed++;
-        }
       }
-    },
-
-    // If request failed 4 times then this function is executed.
-    handleFailedRequestFunction: async ({ request }) => {
-      console.log(`Request ${request.url} failed 10 times`);
+      break;
     }
-  });
-  // Run crawler.
-  await crawler.run();
-
-  console.log("crawler finished");
-
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
-
-  if (!development) {
-    try {
-      await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "czc.cz");
-      log.info("invalidated Data CDN");
-      await uploadToKeboola(type === ActorType.BF ? "czc_bf" : "czc");
-      log.info("upload to Keboola finished");
-    } catch (e) {
-      console.log(e);
-    }
+    default:
+      if (urls.length === 0) {
+        log.info("No URLs provided");
+      }
   }
 
-  console.log("Finished.");
-});
+  const crawler = new HttpCrawler({
+    requestQueue,
+    useSessionPool: true,
+    sessionPoolOptions: {
+      maxPoolSize: 50,
+      persistStateKeyValueStoreId: "czc-sessions"
+    },
+    proxyConfiguration,
+    maxConcurrency,
+    async requestHandler({
+      request,
+      response,
+      body,
+      session,
+      log,
+      enqueueLinks
+    }) {
+      const { label } = request.userData;
+
+      log.info(`Visiting: ${request.url}, ${label}`);
+      if (response.statusCode === 403) {
+        stats.inc("denied");
+        session.isBlocked();
+        throw new Error("Access Denied");
+      }
+      if (response.statusCode === 200) stats.inc("ok");
+      session.setCookiesFromResponse(response);
+
+      const createUrl = s => new URL(s, request.url).href;
+
+      switch (label) {
+        case Label.Category:
+          return handleCategory(
+            body,
+            log,
+            session,
+            stats,
+            createUrl,
+            requestQueue,
+            enqueueLinks
+          );
+        default:
+          throw new Error(`Page type "${label}" not yet implemented`);
+      }
+    },
+    async failedRequestHandler({ request, log }, error) {
+      rollbar.error(error, request);
+      log.error(`Request ${request.url} ${error.message} failed 4 times`);
+    }
+  });
+
+  await crawler.addRequests(urls);
+  await crawler.run();
+  await stats.save(true);
+
+  try {
+    const tableName = getTableName(type);
+    await uploadToKeboola(tableName);
+  } catch (err) {
+    log.error(err);
+  }
+}
+
+await Actor.main(main, { statusMessage: "DONE" });
