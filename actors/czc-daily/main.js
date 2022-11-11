@@ -139,7 +139,7 @@ async function handleCategory(
     await Dataset.pushData(product);
     stats.inc("items");
 
-    const [items] = stats.get();
+    const { items } = stats.get();
     if (items === productsCount) {
       log.info("Collected all products");
     } else if (items > productsCount) {
@@ -267,7 +267,9 @@ export async function main() {
     }
   });
 
-  await crawler.addRequests(urls);
+  await crawler.addRequests(
+    urls.map(url => ({ url, userData: { label: Label.Category } }))
+  );
   await crawler.run();
   await stats.save(true);
 
