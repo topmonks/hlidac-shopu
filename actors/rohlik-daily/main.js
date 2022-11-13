@@ -142,7 +142,7 @@ async function processMain(body, stats, requestQueue) {
 }
 
 async function processList(body, request, stats, requestQueue, s3) {
-  console.log({body})
+  console.log({ body });
   const max = Math.ceil(body.data.totalHits / 25) * 25;
   const { categoryId } = request.userData;
   max !== 0 &&
