@@ -125,7 +125,7 @@ export function createApi(domainName: string, options?: any) {
   ): aws.lambda.Function =>
     new aws.lambda.Function(hsName(`api-${name}-lambda`, options), {
       publish: true,
-      runtime: "nodejs18.x",
+      runtime: "nodejs16.x",
       architectures: ["arm64"],
       role: role.arn,
       handler: "index.handler",
