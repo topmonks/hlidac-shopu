@@ -1,23 +1,12 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
-import { gotScraping } from "got-scraping";
-import Apify from "apify";
+import { Actor, log, LogLevel } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { gql } from "graphql-tag";
+import { Dataset, HttpCrawler } from "@crawlee/http";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
-const {
-  utils: { log }
-} = Apify;
-
-let stats = {};
-const processedIds = new Set();
-
+const PAGE_LIMIT = 80;
 const GET_CAMPAIGN = gql`
   query getCampaningForList(
     $campaignId: String!
@@ -96,59 +85,108 @@ const GET_CAMPAIGN = gql`
   }
 `;
 
-Apify.main(async function main() {
-  rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
+function getVariables(page) {
+  return {
+    "allFilters": false,
+    "productSorting": null,
+    "isMobile": true,
+    "bannersPage": "/kampan/black-friday",
+    "includeBonusSets": false,
+    "campaignId": "black-friday",
+    "filters": [],
+    "pagination": {
+      "limit": PAGE_LIMIT,
+      "offset": (page - 1) * PAGE_LIMIT
+    }
+  };
+}
+
+function getPayload(page) {
+  return JSON.stringify({
+    query: GET_CAMPAIGN.loc.source.body,
+    variables: getVariables(page)
   });
-  const input = await Apify.getInput();
+}
+
+function createRequest(country, page) {
+  return {
+    url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`,
+    uniqueKey: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql?page=${page}`,
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    },
+    payload: getPayload(page),
+    userData: { page }
+  };
+}
+
+function extractProduct(item, country) {
+  const tld = country.toLowerCase();
+  return {
+    itemId: item.mainVariant.id,
+    itemUrl: `https://www.mall.${tld}/${item.mainCategoryUrlKey}/${item.urlKey}`,
+    itemName: item.mainVariant.title,
+    img: `https://www.mall.${tld}/i/${item.mainVariant.mediaIds[0]}/550/550`,
+    category: item.mainVariant.mainMenuPath.join(" > "),
+    currency: country === "CZ" ? "CZK" : "EUR",
+    originalPrice: item.mainVariant.priceRrp,
+    get discounted() {
+      return this.originalPrice > this.currentPrice;
+    },
+    currentPrice: item.mainVariant.price,
+    inStock: item.mainVariant.isAvailable,
+    useUnitPrice:
+      item.mainVariant.pricePerUnit?.measure.includes("cca") ?? false,
+    currentUnitPrice: item.mainVariant.pricePerUnit?.value ?? null,
+    quantity: item.mainVariant.pricePerUnit?.measure ?? null
+  };
+}
+
+async function main() {
+  rollbar.init();
+
+  const input = await Actor.getInput();
   const {
     development = false,
     maxRequestRetries = 3,
     maxConcurrency = 10,
     country = "CZ",
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.BF,
-    debug = false
+    type = ActorType.BlackFriday,
+    debug = true
   } = input ?? {};
 
   if (debug) {
-    log.setLevel(log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  stats = (await Apify.getValue("STATS")) || {
-    // categories: 0,
+  const processedIds = new Set();
+  const stats = await withPersistedStats(x => x, {
+    ok: 0,
+    denied: 0,
     pages: 0,
     items: 0,
     itemsDuplicity: 0
-  };
+  });
 
-  const requestQueue = await Apify.openRequestQueue();
+  const requestQueue = await Actor.openRequestQueue();
 
-  if ([ActorType.BF, ActorType.TEST].includes(type)) {
-    await requestQueue.addRequest({
-      url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`
-    });
+  if (new Set([ActorType.BlackFriday, ActorType.Test]).has(type)) {
+    const page = 1;
+    await requestQueue.addRequest(createRequest(country, page));
   } else {
     throw new Error(`ActorType ${type} not yet implemented`);
   }
 
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
-
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups
   });
 
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
-    //proxyConfiguration,
+    proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
     useSessionPool: true,
@@ -159,52 +197,21 @@ Apify.main(async function main() {
         maxUsageCount: 50
       }
     },
-    handleRequestFunction: async ({ request, session }) => {
-      stats.pages++;
-      const PAGE_LIMIT = 80;
+    async requestHandler({ request, response, json, session }) {
+      if (response.statusCode === 403) {
+        stats.inc("denied");
+        session.isBlocked();
+        throw new Error("Access Denied");
+      }
+      if (response.statusCode === 200) stats.inc("ok");
+      session.setCookiesFromResponse(response);
+
+      stats.inc("pages");
       const { page = 1 } = request.userData || {};
       log.debug(`We are on ${page} page`);
 
-      const variables = {
-        "allFilters": false,
-        "productSorting": null,
-        "isMobile": true,
-        "bannersPage": "/kampan/black-friday",
-        "includeBonusSets": false,
-        "campaignId": "black-friday",
-        "filters": [],
-        "pagination": {
-          "limit": PAGE_LIMIT,
-          "offset": page * PAGE_LIMIT - PAGE_LIMIT
-        }
-      };
-
-      const {
-        statusCode,
-        body: { data: { getCampaign: data } = {}, errors }
-      } = await gotScraping(request.url, {
-        responseType: "json",
-        method: "POST",
-        headers: {
-          // "X-App-Token": token, // no need on mall
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          query: GET_CAMPAIGN.loc.source.body,
-          variables
-        })
-      });
-
-      // Status code check
-      if (![200, 404].includes(statusCode)) {
-        session.retire();
-        request.retryCount--;
-        throw new Error(`We got blocked by target on ${request.url}`);
-      }
-
-      if (errors) {
-        log.error("GraphQL errors", errors);
-      }
+      const { data: { getCampaign: data } = {}, errors } = json;
+      if (errors) log.error("GraphQL errors", errors);
 
       const { productCollection: { items = [] } = {}, ...rest } = data || {};
       log.debug(`Got ${items.length} items now`);
@@ -216,83 +223,40 @@ Apify.main(async function main() {
       const hasMorePages = items.length === PAGE_LIMIT;
       log.debug(hasMorePages ? "Has more pages." : "That was last page");
 
-      if (hasMorePages && type !== ActorType.TEST) {
-        await requestQueue.addRequest({
-          url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`,
-          userData: {
-            page: page + 1
-          },
-          uniqueKey: `Query of ${page}. page`
-        });
+      if (hasMorePages && type !== ActorType.Test) {
+        await requestQueue.addRequest(createRequest(country, page + 1));
       }
 
-      const promises = [];
       for (const item of items) {
-        const product = {
-          "itemId": item.mainVariant.id,
-          "itemUrl": `https://www.mall.${country.toLowerCase()}/${
-            item.mainCategoryUrlKey
-          }/${item.urlKey}`,
-          "itemName": item.mainVariant.title,
-          "img": `https://www.mall.${country.toLowerCase()}/i/${
-            item.mainVariant.mediaIds[0]
-          }/550/550`,
-          "category": item.mainVariant.mainMenuPath.join(" > "),
-          "currency": country === "CZ" ? "CZK" : "EUR",
-          "originalPrice": item.mainVariant.priceRrp,
-          get discounted() {
-            return this.originalPrice > this.currentPrice;
-          },
-          "currentPrice": item.mainVariant.price,
-          "inStock": item.mainVariant.isAvailable,
-          "useUnitPrice":
-            item.mainVariant.pricePerUnit?.measure.includes("cca") ?? false,
-          "currentUnitPrice": item.mainVariant.pricePerUnit?.value ?? null,
-          "quantity": item.mainVariant.pricePerUnit?.measure ?? null
-        };
+        const product = extractProduct(item, country);
 
         if (!processedIds.has(product.itemId)) {
           processedIds.add(product.itemId);
-          promises.push(Apify.pushData(product));
-          if (!development) {
-            promises.push(
-              uploadToS3v2(s3, product, {
-                priceCurrency: product.currency,
-                inStock: product.inStock
-              })
-            );
-          }
-          stats.items++;
+          await Dataset.pushData(product);
+          stats.inc("items");
         } else {
-          stats.itemsDuplicity++;
+          stats.inc("itemsDuplicity");
         }
       }
-      await Promise.all(promises);
     },
-    handleFailedRequestFunction: async ({ request }) => {
-      console.log(`Request ${request.url} failed 4 times`);
+    async failedRequestHandler({ request }) {
+      log.error(`Request ${request.url} failed 4 times`);
     }
   });
 
   await crawler.run();
-  console.log("Crawling finished.");
+  await stats.save(true);
 
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
-
-  await invalidateCDN(
-    cloudfront,
-    "EQYSHWUECAQC9",
-    `mall.${country.toLowerCase()}`
-  );
   log.info("invalidated Data CDN");
-  if (type !== ActorType.TEST && !development) {
+  if (type !== ActorType.Test && !development) {
     let tableName = country === "CZ" ? "mall" : "mall_sk";
-    if (type === ActorType.BF) {
+    if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;
     }
 
     await uploadToKeboola(tableName);
     log.info("upload to Keboola finished");
   }
-});
+}
+
+await Actor.main(main);
