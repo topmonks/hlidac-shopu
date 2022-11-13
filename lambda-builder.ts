@@ -7,11 +7,11 @@ function build(entrypoint: string, minify: boolean) {
     minify,
     charset: "utf8",
     platform: "node",
-    target: "node16.14",
+    target: "node18",
     mainFields: ["module", "main"],
     external: ["aws-sdk"],
     entryPoints: [entrypoint],
-    write: false,
+    write: false
   });
   return result?.outputFiles?.[0].text ?? "";
 }
@@ -21,6 +21,6 @@ export function buildCodeAsset(
   minify = false
 ): pulumi.asset.AssetArchive {
   return new pulumi.asset.AssetArchive({
-    "index.js": new pulumi.asset.StringAsset(build(entrypoint, minify)),
+    "index.js": new pulumi.asset.StringAsset(build(entrypoint, minify))
   });
 }
