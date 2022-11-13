@@ -5,55 +5,23 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import Apify from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { sleep } from "@crawlee/utils";
+import { CheerioCrawler } from "@crawlee/cheerio";
+import {
+  Country,
+  extractPrice,
+  getBaseUrl,
+  getHumanDelayMillis,
+  getRootUrl,
+  Label
+} from "./index.js";
 
-const { log } = Apify.utils;
+/** @typedef {import("apify").ProxyConfiguration} ProxyConfiguration */
 
-const LABELS = {
-  START: "START",
-  PAGE: "PAGE"
-};
-const COUNTRY_TYPE = {
-  CZ: "CZ",
-  SK: "SK"
-};
-
-const getRootUrl = (type = ActorType.FULL, country = COUNTRY_TYPE.CZ) => {
-  const origin = `https://www.aaaauto.${country.toLocaleLowerCase()}`;
-  const root = {
-    [COUNTRY_TYPE.CZ]: `${origin}/cz/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojete-vozy%2F`,
-    [COUNTRY_TYPE.SK]: `${origin}/sk/cars.php?carlist=1&limit=50&page=1&modern-request&origListURL=%2Fojazdene-vozidla%2F`
-  }[country];
-
-  return {
-    [ActorType.TEST]: root.replace("limit=50", "limit=1"),
-    [ActorType.FULL]: root,
-    [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50`
-  }[type];
-};
-
-const getBaseUrl = (
-  type = ActorType.FULL,
-  country = COUNTRY_TYPE.CZ,
-  page = 1
-) => {
-  const tld = country.toLocaleLowerCase();
-  const origin = `https://www.aaaauto.${tld}`;
-  const category = {
-    [COUNTRY_TYPE.CZ]: "ojete-vozy",
-    [COUNTRY_TYPE.SK]: "ojazdene-vozidla"
-  }[country];
-
-  return {
-    [ActorType.TEST]: `${origin}/${tld}/cars.php?carlist=1&limit=1&page=1&modern-request&origListURL=%2F${category}%2F`,
-    [ActorType.FULL]: `${origin}/${tld}/cars.php?carlist=1&limit=50&page=${page}&modern-request&origListURL=%2F${category}%2F`,
-    [ActorType.BF]: `${origin}/black-friday/?category=92&limit=50&page=${page}`
-  }[type];
-};
-
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -61,7 +29,7 @@ Apify.main(async function main() {
     region: "eu-central-1",
     maxAttempts: 3
   });
-  const input = await Apify.getInput();
+  const input = await Actor.getInput();
   const {
     development = false,
     debug = false,
@@ -69,24 +37,24 @@ Apify.main(async function main() {
     maxConcurrency = 10,
     type = ActorType.FULL,
     proxyGroups = ["CZECH_LUMINATI"],
-    country = COUNTRY_TYPE.CZ
+    country = Country.CZ
   } = input ?? {};
 
-  const requestQueue = await Apify.openRequestQueue();
+  const requestQueue = await Actor.openRequestQueue();
 
   if (development || debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
   await requestQueue.addRequest({
     url: getRootUrl(type, country),
     userData: {
-      label: LABELS.START
+      label: Label.START
     }
   });
   log.info("ACTOR - setUp crawler");
   /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
@@ -130,7 +98,7 @@ Apify.main(async function main() {
             itemName: arr[0],
             currentPrice,
             originalPrice,
-            currency: country === COUNTRY_TYPE.CZ ? "Kč" : "Eur",
+            currency: country === Country.CZ ? "Kč" : "Eur",
             actionPrice,
             discounted: !!originalPrice,
             year: arr[1] ? arr[1] : undefined,
@@ -151,7 +119,7 @@ Apify.main(async function main() {
     for (const product of products) {
       sleepTotal += getHumanDelayMillis(250, 950);
       requests.push(
-        Apify.pushData(product),
+        Dataset.pushData(product),
         uploadToS3v2(s3, product, {
           category: "",
           inStock: true
@@ -161,10 +129,10 @@ Apify.main(async function main() {
     // await all requests, so we don't end before they end
     await Promise.all(requests);
     log.debug(`Found ${requests.length / 2} cars, ${request.url}`);
-    await Apify.utils.sleep(sleepTotal);
+    await sleep(sleepTotal);
   }
 
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new CheerioCrawler({
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
@@ -176,32 +144,33 @@ Apify.main(async function main() {
     persistCookiesPerSession: true,
     requestTimeoutSecs: 300,
     handlePageTimeoutSecs: 300,
-    handlePageFunction: async ({ request, $ }) => {
+    async handlePageFunction({ request, $ }) {
       log.info(
         `Label: ${request.userData.label} - Scraping page ${request.url}`
       );
       if (request.userData.label === "START") {
         const pages = $("nav.pagenav li");
-        const lastPage = pages
-          .eq(pages.length - 2)
-          .find("a")
-          .text()
-          .trim();
-        await Array.from(
-          { length: lastPage },
-          (_value, index) => index + 1
-        ).map(async pageNumber => {
+        const lastPage = parseInt(
+          pages
+            .eq(pages.length - 2)
+            .find("a")
+            .text()
+            .trim()
+        );
+
+        for (let i = 0; i < lastPage; i++) {
+          const pageNumber = i + 1;
           await requestQueue.addRequest({
             url: getBaseUrl(type, country, pageNumber),
-            userData: { label: LABELS.PAGE, pageNumber }
+            userData: { label: Label.PAGE, pageNumber }
           });
-        });
+        }
         await parseProducts(request, $);
       } else if (request.userData.label === "PAGE") {
         await parseProducts(request, $);
       }
     },
-    handleFailedRequestFunction: async ({ error, request, body }) => {
+    async handleFailedRequestFunction({ error, request, body }) {
       log.error(`Request ${request.url} failed multiple times`, request);
       console.log(request.statusCode);
       console.log(error);
@@ -216,39 +185,15 @@ Apify.main(async function main() {
     try {
       await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "aaaauto.cz");
       log.info("invalidated Data CDN");
-      let tableName = `aaaauto_${country.toLocaleLowerCase()}`;
-      if (type === ActorType.BF) {
-        tableName = `${tableName}_bf`;
-      }
+      const postfix = type === ActorType.BlackFriday ? "_bf" : "";
+      const tableName = `aaaauto_${country.toLocaleLowerCase()}${postfix}`;
       await uploadToKeboola(tableName);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
     }
   }
 
   console.log("Finished.");
-});
-
-/**
- *
- * @param {String} string
- * @returns {undefined|number}
- */
-export function extractPrice(string) {
-  const match = string.match(/[\d*\s]*\s[Kč|€]/g);
-  if (match && match.length > 0) {
-    const value = match[0]
-      .replace(/\s/g, "")
-      .replace("Kč", "")
-      .replace("€", "")
-      .replace("Cena", "");
-    return parseInt(value);
-  }
-  return undefined;
 }
 
-export function getHumanDelayMillis(min = 400, max = 800) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+await Actor.main(main);

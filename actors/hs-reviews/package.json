@@ -8,9 +8,9 @@
   "main": "main.js",
   "dependencies": {
     "@adobe/helix-fetch": "3.1.2",
-    "@aws-sdk/client-cloudfront": "3.204.0",
-    "@aws-sdk/client-s3": "3.204.0",
-    "@hlidac-shopu/actors-common": "2.0.4",
+    "@aws-sdk/client-cloudfront": "3.209.0",
+    "@aws-sdk/client-s3": "3.209.0",
+    "@hlidac-shopu/actors-common": "2.0.5",
     "@types/node": "18.11.9",
     "apify": "3.1.0",
     "csv-parse": "5.3.2",

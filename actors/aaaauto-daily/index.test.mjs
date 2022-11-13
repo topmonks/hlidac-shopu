@@ -1,5 +1,5 @@
 import test from "ava";
-import { extractPrice } from "./main.js";
+import { extractPrice } from "./index.js";
 
 test("extractPrice", t => {
   const result = extractPrice("1 000 000 Kč");
