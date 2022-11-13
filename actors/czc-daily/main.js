@@ -24,7 +24,7 @@ function extractPaginationInfo(document) {
     document
       .querySelector("#breadcrumbs")
       ?.textContent.trim()
-      .replaceAll(/[\n](\s)\1+/g, "")
+      .replaceAll(/\n(\s)\1+/g, "")
       .split("\n") || [];
 
   const pages =
