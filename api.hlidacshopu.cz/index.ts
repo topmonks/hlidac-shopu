@@ -199,6 +199,7 @@ export function createApi(domainName: string, options?: any) {
         httpMethod: "GET",
         path: "/back-friday",
         fileName: "back-friday/index.mjs",
+        requiredParameters: [{ in: "query", name: "year" }],
         cache: { ttl: 3600 }
       }),
       createHandlerRoute("og", {
