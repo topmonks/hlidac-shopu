@@ -92,11 +92,7 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - node/install
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2
-          override-ci-command: yarn install --immutable
+      - install_packages
       - run:
           name: Lint actors
           command: yarn lint:actors
@@ -116,11 +112,7 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - node/install
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2
-          override-ci-command: yarn install --immutable
+      - install_packages
       - run:
           name: Run tests
           command: yarn test:lib
