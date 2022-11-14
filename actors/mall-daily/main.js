@@ -1,6 +1,6 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Actor, log, LogLevel } from "apify";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { gql } from "graphql-tag";
 import { Dataset, HttpCrawler } from "@crawlee/http";
@@ -146,7 +146,7 @@ function extractProduct(item, country) {
 }
 
 async function main() {
-  rollbar.init();
+  const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
   const {
@@ -240,7 +240,8 @@ async function main() {
         }
       }
     },
-    async failedRequestHandler({ request }) {
+    async failedRequestHandler({ request, error }) {
+      rollbar.error(error, request);
       log.error(`Request ${request.url} failed 4 times`);
     }
   });
