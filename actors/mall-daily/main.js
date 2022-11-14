@@ -109,9 +109,10 @@ function getPayload(page) {
 }
 
 function createRequest(country, page) {
+  const tld = country.toLowerCase();
   return {
-    url: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql`,
-    uniqueKey: `https://www.mall.${country.toLowerCase()}/web-gateway/graphql?page=${page}`,
+    url: `https://www.mall.${tld}/web-gateway/graphql`,
+    uniqueKey: `https://www.mall.${tld}/web-gateway/graphql?page=${page}`,
     method: "POST",
     headers: {
       "Accept": "application/json",
@@ -124,23 +125,23 @@ function createRequest(country, page) {
 
 function extractProduct(item, country) {
   const tld = country.toLowerCase();
+  const { mainVariant } = item;
   return {
-    itemId: item.mainVariant.id,
+    itemId: mainVariant.id,
     itemUrl: `https://www.mall.${tld}/${item.mainCategoryUrlKey}/${item.urlKey}`,
-    itemName: item.mainVariant.title,
-    img: `https://www.mall.${tld}/i/${item.mainVariant.mediaIds[0]}/550/550`,
-    category: item.mainVariant.mainMenuPath.join(" > "),
+    itemName: mainVariant.title,
+    img: `https://www.mall.${tld}/i/${mainVariant.mediaIds[0]}/550/550`,
+    category: mainVariant.mainMenuPath.join(" > "),
     currency: country === "CZ" ? "CZK" : "EUR",
-    originalPrice: item.mainVariant.priceRrp,
+    originalPrice: mainVariant.priceRrp,
     get discounted() {
       return this.originalPrice > this.currentPrice;
     },
-    currentPrice: item.mainVariant.price,
-    inStock: item.mainVariant.isAvailable,
-    useUnitPrice:
-      item.mainVariant.pricePerUnit?.measure.includes("cca") ?? false,
-    currentUnitPrice: item.mainVariant.pricePerUnit?.value ?? null,
-    quantity: item.mainVariant.pricePerUnit?.measure ?? null
+    currentPrice: mainVariant.price,
+    inStock: mainVariant.isAvailable,
+    useUnitPrice: mainVariant.pricePerUnit?.measure?.includes("cca") ?? false,
+    currentUnitPrice: mainVariant.pricePerUnit?.value ?? null,
+    quantity: mainVariant.pricePerUnit?.measure ?? null
   };
 }
 
