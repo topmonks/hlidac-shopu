@@ -15,6 +15,7 @@ commands:
   install_packages:
     steps:
       - node/install
+      - node/install-yarn
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2
@@ -85,7 +86,7 @@ commands:
 jobs:
   test-actors:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -109,7 +110,7 @@ jobs:
 
   test-lib:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -136,7 +137,7 @@ jobs:
 
   build-website:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -169,7 +170,7 @@ jobs:
 
   build-web-extension:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -204,7 +205,7 @@ jobs:
 
   test-web-extension:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -224,7 +225,7 @@ jobs:
       browser:
         type: string
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -282,7 +283,7 @@ jobs:
 
   provision:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -305,7 +306,7 @@ jobs:
 
   preview-provision:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
     steps:
       - checkout
