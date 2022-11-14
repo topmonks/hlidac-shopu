@@ -8,10 +8,10 @@ import { notFound, response, withCORS } from "../http.mjs";
 const db = new DynamoDBClient({});
 
 /**
- * @param {APIGatewayProxyEvent} event
+ * @param {APIGatewayProxyEvent} _event
  * @returns {Promise.<APIGatewayProxyResult>}
  */
-export async function handler(event) {
+export async function handler(_event) {
   const res = await db.send(
     new GetItemCommand({
       Key: marshall({ "pkey": "shopNumbers" }),
