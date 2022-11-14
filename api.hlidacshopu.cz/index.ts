@@ -195,6 +195,12 @@ export function createApi(domainName: string, options?: any) {
         fileName: "dashboard/index.mjs",
         cache: { ttl: 3600 }
       }),
+      createHandlerRoute("back-friday", {
+        httpMethod: "GET",
+        path: "/back-friday",
+        fileName: "back-friday/index.mjs",
+        cache: { ttl: 3600 }
+      }),
       createHandlerRoute("og", {
         httpMethod: "GET",
         path: "/og",
