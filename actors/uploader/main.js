@@ -1,10 +1,12 @@
-import Apify from "apify";
-import byteSize from "byte-size";
-import gzip from "node-gzip";
+import { getMemoryInfo, sleep } from "@crawlee/utils";
 import { writeToBuffer } from "@fast-csv/format";
-import { addMinutes, format } from "date-fns";
-import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { retry } from "@hlidac-shopu/lib/remoting.mjs";
+import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, log } from "apify";
+import byteSize from "byte-size";
+import { addMinutes, format } from "date-fns";
+import gzip from "node-gzip";
 
 import { keboolaUploader } from "./src/uploader.js";
 import { mironetValidator } from "./src/validators/mironetValidator.js";
@@ -52,6 +54,8 @@ import { dekValidator } from "./src/validators/dekValidator.js";
 
 const { KEBOOLA_BUCKET } = process.env;
 let stateValues = 0;
+
+const rollbar = Rollbar.init();
 
 async function processItems(
   {
@@ -324,7 +328,7 @@ async function processItems(
     validItems.push(item);
   }
   const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-  console.log(`Processed ${items.length} in ${elapsed}s`);
+  log.info(`Processed ${items.length} in ${elapsed}s`);
 
   // just to be sure that we are not sending empty CSV, it will be visible in Keboola as failed import
   if (validItems.length) {
@@ -341,7 +345,7 @@ async function processItems(
         true
       );
     } else {
-      await Apify.pushData(validItems);
+      await Actor.pushData(validItems);
     }
     stats.uploaded += items.length;
   }
@@ -349,12 +353,11 @@ async function processItems(
   // save state everytime we process a new chunk of data
   try {
     await Promise.all([
-      Apify.setValue("STATE", stateValues),
-      Apify.setValue("STATS", stats)
+      Actor.setValue("STATE", stateValues),
+      Actor.setValue("STATS", stats)
     ]);
-  } catch (e) {
-    console.log("error with saving state.");
-    console.log(e);
+  } catch (err) {
+    log.error("error with saving state.", err);
   }
 }
 
@@ -363,13 +366,13 @@ async function loadDatasetItems(datasetId, offset, pageLimit, test) {
     const start = Date.now();
     const currentLimit = test ? 10 : pageLimit;
     // Open a named dataset
-    const dataset = await Apify.openDataset(datasetId);
+    const dataset = await Actor.openDataset(datasetId);
     const result = await dataset.getData({
       offset,
       limit: currentLimit
     });
     const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-    console.log(`Download of ${currentLimit} items elapsed: ${elapsed}s`);
+    log.info(`Download of ${currentLimit} items elapsed: ${elapsed}s`);
     return result.items;
   });
 }
@@ -388,7 +391,7 @@ async function loadItems(
   },
   stats
 ) {
-  console.log(`Downloading with offset ${offset} and limit ${limit}`);
+  log.info(`Downloading with offset ${offset} and limit ${limit}`);
   let tries = 20;
 
   while (tries > 0) {
@@ -424,22 +427,22 @@ async function loadItems(
       stateValues = offset + limit;
       offset += limit;
     } catch (error) {
-      console.error(error);
+      rollbar.error(error, { tableName });
+      log.error(error);
       tries--;
-      console.log(
+      log.info(
         `Some problem with loading, lets give it a try. Still have ${tries}`
       );
-      await Apify.utils.sleep(300);
+      await sleep(300);
       if (limit > 5000) {
         limit = Math.floor(limit / 2);
-        console.log(`Lowered limit to ${limit}`);
+        log.info(`Lowered limit to ${limit}`);
       }
     }
   }
 }
-
-Apify.main(async function main() {
-  const input = await Apify.getValue("INPUT");
+async function main() {
+  const input = await Actor.getValue("INPUT");
   const {
     datasetId,
     upload,
@@ -453,26 +456,26 @@ Apify.main(async function main() {
 
   const limit = manualLimit ?? 10000;
 
-  const loadedStats = await Apify.getValue("STATS");
+  const loadedStats = await Actor.getValue("STATS");
   const stats = loadedStats ?? {
     downloaded: 0,
     uploaded: 0
   };
 
   // set the offset based on the state
-  const state = await Apify.getValue("STATE");
+  const state = await Actor.getValue("STATE");
   let offset;
   if (state === null) {
     offset = offsetManual ?? 0;
   } else {
-    console.log(`Loaded offset from the state: ${state}`);
+    log.info(`Loaded offset from the state: ${state}`);
     offset = state;
     stateValues = state;
   }
 
   // notifications
   const progressInterval = setInterval(async () => {
-    const memory = await Apify.getMemoryInfo();
+    const memory = await getMemoryInfo();
     const usedMemory = byteSize(memory.usedBytes);
     console.log("-------------------------------------");
     console.log(`Downloaded ${stats.downloaded}`);
@@ -482,10 +485,10 @@ Apify.main(async function main() {
   }, 30000);
 
   try {
-    const dataset = await retry(4, () => Apify.openDataset(datasetId));
+    const dataset = await retry(4, () => Actor.openDataset(datasetId));
     const { createdAt } = await dataset.getInfo();
     const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
-    console.log("Crawled", crawledDate);
+    log.info(`Crawled ${crawledDate}`);
 
     await loadItems(
       {
@@ -504,4 +507,6 @@ Apify.main(async function main() {
   } finally {
     clearInterval(progressInterval);
   }
-});
+}
+
+await Actor.main(main);

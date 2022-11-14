@@ -7,8 +7,10 @@
   "type": "module",
   "dependencies": {
     "@adobe/helix-fetch": "3.1.2",
+    "@crawlee/utils": "^3.1.1",
     "@fast-csv/format": "^4.3.5",
-    "@hlidac-shopu/lib": "^1.3.8",
+    "@hlidac-shopu/actors-common": "2.0.5",
+    "@hlidac-shopu/lib": "1.3.8",
     "apify": "3.1.0",
     "byte-size": "^8.1.0",
     "date-fns": "^2.29.3",
