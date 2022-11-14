@@ -65,11 +65,11 @@ function extractCategoryProducts(
     itemId: element
       .querySelector("[data-product-code]")
       .getAttribute("data-product-code"),
-    itemName: element.querySelector(".tile-title a").textContent.trim(),
+    itemName: element.querySelector(".tile-title a")?.textContent?.trim(),
     inStock:
       element
         .querySelector(".btn.btn-buy")
-        .classList.has("item-not-on-stock") === false,
+        ?.classList?.has("item-not-on-stock") == false,
     currentPrice: cleanPrice(
       element.querySelector(".total-price .price .price-vatin")?.textContent
     ),
@@ -80,7 +80,7 @@ function extractCategoryProducts(
     get discounted() {
       return this.currentPrice < this.originalPrice;
     },
-    img: element.querySelector(".img-wrapper img").src,
+    img: element.querySelector(".img-wrapper img")?.src,
     category,
     paginationUrl
   });
