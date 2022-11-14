@@ -60,14 +60,9 @@ export function extractStructuredData(structuredData) {
     rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
     inStock: offer?.availability === "http://schema.org/InStock",
     discontinued: offer?.availability === "http://schema.org/Discontinued",
-    get discounted() {
-      return this.originalPrice
-        ? this.originalPrice > this.currentPrice
-        : false;
-    },
     currentPrice: cleanPrice(currentPrice),
-    currency,
-    originalPrice: cleanPrice(referralPrice)
+    originalPrice: cleanPrice(referralPrice),
+    currency
   };
 }
 
@@ -116,9 +111,18 @@ function extractDetail(document, structuredData) {
   if (!domParts) return;
 
   const structuredParts = extractStructuredData(structuredData);
-  return Object.assign({}, structuredParts, domParts, {
-    category: decodeEntities(structuredParts.category)
-  });
+  return Object.assign(
+    {
+      get discounted() {
+        return this.originalPrice
+          ? this.currentPrice < this.originalPrice
+          : false;
+      }
+    },
+    structuredParts,
+    domParts,
+    { category: decodeEntities(structuredParts.category) }
+  );
 }
 
 /**
