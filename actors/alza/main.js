@@ -60,6 +60,11 @@ export function extractStructuredData(structuredData) {
     rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
     inStock: offer?.availability === "http://schema.org/InStock",
     discontinued: offer?.availability === "http://schema.org/Discontinued",
+    get discounted() {
+      return this.originalPrice
+        ? this.originalPrice > this.currentPrice
+        : false;
+    },
     currentPrice: cleanPrice(currentPrice),
     currency,
     originalPrice: cleanPrice(referralPrice)
