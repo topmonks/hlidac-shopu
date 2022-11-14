@@ -5014,7 +5014,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@adobe/helix-fetch": 3.1.2
     "@crawlee/utils": ^3.1.1
     "@fast-csv/format": ^4.3.5
     "@hlidac-shopu/actors-common": 2.0.5
