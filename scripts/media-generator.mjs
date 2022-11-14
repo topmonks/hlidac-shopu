@@ -8,7 +8,6 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "http://newsroom.fyi.cz/black-friday-v-podani-czc-ferove-slevy-cely-listopad-a-specialni-akce/",
   "https://pressmob.cz/black-friday-v-podani-czc-ferove-slevy-cely-listopad-a-cena-kterou-si-urci-sami-zakaznici/",
   "https://insmart.cz/black-friday-jak-si-overit-ze-je-sleva-skutecna/",
   "https://indian-tv.cz/clanek/black-friday-v-podani-czc-ferove-slevy-cely-listopad-tugvvh",
