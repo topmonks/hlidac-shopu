@@ -36,12 +36,10 @@ async function createNewTable(bucket, table, type, token) {
   if (resp.ok) {
     return resp.json();
   }
-  console.error(resp.error)
+  console.error(resp.error);
 }
 
-function main(tableName, options) {
-
-}
+function main(tableName, options) {}
 
 program
   .arguments("<actor-name>")

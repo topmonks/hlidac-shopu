@@ -7,13 +7,13 @@ export class Prozdravi extends Shop {
   }
 
   async scrape() {
-    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[0];
-    if (!jsonld)
-      return null;
+    const jsonld = document.querySelectorAll(
+      'script[type="application/ld+json"]'
+    )[0];
+    if (!jsonld) return null;
     try {
       const data = JSON.parse(jsonld.innerText)[0];
-      if (data["@type"] !== "Product")
-        return null;
+      if (data["@type"] !== "Product") return null;
       const originalPrice = cleanPrice(".old-price span");
       return {
         itemId: null,

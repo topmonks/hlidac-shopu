@@ -9,10 +9,10 @@ import { Shop } from "./shop.mjs";
 export class Knihydobrovsky extends Shop {
   get injectionPoint() {
     const elem = document.querySelector("#snippet--deliveryInfo .variants");
-    if(elem){
+    if (elem) {
       return ["afterend", "#snippet--deliveryInfo .variants"];
     }
-      return ["afterend", "#snippet--deliveryInfo .b-gift"];
+    return ["afterend", "#snippet--deliveryInfo .b-gift"];
   }
 
   async scrape() {
