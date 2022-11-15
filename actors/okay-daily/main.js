@@ -46,8 +46,8 @@ const INTERESTED_TAGS = {
     [COUNTRY.SK]: ["COL1:2102"]
   },
   [ActorType.BF]: {
-    [COUNTRY.CZ]: ["BDT:Black Friday#1{2512}", "BDT:Black Friday#1{2513}"],
-    [COUNTRY.SK]: ["BDT:Black Friday#1{2521}", "BDT:Black Friday#1{2520}"]
+    [COUNTRY.CZ]: ["BDT:Black Friday#1{2581}", "BDT:Black Friday#1{2583}"],
+    [COUNTRY.SK]: ["BDT:Black Friday#1{2589}", "BDT:Black Friday#1{2590}"]
   },
   [ActorType.FULL]: {
     [COUNTRY.CZ]: null,
