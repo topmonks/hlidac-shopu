@@ -15,7 +15,7 @@ export async function handler(event) {
   const { year } = event.queryStringParameters;
   const res = await db.send(
     new GetItemCommand({
-      Key: marshall({ "year": parseInt(year, 10) }),
+      Key: marshall({ "year": year }),
       TableName: "black_friday_data"
     })
   );
