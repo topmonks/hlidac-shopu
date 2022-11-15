@@ -6,11 +6,7 @@ import {
 } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.mjs";
 import { rating } from "@hlidac-shopu/lib/templates.mjs";
-import * as rollbar from "./rollbar.js";
-
-rollbar.init();
-
-const tableRoot = document.getElementById("table-root");
+import * as Rollbar from "./rollbar.js";
 
 const extraData = new Map([
   [
@@ -46,16 +42,6 @@ function addExtraData(year) {
   const data = extraData.get(year);
   return x => Object.assign({}, x, data.get(x.shop));
 }
-
-addEventListener("DOMContentLoaded", async e => {
-  try {
-    const data = await fetchDashboardData(2021);
-    tableRoot.innerHTML = null;
-    render(tableTemplate(data), tableRoot);
-  } catch (ex) {
-    console.error(ex);
-  }
-});
 
 function tableTemplate(data) {
   return data
@@ -107,4 +93,19 @@ function logoTemplate({ logo, name, url, viewBox }) {
   return html`
     <a href="${url}" class="sprite sprite--${logo}" title="${name}">${image}</a>
   `;
+}
+
+export function main({ tableRoot, year }) {
+  const rollbar = Rollbar.init();
+
+  addEventListener("DOMContentLoaded", async e => {
+    try {
+      const data = await fetchDashboardData(year ?? 2021);
+      tableRoot.innerHTML = null;
+      render(tableTemplate(data), tableRoot);
+    } catch (err) {
+      rollbar.error(err);
+      console.error(err);
+    }
+  });
 }

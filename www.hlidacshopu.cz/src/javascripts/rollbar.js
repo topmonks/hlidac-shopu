@@ -7,7 +7,7 @@ const getMeta = key =>
 
 export function init() {
   Rollbar.setComponents({ telemeter, instrumenter });
-  Rollbar.init({
+  return Rollbar.init({
     accessToken: getMeta("rollbar:access-token"),
     captureUncaught: true,
     captureUnhandledRejections: true,
