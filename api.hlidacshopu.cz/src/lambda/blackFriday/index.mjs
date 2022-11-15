@@ -1,5 +1,5 @@
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
-import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { notFound, response, withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
@@ -15,7 +15,7 @@ export async function handler(event) {
   const { year } = event.queryStringParameters;
   const res = await db.send(
     new GetItemCommand({
-      Key: marshall({ "year": year }),
+      Key: { "year": { S: year } },
       TableName: "black_friday_data"
     })
   );
