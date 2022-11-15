@@ -6356,9 +6356,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@topmonks/blendid@https://github.com/topmonks/blendid.git#commit=f6b5b1136e021b37043114a062dbbce97f1c7efd":
+"@topmonks/blendid@https://github.com/topmonks/blendid.git#commit=6420b69505cb3683ba68179f48b39da8a96e8e1b":
   version: 6.0.0
-  resolution: "@topmonks/blendid@https://github.com/topmonks/blendid.git#commit=f6b5b1136e021b37043114a062dbbce97f1c7efd"
+  resolution: "@topmonks/blendid@https://github.com/topmonks/blendid.git#commit=6420b69505cb3683ba68179f48b39da8a96e8e1b"
   dependencies:
     "@rollup/plugin-alias": ^4.0.2
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -6420,7 +6420,7 @@ __metadata:
     workbox-build: ^6.5.4
   bin:
     blendid: bin/blendid.js
-  checksum: a21969eb5cd50146277f2d7e7c187ac96fb0164e3388dee7e9c6d60ebb1e3fa8e7ac129919b149ebe6f0da652943082c7128205232637f26acf4460f5be0712d
+  checksum: 9f6a3b124272ac104588a4707883279a31c791b11bc60be0aeea5a6535b4e50b0ca93f97d1a94f0680dfa9c7c8964da0aa88966dc4b3838872c2e4b7a9062ded
   languageName: node
   linkType: hard
 
@@ -14876,7 +14876,7 @@ __metadata:
     "@rollup/plugin-alias": 4.0.2
     "@rollup/plugin-node-resolve": 15.0.1
     "@rollup/plugin-replace": 5.0.1
-    "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=f6b5b1136e021b37043114a062dbbce97f1c7efd"
+    "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=6420b69505cb3683ba68179f48b39da8a96e8e1b"
     "@topmonks/pulumi-aws": 2.2.4
     "@types/firefox-webext-browser": 94.0.1
     "@types/node": 18.11.9

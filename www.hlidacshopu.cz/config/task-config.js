@@ -110,14 +110,6 @@ const config = {
         src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
         dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
       };
-      const legacyPaths = {
-        src: projectPath(
-          pathConfig.src,
-          pathConfig["esbuild-legacy"].src,
-          "*.js"
-        ),
-        dest: projectPath(pathConfig.dest, pathConfig["esbuild-legacy"].dest)
-      };
       task("esbuild-prod", () =>
         src(paths.src)
           .pipe(esbuild(taskConfig.esbuild.options))
