@@ -198,9 +198,8 @@ export function createApi(domainName: string, options?: any) {
       createHandlerRoute("black-friday", {
         httpMethod: "GET",
         path: "/black-friday",
-        fileName: "black-friday/index.mjs",
-        requiredParameters: [{ in: "query", name: "year" }],
-        cache: { ttl: 3600 }
+        fileName: "blackFriday/index.mjs",
+        requiredParameters: [{ in: "query", name: "year" }]
       }),
       createHandlerRoute("og", {
         httpMethod: "GET",
