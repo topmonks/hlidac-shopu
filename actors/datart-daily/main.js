@@ -5,12 +5,14 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import cheerio from "cheerio";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { gotScraping } from "got-scraping";
+import { DOMParser, parseHTML } from "linkedom";
 
-const { log, requestAsBrowser } = Apify.utils;
 const LABELS = {
   START: "START",
   CATEGORY: "CATEGORY",
@@ -24,152 +26,131 @@ const COUNTRY = {
 const BASE_URL = "https://www.datart.cz";
 const BASE_URL_SK = "https://www.datart.sk";
 
-async function streamToBuffer(stream) {
-  const chunks = [];
-  return new Promise((resolve, reject) => {
-    stream.on("data", chunk => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
-  });
-}
+export const parseXML = (xml, globals = null) =>
+  new DOMParser().parseFromString(xml, "text/xml", globals).defaultView;
 
 async function countAllProducts(rootUrl, stats) {
-  const stream = await requestAsBrowser({
-    url: `${rootUrl}/sitemap/sitemapindex.xml`,
-    stream: true
-  });
-  const buffer = await streamToBuffer(stream);
-  const xmlString = buffer.toString();
-  const $ = cheerio.load(xmlString, { xmlMode: true });
-  const productXmlUrls = [];
-
-  // Pick all product xml urls from sitemap
-  $("sitemap").each(function () {
-    const url = $(this).find("loc").text().trim();
-    productXmlUrls.push(url);
-  });
+  const { body } = await gotScraping.get(`${rootUrl}/sitemap/sitemapindex.xml`);
+  const { document } = parseXML(body);
+  const productXmlUrls = document
+    .querySelectorAll("sitemap loc")
+    .map(loc => loc.innerText.trim());
   log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
 
   for await (const xmlUrl of productXmlUrls) {
-    const stream = await requestAsBrowser({
-      url: xmlUrl,
-      stream: true
-    });
-    const buffer = await streamToBuffer(stream);
-    const xmlString = buffer.toString();
-    const $ = cheerio.load(xmlString, { xmlMode: true });
+    const { body } = await gotScraping.get(xmlUrl);
+    const { document } = parseXML(body);
     let readyForProductsLink = false;
-    $("url").each(function () {
-      const priority = $(this).find("priority").text().trim();
+    document.querySelectorAll("url priority").forEach(priority_ => {
+      const priority = priority_.innerText.trim();
       //Will count only products link with priority "0.9" starting after category links with priority "0.5"
       if (priority === "0.9" && readyForProductsLink) {
-        stats.items++;
+        stats.inc("items");
       } else if (priority === "0.5" && !readyForProductsLink) {
         readyForProductsLink = true;
       }
     });
   }
-  log.info(`Total items ${stats.items}x`);
+  log.info(`Total items ${stats.get().items}x`);
 }
 
 /**
  *
- * @param {Cheerio} $
+ * @param {Document} document
  * @param {String} rootUrl
  * @param {COUNTRY.CZ|COUNTRY.SK} country
  * @returns {Promise<[]>}
  */
-async function extractItems($, rootUrl, country) {
-  const itemsArray = [];
+async function extractItems(document, rootUrl, country) {
   // products
-  const productElements = $("div.product-box-list div.product-box");
-  if (productElements.length > 0) {
-    const categoryArr = [];
-    $("ol.breadcrumb > li > a").each(function () {
-      categoryArr.push($(this).text().trim());
-    });
+  const categoryArr = Array.from(
+    document.querySelectorAll("ol.breadcrumb > li > a")
+  ).map(a => a.innerText.trim());
 
-    productElements.each(function () {
-      if ($(this).attr("data-track")) {
-        const result = {};
-        const productBoxBuyInfoDelivery = $(this).find(
-          "div.product-box-buy-info > div.product-box-buy-info-delivery span.color-text-red"
-        );
-        result.inStock = !productBoxBuyInfoDelivery.length > 0;
+  return document
+    .querySelectorAll("div.product-box-list div.product-box")
+    .filter(productEl => productEl.getAttribute("data-track"))
+    .map(productEl => {
+      const result = {};
+      const productBoxBuyInfoDelivery = productEl.querySelector(
+        "div.product-box-buy-info > div.product-box-buy-info-delivery span.color-text-red"
+      );
+      result.inStock = Boolean(productBoxBuyInfoDelivery);
 
-        const productBoxBuyInfoCart = $(this).find(
-          "div.product-box-buy-info > div.product-box-buy-info-cart"
-        );
-        const itemCartDataTarget = productBoxBuyInfoCart
-          .find("div.item-link-compare > button")
-          .attr("data-target-add");
-        if (itemCartDataTarget.length > 1) {
-          const searchParams = new URLSearchParams(itemCartDataTarget);
-          result.itemId = searchParams.get("id");
-        }
-        const productBoxTopSide = $(this).find("div.product-box-top-side");
-        const productHeader = productBoxTopSide.find(
-          "div.item-title-holder h3.item-title a"
-        );
-        result.itemName = productHeader.text().trim();
-        result.itemUrl = rootUrl + productHeader.attr("href");
+      const productBoxBuyInfoCart = productEl.querySelector(
+        "div.product-box-buy-info > div.product-box-buy-info-cart"
+      );
+      const itemCartDataTarget = productBoxBuyInfoCart
+        .querySelector("div.item-link-compare > button")
+        .getAttribute("data-target-add");
+      if (itemCartDataTarget) {
+        const searchParams = new URLSearchParams(itemCartDataTarget);
+        result.itemId = searchParams.get("id");
+      }
+      const productBoxTopSide = productEl.querySelector(
+        "div.product-box-top-side"
+      );
+      const productHeader = productBoxTopSide.querySelector(
+        "div.item-title-holder h3.item-title a"
+      );
+      result.itemName = productHeader.innerText.trim();
+      result.itemUrl = rootUrl + productHeader.getAttribute("href");
 
-        result.img = productBoxTopSide
-          .find("div.item-thumbnail img")
-          .attr("src");
+      result.img = productBoxTopSide
+        .querySelector("div.item-thumbnail img")
+        .getAttribute("src");
 
-        result.currentPrice = parseFloat(
-          productBoxBuyInfoCart
-            .find("div.item-price div.actual")
-            .text()
+      result.currentPrice = parseFloat(
+        productBoxBuyInfoCart
+          .querySelector("div.item-price div.actual")
+          .innerText.trim()
+          .replace(/[^\d,]+/g, "")
+          .replace(",", ".")
+      );
+      const cutPrice = productBoxBuyInfoCart.querySelector(
+        "div.item-price span.cut-price del"
+      );
+
+      if (cutPrice) {
+        result.originalPrice = parseFloat(
+          cutPrice.innerText
             .trim()
             .replace(/[^\d,]+/g, "")
             .replace(",", ".")
         );
-        const cutPrice = productBoxBuyInfoCart.find(
-          "div.item-price span.cut-price del"
-        );
-
-        if (cutPrice.length > 0) {
-          result.originalPrice = parseFloat(
-            cutPrice
-              .text()
-              .trim()
-              .replace(/[^\d,]+/g, "")
-              .replace(",", ".")
-          );
-          result.discounted = true;
-        } else {
-          result.originalPrice = null;
-          result.discounted = false;
-        }
-        result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
-
-        result.category = categoryArr;
-
-        itemsArray.push(result);
+        result.discounted = true;
+      } else {
+        result.originalPrice = null;
+        result.discounted = false;
       }
+      result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
+
+      result.category = categoryArr;
+
+      return result;
     });
-  }
-  return itemsArray;
 }
 
-async function enqueuRequests(requestQueu, items) {
+async function enqueueRequests(requestQueu, items) {
   for (const item of items) {
     await requestQueu.addRequest(item);
   }
 }
 
-Apify.main(async function main() {
+function getLastPageNumber(arr) {
+  // first and last buttons are arrows
+  return arr.length > 3 ? Number(arr[arr.length - 2].innerText) : 0;
+}
+
+export async function main() {
   rollbar.init();
-  let stats = {};
   const processedIds = new Set();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
     region: "eu-central-1",
     maxAttempts: 3
   });
-  const input = await Apify.getInput();
+  const input = await KeyValueStore.getInput();
   const {
     development = false,
     debug = false,
@@ -180,18 +161,18 @@ Apify.main(async function main() {
     type = ActorType.FULL
   } = input ?? {};
 
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = await withPersistedStats(x => x, {
     categories: 0,
     pages: 0,
     items: 0,
     itemsSkipped: 0,
     itemsDuplicity: 0,
     failed: 0
-  };
+  });
 
   const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
   // Get queue and enqueue first url.
-  const requestQueue = await Apify.openRequestQueue();
+  const requestQueue = await Actor.openRequestQueue();
   if (type === ActorType.BF) {
     await requestQueue.addRequest({
       url: `${rootUrl}/black-friday`,
@@ -224,106 +205,93 @@ Apify.main(async function main() {
     });
   }
 
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
-
   log.info("ACTOR - setUp crawler");
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
 
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    // Activates the Session pool.
     useSessionPool: true,
-    // Overrides default Session pool configuration.
     sessionPoolOptions: {
       maxPoolSize: 200
     },
-    handlePageFunction: async ({ request, $, session, response }) => {
+    requestHandler: async ({ request, session, response, log, body }) => {
       if (response.statusCode !== 200) {
         session.retire();
       }
+      const { document } = parseHTML(body.toString());
       // Process START page
       if (request.userData.label === LABELS.START) {
-        const items = [];
-        $("div.microsite-katalog")
-          .find("ul.category-submenu > li > a")
-          .each(function () {
-            const link = $(this).attr("href");
-            //console.log(`${rootUrl}${link}`);
-            items.push({
+        const items = document
+          .querySelectorAll(
+            "div.microsite-katalog ul.category-submenu > li > a"
+          )
+          .map(a => {
+            const link = a.getAttribute("href");
+            //log.info(`${rootUrl}${link}`);
+            return {
               url: `${rootUrl}${link}`,
               userData: {
                 label: LABELS.CATEGORY,
                 uniqueKey: Math.random()
               }
-            });
+            };
           });
-        console.log(`${request.url} Found ${items.length} categories`);
-        await enqueuRequests(requestQueue, items);
+        log.info(`${request.url} Found ${items.length} categories`);
+        await enqueueRequests(requestQueue, items);
       }
       // Process CATEGORY page
       if (request.userData.label === LABELS.CATEGORY) {
         try {
           // Add subcategories if this category has also products
-          const subcategories = $(
-            "div.subcategory-box-list .subcategoryWrapper"
-          ).find("a");
+          const subcategories = document.querySelectorAll(
+            "div.subcategory-box-list .subcategoryWrapper a"
+          );
           if (subcategories.length > 0) {
-            const items = [];
-            subcategories.each(function () {
-              const link = $(this).attr("href");
-              items.push({
+            const items = subcategories.map(a => {
+              const link = a.getAttribute("href");
+              return {
                 url: `${rootUrl}${link}`,
                 userData: {
                   label: LABELS.CATEGORY,
                   uniqueKey: Math.random()
                 }
-              });
+              };
             });
-            stats.categories += items.length;
-            console.log(`${request.url} Found ${items.length} subcategories`);
-            await enqueuRequests(requestQueue, items);
+            stats.add("categories", items.length);
+            log.info(`${request.url} Found ${items.length} subcategories`);
+            await enqueueRequests(requestQueue, items);
             return; // Nothing more we can do for this page
           }
           // Add categories if this page has only categories and no products
-          const categoryTree = $("div.category-tree-box-list").find("a");
+          const categoryTree = document.querySelectorAll(
+            "div.category-tree-box-list a"
+          );
           if (categoryTree.length > 0) {
-            const categories = [];
-            categoryTree.each(function () {
-              const link = $(this).attr("href");
-              categories.push({
+            const categories = categoryTree.map(a => {
+              const link = a.getAttribute("href");
+              return {
                 url: `${rootUrl}${link}`,
                 userData: {
                   label: LABELS.CATEGORY,
                   uniqueKey: Math.random()
                 }
-              });
+              };
             });
-            stats.categories += categories.length;
-            console.log(`${request.url} Found ${categories.length} categories`);
-            await enqueuRequests(requestQueue, categories);
+            stats.add("categories", categories.length);
+            log.info(`${request.url} Found ${categories.length} categories`);
+            await enqueueRequests(requestQueue, categories);
             return; // Nothing more we can do for this page
           }
           //No more categories and subcategories continue with find maxPaginationPage
-          let lastPagination = 0;
-          $("div.pagination-wrapper ul.pagination")
-            .find("a")
-            .each(function () {
-              const page = parseInt($(this).text());
-              if (page > lastPagination) {
-                lastPagination = page;
-              }
-            });
+          const lastPagination = getLastPageNumber(
+            document.querySelectorAll("div.pagination-wrapper ul.pagination a")
+          );
           // Add pages from pagination
           const items = [];
           for (let i = 2; i <= lastPagination; i++) {
@@ -334,14 +302,14 @@ Apify.main(async function main() {
                 uniqueKey: Math.random()
               }
             });
-            //console.log(`${request.url}?showPage&page=${i}&limit=16`);
+            //log.info(`${request.url}?showPage&page=${i}&limit=16`);
           }
-          stats.pages += items.length;
-          console.log(`${request.url} Adding ${items.length} pagination pages`);
-          await enqueuRequests(requestQueue, items);
+          stats.add("pages", items.length);
+          log.info(`${request.url} Adding ${items.length} pagination pages`);
+          await enqueueRequests(requestQueue, items);
         } catch (e) {
-          console.log(`Error processing url ${request.url}`);
-          console.error(e);
+          log.info(`Error processing url ${request.url}`);
+          log.error(e);
         }
       }
 
@@ -351,7 +319,7 @@ Apify.main(async function main() {
         request.userData.label === LABELS.CATEGORY_NEXT
       ) {
         try {
-          const products = await extractItems($, rootUrl, country);
+          const products = await extractItems(document, rootUrl, country);
           // we don't need to block pushes, we will await them all at the end
           const requests = [];
           for (const product of products) {
@@ -361,20 +329,24 @@ Apify.main(async function main() {
             // Save data to dataset
             if (!processedIds.has(product.itemId)) {
               processedIds.add(product.itemId);
-              requests.push(Apify.pushData(product), uploadToS3v2(s3, s3item));
-              stats.items++;
+              requests.push(
+                Dataset.pushData(product),
+                uploadToS3v2(s3, s3item)
+              );
+              stats.inc("items");
             } else {
-              stats.itemsDuplicity++;
+              stats.inc("itemsDuplicity");
             }
           }
-          console.log(
+          log.info(
             `${request.url} Found ${requests.length / 2} unique products`
           );
           // await all requests, so we don't end before they end
           await Promise.all(requests);
         } catch (e) {
-          console.log(`Failed to get products from page ${request.url}`);
-          await Apify.pushData({
+          log.error(e);
+          log.error(`Failed to get products from page ${request.url}`);
+          await Dataset.pushData({
             status: "Failed to get products",
             url: request.url
           });
@@ -383,33 +355,25 @@ Apify.main(async function main() {
 
       if (request.userData.label === LABELS.BF) {
         log.info(`START BF ${request.url}`);
-        const categories = [];
-        $(".ms-category-box").each(function () {
-          categories.push({
-            url: `${rootUrl}${$(this).attr("href")}`,
+        const categories = document
+          .querySelectorAll(".ms-category-box")
+          .map(a => ({
+            url: `${rootUrl}${a.getAttribute("href")}`,
             userData: {
               label: LABELS.CATEGORY
             }
-          });
-        });
+          }));
         log.info(`Found ${categories.length} BF categories`);
-        await enqueuRequests(requestQueue, categories);
+        await enqueueRequests(requestQueue, categories);
       }
     },
-
-    // If request failed 4 times then this function is executed.
-    handleFailedRequestFunction: async ({ request }) => {
-      console.log(`Request ${request.url} failed multiple times`);
+    failedRequestHandler: async ({ request, log }) => {
+      log.error(`Request ${request.url} failed multiple times`);
     }
   });
 
-  // Run crawler.
   await crawler.run();
-
-  console.log("crawler finished");
-
-  await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-  log.info(JSON.stringify(stats));
+  log.info("crawler finished");
 
   try {
     let tableName = "";
@@ -435,8 +399,10 @@ Apify.main(async function main() {
       log.info("upload to Keboola finished");
     }
   } catch (e) {
-    console.log(e);
+    log.error(e);
   }
 
-  console.log("Finished.");
-});
+  log.info("Finished.");
+}
+
+await Actor.main(main);
