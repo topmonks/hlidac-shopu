@@ -7,17 +7,17 @@
   "main": "main.js",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.209.0",
-    "@aws-sdk/client-s3": "3.209.0",
-    "@crawlee/cheerio": "^3.1.1",
-    "@crawlee/utils": "^3.1.1",
+    "@aws-sdk/client-cloudfront": "3.212.0",
+    "@aws-sdk/client-s3": "3.212.0",
+    "@crawlee/cheerio": "^3.1.2",
+    "@crawlee/utils": "^3.1.2",
     "@hlidac-shopu/actors-common": "2.0.5",
-    "apify": "3.1.0",
+    "apify": "3.1.1",
     "got-scraping": "^3.2.12"
   },
   "devDependencies": {
     "@types/node": "18.11.9",
-    "apify-cli": "0.9.0"
+    "apify-cli": "0.10.0"
   },
   "scripts": {
     "start": "node main.js",

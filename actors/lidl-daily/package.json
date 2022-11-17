@@ -6,17 +6,17 @@
   "license": "EPL-2.0",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.209.0",
-    "@aws-sdk/client-s3": "3.209.0",
+    "@aws-sdk/client-cloudfront": "3.212.0",
+    "@aws-sdk/client-s3": "3.212.0",
     "@hlidac-shopu/actors-common": "2.0.5",
-    "apify": "3.1.0",
+    "apify": "3.1.1",
     "cheerio": "^1.0.0-rc.12",
-    "playwright": "^1.27.1",
+    "playwright": "^1.28.0",
     "underscore": "^1.13.6"
   },
   "devDependencies": {
     "@types/node": "18.11.9",
-    "apify-cli": "0.9.0"
+    "apify-cli": "0.10.0"
   },
   "scripts": {
     "start": "node src/main.js",
