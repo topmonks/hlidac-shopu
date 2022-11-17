@@ -1,6 +1,6 @@
 ---
 shop: mall.cz
-link: https://docs.google.com/spreadsheets/d/1Ts9yt1rXdzTQqKi6Wm2wnkY5P0OAEf3t8-YxoG2momI/edit?usp=sharing
+link: https://docs.google.com/spreadsheets/d/1knaEvMdOK_IYesf-YoSYhzAjsrB9yg8__a2x-fdgrro/edit?usp=sharing
 rating: 2
 ---
 
