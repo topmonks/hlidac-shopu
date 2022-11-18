@@ -143,7 +143,7 @@ async function handleCategory(
     if (items === productsCount) {
       log.info("Collected all products");
     } else if (items > productsCount) {
-      log.warn("Probably collecting duplicate products now");
+      log.warning("Probably collecting duplicate products now");
     }
   }
 
