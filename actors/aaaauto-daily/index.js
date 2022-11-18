@@ -149,7 +149,6 @@ export async function main() {
     }
   });
   log.info("ACTOR - setUp crawler");
-  /** @type {ProxyConfiguration} */
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
