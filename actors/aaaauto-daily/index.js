@@ -1,8 +1,9 @@
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
-import { CheerioCrawler } from "@crawlee/cheerio";
+import { HttpCrawler } from "@crawlee/http";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { parseHTML } from "linkedom";
 
 /** @typedef {import("apify").ProxyConfiguration} ProxyConfiguration */
 
@@ -61,6 +62,7 @@ export function getBaseUrl(
  * @returns {number|undefined}
  */
 export function extractPrice(string) {
+  if (!string) return;
   const match = string.match(/[\d*\s]*\s[Kč|€]/g);
   if (!match) return;
 
@@ -72,71 +74,49 @@ export function extractPrice(string) {
   return parseInt(value);
 }
 
-/**
- * @param {number} min
- * @param {number} max
- * @return {number}
- */
-export function getHumanDelayMillis(min = 400, max = 800) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+async function parseProducts(request, document, country) {
+  const offers = document.querySelectorAll(".card");
+  const products = offers.map(item => {
+    const link = item.querySelector("a.fullSizeLink").getAttribute("href");
+    const figure = item.querySelector("figure");
+    const url = new URL(link);
+    const itemId = url.searchParams.get("id");
+    const itemName = item.querySelector("h2 a").innerText.trim();
+    const arr = itemName.split(",");
 
-async function parseProducts(request, $, country) {
-  const offers = $(".card");
-  const products = await Promise.all(
-    offers.map(async function () {
-      try {
-        const item = $(this);
-        const link = item.find("a.fullSizeLink").attr("href");
-        const figure = item.find("figure");
-        const url = new URL(link);
-        const itemId = url.searchParams.get("id");
-        const itemName = item.find("h2 a").text().trim();
-        const arr = itemName.split(",");
+    const currentPrice = item
+      .querySelector("span[id*=garageHeart]")
+      .getAttribute("data-price");
+    const actionPrice = extractPrice(
+      item.querySelector(".carPrice h3.error:not(.hide)")?.innerText
+    );
+    let originalPrice = extractPrice(
+      item.querySelector(".carPrice .darkGreyAlt")?.innerText
+    );
+    const description = item.querySelector(".carFeatures p").innerText.trim();
+    const carFeatures = item
+      .querySelectorAll(".carFeaturesList li")
+      .map(feature => feature.innerText);
 
-        const currentPrice = item
-          .find("span[id*=garageHeart]")
-          .attr("data-price");
-        const actionPrice = extractPrice(
-          item.find(".carPrice h3.error:not(.hide)").text()
-        );
-        let originalPrice = extractPrice(
-          item.find(".carPrice .darkGreyAlt").text()
-        );
-        const description = item.find(".carFeatures p").text().trim();
-        const carFeatures = item
-          .find(".carFeaturesList li")
-          .toArray()
-          .map(feature => {
-            return $(feature).text();
-          });
-
-        const [km, transmission, fuelType, engine] = carFeatures;
-        return {
-          itemUrl: link,
-          itemId,
-          description,
-          img: figure.length > 0 ? figure.find("img").attr("src") : null,
-          itemName: arr[0],
-          currentPrice,
-          originalPrice,
-          currency: country === Country.CZ ? "Kč" : "Eur",
-          actionPrice,
-          discounted: !!originalPrice,
-          year: arr[1] ? arr[1] : undefined,
-          km,
-          transmission,
-          fuelType,
-          engine
-        };
-      } catch (e) {
-        log.error(e.message);
-        log.error(`Products extraction failed on url: ${request.url}`);
-      }
-    })
-  );
+    const [km, transmission, fuelType, engine] = carFeatures;
+    return {
+      itemUrl: link,
+      itemId,
+      description,
+      img: figure.querySelector("img").getAttribute("src"),
+      itemName: arr[0],
+      currentPrice,
+      originalPrice,
+      currency: country === Country.CZ ? "Kč" : "Eur",
+      actionPrice,
+      discounted: !!originalPrice,
+      year: arr[1] ? arr[1] : undefined,
+      km,
+      transmission,
+      fuelType,
+      engine
+    };
+  });
 
   for (const product of products) {
     await Dataset.pushData(product);
@@ -175,7 +155,7 @@ export async function main() {
     useApifyProxy: !development
   });
 
-  const crawler = new CheerioCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
     proxyConfiguration,
     maxRequestRetries,
@@ -187,18 +167,16 @@ export async function main() {
     persistCookiesPerSession: true,
     requestHandlerTimeoutSecs: 300,
     navigationTimeoutSecs: 300,
-    async handlePageFunction({ request, $ }) {
+    async requestHandler({ request, body }) {
+      const { document } = parseHTML(body.toString());
+
       const { label } = request.userData;
       log.info(`Label: ${label} - Scraping page ${request.url}`);
       switch (label) {
         case Label.START:
-          const pages = $("nav.pagenav li");
+          const pages = document.querySelectorAll("nav.pagenav li");
           const lastPage = parseInt(
-            pages
-              .eq(pages.length - 2)
-              .find("a")
-              .text()
-              .trim()
+            pages[pages.length - 2].querySelector("a").innerText.trim()
           );
 
           for (let i = 0; i < lastPage; i++) {
@@ -208,12 +186,12 @@ export async function main() {
               userData: { label: Label.PAGE, pageNumber }
             });
           }
-          return parseProducts(request, $, country);
+          return parseProducts(request, document, country);
         case Label.PAGE:
-          return parseProducts(request, $, country);
+          return parseProducts(request, document, country);
       }
     },
-    async handleFailedRequestFunction({ error, request, body }) {
+    async failedRequestHandler({ error, request, body }) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, error);
       console.log(request.statusCode);

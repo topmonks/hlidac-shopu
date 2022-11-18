@@ -4119,7 +4119,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/cheerio@npm:3.1.2, @crawlee/cheerio@npm:^3.1.2":
+"@crawlee/cheerio@npm:3.1.2":
   version: 3.1.2
   resolution: "@crawlee/cheerio@npm:3.1.2"
   dependencies:
@@ -4515,13 +4515,13 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.213.0
     "@aws-sdk/client-s3": 3.213.0
-    "@crawlee/cheerio": ^3.1.2
+    "@crawlee/http": 3.1.2
     "@crawlee/utils": ^3.1.2
     "@hlidac-shopu/actors-common": 2.0.6
     "@types/node": 18.11.9
     apify: 3.1.1
     apify-cli: 0.10.0
-    got-scraping: ^3.2.12
+    linkedom: 0.14.20
   languageName: unknown
   linkType: soft
 
