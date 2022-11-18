@@ -1,21 +1,11 @@
 import { URLSearchParams } from "url";
-import Apify from "apify";
-import { gotScraping } from "got-scraping";
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { Actor, log, LogLevel, Dataset } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-
-const {
-  utils: { log }
-} = Apify;
+import { HttpCrawler } from "@crawlee/http";
 
 const COUNTRY = {
   CZ: "CZ",
@@ -41,15 +31,15 @@ function getShopUri(country) {
 }
 
 const INTERESTED_TAGS = {
-  [ActorType.TEST]: {
+  [ActorType.Test]: {
     [COUNTRY.CZ]: ["COL1:1573"],
     [COUNTRY.SK]: ["COL1:2102"]
   },
-  [ActorType.BF]: {
+  [ActorType.BlackFriday]: {
     [COUNTRY.CZ]: ["BDT:Black Friday#1{2581}", "BDT:Black Friday#1{2583}"],
     [COUNTRY.SK]: ["BDT:Black Friday#1{2589}", "BDT:Black Friday#1{2590}"]
   },
-  [ActorType.FULL]: {
+  [ActorType.Full]: {
     [COUNTRY.CZ]: null,
     [COUNTRY.SK]: null
   }
@@ -93,6 +83,10 @@ async function enqueueRequests(requestQueue, country, stats, params) {
         userData: {
           endpointUrl,
           params: nextParams
+        },
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         }
       });
     }
@@ -103,6 +97,10 @@ async function enqueueRequests(requestQueue, country, stats, params) {
       userData: {
         endpointUrl,
         params: nextParams
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
       }
     });
   }
@@ -117,9 +115,8 @@ async function handleResponse(
   params,
   endpointUrl,
   stats,
-  s3
+  log
 ) {
-  const requests = [];
   for (const product of responseData.products) {
     const item = {
       itemId: product.id,
@@ -142,13 +139,10 @@ async function handleResponse(
       stats.inc("itemsDuplicity");
     } else {
       processedIds.add(item.itemId);
-      requests.push(Apify.pushData(item), uploadToS3v2(s3, item));
+      await Dataset.pushData(item);
       stats.inc("items");
     }
   }
-  log.debug(`Found ${requests.length / 2} unique products`);
-  await Promise.all(requests);
-
   const paginationCount = Math.ceil(responseData.total_product / params.limit);
   if (paginationCount > 1 && params.page === 1) {
     log.info(`Adding ${paginationCount - 1}x pagination pages `);
@@ -162,15 +156,8 @@ async function handleResponse(
     }
   }
 }
-
-Apify.main(async function main() {
-  rollbar.init();
-
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
+async function main() {
+  const rollbar = Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     collections: 0,
@@ -180,10 +167,10 @@ Apify.main(async function main() {
     itemsDuplicity: 0
   });
 
-  const input = await Apify.getInput();
+  const input = await Actor.getInput();
   const {
     country = COUNTRY.CZ,
-    type = ActorType.FULL,
+    type = ActorType.Full,
     debug = false,
     development = false,
     proxyGroups = ["CZECH_LUMINATI"],
@@ -193,83 +180,56 @@ Apify.main(async function main() {
   } = input ?? {};
 
   if (development || debug) {
-    log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Apify.openRequestQueue();
+  const requestQueue = await Actor.openRequestQueue();
 
   await enqueueRequests(requestQueue, country, stats, {
     page: 1,
     tag: getInterestedTags(type, country)
   });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups
   });
 
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
     maxConcurrency: development ? 1 : maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
-    async handleRequestFunction(context) {
-      const { request, session } = context;
+    proxyConfiguration,
+    async requestHandler({ session, request, response, json, log }) {
       const { endpointUrl, params } = request.userData;
+      stats.inc("urls");
 
       log.debug(`Processing ${params.page}. page: ${request.url}`);
-      const response = await gotScraping({
-        url: request.url,
-        proxyUrl: proxyConfiguration.newUrl(session.id),
-        throwHttpErrors: false,
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          // If you want to use the cookieJar.
-          // This way you get the Cookie headers string from session.
-          "Cookie": session.getCookieString()
-        }
-      });
-
-      // Status code check
-      if (![200, 404].includes(response.statusCode)) {
-        session.retire();
-        request.retryCount--;
-        throw new Error(`We got blocked by target on ${request.url}`);
-      }
-
-      const responseData = JSON.parse(response.body);
       return handleResponse(
-        responseData,
+        json,
         country,
         requestQueue,
         params,
         endpointUrl,
         stats,
-        s3
+        log
       );
     },
-    async handleFailedRequestFunction({ request }) {
+    async failedRequestHandler({ error, request }) {
+      rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
 
-  log.info("Starting the crawl.");
   await crawler.run();
-
-  log.info("Crawl finished.");
+  await stats.save(true);
 
   if (!development) {
     const rootUrl = getBaseUrl(country);
-    const suffix = type === ActorType.BF ? "_bf" : "";
+    const suffix = type === ActorType.BlackFriday ? "_bf" : "";
     const tableName = customTableName ?? `${shopName(rootUrl)}${suffix}`;
-    await Promise.all([
-      stats.save(),
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(rootUrl)),
-      uploadToKeboola(tableName)
-    ]);
-    log.info(`invalidated Data CDN: ${shopOrigin(rootUrl)}`);
-    log.info(`upload to Keboola finished: ${tableName}`);
+    await uploadToKeboola(tableName);
   }
+}
 
-  log.info("ACTOR - Finished");
-});
+await Actor.main(main, { statusMessage: "DONE" });
