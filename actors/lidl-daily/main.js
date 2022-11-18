@@ -443,6 +443,7 @@ async function main() {
   });
 
   await crawler.run();
+  await stats.save(true);
   log.info("crawler finished");
 
   if (!development) {
