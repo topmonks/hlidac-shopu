@@ -158,7 +158,7 @@ export function extractDetail(
   return {
     itemId: product.id,
     itemName: product.name,
-    itemUrl: new URL(product.alias, url).href,
+    itemUrl: new URL(`/${product.alias}`, url).href,
     img: `https://cdn.electroworld.cz/images/product-w510h463/1/${product.image.id}.${product.image.extension}`,
     category: "Black friday",
     rating: cleanPrice(averageReview.value),
