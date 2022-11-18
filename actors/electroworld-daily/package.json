@@ -6,10 +6,11 @@
   "description": "",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.212.0",
-    "@aws-sdk/client-s3": "3.212.0",
+    "@aws-sdk/client-cloudfront": "3.213.0",
+    "@aws-sdk/client-s3": "3.213.0",
     "@crawlee/cheerio": "3.1.2",
-    "@hlidac-shopu/actors-common": "2.0.5",
+    "@crawlee/playwright": "3.1.2",
+    "@hlidac-shopu/actors-common": "2.0.6",
     "apify": "3.1.1",
     "got-scraping": "^3.2.12",
     "playwright": "^1.28.0"

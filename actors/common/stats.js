@@ -1,5 +1,7 @@
-import { Actor, log } from "apify";
+import { Actor, log as parentLog } from "apify";
 import { defAtom } from "@thi.ng/atom";
+
+const log = parentLog.child({ prefix: "Stats" });
 
 // TODO: make this lowest common denominator
 const defaultStats = {
@@ -14,7 +16,7 @@ const defaultStats = {
 const inc = x => x + 1;
 const dec = x => x - 1;
 
-class Stats {
+export class Stats {
   constructor(init) {
     this.stats = defAtom(init);
     this.interval = setInterval(() => this.log(), 20 * 1000);
@@ -38,7 +40,7 @@ class Stats {
 
   log() {
     const stats = this.stats.deref();
-    log.info(`stats: ${JSON.stringify(stats)}`);
+    log.info(`current`, stats);
   }
 
   /**
@@ -50,7 +52,7 @@ class Stats {
     }
     const stats = this.stats.deref();
     await Actor.setValue("STATS", this.get());
-    log.info("STATS saved!");
+    log.info("saved");
     if (stats.ok) {
       log.info(`Denied ratio: ${(stats.denied ?? 0 / stats.ok) * 100} %`);
     }

@@ -1,9 +1,10 @@
-import { Actor, log } from "apify";
+import { Actor, log as parentLog } from "apify";
 
 /** @typedef { import("apify").ApifyEnv } ApifyEnv */
 /** @typedef { import("apify").ActorRun } ActorRun */
 
 const isDisabled = process.env.DISABLE_KEBOOLA_UPLOAD || process.env.TEST;
+const log = parentLog.child({ prefix: "Keboola" });
 
 /**
  * @param {string} tableName
@@ -11,7 +12,7 @@ const isDisabled = process.env.DISABLE_KEBOOLA_UPLOAD || process.env.TEST;
  */
 export async function uploadToKeboola(tableName) {
   if (isDisabled) return;
-  log.info(`Keboola: Uploading to ${tableName}`);
+  log.info(`Uploading to table ${tableName}`);
   /** @type {ApifyEnv} */
   const env = await Actor.getEnv();
   /** @type {ActorRun} */
@@ -22,5 +23,9 @@ export async function uploadToKeboola(tableName) {
     tableName
   });
 
-  log.info(`Keboola upload called: ${run.id}`, { run });
+  log.info(
+    `upload ${run.status}: https://console.apify.com/organization/${run.userId}/actors/${run.actId}/runs/${run.id}#log`,
+    { run }
+  );
+  if (run.status === "FAILED") throw new Error("Upload failed");
 }

@@ -348,8 +348,7 @@ export async function main() {
     }
   });
 
-  await crawler.addRequests(urls);
-  await crawler.run();
+  await crawler.run(urls);
   await stats.save(true);
 
   try {

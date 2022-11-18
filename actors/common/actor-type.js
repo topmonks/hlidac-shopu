@@ -1,3 +1,4 @@
+/** @enum */
 export const ActorType = {
   /** @deprecated */
   BF: "BF",
