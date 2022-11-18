@@ -1,0 +1,21 @@
+{
+  "name": "@hlidac-shopu/electroworld",
+  "version": "1.0.0",
+  "author": "TopMonks s.r.o. & contributors",
+  "license": "EPL-2.0",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@crawlee/http": "3.1.2",
+    "@hlidac-shopu/actors-common": "2.0.6",
+    "apify": "3.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.9",
+    "apify-cli": "0.10.0"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "../../scripts/test-actor.sh"
+  }
+}
