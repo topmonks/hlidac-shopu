@@ -163,6 +163,9 @@ export function extractDetail(
     category: "Black friday",
     rating: cleanPrice(averageReview.value),
     inStock: productAvailability.eshop?.title === "Skladem",
+    get available() {
+      return this.inStock;
+    },
     currentPrice: cleanPrice(priceBundle.sellPrice.amount),
     originalPrice: cleanPrice(priceBundle.oldPrice?.amount),
     currency: "CZK"
