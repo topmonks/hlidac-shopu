@@ -213,7 +213,12 @@ export async function main() {
     maxConcurrency,
     async requestHandler({ session, request, response, json, log }) {
       const { label, categoryId, page } = request.userData;
-      log.info("processing page", { url: request.url, label, categoryId });
+      log.info("processing page", {
+        url: request.url,
+        label,
+        categoryId,
+        page
+      });
       checkResponseStatus(session, response, stats);
 
       switch (label) {
