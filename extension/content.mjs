@@ -62,7 +62,35 @@ function renderHTML(repaint, shop, data, metadata) {
 
 function injectFont() {
   render(
-    html`<link rel="stylesheet" href="https://use.typekit.net/nxm2nnh.css" />`,
+    html`
+      <style>
+        /*
+         * The Typekit service used to deliver this font or fonts for use on websites
+         * is provided by Adobe and is subject to these Terms of Use
+         * http://www.adobe.com/products/eulas/tou_typekit. For font license
+         * information, see the list below.
+         *
+         * bc-novatica-cyr:
+         *   - http://typekit.com/eulas/00000000000000007735b6c8
+         *   - http://typekit.com/eulas/00000000000000007735b6d6
+         *
+         * © 2009-2022 Adobe Systems Incorporated. All Rights Reserved.
+         */
+        /*{"last_published":"2022-02-05 09:15:50 UTC"}*/
+
+        @font-face {
+          font-family:"bc-novatica-cyr";
+          src:url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("woff2"),url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("woff"),url("https://use.typekit.net/af/788233/00000000000000007735b6c8/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n4&v=3") format("opentype");
+          font-display:swap;font-style:normal;font-weight:400;font-stretch:normal;
+        }
+
+        @font-face {
+          font-family:"bc-novatica-cyr";
+          src:url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/l?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("woff2"),url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/d?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("woff"),url("https://use.typekit.net/af/a5db3b/00000000000000007735b6d6/30/a?primer=9534f20d24153432f138f14be19fe00ed05018076afc824dd1a6f6ca76bae7c7&fvd=n7&v=3") format("opentype");
+          font-display:swap;font-style:normal;font-weight:700;font-stretch:normal;
+        }
+      </style>
+    `,
     document.head
   );
 }
