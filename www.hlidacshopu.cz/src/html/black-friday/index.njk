@@ -83,7 +83,7 @@
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <ul>
-              {% for year in range(2021, 2018, -1) %}
+              {% for year in range(2022, 2018, -1) %}
                 <li><a href="?rok={{ year }}">{{ year }}</a></li>
               {% endfor %}</ul>
           </div>
@@ -244,7 +244,7 @@
     import { main } from "/assets/esm/dashboard.js";
 
     const tableRoot = document.getElementById("table-root");
-    const year = new URL(location.href).searchParams.get("rok") ?? 2021;
+    const year = new URL(location.href).searchParams.get("rok") ?? 2022;
     main({ year, tableRoot, extraData: {{ dashboard | dump | safe }} });
   </script>
 {% endblock %}
