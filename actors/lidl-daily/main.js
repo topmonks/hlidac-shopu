@@ -244,6 +244,45 @@ function slug(str) {
     .replace(/-+/g, "-"); // collapse dashes
 }
 
+/**
+ *
+ * @param {Document} document
+ * @param {string} url
+ * @param {Stats} stats
+ * @param {Set} processedIds
+ * @return {Promise<void>}
+ */
+async function scrapeBlackFridayCategory(
+  { document, url },
+  { stats, processedIds }
+) {
+  const products = document.querySelectorAll("[data-selector='PRODUCT']");
+  for (const el of products) {
+    const detailEl = el.querySelector(".detail__grids");
+    const [data] = JSON.parse(detailEl.dataset.gridData);
+    if (!processedIds.has(data.productId)) {
+      processedIds.add(data.productId);
+      const result = {
+        itemId: data.productId,
+        itemUrl: new URL(data.canonicalUrl, url).href,
+        itemName: data.fullTitle,
+        currency: "CZK",
+        currentPrice: parseFloat(data.price.price),
+        img: data.image,
+        originalPrice: parseFloat(data.price.oldPrice),
+        discounted: Boolean(data.price.discount),
+        inStock: data.stockAvailability.onlineAvailable,
+        category: data.category.split("/").slice(1).join(" > "),
+        slug: data.productId
+      };
+      await Dataset.pushData(result);
+      stats.inc("itemsUnique");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  }
+}
+
 async function scrapeShopCategory(
   { document, crawler },
   { stats, processedIds, input }
@@ -253,18 +292,14 @@ async function scrapeShopCategory(
   if (nextButton) {
     await crawler.requestQueue.addRequest(
       {
-        url: `https://www.lidl.cz${nextButton.getAttribute("href")}`,
-        userData: {
-          label: LABELS.LIDL_SHOP_CAT
-        }
+        url: new URL(nextButton.getAttribute("href"), "https://www.lidl.cz")
+          .href,
+        userData: { label: LABELS.LIDL_SHOP_CAT }
       },
       { forefront: true }
     );
   }
-  let products = document.querySelectorAll("#s-results .s-grid__item > div");
-  if (type === ActorType.BlackFriday) {
-    products = document.querySelectorAll(".product-grid-box");
-  }
+  const products = document.querySelectorAll("#s-results .s-grid__item > div");
   let breadcrumbs = document.querySelectorAll(
     ".s-breadcrumb a.s-breadcrumb__link"
   );
@@ -273,10 +308,8 @@ async function scrapeShopCategory(
     .querySelector(".s-page-heading h1")
     ?.innerText?.trim();
   for (const product of products) {
-    const dataQaLabel = product.getAttribute("data-qa-label");
-    if (!dataQaLabel) {
-      continue;
-    }
+    const dataQaLabel = product.dataset.qaLabel;
+    if (!dataQaLabel) continue;
     const itemId = dataQaLabel.split("-").pop();
     stats.inc("items");
     if (!processedIds.has(itemId)) {
@@ -315,9 +348,6 @@ async function scrapeShopCategory(
         price = price.match(/(\d+)/)[1];
         result.discounted = true;
         result.originalPrice = parseFloat(price);
-      }
-      if (type === ActorType.BlackFriday) {
-        result.category = "Black Friday";
       }
       await Dataset.pushData(result);
       stats.inc("itemsUnique");
@@ -379,20 +409,20 @@ async function main() {
     navigationTimeoutSecs: 120,
     launchContext: {
       useChrome: true,
-      launchOptions: {
-        headless: true
-      }
+      launchOptions: { headless: false }
     },
     async requestHandler(context) {
-      const { request, page, infiniteScroll } = context;
+      const { request, page, infiniteScroll, log, saveSnapshot } = context;
+      const { label } = request.userData;
+      log.info("processing page", { url: request.url, label });
+
       await page.waitForLoadState("networkidle", { timeout: 0 });
-      await infiniteScroll();
-      const text = await page.content();
-      const { document } = parseHTML(text);
-      const {
-        userData: { label }
-      } = request;
-      log.info(`Processing: [${request.url}]`);
+      await page.locator(".cookie-alert-decline-button").click();
+
+      await infiniteScroll({});
+      if (debug) await saveSnapshot({});
+      const html = await page.content();
+      const { document } = parseHTML(html);
 
       switch (label) {
         case LABELS.DETAIL:
@@ -400,6 +430,11 @@ async function main() {
         case LABELS.LIDL_SHOP:
           return scrapeShop({ ...context, document });
         case LABELS.LIDL_SHOP_CAT:
+          if (type === ActorType.BlackFriday)
+            return scrapeBlackFridayCategory(
+              { document, url: request.url },
+              { stats, processedIds }
+            );
           return scrapeShopCategory(
             { ...context, document },
             {
