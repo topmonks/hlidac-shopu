@@ -8,9 +8,9 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://pressmob.cz/black-friday-v-podani-czc-ferove-slevy-cely-listopad-a-cena-kterou-si-urci-sami-zakaznici/",
-  "https://insmart.cz/black-friday-jak-si-overit-ze-je-sleva-skutecna/",
-  "https://indian-tv.cz/clanek/black-friday-v-podani-czc-ferove-slevy-cely-listopad-tugvvh",
+  "https://faei.cz/slevove-akce-black-friday-jsou-tu-a-s-nimi-i-falesne-slevy/",
+  "https://prazsky-magazin.cz/udalosti/business/slevove-akce-black-friday-jsou-tu-a-s-nimi-i-falesne-slevy/",
+  "https://mobilmania.zive.cz/clanky/nejlepsi-aplikace-pro-tento-tyden-mastodon-manazer-kopirovani/vkladani-a-hlidac-slev/sc-3-a-1356519/default.aspx#part=6",
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
