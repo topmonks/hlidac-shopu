@@ -384,7 +384,8 @@ async function main() {
       }
     },
     async requestHandler(context) {
-      const { request, page } = context;
+      const { request, page, infiniteScroll } = context;
+      await infiniteScroll();
       await page.waitForLoadState("networkidle", { timeout: 0 });
       const text = await page.content();
       const { document } = parseHTML(text);
@@ -431,7 +432,8 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    await uploadToKeboola(type !== ActorType.BF ? "lidl_cz" : "lidl_cz_bf");
+    const tableName = type === ActorType.BlackFriday ? "lidl_cz_bf" : "lidl_cz";
+    await uploadToKeboola(tableName);
   }
 
   log.info("Finished.");
