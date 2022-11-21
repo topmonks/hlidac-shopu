@@ -248,7 +248,7 @@ async function scrapeShopCategory(
   { document, crawler },
   { stats, processedIds, input }
 ) {
-  const { type = ActorType.FULL } = input;
+  const { type = ActorType.Full } = input;
   const nextButton = document.querySelector("a.s-load-more__button");
   if (nextButton) {
     await crawler.requestQueue.addRequest(
@@ -262,16 +262,17 @@ async function scrapeShopCategory(
     );
   }
   let products = document.querySelectorAll("#s-results .s-grid__item > div");
-  if (type === ActorType.BF) {
+  if (type === ActorType.BlackFriday) {
     products = document.querySelectorAll(".product-grid-box");
   }
-  const requests = [];
   let breadcrumbs = document.querySelectorAll(
     ".s-breadcrumb a.s-breadcrumb__link"
   );
   breadcrumbs = breadcrumbs.slice(1, breadcrumbs.length);
-  const heading = document.querySelector(".s-page-heading h1").innerText.trim();
-  for (let product of products) {
+  const heading = document
+    .querySelector(".s-page-heading h1")
+    ?.innerText?.trim();
+  for (const product of products) {
     const dataQaLabel = product.getAttribute("data-qa-label");
     if (!dataQaLabel) {
       continue;
@@ -315,7 +316,7 @@ async function scrapeShopCategory(
         result.discounted = true;
         result.originalPrice = parseFloat(price);
       }
-      if (type === ActorType.BF) {
+      if (type === ActorType.BlackFriday) {
         result.category = "Black Friday";
       }
       await Dataset.pushData(result);
