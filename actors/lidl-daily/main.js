@@ -351,7 +351,8 @@ async function main() {
     maxRequestRetries = 3,
     maxConcurrency = 5,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL
+    type = ActorType.Full,
+    urls
   } = input;
 
   if (debug) {
@@ -366,23 +367,20 @@ async function main() {
   });
 
   const requestQueue = await Actor.openRequestQueue();
-  if (type !== ActorType.BF) {
-    await createInitRequests(requestQueue);
-  } else {
+  if (type === ActorType.BlackFriday) {
     await requestQueue.addRequest({
-      url: "https://www.lidl.cz/c/black-friday/a10010065",
+      url: urls?.length
+        ? urls[0]
+        : "https://www.lidl.cz/c/black-friday/a10016094",
       userData: {
         label: LABELS.LIDL_SHOP_CAT,
         level: 1
       }
     });
+  } else {
+    await createInitRequests(requestQueue);
   }
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups
   });
@@ -399,7 +397,7 @@ async function main() {
         headless: true
       }
     },
-    requestHandler: async context => {
+    async requestHandler(context) {
       const { request, page } = context;
       await page.waitForLoadState("networkidle", { timeout: 0 });
       const text = await page.content();
@@ -436,7 +434,7 @@ async function main() {
           return scrapeMainMenuCategory({ ...context, document });
       }
     },
-    failedRequestHandler: async ({ request }) => {
+    async failedRequestHandler({ request }) {
       stats.inc("failed");
       log.error(`Request ${request.url} failed multiple times`, request);
     }
@@ -447,9 +445,6 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `lidl.cz`);
-    log.info("invalidated Data CDN");
-
     await uploadToKeboola(type !== ActorType.BF ? "lidl_cz" : "lidl_cz_bf");
   }
 
