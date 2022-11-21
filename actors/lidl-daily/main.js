@@ -385,8 +385,8 @@ async function main() {
     },
     async requestHandler(context) {
       const { request, page, infiniteScroll } = context;
-      await infiniteScroll();
       await page.waitForLoadState("networkidle", { timeout: 0 });
+      await infiniteScroll();
       const text = await page.content();
       const { document } = parseHTML(text);
       const {
