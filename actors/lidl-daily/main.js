@@ -1,11 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, Dataset, log, KeyValueStore, LogLevel } from "apify";
 import { parseHTML } from "linkedom";
@@ -141,7 +135,7 @@ async function scrapeMainMenuCategory({ document, crawler }) {
   }
 }
 
-async function scrapeDetail({ request, document }, { s3 }) {
+async function scrapeDetail({ request, document }) {
   const {
     userData: { product }
   } = request;
@@ -152,10 +146,6 @@ async function scrapeDetail({ request, document }, { s3 }) {
     breadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
     product.category = breadcrumbs.map(b => b.innerText.trim()).join(" > ");
     await Dataset.pushData(product);
-    await uploadToS3v2(s3, product, {
-      priceCurrency: product.currency,
-      inStock: true
-    });
   }
 }
 
@@ -256,7 +246,7 @@ function slug(str) {
 
 async function scrapeShopCategory(
   { document, crawler },
-  { s3, stats, processedIds, input }
+  { stats, processedIds, input }
 ) {
   const { type = ActorType.FULL } = input;
   const nextButton = document.querySelector("a.s-load-more__button");
@@ -328,21 +318,16 @@ async function scrapeShopCategory(
       if (type === ActorType.BF) {
         result.category = "Black Friday";
       }
-      requests.push(
-        Dataset.pushData(result),
-        uploadToS3v2(s3, result, { priceCurrency: result.currency })
-      );
+      await Dataset.pushData(result);
       stats.inc("itemsUnique");
     } else {
       stats.inc("itemsDuplicity");
     }
   }
-  log.info(`Found ${requests.length / 2} unique products`);
-  return await Promise.all(requests);
 }
 
 async function main() {
-  rollbar.init();
+  const rollbar = Rollbar.init();
   const processedIds = new Set();
   const input = (await KeyValueStore.getInput()) ?? {};
   const {
@@ -409,14 +394,13 @@ async function main() {
 
       switch (label) {
         case LABELS.DETAIL:
-          return scrapeDetail({ ...context, document }, { s3 });
+          return scrapeDetail({ ...context, document });
         case LABELS.LIDL_SHOP:
           return scrapeShop({ ...context, document });
         case LABELS.LIDL_SHOP_CAT:
           return scrapeShopCategory(
             { ...context, document },
             {
-              s3,
               stats,
               processedIds,
               input
@@ -434,8 +418,9 @@ async function main() {
           return scrapeMainMenuCategory({ ...context, document });
       }
     },
-    async failedRequestHandler({ request }) {
+    async failedRequestHandler({ error, request }) {
       stats.inc("failed");
+      rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
