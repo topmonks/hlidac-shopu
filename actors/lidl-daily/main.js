@@ -412,15 +412,16 @@ async function main() {
       launchOptions: { headless: false }
     },
     async requestHandler(context) {
-      const { request, page, infiniteScroll, log, saveSnapshot } = context;
+      const { request, page, log, saveSnapshot } = context;
       const { label } = request.userData;
       log.info("processing page", { url: request.url, label });
 
       await page.waitForLoadState("networkidle", { timeout: 0 });
-      await page.locator(".cookie-alert-decline-button").click();
 
-      await infiniteScroll({});
-      if (debug) await saveSnapshot({});
+      if (debug) {
+        await page.locator(".cookie-alert-decline-button").click();
+        await saveSnapshot({});
+      }
       const html = await page.content();
       const { document } = parseHTML(html);
 
