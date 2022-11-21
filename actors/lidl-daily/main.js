@@ -256,8 +256,10 @@ async function scrapeBlackFridayCategory(
   { document, url },
   { stats, processedIds }
 ) {
+  stats.inc("categories");
   const products = document.querySelectorAll("[data-selector='PRODUCT']");
   for (const el of products) {
+    stats.inc("items");
     const detailEl = el.querySelector(".detail__grids");
     const [data] = JSON.parse(detailEl.dataset.gridData);
     if (!processedIds.has(data.productId)) {
