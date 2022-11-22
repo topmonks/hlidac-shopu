@@ -82,10 +82,22 @@
             <h2>Black Friday v číslech</h2>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-            <ul>
+            <ul class="hs-year-selector">
               {% for year in range(2022, 2018, -1) %}
                 <li><a href="?rok={{ year }}">{{ year }}</a></li>
-              {% endfor %}</ul>
+              {% endfor %}
+            </ul>
+            <script type="module">
+              const qs = new URL(location).searchParams;
+              const year = qs.get("rok") ?? 2022;
+              for (const el of document.querySelectorAll(".hs-year-selector a")) {
+                if (el.textContent != year) continue;
+                const newEl = document.createElement("strong");
+                newEl.textContent = year;
+                el.parentNode.appendChild(newEl);
+                el.remove();
+              }
+            </script>
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <table class="shops-stats">
