@@ -6,6 +6,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { HttpCrawler } from "@crawlee/http";
+import { calculateTagSalePrice } from "./index.js";
 
 const COUNTRY = {
   CZ: "CZ",
@@ -39,7 +40,8 @@ const INTERESTED_TAGS = {
     [COUNTRY.CZ]: [
       "BDT:Black Friday#1{2655}",
       "BDT:Black Friday#1{2657}",
-      "BDT:Black Friday#1{2581}"
+      "BDT:Black Friday#1{2581}",
+      "BDT:Black Friday#3{2425}"
     ],
     [COUNTRY.SK]: [
       "BDT:Black Friday#1{2663}",
@@ -85,9 +87,13 @@ async function enqueueRequests(requestQueue, country, stats, params) {
 
   if (Array.isArray(tags)) {
     for (let tag of tags) {
+      const url = `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(
+        tag
+      )}`;
+      log.debug(`Requesting ${url}`);
       await requestQueue.addRequest({
         uniqueKey: `Products of "${tag}" tag on ${params.page}. page`,
-        url: `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(tag)}`,
+        url,
         userData: {
           endpointUrl,
           params: nextParams
@@ -99,9 +105,11 @@ async function enqueueRequests(requestQueue, country, stats, params) {
       });
     }
   } else {
+    const url = `${endpointUrl}?${searchParams}`;
+    log.info(`Requesting ${url}`);
     await requestQueue.addRequest({
       uniqueKey: `All products on ${params.page}. page`,
-      url: `${endpointUrl}?${searchParams}`,
+      url,
       userData: {
         endpointUrl,
         params: nextParams
@@ -126,17 +134,17 @@ async function handleResponse(
   log
 ) {
   for (const product of responseData.products) {
+    const productWithSale = calculateTagSalePrice(structuredClone(product));
     const item = {
       itemId: product.id,
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
       itemName: product.title,
-      originalPrice:
-        product.compare_at_price_max === 0
-          ? product.price_max
-          : product.compare_at_price_max,
-      currentPrice: product.price_max,
-      discounted: product.compare_at_price_max > product.price_max,
+      originalPrice: product.price_max,
+      currentPrice: productWithSale.price_min,
+      get discounted() {
+        return this.currentPrice < this.originalPrice;
+      },
       currency: getCurrency(country),
       category: product.product_type,
       inStock: product.available
