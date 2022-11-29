@@ -367,8 +367,8 @@ export async function main() {
         await enqueueRequests(requestQueue, categories);
       }
     },
-    failedRequestHandler: async ({ request, log }) => {
-      log.error(`Request ${request.url} failed multiple times`);
+    failedRequestHandler: async ({ request, log }, error) => {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 

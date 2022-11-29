@@ -240,7 +240,7 @@ async function main() {
         }
       }
     },
-    async failedRequestHandler({ request, error }) {
+    async failedRequestHandler({ request }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed 4 times`);
     }

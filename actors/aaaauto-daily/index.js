@@ -190,7 +190,7 @@ export async function main() {
           return parseProducts(request, document, country);
       }
     },
-    async failedRequestHandler({ error, request, body }) {
+    async failedRequestHandler({ request, body }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, error);
       console.log(request.statusCode);

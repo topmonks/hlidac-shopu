@@ -249,7 +249,7 @@ export async function main() {
         }
       }
     },
-    async failedRequestHandler({ error, request }) {
+    async failedRequestHandler({ request }, error) {
       stats.inc("failed");
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed 4 times. ${error.message}`);

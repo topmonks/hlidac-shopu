@@ -458,7 +458,7 @@ async function main() {
           return scrapeMainMenuCategory({ ...context, document });
       }
     },
-    async failedRequestHandler({ error, request }) {
+    async failedRequestHandler({ request }, error) {
       stats.inc("failed");
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);

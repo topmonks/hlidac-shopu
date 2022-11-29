@@ -231,7 +231,7 @@ async function main() {
         log
       );
     },
-    async failedRequestHandler({ error, request }) {
+    async failedRequestHandler({ request }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
     }
