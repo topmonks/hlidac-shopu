@@ -244,6 +244,7 @@ function slug(str) {
     .replace(/-+/g, "-"); // collapse dashes
 }
 
+// TODO: reimplement BF as HttpCrawler, there is no need to run full browser for it
 /**
  *
  * @param {Document} document
