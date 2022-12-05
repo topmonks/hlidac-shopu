@@ -6,34 +6,64 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import Apify from "apify";
-import CloudFlareUnBlocker from "./cloudflare-unblocker.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { HttpCrawler } from "@crawlee/http";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { partition } from "@thi.ng/transducers";
+import { sleep } from "@crawlee/utils";
+import { defAtom } from "@thi.ng/atom";
 
-/** @typedef { import("./apify.json").ApifyEnv } ApifyEnv */
-/** @typedef { import("./apify.json").ActorRun } ActorRun */
-/** @typedef { import("./apify.json").RequestQueue } RequestQueue */
-/** @typedef { import("./apify.json").RequestList } RequestList */
-/** @typedef { import("./apify.json").ProxyConfiguration } ProxyConfiguration */
+/** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 
-const { log, requestAsBrowser } = Apify.utils;
-
+/** @enum {string} */
 const Label = {
-  MAIN: "main",
-  LIST: "list",
-  DETAIL: "PAGE"
+  Main: "main",
+  Count: "count",
+  List: "list",
+  Detail: "detail"
 };
 
-let jsonCategories = {};
-const firstPage =
-  "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
+/**
+ * @typedef {Object} UserData
+ * @property {Label} label
+ * @property {number} categoryId
+ */
 
-const processedIds = new Set();
+/**
+ * @typedef {Object} TODO
+ * @property {number} categoryId
+ * @property {string} categoryType
+ * @property {string[]} productIds
+ */
 
-function getBreadCrumbs(categoryId, jsonCategories) {
+/**
+ * @typedef {Object} Category
+ * @property {number} id
+ * @property {number} occurrence
+ * @property {number} position
+ * @property {string} name
+ * @property {boolean} aboveAverage
+ * @property {string=} templateName
+ * @property {string} link
+ * @property {number} companyId
+ * @property {number} parentId
+ * @property {number[]} children
+ */
+
+/**
+ * @typedef {Object} Categories
+ * @property {string} staticContentUrl
+ * @property {Object.<string, Category>} navigation
+ */
+
+/**
+ * @param {{categoryId: string | number, categoriesById: Object.<string, Category>}}
+ * @returns {string[]}
+ */
+function getBreadCrumbs({ categoryId, categoriesById }) {
   const breadcrumbs = [];
-  while (jsonCategories[categoryId]) {
-    const category = jsonCategories[categoryId];
+  while (categoriesById[categoryId]) {
+    const category = categoriesById[categoryId];
     breadcrumbs.push(category.name);
     categoryId = category.parentId;
   }
@@ -41,146 +71,158 @@ function getBreadCrumbs(categoryId, jsonCategories) {
   return breadcrumbs;
 }
 
-export default function getItems(items, jsonCategories) {
-  const results = [];
-  for (const item of items) {
-    const result = {
-      img: item.imgPath ?? null,
-      itemId: item.productId ?? null,
-      itemUrl: item.baseLink ? `https://www.rohlik.cz/${item.baseLink}` : null,
-      itemName: item.productName ?? null,
-      discounted: false,
-      currentPrice: item.price?.full ?? null,
-      currentUnitPrice: item.pricePerUnit?.full ?? null,
-      currency: item.price?.currency ?? null,
-      inStock: item.inStock,
-      useUnitPrice: item.textualAmount.includes("cca")
-    };
-    if (item.sales.length !== 0) {
-      for (const sale of item.sales) {
-        if (sale.type === "sale") {
-          result.originalPrice = result.currentPrice;
-          result.originalUnitPrice = result.currentUnitPrice;
-          result.currentPrice = sale.price?.full ?? null;
-          result.currentUnitPrice = sale.priceForUnit?.full ?? null;
-          result.discounted = true;
-        }
+/**
+ * @param {{item: Item, categoriesById: Object.<string, Category>, categoryId: string | number}}
+ * @returns {ProductItem}
+ */
+export function getItem({ item, categoriesById, categoryId }) {
+  const result = {
+    img: item.imgPath ?? null,
+    itemId: item.productId ?? null,
+    itemUrl: `https://www.rohlik.cz/${item.productId}-${item.slug}`,
+    itemName: item.name ?? null,
+    discounted: false,
+    currentPrice: item.price?.amount ?? null,
+    currentUnitPrice: item.pricePerUnit?.amount ?? null,
+    currency: item.price?.currency ?? null,
+    useUnitPrice: item.textualAmount?.includes("cca")
+  };
+  if (item.sales.length !== 0) {
+    for (const sale of item.sales) {
+      if (sale.type === "sale") {
+        result.originalPrice = result.currentPrice;
+        result.originalUnitPrice = result.currentUnitPrice;
+        result.currentPrice = sale.price?.amount ?? null;
+        result.currentUnitPrice = sale.priceForUnit?.full ?? null;
+        result.discounted = true;
       }
-    } else if (item.goodPrice) {
-      const { originalPrice } = item;
-      result.originalPrice = originalPrice.full;
-      result.discounted = true;
     }
-    result.breadcrumbs = getBreadCrumbs(item.mainCategoryId, jsonCategories);
-    results.push(result);
   }
-  return results;
+  result.breadcrumbs = getBreadCrumbs({ categoryId, categoriesById });
+  return result;
 }
 
-async function processItem(s3, products, stats) {
-  // we don't need to block pushes, we will await them all at the end
+async function processItem({ s3, item }) {
   const requests = [];
-  const unprocessedProducts = products.filter(p => !processedIds.has(p.itemId));
-  for (const item of unprocessedProducts) {
-    stats.inc("items");
-    const product = {
-      ...item,
-      category: item.breadcrumbs.join(" > ")
-    };
-    requests.push(
-      // push data to dataset to be ready for upload to Keboola
-      Apify.pushData(item),
-      // upload JSON+LD data to CDN
-      uploadToS3v2(s3, product, { priceCurrency: "CZK" })
-    );
-    processedIds.add(item.itemId);
-  }
-  // await all requests, so we don't end before they end
+  const product = Object.assign(item, {
+    category: item.breadcrumbs.join(" > ")
+  });
+  requests.push(Dataset.pushData(item), uploadToS3v2(s3, product));
   await Promise.all(requests);
 }
 
-async function processMain(body, stats, requestQueue) {
-  const categories = Object.keys(body.navigation);
-  jsonCategories = body.navigation;
-  if (categories.length) {
-    log.debug(`Adding to the queue ${categories.length} of categories`);
-    for (const category of categories) {
-      stats.inc("categories");
-      await requestQueue.addRequest(
-        new Apify.Request({
-          // url: `https://www.rohlik.cz/services/frontend-service/products/${category}?offset=0&limit=25`,
-          url: `https://www.rohlik.cz/api/v1/categories/normal/${category}/products?page=0`,
-          userData: {
-            label: Label.LIST,
-            categoryId: category
-          },
-          uniqueKey: category.toString()
-        })
-      );
-      const subCategories = body.navigation[category].children;
-      if (subCategories.length) {
-        log.debug(
-          `Adding to the queue ${subCategories.length} of subCategories`
-        );
+/**
+ * @param {{categoryId: string}}
+ * @returns {PromiseLike<number>}
+ */
+async function getProductsCountInCategory({ categoryId, requestQueue }) {
+  return await requestQueue.addRequest({
+    url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products/count`,
+    userData: {
+      label: Label.Count,
+      categoryId: categoryId
+    }
+  });
+}
+
+/**
+ * @param {{categoryId: string}}
+ * @returns {PromiseLike<number>}
+ */
+async function enqueueCategories({
+  count,
+  categoryId,
+  requestQueue,
+  categoriesById
+}) {
+  console.log(`${count} products in ${categoriesById[categoryId].name}`);
+  const limitPerPage = 100;
+  for (let i = 0; i * limitPerPage < count; i++) {
+    await requestQueue.addRequest({
+      url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products?page=${i}`,
+      userData: {
+        label: Label.List,
+        categoryId: categoryId
       }
-      for (const subCategory of subCategories) {
-        stats.inc("subCategories");
-        await requestQueue.addRequest(
-          new Apify.Request({
-            // url: `https://www.rohlik.cz/services/frontend-service/products/${subCategory}?offset=0&limit=25`,
-            url: `https://www.rohlik.cz/api/v1/categories/normal/${subCategory}/products?page=0`,
-            userData: {
-              label: Label.LIST,
-              categoryId: subCategory
-            },
-            uniqueKey: subCategory.toString()
-          })
-        );
-      }
+    });
+  }
+}
+
+/**
+ * @param {{categoriesById: Object.<string, Category>}}
+ * @returns {Promise<void>}
+ */
+async function processMain({ categoriesById, stats, requestQueue }) {
+  const categories = Object.values(categoriesById);
+  log.debug(`Adding to the queue ${categories.length} of categories`);
+  for (const category of categories) {
+    stats.inc("categories");
+    await getProductsCountInCategory({
+      categoryId: category.id.toString(),
+      requestQueue
+    });
+
+    const subCategories = category.children;
+    if (subCategories.length) {
+      log.debug(`Adding to the queue ${subCategories.length} of subCategories`);
+    }
+    for (const subCategory of subCategories) {
+      stats.inc("subCategories");
+      await getProductsCountInCategory({
+        categoryId: subCategory.toString(),
+        requestQueue
+      });
+    }
+    if (subCategories.length) {
+      break; // TODO: remove
     }
   }
 }
 
-async function processList(body, request, stats, requestQueue, s3) {
-  console.log({ body });
-  const max = Math.ceil(body.data.totalHits / 25) * 25;
-  const { categoryId } = request.userData;
-  max !== 0 &&
-    log.debug(
-      `Adding to the queue ${max} for https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=0&limit=25`
-    );
-  for (let i = 25; i <= max; i += 25) {
-    await requestQueue.addRequest(
-      new Apify.Request({
-        url: `https://www.rohlik.cz/services/frontend-service/products/${categoryId}?offset=${i}&limit=25`,
-        userData: {
-          label: Label.DETAIL,
-          categoryId
-        }
-      })
-    );
-  }
-  if (body.data?.productList?.length) {
-    log.debug(
-      `Stroring ${body.data.productList.length} items for category ${categoryId}`
-    );
-    const products = getItems(body.data.productList, jsonCategories);
-    await processItem(s3, products, stats);
-  }
-}
-
-async function processDetail(request, body, s3, stats) {
-  const { categoryId } = request.userData;
-  if (body.data?.productList?.length) {
-    log.debug(
-      `Storing ${body.data.productList.length} items for category ${categoryId}`
-    );
-    const products = getItems(body.data.productList, jsonCategories);
-    await processItem(s3, products, stats);
+async function processList({
+  productIds,
+  requestQueue,
+  categoryId,
+  stats,
+  processedIds
+}) {
+  const newProductIds = productIds.filter(item => !processedIds.has(item));
+  for (const productIdsBatch of partition(10, true, newProductIds)) {
+    const productsParams = new URLSearchParams();
+    productIdsBatch.forEach(id => {
+      processedIds.add(id);
+      productsParams.append("products", id.toString());
+    });
+    await requestQueue.addRequest({
+      url: `https://www.rohlik.cz/api/v1/products/prices?${productsParams}`,
+      userData: {
+        label: Label.Detail,
+        categoryId
+      }
+    });
+    await requestQueue.addRequest({
+      url: `https://www.rohlik.cz/api/v1/products?${productsParams}`,
+      userData: {
+        label: Label.Detail,
+        categoryId
+      }
+    });
+    stats.inc("items");
   }
 }
 
-Apify.main(async function main() {
+async function mergeProductsData({ productList, itemsForSaving }) {
+  productList.forEach(item => {
+    itemsForSaving.swap(items => {
+      const id = item.id ?? item.productId;
+      const prevItem = items[id];
+      items[id] = Object.assign(item, prevItem);
+      return items;
+    });
+  });
+}
+
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -189,13 +231,8 @@ Apify.main(async function main() {
     maxAttempts: 3
   });
 
-  const input = await Apify.getInput();
-
-  const {
-    country = "cz",
-    maxConcurrency = 5,
-    proxyGroups = ["CZECH_LUMINATI"]
-  } = input ?? {};
+  const input = (await KeyValueStore.getInput()) ?? {};
+  const { maxConcurrency = 5, proxyGroups = ["CZECH_LUMINATI"] } = input;
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -203,76 +240,87 @@ Apify.main(async function main() {
     items: 0
   });
 
-  // Get queue and enqueue first url.
-  const requestQueue = await Apify.openRequestQueue();
-  await requestQueue.addRequest(
-    new Apify.Request({
-      url: firstPage,
-      userData: { label: Label.MAIN }
-    })
-  );
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const requestQueue = await Actor.openRequestQueue();
+  const firstPage =
+    "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
+  await requestQueue.addRequest({
+    url: firstPage,
+    userData: { label: Label.Main }
+  });
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: true
   });
-  const cloudFlareUnBlocker = new CloudFlareUnBlocker({
-    unblockUrl: firstPage,
-    proxyConfiguration
-  });
 
-  // Create crawler.
-  const crawler = new Apify.BasicCrawler({
+  const processedIds = new Set();
+  const itemsForSaving = defAtom([]);
+
+  let categoriesById;
+  const crawler = new HttpCrawler({
     requestQueue,
     maxConcurrency,
+    proxyConfiguration,
     useSessionPool: true,
-    handleRequestFunction: async function ({ request, session }) {
-      const response = await requestAsBrowser({
-        url: request.url,
-        json: true,
-        ...cloudFlareUnBlocker.getRequestOptions(session)
-      });
-      session.setCookiesFromResponse(response);
-      const { statusCode, body } = response;
-
-      if (statusCode !== 200 && statusCode !== 404) {
-        session.retire();
-        // don't mark this request as bad, it is probably looking for working session
-        request.retryCount--;
-        // don't retry the request right away, wait a little bit
-        await Apify.utils.sleep(5000);
-        throw new Error("Session blocked, retiring.");
-      }
-
-      switch (request.userData.label) {
-        case Label.MAIN:
-          await processMain(body, stats, requestQueue);
-          break;
-        case Label.LIST:
-          await processList(body, request, stats, requestQueue, s3);
-          break;
-        case Label.DETAIL:
-          await processDetail(request, body, s3, stats);
-          break;
-      }
-
-      await Apify.utils.sleep(1000);
-    },
     sessionPoolOptions: {
-      maxPoolSize: 100,
-      createSessionFunction:
-        cloudFlareUnBlocker.createSessionFunction.bind(cloudFlareUnBlocker)
+      maxPoolSize: 100
     },
+    async requestHandler({ request, json }) {
+      const { userData } = request;
+      const { categoryId } = userData;
+      log.info(`Processing ${request.url}`);
+      switch (userData.label) {
+        case Label.Main:
+          categoriesById = json.navigation;
+          await processMain({
+            categoriesById,
+            stats,
+            requestQueue
+          });
+          break;
+        case Label.Count:
+          await enqueueCategories({
+            count: json.results,
+            requestQueue,
+            categoryId,
+            categoriesById
+          });
+          break;
+        case Label.List:
+          await processList({
+            productIds: json.productIds,
+            categoryId,
+            categoriesById,
+            stats,
+            requestQueue,
+            processedIds
+          });
+          break;
+        case Label.Detail:
+          await mergeProductsData({
+            productList: json,
+            itemsForSaving
+          });
+          break;
+      }
 
-    // If request failed 4 times then this function is executed.
-    async handleFailedRequestFunction({ request }) {
-      log.info(`Request ${request.url} failed 4 times`);
+      await sleep(1000);
+    },
+    async failedRequestHandler({ request }) {
+      await sleep(5000);
+      log.info(`Request ${request.url} failed ${request.retryCount} times`);
     }
   });
 
-  // Run crawler.
   await crawler.run();
-  log.info("crawler finished");
+
+  for (const item of Object.values(itemsForSaving.deref())) {
+    const itemForSave = getItem({
+      item: item,
+      categoriesById,
+      categoryId: item.mainCategoryId
+    });
+    await processItem({ s3, item: itemForSave, stats, processedIds });
+  }
 
   try {
     await Promise.all([
@@ -287,4 +335,6 @@ Apify.main(async function main() {
     log.warning("upload to Keboola failed");
     log.error(err);
   }
-});
+}
+
+await Actor.main(main);
