@@ -173,9 +173,6 @@ async function processMain({ categoriesById, stats, requestQueue }) {
         requestQueue
       });
     }
-    if (subCategories.length) {
-      break; // TODO: remove
-    }
   }
 }
 
