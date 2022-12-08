@@ -12,6 +12,7 @@ import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { partition } from "@thi.ng/transducers";
 import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
+import { co, Channel } from "core-async";
 
 /** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 
@@ -22,19 +23,6 @@ const Label = {
   List: "list",
   Detail: "detail"
 };
-
-/**
- * @typedef {Object} UserData
- * @property {Label} label
- * @property {number} categoryId
- */
-
-/**
- * @typedef {Object} TODO
- * @property {number} categoryId
- * @property {string} categoryType
- * @property {string[]} productIds
- */
 
 /**
  * @typedef {Object} Category
@@ -51,14 +39,8 @@ const Label = {
  */
 
 /**
- * @typedef {Object} Categories
- * @property {string} staticContentUrl
- * @property {Object.<string, Category>} navigation
- */
-
-/**
- * @param {{categoryId: string | number, categoriesById: Object.<string, Category>}}
- * @returns {string[]}
+ * @param {{categoryId: number, categoriesById: Object.<string, Category>}}
+ * @returns {string}
  */
 function getBreadCrumbs({ categoryId, categoriesById }) {
   const breadcrumbs = [];
@@ -68,19 +50,48 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
     categoryId = category.parentId;
   }
   breadcrumbs.reverse();
-  return breadcrumbs;
+  return breadcrumbs.join(" > ");
 }
+
+/**
+ * @typedef {Object} Item
+ * @property {number} productId
+ * @property {string[]=} images
+ * @property {string} name
+ * @property {string} slug
+ * @property {{amount: number, currency: string}} price
+ * @property {{amount: number, currency: string}=} pricePerUnit
+ * @property {{type: string, price: {amount: number}, priceForUnit?: {amount: number}}[]=} sales
+ * @property {string} textualAmount
+ */
+
+/**
+ * @typedef {Object} ProductItem
+ * @property {string | null} img
+ * @property {number} itemId
+ * @property {string} itemUrl
+ * @property {string} itemName
+ * @property {boolean} discounted
+ * @property {number | null} currentPrice
+ * @property {number | null} currentUnitPrice
+ * @property {string | null} currency
+ * @property {boolean} useUnitPrice
+ * @property {number=} originalPrice
+ * @property {number | null} originalUnitPrice
+ * @property {number} mainCategoryId
+ * @property {string} breadcrumbs
+ */
 
 /**
  * @param {{item: Item, categoriesById: Object.<string, Category>, categoryId: string | number}}
  * @returns {ProductItem}
  */
-export function getItem({ item, categoriesById, categoryId }) {
+export function normalizeItem({ item, categoriesById }) {
   const result = {
-    img: item.imgPath ?? null,
+    img: item.images?.[0] ?? null,
     itemId: item.productId ?? null,
     itemUrl: `https://www.rohlik.cz/${item.productId}-${item.slug}`,
-    itemName: item.name ?? null,
+    itemName: item.name,
     discounted: false,
     currentPrice: item.price?.amount ?? null,
     currentUnitPrice: item.pricePerUnit?.amount ?? null,
@@ -93,22 +104,16 @@ export function getItem({ item, categoriesById, categoryId }) {
         result.originalPrice = result.currentPrice;
         result.originalUnitPrice = result.currentUnitPrice;
         result.currentPrice = sale.price?.amount ?? null;
-        result.currentUnitPrice = sale.priceForUnit?.full ?? null;
+        result.currentUnitPrice = sale.priceForUnit?.amount ?? null;
         result.discounted = true;
       }
     }
   }
-  result.breadcrumbs = getBreadCrumbs({ categoryId, categoriesById });
-  return result;
-}
-
-async function processItem({ s3, item }) {
-  const requests = [];
-  const product = Object.assign(item, {
-    category: item.breadcrumbs.join(" > ")
+  result.breadcrumbs = getBreadCrumbs({
+    categoryId: item.mainCategoryId,
+    categoriesById
   });
-  requests.push(Dataset.pushData(item), uploadToS3v2(s3, product));
-  await Promise.all(requests);
+  return result;
 }
 
 /**
@@ -127,7 +132,7 @@ async function getProductsCountInCategory({ categoryId, requestQueue }) {
 
 /**
  * @param {{categoryId: string}}
- * @returns {PromiseLike<number>}
+ * @returns {PromiseLike<void>}
  */
 async function enqueueCategories({
   count,
@@ -150,13 +155,13 @@ async function enqueueCategories({
 
 /**
  * @param {{categoriesById: Object.<string, Category>}}
- * @returns {Promise<void>}
+ * @returns {PromiseLike<void>}
  */
 async function processMain({ categoriesById, stats, requestQueue }) {
   const categories = Object.values(categoriesById);
   log.debug(`Adding to the queue ${categories.length} of categories`);
   for (const category of categories) {
-    stats.inc("categories");
+    stats.inc("categoriesTotal");
     await getProductsCountInCategory({
       categoryId: category.id.toString(),
       requestQueue
@@ -167,7 +172,7 @@ async function processMain({ categoriesById, stats, requestQueue }) {
       log.debug(`Adding to the queue ${subCategories.length} of subCategories`);
     }
     for (const subCategory of subCategories) {
-      stats.inc("subCategories");
+      stats.inc("subCategoriesTotal");
       await getProductsCountInCategory({
         categoryId: subCategory.toString(),
         requestQueue
@@ -176,18 +181,26 @@ async function processMain({ categoriesById, stats, requestQueue }) {
   }
 }
 
+const productsPerRequest = 15;
+
 async function processList({
   productIds,
   requestQueue,
   categoryId,
-  stats,
-  processedIds
+  requestedProductsIds
 }) {
-  const newProductIds = productIds.filter(item => !processedIds.has(item));
-  for (const productIdsBatch of partition(10, true, newProductIds)) {
+  stats.inc("categoryPagesCount");
+  const newProductIds = productIds.filter(
+    item => !requestedProductsIds.has(item)
+  );
+  for (const productIdsBatch of partition(
+    productsPerRequest,
+    true,
+    newProductIds
+  )) {
     const productsParams = new URLSearchParams();
     productIdsBatch.forEach(id => {
-      processedIds.add(id);
+      requestedProductsIds.add(id);
       productsParams.append("products", id.toString());
     });
     await requestQueue.addRequest({
@@ -204,17 +217,22 @@ async function processList({
         categoryId
       }
     });
-    stats.inc("items");
   }
 }
 
-async function mergeProductsData({ productList, itemsForSaving }) {
+async function mergeProductsData({ productList, items, itemsForSaving }) {
   productList.forEach(item => {
-    itemsForSaving.swap(items => {
+    items.swap(_items => {
       const id = item.id ?? item.productId;
-      const prevItem = items[id];
-      items[id] = Object.assign(item, prevItem);
-      return items;
+      const prevItem = _items[id];
+      const newItem = Object.assign(item, prevItem);
+      if (newItem.name && newItem.price) {
+        co(function* () {
+          yield itemsForSaving.put(newItem);
+        });
+      }
+      _items[id] = newItem;
+      return _items;
     });
   });
 }
@@ -232,16 +250,17 @@ async function main() {
   const { maxConcurrency = 5, proxyGroups = ["CZECH_LUMINATI"] } = input;
 
   const stats = await withPersistedStats(x => x, {
-    categories: 0,
-    subCategories: 0,
+    categoriesTotal: 0,
+    subCategoriesTotal: 0,
+    categoryPagesCount: 0,
     items: 0
   });
 
   const requestQueue = await Actor.openRequestQueue();
-  const firstPage =
+  const listCategoriesUrl =
     "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
   await requestQueue.addRequest({
-    url: firstPage,
+    url: listCategoriesUrl,
     userData: { label: Label.Main }
   });
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -249,8 +268,22 @@ async function main() {
     useApifyProxy: true
   });
 
-  const processedIds = new Set();
-  const itemsForSaving = defAtom([]);
+  const requestedProductsIds = new Set();
+  const items = defAtom([]);
+  const itemsForSaving = new Channel(maxConcurrency * (productsPerRequest * 2));
+
+  // save items as they are put into `itemsForSaving`
+  co(function* () {
+    while (true) {
+      const item = yield itemsForSaving.take();
+      const product = normalizeItem({
+        item,
+        categoriesById
+      });
+      Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)]);
+      stats.inc("items");
+    }
+  });
 
   let categoriesById;
   const crawler = new HttpCrawler({
@@ -286,40 +319,31 @@ async function main() {
           await processList({
             productIds: json.productIds,
             categoryId,
-            categoriesById,
-            stats,
             requestQueue,
-            processedIds
+            requestedProductsIds
           });
           break;
         case Label.Detail:
           await mergeProductsData({
             productList: json,
+            items,
             itemsForSaving
           });
           break;
       }
 
-      await sleep(1000);
+      await sleep(750);
     },
     async failedRequestHandler({ request }) {
-      await sleep(5000);
+      await sleep(2500);
       log.info(`Request ${request.url} failed ${request.retryCount} times`);
     }
   });
 
   await crawler.run();
 
-  for (const item of Object.values(itemsForSaving.deref())) {
-    const itemForSave = getItem({
-      item: item,
-      categoriesById,
-      categoryId: item.mainCategoryId
-    });
-    await processItem({ s3, item: itemForSave, stats, processedIds });
-  }
-
   try {
+    itemsForSaving.close();
     await Promise.all([
       stats.save(),
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
