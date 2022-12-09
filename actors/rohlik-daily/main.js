@@ -40,7 +40,7 @@ const Label = {
 
 /**
  * @param {{categoryId: number, categoriesById: Object.<string, Category>}}
- * @returns {string}
+ * @returns {string[]}
  */
 function getBreadCrumbs({ categoryId, categoriesById }) {
   const breadcrumbs = [];
@@ -50,7 +50,7 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
     categoryId = category.parentId;
   }
   breadcrumbs.reverse();
-  return breadcrumbs.join(" > ");
+  return breadcrumbs;
 }
 
 /**
@@ -280,12 +280,18 @@ async function main() {
         item,
         categoriesById
       });
+      Promise.all([
+        Dataset.pushData(product),
+        uploadToS3v2(
+          s3,
+          Object.assign(product, {
+            category: item.breadcrumbs.join(" > ")
+          })
+        )
+      ]).catch(e => {
+        log.error(e);
+      });
       stats.inc("items");
-      Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)]).catch(
-        e => {
-          log.error(e);
-        }
-      );
     }
   });
 
