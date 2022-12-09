@@ -280,12 +280,12 @@ async function main() {
         item,
         categoriesById
       });
-      try {
-        Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)]);
-      } catch (e) {
-        log.error(e);
-      }
       stats.inc("items");
+      Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)]).catch(
+        e => {
+          log.error(e);
+        }
+      );
     }
   });
 
