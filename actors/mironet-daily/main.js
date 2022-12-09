@@ -6,16 +6,14 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import { fetch } from "@adobe/helix-fetch";
-import { DOMParser } from "linkedom";
-import Apify from "apify";
+import { DOMParser, parseHTML } from "linkedom";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
 import zlib from "zlib";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-
-const { log } = Apify.utils;
-const processedIds = new Set();
+import { HttpCrawler } from "@crawlee/http";
 
 const WEB = "https://www.mironet.cz";
 
@@ -29,34 +27,36 @@ async function getAllCategories() {
   const document = new DOMParser().parseFromString(markup, "text/xml");
   return Array.from(document.getElementsByTagNameNS("", "url"))
     .flatMap(x => Array.from(x.getElementsByTagNameNS("", "loc")))
-    .map(x => x.textContent.trim())
-    .map(url => ({
-      url,
-      userData: {
-        label: "page",
-        baseUrl: url
-      }
-    }));
+    .map(x => {
+      const url = x.textContent.trim();
+      return {
+        url,
+        userData: {
+          label: "page",
+          baseUrl: url
+        }
+      };
+    });
 }
 
 /**
- * @param {string} type
+ * @param {ActorType} type
  * @param {string} bfUrl
  * @returns {Promise<RequestList>}
  */
 async function createRequestList({ type, bfUrl }) {
   switch (type) {
     case ActorType.BF:
-      return Apify.openRequestList("black-friday", [
+      return [
         {
           url: bfUrl,
           userData: {
             label: "category_vyprodej"
           }
         }
-      ]);
+      ];
     case ActorType.TEST:
-      return Apify.openRequestList("test", [
+      return [
         {
           url: "https://www.mironet.cz/graficke-karty+c14402/",
           userData: {
@@ -64,42 +64,41 @@ async function createRequestList({ type, bfUrl }) {
             baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
           }
         }
-      ]);
+      ];
     case ActorType.FULL:
-      const categories = await getAllCategories();
-      return Apify.openRequestList("sitemap", categories);
+      return await getAllCategories();
     default:
-      throw new Error("Unknown actor type: " + type);
+      throw new Error(`Unknown actor type: ${type}`);
   }
 }
 
-async function handleSelout($, requestQueue, stats) {
-  const categories = [];
+async function handleSale(document, enqueueLinks, stats) {
+  const categoriesUrls = [];
   let onclickUrl;
-  $(".vyprodej_category_head").each(function () {
-    const moreBox = $(this).find(".bpMoreBox");
-    if (moreBox.length) {
-      moreBox.find("a").each(function () {
-        categories.push({
-          url: `${WEB}${$(this).attr("href")}`,
-          userData: {
-            label: "category"
-          }
-        });
+  document.querySelectorAll(".vyprodej_category_head").map(category => {
+    const moreBox = category.querySelector(".bpMoreBox");
+    if (moreBox) {
+      moreBox.querySelectorAll("a").map(a => {
+        categoriesUrls.push(`${WEB}${a.getAttribute("href")}`);
       });
     } else {
-      const onClick = $(this).attr("onclick");
+      const onClick = category.getAttribute("onclick");
       onclickUrl = onClick.replace("location.href=", "").replace(/'/g, "");
     }
   });
-  if (categories.length) {
-    for (const category of categories) {
-      await requestQueue.addRequest(category);
-      stats.inc("urls");
-    }
+  if (categoriesUrls.length) {
+    await enqueueLinks(
+      Object.assign({
+        urls: categoriesUrls,
+        userData: {
+          label: "category"
+        }
+      })
+    );
+    stats.add("urls", categoriesUrls.length);
   } else if (onclickUrl) {
-    await requestQueue.addRequest({
-      url: new URL(onclickUrl, WEB).href,
+    await enqueueLinks({
+      urls: [new URL(onclickUrl, WEB).href],
       userData: {
         label: "category"
       }
@@ -108,17 +107,15 @@ async function handleSelout($, requestQueue, stats) {
   }
 }
 
-async function handleCategory($, stats, request, requestQueue) {
-  const browseSubCategories = $("div#BrowseSubCategories > a")
-    .map(function () {
-      return $(this).attr("href");
-    })
-    .toArray();
+async function handleCategory(document, stats, request, enqueueLinks) {
+  const browseSubCategories = document
+    .querySelectorAll("div#BrowseSubCategories > a")
+    .map(a => a.getAttribute("href"));
   if (browseSubCategories.length) {
     for (const categoryUrl of browseSubCategories) {
       const url = new URL(categoryUrl, WEB).href;
-      await requestQueue.addRequest({
-        url: url,
+      await enqueueLinks({
+        urls: [url],
         userData: {
           label: "page",
           baseUrl: url
@@ -128,8 +125,8 @@ async function handleCategory($, stats, request, requestQueue) {
     }
   } else {
     log.debug(`Enqueue ${request.url} as a page`);
-    await requestQueue.addRequest({
-      url: request.url,
+    await enqueueLinks({
+      urls: [request.url],
       userData: {
         label: "page",
         baseUrl: request.url
@@ -139,34 +136,29 @@ async function handleCategory($, stats, request, requestQueue) {
   }
 }
 
-async function handlePage($, stats, request, requestQueue) {
-  let pageNum = 0;
-  $("a.PageNew").each(function () {
-    pageNum =
-      pageNum < parseInt($(this).text().trim())
-        ? parseInt($(this).text().trim())
-        : pageNum;
-  });
+async function handlePage(document, stats, request, enqueueLinks) {
+  const pageNum = document.querySelectorAll("a.PageNew").reduce((max, a) => {
+    const pageNumber = parseInt(a.innerText.trim());
+    return pageNumber > max ? pageNumber : max;
+  }, 0);
   if (pageNum > 0) {
     stats.add("pages", pageNum);
     log.debug(`Found ${pageNum} pages on ${request.url}`);
     const { baseUrl } = request.userData;
     const url = baseUrl.includes("?") ? `${baseUrl}&PgID=` : `${baseUrl}?PgID=`;
     for (let i = 2; i <= pageNum; i++) {
-      await requestQueue.addRequest(
-        new Apify.Request({
-          userData: {
-            label: "pages",
-            baseUrl: request.userData.baseUrl
-          },
-          url: `${url}${i}`
-        })
-      );
+      await enqueueLinks({
+        userData: {
+          label: "pages",
+          baseUrl: request.userData.baseUrl
+        },
+        urls: [`${url}${i}`]
+      });
     }
   }
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -183,7 +175,7 @@ Apify.main(async function main() {
     failed: 0
   });
 
-  const input = await Apify.getInput();
+  const input = await KeyValueStore.getInput();
   const {
     development = false,
     debug = false,
@@ -197,82 +189,59 @@ Apify.main(async function main() {
   const shop = shopName(WEB);
 
   if (development || debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Apify.openRequestQueue();
-  const requestList = await createRequestList({ type, bfUrl });
-  stats.add("urls", requestList.length());
-
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
 
-  // Create crawler
-  const crawler = new Apify.CheerioCrawler({
-    requestList,
-    requestQueue,
+  const processedIds = new Set();
+
+  const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
     maxConcurrency,
-    // Activates the Session pool.
     useSessionPool: true,
-    // Overrides default Session pool configuration.
     sessionPoolOptions: {
       maxPoolSize: 200
     },
-    // Handle page context
-    async handlePageFunction({ $, request, session, response }) {
-      if (response.statusCode !== 200 && response.statusCode !== 404) {
-        log.debug(
-          `${request.url} -> Bad response code: ${response.statusCode}`
-        );
-        session.retire();
-        stats.inc("failed");
-      }
-
-      if (request.userData.label === "category_vyprodej") {
-        await handleSelout($, requestQueue, stats);
-      } else if (request.userData.label === "category") {
-        await handleCategory($, stats, request, requestQueue);
-      }
-      // This is the category page
-      else if (
-        request.userData.label === "page" ||
-        request.userData.label === "pages"
-      ) {
+    async requestHandler({ body, request, enqueueLinks }) {
+      log.info(`Processing ${request.url}`);
+      const { document } = parseHTML(body.toString());
+      const { label } = request.userData;
+      const isCategoryPage = label === "page" || label === "pages";
+      if (label === "category_vyprodej") {
+        await handleSale(document, enqueueLinks, stats);
+      } else if (label === "category") {
+        await handleCategory(document, stats, request, enqueueLinks);
+      } else if (isCategoryPage) {
         try {
-          if (request.userData.label === "page") {
-            await handlePage($, stats, request, requestQueue);
+          if (label === "page") {
+            await handlePage(document, stats, request, enqueueLinks);
           }
-          const breadCrumbs = [];
-          $("div#displaypath > a.CatParent").each(function () {
-            breadCrumbs.push($(this).text().trim());
-          });
+          const breadCrumbs = document
+            .querySelectorAll("div#displaypath > a.CatParent")
+            .map(cat => cat.innerText.trim());
           // we don't need to block pushes, we will await them all at the end
           const requests = [];
-          const rawItems = $(".item_b").toArray();
-          for (const item of rawItems) {
+          for (const item of document.querySelectorAll(".item_b")) {
             const toNumber = p =>
               parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
 
-            const idElem = $(item).find(".item_kod");
-            const linkElem = $(item).find(".nazev a");
-            const priceElem = $(item).find(".item_cena");
-            const imgElem = $(item).find(".item_obr img");
-            const oPriceElem = $(item).find(".item_s_cena span");
-            const img =
-              imgElem.length !== 0 ? `https:${imgElem.attr("src")}` : null;
-            const link = linkElem.length !== 0 ? linkElem.attr("href") : null;
-            const id =
-              idElem.length !== 0
-                ? idElem.text().trim().replace("Kód: ", "")
-                : null;
-            const name = linkElem.length !== 0 ? linkElem.text().trim() : null;
-            const price =
-              priceElem.length !== 0 ? priceElem.text().trim() : false;
+            const idElem = item.querySelector(".item_kod");
+            const linkElem = item.querySelector(".nazev a");
+            const priceElem = item.querySelector(".item_cena");
+            const imgElem = item.querySelector(".item_obr img");
+            const oPriceElem = item.querySelector(".item_s_cena span");
+            const img = imgElem ? `https:${imgElem.getAttribute("src")}` : null;
+            const link = linkElem ? linkElem.getAttribute("href") : null;
+            const id = idElem
+              ? idElem.innerText.trim().replace("Kód: ", "")
+              : null;
+            const name = linkElem ? linkElem.innerText.trim() : null;
+            const price = priceElem ? priceElem.innerText.trim() : false;
             const dataItem = {
               img,
               itemId: id,
@@ -282,8 +251,8 @@ Apify.main(async function main() {
               currentPrice: price ? toNumber(price) : null,
               breadCrumbs
             };
-            if (oPriceElem.length !== 0) {
-              const oPrice = oPriceElem.text().trim();
+            if (oPriceElem) {
+              const oPrice = oPriceElem.innerText.trim();
               dataItem.originalPrice = toNumber(oPrice);
             }
             // Save data to dataset
@@ -291,7 +260,7 @@ Apify.main(async function main() {
               processedIds.add(dataItem.itemId);
               const slug = itemSlug(dataItem.itemUrl);
               requests.push(
-                Apify.pushData({
+                Dataset.pushData({
                   ...dataItem,
                   shop,
                   slug
@@ -310,7 +279,6 @@ Apify.main(async function main() {
           log.debug(
             `Found ${requests.length} items, storing them. ${request.url}`
           );
-          // await all requests, so we don't end before they end
           await Promise.all(requests);
         } catch (e) {
           stats.inc("failed");
@@ -320,14 +288,19 @@ Apify.main(async function main() {
         }
       }
     },
-    // If request failed 4 times then this function is executed
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed 4 times`);
+    async failedRequestHandler({ request }, error) {
+      log.error(
+        `Request ${request.url} failed ${request.retryCount}} times`,
+        error
+      );
     }
   });
 
+  const requestList = await createRequestList({ type, bfUrl });
+  await crawler.addRequests(requestList);
+  stats.add("urls", requestList.length);
+
   log.info("ACTOR - run crawler");
-  // Run crawler
   await crawler.run();
 
   log.info("ACTOR - crawler end");
@@ -340,4 +313,6 @@ Apify.main(async function main() {
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");
-});
+}
+
+await Actor.main(main);
