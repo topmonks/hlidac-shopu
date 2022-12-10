@@ -187,7 +187,8 @@ async function processList({
   productIds,
   requestQueue,
   categoryId,
-  requestedProductsIds
+  requestedProductsIds,
+  stats
 }) {
   stats.inc("categoryPagesCount");
   const newProductIds = productIds.filter(
@@ -330,7 +331,8 @@ async function main() {
             productIds: json.productIds,
             categoryId,
             requestQueue,
-            requestedProductsIds
+            requestedProductsIds,
+            stats
           });
           break;
         case Label.Detail:
