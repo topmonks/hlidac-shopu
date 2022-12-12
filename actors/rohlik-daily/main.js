@@ -44,10 +44,6 @@ const Label = {
  */
 function getBreadCrumbs({ categoryId, categoriesById }) {
   const breadcrumbs = [];
-  if (!categoriesById) {
-    console.warn("categoriesById is not defined"); // TODO: remove
-    return breadcrumbs;
-  }
   while (categoriesById[categoryId]) {
     const category = categoriesById[categoryId];
     breadcrumbs.push(category.name);
@@ -145,7 +141,7 @@ async function enqueueCategories({
   categoriesById
 }) {
   console.log(
-    `${count} products in ${categoriesById[categoryId]?.name ?? categoryId}`
+    `${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`
   );
   const limitPerPage = 100;
   for (let i = 0; i * limitPerPage < count; i++) {
@@ -275,7 +271,7 @@ async function main() {
     useApifyProxy: true
   });
 
-  let categoriesById;
+  let categoriesById = await KeyValueStore.getValue("categoriesById");
   const requestedProductsIds = new Set();
   const items = defAtom([]);
   const itemsForSaving = new Channel(maxConcurrency * (productsPerRequest * 2));
@@ -323,6 +319,7 @@ async function main() {
       switch (userData.label) {
         case Label.Main:
           categoriesById = json.navigation;
+          KeyValueStore.setValue("categoriesById", categoriesById);
           await processMain({
             categoriesById,
             stats,
