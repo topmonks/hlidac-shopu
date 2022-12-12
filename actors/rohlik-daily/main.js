@@ -44,6 +44,10 @@ const Label = {
  */
 function getBreadCrumbs({ categoryId, categoriesById }) {
   const breadcrumbs = [];
+  if (!categoriesById) {
+    console.warn("categoriesById is not defined"); // TODO: remove
+    return breadcrumbs;
+  }
   while (categoriesById[categoryId]) {
     const category = categoriesById[categoryId];
     breadcrumbs.push(category.name);
@@ -271,6 +275,7 @@ async function main() {
     useApifyProxy: true
   });
 
+  let categoriesById;
   const requestedProductsIds = new Set();
   const items = defAtom([]);
   const itemsForSaving = new Channel(maxConcurrency * (productsPerRequest * 2));
@@ -303,7 +308,6 @@ async function main() {
     }
   });
 
-  let categoriesById;
   const crawler = new HttpCrawler({
     requestQueue,
     maxConcurrency,
