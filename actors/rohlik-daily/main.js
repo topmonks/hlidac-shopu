@@ -88,7 +88,7 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
  */
 export function normalizeItem({ item, categoriesById }) {
   const result = {
-    img: item.images?.[0] ?? null,
+    img: item?.images?.[0] ?? null,
     itemId: item.productId ?? null,
     itemUrl: `https://www.rohlik.cz/${item.productId}-${item.slug}`,
     itemName: item.name,
@@ -140,7 +140,9 @@ async function enqueueCategories({
   requestQueue,
   categoriesById
 }) {
-  console.log(`${count} products in ${categoriesById[categoryId].name}`);
+  console.log(
+    `${count} products in ${categoriesById[categoryId]?.name ?? categoryId}`
+  );
   const limitPerPage = 100;
   for (let i = 0; i * limitPerPage < count; i++) {
     await requestQueue.addRequest({
@@ -276,23 +278,28 @@ async function main() {
   // save items as they are put into `itemsForSaving`
   co(function* () {
     while (true) {
-      const item = yield itemsForSaving.take();
-      const product = normalizeItem({
-        item,
-        categoriesById
-      });
-      Promise.all([
-        Dataset.pushData(product),
-        uploadToS3v2(
-          s3,
-          Object.assign(product, {
-            category: item.breadcrumbs.join(" > ")
-          })
-        )
-      ]).catch(e => {
+      try {
+        const item = yield itemsForSaving.take();
+        const product = normalizeItem({
+          item,
+          categoriesById
+        });
+        Promise.all([
+          Dataset.pushData(product),
+          uploadToS3v2(
+            s3,
+            Object.assign(product, {
+              category: product.breadcrumbs.join(" > ")
+            })
+          )
+        ])
+          .then(() => stats.inc("items"))
+          .catch(e => {
+            log.error(e);
+          });
+      } catch (e) {
         log.error(e);
-      });
-      stats.inc("items");
+      }
     }
   });
 
