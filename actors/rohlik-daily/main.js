@@ -88,7 +88,7 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
  */
 export function normalizeItem({ item, categoriesById }) {
   const result = {
-    img: item?.images?.[0] ?? null,
+    img: item.images?.[0] ?? null,
     itemId: item.productId ?? null,
     itemUrl: `https://www.rohlik.cz/${item.productId}-${item.slug}`,
     itemName: item.name,
@@ -281,6 +281,7 @@ async function main() {
     while (true) {
       try {
         const item = yield itemsForSaving.take();
+        if (!item) return;
         const product = normalizeItem({
           item,
           categoriesById
@@ -363,7 +364,7 @@ async function main() {
   await crawler.run();
 
   try {
-    itemsForSaving.close();
+    await sleep(10000);
     await Promise.all([
       stats.save(),
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
