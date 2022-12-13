@@ -5,35 +5,31 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
-
-const { log } = Apify.utils;
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "linkedom";
 
 async function handleStart(
-  { $, requestQueue, request },
-  { homePageUrl, inputData, stats }
+  { enqueueLinks, request },
+  { document, homePageUrl, inputData, stats }
 ) {
-  let categoryLinkList = $(
-    ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
-  )
-    .map(function () {
-      return {
-        href: $(this).attr("href"),
-        dataWebtrekk: $(this).attr("data-webtrekk")
-      };
-    })
-    .get();
-  if (!(categoryLinkList.length > 0)) {
-    categoryLinkList = $("ul.first-level > li > a")
-      .map(function () {
-        return {
-          href: $(this).attr("href")
-        };
-      })
-      .get();
+  let categoryLinkList = document
+    .querySelectorAll(
+      ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
+    )
+    .map(a => ({
+      href: a.getAttribute("href"),
+      dataWebtrekk: a.getAttribute("data-webtrekk")
+    }));
+  if (!categoryLinkList.length) {
+    categoryLinkList = document
+      .querySelectorAll("ul.first-level > li > a")
+      .map(a => ({
+        href: a.getAttribute("href")
+      }));
   }
   log.debug(`[handleStart] label: ${request.userData.label}`, {
     url: request.url,
@@ -44,21 +40,26 @@ async function handleStart(
     log.debug(`development mode, subcategory is`, { categoryLinkList });
   }
 
-  for (const categoryObject of categoryLinkList) {
-    if (!categoryObject.dataWebtrekk) {
-      const categoryUrl = new URL(categoryObject.href, homePageUrl).href;
-      await requestQueue.addRequest({
-        url: categoryUrl,
-        userData: { label: "SUBCAT" }
-      });
-      stats.inc("urls");
-    }
-  }
+  const urls = categoryLinkList
+    .filter(categoryObject => !categoryObject.dataWebtrekk)
+    .map(categoryObject => new URL(categoryObject.href, homePageUrl).href);
+  stats.add("urls", urls.length);
+  await enqueueLinks({
+    urls,
+    userData: { label: "SUBCAT" }
+  });
 }
 
-async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
-  const { $, requestQueue, request } = context;
-  const productCount = parseInt($(".variants").data("productcount"), 10);
+async function handleSubCategory(
+  context,
+  { document, homePageUrl, inputData, stats }
+) {
+  const { enqueueLinks, request } = context;
+  const variants = document.querySelector(".variants");
+  const productCount = parseInt(
+    variants?.getAttribute("data-productcount"),
+    10
+  );
   const label = request.userData.label;
   log.debug(`[handleSubCategory] label: ${label}`, {
     url: request.url,
@@ -66,158 +67,124 @@ async function handleSubCategory(context, { homePageUrl, inputData, stats }) {
   });
 
   if (productCount) {
-    await handleLastSubCategory(context, { inputData, stats });
+    await handleLastSubCategory(context, { document, inputData, stats });
   } else {
-    let subCategoryList = $('a[wt_name="assortment_menu.level2"]')
-      .map(function () {
-        return $(this).attr("href");
-      })
-      .toArray();
+    let subCategoryList = document
+      .querySelectorAll('a[wt_name="assortment_menu.level2"]')
+      .map(a => a.getAttribute("href"));
     log.debug(`${label}`, { subCategoryList });
     if (inputData.development) {
       subCategoryList = subCategoryList.slice(0, 1);
       log.debug(`development mode, ${label} is`, subCategoryList);
     }
-    for (const subcategoryLink of subCategoryList) {
-      const subcategoryUrl = new URL(subcategoryLink, homePageUrl).href;
-      await requestQueue.addRequest({
-        url: subcategoryUrl,
-        userData: { label }
-      });
-      stats.inc("urls");
-    }
+
+    const urls = subCategoryList.map(
+      subcategoryLink => new URL(subcategoryLink, homePageUrl).href
+    );
+    stats.add("urls", urls.length);
+    await enqueueLinks({
+      urls,
+      userData: { label }
+    });
   }
 }
 
-async function handleLastSubCategory(context, { inputData, stats }) {
-  const { $, requestQueue, request } = context;
-  const productCount = parseInt($(".variants").data("productcount"), 10);
+async function handleLastSubCategory(context, { document, inputData, stats }) {
+  const { enqueueLinks, request } = context;
+  const productCount = Number(
+    document.querySelector(".variants")?.getAttribute("data-productcount")
+  );
   log.debug(`[handleLastSubCategory] label: ${request.userData.label}`, {
     url: request.url,
     productCount
   });
-  const productPerPageCount = $("li.product > a")
-    .map(function () {
-      if ($(this).attr("data-ui-name")) {
-        return $(this).attr("href");
-      }
-    })
-    .get().length;
+  const productPerPageCount = document
+    .querySelectorAll("li.product > a")
+    .filter(a => a.getAttribute("data-ui-name")).length;
   let pageCount = Math.ceil(productCount / productPerPageCount);
   if (inputData.development) {
     pageCount = 1;
   }
   if (pageCount > 1) {
-    const requestList = Array(pageCount - 1)
+    const urls = Array(pageCount - 1)
       .fill(0)
       .map((_, i) => i + 2)
-      .map(i => {
-        const url = `${request.url}/?page=${i}`;
-        return requestQueue.addRequest({
-          url,
-          userData: { label: "LIST" }
-        });
-      });
-    await Promise.all(requestList);
-    stats.add("urls", requestList.length);
+      .map(i => `${request.url}/?page=${i}`);
+    await enqueueLinks({
+      urls,
+      userData: { label: "LIST" }
+    });
+    stats.add("urls", urls.length);
   }
-  await handleList(context, { stats });
+  await handleList(context, { document, stats });
 }
 
-async function handleList({ $, requestQueue, request }, { stats }) {
-  let productLinkList = $("li.product > a")
-    .map(function () {
-      if ($(this).attr("data-ui-name")) {
-        return $(this).attr("href");
-      }
-    })
-    .toArray();
+async function handleList({ enqueueLinks, request }, { document, stats }) {
+  let productLinkList = document
+    .querySelectorAll("li.product > a")
+    .filter(a => a.getAttribute("data-ui-name"))
+    .map(a => a.getAttribute("href"));
   log.debug(`[handleList] label: ${request.userData.label}`, {
     url: request.url,
     productLinkList
   });
-  const requestList = productLinkList.map(url =>
-    requestQueue.addRequest({
-      url: new URL(url, request.url).href,
-      userData: { label: "DETAIL" }
-    })
-  );
-  await Promise.all(requestList);
-  stats.add("urls", requestList.length);
+  const urls = productLinkList.map(url => new URL(url, request.url).href);
+  await enqueueLinks({
+    urls,
+    userData: { label: "DETAIL" }
+  });
+  stats.add("urls", urls.length);
 }
 
 async function handleDetail(
   context,
-  { dataset, s3, processedIds, pushList, variantIds, stats }
+  { document, s3, processedIds, pushList, variantIds, stats }
 ) {
-  const { request, $ } = context;
-  const itemName = $(".overview__description >.overview__heading")
-    .text()
+  const { request } = context;
+  const itemId = document
+    .querySelector('input[name="code"]')
+    .getAttribute("value")
     .trim();
-  const itemId = $('input[name="code"]').attr("value").trim();
-  let currency = $('meta[itemprop="priceCurrency"]')
-    .map(function () {
-      return $(this).attr("content");
-    })
-    .get()[0];
-  if (currency === "SKK") {
-    currency = "EUR";
-  }
-  let currentPrice = parsePrice($('[data-ui-name="ads.price.strong"]').text());
-  let discountedPrice = $(".saving").get(0);
-  let originalPrice = null;
-  if (discountedPrice) {
-    originalPrice = $(discountedPrice.parent.children)
-      .map(function () {
-        const el = $(this);
-        const tagName = el.get(0).tagName;
-        if (tagName === "del") {
-          const text = el.text();
-          if (text.match(/\d/)) {
-            return text;
-          }
-        }
-      })
-      .get(0);
-    originalPrice = parsePrice(originalPrice);
-    discountedPrice = originalPrice - currentPrice;
-  }
-  const discounted = Boolean(discountedPrice);
-  const inStock = Boolean($("div.marg_b5").text().match(/(\d+)/));
-  let img = $(".ads-slider__link").attr("href");
-  if (!img) {
-    img = $(".ads-slider__image")
-      .map(function () {
-        return $(this).data("src");
-      })
-      .get(0);
-  }
-  img = `https:${img}`;
-  const category = $('a[class*="normal"][wt_name*="breadcrumb.level"]')
-    .map(function () {
-      return $(this).text();
-    })
-    .toArray()
-    .join("/");
-  const result = {
-    itemUrl: request.url,
-    itemName,
-    itemId,
-    currency,
-    currentPrice,
-    discounted,
-    originalPrice,
-    inStock,
-    img,
-    category
-  };
-  if (!processedIds.has(result.itemId)) {
-    pushList.push(
-      // push data to dataset to be ready for upload to Keboola
-      dataset.pushData(result),
-      // upload JSON+LD data to CDN
-      uploadToS3v2(s3, result)
-    );
+  if (!processedIds.has(itemId)) {
+    let currency = document
+      .querySelector('meta[itemprop="priceCurrency"]')
+      .getAttribute("content");
+    if (currency === "SKK") {
+      currency = "EUR";
+    }
+    let discountedPrice = document.querySelector(".saving + del")?.innerText;
+    let originalPrice = null;
+    if (discountedPrice) {
+      originalPrice = parsePrice(discountedPrice);
+    }
+    let img = document.querySelector(".ads-slider__link").getAttribute("href");
+    if (!img) {
+      img = document
+        .querySelector(".ads-slider__image")
+        .getAttribute("data-src");
+    }
+    const result = {
+      itemUrl: request.url,
+      itemName: document
+        .querySelector(".overview__description >.overview__heading")
+        .innerText.trim(),
+      itemId,
+      currency,
+      currentPrice: parsePrice(
+        document.querySelector('[data-ui-name="ads.price.strong"]').innerText
+      ),
+      discounted: Boolean(discountedPrice),
+      originalPrice,
+      inStock: Boolean(
+        document.querySelector("div.marg_b5").innerText.match(/(\d+)/)
+      ),
+      img: `https:${img}`,
+      category: document
+        .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
+        .map(a => a.innerText)
+        .join("/")
+    };
+    pushList.push(Dataset.pushData(result), uploadToS3v2(s3, result));
     processedIds.add(result.itemId);
     stats.inc("items");
   } else {
@@ -229,7 +196,7 @@ async function handleDetail(
     pushList = [];
   }
 
-  await handleVariant(context, { variantIds, processedIds, stats });
+  await handleVariant(context, { document, variantIds, processedIds, stats });
 }
 
 function getItemIdFromUrl(url) {
@@ -237,16 +204,17 @@ function getItemIdFromUrl(url) {
 }
 
 async function handleVariant(
-  { $, requestQueue, request },
-  { variantIds, processedIds, stats }
+  { enqueueLinks, request },
+  { document, variantIds, processedIds, stats }
 ) {
   let crawledItemId = getItemIdFromUrl(request.url);
-  let productLinkList = $(
-    `.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"],
+  let productLinkList = document
+    .querySelectorAll(
+      `.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"],
     .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
-  )
-    .map(function () {
-      let productUrl = $(this).attr("href");
+    )
+    .map(a => {
+      let productUrl = a.getAttribute("href");
       if (!productUrl) {
         return;
       }
@@ -261,7 +229,7 @@ async function handleVariant(
       variantIds.add(itemId);
       return productUrl;
     })
-    .toArray();
+    .filter(Boolean);
 
   if (!productLinkList.length) return;
 
@@ -270,14 +238,11 @@ async function handleVariant(
     productLinkList
   });
 
-  const requestList = productLinkList.map(url => {
-    return requestQueue.addRequest({
-      url: url,
-      userData: { label: "DETAIL" }
-    });
+  await enqueueLinks({
+    urls: productLinkList,
+    userData: { label: "DETAIL" }
   });
-  await Promise.all(requestList);
-  stats.add("urls", requestList.length);
+  stats.add("urls", productLinkList.length);
 }
 
 function parsePrice(text) {
@@ -289,7 +254,7 @@ function parsePrice(text) {
   return price ? parseFloat(price) : null;
 }
 
-Apify.main(async function main() {
+async function main() {
   log.info("Actor starts.");
 
   rollbar.init();
@@ -310,7 +275,7 @@ Apify.main(async function main() {
   });
   let pushList = [];
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
     development = false,
@@ -318,48 +283,50 @@ Apify.main(async function main() {
     proxyGroups = ["CZECH_LUMINATI"],
     maxRequestRetries = 3,
     maxConcurrency = 10
-  } = input ?? {};
+  } = input;
   const country = input?.country?.toLowerCase() ?? "cz";
   const inputData = { country, development, debug };
 
   if (development || debug) {
-    log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  const dataset = await Apify.openDataset();
-
-  const requestQueue = await Apify.openRequestQueue();
   let homePageUrl = `https://www.obi${
     country === "it" ? "-italia" : ""
   }.${country}`;
-  await requestQueue.addRequest({
-    url: homePageUrl,
-    userData: { label: "START" }
-  });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
 
-  const crawler = new Apify.CheerioCrawler({
-    requestTimeoutSecs: 60,
-    requestQueue,
+  const crawler = new HttpCrawler({
+    requestHandlerTimeoutSecs: 60,
     proxyConfiguration,
     maxConcurrency,
     maxRequestRetries,
-    async handlePageFunction(context) {
+    sessionPoolOptions: {
+      maxPoolSize: 150
+    },
+    async requestHandler(context) {
+      const { request, body } = context;
+      log.info(`Processing ${request.url}`);
+      const { document } = parseHTML(body.toString());
       const { label } = context.request.userData;
-      context.requestQueue = requestQueue;
       if (label === "START") {
-        await handleStart(context, { homePageUrl, inputData, stats });
+        await handleStart(context, { document, homePageUrl, inputData, stats });
       } else if (label === "SUBCAT") {
-        await handleSubCategory(context, { homePageUrl, inputData, stats });
+        await handleSubCategory(context, {
+          document,
+          homePageUrl,
+          inputData,
+          stats
+        });
       } else if (label === "LIST") {
-        await handleList(context, { stats });
+        await handleList(context, { document, stats });
       } else if (label === "DETAIL") {
         await handleDetail(context, {
-          dataset,
+          document,
           s3,
           processedIds,
           pushList,
@@ -368,13 +335,18 @@ Apify.main(async function main() {
         });
       }
     },
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed multiple times`, request);
+    async failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 
   log.info("crawler starts.");
-  await crawler.run();
+  await crawler.run([
+    {
+      url: homePageUrl,
+      userData: { label: "START" }
+    }
+  ]);
   log.info("crawler finished");
 
   await stats.save();
@@ -389,4 +361,6 @@ Apify.main(async function main() {
     log.info(`update to Keboola finished ${tableName}.`);
   }
   log.info("Actor Finished.");
-});
+}
+
+await Actor.main(main);
