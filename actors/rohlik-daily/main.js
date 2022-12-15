@@ -96,7 +96,11 @@ export function normalizeItem({ item, categoriesById }) {
     currentPrice: item.price?.amount ?? null,
     currentUnitPrice: item.pricePerUnit?.amount ?? null,
     currency: item.price?.currency ?? null,
-    useUnitPrice: item.textualAmount?.includes("cca")
+    useUnitPrice: item.textualAmount?.includes("cca"),
+    category: getBreadCrumbs({
+      categoryId: item.mainCategoryId,
+      categoriesById
+    }).join(" > ")
   };
   if (item.sales.length !== 0) {
     for (const sale of item.sales) {
@@ -109,10 +113,6 @@ export function normalizeItem({ item, categoriesById }) {
       }
     }
   }
-  result.breadcrumbs = getBreadCrumbs({
-    categoryId: item.mainCategoryId,
-    categoriesById
-  });
   return result;
 }
 
@@ -286,15 +286,7 @@ async function main() {
           item,
           categoriesById
         });
-        Promise.all([
-          Dataset.pushData(product),
-          uploadToS3v2(
-            s3,
-            Object.assign(product, {
-              category: product.breadcrumbs.join(" > ")
-            })
-          )
-        ])
+        Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)])
           .then(() => stats.inc("items"))
           .catch(e => {
             log.error(e);
