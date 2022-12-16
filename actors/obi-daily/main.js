@@ -148,7 +148,8 @@ async function handleDetail(
   if (!processedIds.has(itemId)) {
     let currency = document
       .querySelector('meta[itemprop="priceCurrency"]')
-      .getAttribute("content");
+      ?.getAttribute("content");
+    if (!currency) return;
     if (currency === "SKK") {
       currency = "EUR";
     }
