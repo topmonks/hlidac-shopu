@@ -9,7 +9,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
-import { partition } from "@thi.ng/transducers";
+import { choices, partition, take, transduce, push } from "@thi.ng/transducers";
 import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
 import { co, Channel } from "core-async";
@@ -83,7 +83,7 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
  */
 
 /**
- * @param {{item: Item, categoriesById: Object.<string, Category>, categoryId: string | number}}
+ * @param {{item: Item, categoriesById: Object.<string, Category>}}
  * @returns {ProductItem}
  */
 export function normalizeItem({ item, categoriesById }) {
@@ -117,57 +117,54 @@ export function normalizeItem({ item, categoriesById }) {
 }
 
 /**
- * @param {{categoryId: string}}
- * @returns {PromiseLike<number>}
+ * @param {{categoryId: string, count: number, categoriesById: Object.<string, Category>}}
+ * @returns {{urls: string[], userData: {label: Label.List, categoryId: string}}
  */
-async function getProductsCountInCategory({ categoryId, requestQueue }) {
-  return await requestQueue.addRequest({
-    url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products/count`,
-    userData: {
-      label: Label.Count,
-      categoryId: categoryId
-    }
-  });
-}
-
-/**
- * @param {{categoryId: string}}
- * @returns {PromiseLike<void>}
- */
-async function enqueueCategories({
-  count,
-  categoryId,
-  requestQueue,
-  categoriesById
-}) {
+function categoriesRequests({ count, categoryId, categoriesById }) {
   console.log(
     `${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`
   );
   const limitPerPage = 100;
+  const urls = [];
   for (let i = 0; i * limitPerPage < count; i++) {
-    await requestQueue.addRequest({
-      url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products?page=${i}`,
-      userData: {
-        label: Label.List,
-        categoryId: categoryId
-      }
-    });
+    urls.push(
+      `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products?page=${i}`
+    );
   }
+  return {
+    urls,
+    userData: {
+      label: Label.List,
+      categoryId: categoryId
+    }
+  };
 }
 
 /**
- * @param {{categoriesById: Object.<string, Category>}}
- * @returns {PromiseLike<void>}
+ * @param {number} categoryId
+ * @returns {{url: string, userData: {label: Label.Count, categoryId: string}}}
  */
-async function processMain({ categoriesById, stats, requestQueue }) {
+function productsCountInCategoryRequest(categoryId) {
+  return {
+    url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products/count`,
+    userData: {
+      label: Label.Count,
+      categoryId: categoryId.toString()
+    }
+  };
+}
+
+/**
+ * @param {{categoryId: string, categoriesById: Object.<string, Category>}}
+ * @returns {{url: string, userData: {label: Label.Count, categoryId: string}[]}}
+ */
+function categorysCountRequests({ categoriesById, stats }) {
   const categories = Object.values(categoriesById);
   log.debug(`Adding to the queue ${categories.length} of categories`);
+  const requests = [];
   for (const category of categories) {
     stats.inc("categoriesTotal");
-    await getProductsCountInCategory({
-      categoryId: category.id.toString(),
-      requestQueue
-    });
+    requests.push(productsCountInCategoryRequest(category.id));
 
     const subCategories = category.children;
     if (subCategories.length) {
@@ -175,19 +172,20 @@ async function processMain({ categoriesById, stats, requestQueue }) {
     }
     for (const subCategory of subCategories) {
       stats.inc("subCategoriesTotal");
-      await getProductsCountInCategory({
-        categoryId: subCategory.toString(),
-        requestQueue
-      });
+      requests.push(productsCountInCategoryRequest(subCategory));
     }
   }
+  return requests;
 }
 
 const productsPerRequest = 15;
 
-async function processList({
+/**
+ * @param {{productIds: number[], categoryId: string, requestedProductsIds: Set<number>, stats: Stats}}
+ * @returns {{urls: string[], userData: {label: Label.Detail, categoryId: string}}
+ */
+function detailRequests({
   productIds,
-  requestQueue,
   categoryId,
   requestedProductsIds,
   stats
@@ -196,6 +194,7 @@ async function processList({
   const newProductIds = productIds.filter(
     item => !requestedProductsIds.has(item)
   );
+  const urls = [];
   for (const productIdsBatch of partition(
     productsPerRequest,
     true,
@@ -206,24 +205,19 @@ async function processList({
       requestedProductsIds.add(id);
       productsParams.append("products", id.toString());
     });
-    await requestQueue.addRequest({
-      url: `https://www.rohlik.cz/api/v1/products/prices?${productsParams}`,
-      userData: {
-        label: Label.Detail,
-        categoryId
-      }
-    });
-    await requestQueue.addRequest({
-      url: `https://www.rohlik.cz/api/v1/products?${productsParams}`,
-      userData: {
-        label: Label.Detail,
-        categoryId
-      }
-    });
+    urls.push(`https://www.rohlik.cz/api/v1/products/prices?${productsParams}`);
+    urls.push(`https://www.rohlik.cz/api/v1/products?${productsParams}`);
   }
+  return {
+    urls,
+    userData: {
+      label: Label.Detail,
+      categoryId
+    }
+  };
 }
 
-async function mergeProductsData({ productList, items, itemsForSaving }) {
+function mergeProductsData({ productList, items, itemsForSaving }) {
   productList.forEach(item => {
     items.swap(_items => {
       const id = item.id ?? item.productId;
@@ -240,6 +234,16 @@ async function mergeProductsData({ productList, items, itemsForSaving }) {
   });
 }
 
+/**
+ * @template T
+ * @param {boolean} isDevelopment
+ * @param {T[]} coll
+ * @returns {T[]}
+ */
+function takeRandomIfDev(isDevelopment, coll) {
+  return isDevelopment ? transduce(take(50), push(), choices(coll)) : coll;
+}
+
 async function main() {
   rollbar.init();
 
@@ -250,7 +254,11 @@ async function main() {
   });
 
   const input = (await KeyValueStore.getInput()) ?? {};
-  const { maxConcurrency = 5, proxyGroups = ["CZECH_LUMINATI"] } = input;
+  const {
+    development = process.env.TEST || process.env.DEBUG,
+    maxConcurrency = 5,
+    proxyGroups = ["CZECH_LUMINATI"]
+  } = input;
 
   const stats = await withPersistedStats(x => x, {
     categoriesTotal: 0,
@@ -259,16 +267,9 @@ async function main() {
     items: 0
   });
 
-  const requestQueue = await Actor.openRequestQueue();
-  const listCategoriesUrl =
-    "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
-  await requestQueue.addRequest({
-    url: listCategoriesUrl,
-    userData: { label: Label.Main }
-  });
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: true
+    useApifyProxy: !development
   });
 
   let categoriesById = await KeyValueStore.getValue("categoriesById");
@@ -297,6 +298,7 @@ async function main() {
     }
   });
 
+  const requestQueue = await Actor.openRequestQueue();
   const crawler = new HttpCrawler({
     requestQueue,
     maxConcurrency,
@@ -305,7 +307,7 @@ async function main() {
     sessionPoolOptions: {
       maxPoolSize: 100
     },
-    async requestHandler({ request, json }) {
+    async requestHandler({ request, json, enqueueLinks }) {
       const { userData } = request;
       const { categoryId } = userData;
       log.info(`Processing ${request.url}`);
@@ -313,31 +315,37 @@ async function main() {
         case Label.Main:
           categoriesById = json.navigation;
           KeyValueStore.setValue("categoriesById", categoriesById);
-          await processMain({
-            categoriesById,
-            stats,
-            requestQueue
-          });
+          await requestQueue.addRequests(
+            takeRandomIfDev(
+              development,
+              categorysCountRequests({
+                categoriesById,
+                stats
+              })
+            )
+          );
           break;
         case Label.Count:
-          await enqueueCategories({
-            count: json.results,
-            requestQueue,
-            categoryId,
-            categoriesById
-          });
+          await enqueueLinks(
+            categoriesRequests({
+              count: json.results,
+              categoryId,
+              categoriesById
+            })
+          );
           break;
         case Label.List:
-          await processList({
-            productIds: json.productIds,
-            categoryId,
-            requestQueue,
-            requestedProductsIds,
-            stats
-          });
+          await enqueueLinks(
+            detailRequests({
+              productIds: json.productIds,
+              categoryId,
+              requestedProductsIds,
+              stats
+            })
+          );
           break;
         case Label.Detail:
-          await mergeProductsData({
+          mergeProductsData({
             productList: json,
             items,
             itemsForSaving
@@ -347,18 +355,29 @@ async function main() {
 
       await sleep(750);
     },
-    async failedRequestHandler({ request }) {
+    async failedRequestHandler({ request }, error) {
       await sleep(2500);
-      log.info(`Request ${request.url} failed ${request.retryCount} times`);
+      log.error(
+        `Request ${request.url} failed ${request.retryCount} times`,
+        error
+      );
     }
   });
 
-  await crawler.run();
+  const listCategoriesUrl =
+    "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
+  await crawler.run([
+    {
+      url: listCategoriesUrl,
+      userData: { label: Label.Main }
+    }
+  ]);
 
   try {
-    await sleep(10000);
+    await sleep(5000);
+    itemsForSaving.close();
     await Promise.all([
-      stats.save(),
+      stats.save(true),
       invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
       uploadToKeboola("rohlik")
     ]);
