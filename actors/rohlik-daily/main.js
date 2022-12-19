@@ -101,7 +101,6 @@ export function normalizeItem({ item, categoriesById }) {
     currentUnitPrice: item.pricePerUnit?.amount ?? null,
     currency: item.price?.currency ?? null,
     useUnitPrice: item.textualAmount?.includes("cca"),
-    breadcrumbs: JSON.stringify(breadCrumbs),
     category: breadCrumbs.join(" > ")
   };
   if (item.sales.length !== 0) {

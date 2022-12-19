@@ -297,12 +297,14 @@ async function processItems(
 
     if (!priceFeedOnly) {
       // original category in data are breadcrumbs
-      if (item.category) {
-        item.breadCrumbs = Array.isArray(item.category)
-          ? item.category.toString()
-          : item.category;
-      } else if (typeof item.category === "string" && item.category === "") {
-        item.breadCrumbs = "";
+      if (!item.breadCrumbs) {
+        if (item.category) {
+          item.breadCrumbs = Array.isArray(item.category)
+            ? item.category.toString()
+            : item.category;
+        } else if (typeof item.category === "string" && item.category === "") {
+          item.breadCrumbs = "";
+        }
       }
 
       // TODO: do it in actors
