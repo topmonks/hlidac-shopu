@@ -74,7 +74,7 @@ export function extractPrice(string) {
   return parseInt(value);
 }
 
-async function parseProducts(request, document, country) {
+async function parseProducts(document, country) {
   const offers = document.querySelectorAll(".card");
   const products = offers.map(item => {
     const link = item.querySelector("a.fullSizeLink").getAttribute("href");
@@ -90,7 +90,7 @@ async function parseProducts(request, document, country) {
     const actionPrice = extractPrice(
       item.querySelector(".carPrice h3.error:not(.hide)")?.innerText
     );
-    let originalPrice = extractPrice(
+    const originalPrice = extractPrice(
       item.querySelector(".carPrice .darkGreyAlt")?.innerText
     );
     const description = item.querySelector(".carFeatures p").innerText.trim();
@@ -185,9 +185,9 @@ export async function main() {
               userData: { label: Label.PAGE, pageNumber }
             });
           }
-          return parseProducts(request, document, country);
+          return parseProducts(document, country);
         case Label.PAGE:
-          return parseProducts(request, document, country);
+          return parseProducts(document, country);
       }
     },
     async failedRequestHandler({ request, body }, error) {

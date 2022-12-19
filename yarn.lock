@@ -4730,11 +4730,13 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.213.0
     "@aws-sdk/client-s3": 3.213.0
+    "@crawlee/http": 3.1.2
     "@hlidac-shopu/actors-common": 2.0.6
     "@types/node": 18.11.9
     apify: 3.1.1
     apify-cli: 0.10.0
-    underscore: ^1.13.6
+    linkedom: 0.14.20
+    nth-check: 2.1.1
   languageName: unknown
   linkType: soft
 
@@ -18832,6 +18834,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nth-check@npm:2.1.1":
+  version: 2.1.1
+  resolution: "nth-check@npm:2.1.1"
+  dependencies:
+    boolbase: ^1.0.0
+  checksum: 5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
+  languageName: node
+  linkType: hard
+
 "nth-check@npm:^2.0.1":
   version: 2.0.1
   resolution: "nth-check@npm:2.0.1"
@@ -24398,13 +24409,6 @@ __metadata:
   version: 1.13.2
   resolution: "underscore@npm:1.13.2"
   checksum: 6ab156c845ccc757fd01d8b9eb28be18ba89ac68993370dd7397a66a95b124f2ba26947fd53e687c084d334429914fc3dd1620d5123b6e0a7cf112cdcf4e859f
-  languageName: node
-  linkType: hard
-
-"underscore@npm:^1.13.6":
-  version: 1.13.6
-  resolution: "underscore@npm:1.13.6"
-  checksum: d5cedd14a9d0d91dd38c1ce6169e4455bb931f0aaf354108e47bd46d3f2da7464d49b2171a5cf786d61963204a42d01ea1332a903b7342ad428deaafaf70ec36
   languageName: node
   linkType: hard
 

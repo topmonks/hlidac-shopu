@@ -1,26 +1,254 @@
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import {
+  uploadToS3v2,
+  invalidateCDN,
+  cleanPrice
+} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import Apify from "apify";
-import _ from "underscore";
-import { COUNTRY, LABELS, STARTURLS } from "./consts.js";
-import { extractItems, findArraysUrl } from "./tools.js";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "linkedom";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { S3Client } from "@aws-sdk/client-s3";
 
-const { log } = Apify.utils;
+/**
+ * @param {number} start
+ * @param {number} stop
+ * @param {number=} step
+ * @returns number[]
+ */
+function range(start, stop, step = 1) {
+  return Array.from(
+    { length: (stop - start) / step + 1 },
+    (_, i) => start + i * step
+  );
+}
+
+/** @enum */
+const Country = {
+  CZ: "CZ",
+  SK: "SK"
+};
+
+/** @enum */
+const Labels = {
+  Start: "START",
+  Pagination: "PAGINATION",
+  Page: "PAGE",
+  PageBF: "PAGE_BF"
+};
+
+/** @enum */
+const StartUrls = {
+  CZ: "https://nakup.itesco.cz/groceries/cs-CZ/shop/ovoce-a-zelenina?include-children=true",
+  SK: "https://potravinydomov.itesco.sk/groceries/sk-SK/shop/ovocie-a-zelenina?include-children=true"
+};
+
+function flattenChildren(array) {
+  let result = [];
+  array.forEach(a => {
+    result.push(a);
+    if (Array.isArray(a.children)) {
+      result = result.concat(flattenChildren(a.children));
+    }
+  });
+  return result;
+}
+
+function findArraysUrl(urlsCatHtml, country) {
+  const { navList } = urlsCatHtml.taxonomy;
+  const childrenArr = [];
+  flattenChildren(navList).map(item => {
+    if (item.children) {
+      for (const url of item.children) {
+        childrenArr.push(url);
+      }
+    }
+  });
+  let arr = [].concat(childrenArr);
+  arr = arr.map(item => {
+    if (item.url.includes("/all")) {
+      return item.url;
+    } else {
+      return item.allUrl;
+    }
+  });
+
+  const url =
+    country === Country.CZ
+      ? "https://nakup.itesco.cz/groceries/cs-CZ/shop"
+      : "https://potravinydomov.itesco.sk/groceries/sk-SK/shop";
+  return arr.map(item => `${url}${item}`);
+}
+
+/**
+ * @param {number} productId
+ * @param {Object} reduxResults
+ */
+function getProductFromRedux(productId, reduxResults) {
+  const objReduxResults = Object.fromEntries(reduxResults);
+  if (objReduxResults[productId]) {
+    const { product } = objReduxResults[productId];
+    if (product) {
+      return product;
+    }
+  }
+}
+
+function extractItems({ document, country, uniqueItems, stats }) {
+  const rootUrl =
+    country === Country.CZ
+      ? "https://nakup.itesco.cz"
+      : "https://potravinydomov.itesco.sk";
+  const category = document
+    .querySelectorAll(".breadcrumbs ol li")
+    .map(li => li.innerText)
+    .filter(Boolean);
+
+  const body = document.querySelector("body");
+  const reduxData = JSON.parse(body.getAttribute("data-redux-state"));
+  let resultsData = null;
+  if (reduxData) {
+    const { results } = reduxData;
+    stats.add("offers", results.count);
+    const { pages } = reduxData.results;
+    // Use filter on paginated pages that includes null elements in pages array
+    const filteredPages = pages.filter(Boolean);
+    const [result] = filteredPages;
+    if (!result) {
+      console.log("filteredPages", filteredPages); // TODO: remove!!!
+    }
+    const { serializedData } = result ?? {};
+    resultsData = serializedData;
+  }
+
+  return document
+    .querySelectorAll(".product-list--list-item")
+    .map(item => {
+      const result = {
+        category,
+        currency: country === Country.CZ ? "CZK" : "EUR"
+      };
+
+      let itemId = parseInt(item.querySelector(".tile-content"));
+      if (!itemId && item.querySelector("a.product-image-wrapper")) {
+        itemId = parseInt(
+          item
+            .querySelector("a.product-image-wrapper")
+            .getAttribute("href")
+            .replace(/^.+products\//, "")
+        );
+      }
+      result.itemId = itemId;
+      if (uniqueItems.has(itemId)) return;
+
+      result.itemUrl = `${rootUrl}${item
+        .querySelector(".product-image-wrapper")
+        ?.getAttribute("href")}`;
+
+      const productRedux = getProductFromRedux(itemId, resultsData);
+      result.itemName = productRedux.title;
+
+      const offer = item.querySelector(
+        ".product-details--wrapper .offer-text"
+      )?.innerText;
+      if (offer) {
+        if (country === Country.CZ) {
+          result.discounted = !!offer;
+          result.currentPrice = offer
+            ? cleanPrice(
+                offer.includes("Clubcard")
+                  ? offer.split("běžná cena")[0]
+                  : offer.split("nyní")[1]
+              )
+            : cleanPrice(item.querySelector(".beans-price__text").innerText);
+          result.originalPrice = offer
+            ? cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""))
+            : null;
+        } else {
+          result.currentPrice = offer
+            ? cleanPrice(
+                offer.includes("Clubcard")
+                  ? offer.split("běžná cena")[0]
+                  : offer.split("teraz")[1]
+              )
+            : cleanPrice(item.querySelector(".beans-price__text").innerText);
+          const match = offer.includes("Clubcard")
+            ? offer.match(/(cena) ([\d+|.]+)/)
+            : offer.match(/(predtým) ([\d+|,]+)/);
+          if (match && match.length === 3) {
+            result.originalPrice = cleanPrice(match[2]);
+          }
+          result.discounted = Boolean(result.originalPrice);
+        }
+        result.currentUnitPrice = cleanPrice(
+          item.querySelector(".beans-price__subtext").innerText
+        );
+        result.useUnitPrice =
+          item.querySelector(".beans-radio-button-with-label__label")
+            ?.length !== 0;
+        result.originalUnitPrice = result.useUnitPrice
+          ? result.originalPrice
+          : null;
+      }
+
+      result.img = productRedux.defaultImageUrl;
+      result.inStock = productRedux.status === "AvailableForSale";
+
+      const unitOfMeasure = item
+        .querySelector(".weightedProduct-text")
+        ?.innerText?.trim();
+      if (unitOfMeasure === "0.1kg" && result.discounted) {
+        result.currentPrice /= 10;
+        result.originalPrice /= 10;
+      }
+      result.unitOfMeasure = unitOfMeasure;
+
+      uniqueItems.add(result.itemId);
+      return result;
+    })
+    .filter(Boolean);
+}
 
 function getTableName(country, type) {
-  let tableName = country === COUNTRY.CZ ? "itesco" : "itesco_sk";
+  let tableName = country === Country.CZ ? "itesco" : "itesco_sk";
   if (type === ActorType.BF) {
     tableName = `${tableName}_bf`;
   }
   return tableName;
 }
 
-Apify.main(async function main() {
+function startUrls(document, country) {
+  const script = document
+    .querySelector("body")
+    .getAttribute("data-redux-state");
+  const urlsCatHtml = JSON.parse(script);
+  return findArraysUrl(urlsCatHtml, country);
+}
+
+async function pushAndUpload(s3, items) {
+  await Promise.all([
+    Dataset.pushData(items),
+    ...items.map(item => uploadToS3v2(s3, item))
+  ]);
+}
+
+/**
+ * @param {string} url
+ * @param {string} lastPage
+ * @returns string[]
+ */
+function pagesUrls(url, lastPage) {
+  const parsedLastPage = parseInt(lastPage);
+  if (parsedLastPage > 1 && url.indexOf("?page=") === -1) {
+    return range(2, parsedLastPage + 1).map(page => `${url}?page=${page}`);
+  }
+}
+
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -28,224 +256,172 @@ Apify.main(async function main() {
     region: "eu-central-1",
     maxAttempts: 3
   });
-  const stats = {
+  const stats = await withPersistedStats(x => x, {
     offers: 0
-  };
+  });
   const uniqueItems = new Set();
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = false,
-    debugLog = false,
+    development = process.env.TEST || process.env.DEBUG,
     maxConcurrency = 10,
     maxRequestRetries = 5,
-    country = COUNTRY.CZ,
+    country = Country.CZ,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.FULL,
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
     testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/alkoholicke-napoje/whisky-a-bourbon/bourbon/all"
-  } = input ?? {};
+  } = input;
 
-  const requestQueue = await Apify.openRequestQueue();
-  const url = country === COUNTRY.CZ ? STARTURLS.CZ : STARTURLS.SK;
-  if (debugLog) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
-  }
-  if (type === ActorType.FULL) {
-    await requestQueue.addRequest({
-      url,
-      userData: {
-        label: LABELS.START
-      }
-    });
-  } else if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: bfUrl,
-      userData: {
-        label: LABELS.PAGE_BF
-      }
-    });
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: testUrl,
-      userData: {
-        label: LABELS.PAGE
-      }
-    });
+  if (development) {
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  Apify.events.on("persistState", async () => {
-    console.log(stats);
+  const requestQueue = await Actor.openRequestQueue();
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
-
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
-  });
-  const crawler = new Apify.CheerioCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
     maxConcurrency,
     maxRequestRetries,
     proxyConfiguration,
-    handlePageTimeoutSecs: 60,
-
-    handlePageFunction: async ({ $, request }) => {
+    requestHandlerTimeoutSecs: 60,
+    requestHandler: async ({ request, body, enqueueLinks }) => {
+      const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
-      if (request.userData.label === LABELS.START) {
-        const script = $("body").attr("data-redux-state");
-        const urlsCatHtml = JSON.parse(script);
-
-        const startUrls = await findArraysUrl(urlsCatHtml, country);
-        log.debug(`Found ${startUrls.length} on ${request.userData.label}`);
-        for (const item of startUrls) {
-          await requestQueue.addRequest({
-            url: item.url,
+      if (request.userData.label === Labels.Start) {
+        const urls = startUrls(document, country);
+        log.debug(
+          `Found ${startUrls.length} on ${request.url} ${request.userData.label}`
+        );
+        await enqueueLinks({
+          urls,
+          userData: {
+            label: Labels.Page
+          }
+        });
+      } else if (request.userData.label === Labels.Page) {
+        const lastPage = document
+          .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
+          .slice(-2, -1)?.[0]?.innerText;
+        const urls = pagesUrls(request.url, lastPage);
+        if (urls) {
+          log.debug(
+            `Found ${urls.length} on ${request.url} ${request.userData.label}`
+          );
+          await enqueueLinks({
+            urls,
             userData: {
-              label: LABELS.PAGE
+              label: Labels.Pagination
             }
           });
         }
-      } else if (request.userData.label === LABELS.PAGE) {
-        try {
-          if ($(".pagination--page-selector-wrapper ul li").eq(-2)) {
-            const lastPage = $(".pagination--page-selector-wrapper ul li")
-              .eq(-2)
-              .text();
-            const parsedLastPage = parseInt(lastPage);
-            if (parsedLastPage > 1 && request.url.indexOf("?page=") === -1) {
-              const pagesArr = _.range(2, parsedLastPage + 1);
-              for (const page of pagesArr) {
-                const nextPageUrl = `${request.url}?page=${page}`;
-                await requestQueue.addRequest({
-                  url: nextPageUrl,
-                  userData: {
-                    label: LABELS.PAGINATION
-                  }
-                });
-              }
+        const items = extractItems({
+          document,
+          country,
+          uniqueItems,
+          stats
+        });
+        await pushAndUpload(s3, items);
+      } else if (request.userData.label === Labels.PageBF) {
+        const lastPage = document
+          .querySelector(".ddl_plp_pagination .page a:last-child")
+          ?.innerText?.trim();
+        const urls = pagesUrls(request.url, lastPage);
+        await enqueueLinks({
+          urls,
+          userData: {
+            label: Labels.PageBF
+          }
+        });
+        const items = document
+          .querySelectorAll(".a-productListing__productsGrid__element")
+          .map(el => {
+            const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
+            if (itemUrl) {
+              const originalPrice =
+                parseFloat(
+                  el
+                    .querySelector(".product__old-price")
+                    .innerText.trim()
+                    .replace(",", "")
+                    .replace(/\s+/g, "")
+                ) / 100;
+              const currentPrice =
+                parseFloat(
+                  el
+                    .querySelector(".product__price ")
+                    .innerText.trim()
+                    .replace(/\s+/g, "")
+                ) / 100;
+              log.info(`Found  ${itemUrl}`);
+              return {
+                itemId: itemSlug(itemUrl),
+                itemUrl,
+                itemName: el.querySelector(".product__name").innerText,
+                img: `https://itesco.${country.toLowerCase()}${el
+                  .querySelector(".product__img-wrapper img")
+                  .getAttribute("data-src")}`,
+                originalPrice,
+                currentPrice,
+                discounted: originalPrice
+                  ? originalPrice > currentPrice
+                  : false,
+                category:
+                  country.toLowerCase() === "cz"
+                    ? ["Akční nabídky"]
+                    : ["Špeciálne ponuky"],
+                currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+              };
             }
-          }
-          const items = await extractItems({
-            $,
-            country,
-            uniqueItems,
-            stats,
-            request,
-            s3
           });
-          log.debug(`Found ${items.length} storing them, ${request.url}`);
-          await Apify.pushData(items);
-        } catch (e) {
-          // no items on the page check it out
-          log.debug(`Check this url, there are no items ${request.url}`);
-          await Apify.pushData({
-            status: "Check this url, there are no items",
-            url: request.url
-          });
-        }
-      } else if (request.userData.label === LABELS.PAGE_BF) {
-        try {
-          const paginationBlock = $(".ddl_plp_pagination .page");
-          if (paginationBlock) {
-            const lastPage = paginationBlock.find("a").last().text().trim();
-            const parsedLastPage = parseInt(lastPage);
-            if (parsedLastPage > 1 && request.url.indexOf("?page=") === -1) {
-              const pagesArr = _.range(2, parsedLastPage + 1);
-              for (const page of pagesArr) {
-                const nextPageUrl = `${request.url}?page=${page}`;
-                console.log(`Added ${nextPageUrl} to queue`);
-                await requestQueue.addRequest({
-                  url: nextPageUrl,
-                  userData: {
-                    label: LABELS.PAGE_BF
-                  }
-                });
-              }
-            }
-          }
-          const productBlock = $(".a-productListing__productsGrid__element");
-          if (productBlock) {
-            productBlock.each(async function () {
-              const itemUrl = $(this).find("a.ghs-link").first().attr("href");
-              if (itemUrl) {
-                const itemId = itemSlug(itemUrl);
-                const itemName = $(this).find(".product__name").text();
-                const originalPrice =
-                  parseFloat(
-                    $(this)
-                      .find(".product__old-price")
-                      .text()
-                      .trim()
-                      .replace(",", "")
-                      .replace(/\s+/g, "")
-                  ) / 100;
-                const currentPrice =
-                  parseFloat(
-                    $(this)
-                      .find(".product__price ")
-                      .text()
-                      .trim()
-                      .replace(/\s+/g, "")
-                  ) / 100;
-                const img =
-                  `https://itesco.${country.toLowerCase()}` +
-                  $(this).find(".product__img-wrapper img").attr("data-src");
-                log.info(`Found  ${itemUrl}`);
-                await Apify.pushData({
-                  itemId,
-                  itemUrl,
-                  itemName,
-                  img,
-                  originalPrice,
-                  currentPrice,
-                  discounted: originalPrice
-                    ? originalPrice > currentPrice
-                    : false,
-                  category:
-                    country.toLowerCase() === "cz"
-                      ? ["Akční nabídky"]
-                      : ["Špeciálne ponuky"],
-                  currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
-                });
-              }
-            });
-          }
-        } catch (e) {
-          // no items on the page check it out
-          log.debug(`Check this url, there are no items ${request.url}`);
-          await Apify.pushData({
-            status: "Check this url, there are no items",
-            url: request.url
-          });
-        }
-      } else if (request.userData.label === LABELS.PAGINATION) {
-        try {
-          const items = await extractItems({
-            $,
-            country,
-            uniqueItems,
-            stats,
-            request,
-            s3
-          });
-          log.debug(`Found ${items.length} storing them, ${request.url}`);
-          await Apify.pushData(items);
-        } catch (e) {
-          // no items on the page check it out
-          log.debug(`Check this url, there are no items ${request.url}`);
-          await Apify.pushData({
-            status: "Check this url, there are no items",
-            url: request.url
-          });
-        }
+        await pushAndUpload(s3, items);
+      } else if (request.userData.label === Labels.Pagination) {
+        const items = extractItems({
+          document,
+          country,
+          uniqueItems,
+          stats,
+          request
+        });
+        log.debug(`Found ${items.length} storing them, ${request.url}`);
+        await pushAndUpload(s3, items);
       }
     },
-
-    handleFailedRequestFunction: async ({ request }) => {
-      log.error(`Request ${request.url} failed 4 times`);
+    failedRequestHandler: ({ request }, error) => {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
-  await crawler.run();
-  console.log(stats);
+
+  let startingRequest;
+  if (type === ActorType.FULL) {
+    startingRequest = {
+      url: country === Country.CZ ? StartUrls.CZ : StartUrls.SK,
+      userData: {
+        label: Labels.Start
+      }
+    };
+  } else if (type === ActorType.BF) {
+    startingRequest = {
+      url: bfUrl,
+      userData: {
+        label: Labels.PageBF
+      }
+    };
+  } else if (type === ActorType.TEST) {
+    startingRequest = {
+      url: testUrl,
+      userData: {
+        label: Labels.Page
+      }
+    };
+  }
+  await crawler.run([startingRequest]);
+
+  stats.save(true);
+
   if (!development) {
     await invalidateCDN(
       cloudfront,
@@ -256,4 +432,6 @@ Apify.main(async function main() {
     await uploadToKeboola(getTableName(country, type));
     log.info("upload to Keboola finished");
   }
-});
+}
+
+await Actor.main(main);
