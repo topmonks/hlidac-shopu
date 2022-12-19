@@ -87,6 +87,10 @@ function getBreadCrumbs({ categoryId, categoriesById }) {
  * @returns {ProductItem}
  */
 export function normalizeItem({ item, categoriesById }) {
+  const breadCrumbs = getBreadCrumbs({
+    categoryId: item.mainCategoryId,
+    categoriesById
+  });
   const result = {
     img: item.images?.[0] ?? null,
     itemId: item.productId ?? null,
@@ -97,10 +101,8 @@ export function normalizeItem({ item, categoriesById }) {
     currentUnitPrice: item.pricePerUnit?.amount ?? null,
     currency: item.price?.currency ?? null,
     useUnitPrice: item.textualAmount?.includes("cca"),
-    category: getBreadCrumbs({
-      categoryId: item.mainCategoryId,
-      categoriesById
-    }).join(" > ")
+    breadCrumbs: JSON.stringify(breadCrumbs),
+    category: breadCrumbs.join(" > ")
   };
   if (item.sales.length !== 0) {
     for (const sale of item.sales) {
@@ -158,7 +160,7 @@ function productsCountInCategoryRequest(categoryId) {
  * @param {{categoryId: string, categoriesById: Object.<string, Category>}}
  * @returns {{url: string, userData: {label: Label.Count, categoryId: string}[]}}
  */
-function categorysCountRequests({ categoriesById, stats }) {
+function categoriesCountRequests({ categoriesById, stats }) {
   const categories = Object.values(categoriesById);
   log.debug(`Adding to the queue ${categories.length} of categories`);
   const requests = [];
@@ -318,7 +320,7 @@ async function main() {
           await requestQueue.addRequests(
             takeRandomIfDev(
               development,
-              categorysCountRequests({
+              categoriesCountRequests({
                 categoriesById,
                 stats
               })
