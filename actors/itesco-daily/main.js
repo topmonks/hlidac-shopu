@@ -117,22 +117,12 @@ function extractItems({ document, country, uniqueItems, stats }) {
     const { pages } = reduxData.results;
     // Use filter on paginated pages that includes null elements in pages array
     const filteredPages = pages.filter(Boolean);
-    const [result] = filteredPages;
-    if (!result) {
-      console.log("filteredPages", filteredPages); // TODO: remove!!!
-    }
-    const { serializedData } = result ?? {};
-    resultsData = serializedData;
+    resultsData = filteredPages?.[0]?.serializedData;
   }
 
   return document
     .querySelectorAll(".product-list--list-item")
     .map(item => {
-      const result = {
-        category,
-        currency: country === Country.CZ ? "CZK" : "EUR"
-      };
-
       let itemId = parseInt(item.querySelector(".tile-content"));
       if (!itemId && item.querySelector("a.product-image-wrapper")) {
         itemId = parseInt(
@@ -142,70 +132,63 @@ function extractItems({ document, country, uniqueItems, stats }) {
             .replace(/^.+products\//, "")
         );
       }
-      result.itemId = itemId;
       if (uniqueItems.has(itemId)) return;
 
-      result.itemUrl = `${rootUrl}${item
-        .querySelector(".product-image-wrapper")
-        ?.getAttribute("href")}`;
-
-      const productRedux = getProductFromRedux(itemId, resultsData);
-      result.itemName = productRedux.title;
+      const result = {
+        itemId,
+        category,
+        currency: country === Country.CZ ? "CZK" : "EUR",
+        currentPrice: cleanPrice(
+          item.querySelector(".beans-price__text")?.innerText
+        ),
+        currentUnitPrice: cleanPrice(
+          item.querySelector(".beans-price__subtext")?.innerText
+        ),
+        discounted: false,
+        itemUrl: `${rootUrl}${item
+          .querySelector(".product-image-wrapper")
+          ?.getAttribute("href")}`
+      };
 
       const offer = item.querySelector(
         ".product-details--wrapper .offer-text"
       )?.innerText;
-      if (offer) {
+      if (offer && !offer.includes("Clubcard")) {
+        result.discounted = true;
+
         if (country === Country.CZ) {
-          result.discounted = !!offer;
-          result.currentPrice = offer
-            ? cleanPrice(
-                offer.includes("Clubcard")
-                  ? offer.split("běžná cena")[0]
-                  : offer.split("nyní")[1]
-              )
-            : cleanPrice(item.querySelector(".beans-price__text").innerText);
-          result.originalPrice = offer
-            ? cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""))
-            : null;
+          result.currentPrice = cleanPrice(offer.split("nyní")[1]);
+          result.originalPrice = cleanPrice(
+            offer.replace(/^.+cena|nyní.+/g, "")
+          );
         } else {
-          result.currentPrice = offer
-            ? cleanPrice(
-                offer.includes("Clubcard")
-                  ? offer.split("běžná cena")[0]
-                  : offer.split("teraz")[1]
-              )
-            : cleanPrice(item.querySelector(".beans-price__text").innerText);
-          const match = offer.includes("Clubcard")
-            ? offer.match(/(cena) ([\d+|.]+)/)
-            : offer.match(/(predtým) ([\d+|,]+)/);
+          result.currentPrice = cleanPrice(offer.split("teraz")[1]);
+          const match = offer.match(/(predtým) ([\d+|,]+)/);
           if (match && match.length === 3) {
             result.originalPrice = cleanPrice(match[2]);
           }
-          result.discounted = Boolean(result.originalPrice);
         }
-        result.currentUnitPrice = cleanPrice(
-          item.querySelector(".beans-price__subtext").innerText
+
+        result.useUnitPrice = Boolean(
+          item.querySelector(".beans-quantity-controls__option") ||
+            item.querySelector(".beans-radio-button-with-label__label")
         );
-        result.useUnitPrice =
-          item.querySelector(".beans-radio-button-with-label__label")
-            ?.length !== 0;
-        result.originalUnitPrice = result.useUnitPrice
-          ? result.originalPrice
-          : null;
+        if (result.useUnitPrice) {
+          result.originalUnitPrice = result.originalPrice;
+          result.unitOfMeasure = "0.1kg";
+          result.currentPrice /= 10;
+          result.originalPrice /= 10;
+        }
       }
 
+      const productRedux = getProductFromRedux(itemId, resultsData);
+      result.itemName = productRedux.title;
       result.img = productRedux.defaultImageUrl;
       result.inStock = productRedux.status === "AvailableForSale";
 
-      const unitOfMeasure = item
-        .querySelector(".weightedProduct-text")
-        ?.innerText?.trim();
-      if (unitOfMeasure === "0.1kg" && result.discounted) {
-        result.currentPrice /= 10;
-        result.originalPrice /= 10;
+      if (!result.currentPrice && result.inStock) {
+        log.error("Missing price", result);
       }
-      result.unitOfMeasure = unitOfMeasure;
 
       uniqueItems.add(result.itemId);
       return result;
@@ -248,6 +231,75 @@ function pagesUrls(url, lastPage) {
   }
 }
 
+async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
+  let startingRequest;
+  if (type === ActorType.FULL) {
+    startingRequest = {
+      url: country === Country.CZ ? StartUrls.CZ : StartUrls.SK,
+      userData: {
+        label: Labels.Start
+      }
+    };
+  } else if (type === ActorType.BF) {
+    startingRequest = {
+      url: bfUrl,
+      userData: {
+        label: Labels.PageBF
+      }
+    };
+  } else if (type === ActorType.TEST) {
+    startingRequest = {
+      url: testUrl,
+      userData: {
+        label: Labels.Page
+      }
+    };
+  }
+  await crawler.run([startingRequest]);
+}
+
+function extractBFItems(document, country) {
+  return document
+    .querySelectorAll(".a-productListing__productsGrid__element")
+    .map(el => {
+      const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
+      if (itemUrl) {
+        const originalPrice =
+          parseFloat(
+            el
+              .querySelector(".product__old-price")
+              .innerText.trim()
+              .replace(",", "")
+              .replace(/\s+/g, "")
+          ) / 100;
+        const currentPrice =
+          parseFloat(
+            el
+              .querySelector(".product__price ")
+              .innerText.trim()
+              .replace(/\s+/g, "")
+          ) / 100;
+        log.info(`Found  ${itemUrl}`);
+        return {
+          itemId: itemSlug(itemUrl),
+          itemUrl,
+          itemName: el.querySelector(".product__name").innerText,
+          img: `https://itesco.${country.toLowerCase()}${el
+            .querySelector(".product__img-wrapper img")
+            .getAttribute("data-src")}`,
+          originalPrice,
+          currentPrice,
+          discounted: originalPrice ? originalPrice > currentPrice : false,
+          category:
+            country.toLowerCase() === "cz"
+              ? ["Akční nabídky"]
+              : ["Špeciálne ponuky"],
+          currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+        };
+      }
+    });
+}
+
 async function main() {
   rollbar.init();
 
@@ -288,6 +340,7 @@ async function main() {
     maxRequestRetries,
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
+    maxRequestsPerMinute: 500,
     requestHandler: async ({ request, body, enqueueLinks }) => {
       const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
@@ -336,47 +389,7 @@ async function main() {
             label: Labels.PageBF
           }
         });
-        const items = document
-          .querySelectorAll(".a-productListing__productsGrid__element")
-          .map(el => {
-            const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
-            if (itemUrl) {
-              const originalPrice =
-                parseFloat(
-                  el
-                    .querySelector(".product__old-price")
-                    .innerText.trim()
-                    .replace(",", "")
-                    .replace(/\s+/g, "")
-                ) / 100;
-              const currentPrice =
-                parseFloat(
-                  el
-                    .querySelector(".product__price ")
-                    .innerText.trim()
-                    .replace(/\s+/g, "")
-                ) / 100;
-              log.info(`Found  ${itemUrl}`);
-              return {
-                itemId: itemSlug(itemUrl),
-                itemUrl,
-                itemName: el.querySelector(".product__name").innerText,
-                img: `https://itesco.${country.toLowerCase()}${el
-                  .querySelector(".product__img-wrapper img")
-                  .getAttribute("data-src")}`,
-                originalPrice,
-                currentPrice,
-                discounted: originalPrice
-                  ? originalPrice > currentPrice
-                  : false,
-                category:
-                  country.toLowerCase() === "cz"
-                    ? ["Akční nabídky"]
-                    : ["Špeciálne ponuky"],
-                currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
-              };
-            }
-          });
+        const items = extractBFItems(document, country);
         await pushAndUpload(s3, items);
       } else if (request.userData.label === Labels.Pagination) {
         const items = extractItems({
@@ -395,30 +408,7 @@ async function main() {
     }
   });
 
-  let startingRequest;
-  if (type === ActorType.FULL) {
-    startingRequest = {
-      url: country === Country.CZ ? StartUrls.CZ : StartUrls.SK,
-      userData: {
-        label: Labels.Start
-      }
-    };
-  } else if (type === ActorType.BF) {
-    startingRequest = {
-      url: bfUrl,
-      userData: {
-        label: Labels.PageBF
-      }
-    };
-  } else if (type === ActorType.TEST) {
-    startingRequest = {
-      url: testUrl,
-      userData: {
-        label: Labels.Page
-      }
-    };
-  }
-  await crawler.run([startingRequest]);
+  await startCrawler(crawler, { type, country, bfUrl, testUrl });
 
   stats.save(true);
 
