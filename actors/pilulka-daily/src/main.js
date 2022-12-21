@@ -179,7 +179,7 @@ async function fetchProductBase(
           return {
             itemId: id,
             itemName: name,
-            itemUrl: itemUrl,
+            itemUrl,
             shop: shopName(itemUrl),
             slug: itemSlug(itemUrl),
             img: buildUrl(ROOT_WEB_URL(country), imgLink),

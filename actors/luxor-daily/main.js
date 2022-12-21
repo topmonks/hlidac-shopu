@@ -79,7 +79,7 @@ async function handleAPIStart(context, stats, crawlContext) {
       url: getProductUrl(PAGE, PRODUCTS_PER_PAGE, slug),
       userData: {
         label: LABELS.API_LIST,
-        slug: slug,
+        slug,
         page: 1
       }
     };

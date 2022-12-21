@@ -148,7 +148,7 @@ function createPaginationPayload({ categoryId, page }) {
     "parameters": [],
     "idPrefix": 0,
     "prefixType": 3,
-    "page": page,
+    page,
     // "pageTo": page,
     "availabilityType": 0,
     "newsOnly": false,

@@ -190,7 +190,7 @@ async function addProductListPagesToQueue($, crawlContext, firstPageURL) {
     console.info(`Adding page ${url} to queue.`);
     await crawlContext.requestQueue.addRequest({
       userData: { label: "nthPage", pageN: i },
-      url: url
+      url
     });
   }
 }
@@ -281,8 +281,8 @@ function mkRating($) {
 function mkProperty(name, value) {
   return {
     "@type": "PropertyValue",
-    "name": name,
-    "value": value
+    name,
+    value
   };
 }
 
@@ -331,7 +331,7 @@ export async function fetchDetail($, request, dataset) {
       "@type": "Product",
       "name": json["name"],
       "description": json["description"],
-      "images": images,
+      images,
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": rating.value,

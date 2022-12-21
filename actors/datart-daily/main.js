@@ -221,7 +221,7 @@ export async function main() {
     sessionPoolOptions: {
       maxPoolSize: 200
     },
-    requestHandler: async ({ request, log, body, enqueueLinks }) => {
+    async requestHandler({ request, log, body, enqueueLinks }) {
       if (request.userData.label === Labels.COUNT) {
         await countAllProducts({ body, stats });
         return;
@@ -330,7 +330,7 @@ export async function main() {
         });
       }
     },
-    failedRequestHandler: async ({ request, log }, error) => {
+    async failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
     }
   });

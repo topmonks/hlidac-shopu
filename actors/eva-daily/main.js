@@ -19,8 +19,8 @@ async function enqueueRequests(requestQueue, urls, userData) {
   for (const url of urls) {
     await requestQueue.addRequest(
       {
-        url: url,
-        userData: userData
+        url,
+        userData
       },
       { forefront: true }
     );

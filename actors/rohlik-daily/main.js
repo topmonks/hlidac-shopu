@@ -136,7 +136,7 @@ function categoriesRequests({ count, categoryId, categoriesById }) {
     urls,
     userData: {
       label: Label.List,
-      categoryId: categoryId
+      categoryId
     }
   };
 }

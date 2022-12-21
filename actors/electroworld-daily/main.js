@@ -66,8 +66,8 @@ Apify.main(async function main() {
   const dataset = await Apify.openDataset();
   const requestQueue = await Apify.openRequestQueue();
   const crawlContext = {
-    requestQueue: requestQueue,
-    dataset: dataset,
+    requestQueue,
+    dataset,
     stats,
     processedIds,
     s3,
@@ -124,8 +124,8 @@ Apify.main(async function main() {
     });
   } else {
     crawler = new Apify.CheerioCrawler({
-      requestQueue: requestQueue,
-      proxyConfiguration: proxyConfiguration,
+      requestQueue,
+      proxyConfiguration,
       maxRequestRetries,
       maxConcurrency,
       handlePageFunction: async context => {

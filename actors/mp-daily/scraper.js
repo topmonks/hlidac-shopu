@@ -85,7 +85,7 @@ async function doScraping(request, proxyConfiguration, headers = null) {
       locales: ["cs-CZ"],
       operatingSystems: ["windows", "linux"]
     },
-    url: url
+    url
   };
   if (proxyConfiguration)
     gotOptions = {

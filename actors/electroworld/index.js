@@ -39,7 +39,7 @@ export function categoryPaginationPayload(categoryId, page) {
       "review": null,
       "tags": [],
       "sort": { "sortBy": "article", "order": "ASC" },
-      "paging": { "limit": PageSize, "page": page },
+      "paging": { "limit": PageSize, page },
       "category": null,
       "article": categoryId,
       "storeMode": false,

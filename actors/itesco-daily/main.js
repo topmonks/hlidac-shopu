@@ -341,7 +341,7 @@ async function main() {
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
     maxRequestsPerMinute: 500,
-    requestHandler: async ({ request, body, enqueueLinks }) => {
+    async requestHandler({ request, body, enqueueLinks }) {
       const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
       if (request.userData.label === Labels.Start) {
@@ -403,7 +403,7 @@ async function main() {
         await pushAndUpload(s3, items);
       }
     },
-    failedRequestHandler: ({ request }, error) => {
+    failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
