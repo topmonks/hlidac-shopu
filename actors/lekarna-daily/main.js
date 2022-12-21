@@ -185,7 +185,7 @@ async function extractBfItems($, $products, breadCrumbs) {
       result.inStock = itemJson.availability === "InStock";
       itemsArray.push(result);
     } else {
-      log.info(`Skipp non price product [${name}]`);
+      log.info(`Skipp non price product [${itemJson.name}]`);
       stats.itemsSkipped++;
     }
   });

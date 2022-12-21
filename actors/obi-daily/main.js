@@ -230,7 +230,7 @@ async function main() {
   } = input;
   const country = input?.country?.toLowerCase() ?? "cz";
 
-  if (development || debug) {
+  if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 

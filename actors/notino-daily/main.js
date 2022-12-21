@@ -425,7 +425,7 @@ const handleProductInDetailPage = async (
       }
       product.inStock = true;
       results.push(product);
-      crawledPłroducts++;
+      crawledProducts++;
     }
   }
 
