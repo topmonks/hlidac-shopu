@@ -226,7 +226,7 @@ async function main() {
     development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
     maxRequestRetries = 3,
-    maxConcurrency = 10
+    maxConcurrency = 7
   } = input;
   const country = input?.country?.toLowerCase() ?? "cz";
 
