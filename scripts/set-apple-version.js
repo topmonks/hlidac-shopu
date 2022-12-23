@@ -18,7 +18,7 @@ try {
 function changeProductVersion(version) {
   const filePath = path.resolve(
     appleProjectPath,
-    "Hlídač Shopů.xcodeproj/project.pbxproj"
+    "App.xcodeproj/project.pbxproj"
   );
 
   const prev = execSync(`cat "${filePath}"`).toString();

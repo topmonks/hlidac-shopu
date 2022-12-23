@@ -114,7 +114,7 @@ folder.
 ## Extension release
 
 Release process of extension is fully automated. To start the release process, you have to:
-1. [Update extension version](#updating-extension-version)
+1. run `./version.sh` to see current version and then bump it with `./version.sh x.y.z`
 2. Commit & create tag in github repository in following format: `extension-x.y.z`, 
    where `x.y.z` is the version you set in previous step. 
 
