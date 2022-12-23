@@ -122,7 +122,7 @@ export function normalizeItem({ item, categoriesById }) {
  * @returns {{urls: string[], userData: {label: Label.List, categoryId: string}}
  */
 function categoriesRequests({ count, categoryId, categoriesById }) {
-  console.log(
+  log.info(
     `${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`
   );
   const limitPerPage = 100;

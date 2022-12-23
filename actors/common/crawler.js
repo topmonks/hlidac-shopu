@@ -14,3 +14,17 @@ export function checkResponseStatus(session, response, stats) {
   if (response.statusCode === 200) stats.inc("ok");
   session.setCookiesFromResponse(response);
 }
+
+/**
+ *
+ * @param {number} totalCount
+ * @param {(pageNr: number) => string} urlFn
+ * @returns {string[]} urls
+ */
+function morePageUrls(totalCount, urlFn) {
+  const urls = [];
+  for (let pageNr = 2; pageNr <= totalCount; pageNr++) {
+    urls.push(urlFn(pageNr));
+  }
+  return urls;
+}

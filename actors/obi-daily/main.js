@@ -50,14 +50,12 @@ function pagesUrls({ document, url }) {
     .querySelectorAll("li.product > a")
     .filter(a => a.getAttribute("data-ui-name")).length;
   const pageCount = Math.ceil(productCount / productPerPageCount);
-  if (pageCount > 1) {
-    return Array(pageCount - 1)
-      .fill(0)
-      .map((_, i) => i + 2)
-      .map(i => `${url}/?page=${i}`);
-  } else {
-    return [];
-  }
+  return pageCount > 1
+    ? Array(pageCount - 1)
+        .fill(0)
+        .map((_, i) => i + 2)
+        .map(i => `${url}/?page=${i}`)
+    : [];
 }
 
 async function handleSubCategory(
@@ -87,20 +85,20 @@ async function handleSubCategory(
       urls,
       userData: { label: Labels.Detail }
     });
-  } else {
-    const subCategoryList = document
-      .querySelectorAll('a[wt_name="assortment_menu.level2"]')
-      .map(a => a.getAttribute("href"));
-    const urls = subCategoryList.map(
-      subcategoryLink => new URL(subcategoryLink, homePageUrl).href
-    );
-
-    stats.add("urls", urls.length);
-    await enqueueLinks({
-      urls,
-      userData: { label }
-    });
+    return;
   }
+  const subCategoryList = document
+    .querySelectorAll('a[wt_name="assortment_menu.level2"]')
+    .map(a => a.getAttribute("href"));
+  const urls = subCategoryList.map(
+    subcategoryLink => new URL(subcategoryLink, homePageUrl).href
+  );
+
+  stats.add("urls", urls.length);
+  await enqueueLinks({
+    urls,
+    userData: { label }
+  });
 }
 
 function listUrls({ request, document, processedIds }) {
@@ -127,16 +125,13 @@ function extractProduct({ url, document }) {
   if (currency === "SKK") {
     currency = "EUR";
   }
-  let discountedPrice = document.querySelector(".saving + del")?.innerText;
-  let originalPrice = null;
-  if (discountedPrice) {
-    originalPrice = cleanPrice(discountedPrice);
-  }
+  const discountedPrice = document.querySelector(".saving + del")?.innerText;
+  const originalPrice = discountedPrice ? cleanPrice(discountedPrice) : null;
   let img = document.querySelector(".ads-slider__link").getAttribute("href");
   if (!img) {
     img = document.querySelector(".ads-slider__image").getAttribute("data-src");
   }
-  const result = {
+  return {
     itemUrl: url,
     itemName: document
       .querySelector(".overview__description >.overview__heading")
@@ -157,7 +152,6 @@ function extractProduct({ url, document }) {
       .map(a => a.innerText)
       .join("/")
   };
-  return result;
 }
 
 function getItemIdFromUrl(url) {
@@ -172,11 +166,11 @@ function variantsUrls({ url, document, processedIds }) {
     .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
     )
     .map(a => {
-      let productUrl = a.getAttribute("href");
+      const productUrl = a.getAttribute("href");
       if (!productUrl) {
         return;
       }
-      let itemId = getItemIdFromUrl(productUrl);
+      const itemId = getItemIdFromUrl(productUrl);
       if (crawledItemId === itemId || processedIds.has(itemId)) {
         return;
       }
@@ -214,7 +208,7 @@ async function main() {
   });
 
   const processedIds = new Set();
-  let stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats(x => x, {
     urls: 0,
     items: 0,
     totalItems: 0
@@ -234,7 +228,7 @@ async function main() {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  let homePageUrl = `https://www.obi${
+  const homePageUrl = `https://www.obi${
     country === "it" ? "-italia" : ""
   }.${country}`;
 
@@ -257,48 +251,59 @@ async function main() {
       log.info(`Processing ${request.url}`);
       const { document } = parseHTML(body.toString());
       const { label } = context.request.userData;
-      if (label === Labels.Start) {
-        const urls = startUrls({
-          document,
-          homePageUrl
-        });
-        stats.add("urls", urls.length);
-        await enqueueLinks({
-          urls,
-          userData: { label: Labels.SubCat }
-        });
-      } else if (label === Labels.SubCat) {
-        await handleSubCategory(context, {
-          document,
-          homePageUrl,
-          stats,
-          processedIds
-        });
-      } else if (label === Labels.List) {
-        const urls = listUrls({ request, document, processedIds });
-        stats.add("urls", urls.length);
-        await enqueueLinks({
-          urls,
-          userData: { label: Labels.Detail }
-        });
-      } else if (label === Labels.Detail) {
-        stats.inc("totalItems");
-        await enqueueVariants(context, {
-          document,
-          processedIds,
-          stats
-        });
-        const product = extractProduct({
-          url: request.url,
-          document
-        });
-        if (product) {
-          stats.inc("items");
-          await Promise.all([
-            Dataset.pushData(product),
-            uploadToS3v2(s3, product)
-          ]);
-        }
+      switch (label) {
+        case Labels.Start:
+          {
+            const urls = startUrls({
+              document,
+              homePageUrl
+            });
+            stats.add("urls", urls.length);
+            await enqueueLinks({
+              urls,
+              userData: { label: Labels.SubCat }
+            });
+          }
+          break;
+        case Labels.SubCat:
+          await handleSubCategory(context, {
+            document,
+            homePageUrl,
+            stats,
+            processedIds
+          });
+          break;
+        case Labels.List:
+          {
+            const urls = listUrls({ request, document, processedIds });
+            stats.add("urls", urls.length);
+            await enqueueLinks({
+              urls,
+              userData: { label: Labels.Detail }
+            });
+          }
+          break;
+        case Labels.Detail:
+          {
+            stats.inc("totalItems");
+            await enqueueVariants(context, {
+              document,
+              processedIds,
+              stats
+            });
+            const product = extractProduct({
+              url: request.url,
+              document
+            });
+            if (product) {
+              stats.inc("items");
+              await Promise.all([
+                Dataset.pushData(product),
+                uploadToS3v2(s3, product)
+              ]);
+            }
+          }
+          break;
       }
     },
     async failedRequestHandler({ request }, error) {

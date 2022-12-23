@@ -70,11 +70,7 @@ function findArraysUrl(urlsCatHtml, country) {
   });
   let arr = [].concat(childrenArr);
   arr = arr.map(item => {
-    if (item.url.includes("/all")) {
-      return item.url;
-    } else {
-      return item.allUrl;
-    }
+    return item.url.includes("/all") ? item.url : item.allUrl;
   });
 
   const url =
@@ -197,9 +193,9 @@ function extractItems({ document, country, uniqueItems, stats }) {
 }
 
 function getTableName(country, type) {
-  let tableName = country === Country.CZ ? "itesco" : "itesco_sk";
+  const tableName = country === Country.CZ ? "itesco" : "itesco_sk";
   if (type === ActorType.BF) {
-    tableName = `${tableName}_bf`;
+    return `${tableName}_bf`;
   }
   return tableName;
 }
@@ -263,40 +259,41 @@ function extractBFItems(document, country) {
     .querySelectorAll(".a-productListing__productsGrid__element")
     .map(el => {
       const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
-      if (itemUrl) {
-        const originalPrice =
-          parseFloat(
-            el
-              .querySelector(".product__old-price")
-              .innerText.trim()
-              .replace(",", "")
-              .replace(/\s+/g, "")
-          ) / 100;
-        const currentPrice =
-          parseFloat(
-            el
-              .querySelector(".product__price ")
-              .innerText.trim()
-              .replace(/\s+/g, "")
-          ) / 100;
-        log.info(`Found  ${itemUrl}`);
-        return {
-          itemId: itemSlug(itemUrl),
-          itemUrl,
-          itemName: el.querySelector(".product__name").innerText,
-          img: `https://itesco.${country.toLowerCase()}${el
-            .querySelector(".product__img-wrapper img")
-            .getAttribute("data-src")}`,
-          originalPrice,
-          currentPrice,
-          discounted: originalPrice ? originalPrice > currentPrice : false,
-          category:
-            country.toLowerCase() === "cz"
-              ? ["Akční nabídky"]
-              : ["Špeciálne ponuky"],
-          currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
-        };
+      if (!itemUrl) {
+        return;
       }
+      const originalPrice =
+        parseFloat(
+          el
+            .querySelector(".product__old-price")
+            .innerText.trim()
+            .replace(",", "")
+            .replace(/\s+/g, "")
+        ) / 100;
+      const currentPrice =
+        parseFloat(
+          el
+            .querySelector(".product__price ")
+            .innerText.trim()
+            .replace(/\s+/g, "")
+        ) / 100;
+      log.info(`Found  ${itemUrl}`);
+      return {
+        itemId: itemSlug(itemUrl),
+        itemUrl,
+        itemName: el.querySelector(".product__name").innerText,
+        img: `https://itesco.${country.toLowerCase()}${el
+          .querySelector(".product__img-wrapper img")
+          .getAttribute("data-src")}`,
+        originalPrice,
+        currentPrice,
+        discounted: originalPrice ? originalPrice > currentPrice : false,
+        category:
+          country.toLowerCase() === "cz"
+            ? ["Akční nabídky"]
+            : ["Špeciálne ponuky"],
+        currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+      };
     });
 }
 
@@ -344,63 +341,76 @@ async function main() {
     async requestHandler({ request, body, enqueueLinks }) {
       const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
-      if (request.userData.label === Labels.Start) {
-        const urls = startUrls(document, country);
-        log.debug(
-          `Found ${startUrls.length} on ${request.url} ${request.userData.label}`
-        );
-        await enqueueLinks({
-          urls,
-          userData: {
-            label: Labels.Page
+      switch (request.userData.label) {
+        case Labels.Start:
+          {
+            const urls = startUrls(document, country);
+            log.debug(
+              `Found ${startUrls.length} on ${request.url} ${request.userData.label}`
+            );
+            await enqueueLinks({
+              urls,
+              userData: {
+                label: Labels.Page
+              }
+            });
           }
-        });
-      } else if (request.userData.label === Labels.Page) {
-        const lastPage = document
-          .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
-          .slice(-2, -1)?.[0]?.innerText;
-        const urls = pagesUrls(request.url, lastPage);
-        if (urls) {
-          log.debug(
-            `Found ${urls.length} on ${request.url} ${request.userData.label}`
-          );
-          await enqueueLinks({
-            urls,
-            userData: {
-              label: Labels.Pagination
+          break;
+        case Labels.Page:
+          {
+            const lastPage = document
+              .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
+              .slice(-2, -1)?.[0]?.innerText;
+            const urls = pagesUrls(request.url, lastPage);
+            if (urls) {
+              log.debug(
+                `Found ${urls.length} on ${request.url} ${request.userData.label}`
+              );
+              await enqueueLinks({
+                urls,
+                userData: {
+                  label: Labels.Pagination
+                }
+              });
             }
-          });
-        }
-        const items = extractItems({
-          document,
-          country,
-          uniqueItems,
-          stats
-        });
-        await pushAndUpload(s3, items);
-      } else if (request.userData.label === Labels.PageBF) {
-        const lastPage = document
-          .querySelector(".ddl_plp_pagination .page a:last-child")
-          ?.innerText?.trim();
-        const urls = pagesUrls(request.url, lastPage);
-        await enqueueLinks({
-          urls,
-          userData: {
-            label: Labels.PageBF
+            const items = extractItems({
+              document,
+              country,
+              uniqueItems,
+              stats
+            });
+            await pushAndUpload(s3, items);
           }
-        });
-        const items = extractBFItems(document, country);
-        await pushAndUpload(s3, items);
-      } else if (request.userData.label === Labels.Pagination) {
-        const items = extractItems({
-          document,
-          country,
-          uniqueItems,
-          stats,
-          request
-        });
-        log.debug(`Found ${items.length} storing them, ${request.url}`);
-        await pushAndUpload(s3, items);
+          break;
+        case Labels.PageBF:
+          {
+            const lastPage = document
+              .querySelector(".ddl_plp_pagination .page a:last-child")
+              ?.innerText?.trim();
+            const urls = pagesUrls(request.url, lastPage);
+            await enqueueLinks({
+              urls,
+              userData: {
+                label: Labels.PageBF
+              }
+            });
+            const items = extractBFItems(document, country);
+            await pushAndUpload(s3, items);
+          }
+          break;
+        case Labels.Pagination:
+          {
+            const items = extractItems({
+              document,
+              country,
+              uniqueItems,
+              stats,
+              request
+            });
+            log.debug(`Found ${items.length} storing them, ${request.url}`);
+            await pushAndUpload(s3, items);
+          }
+          break;
       }
     },
     failedRequestHandler({ request }, error) {
