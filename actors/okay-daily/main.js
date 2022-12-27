@@ -1,243 +1,189 @@
-import { URLSearchParams } from "url";
 import { Actor, log, LogLevel, Dataset } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { HttpCrawler } from "@crawlee/http";
-import { calculateTagSalePrice } from "./index.js";
+import { PlaywrightCrawler } from "@crawlee/playwright";
+import { DOMParser, parseHTML } from "linkedom";
 
-const COUNTRY = {
+/** @enum */
+const Country = {
   CZ: "CZ",
   SK: "SK"
 };
 
+/** @enum */
+const Labels = {
+  MainSitemap: "MainSitemap",
+  ProductSitemap: "ProductSitemap",
+  Detail: "Detail"
+};
+
 function getBaseUrl(country) {
   switch (country) {
-    case COUNTRY.CZ:
+    case Country.CZ:
       return "https://www.okay.cz";
-    case COUNTRY.SK:
+    case Country.SK:
       return "https://www.okay.sk";
   }
 }
 
-function getShopUri(country) {
-  switch (country.toUpperCase()) {
-    case COUNTRY.CZ:
-      return "okay-elektro-cz.myshopify.com";
-    case COUNTRY.SK:
-      return "okay-dev-sk.myshopify.com";
-  }
+function productsSitemapsUrls(body) {
+  const document = new DOMParser().parseFromString(body, "text/xml");
+  return document
+    .getElementsByTagNameNS("", "sitemap")
+    .flatMap(x => x.getElementsByTagNameNS("", "loc"))
+    .map(x => x.textContent.trim())
+    .filter(url => url.includes("products"));
 }
 
-const INTERESTED_TAGS = {
-  [ActorType.Test]: {
-    [COUNTRY.CZ]: ["COL1:1573"],
-    [COUNTRY.SK]: ["COL1:2102"]
-  },
-  [ActorType.BF]: {
-    [COUNTRY.CZ]: [
-      "BDT:Black Friday#1{2655}",
-      "BDT:Black Friday#1{2657}",
-      "BDT:Black Friday#1{2581}",
-      "BDT:Black Friday#3{2425}"
-    ],
-    [COUNTRY.SK]: [
-      "BDT:Black Friday#1{2663}",
-      "BDT:Black Friday#1{2665}",
-      "BDT:Black Friday#1{2589}"
-    ]
-  },
-  [ActorType.Full]: {
-    [COUNTRY.CZ]: null,
-    [COUNTRY.SK]: null
-  }
-};
-
-function getInterestedTags(type, country) {
-  return INTERESTED_TAGS[type][country];
+function productUrlsFromSitemap(body) {
+  const document = new DOMParser().parseFromString(body, "text/xml");
+  return document
+    .getElementsByTagNameNS("", "url")
+    .flatMap(x => x.getElementsByTagNameNS("", "loc"))
+    .map(x => x.textContent.trim());
 }
 
-function getCurrency(country) {
-  switch (country) {
-    case COUNTRY.CZ:
-      return "CZK";
-    default:
-      return "EUR";
+function extractProduct(url, document) {
+  const itemId = document
+    .querySelector(".productInfox")
+    ?.getAttribute("data-id");
+  if (!itemId) {
+    log.warning(`No itemId found for ${url}`);
+    return;
   }
+
+  const manufacturersRecommendedPrice = cleanPrice(
+    document.querySelector(".modal_price .was-price .money")?.innerText
+  );
+  const price = cleanPrice(
+    document.querySelector(".modal_price .current_price .money")?.innerText
+  );
+  const priceAfterDiscount = cleanPrice(
+    document.querySelector(".modal_price .current_price_mz .money.sale")
+      ?.innerText
+  );
+  const originalPrice = manufacturersRecommendedPrice
+    ? manufacturersRecommendedPrice
+    : priceAfterDiscount
+    ? price
+    : null;
+  const currentPrice = priceAfterDiscount ? priceAfterDiscount : price;
+
+  return {
+    itemId,
+    itemUrl: url,
+    img: document
+      .querySelector("[property=og:image:secure_url]")
+      .getAttribute("content"),
+    itemName: document.querySelector(".product_name").textContent.trim(),
+    originalPrice,
+    currentPrice,
+    discounted: Boolean(originalPrice),
+    currency: document
+      .querySelector("[property=og:price:currency]")
+      .getAttribute("content"),
+    category: document
+      .querySelectorAll(".breadcrumb li a")
+      .map(x => x.textContent.trim())
+      .slice(1, -1)
+      .join("/"),
+    inStock: Boolean(currentPrice)
+  };
 }
 
-async function enqueueRequests(requestQueue, country, stats, params) {
-  const endpointUrl = "https://services.mybcapps.com/bc-sf-filter/filter";
-  const shop = getShopUri(country);
-
-  const nextParams = Object.assign({}, params, {
-    shop,
-    limit: 70,
-    sort: "price-ascending",
-    product_available: false,
-    variant_available: false,
-    check_cache: false,
-    sort_first: "available"
-  });
-
-  const { tag: tags, ...otherParams } = nextParams;
-  const searchParams = new URLSearchParams(otherParams);
-
-  if (Array.isArray(tags)) {
-    for (let tag of tags) {
-      const url = `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(
-        tag
-      )}`;
-      log.debug(`Requesting ${url}`);
-      await requestQueue.addRequest({
-        uniqueKey: `Products of "${tag}" tag on ${params.page}. page`,
-        url,
-        userData: {
-          endpointUrl,
-          params: nextParams
-        },
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        }
-      });
-    }
-  } else {
-    const url = `${endpointUrl}?${searchParams}`;
-    log.info(`Requesting ${url}`);
-    await requestQueue.addRequest({
-      uniqueKey: `All products on ${params.page}. page`,
-      url,
-      userData: {
-        endpointUrl,
-        params: nextParams
-      },
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      }
-    });
-  }
-}
-
-const processedIds = new Set();
-
-async function handleResponse(
-  responseData,
-  country,
-  requestQueue,
-  params,
-  endpointUrl,
-  stats,
-  log
-) {
-  for (const product of responseData.products) {
-    const productWithSale = calculateTagSalePrice(structuredClone(product));
-    const item = {
-      itemId: product.id,
-      itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
-      img: product.images["1"],
-      itemName: product.title,
-      originalPrice: product.price_max,
-      currentPrice: productWithSale.price_min,
-      get discounted() {
-        return this.currentPrice < this.originalPrice;
-      },
-      currency: getCurrency(country),
-      category: product.product_type,
-      inStock: product.available
-    };
-
-    stats.inc("totalItems");
-    if (processedIds.has(item.itemId)) {
-      stats.inc("itemsDuplicity");
-    } else {
-      processedIds.add(item.itemId);
-      await Dataset.pushData(item);
-      stats.inc("items");
-    }
-  }
-  const paginationCount = Math.ceil(responseData.total_product / params.limit);
-  if (paginationCount > 1 && params.page === 1) {
-    log.info(`Adding ${paginationCount - 1}x pagination pages `);
-    for (let page = 2; page <= paginationCount; page++) {
-      await enqueueRequests(
-        requestQueue,
-        country,
-        stats,
-        Object.assign({}, params, { page })
-      );
-    }
-  }
-}
 async function main() {
   const rollbar = Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
-    collections: 0,
     urls: 0,
-    totalItems: 0,
-    items: 0,
-    itemsDuplicity: 0
+    items: 0
   });
 
-  const input = await Actor.getInput();
+  const input = (await Actor.getInput()) || {};
   const {
-    country = COUNTRY.CZ,
+    country = Country.CZ,
     type = ActorType.Full,
-    debug = false,
-    development = false,
+    development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 5,
     maxRequestRetries = 3,
     customTableName = null
   } = input ?? {};
 
-  if (development || debug) {
+  if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Actor.openRequestQueue();
-
-  await enqueueRequests(requestQueue, country, stats, {
-    page: 1,
-    tag: getInterestedTags(type, country)
-  });
-
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
-  const crawler = new HttpCrawler({
-    requestQueue,
-    maxConcurrency: development ? 1 : maxConcurrency,
+  const crawler = new PlaywrightCrawler({
+    maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
-    async requestHandler({ session, request, response, json, log }) {
-      const { endpointUrl, params } = request.userData;
-      stats.inc("urls");
-
-      log.debug(`Processing ${params.page}. page: ${request.url}`);
-      return handleResponse(
-        json,
-        country,
-        requestQueue,
-        params,
-        endpointUrl,
-        stats,
-        log
-      );
+    browserPoolOptions: {
+      useFingerprints: true,
+      fingerprintOptions: {
+        fingerprintGeneratorOptions: { locales: ["cs-CZ", "sk-SK"] }
+      }
     },
-    async failedRequestHandler({ request }, error) {
+    async requestHandler({ request, page, enqueueLinks, log }) {
+      log.info(`Processing ${request.url}`);
+      stats.inc("urls");
+      const body = await page.content();
+      const { label } = request.userData;
+      switch (label) {
+        case Labels.MainSitemap:
+          {
+            const urls = productsSitemapsUrls(body);
+            log.info(`Found ${urls.length} product sitemaps`);
+            await enqueueLinks({
+              urls,
+              userData: {
+                label: Labels.ProductSitemap
+              }
+            });
+          }
+          break;
+        case Labels.ProductSitemap:
+          {
+            const urls = productUrlsFromSitemap(body);
+            log.info(`Found ${urls.length} product urls`);
+            await enqueueLinks({
+              urls,
+              userData: {
+                label: Labels.Detail
+              }
+            });
+          }
+          break;
+        case Labels.Detail:
+          stats.inc("items");
+          const { document } = parseHTML(body.toString());
+          const product = extractProduct(request.url, document);
+          if (product) await Dataset.pushData(product);
+          break;
+      }
+    },
+    async failedRequestHandler({ request, log }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
 
-  await crawler.run();
+  await crawler.run([
+    {
+      url: `${getBaseUrl(country)}/sitemap.xml`,
+      userData: { label: Labels.MainSitemap }
+    }
+  ]);
   await stats.save(true);
 
   if (!development) {

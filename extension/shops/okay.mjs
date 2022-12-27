@@ -11,9 +11,13 @@ export class Okay extends Shop {
     if (!elem) return;
     const itemId = document.querySelector("div.product-gallery__main")
       .attributes["data-product-id"].textContent;
-    const manufacturersRecommendedPrice = cleanPrice(".was-price .money");
-    const price = cleanPrice(".current_price .money");
-    const priceAfterDiscount = cleanPrice(".current_price_mz .money.sale");
+    const manufacturersRecommendedPrice = cleanPrice(
+      ".modal_price .was-price .money"
+    );
+    const price = cleanPrice(".modal_price .current_price .money");
+    const priceAfterDiscount = cleanPrice(
+      ".modal_price  .current_price_mz .money.sale"
+    );
     const originalPrice = manufacturersRecommendedPrice
       ? manufacturersRecommendedPrice
       : priceAfterDiscount
