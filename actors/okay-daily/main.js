@@ -6,6 +6,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { PlaywrightCrawler } from "@crawlee/playwright";
+import { HttpCrawler } from "@crawlee/http";
 import { DOMParser, parseHTML } from "linkedom";
 
 /** @enum */
@@ -31,7 +32,7 @@ function getBaseUrl(country) {
 }
 
 function productsSitemapsUrls(body) {
-  const document = new DOMParser().parseFromString(body, "text/xml");
+  const document = new DOMParser().parseFromString(body.toString(), "text/xml");
   return document
     .getElementsByTagNameNS("", "sitemap")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
@@ -40,7 +41,7 @@ function productsSitemapsUrls(body) {
 }
 
 function productUrlsFromSitemap(body) {
-  const document = new DOMParser().parseFromString(body, "text/xml");
+  const document = new DOMParser().parseFromString(body.toString(), "text/xml");
   return document
     .getElementsByTagNameNS("", "url")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
@@ -122,22 +123,16 @@ async function main() {
     groups: proxyGroups,
     useApifyProxy: !development
   });
+  const requestQueue = await Actor.openRequestQueue();
 
-  const crawler = new PlaywrightCrawler({
+  const httpCrawler = new HttpCrawler({
     maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
-    browserPoolOptions: {
-      useFingerprints: true,
-      fingerprintOptions: {
-        fingerprintGeneratorOptions: { locales: ["cs-CZ", "sk-SK"] }
-      }
-    },
-    async requestHandler({ request, page, enqueueLinks, log }) {
+    async requestHandler({ request, body, enqueueLinks, log }) {
       log.info(`Processing ${request.url}`);
       stats.inc("urls");
-      const body = await page.content();
       const { label } = request.userData;
       switch (label) {
         case Labels.MainSitemap:
@@ -156,19 +151,8 @@ async function main() {
           {
             const urls = productUrlsFromSitemap(body);
             log.info(`Found ${urls.length} product urls`);
-            await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.Detail
-              }
-            });
+            await requestQueue.addRequests(urls.map(url => ({ url })));
           }
-          break;
-        case Labels.Detail:
-          stats.inc("items");
-          const { document } = parseHTML(body.toString());
-          const product = extractProduct(request.url, document);
-          if (product) await Dataset.pushData(product);
           break;
       }
     },
@@ -178,12 +162,41 @@ async function main() {
     }
   });
 
-  await crawler.run([
+  await httpCrawler.run([
     {
       url: `${getBaseUrl(country)}/sitemap.xml`,
       userData: { label: Labels.MainSitemap }
     }
   ]);
+
+  const browserCrawler = new PlaywrightCrawler({
+    requestQueue,
+    maxConcurrency,
+    maxRequestRetries,
+    useSessionPool: true,
+    proxyConfiguration,
+    browserPoolOptions: {
+      useFingerprints: true,
+      fingerprintOptions: {
+        fingerprintGeneratorOptions: { locales: ["cs-CZ", "sk-SK"] }
+      }
+    },
+    async requestHandler({ request, page, log }) {
+      log.info(`Processing ${request.url}`);
+      stats.inc("urls");
+      const body = await page.content();
+      stats.inc("items");
+      const { document } = parseHTML(body.toString());
+      const product = extractProduct(request.url, document);
+      if (product) await Dataset.pushData(product);
+    },
+    async failedRequestHandler({ request, log }, error) {
+      rollbar.error(error, request);
+      log.error(`Request ${request.url} failed multiple times`, request);
+    }
+  });
+
+  await browserCrawler.run();
   await stats.save(true);
 
   if (!development) {
