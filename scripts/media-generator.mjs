@@ -8,10 +8,13 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://www.tyden.cz/rubriky/byznys/black-friday-je-pro-obchodniky-generalkou-na-vanoce-e-shopy-cekaji-dvojnasobnou-navstevnost-slevy-ale-nebudou-obrovske_559749.html",
-  "https://cnn.iprima.cz/black-friday-prinese-slevy-v-prumeru-az-o-15-experti-varuji-pred-falesnymi-akcemi-193679",
-  "https://cc.cz/e-shopy-ukazuji-i-trojnasobne-vyssi-nez-realne-slevy-letosni-black-friday-je-posledni-bez-regulace/",
-  "https://www.ceskatelevize.cz/porady/15371150708-drahe-cesko/222411033801127/",
+  "https://udalosti247.cz/domaci/vanocni-nakupni-silenstvi-vrcholi-zakaznici-nakupuji-ve-slevach/",
+  "https://www.ecommercebridge.cz/hlidac-shopu-prinasi-analyzu-black-friday/",
+  "https://byznysdenik.cz/cesko/slevove-silenstvi-v-cesku-black-friday-dostal-z-ceskych-zakazniku-vice-nez-7-miliard-korun/martinpracuch/",
+  "https://www.idnes.cz/ekonomika/domaci/black-friday-prodeje-slevy-tlacitkova-novela-cerny-patek-obchod-zakaznici.A221129_134945_ekonomika_vebe",
+  "https://www.seznamzpravy.cz/clanek/ekonomika-byznys-trendy-analyzy-slevove-kejkle-konci-vetsina-e-shopu-prestala-lakovat-ceny-220252",
+  "https://www.dsl.cz/clanky/black-friday-je-u-konce-ktere-e-shopy-podvadely-a-ktere-uvadely-realne-slevy",
+  "https://smartmania.cz/black-friday-v-cesku-nektere-e-shopy-smelily-se-slevou-provinil-se-i-lidl/",
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
