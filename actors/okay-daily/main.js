@@ -110,7 +110,7 @@ async function main() {
     type = ActorType.Full,
     development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
-    maxConcurrency = 5,
+    maxConcurrency = 10,
     maxRequestRetries = 3,
     customTableName = null
   } = input ?? {};
@@ -123,10 +123,10 @@ async function main() {
     groups: proxyGroups,
     useApifyProxy: !development
   });
-  const requestQueue = await Actor.openRequestQueue();
+  let detailUrls = [];
 
   const httpCrawler = new HttpCrawler({
-    maxConcurrency,
+    maxConcurrency: 1,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
@@ -151,7 +151,7 @@ async function main() {
           {
             const urls = productUrlsFromSitemap(body);
             log.info(`Found ${urls.length} product urls`);
-            await requestQueue.addRequests(urls.map(url => ({ url })));
+            detailUrls = detailUrls.concat(urls.map(url => ({ url })));
           }
           break;
       }
@@ -170,7 +170,6 @@ async function main() {
   ]);
 
   const browserCrawler = new PlaywrightCrawler({
-    requestQueue,
     maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
@@ -183,10 +182,10 @@ async function main() {
     },
     async requestHandler({ request, page, log }) {
       log.info(`Processing ${request.url}`);
-      stats.inc("urls");
       const body = await page.content();
+      stats.inc("urls");
       stats.inc("items");
-      const { document } = parseHTML(body.toString());
+      const { document } = parseHTML(body);
       const product = extractProduct(request.url, document);
       if (product) await Dataset.pushData(product);
     },
@@ -196,7 +195,7 @@ async function main() {
     }
   });
 
-  await browserCrawler.run();
+  await browserCrawler.run(detailUrls);
   await stats.save(true);
 
   if (!development) {
