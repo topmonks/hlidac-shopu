@@ -16,12 +16,12 @@ export function checkResponseStatus(session, response, stats) {
 }
 
 /**
- *
+ * Returns URLs for all pages except the first one.
  * @param {number} totalCount
  * @param {(pageNr: number) => string} urlFn
  * @returns {string[]} urls
  */
-function morePageUrls(totalCount, urlFn) {
+export function restPageUrls(totalCount, urlFn) {
   const urls = [];
   for (let pageNr = 2; pageNr <= totalCount; pageNr++) {
     urls.push(urlFn(pageNr));
