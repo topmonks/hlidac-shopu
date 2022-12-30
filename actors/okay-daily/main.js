@@ -137,13 +137,15 @@ async function handleResponse(
     const productWithSale = calculateTagSalePrice(structuredClone(product));
     const maxPrice = Math.max(product.compare_at_price_max, product.price_max); // use crossed out price if available
     const inStock = product.available;
+    const originalPrice = inStock ? maxPrice : currentPrice; // Sold out products doesn't show original price. For compatibility reason, use current price even if there is no discount.
     const currentPrice = productWithSale.price_min;
     const item = {
       itemId: product.id,
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
       itemName: product.title,
-      originalPrice: inStock ? maxPrice : currentPrice, // Sold out products doesn't show original price. For compatibility reason, use current price even if there is no discount.
+      originalPrice:
+        country === COUNTRY.CZ ? Math.round(originalPrice) : originalPrice,
       currentPrice,
       get discounted() {
         return this.currentPrice < this.originalPrice;
@@ -152,6 +154,9 @@ async function handleResponse(
       category: product.product_type,
       inStock
     };
+    if (Math.round(originalPrice) !== originalPrice) {
+      console.log("item", originalPrice, item); // TODO: remove!!!
+    }
 
     stats.inc("totalItems");
     if (processedIds.has(item.itemId)) {
