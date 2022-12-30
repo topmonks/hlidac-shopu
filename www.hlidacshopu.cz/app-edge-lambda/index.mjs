@@ -74,7 +74,7 @@ async function createMetadataResponse(url) {
       body: content({
         url: `https://www.hlidacshopu.cz/app/?${query}`,
         name: `${title} prodává ${itemName}`,
-        imageUrl: `https://api2.hlidacshopu.cz/og?${query}`
+        imageUrl: `https://api.hlidacshopu.cz/og?${query}`
       })
     };
   } catch (err) {
@@ -90,7 +90,7 @@ async function createMetadataResponse(url) {
  * @returns {Promise<CloudFrontRequestResult>}
  */
 export async function handler(event) {
-  const request = event.Records[0].cf.request;
+  const { request } = event.Records[0].cf;
   const ua = request.headers["user-agent"][0].value;
   if (isSocialMediaBot(ua)) {
     const qs = new URLSearchParams(request.querystring);
