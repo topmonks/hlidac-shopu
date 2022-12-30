@@ -154,9 +154,6 @@ async function handleResponse(
       category: product.product_type,
       inStock
     };
-    if (Math.round(originalPrice) !== originalPrice) {
-      console.log("item", originalPrice, item); // TODO: remove!!!
-    }
 
     stats.inc("totalItems");
     if (processedIds.has(item.itemId)) {
