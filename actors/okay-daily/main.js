@@ -135,19 +135,22 @@ async function handleResponse(
 ) {
   for (const product of responseData.products) {
     const productWithSale = calculateTagSalePrice(structuredClone(product));
+    const maxPrice = Math.max(product.compare_at_price_max, product.price_max); // use crossed out price if available
+    const inStock = product.available;
+    const currentPrice = productWithSale.price_min;
     const item = {
       itemId: product.id,
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
       itemName: product.title,
-      originalPrice: product.price_max,
-      currentPrice: productWithSale.price_min,
+      originalPrice: inStock ? maxPrice : currentPrice, // Sold out products doesn't show original price. For compatibility reason, use current price even if there is no discount.
+      currentPrice,
       get discounted() {
         return this.currentPrice < this.originalPrice;
       },
       currency: getCurrency(country),
       category: product.product_type,
-      inStock: product.available
+      inStock
     };
 
     stats.inc("totalItems");
@@ -187,15 +190,14 @@ async function main() {
   const {
     country = COUNTRY.CZ,
     type = ActorType.Full,
-    debug = false,
-    development = false,
+    development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
     maxConcurrency = 5,
     maxRequestRetries = 3,
     customTableName = null
   } = input ?? {};
 
-  if (development || debug) {
+  if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 
@@ -207,16 +209,17 @@ async function main() {
   });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const crawler = new HttpCrawler({
     requestQueue,
-    maxConcurrency: development ? 1 : maxConcurrency,
+    maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
-    async requestHandler({ session, request, response, json, log }) {
+    async requestHandler({ request, json, log }) {
       const { endpointUrl, params } = request.userData;
       stats.inc("urls");
 
