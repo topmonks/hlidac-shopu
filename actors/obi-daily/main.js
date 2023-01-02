@@ -219,8 +219,7 @@ async function main() {
   const {
     development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
-    maxRequestRetries = 3,
-    maxConcurrency = 7
+    maxRequestRetries = 3
   } = input;
   const country = input?.country?.toLowerCase() ?? "cz";
 
@@ -241,7 +240,6 @@ async function main() {
     maxRequestsPerMinute: 600,
     requestHandlerTimeoutSecs: 45,
     proxyConfiguration,
-    maxConcurrency,
     maxRequestRetries,
     sessionPoolOptions: {
       maxPoolSize: 150
