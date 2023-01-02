@@ -3,7 +3,7 @@ import { Actor, log, LogLevel, Dataset } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { HttpCrawler } from "@crawlee/http";
 import { calculateTagSalePrice } from "./index.js";
@@ -23,7 +23,7 @@ function getBaseUrl(country) {
 }
 
 function getShopUri(country) {
-  switch (country.toUpperCase()) {
+  switch (country) {
     case COUNTRY.CZ:
       return "okay-elektro-cz.myshopify.com";
     case COUNTRY.SK:
@@ -60,15 +60,10 @@ function getInterestedTags(type, country) {
 }
 
 function getCurrency(country) {
-  switch (country) {
-    case COUNTRY.CZ:
-      return "CZK";
-    default:
-      return "EUR";
-  }
+  return country === COUNTRY.CZ ? "CZK" : "EUR";
 }
 
-async function enqueueRequests(requestQueue, country, stats, params) {
+function requests(country, params) {
   const endpointUrl = "https://services.mybcapps.com/bc-sf-filter/filter";
   const shop = getShopUri(country);
 
@@ -85,13 +80,14 @@ async function enqueueRequests(requestQueue, country, stats, params) {
   const { tag: tags, ...otherParams } = nextParams;
   const searchParams = new URLSearchParams(otherParams);
 
+  const requests = [];
   if (Array.isArray(tags)) {
-    for (let tag of tags) {
+    for (const tag of tags) {
       const url = `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(
         tag
       )}`;
-      log.debug(`Requesting ${url}`);
-      await requestQueue.addRequest({
+      log.info(`Requesting ${url}`);
+      requests.push({
         uniqueKey: `Products of "${tag}" tag on ${params.page}. page`,
         url,
         userData: {
@@ -107,7 +103,7 @@ async function enqueueRequests(requestQueue, country, stats, params) {
   } else {
     const url = `${endpointUrl}?${searchParams}`;
     log.info(`Requesting ${url}`);
-    await requestQueue.addRequest({
+    requests.push({
       uniqueKey: `All products on ${params.page}. page`,
       url,
       userData: {
@@ -120,26 +116,17 @@ async function enqueueRequests(requestQueue, country, stats, params) {
       }
     });
   }
+  return requests;
 }
 
-const processedIds = new Set();
-
-async function handleResponse(
-  responseData,
-  country,
-  requestQueue,
-  params,
-  endpointUrl,
-  stats,
-  log
-) {
-  for (const product of responseData.products) {
+function extractProducts({ json, country }) {
+  return json.products.map(product => {
     const productWithSale = calculateTagSalePrice(structuredClone(product));
     const maxPrice = Math.max(product.compare_at_price_max, product.price_max); // use crossed out price if available
     const inStock = product.available;
     const currentPrice = productWithSale.price_min;
-    const originalPrice = inStock ? maxPrice : currentPrice; // Sold out products doesn't show original price. For compatibility reason, use current price even if there is no discount.
-    const item = {
+    const originalPrice = inStock ? maxPrice : currentPrice; // Sold out products don't show original price. For compatibility reason, use current price even if there is no discount.
+    return {
       itemId: product.id,
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
@@ -155,41 +142,51 @@ async function handleResponse(
       category: product.product_type,
       inStock
     };
+  });
+}
 
-    stats.inc("totalItems");
-    if (processedIds.has(item.itemId)) {
-      stats.inc("itemsDuplicity");
-    } else {
-      processedIds.add(item.itemId);
-      await Dataset.pushData(item);
+async function saveProducts({ stats, products, processedIds }) {
+  stats.add("totalItems", products.length);
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      await Dataset.pushData(product);
       stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
     }
   }
-  const paginationCount = Math.ceil(responseData.total_product / params.limit);
+}
+
+async function enqueueMoreRequests({
+  json,
+  params,
+  log,
+  requestQueue,
+  country
+}) {
+  const paginationCount = Math.ceil(json.total_product / params.limit);
   if (paginationCount > 1 && params.page === 1) {
     log.info(`Adding ${paginationCount - 1}x pagination pages `);
     for (let page = 2; page <= paginationCount; page++) {
-      await enqueueRequests(
-        requestQueue,
-        country,
-        stats,
-        Object.assign({}, params, { page })
+      await requestQueue.addRequests(
+        requests(country, Object.assign({}, params, { page }))
       );
     }
   }
 }
+
 async function main() {
   const rollbar = Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
-    collections: 0,
     urls: 0,
     totalItems: 0,
     items: 0,
     itemsDuplicity: 0
   });
 
-  const input = await Actor.getInput();
+  const input = (await Actor.getInput()) ?? {};
   const {
     country = COUNTRY.CZ,
     type = ActorType.Full,
@@ -198,18 +195,13 @@ async function main() {
     maxConcurrency = 5,
     maxRequestRetries = 3,
     customTableName = null
-  } = input ?? {};
+  } = input;
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Actor.openRequestQueue();
-
-  await enqueueRequests(requestQueue, country, stats, {
-    page: 1,
-    tag: getInterestedTags(type, country)
-  });
+  const processedIds = new Set();
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -217,25 +209,27 @@ async function main() {
   });
 
   const crawler = new HttpCrawler({
-    requestQueue,
     maxConcurrency,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
-    async requestHandler({ request, json, log }) {
-      const { endpointUrl, params } = request.userData;
+    async requestHandler({ request, json, log, crawler }) {
+      const { params } = request.userData;
       stats.inc("urls");
 
-      log.debug(`Processing ${params.page}. page: ${request.url}`);
-      return handleResponse(
+      log.info(`Processing ${params.page}. page: ${request.url}`);
+      const products = extractProducts({
         json,
-        country,
-        requestQueue,
+        country
+      });
+      await saveProducts({ stats, products, processedIds });
+      await enqueueMoreRequests({
+        json,
         params,
-        endpointUrl,
-        stats,
-        log
-      );
+        log,
+        requestQueue: crawler.requestQueue,
+        country
+      });
     },
     async failedRequestHandler({ request }, error) {
       rollbar.error(error, request);
@@ -243,7 +237,12 @@ async function main() {
     }
   });
 
-  await crawler.run();
+  await crawler.run(
+    requests(country, {
+      page: 1,
+      tag: getInterestedTags(type, country)
+    })
+  );
   await stats.save(true);
 
   if (!development) {
