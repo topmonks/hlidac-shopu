@@ -5020,7 +5020,7 @@ __metadata:
     apify-cli: 0.12.0
     cheerio: 1.0.0-rc.12
     puppeteer: 14.4.1
-    user-agents: 1.0.1238
+    user-agents: 1.0.1249
   languageName: unknown
   linkType: soft
 
@@ -24845,13 +24845,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"user-agents@npm:1.0.1238":
-  version: 1.0.1238
-  resolution: "user-agents@npm:1.0.1238"
+"user-agents@npm:1.0.1249":
+  version: 1.0.1249
+  resolution: "user-agents@npm:1.0.1249"
   dependencies:
     dot-json: ^1.2.2
     lodash.clonedeep: ^4.5.0
-  checksum: b5d6fd8d7a5356f558cfb7592f2783b81b83fa48e1d801491a39ac16312aabf858fab3559a1b84728fc83adb7fac03191ad0512dfe52c89f8dfa909c107d1f6c
+  checksum: dd38b4458e3fe5c3532589895e6ac000dc3e0ceb8936402399c5c1b9044181ead612c65ab869ad60363611e14a7579b228990512ebeaf37d5f0aa48317929aa0
   languageName: node
   linkType: hard
 
