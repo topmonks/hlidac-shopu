@@ -5084,7 +5084,7 @@ __metadata:
     "@web/test-runner": 0.15.0
     "@web/test-runner-junit-reporter": 0.5.0
     chart.js: 4.1.1
-    chartjs-adapter-date-fns: 2.0.1
+    chartjs-adapter-date-fns: 3.0.0
     lit: 2.5.0
   languageName: unknown
   linkType: soft
@@ -10069,12 +10069,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chartjs-adapter-date-fns@npm:2.0.1":
-  version: 2.0.1
-  resolution: "chartjs-adapter-date-fns@npm:2.0.1"
+"chartjs-adapter-date-fns@npm:3.0.0":
+  version: 3.0.0
+  resolution: "chartjs-adapter-date-fns@npm:3.0.0"
   peerDependencies:
     chart.js: ">=2.8.0"
-  checksum: e13fd5357e963ee0b5fc51dd491015df12ff6df286770bdca54bd5481fb6f2d7712b37f5b5638a0fa2058e3551d6bfbb5daa8b73cab3fd8ccf3e684a8a12369e
+    date-fns: ">=2.0.0"
+  checksum: c39bfdf490749faa589fba6e0dc0a2c5a467a5f06aaa52c5180e10fd9c83414807a064f6950538448bffee354c8064c0ce9d957bccbf2048e7ee2257aa95f138
   languageName: node
   linkType: hard
 
