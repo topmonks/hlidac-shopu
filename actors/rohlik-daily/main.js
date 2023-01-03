@@ -257,7 +257,6 @@ async function main() {
   const input = (await KeyValueStore.getInput()) ?? {};
   const {
     development = process.env.TEST || process.env.DEBUG,
-    maxConcurrency = 5,
     proxyGroups = ["CZECH_LUMINATI"]
   } = input;
 
@@ -276,7 +275,7 @@ async function main() {
   let categoriesById = await KeyValueStore.getValue("categoriesById");
   const requestedProductsIds = new Set();
   const items = defAtom([]);
-  const itemsForSaving = new Channel(maxConcurrency * (productsPerRequest * 2));
+  const itemsForSaving = new Channel(500);
 
   // save items as they are put into `itemsForSaving`
   co(function* () {
@@ -299,16 +298,14 @@ async function main() {
     }
   });
 
-  const requestQueue = await Actor.openRequestQueue();
   const crawler = new HttpCrawler({
-    requestQueue,
-    maxConcurrency,
     proxyConfiguration,
+    maxRequestsPerMinute: development ? Infinity : 300,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 100
     },
-    async requestHandler({ request, json, enqueueLinks }) {
+    async requestHandler({ request, json, enqueueLinks, crawler }) {
       const { userData } = request;
       const { categoryId } = userData;
       log.info(`Processing ${request.url}`);
@@ -316,7 +313,7 @@ async function main() {
         case Label.Main:
           categoriesById = json.navigation;
           KeyValueStore.setValue("categoriesById", categoriesById);
-          await requestQueue.addRequests(
+          await crawler.requestQueue.addRequests(
             takeRandomIfDev(
               development,
               categoriesCountRequests({
@@ -353,11 +350,8 @@ async function main() {
           });
           break;
       }
-
-      await sleep(750);
     },
     async failedRequestHandler({ request }, error) {
-      await sleep(2500);
       log.error(
         `Request ${request.url} failed ${request.retryCount} times`,
         error
