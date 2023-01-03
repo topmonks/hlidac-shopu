@@ -27,6 +27,7 @@ export class AAAAuto extends Shop {
       const originalPrice = null;
       return { itemId, title, currentPrice, originalPrice, imageUrl };
     }
+
     const title = document.querySelector("#carCardHead h1").innerText;
     const price = document.querySelectorAll(`
       .sidebar ul.infoBoxNav li:not([style]):not([class]),
@@ -40,15 +41,17 @@ export class AAAAuto extends Shop {
         let strikePrice = p.querySelector("span.notranslate s");
         if (strikePrice) {
           strikePrice = p.querySelector("span.notranslate");
-          originalPrice = cleanPriceText(strikePrice.childNodes[0].textContent);
-          currentPrice = cleanPriceText(strikePrice.childNodes[1].textContent);
+          const prices = Array.from(strikePrice.childNodes)
+            .map(n => cleanPriceText(n.textContent))
+            .filter(Boolean);
+          [originalPrice, currentPrice] = prices;
         } else {
           currentPrice = cleanPriceText(p.textContent);
         }
       }
     }
 
-    console.log(originalPrice);
+    console.log(`originalPrice ${originalPrice}`);
     console.log(`currentPrice ${currentPrice}`);
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
