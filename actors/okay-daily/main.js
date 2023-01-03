@@ -192,7 +192,6 @@ async function main() {
     type = ActorType.Full,
     development = process.env.TEST || process.env.DEBUG,
     proxyGroups = ["CZECH_LUMINATI"],
-    maxConcurrency = 5,
     maxRequestRetries = 3,
     customTableName = null
   } = input;
@@ -209,7 +208,7 @@ async function main() {
   });
 
   const crawler = new HttpCrawler({
-    maxConcurrency,
+    maxRequestsPerMinute: 600,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
