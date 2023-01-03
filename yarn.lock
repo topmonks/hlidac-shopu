@@ -8812,9 +8812,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1281.0":
-  version: 2.1281.0
-  resolution: "aws-sdk@npm:2.1281.0"
+"aws-sdk@npm:2.1286.0":
+  version: 2.1286.0
+  resolution: "aws-sdk@npm:2.1286.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -8826,7 +8826,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 189fffeee378155e45096e54b858ca506bdafb3a6a2614933403c55301337e5523a59e827481aad7f006f43908a6cedc7a87ab340c1540a979de04cfea10e881
+  checksum: 589494899ee008c2acb5dde44c036501dcfe51bfc537eddb4dcbf6c8a937fb5bd29fb4f2433d75ef080bef79c4ead486d230ba558ab89f54e2cc92b88a500de7
   languageName: node
   linkType: hard
 
@@ -15434,7 +15434,7 @@ __metadata:
     "@typescript-eslint/parser": 5.47.0
     abort-controller: 3.0.0
     ava: 5.1.0
-    aws-sdk: 2.1281.0
+    aws-sdk: 2.1286.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 9.4.1
