@@ -4943,7 +4943,7 @@ __metadata:
     "@open-wc/testing": 3.1.7
     "@web/test-runner": 0.15.0
     "@web/test-runner-junit-reporter": 0.5.0
-    chart.js: 4.0.1
+    chart.js: 4.1.1
     chartjs-adapter-date-fns: 2.0.1
     lit: 2.5.0
   languageName: unknown
@@ -5375,6 +5375,13 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.0.3
     "@jridgewell/sourcemap-codec": ^1.4.10
   checksum: e38254e830472248ca10a6ed1ae75af5e8514f0680245a5e7b53bc3c030fd8691d4d3115d80595b45d3badead68269769ed47ecbbdd67db1343a11f05700e75a
+  languageName: node
+  linkType: hard
+
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.1
+  resolution: "@kurkle/color@npm:0.3.1"
+  checksum: e6be5c081bf5acfd4a1803dcd5a0733caf450e73148d5f02dc536b1ff0c60c959c23472a26c9c3c6c78ada04fb6a53c9202db9b2de8ea56f6eeec381f9cc3a1a
   languageName: node
   linkType: hard
 
@@ -9913,10 +9920,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.0.1":
-  version: 4.0.1
-  resolution: "chart.js@npm:4.0.1"
-  checksum: 013dabf3cd4ad2d71574e1d616906ae6f5b3f5914efb7f8ac7407bfe9b621e997f30966350bbdf31e3a1322c8c602715ef4dd6d0b6072590bb48db03861ac401
+"chart.js@npm:4.1.1":
+  version: 4.1.1
+  resolution: "chart.js@npm:4.1.1"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: e195abc7b1271a0d4f616b90ac56465b639bffef8e965d26bf1fd65050011bf359fdc25e43dac1576420c1173dc1430c576fd0f953ae8b62bf257ec571424882
   languageName: node
   linkType: hard
 
