@@ -13,6 +13,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
+import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @enum */
 const Labels = {
@@ -23,6 +24,10 @@ const Labels = {
   Pages: "pages"
 };
 
+/**
+ * @param {Buffer} buffer
+ * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
+ */
 function allCategoriesRequests(buffer) {
   log.info("Loading Sitemap");
   const markup = zlib.unzipSync(buffer).toString();
@@ -43,9 +48,8 @@ function allCategoriesRequests(buffer) {
 }
 
 /**
- * @param {ActorType} type
- * @param {string} bfUrl
- * @returns {{url: string, userData: {label: string, baseUrl?: string}}}
+ * @param {{type:ActorType, bfUrl:string}}
+ * @returns {{url: string, userData: {label: Labels, baseUrl?: string}}}
  */
 function startingRequest({ type, bfUrl }) {
   switch (type) {
@@ -76,6 +80,11 @@ function startingRequest({ type, bfUrl }) {
   }
 }
 
+/**
+ *
+ * @param {{document: Document, rootUrl: string}}
+ * @returns {string[]}
+ */
 function saleUrls({ document, rootUrl }) {
   const categoriesUrls = [];
   let onclickUrl;
@@ -97,6 +106,10 @@ function saleUrls({ document, rootUrl }) {
   }
 }
 
+/**
+ * @param {{document: Document, requestUrl: string, rootUrl: string}}
+ * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
+ */
 function categoryRequests({ document, requestUrl, rootUrl }) {
   const browseSubCategories = document
     .querySelectorAll("div#BrowseSubCategories > a")
@@ -127,19 +140,9 @@ function categoryRequests({ document, requestUrl, rootUrl }) {
 }
 
 /**
- *
- * @param {number} totalCount
- * @param {(pageNr: number) => string} urlFn
- * @returns {string[]} urls
+ * @param {{document: Document, request: {url: string, userData: {baseUrl: string}}}}
+ * @returns {string[]}
  */
-function morePageUrls(totalCount, urlFn) {
-  const urls = [];
-  for (let pageNr = 2; pageNr <= totalCount; pageNr++) {
-    urls.push(urlFn(pageNr));
-  }
-  return urls;
-}
-
 function pageUrls({ document, request }) {
   const pageNum = document.querySelectorAll("a.PageNew").reduce((max, a) => {
     const pageNumber = parseInt(a.innerText.trim());
@@ -147,7 +150,7 @@ function pageUrls({ document, request }) {
   }, 0);
   log.debug(`Found ${pageNum} pages on ${request.url}`);
   const { baseUrl } = request.userData;
-  return morePageUrls(pageNum, pageNr => {
+  return restPageUrls(pageNum, pageNr => {
     const url = new URL(baseUrl);
     url.searchParams.append("PgID", pageNr);
     return url.href;
@@ -175,7 +178,6 @@ async function main() {
   const {
     development = process.env.TEST || process.env.DEBUG,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.FULL,
     bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
@@ -197,12 +199,11 @@ async function main() {
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 200
     },
-    maxRequestsPerMinute: 600,
+    maxRequestsPerMinute: 400,
     additionalMimeTypes: ["application/x-gzip"],
     async requestHandler({ body, request, enqueueLinks, crawler }) {
       log.info(`Processing ${request.url}`);
@@ -249,7 +250,6 @@ async function main() {
           .map(cat => cat.innerText.trim());
         const requests = document.querySelectorAll(".item_b").flatMap(item => {
           const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
-
           const idElem = item.querySelector(".item_kod");
           const linkElem = item.querySelector(".nazev a");
           const priceElem = item.querySelector(".item_cena");
