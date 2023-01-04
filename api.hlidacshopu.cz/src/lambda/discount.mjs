@@ -110,8 +110,8 @@ function isEuDiscountApplicable(
   return false;
 }
 
-const commonPriceInterval = 60;
-const saleActionInterval = 30;
+const commonPriceInterval = 90;
+const saleActionInterval = 90;
 
 /**
  *
