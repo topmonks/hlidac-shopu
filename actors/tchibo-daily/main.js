@@ -1,4 +1,4 @@
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
@@ -8,10 +8,11 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "linkedom";
 
-const { log } = Apify.utils;
-
-const LABELS = {
+/** @enum {string} */
+const Labels = {
   NAVIGATION: "NAVIGATION",
   CATEGORY: "CATEGORY",
   CATEGORY_CAT: "CATEGORY_CAT",
@@ -90,100 +91,106 @@ function getCoffeeCategory(userInput) {
   }
 }
 
-async function scrapeNavigation({ json, crawler }, { userInput }) {
+function navigationRequests({ json, userInput }) {
+  const requests = [];
   const { country = "cz" } = userInput;
   for (const { children } of json.list) {
     for (const { href } of children) {
       if (ignoredCategories.has(href)) continue;
       if (coffeeCategories.has(href)) {
-        await crawler.requestQueue.addRequest({
+        requests.push({
           url: new URL(href, `https://www.tchibo.${country}/`).href,
           userData: {
-            label: LABELS.COFFEE_CATEGORY
+            label: Labels.COFFEE_CATEGORY
           }
         });
       } else {
-        await crawler.requestQueue.addRequest({
+        requests.push({
           url: new URL(href, `https://www.tchibo.${country}/`).href,
           userData: {
-            label: LABELS.CATEGORY
+            label: Labels.CATEGORY
           }
         });
       }
     }
   }
+  return requests;
 }
 
-async function scrapeCategory({ $, crawler }) {
-  const menu = $(".c-tp-sidebarnavigation > ul > li > ul > li > a").toArray();
-  for (const m of menu) {
-    await crawler.requestQueue.addRequest({
-      url: $(m).attr("href"),
-      userData: {
-        label: LABELS.CATEGORY_CAT
-      }
-    });
-  }
+function categoryRequests(document) {
+  const menu = document.querySelectorAll(
+    ".c-tp-sidebarnavigation > ul > li > ul > li > a"
+  );
+  return menu.map(m => ({
+    url: m.getAttribute("href"),
+    userData: {
+      label: Labels.CATEGORY_CAT
+    }
+  }));
 }
 
-async function scrapeCategoryCat({ $, crawler }) {
-  const selectedCategory = $("a.active").parent().find("ul > li > a").toArray();
-  for (const s of selectedCategory) {
-    await crawler.requestQueue.addRequest({
-      url: $(s).attr("href"),
-      userData: {
-        label: LABELS.LIST,
-        page: 0
-      }
-    });
-  }
+function categoryCatRequests(document) {
+  const selectedCategory = document.querySelectorAll("a.active ~ ul > li > a");
+  return selectedCategory.map(s => ({
+    url: s.getAttribute("href"),
+    userData: {
+      label: Labels.LIST,
+      page: 0
+    }
+  }));
 }
 
-async function scrapePagination($, pageNumber, crawler, url) {
-  const searchResults = $(".searchResults");
-  if (pageNumber !== 0) return;
+function paginationRequests({ document, pageNumber, url }) {
+  if (pageNumber !== 0) return [];
 
-  const finalCount = parseInt(searchResults.attr("data-result-count"), 10);
-  if (finalCount <= 30) return;
+  const searchResults = document.querySelector(".searchResults");
+  const finalCount = parseInt(
+    searchResults.getAttribute("data-result-count"),
+    10
+  );
+  if (finalCount <= 30) return [];
 
   let page = 2;
   let productsCount = 0;
+
+  const requests = [];
   while (productsCount < finalCount) {
-    await crawler.requestQueue.addRequest({
+    requests.push({
       url: `${url}?page=${page}`,
       userData: {
-        label: LABELS.LIST,
+        label: Labels.LIST,
         page
       }
     });
     page += 1;
     productsCount += 30;
   }
+  return requests;
 }
 
-async function scrapeListing(
-  { request: { url, userData }, $, crawler },
-  { s3, handledIdsSet, currency, userInput }
-) {
+function productsFromListing({ document, handledIdsSet, currency, userInput }) {
   const { country = "cz" } = userInput;
-  let { page } = userData;
-  await scrapePagination($, page, crawler, url);
-  const breadcrumbItems = $(".c-tp-breadcrumb-item > a").toArray();
-  const productList = $("div[data-search-result-list-entry]").toArray();
-  const promises = [];
+  const breadcrumbItems = document.querySelectorAll(
+    ".c-tp-breadcrumb-item > a"
+  );
+  const productList = document.querySelectorAll(
+    "div[data-search-result-list-entry]"
+  );
+  const items = [];
   for (const product of productList) {
-    const itemId = $(product).attr("data-product-id");
+    const itemId = product.getAttribute("data-product-id");
     if (handledIdsSet.has(itemId)) continue;
     handledIdsSet.add(itemId);
-    const image = $(product).find(".m-tp-productbox002-image");
-    const url = image.parent().attr("href");
-    const itemName = image.attr("alt");
-    const img = image.attr("data-src");
-    const currentPrice = $(product)
-      .find(".c-tp-price-currentprice")
-      .text()
-      .trim();
-    const oldPrice = $(product).find(".c-tp-price-oldprice").text().trim();
+    const image = product.querySelector(".m-tp-productbox002-image");
+    const url = image.parentNode.getAttribute("href");
+    const itemName = image.getAttribute("alt");
+    const img = image.getAttribute("data-src");
+    const currentPrice = product
+      .querySelector(".c-tp-price-currentprice")
+      .innerText.trim();
+    const oldPrice = product
+      .querySelector(".c-tp-price-oldprice")
+      ?.innerText?.trim();
     const result = {
       itemId,
       itemUrl: url,
@@ -194,47 +201,48 @@ async function scrapeListing(
       originalPrice: null,
       currency,
       currentPrice: parsePrice(currentPrice, userInput),
-      category: breadcrumbItems.map(p => $(p).text().trim()).join(" > ")
+      category: breadcrumbItems.map(p => p.innerText.trim()).join(" > ")
     };
     if (oldPrice && oldPrice.length > 0) {
       result.discounted = true;
       result.originalPrice = parsePrice(oldPrice, userInput);
     }
-    promises.push(
-      Apify.pushData(result),
-      uploadToS3v2(s3, result, {
-        inStock: true,
-        priceCurrency: result.currency
-      })
-    );
+    items.push(result);
   }
-  await Promise.all(promises);
+  return items;
 }
 
-async function scrapeCoffeeCategory(
-  { $, crawler },
-  { s3, handledIdsSet, currency, userInput }
-) {
+function productsFromCoffeeCategory({
+  document,
+  handledIdsSet,
+  currency,
+  userInput
+}) {
   const { country = "cz" } = userInput;
-  const products = $(".m-tp-productbox002").toArray();
-  let promises = [];
+  const products = document.querySelectorAll(".m-tp-productbox002");
+  const items = [];
   for (const p of products) {
-    const titleObject = $(p).find(".m-tp-productbox002-title");
-    const itemId = titleObject.find("a").attr("data-pds-link");
+    const titleObject = p.querySelector(".m-tp-productbox002-title");
+    const itemId = titleObject.querySelector("a").getAttribute("data-pds-link");
     if (handledIdsSet.has(itemId)) continue;
     handledIdsSet.add(itemId);
-    const title = titleObject.find("a").attr("title");
-    const itemUrl = titleObject.find("a").attr("href");
+    const title = titleObject.querySelector("a").getAttribute("title");
+    const itemUrl = titleObject.querySelector("a").getAttribute("href");
     if (itemUrl === undefined) break;
-    const topLineText = $(p)
-      .find(".m-tp-productbox002-topline-text")
-      .text()
-      .trim();
-    const name = titleObject.find("a > span").text().trim();
-    const subName = $(p).find(".m-tp-productbox002-flavor").text().trim();
-    const img = $(p).find(".m-tp-productbox002-image").attr("data-src");
-    const currentPrice = $(p).find(".c-tp-price-currentprice").text().trim();
-    const oldPrice = $(p).find(".c-tp-price-oldprice").text().trim();
+    const topLineText = p
+      .querySelector(".m-tp-productbox002-topline-text")
+      .innerText.trim();
+    const name = titleObject.querySelector("a > span").innerText.trim();
+    const subName = p
+      .querySelector(".m-tp-productbox002-flavor")
+      .innerText.trim();
+    const img = p
+      .querySelector(".m-tp-productbox002-image")
+      .getAttribute("data-src");
+    const currentPrice = p
+      .querySelector(".c-tp-price-currentprice")
+      .innerText.trim();
+    const oldPrice = p.querySelector(".c-tp-price-oldprice")?.innerText?.trim();
     const result = {
       itemId,
       itemUrl,
@@ -253,33 +261,26 @@ async function scrapeCoffeeCategory(
       result.discounted = true;
       result.originalPrice = parsePrice(oldPrice, userInput);
     }
-    promises.push(
-      Apify.pushData(result),
-      uploadToS3v2(s3, result, {
-        inStock: true,
-        priceCurrency: result.currency
-      })
-    );
-    if (promises.length > 40) {
-      await Promise.all(promises);
-      promises = [];
-    }
+    items.push(result);
   }
-  await Promise.all(promises);
-  const subCategories = $(
-    ".m-coffee-categoryTeaser--tileWrapper > a, .m-coffee-teaser-slider > a"
-  ).toArray();
-  for (const sc of subCategories) {
-    await crawler.requestQueue.addRequest({
-      url: $(sc).attr("href"),
-      userData: {
-        label: LABELS.COFFEE_CATEGORY
-      }
-    });
-  }
+  return items;
 }
 
-Apify.main(async function main() {
+async function savaProducts({ products, s3 }) {
+  return Promise.allSettled([
+    Dataset.pushData(products),
+    Promise.allSettled(
+      products.map(result => {
+        uploadToS3v2(s3, result, {
+          inStock: true,
+          priceCurrency: result.currency
+        });
+      })
+    )
+  ]);
+}
+
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -288,82 +289,101 @@ Apify.main(async function main() {
     maxAttempts: 3
   });
 
-  const userInput = await Apify.getInput();
-  const { country, type } = userInput;
+  const userInput = (await KeyValueStore.getInput()) || {};
+  const { country = "cz", type, development = process.env.TEST } = userInput;
   const currency = getCurrencyISO(country);
 
-  const requestQueue = await Apify.openRequestQueue();
-  let requestList = await Apify.openRequestList("", []);
-  if (type === "test") {
-    await requestQueue.addRequest({
-      url: "https://www.tchibo.cz/lozni-pradlo-c400118928.html",
-      userData: {
-        label: LABELS.LIST,
-        page: 0
-      }
-    });
-  } else {
-    requestList = await Apify.openRequestList("start-categories", [
-      {
-        url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
-        userData: {
-          label: LABELS.NAVIGATION
-        }
-      }
-    ]);
-  }
-
-  const handledIds = (await Apify.getValue("HANDLED_PRODUCT_IDS")) || [];
+  const handledIds = (await Actor.getValue("HANDLED_PRODUCT_IDS")) || [];
   const handledIdsSet = new Set(handledIds);
 
-  Apify.events.on("persistState", async () => {
-    await Apify.setValue("handledIds", Array.from(handledIdsSet));
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: ["CZECH_LUMINATI"],
+    useApifyProxy: !development
   });
 
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"]
-  });
-
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
-    requestList,
+  const crawler = new HttpCrawler({
     proxyConfiguration,
-    maxConcurrency: 20,
+    maxRequestsPerMinute: 200,
     useSessionPool: true,
-    async handlePageFunction(context) {
-      const { request } = context;
-      const { label } = request.userData;
+    async requestHandler({ request, log, body, json }) {
+      const { label, page } = request.userData;
+      const { document } = parseHTML(body.toString());
       log.info(`Processing: [${label}] - [${request.url}]`);
+
       switch (label) {
-        case LABELS.LIST:
-          return scrapeListing(context, {
-            s3,
-            handledIdsSet,
-            currency,
-            userInput
-          });
-        case LABELS.CATEGORY:
-          return scrapeCategory(context);
-        case LABELS.NAVIGATION:
-          return scrapeNavigation(context, { userInput });
-        case LABELS.COFFEE_CATEGORY:
-          return scrapeCoffeeCategory(context, {
-            s3,
-            handledIdsSet,
-            currency,
-            userInput
-          });
-        case LABELS.CATEGORY_CAT:
-          return scrapeCategoryCat(context);
+        case Labels.LIST:
+          {
+            await crawler.addRequests(
+              paginationRequests({
+                document,
+                pageNumber: page,
+                url: request.url
+              })
+            );
+            const products = productsFromListing({
+              document,
+              handledIdsSet,
+              currency,
+              userInput
+            });
+            await savaProducts({ products, s3 });
+          }
+          break;
+        case Labels.CATEGORY:
+          await crawler.addRequests(categoryRequests(document));
+          break;
+        case Labels.NAVIGATION:
+          await crawler.addRequests(navigationRequests({ json, userInput }));
+          break;
+        case Labels.COFFEE_CATEGORY:
+          {
+            const products = productsFromCoffeeCategory({
+              document,
+              handledIdsSet,
+              currency,
+              userInput
+            });
+            const subCategoriesRequests = document
+              .querySelectorAll(
+                ".m-coffee-categoryTeaser--tileWrapper > a, .m-coffee-teaser-slider > a"
+              )
+              .map(sc => ({
+                url: sc.getAttribute("href"),
+                userData: {
+                  label: Labels.COFFEE_CATEGORY
+                }
+              }));
+            await Promise.allSettled([
+              crawler.addRequests(subCategoriesRequests),
+              savaProducts({ products, s3 })
+            ]);
+          }
+          break;
+        case Labels.CATEGORY_CAT:
+          await crawler.addRequests(categoryCatRequests(document));
       }
     },
-    // If request failed 4 times then this function is executed
-    async handleFailedRequestFunction({ request }) {
-      log.info(`Request ${request.url} failed 4 times`);
+    async failedRequestHandler({ request, log }, error) {
+      log.info(`Request ${request.url} failed multiple times`, error);
     }
   });
 
-  await crawler.run();
+  const startingRequest =
+    type === "test"
+      ? {
+          url: "https://www.tchibo.cz/lozni-pradlo-c400118928.html",
+          userData: {
+            label: Labels.LIST,
+            page: 0
+          }
+        }
+      : {
+          url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
+          userData: {
+            label: Labels.NAVIGATION
+          }
+        };
+  await crawler.run([startingRequest]);
   log.info("crawler finished");
 
   await Promise.all([
@@ -372,4 +392,6 @@ Apify.main(async function main() {
   ]);
   log.info("invalidated Data CDN");
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);
