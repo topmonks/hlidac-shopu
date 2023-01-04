@@ -240,7 +240,7 @@ jobs:
 
   publish-apple-apps:
     macos:
-      xcode: "14.0.0"
+      xcode: "14.2.0"
     steps:
       - checkout
       - attach_workspace:
