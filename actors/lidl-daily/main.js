@@ -6,7 +6,8 @@ import { parseHTML } from "linkedom";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
-export const LABELS = {
+/** @enum {string} */
+const Labels = {
   MAIN_NABIDKA: "MAIN_NABIDKA",
   MAIN_NABIDKA_CAT: "MAIN_NABIDKA_CAT",
   DETAIL: "DETAIL",
@@ -16,9 +17,21 @@ export const LABELS = {
   LIDL_SHOP_DETAIL: "LIDL_SHOP_DETAIL",
   LIDL_SHOP_SECTION: "LIDL_SHOP_SECTION"
 };
-export const MAIN_URL = "https://www.lidl.cz";
+const shopUrl = "https://www.lidl.cz";
 
-export async function createInitRequests(requestQueue) {
+function createInitRequests({ type, urls }) {
+  const sources = [];
+  if (type === ActorType.BlackFriday) {
+    sources.push({
+      url: urls?.length
+        ? urls[0]
+        : "https://www.lidl.cz/c/black-friday/a10016094",
+      userData: {
+        label: Labels.LIDL_SHOP_CAT,
+        level: 1
+      }
+    });
+  }
   /*sources.push({
     url: "https://www.lidl.cz/aktualni-nabidka",
     userData: {
@@ -55,27 +68,28 @@ export async function createInitRequests(requestQueue) {
       label: LABELS.LIDL_SHOP_DETAIL
     }
   });*/
-  await requestQueue.addRequest({
+  sources.push({
     url: "https://www.lidl.cz/q/query/Slevy?offset=0&sort=Price-asc",
     userData: {
-      label: LABELS.LIDL_SHOP_CAT
+      label: Labels.LIDL_SHOP_CAT
     }
   });
-  await requestQueue.addRequest({
+  sources.push({
     url: "https://www.lidl.cz/c/kategorie/s10004543",
     userData: {
-      label: LABELS.LIDL_SHOP_SECTION,
+      label: Labels.LIDL_SHOP_SECTION,
       level: 1
     }
   });
+  return sources;
 }
 
-export function getItemId(url) {
+function getItemId(url) {
   const arr = url.split("/");
   return arr[arr.length - 1];
 }
 
-export function getBaseProducts(documnet) {
+function getBaseProducts(documnet) {
   return documnet.querySelectorAll("article.product").map(article => {
     const title = article.querySelector("h3").innerText.trim();
     const mainFrame = article.querySelector("a.product__body");
@@ -84,7 +98,7 @@ export function getBaseProducts(documnet) {
     const imageLargeArr = imageSource.getAttribute("data-srcset").split(",");
     const result = {
       itemId: getItemId(itemUrl),
-      itemUrl: `${MAIN_URL}${itemUrl}`,
+      itemUrl: `${shopUrl}${itemUrl}`,
       itemName: title,
       currency: "CZK",
       img: imageLargeArr[0],
@@ -105,37 +119,30 @@ export function getBaseProducts(documnet) {
   });
 }
 
-async function scrapeMainMenu({ document, crawler }) {
+function mainMenuRequests(document) {
   log.info("Start scrapeMainMenu");
   const subMenu = document.querySelectorAll("a.theme__item");
   log.debug(`Found ${subMenu.length} subcategories`);
-  for (const m of subMenu) {
-    await crawler.requestQueue.addRequest({
-      url: `${MAIN_URL}${m.getAttribute("href")}`,
-      userData: {
-        label: LABELS.MAIN_NABIDKA_CAT
-      }
-    });
-  }
+  return subMenu.map(m => ({
+    url: `${shopUrl}${m.getAttribute("href")}`,
+    userData: {
+      label: Labels.MAIN_NABIDKA_CAT
+    }
+  }));
 }
 
-async function scrapeMainMenuCategory({ document, crawler }) {
+function mainMenuCategoryRequests(document) {
   const products = getBaseProducts(document);
-  for (const product of products) {
-    await crawler.requestQueue.addRequest(
-      {
-        url: product.itemUrl,
-        userData: {
-          label: LABELS.DETAIL,
-          product
-        }
-      },
-      { forefront: true }
-    );
-  }
+  return products.map(product => ({
+    url: product.itemUrl,
+    userData: {
+      label: Labels.DETAIL,
+      product
+    }
+  }));
 }
 
-async function scrapeDetail({ request, document }) {
+function scrapeDetail({ request, document }) {
   const {
     userData: { product }
   } = request;
@@ -145,72 +152,72 @@ async function scrapeDetail({ request, document }) {
   if (product) {
     breadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
     product.category = breadcrumbs.map(b => b.innerText.trim()).join(" > ");
-    await Dataset.pushData(product);
+    return product;
   }
 }
 
-async function scrapeShop({ document, crawler }) {
+function mainNavigationRequests(document) {
   const mainMenu = document.querySelectorAll(
     "ol.n-header__main-navigation--sub a.n-header__main-navigation-link"
   );
-  for (let menu of mainMenu) {
-    await crawler.requestQueue.addRequest({
-      url: `https://www.lidl.cz${menu.getAttribute("href")}`,
-      userData: {
-        label: LABELS.LIDL_SHOP_MAIN_CAT,
-        level: 1
-      }
-    });
-  }
+  return mainMenu.map(menu => ({
+    url: `https://www.lidl.cz${menu.getAttribute("href")}`,
+    userData: {
+      label: Labels.LIDL_SHOP_MAIN_CAT,
+      level: 1
+    }
+  }));
 }
 
-async function enqueueCategories(document, level, cats, crawler, catLevel) {
+function enqueueCategories(document, level, cats, catLevel, requests = []) {
   for (const c of cats) {
     const name = document.querySelector("div > a, > span");
     const isSelected = name.classList.contains("s-anchor--selected");
     const subCats = c.querySelectorAll("ul > li");
     if (isSelected && subCats.length > 0) {
-      await enqueueCategories(document, level, subCats, crawler, catLevel + 1);
+      enqueueCategories(document, level, subCats, catLevel + 1, requests);
     } else if (!isSelected && subCats.length === 0 && catLevel > level) {
       log.info(`enqueue category: ${name.innerText.trim()}`);
-      await crawler.requestQueue.addRequest({
+      requests.push({
         url: `https://www.lidl.cz${c.querySelector("a").getAttribute("href")}`,
         userData: {
           label:
-            catLevel < 2 ? LABELS.LIDL_SHOP_MAIN_CAT : LABELS.LIDL_SHOP_CAT,
+            catLevel < 2 ? Labels.LIDL_SHOP_MAIN_CAT : Labels.LIDL_SHOP_CAT,
           level: catLevel
         }
       });
     }
   }
+  return requests;
 }
 
-async function scrapeShopMainCategory({ document, request, crawler }) {
+function scrapeShopMainCategory({ document, request }) {
   const { level } = request.userData;
   const cats = document.querySelectorAll("#category > ul > li");
-  await enqueueCategories(document, level, cats, crawler, 0);
+  return enqueueCategories(document, level, cats, 0);
 }
 
-async function scrapeShopSection({ document, request, crawler }, { stats }) {
+function shopSectionRequests({ document, request }, { stats }) {
+  const requests = [];
   const { level } = request.userData;
   const sections = document.querySelectorAll(
     "div.APageRoot__Sections li.ATheContentPageCardList__Item a.ATheContentPageCardList__Item--Linked"
   );
-  for (let section of sections) {
+  for (const section of sections) {
     const a = section.getAttribute("href");
     if (level === 1) {
-      await crawler.requestQueue.addRequest({
+      requests.push({
         url: a,
         userData: {
-          label: LABELS.LIDL_SHOP_SECTION,
+          label: Labels.LIDL_SHOP_SECTION,
           level: 2
         }
       });
     } else if (level === 2) {
-      await crawler.requestQueue.addRequest({
+      requests.push({
         url: a,
         userData: {
-          label: LABELS.LIDL_SHOP_CAT
+          label: Labels.LIDL_SHOP_CAT
         }
       });
 
@@ -218,6 +225,7 @@ async function scrapeShopSection({ document, request, crawler }, { stats }) {
     }
   }
   log.info(`Found ${sections.length}x categories in ${request.url}`);
+  return requests;
 }
 
 const from =
@@ -245,19 +253,12 @@ function slug(str) {
 }
 
 // TODO: reimplement BF as HttpCrawler, there is no need to run full browser for it
-/**
- *
- * @param {Document} document
- * @param {string} url
- * @param {Stats} stats
- * @param {Set} processedIds
- * @return {Promise<void>}
- */
-async function scrapeBlackFridayCategory(
+function extractBlackFridayProducts(
   { document, url },
   { stats, processedIds }
 ) {
   stats.inc("categories");
+  const items = [];
   const products = document.querySelectorAll("[data-selector='PRODUCT']");
   for (const el of products) {
     stats.inc("items");
@@ -265,7 +266,8 @@ async function scrapeBlackFridayCategory(
     const [data] = JSON.parse(detailEl.dataset.gridData);
     if (!processedIds.has(data.productId)) {
       processedIds.add(data.productId);
-      const result = {
+      stats.inc("itemsUnique");
+      items.push({
         itemId: data.productId,
         itemUrl: new URL(data.canonicalUrl, url).href,
         itemName: data.fullTitle,
@@ -277,32 +279,18 @@ async function scrapeBlackFridayCategory(
         inStock: data.stockAvailability.onlineAvailable,
         category: data.category.split("/").slice(1).join(" > "),
         slug: data.productId
-      };
-      await Dataset.pushData(result);
-      stats.inc("itemsUnique");
+      });
     } else {
       stats.inc("itemsDuplicity");
     }
   }
+  return items;
 }
 
-async function scrapeShopCategory(
-  { document, crawler },
-  { stats, processedIds, input }
-) {
-  const { type = ActorType.Full } = input;
-  const nextButton = document.querySelector("a.s-load-more__button");
-  if (nextButton) {
-    await crawler.requestQueue.addRequest(
-      {
-        url: new URL(nextButton.getAttribute("href"), "https://www.lidl.cz")
-          .href,
-        userData: { label: LABELS.LIDL_SHOP_CAT }
-      },
-      { forefront: true }
-    );
-  }
-  const products = document.querySelectorAll("#s-results .s-grid__item > div");
+function extractProducts({ document, stats, processedIds }) {
+  const products = document.querySelectorAll(
+    "#s-results .s-grid__item:not(.s-grid__item--hidden) > div"
+  );
   let breadcrumbs = document.querySelectorAll(
     ".s-breadcrumb a.s-breadcrumb__link"
   );
@@ -310,6 +298,7 @@ async function scrapeShopCategory(
   const heading = document
     .querySelector(".s-page-heading h1")
     ?.innerText?.trim();
+  const items = [];
   for (const product of products) {
     const dataQaLabel = product.dataset.qaLabel;
     if (!dataQaLabel) continue;
@@ -318,7 +307,6 @@ async function scrapeShopCategory(
     if (!processedIds.has(itemId)) {
       processedIds.add(itemId);
       const title = product.querySelector("h2").innerText.trim();
-
       const itemUrl = `https://www.lidl.cz/p/${slug(title)}/p${itemId}`;
       const imageSource = product.querySelector("img.product-grid-box__image");
       const price = product.querySelector(
@@ -352,12 +340,13 @@ async function scrapeShopCategory(
         result.discounted = true;
         result.originalPrice = parseFloat(price);
       }
-      await Dataset.pushData(result);
       stats.inc("itemsUnique");
+      items.push(result);
     } else {
       stats.inc("itemsDuplicity");
     }
   }
+  return items;
 }
 
 async function main() {
@@ -365,10 +354,9 @@ async function main() {
   const processedIds = new Set();
   const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = false,
+    development = process.env.TEST,
     debug = false,
     maxRequestRetries = 3,
-    maxConcurrency = 5,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full,
     urls
@@ -385,33 +373,17 @@ async function main() {
     itemsDuplicity: 0
   });
 
-  const requestQueue = await Actor.openRequestQueue();
-  if (type === ActorType.BlackFriday) {
-    await requestQueue.addRequest({
-      url: urls?.length
-        ? urls[0]
-        : "https://www.lidl.cz/c/black-friday/a10016094",
-      userData: {
-        label: LABELS.LIDL_SHOP_CAT,
-        level: 1
-      }
-    });
-  } else {
-    await createInitRequests(requestQueue);
-  }
-
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development && !debug
   });
 
   const crawler = new PlaywrightCrawler({
-    requestQueue,
+    maxRequestsPerMinute: 300,
     proxyConfiguration,
-    maxConcurrency,
     maxRequestRetries,
     navigationTimeoutSecs: 120,
     launchContext: {
-      useChrome: true,
       launchOptions: { headless: false }
     },
     async requestHandler(context) {
@@ -429,34 +401,65 @@ async function main() {
       const { document } = parseHTML(html);
 
       switch (label) {
-        case LABELS.DETAIL:
-          return scrapeDetail({ ...context, document });
-        case LABELS.LIDL_SHOP:
-          return scrapeShop({ ...context, document });
-        case LABELS.LIDL_SHOP_CAT:
-          if (type === ActorType.BlackFriday)
-            return scrapeBlackFridayCategory(
+        case Labels.DETAIL:
+          {
+            const product = scrapeDetail({ request, document });
+            await Dataset.pushData(product);
+          }
+          break;
+        case Labels.LIDL_SHOP:
+          await crawler.requestQueue.addRequests(
+            mainNavigationRequests(document)
+          );
+          break;
+        case Labels.LIDL_SHOP_CAT:
+          if (type === ActorType.BlackFriday) {
+            const products = extractBlackFridayProducts(
               { document, url: request.url },
               { stats, processedIds }
             );
-          return scrapeShopCategory(
-            { ...context, document },
+            await Dataset.pushData(products);
+          }
+          const nextButton = document.querySelector("a.s-load-more__button");
+          if (nextButton) {
+            await crawler.requestQueue.addRequest(
+              {
+                url: new URL(
+                  nextButton.getAttribute("href"),
+                  "https://www.lidl.cz"
+                ).href,
+                userData: { label: Labels.LIDL_SHOP_CAT }
+              },
+              { forefront: true }
+            );
+          }
+          const products = extractProducts({ document, stats, processedIds });
+          await Dataset.pushData(products);
+          break;
+        case Labels.LIDL_SHOP_DETAIL:
+          // return scrapeShopDetail({ ...context, document });
+          break;
+        case Labels.LIDL_SHOP_MAIN_CAT:
+          await crawler.requestQueue.addRequests(
+            scrapeShopMainCategory({ document, request })
+          );
+          break;
+        case Labels.LIDL_SHOP_SECTION:
+          await crawler.requestQueue.addRequests(
+            shopSectionRequests({ document, request }, { stats })
+          );
+          break;
+        case Labels.MAIN_NABIDKA:
+          await crawler.requestQueue.addRequests(mainMenuRequests(document));
+          break;
+        case Labels.MAIN_NABIDKA_CAT:
+          await crawler.requestQueue.addRequests(
+            mainMenuCategoryRequests(document),
             {
-              stats,
-              processedIds,
-              input
+              forefront: true
             }
           );
-        case LABELS.LIDL_SHOP_DETAIL:
-        // return scrapeShopDetail({ ...context, document });
-        case LABELS.LIDL_SHOP_MAIN_CAT:
-          return scrapeShopMainCategory({ ...context, document });
-        case LABELS.LIDL_SHOP_SECTION:
-          return scrapeShopSection({ ...context, document }, { stats });
-        case LABELS.MAIN_NABIDKA:
-          return scrapeMainMenu({ ...context, document });
-        case LABELS.MAIN_NABIDKA_CAT:
-          return scrapeMainMenuCategory({ ...context, document });
+          break;
       }
     },
     async failedRequestHandler({ request }, error) {
@@ -466,7 +469,7 @@ async function main() {
     }
   });
 
-  await crawler.run();
+  await crawler.run(createInitRequests({ urls, type }));
   await stats.save(true);
   log.info("crawler finished");
 
