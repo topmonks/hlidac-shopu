@@ -223,7 +223,9 @@ function productsFromCoffeeCategory({
   const items = [];
   for (const p of products) {
     const titleObject = p.querySelector(".m-tp-productbox002-title");
-    const itemId = titleObject.querySelector("a").getAttribute("data-pds-link");
+    const itemId = titleObject
+      .querySelector("a[data-pds-link]")
+      .getAttribute("data-pds-link");
     if (handledIdsSet.has(itemId)) continue;
     handledIdsSet.add(itemId);
     const title = titleObject.querySelector("a").getAttribute("title");
