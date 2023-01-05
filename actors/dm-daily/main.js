@@ -11,11 +11,9 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
-import Apify from "apify";
-import { gotScraping } from "got-scraping";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import { URL, URLSearchParams } from "url";
-
-const { log } = Apify.utils;
 
 const COUNTRY = {
   CZ: "CZ",
@@ -110,7 +108,7 @@ function parseItem(p, country, category) {
 }
 
 async function handleProducts(
-  body,
+  json,
   stats,
   requestQueue,
   country,
@@ -121,7 +119,7 @@ async function handleProducts(
   request,
   detailUrl
 ) {
-  const { products, currentPage, totalPages } = body;
+  const { products, currentPage, totalPages } = json;
   // we don't need to block pushes, we will await them all at the end
   const requests = [];
   stats.add("items", products.length);
@@ -148,10 +146,9 @@ async function handleProducts(
         stats.inc("itemsUnique");
         const detail = parseItem(item, country, category);
         if (!detailUrl.deref()) detailUrl.reset(detail.itemUrl);
-
         requests.push(
           // push data to dataset to be ready for upload to Keboola
-          Apify.pushData(detail),
+          Dataset.pushData(detail),
           // upload JSON+LD data to CDN
           uploadToS3v2(s3, detail, {
             brand: item.brandName,
@@ -170,11 +167,11 @@ async function handleProducts(
   }
 }
 
-async function handleCategory(body, requestQueue, country, category) {
-  const { mainData } = body;
+async function handleCategory(json, requestQueue, country, category) {
+  const { mainData } = json;
   const result = mainData
-    .filter(x => x.query)
-    .map(x => x.query.query)
+    .map(x => x.query?.query)
+    .filter(Boolean)
     .shift();
 
   if (result) {
@@ -198,7 +195,7 @@ async function handleCategory(body, requestQueue, country, category) {
 }
 
 async function handleStart(type, navigation, stats, requestQueue, country) {
-  log.info("Pagination info", type);
+  log.info(`Pagination info ${type}`);
   const { children } = navigation;
   // we are traversing recursively from leaves to trunk
   for (const category of traverseCategories(children)) {
@@ -244,7 +241,7 @@ async function enqueInitialRequest(type, requestQueue, country) {
   }
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -262,41 +259,27 @@ Apify.main(async function main() {
   const processedIds = new Set();
   const detailUrl = defAtom(null);
 
-  const input = await Apify.getInput();
-  const {
-    debug = false,
-    country = COUNTRY.CZ,
-    type = ActorType.FULL
-  } = input ?? {};
+  const input = (await KeyValueStore.getInput()) ?? {};
+  const { debug = false, country = COUNTRY.CZ, type = ActorType.FULL } = input;
 
   if (debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  /** @type {RequestQueue} */
-  const requestQueue = await Apify.openRequestQueue();
+  const requestQueue = await Actor.openRequestQueue();
   await enqueInitialRequest(type, requestQueue, country);
 
-  const crawler = new Apify.BasicCrawler({
+  const crawler = new HttpCrawler({
     requestQueue,
-    maxConcurrency: 10,
-    maxRequestRetries: 1,
-    async handleRequestFunction(context) {
-      const { request } = context;
+    maxRequestsPerMinute: 400,
+    async requestHandler({ request, json }) {
+      log.info(`Processing ${request.url}...`);
       const {
-        url,
         userData: { country, label, category, productQuery }
       } = request;
-      const response = await gotScraping({
-        responseType: "json",
-        url
-      });
-      const { statusCode, body } = response;
-      if (statusCode !== 200) {
-        return log.info(body.toString());
-      }
 
-      const { type, navigation } = body;
+      if (!json) return;
+      const { type, navigation } = json;
       switch (label) {
         case LABELS.START:
           return await handleStart(
@@ -307,10 +290,10 @@ Apify.main(async function main() {
             country
           );
         case LABELS.CATEGORY:
-          return await handleCategory(body, requestQueue, country, category);
+          return await handleCategory(json, requestQueue, country, category);
         default:
           return await handleProducts(
-            body,
+            json,
             stats,
             requestQueue,
             country,
@@ -323,8 +306,8 @@ Apify.main(async function main() {
           );
       }
     },
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed multiple times`, request);
+    failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 
@@ -339,4 +322,6 @@ Apify.main(async function main() {
 
   log.info("invalidated Data CDN");
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);
