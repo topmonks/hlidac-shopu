@@ -83,6 +83,7 @@ export async function handler(event) {
   try {
     console.time("data fetching");
     const slug = shop.itemId ?? shop.itemUrl;
+    console.log("slug", slug);
     const [meta, priceHistory, extraData] = await Promise.all([
       getMetadataFromS3(s3, shop.origin, slug),
       getHistoricalDataFromS3(s3, shop.origin, slug),
