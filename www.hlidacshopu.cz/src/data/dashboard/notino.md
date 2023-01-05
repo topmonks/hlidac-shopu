@@ -1,7 +1,7 @@
 ---
 shop: notino.cz
 link: https://docs.google.com/spreadsheets/d/1Lg0_OmRdZvNbQY6nPfdRVwHL1xP7K52ake4dLC3_pUo/edit?usp=sharing
-rating: 2
+rating: 1
 ---
 
 Notino.cz se na novou směrnici připravilo a výpočet slev u části zlevněných produktů (u kterých je uvedeno "ušetříte") je proveden správně podle nové směrnice. Ovšem u další časti produktů uvádí také _slevu_ s dovětkem "výhodněji" a k ní referenční cenu. Ta už po staru odpovídá maloobchodním cenám. Na první pohled vypadají oba typy _slev_ stejně, navíc jsou oba zařazeny v kategorii Akce.
