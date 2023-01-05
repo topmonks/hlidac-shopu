@@ -52,7 +52,9 @@ function productsSitemapsUrls(body) {
     .getElementsByTagNameNS("", "sitemap")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
     .map(x => x.textContent.trim())
-    .filter(url => url.includes("collections"));
+    .filter(
+      url => url.includes("collections") && !url.includes("nejprodavanejsi")
+    );
 }
 
 /**
