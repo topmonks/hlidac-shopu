@@ -130,7 +130,6 @@ export async function getMetadataFromS3(s3Client, shop, itemUrl) {
  * @returns {GetItemCommand}
  */
 export async function getHistoricalDataCommand(shop, slug) {
-  console.log("price-history", `items/${shop}/${slug}/price-history.json`); // TODO: remove!!!
   return new GetObjectCommand({
     Bucket: "data.hlidacshopu.cz",
     Key: `items/${shop}/${slug}/price-history.json`

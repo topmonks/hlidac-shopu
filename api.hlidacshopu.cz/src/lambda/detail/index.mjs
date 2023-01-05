@@ -81,7 +81,8 @@ export async function handler(event) {
   }
 
   try {
-    console.time("data fetching");
+    const now = Date.now();
+    console.time(`data fetching ${now}`);
     const slug = shop.itemId ?? shop.itemUrl;
     console.log("slug", slug);
     const [meta, priceHistory, extraData] = await Promise.all([
@@ -89,7 +90,7 @@ export async function handler(event) {
       getHistoricalDataFromS3(s3, shop.origin, slug),
       getParsedData(db, shop)
     ]);
-    console.timeEnd("data fetching");
+    console.timeEnd(`data fetching ${now}`);
 
     if (!meta) {
       return withCORS(["GET", "OPTIONS"])(
