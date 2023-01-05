@@ -227,24 +227,8 @@ async function main() {
             );
             stats.add("items", newProducts.length);
             stats.add("duplicates", products.length - newProducts.length);
-            await Dataset.pushData(newProducts);
             newProducts.forEach(p => savedProductIds.add(p.itemUrl));
-            const lastPage = document
-              .querySelector(".pagination-list li:last-child")
-              ?.innerText?.trim();
-            if (lastPage) {
-              const pages = Number(lastPage);
-              const urls = restPageUrls(
-                pages,
-                nr => `${request.url}?page=${nr}`
-              );
-              await enqueueLinks({
-                urls,
-                userData: {
-                  label: Labels.List
-                }
-              });
-            }
+            await Dataset.pushData(newProducts);
           }
           break;
       }
