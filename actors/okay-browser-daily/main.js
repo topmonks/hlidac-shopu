@@ -52,9 +52,7 @@ function productsSitemapsUrls(body) {
     .getElementsByTagNameNS("", "sitemap")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
     .map(x => x.textContent.trim())
-    .filter(
-      url => url.includes("collections") && !url.includes("nejprodavanejsi")
-    );
+    .filter(url => url.includes("collections"));
 }
 
 /**
@@ -65,7 +63,8 @@ function productUrlsFromSitemap(body) {
   return document
     .getElementsByTagNameNS("", "url")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
-    .map(x => x.textContent.trim());
+    .map(x => x.textContent.trim())
+    .filter(url => !url.includes("nejprodavanejsi"));
 }
 
 function extractProducts({ document, rootUrl, currency, url }) {
@@ -166,8 +165,6 @@ async function main() {
   }
 
   const crawler = new PlaywrightCrawler({
-    // headless: false,
-    maxRequestsPerMinute: 200,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
