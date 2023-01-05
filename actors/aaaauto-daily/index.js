@@ -1,3 +1,4 @@
+// @ts-check
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
@@ -5,12 +6,15 @@ import { HttpCrawler } from "@crawlee/http";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { parseHTML } from "linkedom";
 
-/** @typedef {import("apify").ProxyConfiguration} ProxyConfiguration */
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
+/** @enum {string} */
 export const Label = {
   START: "START",
   PAGE: "PAGE"
 };
+
+/** @enum {string} */
 export const Country = {
   CZ: "CZ",
   SK: "SK"
@@ -21,6 +25,11 @@ const categoryByCountry = new Map([
   [Country.SK, "ojazdene-vozidla"]
 ]);
 
+/**
+ * @param {ActorType} type
+ * @param {Country} country
+ * @returns {string}
+ */
 export function getRootUrl(type = ActorType.Full, country = Country.CZ) {
   const tld = country.toLocaleLowerCase();
   const origin = `https://www.aaaauto.${tld}`;
@@ -34,9 +43,17 @@ export function getRootUrl(type = ActorType.Full, country = Country.CZ) {
       return root.replace("limit=50", "limit=1");
     case ActorType.BlackFriday:
       return `${origin}/black-friday/?category=92&limit=50`;
+    default:
+      throw new Error(`Unknown actor type ${type}`);
   }
 }
 
+/**
+ * @param {ActorType} type
+ * @param {Country} country
+ * @param {number} page
+ * @returns {string}
+ */
 export function getBaseUrl(
   type = ActorType.Full,
   country = Country.CZ,
@@ -53,12 +70,13 @@ export function getBaseUrl(
       return `${origin}/${tld}/cars.php?carlist=1&limit=50&page=${page}&modern-request&origListURL=%2F${category}%2F`;
     case ActorType.BlackFriday:
       return `${origin}/black-friday/?category=92&limit=50&page=${page}`;
+    default:
+      throw new Error(`Unknown actor type ${type}`);
   }
 }
 
 /**
- *
- * @param {String} string
+ * @param {string} string
  * @returns {number|undefined}
  */
 export function extractPrice(string) {
@@ -74,9 +92,13 @@ export function extractPrice(string) {
   return parseInt(value);
 }
 
-async function parseProducts(document, country) {
+/**
+ * @param {Document} document
+ * @param {string} country
+ */
+function parseProducts(document, country) {
   const offers = document.querySelectorAll(".card");
-  const products = offers.map(item => {
+  return offers.map(item => {
     const link = item.querySelector("a.fullSizeLink").getAttribute("href");
     const figure = item.querySelector("figure");
     const url = new URL(link);
@@ -117,37 +139,25 @@ async function parseProducts(document, country) {
       engine
     };
   });
-
-  for (const product of products) {
-    await Dataset.pushData(product);
-  }
 }
 
 export async function main() {
   const rollbar = Rollbar.init();
 
-  const input = await Actor.getInput();
+  const input = (await Actor.getInput()) ?? {};
   const {
-    development = false,
+    development = process.env.TEST,
     debug = false,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
     type = ActorType.Full,
     proxyGroups = ["CZECH_LUMINATI"],
     country = Country.CZ
-  } = input ?? {};
+  } = input;
 
   if (development || debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Actor.openRequestQueue();
-  await requestQueue.addRequest({
-    url: getRootUrl(type, country),
-    userData: {
-      label: Label.START
-    }
-  });
   log.info("ACTOR - setUp crawler");
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -155,10 +165,9 @@ export async function main() {
   });
 
   const crawler = new HttpCrawler({
-    requestQueue,
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
+    maxRequestsPerMinute: 200,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 20
@@ -173,33 +182,49 @@ export async function main() {
       log.info(`Label: ${label} - Scraping page ${request.url}`);
       switch (label) {
         case Label.START:
-          const pages = document.querySelectorAll("nav.pagenav li");
-          const lastPage = parseInt(
-            pages[pages.length - 2].querySelector("a").innerText.trim()
-          );
+          {
+            const pages = document.querySelectorAll("nav.pagenav li");
+            const lastPage = parseInt(
+              pages[pages.length - 2].querySelector("a").innerText.trim()
+            );
 
-          for (let i = 0; i < lastPage; i++) {
-            const pageNumber = i + 1;
-            await requestQueue.addRequest({
-              url: getBaseUrl(type, country, pageNumber),
-              userData: { label: Label.PAGE, pageNumber }
-            });
+            const requests = [];
+            for (let i = 0; i < lastPage; i++) {
+              const pageNumber = i + 1;
+              requests.push({
+                url: getBaseUrl(type, country, pageNumber),
+                userData: { label: Label.PAGE, pageNumber }
+              });
+            }
+            const products = parseProducts(document, country);
+            await Promise.allSettled([
+              crawler.requestQueue.addRequests(requests),
+              Dataset.pushData(products)
+            ]);
           }
-          return parseProducts(document, country);
+          break;
         case Label.PAGE:
-          return parseProducts(document, country);
+          {
+            const products = parseProducts(document, country);
+            await Dataset.pushData(products);
+          }
+          break;
       }
     },
-    async failedRequestHandler({ request, body }, error) {
+    async failedRequestHandler({ request }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, error);
-      console.log(request.statusCode);
-      console.log(error);
-      console.log(body);
     }
   });
-  await crawler.run();
 
+  await crawler.run([
+    {
+      url: getRootUrl(type, country),
+      userData: {
+        label: Label.START
+      }
+    }
+  ]);
   log.info("Crawler finished.");
 
   if (!development) {
@@ -209,9 +234,9 @@ export async function main() {
       await uploadToKeboola(tableName);
     } catch (err) {
       rollbar.error(err);
-      console.log(err);
+      log.error(err);
     }
   }
 
-  console.log("Finished.");
+  log.info("Finished.");
 }
