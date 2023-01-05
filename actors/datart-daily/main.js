@@ -189,7 +189,6 @@ export async function main() {
   const {
     development = process.env.TEST || process.env.DEBUG,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
     country = Country.CZ,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.FULL
@@ -215,9 +214,8 @@ export async function main() {
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
     useSessionPool: true,
-    maxRequestsPerMinute: 600,
+    maxRequestsPerMinute: 400,
     sessionPoolOptions: {
       maxPoolSize: 200
     },
