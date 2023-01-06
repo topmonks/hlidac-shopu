@@ -198,14 +198,10 @@ async function processItems(
         item = prozdraviczValidator(item);
         break;
       case "okay_cz_bf":
-        item = okayValidator(item);
-        break;
       case "okay_cz":
-        item = okayValidator(item);
-        break;
+      case "okay_cz-browser":
       case "okay_sk":
-        item = okayValidator(item);
-        break;
+      case "okay_sk-browser":
       case "okay_sk_bf":
         item = okayValidator(item);
         break;
