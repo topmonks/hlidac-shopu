@@ -58,7 +58,7 @@ export async function keboolaUploader(
         err
       );
       await sleep((i + 1) * 10 * 1000);
-      await Actor.setValue("debugFile.csv", data, {
+      await Actor.setValue(`debugFile.csv${isGzipped ? ".gz" : ""}`, data, {
         contentType: "text/csv"
       });
     }
