@@ -9,4 +9,4 @@ Megapixel.cz se již snaží splňovat novou EU směrnici. Ve slevě má pouze 1
 
 Slovy e-shopu:
 
-> "Algoritmus pro výpočet slevy chceme mít ve stejné logice jako máte v Hlídači shopů, jen to musíme ještě doladit."
+> 05/2022: "Algoritmus pro výpočet slevy chceme mít ve stejné logice jako máte v Hlídači shopů, jen to musíme ještě doladit."
