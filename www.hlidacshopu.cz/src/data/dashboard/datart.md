@@ -8,4 +8,4 @@ Datart.cz se minimálně podle popisu u slev na novou EU směrnici připravil. N
 
 Slovy e-shopu:
 
-> Z popisu slevy: "Nejnižší cena v době 30 dnů před poskytnutím slevy nebo nejnižší cena od okamžiku začátku prodeje do poskytnutí slevy, je-li výrobek v prodeji méně než 30 dnů."
+> 05/2022 Z popisu slevy: "Nejnižší cena v době 30 dnů před poskytnutím slevy nebo nejnižší cena od okamžiku začátku prodeje do poskytnutí slevy, je-li výrobek v prodeji méně než 30 dnů."
