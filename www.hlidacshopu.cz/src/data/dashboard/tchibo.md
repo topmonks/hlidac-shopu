@@ -8,4 +8,4 @@ Tchibo.cz stále referuje k maloobchodním cenám.
 
 Slovy e-shopu:
 
-> "Danou problematiku bedlivě sledujeme, příslušná směrnice však zatím není v ČR implementována a aktuálně probíhá první čtení novely zákona v Poslanecké sněmovně. Poté, co bude zveřejněno jeho finální znění a podmínky se začneme připravovat na implementaci veškerých potřebných kroků do našich procesů."
+> 05/2022: "Danou problematiku bedlivě sledujeme, příslušná směrnice však zatím není v ČR implementována a aktuálně probíhá první čtení novely zákona v Poslanecké sněmovně. Poté, co bude zveřejněno jeho finální znění a podmínky se začneme připravovat na implementaci veškerých potřebných kroků do našich procesů."
