@@ -8,4 +8,4 @@ KnihyDobrovsky.cz stále počítají slevy z maloobchodních cen. Nicméně se s
 
 Slovy e-shopu:
 
-> "Filozofií naší společnosti vždy byla maximální transparentnost vůči zákazníků a v tom chceme i nadále pokračovat. Nyní je v rámci každého produktu spuštěn graf, který umožňuje kontrolu MOC a minimální akční ceny, kde jsou zohledněny i všechny typy slevových akcí (1+3 atd.). V implementaci změn spojených s novou EU směrnicí budeme pokračovat v těchto dnech a týdnech."
+> 05/2022: "Filozofií naší společnosti vždy byla maximální transparentnost vůči zákazníků a v tom chceme i nadále pokračovat. Nyní je v rámci každého produktu spuštěn graf, který umožňuje kontrolu MOC a minimální akční ceny, kde jsou zohledněny i všechny typy slevových akcí (1+3 atd.). V implementaci změn spojených s novou EU směrnicí budeme pokračovat v těchto dnech a týdnech."
