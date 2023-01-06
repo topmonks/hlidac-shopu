@@ -8,4 +8,4 @@ Okay.cz nam na dotazy k auditu 6. 6. 2022 odpověděl s tím, že se rozhodli p�
 
 Slovy e-shopu:
 
-> "Rozhodli jsme se původní ceny vůbec neuvádět a počkat na vyjasnění aplikaci nové směrnice EU do české legislativy. Zároveň sledujeme reakce konkurence a best-practice na trhu. Vůči zákazníkům chceme být transparentní. Uvádění slev ponecháme pouze v situaci dynamického cenění a krátkodobých akcí formou kuponů."
+> 05/2022: "Rozhodli jsme se původní ceny vůbec neuvádět a počkat na vyjasnění aplikaci nové směrnice EU do české legislativy. Zároveň sledujeme reakce konkurence a best-practice na trhu. Vůči zákazníkům chceme být transparentní. Uvádění slev ponecháme pouze v situaci dynamického cenění a krátkodobých akcí formou kuponů."
