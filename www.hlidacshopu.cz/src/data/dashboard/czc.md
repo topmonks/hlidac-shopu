@@ -10,4 +10,4 @@ nesrovnalosti, vždy se jedná o chyby, které CZC.cz ihned napravuje. Odlišnos
 
 Slovy e-shopu:
 
-> „Slevu vždy počítáme z nejnižší ceny za posledních 30 dní“, viz https://www.czc.cz/garance-ferove-ceny/clanek
+> 05/2022: „Slevu vždy počítáme z nejnižší ceny za posledních 30 dní“, viz https://www.czc.cz/garance-ferove-ceny/clanek
