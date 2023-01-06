@@ -42,6 +42,28 @@ export function getItemIdFromUrl(url) {
   return shop.parse(url).itemId;
 }
 
+/**
+ * Inspired by https://snipplr.com/view/7215/javascript-dom-element-visibility-checker
+ * @param {Element} el
+ * @returns {boolean}
+ */
+export function isElementVisible(el) {
+  if (el == document) return true;
+
+  if (!el) return false;
+  if (!el.parentNode) return false;
+  if (el.style) {
+    if (el.style.display == "none") return false;
+    if (el.style.visibility == "hidden") return false;
+  }
+
+  const style = window.getComputedStyle(el, "");
+  if (style.display == "none") return false;
+  if (style.visibility == "hidden") return false;
+
+  return isElementVisible(el.parentNode);
+}
+
 export {
   cleanPriceText,
   cleanUnitPriceText
