@@ -8,4 +8,4 @@ Pilulka.cz se snaží upravit svojí metodiku podle nové EU směrnice, nicmén�
 
 Slovy e-shopu:
 
-> "Mnohokrát děkujeme za poskytnutá data, předávám kolegovi na obchodní oddělení pro kontrolu a vyjádření. Vaše poskytnutá data nám ukázali mezeru u druhé jakosti, kterou porovnáváme s aktuální cenou stejného výrobku bez kazu, zde nyní díky vašim datům, hledáme správné řešení."
+> 05/2022: "Mnohokrát děkujeme za poskytnutá data, předávám kolegovi na obchodní oddělení pro kontrolu a vyjádření. Vaše poskytnutá data nám ukázali mezeru u druhé jakosti, kterou porovnáváme s aktuální cenou stejného výrobku bez kazu, zde nyní díky vašim datům, hledáme správné řešení."
