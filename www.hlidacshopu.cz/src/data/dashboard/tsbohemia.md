@@ -8,4 +8,4 @@ TSBohemia.cz se na novou EU směrnici připravila a prakticky veškeré slevy po
 
 Slovy e-shopu:
 
-> "Náš výpočet slevy zohledňuje data za posledních 30 dnů a v případě slevy zobrazí nejmenší rozdíl za toto období. Jelikož jsme ale implementovali na web teprve nedávno cca 14 dní zpět, tak stále ladíme některé problémy, na které narážíte přímo v e-mailu."
+> 05/2022: "Náš výpočet slevy zohledňuje data za posledních 30 dnů a v případě slevy zobrazí nejmenší rozdíl za toto období. Jelikož jsme ale implementovali na web teprve nedávno cca 14 dní zpět, tak stále ladíme některé problémy, na které narážíte přímo v e-mailu."
