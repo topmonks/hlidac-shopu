@@ -3,12 +3,10 @@ import { Actor, log, LogLevel, Dataset } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { DOMParser, parseHTML } from "linkedom";
-import { assert } from "console";
 
 /** @enum {string} */
 const Country = {
@@ -67,17 +65,25 @@ function productUrlsFromSitemap(body) {
     .filter(url => !url.includes("nejprodavanejsi"));
 }
 
-function extractProducts({ document, rootUrl, currency, url }) {
+export async function getTextFromLocator(locator) {
+  try {
+    return await (await locator).textContent({ timeout: 1000 });
+  } catch (e) {
+    return;
+  }
+}
+
+function extractProducts({ document, page, rootUrl, currency, url }) {
   const category = document
     .querySelectorAll(".breadcrumb li")
     .map(x => x.textContent.trim())
     .slice(1, -1)
     .join("/");
 
-  return (
+  return Promise.all(
     document
       .querySelectorAll(".collection-matrix > [data-id]")
-      ?.map(product => {
+      ?.map(async product => {
         const itemId = product.getAttribute("data-id");
         if (!itemId) {
           log.error("Missing itemId", { url });
@@ -85,12 +91,14 @@ function extractProducts({ document, rootUrl, currency, url }) {
         }
 
         const originalPrice = cleanPrice(
-          product.querySelector(".was-price .money")?.innerText
+          await getTextFromLocator(
+            page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
+          )
         );
         const currentPrice = cleanPrice(
           product.querySelector(".money.final")?.innerText
         );
-        assert(currentPrice, "Missing currentPrice", { url });
+        console.assert(currentPrice, "Missing currentPrice", { url });
 
         return {
           itemId,
@@ -117,8 +125,7 @@ async function main() {
 
   const stats = await withPersistedStats(x => x, {
     urls: 0,
-    items: 0,
-    duplicates: 0
+    items: 0
   });
 
   const input = (await Actor.getInput()) || {};
@@ -136,7 +143,6 @@ async function main() {
 
   const rootUrl = getBaseUrl(country);
   const currency = Currency[country];
-  const savedProductIds = new Set();
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -216,19 +222,15 @@ async function main() {
                 .at(-1)
             });
             const { document } = parseHTML(body.toString());
-            const products = extractProducts({
+            const products = await extractProducts({
               document,
+              page,
               rootUrl,
               currency,
               url: request.url
             });
-            const newProducts = products.filter(
-              p => !savedProductIds.has(p.itemUrl)
-            );
-            stats.add("items", newProducts.length);
-            stats.add("duplicates", products.length - newProducts.length);
-            newProducts.forEach(p => savedProductIds.add(p.itemUrl));
-            await Dataset.pushData(newProducts);
+            stats.add("items", products.length);
+            await Dataset.pushData(products);
           }
           break;
       }
