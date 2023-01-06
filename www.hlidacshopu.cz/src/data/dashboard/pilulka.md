@@ -1,7 +1,7 @@
 ---
 shop: pilulka.cz
 link: https://docs.google.com/spreadsheets/d/1Bls433IWr8b6at1gEuEClVZniTNVpUpCZ5XithovA90/edit?usp=sharing
-rating: 2
+rating: 3
 ---
 
 Pilulka.cz se snaží upravit svojí metodiku podle nové EU směrnice, nicméně stále nacházíme stovky produktů, kde výpočet slevy neodpovídá. A to nejen u zboží druhé jakosti.
