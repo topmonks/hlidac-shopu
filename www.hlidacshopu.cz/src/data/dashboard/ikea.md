@@ -8,5 +8,5 @@ Ikea.cz na novou EU směrnici ještě nepřešla, slevy ale uvádí většinou t
 
 Slovy e-shopu:
 
-> "Na účinnost této směrnice o stanovování slev se v současné době připravujeme - nastavujeme naše interní systémy tak, aby slevy kalkulovaly v souladu s touto směrnicí."
+> 05/2022: "Na účinnost této směrnice o stanovování slev se v současné době připravujeme - nastavujeme naše interní systémy tak, aby slevy kalkulovaly v souladu s touto směrnicí."
 
