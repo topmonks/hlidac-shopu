@@ -8,4 +8,4 @@ Mountfield.cz nabízí stále prakticky celý sortiment ve slevách počítanýc
 
 Slovy e-shopu:
 
-> "Ohledně nové směrnice – na tu změnu se samozřejmě připravujeme, ale v této chvíli stále čekáme na finální podobu jak to opřipomínkuje parlament a jaké tam udělá změny. Jakmile bude jasné, jaké bude finální znění, tak to samozřejmě budeme 100% naplňovat."
+> 05/2022: "Ohledně nové směrnice – na tu změnu se samozřejmě připravujeme, ale v této chvíli stále čekáme na finální podobu jak to opřipomínkuje parlament a jaké tam udělá změny. Jakmile bude jasné, jaké bude finální znění, tak to samozřejmě budeme 100% naplňovat."
