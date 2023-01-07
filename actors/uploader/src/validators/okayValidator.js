@@ -1,6 +1,5 @@
 export function okayValidator(item) {
   const attributes = [
-    "breadcrumb",
     "currency",
     "currentPrice",
     "discounted",
@@ -9,9 +8,7 @@ export function okayValidator(item) {
     "itemId",
     "itemName",
     "itemUrl",
-    "originalPrice",
-    "vatInfo",
-    "blackFriday"
+    "originalPrice"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {

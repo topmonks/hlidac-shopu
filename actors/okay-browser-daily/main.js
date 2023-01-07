@@ -220,6 +220,7 @@ async function main() {
                 .split("/")
                 .filter(Boolean)
                 .at(-1)
+                ?.replace(/[^a-zA-Z0-9!\-_\.\'\(\)]/g, "!")
             });
             const { document } = parseHTML(body.toString());
             const products = await extractProducts({
