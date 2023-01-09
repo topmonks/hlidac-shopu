@@ -71,14 +71,9 @@ async function processItems(
   stats
 ) {
   const validItems = [];
-  const itemIds = new Set();
   // update the objects to be properly flatten and remove failed items
   const start = Date.now();
   for (let item of items) {
-    if (itemIds.has(item.itemId)) {
-      log.warning(`Duplicate item id ${item.itemId}`);
-      continue;
-    }
     // we can do some transformation here
     let priceFeedOnly = false;
     switch (tableName) {
@@ -329,7 +324,6 @@ async function processItems(
     item.actRunId = actRunId;
 
     validItems.push(item);
-    itemIds.add(item.itemId);
   }
   const elapsed = ((Date.now() - start) / 1000).toFixed(2);
   log.info(`Processed ${items.length} in ${elapsed}s`);
