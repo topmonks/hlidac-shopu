@@ -357,7 +357,7 @@ jobs:
           at: .
       - github/install
       - github/set_repo
-          repo: topmonks/hlidac-shopu
+          repo: "topmonks/hlidac-shopu"
       - github/release:
           tag: "$CIRCLE_TAG"
           files: dist/*.zip
