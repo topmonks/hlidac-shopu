@@ -439,6 +439,7 @@ async function loadItems(
     }
   }
 }
+
 async function main() {
   const input = await Actor.getValue("INPUT");
   const {
@@ -487,6 +488,7 @@ async function main() {
     const { createdAt } = await dataset.getInfo();
     const crawledDate = format(addMinutes(createdAt, 1), "yyyy-MM-dd HH:mm:ss");
     log.info(`Crawled ${crawledDate}`);
+    log.info(`Target table: ${tableName}`);
 
     await loadItems(
       {
