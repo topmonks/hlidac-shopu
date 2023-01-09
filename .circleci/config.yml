@@ -3,8 +3,9 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.4
   aws-cloudfront: topmonks/aws-cloudfront@1.0.0
   aws-s3: circleci/aws-s3@3.1.1
+  browser-tools: circleci/browser-tools@1.4.0
   codecov: codecov/codecov@3.2.4
-  gh: circleci/github-cli@2.2.0
+  github: topmonks/github@1.3.0
   node: circleci/node@5.0.3
   pulumi: pulumi/pulumi@2.1.0
   rollbar: rollbar/deploy@1.0.1
@@ -335,6 +336,32 @@ jobs:
           channel: ntf-hlidac-shopu
       - rollbar/notify_deploy
 
+  merge_pr:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - github/install
+      - github/merge_pr:
+          rebase: true
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+
+  github_release:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - github/install
+      - github/release:
+          tag: "$CIRCLE_TAG"
+          files: dist/*.zip
+          generate_notes: true
+          notes_file: CHANGELOG.md
 workflows:
   ci:
     jobs:
@@ -372,10 +399,10 @@ workflows:
               only: /.*/
             tags:
               only: /^extension-.*/
-      #      - test-web-extension:
-      #          requires:
-      #            - build-web-extension
-      - gh/release:
+#      - test-web-extension:
+#          requires:
+#            - build-web-extension
+      - github_release:
           context:
             - org-github
             - org-global
@@ -386,9 +413,6 @@ workflows:
               ignore: /.*/
             tags:
               only: /^extension-.*/
-          tag: "$CIRCLE_TAG"
-          files: dist/*.zip
-          notes-file: CHANGELOG.md
       - publish-web-extensions:
           name: publish-chrome-web-extension
           browser: chrome
@@ -402,19 +426,19 @@ workflows:
               ignore: /.*/
             tags:
               only: /^extension-.*/
-      #      - publish-web-extensions:
-      #          name: publish-firefox-web-extension
-      #          browser: firefox
-      #          context:
-      #            - org-global
-      #            - app-hlidac-shopu
-      #          requires:
-      #            - build-web-extension
-      #          filters:
-      #            branches:
-      #              ignore: /.*/
-      #            tags:
-      #              only: /^extension-.*/
+#      - publish-web-extensions:
+#          name: publish-firefox-web-extension
+#          browser: firefox
+#          context:
+#            - org-global
+#            - app-hlidac-shopu
+#          requires:
+#            - build-web-extension
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^extension-.*/
       - publish-apple-apps:
           context:
             - org-global
@@ -454,7 +478,7 @@ workflows:
           filters:
             branches:
               only: trunk
-      - gh/pr-merge:
+      - merge_pr:
           context:
             - org-github
             - org-global
@@ -467,4 +491,3 @@ workflows:
               only:
                 - trunk-cf-autofix
                 - /renovate\/.*/
-          additional_args: "--rebase"
