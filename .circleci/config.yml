@@ -335,18 +335,18 @@ jobs:
           channel: ntf-hlidac-shopu
       - rollbar/notify_deploy
 
-  # merge_pr:
-  #   docker:
-  #     - image: cimg/base:current
-  #   steps:
-  #     - checkout
-  #     - github/install
-  #     - github/merge_pr:
-  #         rebase: true
-  #     - slack/notify:
-  #         event: fail
-  #         template: basic_fail_1
-  #         channel: ntf-hlidac-shopu
+  merge_pr:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - github/install
+      - github/merge_pr:
+          rebase: true
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
 
   github_release:
     docker:
@@ -356,8 +356,8 @@ jobs:
       - attach_workspace:
           at: .
       - github/install
-      - github/set_repo
-          repo: "topmonks/hlidac-shopu"
+      - github/set_repo:
+          repo: topmonks/hlidac-shopu
       - github/release:
           tag: "$CIRCLE_TAG"
           files: dist/*.zip
@@ -479,16 +479,16 @@ workflows:
           filters:
             branches:
               only: trunk
-      - merge_pr:
-          context:
-            - org-github
-            - org-global
-          requires:
-            - build-web-extension
-            - build-website
-            - preview-provision
-          filters:
-            branches:
-              only:
-                - trunk-cf-autofix
-                - /renovate\/.*/
+      # - merge_pr:
+      #     context:
+      #       - org-github
+      #       - org-global
+      #     requires:
+      #       - build-web-extension
+      #       - build-website
+      #       - preview-provision
+      #     filters:
+      #       branches:
+      #         only:
+      #           - trunk-cf-autofix
+      #           - /renovate\/.*/
