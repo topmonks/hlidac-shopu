@@ -5,7 +5,7 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { DOMParser, parseHTML } from "linkedom";
+import { DOMParser, parseHTML } from "linkedom/cached";
 import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
 import zlib from "zlib";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";

@@ -1,10 +1,9 @@
-// @ts-check
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 

@@ -4,7 +4,7 @@
 
 import { fetch } from "@adobe/helix-fetch";
 import Apify from "apify";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import {
   cleanPriceText,

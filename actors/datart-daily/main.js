@@ -11,7 +11,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { gotScraping } from "got-scraping";
-import { DOMParser, parseHTML } from "linkedom";
+import { DOMParser, parseHTML } from "linkedom/cached";
 
 /** @enum */
 const Labels = {

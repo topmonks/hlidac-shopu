@@ -6,7 +6,7 @@ import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { PlaywrightCrawler } from "@crawlee/playwright";
-import { DOMParser, parseHTML } from "linkedom";
+import { DOMParser, parseHTML } from "linkedom/cached";
 
 /** @enum {string} */
 const Country = {

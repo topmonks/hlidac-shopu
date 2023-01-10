@@ -9,7 +9,7 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 
 /** @enum {string} */
 const Labels = {

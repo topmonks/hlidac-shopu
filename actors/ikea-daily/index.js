@@ -1,4 +1,4 @@
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import {

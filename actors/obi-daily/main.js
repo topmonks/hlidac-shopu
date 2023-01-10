@@ -11,7 +11,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 
 /** @enum */
 const Labels = {

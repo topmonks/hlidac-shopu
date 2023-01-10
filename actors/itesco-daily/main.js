@@ -9,7 +9,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { S3Client } from "@aws-sdk/client-s3";

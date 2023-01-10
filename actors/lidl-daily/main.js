@@ -2,7 +2,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, Dataset, log, KeyValueStore, LogLevel } from "apify";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
