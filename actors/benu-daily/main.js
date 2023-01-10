@@ -5,15 +5,15 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import randomUA from "modern-random-ua";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { parseHTML } from "linkedom/cached";
 
-const { log } = Apify.utils;
-
-const LABELS = {
+/** @enum {string} */
+const Labels = {
   START: "START",
   HOME: "HOME",
   PAGE: "PAGE",
@@ -23,136 +23,83 @@ const LABELS = {
 };
 const web = "https://www.benu.cz";
 
-async function enqueueRequests(requestQueue, items, forefront) {
-  for (const item of items) {
-    await requestQueue.addRequest(item, { forefront });
+function findSUKL(document) {
+  const rows = document.querySelectorAll(".info-table tr");
+  for (const row of rows) {
+    const key = row.querySelector("th").innerText;
+    if (key.includes("SUKL")) {
+      console.log("key", key); // TODO: remove!!!
+      return row.querySelector("td").innerText;
+    }
   }
+  return null;
 }
 
-async function extractItems($, $products, breadCrumbs, requestQueue) {
-  const productsOnPage = [];
-  $products.each(async function () {
-    const $spc = $(this).find("div.spc");
-    const url = `${web}${$spc.find("a.detail").attr("href")}`;
-    productsOnPage.push({
-      url,
-      headers: {
-        userAgent: randomUA.generate()
-      },
-      userData: {
-        label: LABELS.DETAIL
-      }
-    });
-  });
-  await enqueueRequests(requestQueue, productsOnPage, false);
+function extractProduct(document) {
+  const script = document
+    .querySelector("#snippet-productRichSnippet-richSnippet")
+    .innerHTML.trim();
+  const jsonData = JSON.parse(script);
+  const itemId = jsonData.identifier;
+  if (!itemId) return;
+  const { offers } = jsonData;
+  const currentPrice = offers.price;
+  const originalPriceEl = document.querySelector(
+    "#product-detail .buy-box__price-head del"
+  );
+  const originalPrice = originalPriceEl
+    ? parseFloat(
+        originalPriceEl.innerText.replace("Kč", "").replace(/\s/g, "").trim()
+      )
+    : null;
+  return {
+    itemId,
+    itemName: jsonData.name,
+    itemUrl: jsonData.url,
+    img: jsonData.image,
+    currentPrice,
+    identifierSUKL: findSUKL(document),
+    originalPrice: originalPrice ? originalPrice : null,
+    url: jsonData.url,
+    category: document
+      .querySelectorAll("ol#breadcrumb > li > a")
+      .map(a => a.innerText),
+    discounted: originalPrice ? currentPrice < originalPrice : false
+  };
+}
+
+function productListingRequests(document) {
+  const productsOnPage = document
+    .querySelectorAll("ul.products > li")
+    .map(product => {
+      const spc = product
+        .querySelector("div.spc")
+        .querySelector("a.detail")
+        .getAttribute("href");
+      // if (!spc) return;
+      const url = `${web}${spc}`;
+      return {
+        url,
+        userData: {
+          label: Labels.DETAIL
+        }
+      };
+    })
+    .filter(Boolean);
+  log.info(`Found ${productsOnPage.length} products`);
   return productsOnPage;
 }
 
-function parseScriptJson($, element) {
-  return $(element)
-    .map((i, el) => $(el).html())
-    .get()
-    .toString()
-    .trim();
-}
-
-async function handleSingleDetailOfProduct(
-  $,
-  request,
-  requestQueue,
-  stats,
-  processedIds,
-  s3
-) {
-  try {
-    const $jsonData = JSON.parse(
-      parseScriptJson($, $("#snippet-productRichSnippet-richSnippet"))
-    );
-    const { offers } = $jsonData;
-    const currentPrice = offers.price;
-    const originalPrice = parseFloat(
-      $("#product-detail .buy-box__price-head del")
-        .text()
-        .replace("Kč", "")
-        .replace(/\s/g, "")
-        .trim()
-    );
-    const result = {
-      itemId: $jsonData.identifier,
-      itemName: $jsonData.name,
-      itemUrl: $jsonData.url,
-      img: $jsonData.image,
-      currentPrice,
-      identifierSUKL: $('th:contains("Kód SÚKL:")').siblings().text(),
-      originalPrice: originalPrice ? originalPrice : null,
-      url: $jsonData.url,
-      category: Array.from(
-        $("ol#breadcrumb > li > a").map((i, el) => $(el).text())
-      ),
-      discounted: originalPrice ? currentPrice < originalPrice : false
-    };
-    if (!processedIds.has(result.itemId)) {
-      await uploadToS3v2(s3, result, { priceCurrency: "CZK", inStock: true });
-      await Apify.pushData(result);
-      stats.items++;
-    } else {
-      stats.itemsDuplicity++;
-    }
-  } catch (e) {
-    throw new Error(
-      `Failed extraction of item details ${request.url} - ${e.message}`
-    );
-  }
-}
-
-async function handleProducts($, request, requestQueue) {
-  const $products = $("ul.products > li");
-  if ($products.length > 0) {
-    try {
-      const breadCrumbs = [];
-      $("ol#breadcrumb > li").each(function () {
-        const i = $(this).find("li");
-        if (i.length === 0) {
-          breadCrumbs.push(
-            $(this).text().trim().replace(" /", "").replace(":", "")
-          );
-        }
-      });
-      const actualCrumb = $("ol#breadcrumb > li > a");
-      if (actualCrumb.length > 0) {
-        breadCrumbs.push(actualCrumb.text().trim());
-      }
-      const products = await extractItems(
-        $,
-        $products,
-        breadCrumbs,
-        requestQueue
-      );
-      log.info(`Found ${products.length} products`);
-    } catch (e) {
-      throw new Error(
-        `Failed extraction of item details ${request.url} - ${e.message}`
-      );
-    }
-  }
-}
-
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
-  const processedIds = new Set();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = false,
+    development = process.env.TEST,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL
-  } = input ?? {};
+    type = ActorType.Full
+  } = input;
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -162,133 +109,127 @@ Apify.main(async function main() {
     failed: 0
   });
 
-  const requestQueue = await Apify.openRequestQueue();
-  if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: "https://www.benu.cz/black-friday",
-      userData: {
-        label: LABELS.PAGE
-      }
-    });
-    stats.categories++;
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: "https://www.benu.cz/alavis-maxima-triple-blend-extra-silny-700-g",
-      headers: {
-        userAgent: randomUA.generate()
-      },
-      userData: {
-        label: LABELS.DETAIL
-      }
-    });
-  } else {
-    await requestQueue.addRequest({
-      url: web,
-      headers: {
-        userAgent: randomUA.generate()
-      },
-      userData: {
-        label: LABELS.START
-      }
-    });
-  }
-
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
+  const crawler = new HttpCrawler({
     maxRequestRetries,
-    maxConcurrency,
+    maxRequestsPerMinute: 400,
     proxyConfiguration,
-    handlePageFunction: async ({ $, request }) => {
-      if (request.userData.label === LABELS.START) {
+    async requestHandler({ body, request, crawler }) {
+      const { document } = parseHTML(body.toString());
+      if (request.userData.label === Labels.START) {
         log.info("START scraping benu.cz");
-        const allCategories = new Set();
-        let categories = $("div.submenu li:not(.title) > a");
+        let categories = document.querySelectorAll(
+          "div.submenu li:not(.title) > a"
+        );
         if (type === ActorType.TEST) {
           log.info("type === TEST");
           categories = categories.slice(0, 1);
         }
-        categories.each(function () {
-          // $('div.submenu > ul.level-3.reset > li:not(.title):not(.goto)')
-          const $link = $(this).attr("href");
-          let url = `${web}${$(this).attr("href")}`;
-          if ($link.includes("https")) {
-            url = $link;
+        const allCategories = categories.map(category => {
+          const link = category.getAttribute("href");
+          let url = `${web}${link}`;
+          if (link.includes("https")) {
+            url = link;
           }
-          allCategories.add({
+          return {
             url,
-            headers: {
-              userAgent: randomUA.generate()
-            },
             userData: {
-              label: LABELS.PAGE,
-              mainCategory: $(this).text().trim()
+              label: Labels.PAGE,
+              mainCategory: category.innerText.trim()
             }
-          });
+          };
         });
-        log.info(`Found ${allCategories.size} allCategories.`);
-        stats.categories += allCategories.size;
-        await enqueueRequests(requestQueue, allCategories, false);
-      } else if (request.userData.label === LABELS.PAGE) {
+        log.info(`Found ${allCategories.length} allCategories.`);
+        stats.add("categories", allCategories.length);
+        await crawler.requestQueue.addRequests(allCategories);
+      } else if (request.userData.label === Labels.PAGE) {
         log.info(`START with page ${request.url}`);
-        let maxPage = 0;
-        $("p.paging a").each(function () {
-          if (!$(this).hasClass("next") && !$(this).hasClass("ico-arr-right")) {
-            maxPage = $(this).text().trim();
-          }
-        });
-        await handleProducts($, request, requestQueue);
+        const maxPage =
+          document
+            .querySelectorAll("p.paging a:not(.next):not(.ico-arr-right)")
+            .at(-1)
+            ?.innerText?.trim() ?? 0;
+        const requests = productListingRequests(document);
+        await crawler.requestQueue.addRequests(requests);
         if (maxPage !== 0) {
           const paginationPage = [];
           for (let i = 2; i <= maxPage; i++) {
             paginationPage.push({
               url: `${request.url}?page=${i}`,
-              headers: {
-                userAgent: randomUA.generate()
-              },
               userData: {
-                label: LABELS.PAGI_PAGE,
+                label: Labels.PAGI_PAGE,
                 mainCategory: request.userData.mainCategory,
                 category: request.userData.category
               }
             });
           }
           log.info(`Found ${paginationPage.length} pages in category.`);
-          stats.pages += paginationPage.length;
-          await enqueueRequests(requestQueue, paginationPage, true);
+          stats.add("pages", paginationPage.length);
+          await crawler.requestQueue.addRequests(paginationPage, {
+            forefront: true
+          });
         }
-      } else if (request.userData.label === LABELS.PAGI_PAGE) {
+      } else if (request.userData.label === Labels.PAGI_PAGE) {
         log.info(`START with page ${request.url}`);
-        await handleProducts($, request, requestQueue);
-      } else if (request.userData.label === LABELS.DETAIL) {
+        const requests = productListingRequests(document);
+        await crawler.requestQueue.addRequests(requests);
+      } else if (request.userData.label === Labels.DETAIL) {
         log.info(`START with product ${request.url}`);
-        await handleSingleDetailOfProduct(
-          $,
-          request,
-          requestQueue,
-          stats,
-          processedIds,
-          s3
-        );
+        const result = extractProduct(document);
+        await uploadToS3v2(s3, result, { priceCurrency: "CZK", inStock: true });
+        await Dataset.pushData(result);
         log.info(`END with product ${request.url}`);
       }
     },
-
-    // If request failed 4 times then this function is executed.
-    handleFailedRequestFunction: async ({ request }) => {
-      log.info(`Request ${request.url} failed 10 times`);
+    failedRequestHandler({ request, log }, error) {
+      log.error(
+        `Request ${request.url} failed ${request.retryCount} times`,
+        error
+      );
     }
   });
 
-  await crawler.run();
+  const startingRequests = [];
+  if (type === ActorType.BF) {
+    startingRequests.push({
+      url: "https://www.benu.cz/black-friday",
+      userData: {
+        label: Labels.PAGE
+      }
+    });
+    stats.inc("categories");
+  } else if (type === ActorType.TEST) {
+    startingRequests.push({
+      url: "https://www.benu.cz/alavis-maxima-triple-blend-extra-silny-700-g",
+      userData: {
+        label: Labels.DETAIL
+      }
+    });
+  } else {
+    startingRequests.push({
+      url: web,
+      userData: {
+        label: Labels.START
+      }
+    });
+  }
+
+  await crawler.run(startingRequests);
   log.info("crawler finished");
 
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
   await Promise.all([
-    stats.save(),
+    stats.save(true),
     invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
     uploadToKeboola(type === ActorType.BF ? "benu_cz_bf" : "benu_cz")
   ]);
-});
+}
+
+await Actor.main(main);
