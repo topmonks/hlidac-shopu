@@ -239,10 +239,11 @@ function mergeProductsData({ productList, items, itemsForSaving }) {
  * @template T
  * @param {boolean} isDevelopment
  * @param {T[]} coll
+ * @param {number} [n=50]
  * @returns {T[]}
  */
-function takeRandomIfDev(isDevelopment, coll) {
-  return isDevelopment ? transduce(take(50), push(), choices(coll)) : coll;
+function takeRandomIfDev(isDevelopment, coll, n = 50) {
+  return isDevelopment ? transduce(take(n), push(), choices(coll)) : coll;
 }
 
 async function main() {

@@ -1,9 +1,5 @@
-/**
- * Scrape categories and products from Hornbach
- */
-
-import { fetch } from "@adobe/helix-fetch";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import {
@@ -16,75 +12,66 @@ import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
-const COUNTRY = {
+/** @enum {string} */
+const Country = {
   CZ: "CZ",
   SK: "SK"
 };
 
-const CURRENCY = {
+/** @enum {string} */
+const Currency = {
   CZ: "CZK",
   SK: "EUR"
 };
 
-const LABELS = {
+/** @enum {string} */
+const Labels = {
   TOP_CATEGORIES: "TOP_CATEGORIES",
   SUB_CATEGORIES: "SUB_CATEGORIES",
   CAT_PRODUCTS: "CAT_PRODUCTS"
 };
 
-const { log } = Apify.utils;
+/**
+ * @param {string} country
+ * @param {string} path
+ */
+function completeUrl(country, path) {
+  return `https://www.hornbach.${country.toLowerCase()}${path}`;
+}
 
-const completeUrl = (country, path) =>
-  `https://www.hornbach.${country.toLowerCase()}${path}`;
-
-async function scrapeTopCategories({ dom: { document }, requestQueue, input }) {
+function scrapeTopCategories({ document, input }) {
   const links = document.querySelectorAll(
     `[data-testid="product-category"] h2 a`
   );
-  for (let link of links) {
-    if (input.type === ActorType.TEST && links.indexOf(link) > 0) {
-      continue;
-    }
+  return links.map(link => {
+    log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
     const href = link.getAttribute("href");
-    await requestQueue.addRequest({
+    return {
       url: completeUrl(input.country, href),
       userData: {
-        label: LABELS.SUB_CATEGORIES,
+        label: Labels.SUB_CATEGORIES,
         crumbs: []
       }
-    });
-
-    log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
-  }
+    };
+  });
 }
 
-async function scrapeSubCategories({
-  dom: { document },
-  requestQueue,
-  input,
-  request,
-  stats
-}) {
+function scrapeSubCategories({ document, input, request, stats }) {
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
   );
-  const { innerText: categoryTitle } =
-    document.querySelector(`[data-testid="category-page-header"] h1`) || {};
-
+  const requests = [];
   if (links.length) {
     for (let link of links) {
-      if (input.type === ActorType.TEST && links.indexOf(link) > 0) {
-        continue;
-      }
       const crumb = {
         link: completeUrl(input.country, link.getAttribute("href")),
         title: link.getAttribute("title")
       };
 
-      await requestQueue.addRequest({
+      requests.push({
         url: crumb.link,
         userData: {
-          label: LABELS.SUB_CATEGORIES,
+          label: Labels.SUB_CATEGORIES,
           crumbs: [...request.userData.crumbs, crumb]
         }
       });
@@ -97,17 +84,11 @@ async function scrapeSubCategories({
     log.debug(`Hit rock bottom at ${categoriesFromBottomToTop.length}. level`);
 
     for (let category of categoriesFromBottomToTop) {
-      if (
-        input.type === ActorType.TEST &&
-        categoriesFromBottomToTop.indexOf(category) > 0
-      ) {
-        continue;
-      }
-      await requestQueue.addRequest({
+      requests.push({
         uniqueKey: `products in ${category.title}`,
         url: category.link,
         userData: {
-          label: LABELS.CAT_PRODUCTS,
+          label: Labels.CAT_PRODUCTS,
           category,
           page: 1
         }
@@ -115,23 +96,19 @@ async function scrapeSubCategories({
       log.debug(`Queued products of very bottom category "${category.title}"`);
     }
   }
+  return requests;
 }
 
+/**
+ * @param {string} str
+ */
 function parseCategoryProductsCount(str) {
   if (!str) return 0;
-  const [countStr] = str.match(/\d+/g);
-  return Number(countStr);
+  const match = str.match(/\d+/g);
+  return match ? Number(match[0]) : 0;
 }
 
-async function scrapeCatProducts({
-  dom: { document },
-  requestQueue,
-  input,
-  request,
-  stats,
-  processedIds,
-  detailUrl
-}) {
+function scrapeCatProducts({ document, request }) {
   const categoryProductsCountNode = document.querySelector(
     `[data-testid="result-count"]`
   );
@@ -144,19 +121,19 @@ async function scrapeCatProducts({
   );
 
   const { category } = request.userData;
-  const currency = CURRENCY[input.country.toUpperCase()];
 
+  const requests = [];
   if (request.userData.page === 1) {
     log.debug(`Category URL is ${category.link}`);
     const pagesCount = Math.ceil(categoryProductsCount / 72);
     log.debug(`Category has ${pagesCount} pages`);
 
     for (let page = 2; page <= pagesCount; page++) {
-      await requestQueue.addRequest({
+      requests.push({
         uniqueKey: `products in ${category.title} on ${page}. page`,
         url: `${category.link}?page=${page}`,
         userData: {
-          label: LABELS.CAT_PRODUCTS,
+          label: Labels.CAT_PRODUCTS,
           category,
           page
         }
@@ -165,138 +142,152 @@ async function scrapeCatProducts({
   } else {
     log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
   }
+  return requests;
+}
 
+function extractProducts({ document, input, request, stats, detailUrl }) {
+  const { category } = request.userData;
+  const currency = Currency[input.country.toUpperCase()];
   const productNodes = document.querySelectorAll(
     `[data-testid="article-card"]`
   );
+  return productNodes
+    .map(itemNode => {
+      const href = itemNode.querySelector("a").getAttribute("href");
+      const itemId = href.split("/").filter(Boolean).reverse()[0];
 
-  for (const itemNode of productNodes) {
-    if (
-      input.type === ActorType.TEST &&
-      Array.from(productNodes).indexOf(itemNode) > 2
-    ) {
-      continue;
-    }
+      stats.inc("items");
+      const detail = {
+        itemId,
+        itemUrl: completeUrl(input.country, href),
+        itemName: itemNode.querySelector(`[data-testid="article-title"]`)
+          ?.textContent,
+        img: itemNode.querySelector(`picture img`).getAttribute("src"),
+        currentPrice: cleanPriceText(
+          itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""
+        ),
+        currentUnitPrice: cleanUnitPriceText(
+          itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""
+        ),
+        category: {
+          link: category.link,
+          title: category.title
+        },
+        currency
+      };
 
-    const href = itemNode.querySelector("a").getAttribute("href");
-    const itemId = href.split("/").filter(Boolean).reverse()[0];
+      log.debug("Got product detail", detail);
 
-    stats.inc("items");
-    if (processedIds.has(itemId)) {
-      stats.inc("itemsDuplicity");
-      continue;
-    }
-    processedIds.add(itemId);
-    stats.inc("itemsUnique");
-
-    const detail = {
-      itemId,
-      itemUrl: completeUrl(input.country, href),
-      itemName: itemNode.querySelector(`[data-testid="article-title"]`)
-        ?.textContent,
-      img: itemNode.querySelector(`picture img`).getAttribute("src"),
-      currentPrice: cleanPriceText(
-        itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""
-      ),
-      currentUnitPrice: cleanUnitPriceText(
-        itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""
-      ),
-      category: {
-        link: category.link,
-        title: category.title
-      },
-      currency
-    };
-
-    await Apify.pushData(detail);
-    log.debug("Got product detail", detail);
-
-    if (!detailUrl.deref()) {
-      detailUrl.reset(detail.itemUrl);
-    }
-  }
+      if (!detailUrl.deref()) {
+        detailUrl.reset(detail.itemUrl);
+      }
+      return detail;
+    })
+    .filter(Boolean);
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
-    items: 0,
-    itemsUnique: 0,
-    itemsDuplicity: 0
+    items: 0
   });
-  const processedIds = new Set();
   const detailUrl = defAtom(null);
 
   const input = Object.assign(
     {
-      type: ActorType.FULL,
-      country: COUNTRY.CZ,
+      type: process.env.TYPE ?? ActorType.Full,
+      country: Country.CZ,
       debug: false
     },
-    await Apify.getInput()
+    await KeyValueStore.getInput()
   );
 
   if (input.debug) {
-    log.setLevel(log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
   log.debug(`Running in ${input.type} mode`);
 
-  if ([ActorType.TEST, ActorType.FULL].includes(input.type) === false) {
+  if ([ActorType.Test, ActorType.Full].includes(input.type) === false) {
     log.error(`Actor type ${input.type} not yet implemented`);
     return;
   }
 
-  const requestQueue = await Apify.openRequestQueue();
+  const filterTestRequests = ({ requests, input, take = 1 }) => {
+    return input.type === ActorType.Test ? requests.slice(0, take) : requests;
+  };
 
-  await requestQueue.addRequest({
-    url: completeUrl(input.country, "/c/"),
-    userData: {
-      label: LABELS.TOP_CATEGORIES
-    }
-  });
-
-  const crawler = new Apify.BasicCrawler({
-    requestQueue,
-    async handleRequestFunction({ request }) {
-      const resp = await fetch(request.url);
-      const body = await resp.text();
-      const dom = parseHTML(body);
-
-      const scraperArguments = {
-        dom,
-        requestQueue,
-        input,
-        request,
-        stats,
-        processedIds,
-        detailUrl
-      };
+  const crawler = new HttpCrawler({
+    maxRequestsPerMinute: 600,
+    async requestHandler({ request, crawler, body, log }) {
+      log.info(`Processing ${request.url}...`);
+      const { document } = parseHTML(body.toString());
 
       switch (request.userData.label) {
-        case LABELS.TOP_CATEGORIES: // 1.
-          return scrapeTopCategories(scraperArguments);
-
-        case LABELS.SUB_CATEGORIES: // 2.
-          return scrapeSubCategories(scraperArguments);
-
-        case LABELS.CAT_PRODUCTS: // 3.
-          return scrapeCatProducts(scraperArguments);
+        case Labels.TOP_CATEGORIES: // 1.
+          {
+            const requests = scrapeTopCategories({ document, input });
+            await crawler.requestQueue.addRequests(
+              filterTestRequests({ requests, input }),
+              {
+                forefront: true
+              }
+            );
+          }
+          break;
+        case Labels.SUB_CATEGORIES: // 2.
+          {
+            const requests = scrapeSubCategories({
+              document,
+              input,
+              request,
+              stats
+            });
+            await crawler.requestQueue.addRequests(
+              filterTestRequests({ requests, input })
+            );
+          }
+          break;
+        case Labels.CAT_PRODUCTS: // 3.
+          {
+            const requests = scrapeCatProducts({ document, request });
+            await crawler.requestQueue.addRequests(
+              filterTestRequests({ requests, input })
+            );
+            const products = extractProducts({
+              document,
+              input,
+              request,
+              stats,
+              detailUrl
+            });
+            await Dataset.pushData(products);
+          }
+          break;
       }
     },
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed multiple times`, request);
+    async failedRequestHandler({ request, log }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 
-  await crawler.run();
+  await crawler.run([
+    {
+      url: completeUrl(input.country, "/c/"),
+      userData: {
+        label: Labels.TOP_CATEGORIES
+      }
+    }
+  ]);
   log.info("crawler finished");
 
   await Promise.all([
-    stats.save(),
+    stats.save(true),
     uploadToKeboola(shopName(detailUrl.deref()))
   ]);
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);
