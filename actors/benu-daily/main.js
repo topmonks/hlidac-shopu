@@ -28,7 +28,6 @@ function findSUKL(document) {
   for (const row of rows) {
     const key = row.querySelector("th").innerText;
     if (key.includes("SUKL")) {
-      console.log("key", key); // TODO: remove!!!
       return row.querySelector("td").innerText;
     }
   }
@@ -41,7 +40,8 @@ function extractProduct(document) {
     .innerHTML.trim();
   const jsonData = JSON.parse(script);
   const itemId = jsonData.identifier;
-  if (!itemId) return;
+  const itemUrl = jsonData.url;
+  if (!itemId || !itemUrl) return;
   const { offers } = jsonData;
   const currentPrice = offers.price;
   const originalPriceEl = document.querySelector(
@@ -55,7 +55,7 @@ function extractProduct(document) {
   return {
     itemId,
     itemName: jsonData.name,
-    itemUrl: jsonData.url,
+    itemUrl,
     img: jsonData.image,
     currentPrice,
     identifierSUKL: findSUKL(document),
@@ -70,13 +70,9 @@ function extractProduct(document) {
 
 function productListingRequests(document) {
   const productsOnPage = document
-    .querySelectorAll("ul.products > li")
+    .querySelectorAll("ul.products > li div.spc a.detail")
     .map(product => {
-      const spc = product
-        .querySelector("div.spc")
-        .querySelector("a.detail")
-        .getAttribute("href");
-      // if (!spc) return;
+      const spc = product.getAttribute("href");
       const url = `${web}${spc}`;
       return {
         url,
@@ -84,8 +80,7 @@ function productListingRequests(document) {
           label: Labels.DETAIL
         }
       };
-    })
-    .filter(Boolean);
+    });
   log.info(`Found ${productsOnPage.length} products`);
   return productsOnPage;
 }
