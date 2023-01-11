@@ -74,7 +74,7 @@ async function createMetadataResponse(url) {
       body: content({
         url: `https://www.hlidacshopu.cz/app/?${query}`,
         name: `${title} prodává ${itemName}`,
-        imageUrl: `https://api.hlidacshopu.cz/og?${query}`
+        imageUrl: `https://api.hlidacshopu.cz/v2/og?${query}`
       })
     };
   } catch (err) {
