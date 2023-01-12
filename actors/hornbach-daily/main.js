@@ -39,7 +39,7 @@ function completeUrl(country, path) {
   return `https://www.hornbach.${country.toLowerCase()}${path}`;
 }
 
-function scrapeTopCategories({ document, input }) {
+function topCategoriesRequests({ document, input }) {
   const links = document.querySelectorAll(
     `[data-testid="product-category"] h2 a`
   );
@@ -56,7 +56,7 @@ function scrapeTopCategories({ document, input }) {
   });
 }
 
-function scrapeSubCategories({ document, input, request, stats }) {
+function subCategoriesRequests({ document, input, request, stats }) {
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
   );
@@ -77,7 +77,7 @@ function scrapeSubCategories({ document, input, request, stats }) {
   });
 }
 
-function scrapeCatFroductsFromSubCategories({ request }) {
+function catProductsFromSubCategoriesRequests({ request }) {
   const categoriesFromBottomToTop = request.userData.crumbs.reverse();
   log.debug(`Hit rock bottom at ${categoriesFromBottomToTop.length}. level`);
 
@@ -104,7 +104,7 @@ function parseCategoryProductsCount(str) {
   return match ? Number(match[0]) : 0;
 }
 
-function scrapeCatProducts({ document, request }) {
+function catProductsRequests({ document, request }) {
   const categoryProductsCountNode = document.querySelector(
     `[data-testid="result-count"]`
   );
@@ -231,7 +231,7 @@ async function main() {
       switch (request.userData.label) {
         case Labels.TOP_CATEGORIES: // 1.
           {
-            const requests = scrapeTopCategories({ document, input });
+            const requests = topCategoriesRequests({ document, input });
             await crawler.requestQueue.addRequests(
               filterTestRequests({ requests, input }),
               {
@@ -246,7 +246,7 @@ async function main() {
               `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
             );
             if (links.length) {
-              const requests = scrapeSubCategories({
+              const requests = subCategoriesRequests({
                 document,
                 input,
                 request,
@@ -257,7 +257,7 @@ async function main() {
                 { forefront: true }
               );
             } else {
-              const requests = scrapeCatFroductsFromSubCategories({
+              const requests = catProductsFromSubCategoriesRequests({
                 request
               });
               await crawler.requestQueue.addRequests(
@@ -268,7 +268,7 @@ async function main() {
           break;
         case Labels.CAT_PRODUCTS: // 3.
           {
-            const requests = scrapeCatProducts({ document, request });
+            const requests = catProductsRequests({ document, request });
             await crawler.requestQueue.addRequests(
               filterTestRequests({ requests, input })
             );

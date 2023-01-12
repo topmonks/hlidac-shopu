@@ -4927,9 +4927,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/helix-fetch": 3.1.2
     "@aws-sdk/client-cloudfront": 3.242.0
     "@aws-sdk/client-s3": 3.241.0
+    "@crawlee/http": 3.1.4
     "@hlidac-shopu/actors-common": 2.0.8
     "@types/node": 18.11.18
     apify: 3.1.1

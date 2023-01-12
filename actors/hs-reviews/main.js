@@ -1,4 +1,5 @@
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import { fetch } from "@adobe/helix-fetch";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
@@ -14,20 +15,17 @@ import { promisify } from "util";
 import zlib from "zlib";
 
 /** @typedef { import("apify").RequestQueue } RequestQueue */
-/** @typedef { import("apify").RequestList } RequestList */
 /** @typedef { import("apify").HandleRequest } HandleRequest */
 /** @typedef { import("schema-dts").UserReview } UserReview */
 /** @typedef { import("schema-dts").InteractionCounter } InteractionCounter */
 
 const gunzip = promisify(zlib.gunzip);
-const { log } = Apify.utils;
 
 /**
- * @param {Request} request
  * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function appleStats(request, document) {
+function appleStats(document) {
   const reviews = parseInt(
     document
       .querySelector(".we-customer-ratings__count")
@@ -148,21 +146,18 @@ function appleReview(review) {
 }
 
 /**
- * @param {Request} request
  * @param {Document} document
  * @returns {UserReview[]}
  */
-function appleReviews(request, document) {
-  const reviews = document.querySelectorAll(".we-customer-review");
-  return Array.from(reviews).map(appleReview);
+function appleReviews(document) {
+  return document.querySelectorAll(".we-customer-review").map(appleReview);
 }
 
 /**
- * @param {Request} request
  * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function googleStats(request, document) {
+function googleStats(document) {
   const downloads = parseInt(
     document
       .querySelector(".left-panel > div+div > .value")
@@ -244,21 +239,18 @@ function googleReview(review) {
 }
 
 /**
- * @param {Request} request
  * @param {Document} document
  * @returns {UserReview[]}
  */
-function googleReviews(request, document) {
-  const reviews = document.querySelectorAll("table.table tbody tr");
-  return Array.from(reviews).map(googleReview);
+function googleReviews(document) {
+  return document.querySelectorAll("table.table tbody tr").map(googleReview);
 }
 
 /**
- * @param {Request} request
  * @param {Document} document
  * @returns {InteractionCounter[]}
  */
-function firefoxStats(request, document) {
+function firefoxStats(document) {
   const meta = document.querySelectorAll(".MetadataCard > dl");
   if (!meta.length) return [];
   const downloads = parseInt(
@@ -305,7 +297,10 @@ function firefoxStats(request, document) {
   ];
 }
 
-/** @returns {UserReview} */
+/**
+ * @param {Object} result
+ * @returns {UserReview}
+ */
 function firefoxReview(result) {
   return {
     "@context": "https://schema.org",
@@ -335,18 +330,10 @@ function firefoxReview(result) {
 }
 
 /**
- * @param {Request} request
  * @param {*} json
- * @param {RequestQueue} requestQueue
  * @returns {UserReview[]}
  */
-async function firefoxReviews(request, json, requestQueue) {
-  if (json.next) {
-    await requestQueue.addRequest({
-      url: json.next,
-      userData: { label: FIREFOX_REVIEWS }
-    });
-  }
+function firefoxReviews(json) {
   return json.results.map(firefoxReview);
 }
 
@@ -390,8 +377,10 @@ async function saveData({ reviews, stats }) {
 
   log.info("S3: starting upload of data");
   const s3 = new S3Client(configuration);
-  await uploadToS3(s3, "reviews", "jsonld", reviews);
-  await uploadToS3(s3, "stats", "jsonld", stats);
+  await Promise.all([
+    uploadToS3(s3, "reviews", "jsonld", reviews),
+    uploadToS3(s3, "stats", "jsonld", stats)
+  ]);
   log.info("S3: done");
 
   log.info("CloudFront: invalidating data in CDN");
@@ -446,23 +435,23 @@ const requests = new Map([
 ]);
 
 /**
- * @param {RequestQueue} requestQueue
  * @param {String} token
  */
-function createHandlePageFunction(requestQueue, token) {
+function createHandlePageFunction(token) {
   /** @type {UserReview[]} */
   const reviews = [];
   /** @type {InteractionCounter[]} */
   const stats = [];
   /** @type {HandleRequest} */
-  const handlePageFunction = async ({ request }) => {
+  const handlePageFunction = async ({ crawler, request }) => {
+    const { requestQueue } = crawler;
     log.info(`Handling page ${request.url}`);
     switch (request.userData.label) {
       case APPLE: {
         const response = await fetch(request.url);
         const { document } = parseHTML(await response.text());
-        const result = appleStats(request, document);
-        await Apify.pushData(result);
+        const result = appleStats(document);
+        await Dataset.pushData(result);
         stats.push(...result);
         break;
       }
@@ -474,50 +463,52 @@ function createHandlePageFunction(requestQueue, token) {
           }
         });
         const result = await appleDownloads(request, resp, requestQueue);
-        await Apify.pushData(result);
+        await Dataset.pushData(result);
         stats.push(...result);
         break;
       }
       case APPLE_REVIEWS: {
         const response = await fetch(request.url);
         const { document } = parseHTML(await response.text());
-        const result = appleReviews(request, document);
-        await Apify.pushData(result);
+        const result = appleReviews(document);
+        await Dataset.pushData(result);
         reviews.push(...result);
         break;
       }
       case GOOGLE: {
         const response = await fetch(request.url);
         const { document } = parseHTML(await response.text());
-        const result = googleStats(request, document);
-        await Apify.pushData(result);
+        const result = googleStats(document);
+        await Dataset.pushData(result);
         stats.push(...result);
         break;
       }
       case GOOGLE_REVIEWS: {
         const response = await fetch(request.url);
         const { document } = parseHTML(await response.text());
-        const result = googleReviews(request, document);
-        await Apify.pushData(result);
+        const result = googleReviews(document);
+        await Dataset.pushData(result);
         reviews.push(...result);
         break;
       }
       case FIREFOX: {
         const response = await fetch(request.url);
         const { document } = parseHTML(await response.text());
-        const result = firefoxStats(request, document);
-        await Apify.pushData(result);
+        const result = firefoxStats(document);
+        await Dataset.pushData(result);
         stats.push(...result);
         break;
       }
       case FIREFOX_REVIEWS: {
-        const response = await fetch(request.url);
-        const result = await firefoxReviews(
-          request,
-          await response.json(),
-          requestQueue
-        );
-        await Apify.pushData(result);
+        const json = await fetch(request.url).then(r => r.json());
+        if (json.next) {
+          await requestQueue.addRequest({
+            url: json.next,
+            userData: { label: FIREFOX_REVIEWS }
+          });
+        }
+        const result = firefoxReviews(json);
+        await Dataset.pushData(result);
         reviews.push(...result);
         break;
       }
@@ -546,44 +537,37 @@ function createAppleJWT(applePK) {
   });
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
-  const input = await Apify.getInput();
-  const { applePK } = input ?? {};
+  const input = (await KeyValueStore.getInput()) ?? {};
+  const { applePK } = input;
   const token = createAppleJWT(applePK);
 
-  /** @type {RequestList} */
-  const requestList = await Apify.openRequestList(
-    "urls",
+  const { reviews, stats, handlePageFunction } =
+    createHandlePageFunction(token);
+
+  const crawler = new HttpCrawler({
+    handleRequestFunction: handlePageFunction,
+    maxRequestRetries: 1,
+    async handleFailedRequestFunction({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
+    }
+  });
+
+  log.info("CRAWLER: scraping reviews");
+  await crawler.run(
     Array.from(requests.entries()).map(([label, url]) => ({
       url,
       userData: { label, year: 2019 }
     }))
   );
-  /** @type {RequestQueue} */
-  const requestQueue = await Apify.openRequestQueue();
-  const { reviews, stats, handlePageFunction } = createHandlePageFunction(
-    requestQueue,
-    token
-  );
-
-  const crawler = new Apify.BasicCrawler({
-    requestList,
-    requestQueue,
-    handleRequestFunction: handlePageFunction,
-    maxRequestRetries: 1,
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed multiple times`, request);
-    }
-  });
-
-  log.info("CRAWLER: scraping reviews");
-  await crawler.run();
   log.info("CRAWLER: done");
 
   await saveData({
     reviews,
     stats
   });
-});
+}
+
+await Actor.main(main);
