@@ -60,43 +60,39 @@ function scrapeSubCategories({ document, input, request, stats }) {
   const links = document.querySelectorAll(
     `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
   );
-  const requests = [];
-  if (links.length) {
-    for (let link of links) {
-      const crumb = {
-        link: completeUrl(input.country, link.getAttribute("href")),
-        title: link.getAttribute("title")
-      };
+  return links.map(link => {
+    const crumb = {
+      link: completeUrl(input.country, link.getAttribute("href")),
+      title: link.getAttribute("title")
+    };
+    stats.inc("categories");
+    log.debug(`Scraped category "${crumb.title}"`);
+    return {
+      url: crumb.link,
+      userData: {
+        label: Labels.SUB_CATEGORIES,
+        crumbs: [...request.userData.crumbs, crumb]
+      }
+    };
+  });
+}
 
-      requests.push({
-        url: crumb.link,
-        userData: {
-          label: Labels.SUB_CATEGORIES,
-          crumbs: [...request.userData.crumbs, crumb]
-        }
-      });
+function scrapeCatFroductsFromSubCategories({ request }) {
+  const categoriesFromBottomToTop = request.userData.crumbs.reverse();
+  log.debug(`Hit rock bottom at ${categoriesFromBottomToTop.length}. level`);
 
-      stats.inc("categories");
-      log.debug(`Scraped category "${crumb.title}"`);
-    }
-  } else {
-    const categoriesFromBottomToTop = request.userData.crumbs.reverse();
-    log.debug(`Hit rock bottom at ${categoriesFromBottomToTop.length}. level`);
-
-    for (let category of categoriesFromBottomToTop) {
-      requests.push({
-        uniqueKey: `products in ${category.title}`,
-        url: category.link,
-        userData: {
-          label: Labels.CAT_PRODUCTS,
-          category,
-          page: 1
-        }
-      });
-      log.debug(`Queued products of very bottom category "${category.title}"`);
-    }
-  }
-  return requests;
+  return categoriesFromBottomToTop.map(category => {
+    log.debug(`Queued products of very bottom category "${category.title}"`);
+    return {
+      uniqueKey: `products in ${category.title}`,
+      url: category.link,
+      userData: {
+        label: Labels.CAT_PRODUCTS,
+        category,
+        page: 1
+      }
+    };
+  });
 }
 
 /**
@@ -186,6 +182,20 @@ function extractProducts({ document, input, request, stats, detailUrl }) {
     .filter(Boolean);
 }
 
+function filterTestRequests({ requests, input, take = 1 }) {
+  return input.type === ActorType.Test ? requests.slice(0, take) : requests;
+}
+
+async function getInput(defaults) {
+  return Object.assign(
+    defaults,
+    {
+      type: process.env.TYPE ?? defaults.type
+    },
+    await KeyValueStore.getInput()
+  );
+}
+
 async function main() {
   rollbar.init();
 
@@ -195,14 +205,11 @@ async function main() {
   });
   const detailUrl = defAtom(null);
 
-  const input = Object.assign(
-    {
-      type: process.env.TYPE ?? ActorType.Full,
-      country: Country.CZ,
-      debug: false
-    },
-    await KeyValueStore.getInput()
-  );
+  const input = await getInput({
+    type: ActorType.Full,
+    country: Country.CZ,
+    debug: false
+  });
 
   if (input.debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -214,10 +221,6 @@ async function main() {
     log.error(`Actor type ${input.type} not yet implemented`);
     return;
   }
-
-  const filterTestRequests = ({ requests, input, take = 1 }) => {
-    return input.type === ActorType.Test ? requests.slice(0, take) : requests;
-  };
 
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 600,
@@ -239,15 +242,28 @@ async function main() {
           break;
         case Labels.SUB_CATEGORIES: // 2.
           {
-            const requests = scrapeSubCategories({
-              document,
-              input,
-              request,
-              stats
-            });
-            await crawler.requestQueue.addRequests(
-              filterTestRequests({ requests, input })
+            const links = document.querySelectorAll(
+              `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
             );
+            if (links.length) {
+              const requests = scrapeSubCategories({
+                document,
+                input,
+                request,
+                stats
+              });
+              await crawler.requestQueue.addRequests(
+                filterTestRequests({ requests, input }),
+                { forefront: true }
+              );
+            } else {
+              const requests = scrapeCatFroductsFromSubCategories({
+                request
+              });
+              await crawler.requestQueue.addRequests(
+                filterTestRequests({ requests, input })
+              );
+            }
           }
           break;
         case Labels.CAT_PRODUCTS: // 3.
