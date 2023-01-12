@@ -479,16 +479,16 @@ workflows:
           filters:
             branches:
               only: trunk
-      # - merge_pr:
-      #     context:
-      #       - org-github
-      #       - org-global
-      #     requires:
-      #       - build-web-extension
-      #       - build-website
-      #       - preview-provision
-      #     filters:
-      #       branches:
-      #         only:
-      #           - trunk-cf-autofix
-      #           - /renovate\/.*/
+      - merge_pr:
+          context:
+            - org-github
+            - org-global
+          requires:
+            - build-web-extension
+            - build-website
+            - preview-provision
+          filters:
+            branches:
+              only:
+                - trunk-cf-autofix
+                - /renovate\/.*/
