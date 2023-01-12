@@ -149,11 +149,11 @@ async function main() {
     useApifyProxy: !development
   });
 
-  // TODO: does not work
   async function loadLazyImages({ page }) {
     await page.keyboard.down("End");
 
     await page.evaluate(() => {
+      if (!document.body) return;
       document.body.scrollIntoView(false);
       const height = document.body.scrollHeight;
       window.scrollTo(0, height);
