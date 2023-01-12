@@ -4,9 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1lrTbUaRt80-YCgxEjmK-mQbOwjlKiWdPyJ
 rating: 3
 ---
 
-CZC.cz jako jeden z prvních českých e-shopů přešel na výpočet reálných slev splňující
-novou EU směrnici. Platí pro všechny produkty v nabídce. Když narazíme na nějaké
-nesrovnalosti, vždy se jedná o chyby, které CZC.cz ihned napravuje. Odlišnost od naší metodiky je v tom, že CZC.cz počítá období pro referenční cenu vždy posledních 30 dní od aktuálního data.
+CZC.cz jako jeden z prvních českých e-shopů přešel na výpočet reálných slev už v roce 2020. Aktuálně u nich probíhá změna metodiky (z klouzavého výpočtu na výpočet fixní referenční ceny ke dni vstupu produktu do slevy, jak stanoví EU směrnice), tudíž se v tuto chvíli na slevách neshodujeme.
 
 Slovy e-shopu:
 
