@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/12Ool0WTPw5nTcEutGrSVynKLX2PjRV8eR9
 rating: 2
 ---
 
-AAAAuto.cz upravil svou slevovou politiku v souladu s EU směrnicí. Jako referenční cenu v některých případech ale používá cenu nového vozu, i když jako autobazar vozy za ceny nových vozů nikdy neprodával.
+AAAAuto.cz upravili svou slevovou politiku kvůli nové EU směrnicí. Nicméně v některých případech zde dochází ke krátkodobému nasazení ceny při uvedení do prodeje, následuje snížení ceny a uvádění slevy po nepoměrně dlouhou dobu.
