@@ -5185,7 +5185,7 @@ __metadata:
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
     "@esm-bundle/chai": 4.3.4-fix.0
-    "@lit/reactive-element": 1.5.0
+    "@lit/reactive-element": 1.6.0
     "@open-wc/testing": 3.1.7
     "@web/test-runner": 0.15.0
     "@web/test-runner-junit-reporter": 0.5.0
@@ -5588,10 +5588,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.5.0, @lit/reactive-element@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@lit/reactive-element@npm:1.5.0"
-  checksum: 8f87a2d9d7630c26ad0dd6b9a8ad46bb184fcec11e04ded3d487859a6cfebbe871d07a8271dfdf3f2d4b9688d27c17de0f8fa3fc690602f5b86d742f969a3ca4
+"@lit-labs/ssr-dom-shim@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@lit-labs/ssr-dom-shim@npm:1.0.0"
+  checksum: ccba6675ad631c6f7360af4e12e328e88d877a52ec992ae9254a1be9902ef699b7916d851b073803dd91244d0f709de2c0539a7db643889cfe341ff6e1a74eb5
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@lit/reactive-element@npm:1.6.0"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.0.0
+  checksum: 9e84d3fc3d68c6d396c25d75cd39b97833b72a9560f46bfd6478996edafd6823d5c84cc65828d8f28277fe60af6d498c3ef5254e82cff27f0db4f3d46d02de76
   languageName: node
   linkType: hard
 
@@ -5599,6 +5608,13 @@ __metadata:
   version: 1.3.1
   resolution: "@lit/reactive-element@npm:1.3.1"
   checksum: 6aea5975555c42fd4e3fc0efb9fb46d2984c4fde61fc405f927e81c5518a895e0844340514b6d559173b62b3bbe28bdbc293f62997c43d8dfc70caa624cc5a48
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@lit/reactive-element@npm:1.5.0"
+  checksum: 8f87a2d9d7630c26ad0dd6b9a8ad46bb184fcec11e04ded3d487859a6cfebbe871d07a8271dfdf3f2d4b9688d27c17de0f8fa3fc690602f5b86d742f969a3ca4
   languageName: node
   linkType: hard
 
