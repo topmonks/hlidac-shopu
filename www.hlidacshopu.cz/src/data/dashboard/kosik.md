@@ -4,5 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1iU3ZQvl45LiNDru8gzdcRqXjFP--3qHYJM
 rating: 2
 ---
 
-Kosik.cz stále referuje k maloobchodním cenám, v některých případech jsme narazili také na navýšení referenční ceny.
-
+Kosik.cz neupravil cenovou politiku v návaznosti na EU směrnici. Neshody způsobují především cyklicky opakované slevy, kdy není referováno k minimální prodejní ceně 30 dní před začátkem slevové akce, ale k MOC.
