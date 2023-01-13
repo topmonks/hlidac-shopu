@@ -1,10 +1,10 @@
 ---
 shop: dm.cz
 link: https://docs.google.com/spreadsheets/d/1fDTODSqF9tkD6fcKz1Ck6BqOebJRQ8rHHEbH-il1Z2A/edit?usp=sharing
-rating: 2
+rating: 3
 ---
 
-DM.cz má zlevněné pouze desítky produktů a typicky vypočítává slevu z ceny před zlevněním, nicméně nereflektuje délku trvání slevy. 
+DM.cz sladil svou metodiku s EU směrnici. Neshody ve slevě pramení z příliš dlouhé platnosti slev.
 
 Slovy e-shopu:
 
