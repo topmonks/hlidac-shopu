@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1CozCZMqde777EqbOtE_-MHD-GQ2S01Qkwd
 rating: 2
 ---
 
-KnihyDobrovsky.cz stále počítají slevy z maloobchodních cen. Nicméně se snaží být transparentní a 10. 6. 2022 začali zobrazovat graf vývoje prodejní a referenční ceny (obdobný grafu Hlídače shopů, bohužel z daty pouze od 10. 6. 2022). Pro zajímavost - změnu maloobchodní ceny vysvětlují tím, že může být odlišná v rámci prodejen, viz níže.
+KnihyDobrovsky.cz s platností EU směrnice přestali vyčíslovat slevy, což je za nás OK. Nicméně u produktů označených "Dobrá sleva" zatím nezobrazují minimální prodejní cenu za posledních 30 dní před začátkem slevové akce, jak by dle směrnice měli.
 
 Slovy e-shopu:
 
