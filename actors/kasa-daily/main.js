@@ -5,19 +5,24 @@ import {
   uploadToS3v2,
   invalidateCDN
 } from "@hlidac-shopu/actors-common/product.js";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-
-const { log } = Apify.utils;
+import { parseHTML } from "linkedom/cached";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const web = "https://www.kasa.cz";
 const limit = "limit=96";
 const akce = "akce";
 const aktuality = "aktuality";
 const bazar = "bazar";
-const LAST_CATEGORY = "LAST_CATEGORY";
+const LastCategory = "LAST_CATEGORY";
 
+/**
+ * @param {string} availability
+ * @returns {boolean}
+ */
 function parseAvailability(availability) {
   switch (availability) {
     case "not-available":
@@ -31,217 +36,181 @@ function parseAvailability(availability) {
   }
 }
 
-async function extractItems($, $products, breadcrum) {
-  const itemsArray = [];
-  $products.each(function () {
-    const result = {};
-    const $item = $(this);
-    const $link = $(this).find(".product-box-link");
-    const itemId = $link.data("productId");
-    let isBazar = false;
-    $item.find(".labels > .label-red").each(function () {
-      if ($(this).text().trim() === bazar) {
-        isBazar = true;
+function extractItems(products, breadcrums) {
+  return products
+    .map(item => {
+      const result = {};
+      const link = item.querySelector(".product-box-link");
+      const itemId = link.getAttribute("data-productId");
+      const isBazar = item
+        .querySelectorAll(".labels > .label-red")
+        .some(label => label.innerText.trim() === bazar);
+      if (parseInt(itemId) > 0 || !isBazar) {
+        const name = item
+          .querySelector("h2.product-box-title")
+          .innerText.trim();
+        const itemUrl = link.getAttribute("href");
+        const actualPriceSpan = item.querySelector("p.main-price");
+        const oldPriceSpan = item.querySelector(
+          "div.before-price span.text-strike"
+        );
+        const itemImgUrl = item.querySelector(".product-box-thumb img");
+        result.inStock = parseAvailability(
+          item.querySelector("div.availability span").getAttribute("class")
+        );
+        if (oldPriceSpan) {
+          result.originalPrice = parseFloat(
+            oldPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
+          );
+          result.currentPrice = parseFloat(
+            actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
+          );
+          result.discounted = true;
+        } else {
+          result.currentPrice = parseFloat(
+            actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
+          );
+          result.originalPrice = null;
+          result.discounted = false;
+        }
+        result.img = itemImgUrl.getAttribute("src");
+        result.itemId = itemId;
+        result.itemUrl = `${web}${itemUrl}`;
+        result.itemName = name;
+        result.category = breadcrums.join(" > ");
+        return result;
       }
-    });
-    if (parseInt(itemId) > 0 || !isBazar) {
-      const name = $item.find("h2.product-box-title").text().trim();
-      const itemUrl = $link.attr("href");
-      const $actualPriceSpan = $item.find("p.main-price");
-      const $oldPriceSpan = $item.find("div.before-price span.text-strike");
-      const $itemImgUrl = $item.find(".product-box-thumb img");
-      result.inStock = parseAvailability(
-        $item.find("div.availability span").first().attr("class")
-      );
-      if ($oldPriceSpan.length > 0) {
-        result.originalPrice = parseFloat(
-          $oldPriceSpan.text().replace("Kč", "").replace(" ", "").trim()
-        );
-        result.currentPrice = parseFloat(
-          $actualPriceSpan.text().replace("Kč", "").replace(" ", "").trim()
-        );
-        result.discounted = true;
-      } else {
-        result.currentPrice = parseFloat(
-          $actualPriceSpan.text().replace("Kč", "").replace(" ", "").trim()
-        );
-        result.originalPrice = null;
-        result.discounted = false;
-      }
-      result.img = $itemImgUrl.attr("src");
-      result.itemId = itemId;
-      result.itemUrl = `${web}${itemUrl}`;
-      result.itemName = name;
-      result.category = breadcrum.join(" > ");
-      itemsArray.push(result);
-    }
-  });
-  return itemsArray;
+    })
+    .filter(Boolean);
 }
 
-async function enqueuRequests(requestQueue, items) {
-  for (const item of items) {
-    await requestQueue.addRequest(item);
+function handleProducts(document) {
+  const breadCrums = document
+    .querySelectorAll(".col-main-content-right > ol.breadcrumb > li")
+    .map(breadcrumb => breadcrumb.innerText.trim());
+  const products = document.querySelectorAll(
+    ".product-boxes article.product-box"
+  );
+  const items = extractItems(products, breadCrums);
+  log.info(`Found ${items.length} products`);
+  return items;
+}
+
+async function saveItems(s3, stats, products) {
+  const requests = [Dataset.pushData(products)];
+  stats.add("items", products.length);
+  for (const s3item of products) {
+    requests.push(uploadToS3v2(s3, s3item, { priceCurrency: "CZK" }));
   }
+  return Promise.all(requests);
 }
 
-async function handleProducts({ $, request, s3, processedIds }) {
-  const breadCrums = [];
-  $(".col-main-content-right > ol.breadcrumb > li").each(function () {
-    breadCrums.push($(this).text().trim());
-  });
-  const $products = $(".product-boxes article.product-box");
-  if ($products.length > 0) {
-    try {
-      const products = await extractItems($, $products, breadCrums);
-      log.info(`Found ${products.length} products`);
-
-      // we don't need to block pushes, we will await them all at the end
-      const requests = [];
-
-      // push only unique items
-      const unprocessedProducts = products.filter(
-        x => !processedIds.has(x.itemId)
-      );
-
-      for (const detail of unprocessedProducts) {
-        const s3item = { ...detail };
-        //Keboola data structure fix
-        delete detail.inStock;
-        requests.push(
-          uploadToS3v2(s3, s3item, { priceCurrency: "CZK" }),
-          Apify.pushData(detail)
-        );
-        // remember processed product IDs
-        processedIds.add(detail.itemId);
-      }
-
-      // await all requests, so we don't end before they end
-      await Promise.all(requests);
-    } catch (e) {
-      console.error(e);
-      console.log(`Failed extraction of items. ${request.url}`);
-    }
-  }
-}
-
-async function handleCategories($, categories, requestQueue) {
+function handleCategories(categories) {
   const subCategories = [];
   const lastCategories = [];
-  categories.each(function () {
-    if (!$(this).hasClass("is-extra")) {
-      const link = $(this).find("> a");
-      const href = link.attr("href");
-      const menuItemId = $(this).attr("id");
-      if ($(this).hasClass("last-category")) {
-        lastCategories.push({
-          url: `${web}${href}?${limit}`,
-          userData: {
-            label: LAST_CATEGORY
-          }
-        });
-      } else {
-        subCategories.push({
-          url: `${web}${href}`,
-          userData: {
-            label: "SUB_CATEGORY",
-            categoryMenuId: menuItemId
-          }
-        });
-      }
+  categories.forEach(category => {
+    const link = category.querySelector("a");
+    const href = link.getAttribute("href");
+    const menuItemId = category.getAttribute("id");
+    if (category.classList.contains("last-category")) {
+      lastCategories.push({
+        url: `${web}${href}?${limit}`,
+        userData: {
+          label: LastCategory
+        }
+      });
+    } else {
+      subCategories.push({
+        url: `${web}${href}`,
+        userData: {
+          label: "SUB_CATEGORY",
+          categoryMenuId: menuItemId
+        }
+      });
     }
   });
   log.info(`Found ${subCategories.length} subCategories.`);
-  await enqueuRequests(requestQueue, subCategories);
   log.info(`Found ${lastCategories.length} lastCategories.`);
-  await enqueuRequests(requestQueue, lastCategories);
+  return subCategories.concat(lastCategories);
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
-  const processedIds = new Set();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
     region: "eu-central-1",
     maxAttempts: 3
   });
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) || {};
   const {
-    development = false,
+    development = process.env.TEST,
     maxRequestRetries = 2,
-    maxConcurrency = 10,
-    country = "cz",
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL
-  } = input ?? {};
-  // Get queue and enqueue first url.
-  const requestQueue = await Apify.openRequestQueue();
+    type = ActorType.Full
+  } = input;
 
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
+  const stats = await withPersistedStats(
+    x => x,
+    (await KeyValueStore.getValue("STATS")) || {
+      pages: 0,
+      items: 0
+    }
+  );
+
+  const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
 
-  if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: "https://www.kasa.cz/black-friday",
-      userData: {
-        label: ActorType.BF
-      }
-    });
-  } else if (type === ActorType.FULL) {
-    await requestQueue.addRequest({
-      url: web,
-      userData: {
-        label: "START"
-      }
-    });
-  }
-  // Create crawler.
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
+  const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
-    handlePageFunction: async ({ $, request }) => {
+    maxRequestsPerMinute: 400,
+    async requestHandler({ crawler, body, request }) {
+      stats.inc("pages");
+      const { document } = parseHTML(body.toString());
       if (request.userData.label === "START") {
         log.info("START scrapping Kasa.cz");
-        const mainCategories = [];
-        $(".main-content .col-sidebar-left ul.main-menu-nav > li").each(
-          function () {
-            const link = $(this).find("> a");
-            const href = link.attr("href");
+        const mainCategories = document
+          .querySelectorAll(
+            ".main-content .col-sidebar-left ul.main-menu-nav > li > a"
+          )
+          .map(link => {
+            const href = link.getAttribute("href");
             if (!href.includes(akce) && !href.includes(aktuality)) {
-              mainCategories.push({
+              return {
                 url: `${web}${href}`,
                 userData: {
                   label: "MAIN_CATEGORY"
                 }
-              });
+              };
             }
-          }
-        );
+          })
+          .filter(Boolean);
         log.info(`Found ${mainCategories.length} mainCategories.`);
-        await enqueuRequests(requestQueue, mainCategories);
+        await crawler.requestQueue.addRequests(mainCategories);
       } else if (request.userData.label === "MAIN_CATEGORY") {
         log.info(`START with main category ${request.url}`);
-        const categories = $("ul.sidebar-menu-tree > li");
-        await handleCategories($, categories, requestQueue);
+        const categories = document.querySelectorAll(
+          "ul.sidebar-menu-tree > li:not(.is-extra)"
+        );
+        const requests = handleCategories(categories);
+        await crawler.requestQueue.addRequests(requests);
       } else if (request.userData.label === "SUB_CATEGORY") {
         log.info(`START with sub category ${request.url}`);
-        const $items = $(`#${request.userData.categoryMenuId} > ul > li`);
-        await handleCategories($, $items, requestQueue);
-      } else if (request.userData.label === LAST_CATEGORY) {
+        const items = document.querySelectorAll(
+          `#${request.userData.categoryMenuId} > ul > li:not(.is-extra)`
+        );
+        const requests = handleCategories(items);
+        await crawler.requestQueue.addRequests(requests);
+      } else if (request.userData.label === LastCategory) {
         log.info(`START with last category ${request.url}`);
-        // pagination
-        let maxPage = 0;
-        const nextSteps = $("li.step.next").prev();
-        nextSteps.each(function () {
-          maxPage = $(this).find("> a").text();
-        });
-        await handleProducts({ $, request, s3, processedIds });
+        const maxPage =
+          document.querySelectorAll(".pagination .pg_button").at(-1)
+            ?.innerText ?? 0;
+        const products = handleProducts(document);
+        await saveItems(s3, stats, products);
         if (maxPage !== 0) {
           const pagiPages = [];
           for (let i = 2; i <= maxPage; i++) {
@@ -253,45 +222,64 @@ Apify.main(async function main() {
             });
           }
           console.info(`Found ${pagiPages.length} category pages`);
-          await enqueuRequests(requestQueue, pagiPages);
+          await crawler.requestQueue.addRequests(pagiPages);
         }
       } else if (request.userData.label === "LAST_CATEGORY_PAGE") {
         log.info(`START with page ${request.url}`);
-        await handleProducts({ $, request, s3, processedIds });
-      } else if (request.userData.label === ActorType.BF) {
+        const products = handleProducts(document);
+        await saveItems(s3, stats, products);
+      } else if (request.userData.label === ActorType.BlackFriday) {
         log.info(`START BF ${request.url}`);
-        const categories = [];
-        $(".html_obsah .wsw > div > a").each(function () {
-          if (!$(this).attr("href").includes("doprava")) {
-            categories.push({
-              url: `${web}${$(this).attr("href")}?${limit}`,
-              userData: {
-                label: "LAST_CATEGORY"
-              }
-            });
-          }
-        });
+        const categories = document
+          .querySelectorAll(".html_obsah .wsw > div > a")
+          .map(a => {
+            if (!a.getAttribute("href").includes("doprava")) {
+              return {
+                url: `${web}${a.getAttribute("href")}?${limit}`,
+                userData: {
+                  label: "LAST_CATEGORY"
+                }
+              };
+            }
+          })
+          .filter(Boolean);
         log.info(`Found ${categories.length} BF categories`);
-        await enqueuRequests(requestQueue, categories);
+        await crawler.requestQueue.addRequests(categories);
       }
     },
-
-    // If request failed 4 times then this function is executed.
-    handleFailedRequestFunction: async ({ request }) => {
-      log.info(`Request ${request.url} failed 10 times`);
+    failedRequestHandler({ request, log }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 
+  const startingRequests = [];
+  if (type === ActorType.BlackFriday) {
+    startingRequests.push({
+      url: "https://www.kasa.cz/black-friday",
+      userData: {
+        label: ActorType.BlackFriday
+      }
+    });
+  } else if (type === ActorType.Full) {
+    startingRequests.push({
+      url: web,
+      userData: {
+        label: "START"
+      }
+    });
+  }
   log.info("Starting the crawl.");
-  await crawler.run();
+  await crawler.run(startingRequests);
   log.info("Crawl finished.");
 
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kasa.cz");
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== ActorType.FULL ? "kasa_bf" : "kasacz");
+    await uploadToKeboola(type !== ActorType.Full ? "kasa_bf" : "kasacz");
     log.info("upload to Keboola finished");
   }
 
   console.log("Finished.");
-});
+}
+
+await Actor.main(main);
