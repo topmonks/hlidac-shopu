@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1v_tSB8DHqlkHT6xo5hBVRfa2-KYcxCOJqv
 rating: 2
 ---
 
-Lekarna.cz stále referuje k maloobchodním cenám, v některých případech jsme narazili také na navýšení referenční ceny.
+Lekarna.cz neupravila svou slevovou politiku dle EU směrnice, stále referuje k maloobchodním cenám. Neshody způsobují opakované slevy referované k MOC a také dlouhá platnost slev.
 
 Slovy e-shopu:
 
