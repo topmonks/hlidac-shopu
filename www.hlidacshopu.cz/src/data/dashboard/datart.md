@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/19d_xSz46xdjPwTqO3LTPUhLtkiiTF73R1u
 rating: 2
 ---
 
-Datart.cz se minimálně podle popisu u slev na novou EU směrnici připravil. Nicméně u více jak tisícovky zlevněných produktů jsme narazili na nesrovnalosti, v někteých případech výpočet slevy evidentně nesplňuje deklarovaný popis.
+Datart.cz upravil svou slevovou politiku v souladu s EU směrnicí. Neshody ve slevě pramení z příliš dlouhé platnosti slev. Někdy je zboží inzerováno se stejnou slevou až 6 měsíců, což je dle nás nepřiměřené.
 
 Slovy e-shopu:
 
