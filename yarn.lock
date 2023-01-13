@@ -5191,7 +5191,7 @@ __metadata:
     "@web/test-runner-junit-reporter": 0.5.0
     chart.js: 4.1.2
     chartjs-adapter-date-fns: 3.0.0
-    lit: 2.5.0
+    lit: 2.6.0
   languageName: unknown
   linkType: soft
 
@@ -5611,10 +5611,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@lit/reactive-element@npm:1.5.0"
-  checksum: 8f87a2d9d7630c26ad0dd6b9a8ad46bb184fcec11e04ded3d487859a6cfebbe871d07a8271dfdf3f2d4b9688d27c17de0f8fa3fc690602f5b86d742f969a3ca4
+"@lit/reactive-element@npm:^1.6.0":
+  version: 1.6.1
+  resolution: "@lit/reactive-element@npm:1.6.1"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.0.0
+  checksum: fab0bcfdade9c26af2ad5115fb564bcf8ba0732a3a8be86c157851c2771e3fdc65ab38f2cd60fa121946058bf6e487461fd217f87b01f96e88ee7a95d5d866ba
   languageName: node
   linkType: hard
 
@@ -17380,7 +17382,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.5.0, lit-html@npm:^2.5.0":
+"lit-html@npm:2.5.0":
   version: 2.5.0
   resolution: "lit-html@npm:2.5.0"
   dependencies:
@@ -17398,14 +17400,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.5.0":
-  version: 2.5.0
-  resolution: "lit@npm:2.5.0"
+"lit-html@npm:^2.6.0":
+  version: 2.6.1
+  resolution: "lit-html@npm:2.6.1"
   dependencies:
-    "@lit/reactive-element": ^1.5.0
+    "@types/trusted-types": ^2.0.2
+  checksum: 32291eb5bcaa7fcc1d433522a9a62c3c3d240e49bb8c57ccea5c10014823d94f62f17e2d5361781cb6ee0b3c9078ef839de6164d5374371d650471904515e48e
+  languageName: node
+  linkType: hard
+
+"lit@npm:2.6.0":
+  version: 2.6.0
+  resolution: "lit@npm:2.6.0"
+  dependencies:
+    "@lit/reactive-element": ^1.6.0
     lit-element: ^3.2.0
-    lit-html: ^2.5.0
-  checksum: 7f62ef9da4b21d37f8b476d8425903a22ed9c1e5b26597c811cb38760d28baf6cd83865457c971d1ac77d6ad59ecc73cd1870fa3478a08d0beffa0b74b016bec
+    lit-html: ^2.6.0
+  checksum: 1c15e5f2d3c738f8f674990eeca819420db529ef6dced49f45a5b940ea4fa8eec77a2d31fbc5a3743119de75753144cca42a358ee2d79392306a4c4cb8a739b9
   languageName: node
   linkType: hard
 
