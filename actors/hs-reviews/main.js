@@ -14,8 +14,7 @@ import { URLSearchParams } from "url";
 import { promisify } from "util";
 import zlib from "zlib";
 
-/** @typedef { import("apify").RequestQueue } RequestQueue */
-/** @typedef { import("apify").HandleRequest } HandleRequest */
+/** @typedef { import("@crawlee/http").RequestHandler } HandleRequest */
 /** @typedef { import("schema-dts").UserReview } UserReview */
 /** @typedef { import("schema-dts").InteractionCounter } InteractionCounter */
 
@@ -437,13 +436,13 @@ const requests = new Map([
 /**
  * @param {String} token
  */
-function createHandlePageFunction(token) {
+function createRequestHandler(token) {
   /** @type {UserReview[]} */
   const reviews = [];
   /** @type {InteractionCounter[]} */
   const stats = [];
-  /** @type {HandleRequest} */
-  const handlePageFunction = async ({ crawler, request }) => {
+  /** @type {RequestHandler} */
+  const requestHandler = async ({ crawler, request }) => {
     const { requestQueue } = crawler;
     log.info(`Handling page ${request.url}`);
     switch (request.userData.label) {
@@ -515,7 +514,7 @@ function createHandlePageFunction(token) {
     }
   };
 
-  return { reviews, stats, handlePageFunction };
+  return { reviews, stats, requestHandler };
 }
 
 /**
@@ -544,13 +543,12 @@ async function main() {
   const { applePK } = input;
   const token = createAppleJWT(applePK);
 
-  const { reviews, stats, handlePageFunction } =
-    createHandlePageFunction(token);
+  const { reviews, stats, requestHandler } = createRequestHandler(token);
 
   const crawler = new HttpCrawler({
-    handleRequestFunction: handlePageFunction,
+    requestHandler,
     maxRequestRetries: 1,
-    async handleFailedRequestFunction({ request }, error) {
+    async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
