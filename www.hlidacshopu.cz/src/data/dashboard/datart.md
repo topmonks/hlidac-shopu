@@ -1,7 +1,7 @@
 ---
 shop: datart.cz
 link: https://docs.google.com/spreadsheets/d/19d_xSz46xdjPwTqO3LTPUhLtkiiTF73R1ubj1uIWYt0/edit?usp=sharing
-rating: 2
+rating: 3
 ---
 
 Datart.cz upravil svou slevovou politiku v souladu s EU směrnicí. Neshody ve slevě pramení z příliš dlouhé platnosti slev. Někdy je zboží inzerováno se stejnou slevou až 6 měsíců, což je dle nás nepřiměřené.
