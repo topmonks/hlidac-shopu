@@ -1,6 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import {
   invalidateCDN,
@@ -9,12 +10,7 @@ import {
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-
-/** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
-/** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
-/** @typedef { import("apify").RequestQueue } RequestQueue */
-
-const { log } = Apify.utils;
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const baseUrl = "https://www.kosik.cz/";
 
@@ -34,37 +30,22 @@ function* categoriesTree(root) {
 }
 
 /**
- *
- * @param {RequestQueue} requestQueue
  * @param categories
- * @returns {Promise<void>}
+ * @returns {{url: string, userData: {step: string}}[]}
  */
-async function enqueueCategories(requestQueue, { categories }) {
+function categoriesRequests({ categories }) {
+  const requests = [];
   for (const url of categoriesTree(categories)) {
-    await requestQueue.addRequest({
+    requests.push({
       url,
       userData: { step: "DETAIL" }
     });
   }
+  return requests;
 }
 
-/**
- *
- * @param {RequestQueue} requestQueue
- * @param products
- * @returns {Promise<void>}
- */
-async function enqueuePagination(requestQueue, { products }) {
-  if (products?.more) {
-    await requestQueue.addRequest({
-      url: products.more,
-      userData: { step: "DETAIL" }
-    });
-  }
-}
-
-const parseItem = (item, breadcrumbs) => {
-  let itemUrl = new URL(item.url, baseUrl).href;
+function parseItem(item, breadcrumbs) {
+  const itemUrl = new URL(item.url, baseUrl).href;
   return {
     itemId: item.id,
     itemUrl,
@@ -85,52 +66,9 @@ const parseItem = (item, breadcrumbs) => {
     useUnitPrice: item.productQuantity?.prefix === "cca",
     quantity: item.productQuantity?.value
   };
-};
-
-/**
- * @param {RequestQueue} requestQueue
- * @param {S3Client} s3
- * @returns {CheerioHandlePage}
- */
-function pageFunction(requestQueue, s3) {
-  const processedIds = new Set();
-
-  /**
-   *  @param {CheerioHandlePageInputs} context
-   *  @returns {Promise<void>}
-   */
-  async function handlePageFunction(context) {
-    const { request, response, json } = context;
-    if (response.statusCode !== 200) {
-      log.info("Status code:", response.statusCode);
-    }
-
-    const { step } = request.userData;
-    if (step === "CATEGORIES") {
-      await enqueueCategories(requestQueue, json);
-    } else if (step === "DETAIL") {
-      await enqueuePagination(requestQueue, json);
-
-      const breadcrumbs =
-        json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
-      for (const item of json.products.items) {
-        if (processedIds.has(item.id)) continue;
-        const detail = parseItem(item, breadcrumbs);
-        await Promise.all([
-          Apify.pushData(detail),
-          uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
-        ]);
-        processedIds.add(item.id);
-      }
-    }
-
-    log.info("handled page", { url: request.url });
-  }
-
-  return handlePageFunction;
 }
 
-Apify.main(async function main() {
+async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -139,26 +77,70 @@ Apify.main(async function main() {
     maxAttempts: 3
   });
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    country = "cz",
-    development,
-    maxConcurrency = 4,
+    development = process.env.TEST,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
+    type = ActorType.Full,
     bfUrls = ["https://www.kosik.cz/listy/bf-nanecisto-2021"]
-  } = input ?? {};
+  } = input;
 
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: development ? undefined : proxyGroups,
+  const stats = await withPersistedStats(
+    x => x,
+    (await KeyValueStore.getValue("STATS")) || {
+      pages: 0,
+      items: 0
+    }
+  );
+
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
     useApifyProxy: !development
   });
 
-  /** @type {RequestQueue} */
-  const requestQueue = await Apify.openRequestQueue();
-  if (type === ActorType.BF) {
+  const crawler = new HttpCrawler({
+    proxyConfiguration,
+    // maxRequestsPerMinute: 400,
+    additionalMimeTypes: ["application/json", "text/plain"],
+    async requestHandler({ crawler, request, json }) {
+      const { step } = request.userData;
+      log.info(`Processing ${request.url}...`);
+      if (step === "CATEGORIES") {
+        const requests = categoriesRequests(json);
+        stats.add("pages", requests.length);
+        log.info(`Adding ${requests.length} category requests`);
+        await crawler.requestQueue.addRequests(requests);
+      } else if (step === "DETAIL") {
+        if (json?.more) {
+          stats.inc("pages");
+          await crawler.requestQueue.addRequest({
+            url: json.more,
+            userData: { step: "DETAIL" }
+          });
+        }
+
+        const breadcrumbs =
+          json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
+        const items = json.products?.items || [];
+        stats.add("items", items.length);
+        for (const item of items) {
+          const detail = parseItem(item, breadcrumbs);
+          await Promise.all([
+            Dataset.pushData(detail),
+            uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
+          ]);
+        }
+      }
+    },
+    failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
+    }
+  });
+
+  const startingRequests = [];
+  if (type === ActorType.BlackFriday) {
     for (const url of bfUrls) {
-      await requestQueue.addRequest({
+      startingRequests.push({
         url: listingBFUrl(url),
         userData: {
           step: "DETAIL"
@@ -166,28 +148,14 @@ Apify.main(async function main() {
       });
     }
   } else {
-    await requestQueue.addRequest({
+    startingRequests.push({
       url: "https://www.kosik.cz/api/web/menu/main",
       userData: {
         step: "CATEGORIES"
       }
     });
   }
-
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
-    proxyConfiguration,
-    maxConcurrency,
-    maxRequestRetries: 3,
-    requestTimeoutSecs: 60,
-    additionalMimeTypes: ["application/json", "text/plain"],
-    handlePageFunction: pageFunction(requestQueue, s3),
-    handleFailedRequestFunction: async ({ request }) => {
-      log.error(`Request ${request.url} failed multiple times`, request);
-    }
-  });
-
-  await crawler.run();
+  await crawler.run(startingRequests);
   log.info("crawler finished");
 
   if (!development) {
@@ -196,7 +164,7 @@ Apify.main(async function main() {
 
     try {
       let tableName = `kosik`;
-      if (type === ActorType.BF) {
+      if (type === ActorType.BlackFriday) {
         tableName = `${tableName}_bf`;
       }
       await uploadToKeboola(tableName);
@@ -206,4 +174,6 @@ Apify.main(async function main() {
       log.error(err);
     }
   }
-});
+}
+
+await Actor.main(main);
