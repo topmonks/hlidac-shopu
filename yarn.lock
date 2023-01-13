@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/helix-fetch@npm:3.1.2":
-  version: 3.1.2
-  resolution: "@adobe/helix-fetch@npm:3.1.2"
+"@adobe/fetch@npm:3.3.1":
+  version: 3.3.1
+  resolution: "@adobe/fetch@npm:3.3.1"
   dependencies:
     debug: 4.3.4
     http-cache-semantics: 4.1.0
-    lru-cache: 7.13.2
-  checksum: 0f756bbc53a2450eb80ec4f4249c0e94892446fe5992de945bd669dc4ab55db9ec41be9158c458829a35c09389a8aeef40c9f069ee1cddea372ee2788b6c4a3d
+    lru-cache: 7.14.1
+  checksum: 17806f3177e2abdd57e9809669a5424e0a585308c93325a933f8e3eadece053d652ca849a0bea5ee2ecf20f618f76994d4f0921635197e0cd3acf8fcd9fcb2b6
   languageName: node
   linkType: hard
 
@@ -4930,7 +4930,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/helix-fetch": 3.1.2
+    "@adobe/fetch": 3.3.1
     "@aws-sdk/client-dynamodb": 3.245.0
     "@aws-sdk/client-s3": 3.245.0
     "@aws-sdk/util-dynamodb": 3.245.0
@@ -5085,7 +5085,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/helix-fetch": 3.1.2
+    "@adobe/fetch": 3.3.1
     "@aws-sdk/client-cloudfront": 3.245.0
     "@aws-sdk/client-s3": 3.245.0
     "@crawlee/http": 3.1.4
@@ -15349,7 +15349,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/helix-fetch": 3.1.2
+    "@adobe/fetch": 3.3.1
     "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
@@ -17790,10 +17790,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:7.13.2":
-  version: 7.13.2
-  resolution: "lru-cache@npm:7.13.2"
-  checksum: dfed24e52bae95edf490d0f28f4f14552319ac7e7dc37ae0b84a72e084949233821b33227271abe81d8361ac079810f9d171a706f316cfdeda135012e4311015
+"lru-cache@npm:7.14.1":
+  version: 7.14.1
+  resolution: "lru-cache@npm:7.14.1"
+  checksum: d72c6713c6a6d86836a7a6523b3f1ac6764768cca47ec99341c3e76db06aacd4764620e5e2cda719a36848785a52a70e531822dc2b33fb071fa709683746c104
   languageName: node
   linkType: hard
 

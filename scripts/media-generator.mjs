@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { fetch } from "@adobe/helix-fetch";
+import { fetch } from "@adobe/fetch";
 import formatISO from "date-fns/formatISO/index.js";
 import { parseHTML } from "linkedom/cached";
 import fs from "fs";
@@ -8,7 +8,7 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://cc.cz/e-shopy-utoci-povanocnimi-vyprodeji-vetsina-obchodu-ale-klame-pise-jeden-z-sefu-alzy/",
+  "https://cc.cz/e-shopy-utoci-povanocnimi-vyprodeji-vetsina-obchodu-ale-klame-pise-jeden-z-sefu-alzy/"
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---

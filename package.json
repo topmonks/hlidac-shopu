@@ -16,7 +16,7 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "packageManager": "yarn@3.3.1",
   "dependencies": {
-    "@adobe/helix-fetch": "3.1.2",
+    "@adobe/fetch": "3.3.1",
     "@pulumi/aws": "5.26.0",
     "@pulumi/awsx": "0.40.1",
     "@pulumi/pulumi": "3.51.0",
