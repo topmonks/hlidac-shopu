@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1U9byo2dDkdEoOYFmc4xYB7BGcjD5gCiJzp
 rating: 2
 ---
 
-iGlobus.cz typicky referuje k maloobchodní ceně. V některých případech jsme nalezli navýšení referenční ceny. Pro zajímavost - u některých produktů jsme narazili na odlišnou cenu (a slevu) v případě změny výdejního místa. 
+iGlobus.cz neupravil cenovou politiku v návaznosti na EU smernici, typicky referuje k maloobchodní ceně. Mezi neshodami převládají produkty dle Hlídače nezlevněné, případně dokonce zdražené.
