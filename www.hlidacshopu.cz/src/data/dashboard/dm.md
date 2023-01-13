@@ -1,7 +1,7 @@
 ---
 shop: dm.cz
 link: https://docs.google.com/spreadsheets/d/1fDTODSqF9tkD6fcKz1Ck6BqOebJRQ8rHHEbH-il1Z2A/edit?usp=sharing
-rating: 3
+rating: 2
 ---
 
 DM.cz sladil svou metodiku s EU směrnici. Neshody ve slevě pramení z příliš dlouhé platnosti slev.
