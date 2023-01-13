@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1nvkRJDiCxs64d6f8wYSDvR1wGsU7tYHiyG
 rating: 3
 ---
 
-Elektroworld.cz počítá slevy v souladu se směrnicí EU. Neshody u některých produktů jsou způsobeny drobnými rozdíly v metodice (vyhodnocení postupného zlevňování).
+Elektroworld.cz počítá slevy v souladu s EU směrnicí. Neshody u některých produktů jsou způsobeny drobnými rozdíly v metodice (postupného zlevňování).
