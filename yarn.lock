@@ -4886,7 +4886,7 @@ __metadata:
     "@thi.ng/atom": 5.1.27
     "@types/node": 18.11.18
     apify: 3.1.1
-    rollbar: 2.26.0
+    rollbar: 2.26.1
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.112.0
     "@aws-sdk/client-s3": ^3.112.0
@@ -15380,7 +15380,7 @@ __metadata:
     prettier: 2.8.2
     puppeteer: 19.5.0
     ramda: 0.28.0
-    rollbar: 2.26.0
+    rollbar: 2.26.1
     source-map-explorer: 2.5.3
     stylelint: 14.16.1
     stylelint-config-prettier: 9.0.4
@@ -21814,9 +21814,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollbar@npm:2.26.0":
-  version: 2.26.0
-  resolution: "rollbar@npm:2.26.0"
+"rollbar@npm:2.26.1":
+  version: 2.26.1
+  resolution: "rollbar@npm:2.26.1"
   dependencies:
     async: ~3.2.3
     console-polyfill: 0.3.0
@@ -21829,7 +21829,7 @@ __metadata:
   dependenciesMeta:
     decache:
       optional: true
-  checksum: 27f5ba99c6eedf3fb49f3b7bfab7fdc6d8418c7828947c2f2ba24b5163c835a01b6811677cded6a9ef974db6d44c1215f3fc2dff95f0c45e1c7e70ca26c9db39
+  checksum: 0a13c48f41ddfb0ac505ac8db5033afba4045dc11b1d5c920f79751d9d3abc51c1da26b8ad5544a00b0eeddb9e965b4628a3b90222d304bdfc39ff9ac0fb2916
   languageName: node
   linkType: hard
 
