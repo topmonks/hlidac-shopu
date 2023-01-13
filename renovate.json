@@ -4,6 +4,7 @@
     "config:base",
     "schedule:weekdays",
     "npm:unpublishSafe",
+    "group:allNonMajor",
     "group:aws-sdk-js-v3Monorepo",
     "group:postcss",
     "group:linters",
