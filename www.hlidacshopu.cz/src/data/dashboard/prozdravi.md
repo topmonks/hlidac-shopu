@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1dcCh4kjGo4LEsjVqWrZq9cPmLp5cyzYVfc
 rating: 1
 ---
 
-Prozdravi.cz stále referuje k maloobchodním cenám, v některých případech jsme narazili také na navýšení referenční ceny.
+Prozdravi.cz v rozporu s EU směrnicí i nadále referuje k maloobchodním cenám. V některých případech jsme narazili také na navýšení referenční ceny a příliš dlouhé platnosti slev.
