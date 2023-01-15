@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/16mfTqVuav83VYpTNizkDw-reOZ8_H5GVgr
 rating: 2
 ---
 
-Tetadrogerie.cz většinou počítá slevy z ceny před zlevněním. Nicméně těsně před zlevněním dochází ke zdražení třeba na jeden den. Pravidlo EU směrnice o použití minimální ceny za posledních 30 dní tedy nedodržuje.
+Tetadrogerie.cz s platností EU směrnice nevyčíslují slevy. Nicméně to znamená, že u produktů "v akci" chybí vyčíslení minimální prodejní ceny 30 dní před akcí, jak pravidla nově stanovují.
