@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1knaEvMdOK_IYesf-YoSYhzAjsrB9yg8__a
 rating: 2
 ---
 
-Mall.cz zatím novou EU směrnici neimplementoval a většinou počítá slevy z maloobchodních cen. Na problematické produkty s navýšenou referenční cenou (typicky u partnerského prodeje) rychle reaguje a opravuje.
+Mall.cz se snaží implementovat slevy dle EU směrnic. Nicméně stále se neshodujeme na ca 20% slev, z nichž naprostá většina spadá pod partnerský prodej.
 
 Slovy e-shopu:
 
