@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/14-UBIWt0BphQwvljU1yoUGNNGA25XQDJvd
 rating: 2
 ---
 
-Rohlik.cz stále referuje k maloobchodním cenám.
+Rohlik.cz stále neupravil slevovou politiku v návaznosti na EU směrnici. Neshody způsobují především cyklicky opakované slevy, kdy není referováno k minimální prodejní ceně 30 dní před akcí, ale k MOC.
 
 Slovy e-shopu:
 
