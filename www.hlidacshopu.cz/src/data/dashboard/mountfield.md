@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1q3WIq7XNTUhEDcA8PEKwN1QvwFeXqlZzuI
 rating: 2
 ---
 
-Mountfield.cz nabízí stále prakticky celý sortiment ve slevách počítaných z maloobchodních cen. Po upozornění na navýšení referenční ceny u několika produktů chybu ihned opravil.
+Mountfield.cz ještě před platností EU směrnice zavedl slevy pouze pro věrnostní karty, kdy věrnostní ceny/slevy nezobrazoval na eshopu. Na novoroční výprodej slevovou politiku změnil zpět na zobrazování slev pro všechny. Neshody ve slevách vznikají cyklickým opakováním slev.
 
 Slovy e-shopu:
 
