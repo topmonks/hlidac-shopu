@@ -1,10 +1,10 @@
 ---
 shop: okay.cz
 link: https://docs.google.com/spreadsheets/d/1cY2dZkaxG91kfG7PzUBjHy-uOTdL8cxu8WZj65bZcac/edit?usp=sharing
-rating: 1
+rating: 2
 ---
 
-Okay.cz nam na dotazy k auditu 6. 6. 2022 odpověděl s tím, že se rozhodli původní ceny vůbec neuvádět (viz níže). Bohužel k tomuto nedošlo a na webu Okay.cz (k 16. 6. 2022) stále evidujeme přes 10 tisíc produktů se slevou, typicky počítanou vůči maloobchodním cenám. Současně evidujeme desítky navýšených referenčních cen. Průměrná reálná sleva nám tak vychází dokonce záporná (u produktů s uvedenou slevou došlo v průměru ke zdražení).
+Okay.cz s platností EU směrnice vypnuli vyčíslení slev, nicméně dále inzerují "Slevy více než 92 milionů" a u produktů v akci ("Cenový hit", "Výprodej") neuvádí minimální prodejní cenu za posledních 30 dní před akcí, ačkoliv směrnice jasně stanovuje, že takto označené produkty musí mít slevu vyčíslenou.
 
 Slovy e-shopu:
 
