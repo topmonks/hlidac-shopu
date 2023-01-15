@@ -1,10 +1,10 @@
 ---
 shop: tchibo.cz
 link: https://docs.google.com/spreadsheets/d/15ZWevWCH7VJyZ7M3gdlcsm6dKHSs3ghhirqghrwEHa0/edit?usp=sharing
-rating: 2
+rating: 1
 ---
 
-Tchibo.cz stále referuje k maloobchodním cenám.
+Tchibo.cz nereflektuje novou EU směrnici a nadále referuje k maloobchodním cenám. Problémem jsou i dlouhé platnosti slev.
 
 Slovy e-shopu:
 
