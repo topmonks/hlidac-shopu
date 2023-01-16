@@ -41,7 +41,7 @@ function extractItems(products, breadcrums) {
     .map(item => {
       const result = {};
       const link = item.querySelector(".product-box-link");
-      const itemId = link.getAttribute("data-productId");
+      const itemId = link.dataset.productId;
       const isBazar = item
         .querySelectorAll(".labels > .label-red")
         .some(label => label.innerText.trim() === bazar);
