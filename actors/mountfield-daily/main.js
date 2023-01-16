@@ -7,27 +7,36 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "linkedom";
 
-const COUNTRY = {
+/** @enum {string} */
+const Country = {
   CZ: "CZ",
   SK: "SK"
 };
-const LABELS = {
+
+/** @enum {string} */
+const Labels = {
   START: "START",
+  MAIN_CATEGORY: "MAIN_CATEGORY",
   CATEGORY: "CATEGORY"
 };
 
 const rootUrlByCountry = new Map([
-  [COUNTRY.CZ, "https://www.mountfield.cz/predvypis"],
-  [COUNTRY.SK, "https://www.mountfield.sk/predvypis"]
+  [Country.CZ, "https://www.mountfield.cz/predvypis"],
+  [Country.SK, "https://www.mountfield.sk/predvypis"]
 ]);
 
-const { log } = Apify.utils;
-
+/**
+ * @param {string} text
+ * @return {number|null}
+ */
 function parsePrice(text) {
+  if (!text) return null;
   return parseFloat(
     text
       .replace(/\s/g, "")
@@ -38,32 +47,33 @@ function parsePrice(text) {
   );
 }
 
-async function extractItems({ $, $products, s3, userInput, stats }) {
-  const { country = COUNTRY.CZ } = userInput;
-  const category = [];
-  $(".box-breadcrumb__item").each(function () {
-    category.push($(this).text().trim());
-  });
-  const requests = [];
-  log.debug(`*********** FOUND ${$products.length} items *****************`);
-  for (const product of $products.toArray()) {
-    const result = {};
-    const $item = $(product);
-    const itemUrl = $item.find(" > a").attr("href");
-    const splitUrl = itemUrl.split("-");
-    const itemCode = splitUrl[splitUrl.length - 1];
-    const name = $item.find("h2").text()?.trim();
+function extractItems(document, userInput, stats) {
+  const products = document.querySelectorAll(".list-products__item__in");
+  if (!products.length) return [];
 
-    const $regularPriceSpan = $item.find(
+  const { country = Country.CZ } = userInput;
+  const category = document
+    .querySelectorAll(".box-breadcrumb__item")
+    .map(item => item.innerText.trim());
+  log.debug(`*********** FOUND ${products.length} items *****************`);
+  return products.map(item => {
+    const result = {};
+    const itemUrl = item
+      .querySelector("a.list-products__item__block")
+      .getAttribute("href");
+    const itemCode = itemUrl.split("-").at(-1);
+    const name = item.querySelector("h2").innerText?.trim();
+
+    const regularPriceSpan = item.querySelector(
       ".list-products__item__info__price__item--main"
     );
-    $regularPriceSpan.find("span").remove();
-    const regularPrice = $regularPriceSpan.text();
-    const $retailPriceSpan = $item.find(
+    regularPriceSpan.querySelector("span")?.remove();
+    const regularPrice = regularPriceSpan.innerText;
+    const retailPriceSpan = item.querySelector(
       ".list-products__item__info__price__item--old"
     );
-    $retailPriceSpan.find("span").remove();
-    const retailPrice = $retailPriceSpan.text();
+    retailPriceSpan?.querySelector("span")?.remove();
+    const retailPrice = retailPriceSpan?.innerText;
 
     result.currentPrice = parsePrice(regularPrice);
     result.originalPrice = parsePrice(retailPrice);
@@ -76,11 +86,11 @@ async function extractItems({ $, $products, s3, userInput, stats }) {
       result.discounted = true;
     }
 
-    const $loyaltyPriceSpan = $item.find(
+    const loyaltyPrice = item.querySelector(
       ".list-products__item__loyalty__link .in-loyalty__highlight"
-    );
-    const loyaltyPrice = $loyaltyPriceSpan.text();
+    )?.innerText;
 
+    result.loyalty = false;
     if (!result.originalPrice && loyaltyPrice) {
       result.originalPrice = parsePrice(regularPrice);
       result.currentPrice = parsePrice(loyaltyPrice);
@@ -93,186 +103,185 @@ async function extractItems({ $, $products, s3, userInput, stats }) {
     result.itemId = itemCode;
     result.itemName = name;
     result.category = category.join(" > ");
-    result.currency = country === COUNTRY.CZ ? "CZK" : "EUR";
-    if ($item.find("img").length !== 0) {
-      result.img = $item.find("img").data("src");
-    }
-    requests.push(
-      Apify.pushData(result),
-      !userInput.development
-        ? uploadToS3v2(s3, result, {
-            priceCurrency: result.currency,
-            inStock: true
-          })
-        : null
-    );
+    result.currency = country === Country.CZ ? "CZK" : "EUR";
+    result.img = item.querySelector("img").dataset.src;
     stats.inc("items");
-  }
-  await Promise.all(requests);
-}
-
-async function scrapeProducts({ $, s3, userInput, stats }) {
-  const $products = $(".list-products__item__in");
-  if (!$products.length) return;
-
-  await extractItems({ $, $products, s3, userInput, stats });
+    return result;
+  });
 }
 
 /**
  * return name of the table in keboola according the language
- * @return {string|string}
+ * @param {{type: ActorType, country: Country}} userInput
+ * @return {string}
  */
-export const getTableName = userInput => {
-  const { type, country = COUNTRY.CZ } = userInput;
+function getTableName(userInput) {
+  const { type, country = Country.CZ } = userInput;
   let tableName = `mountfield_${country.toLowerCase()}`;
-  if (type === ActorType.BF) {
+  if (type === ActorType.BlackFriday) {
     tableName = `${tableName}_bf`;
   }
   return tableName;
-};
-
-async function scrapeCategoryItems({ $, crawler }, { stats }) {
-  const categoryItems = $(".list-categories__item__block").toArray();
-  for (const cat of categoryItems) {
-    const url = $(cat).attr("href");
-    stats.inc("categories");
-    await crawler.requestQueue.addRequest({
-      url,
-      userData: {
-        label: LABELS.CATEGORY,
-        mainCategory: $(cat).find("h3").text()?.trim()
-      }
-    });
-  }
 }
 
-async function scrapeCategory(
-  { $, request, crawler },
-  { userInput, s3, stats }
-) {
-  const { mainCategory } = request.userData;
-  const categories = $(
-    `.list-categories__item__block,
-     .list-categories-with-article__box`
-  ).toArray();
-  if (categories.length) {
-    for (const cat of categories) {
-      const url = $(cat).attr("href");
-      stats.inc("categories");
-      await crawler.requestQueue.addRequest({
-        url,
-        userData: {
-          label: LABELS.CATEGORY,
-          mainCategory
-        }
-      });
-    }
-    log.debug(`Found categories ${categories.length}`);
-  } else {
-    await scrapeProducts({ $, s3, userInput, stats });
-    const href = $("a.in-paging__control__item--arrow-next").attr("href");
-    if (!href) return;
-
-    const paginationUrl = new URL(href, request.url).href;
-    await crawler.requestQueue.addRequest({
-      url: paginationUrl,
+function categoryItemsRequests(document) {
+  return document
+    .querySelectorAll(".list-categories__item__block")
+    .map(cat => ({
+      url: cat.getAttribute("href"),
       userData: {
-        label: LABELS.CATEGORY,
-        mainCategory
+        label: Labels.CATEGORY,
+        mainCategory: cat.querySelector("h3").innerText?.trim()
       }
-    });
-    log.debug(`Found pagination page ${paginationUrl}`);
-  }
+    }));
 }
 
-Apify.main(async function main() {
+async function saveItems(s3, stats, products) {
+  const requests = [Dataset.pushData(products)];
+  stats.add("items", products.length);
+  for (const s3item of products) {
+    requests.push(
+      uploadToS3v2(s3, s3item, {
+        priceCurrency: s3item.currency,
+        inStock: true
+      })
+    );
+  }
+  return Promise.all(requests);
+}
+
+async function main() {
   rollbar.init();
+  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
+  const cloudfront = new CloudFrontClient({
+    region: "eu-central-1",
+    maxAttempts: 3
+  });
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     items: 0
   });
 
-  const userInput = await Apify.getInput();
+  const userInput = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = false,
+    development = process.env.TEST,
     debug = false,
-    country = COUNTRY.CZ,
+    country = Country.CZ,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
+    type = ActorType.Full,
     bfUrl = "https://www.mountfield.cz/black-friday"
-  } = userInput ?? {};
+  } = userInput;
 
   if (development || debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Apify.openRequestQueue();
   const rootUrl = rootUrlByCountry.get(country);
-  if (type === ActorType.FULL) {
-    await requestQueue.addRequest({
-      url: rootUrl,
-      userData: {
-        label: LABELS.START
-      }
-    });
-  } else if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      url: bfUrl,
-      userData: {
-        label: LABELS.MAIN_CATEGORY,
-        mainCategory: "Black Friday"
-      }
-    });
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: "https://www.mountfield.sk/pily-prislusenstvo-retaze",
-      userData: {
-        label: LABELS.CATEGORY,
-        mainCategory: "TEST"
-      }
-    });
-  }
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
-    maxConcurrency,
+  const crawler = new HttpCrawler({
+    maxRequestsPerMinute: 400,
     maxRequestRetries,
     useSessionPool: true,
     proxyConfiguration,
-    async handlePageFunction(context) {
-      const { request } = context;
+    async requestHandler({ request, body, crawler }) {
       const {
         url,
         userData: { label }
       } = request;
+      const { document } = parseHTML(body.toString());
       log.debug(`Scraping [${label}] - ${url}`);
 
       switch (label) {
-        case LABELS.START:
-          return scrapeCategoryItems(context, { stats });
-        case LABELS.CATEGORY:
-          return scrapeCategory(context, { userInput, s3, stats });
+        case Labels.START:
+          {
+            const requests = categoryItemsRequests(document);
+            stats.add("categories", requests.length);
+            await crawler.requestQueue.addRequests(requests);
+          }
+          break;
+        case Labels.CATEGORY: {
+          const { mainCategory } = request.userData;
+          const categories = document.querySelectorAll(
+            `.list-categories__item__block,
+     .list-categories-with-article__box`
+          );
+          if (categories.length) {
+            const requests = categories.map(cat => {
+              return {
+                url: cat.getAttribute("href"),
+                userData: {
+                  label: Labels.CATEGORY,
+                  mainCategory
+                }
+              };
+            });
+            stats.add("categories", categories.length);
+            log.debug(`Found categories ${categories.length}`);
+            await crawler.requestQueue.addRequests(requests);
+          } else {
+            const products = extractItems(document, userInput, stats);
+            await saveItems(s3, stats, products);
+
+            const href = document
+              .querySelector("a.in-paging__control__item--arrow-next")
+              ?.getAttribute("href");
+            if (!href) return;
+            const paginationUrl = new URL(href, request.url).href;
+            log.debug(`Found pagination page ${paginationUrl}`);
+            await crawler.requestQueue.addRequest({
+              url: paginationUrl,
+              userData: {
+                label: Labels.CATEGORY,
+                mainCategory
+              }
+            });
+          }
+          break;
+        }
       }
     },
-    // If request failed 4 times then this function is executed
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed 4 times`);
+    async failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
 
-  await crawler.run();
+  const startingRequests = [];
+  switch (type) {
+    case ActorType.Full:
+      startingRequests.push({
+        url: rootUrl,
+        userData: {
+          label: Labels.START
+        }
+      });
+      break;
+    case ActorType.BlackFriday:
+      startingRequests.push({
+        url: bfUrl,
+        userData: {
+          label: Labels.MAIN_CATEGORY,
+          mainCategory: "Black Friday"
+        }
+      });
+      break;
+    case ActorType.Test:
+      startingRequests.push({
+        url: "https://www.mountfield.sk/pily-prislusenstvo-retaze",
+        userData: {
+          label: Labels.CATEGORY,
+          mainCategory: "TEST"
+        }
+      });
+      break;
+  }
+  await crawler.run(startingRequests);
   log.info("crawler finished");
 
   await stats.save();
@@ -285,4 +294,6 @@ Apify.main(async function main() {
     await uploadToKeboola(tableName);
   }
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);
