@@ -5,10 +5,10 @@
   "type": "module",
   "types": "types.d.ts",
   "dependencies": {
-    "@lit/reactive-element": "1.6.0",
+    "@lit/reactive-element": "1.6.1",
     "chart.js": "4.1.2",
     "chartjs-adapter-date-fns": "3.0.0",
-    "lit": "2.6.0"
+    "lit": "2.6.1"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
