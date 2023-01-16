@@ -246,8 +246,7 @@ async function main() {
   log.info("Starting the crawl.");
   await crawler.run(startingRequests);
   log.info("Crawl finished.");
-
-  await KeyValueStore.setValue("STATS", stats);
+  stats.save(true);
   log.debug("STATS saved!");
 
   if (!development) {
