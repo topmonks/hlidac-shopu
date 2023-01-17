@@ -13,7 +13,7 @@ import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 
-/** @enum */
+/** @enum {string} */
 const Labels = {
   Start: "START",
   List: "LIST",
@@ -21,7 +21,7 @@ const Labels = {
   SubCat: "SUBCAT"
 };
 
-function startUrls({ document, homePageUrl }) {
+function startRequests({ document, homePageUrl }) {
   let categoryLinkList = document
     .querySelectorAll(
       ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
@@ -39,10 +39,13 @@ function startUrls({ document, homePageUrl }) {
   }
   return categoryLinkList
     .filter(categoryObject => !categoryObject.dataWebtrekk)
-    .map(categoryObject => new URL(categoryObject.href, homePageUrl).href);
+    .map(categoryObject => ({
+      url: new URL(categoryObject.href, homePageUrl).href,
+      userData: { label: Labels.SubCat }
+    }));
 }
 
-function pagesUrls({ document, url }) {
+function pagesRequests({ document, url }) {
   const productCount = Number(
     document.querySelector(".variants")?.getAttribute("data-productcount")
   );
@@ -54,51 +57,11 @@ function pagesUrls({ document, url }) {
     ? Array(pageCount - 1)
         .fill(0)
         .map((_, i) => i + 2)
-        .map(i => `${url}/?page=${i}`)
+        .map(i => ({
+          url: `${url}/?page=${i}`,
+          userData: { label: Labels.List }
+        }))
     : [];
-}
-
-async function handleSubCategory(
-  context,
-  { document, homePageUrl, stats, processedIds }
-) {
-  const { enqueueLinks, request } = context;
-  const variants = document.querySelector(".variants");
-  const productCount = parseInt(
-    variants?.getAttribute("data-productcount"),
-    10
-  );
-  const label = request.userData.label;
-  const { url } = request;
-
-  if (productCount) {
-    const pageUrls = pagesUrls({ document, url });
-    await enqueueLinks({
-      urls: pageUrls,
-      userData: { label: Labels.List }
-    });
-    stats.add("urls", pageUrls.length);
-
-    const urls = listUrls({ request, document, processedIds });
-    stats.add("urls", urls.length);
-    await enqueueLinks({
-      urls,
-      userData: { label: Labels.Detail }
-    });
-    return;
-  }
-  const subCategoryList = document
-    .querySelectorAll('a[wt_name="assortment_menu.level2"]')
-    .map(a => a.getAttribute("href"));
-  const urls = subCategoryList.map(
-    subcategoryLink => new URL(subcategoryLink, homePageUrl).href
-  );
-
-  stats.add("urls", urls.length);
-  await enqueueLinks({
-    urls,
-    userData: { label }
-  });
 }
 
 function listUrls({ request, document, processedIds }) {
@@ -245,31 +208,63 @@ async function main() {
       maxPoolSize: 150
     },
     async requestHandler(context) {
-      const { request, body, enqueueLinks } = context;
+      const { request, body, enqueueLinks, crawler } = context;
+      const { url } = request;
       log.info(`Processing ${request.url}`);
       const { document } = parseHTML(body.toString());
-      const { label } = context.request.userData;
+      const { label } = request.userData;
       switch (label) {
         case Labels.Start:
           {
-            const urls = startUrls({
+            const requests = startRequests({
               document,
               homePageUrl
             });
-            stats.add("urls", urls.length);
-            await enqueueLinks({
-              urls,
-              userData: { label: Labels.SubCat }
+            stats.add("urls", requests.length);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
             });
           }
           break;
         case Labels.SubCat:
-          await handleSubCategory(context, {
-            document,
-            homePageUrl,
-            stats,
-            processedIds
-          });
+          {
+            const productCount = parseInt(
+              document
+                .querySelector(".variants")
+                ?.getAttribute("data-productcount")
+                ?.replace(/\s+/g, ""),
+              10
+            );
+
+            if (productCount) {
+              const pageRequests = pagesRequests({ document, url });
+              await crawler.requestQueue.addRequests(pageRequests, {
+                forefront: true
+              });
+              stats.add("urls", pageRequests.length);
+
+              const urls = listUrls({ request, document, processedIds });
+              stats.add("urls", urls.length);
+              await enqueueLinks({
+                urls,
+                userData: { label: Labels.Detail }
+              });
+              return;
+            }
+
+            const subCategoryList = document
+              .querySelectorAll('a[wt_name="assortment_menu.level2"]')
+              .map(a => a.href);
+            const subCatRequests = subCategoryList.map(subcategoryLink => ({
+              url: new URL(subcategoryLink, homePageUrl).href,
+              userData: { label: request.userData.label }
+            }));
+
+            stats.add("urls", subCatRequests.length);
+            await crawler.requestQueue.addRequests(subCatRequests, {
+              forefront: true
+            });
+          }
           break;
         case Labels.List:
           {
