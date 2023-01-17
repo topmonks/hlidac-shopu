@@ -3,191 +3,85 @@ import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import Apify from "apify";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 
-const HOME_PAGE = "HOME_PAGE";
-const CATEGORY_PAGE = "CATEGORY_PAGE";
-const DETAIL_PAGE = "DETAIL_PAGE";
-const COUNT = "COUNT";
-const COUNT_PRODUCT = "COUNT_PRODUCT";
+/** @enum {string} */
+const Labels = {
+  HOME_PAGE: "HOME_PAGE",
+  CATEGORY_PAGE: "CATEGORY_PAGE",
+  DETAIL_PAGE: "DETAIL_PAGE",
+  COUNT: "COUNT",
+  COUNT_PRODUCT: "COUNT_PRODUCT",
+  BF: "BF"
+};
+
 const SITEMAP_URL_CZ = "https://www.notino.cz/sitemap.xml";
 const SITEMAP_URL_SK = "https://www.notino.sk/sitemap.xml";
 const BASE_URL = "https://www.notino.cz";
 const BASE_URL_SK = "https://www.notino.sk";
 const BASE_URL_CZ_BF = "https://www.notino.cz/black-friday/";
 const BASE_URL_SK_BF = "https://www.notino.sk/black-friday/";
-const BF = "BF";
-const COUNTRY = {
+
+/** @enum {string} */
+const Country = {
   CZ: "CZ",
   SK: "SK"
 };
 
-const { log } = Apify.utils;
-
-const { requestAsBrowser } = Apify.utils;
-
-async function getReviewPage({ sku, token, page, proxyConfiguration }) {
-  const headers = {
-    "User-Agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36",
-    // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-    authorization: `Bearer ${token}`
-    // 'Accept-Encoding': 'gzip, deflate, br',
-    // 'Content-Type': 'application/json',
-  };
-  const proxyUrl = proxyConfiguration.newUrl();
-  // console.log(`REVIEWS FOR itemId: ${sku}, page: ${page}, ${token}, ${proxyUrl}`);
-  let response;
-  try {
-    const requestObject = {
-      url: "https://nushop.notino.com/apiv1",
-      method: "POST",
-      proxyUrl,
-      headers,
-      json: true,
-      payload: JSON.stringify({
-        operationName: "getReviews",
-        variables: {
-          code: sku,
-          orderBy: "DateTime",
-          orderDesc: true,
-          page,
-          pageSize: 100
-        },
-        query:
-          "query getReviews($page: Int!, $pageSize: Int!, $orderDesc: Boolean!, $orderBy: ReviewOrderBy!, $code: String!) {\n  reviews(page: $page, pageSize: $pageSize, orderDesc: $orderDesc, orderBy: $orderBy, code: $code) {\n    id\n    text\n    userName\n    score\n    createdDate\n    like\n    dislike\n    alreadyLiked\n    alreadyDisliked\n    __typename\n  }\n}\n"
-      })
-    };
-    response = await requestAsBrowser(requestObject);
-  } catch (e) {
-    log.info(e.message);
-  }
-  console.log(response.body);
-  return response.body.data.reviews;
-}
-
-async function getReviews({ sku, token, proxyConfiguration }) {
-  const reviews = [];
-  for (let page = 1; 1 > 0; page += 1) {
-    const reviewsRaw = await getReviewPage({
-      sku,
-      token,
-      page,
-      proxyConfiguration
-    });
-    if (reviewsRaw && reviewsRaw.length !== 0) {
-      for (const review of reviewsRaw) {
-        reviews.push(review);
-      }
-      log.info(
-        `Found ${reviewsRaw.length}, loading more with page ${page}, ${sku}`
-      );
-      await Apify.utils.sleep(1000);
-    } else {
-      break;
-    }
-  }
-  return reviews;
-}
-
-async function pushProducts(products, country, stats, processedIds, s3, input) {
-  const requests = [];
-  let count = 0;
-  // we don't need to block pushes, we will await them all at the end
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [Dataset.pushData(products)];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      // push data to dataset to be ready for upload to Keboola
-      if (input.development) {
-        requests.push(Apify.pushData(product));
-      } else {
-        requests.push(
-          Apify.pushData(product),
-          // upload JSON+LD data to CDN
-          uploadToS3v2(s3, product)
-        );
-      }
-      count += 1;
+      requests.push(uploadToS3v2(s3, product));
+      stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
     }
   }
-  stats.add("items", count);
   await Promise.all(requests);
 }
 
-/**
- *
- * @param {Cheerio} $
- * @property {Function} exists
- * @returns {Cheerio}
- */
-function extendCheerio($) {
-  $.prototype.exists = function () {
-    return this.length > 0;
-  };
-  return $;
-}
-
-/**
- *
- * @param {Cheerio} $
- */
-function getScriptContent($) {
-  let content;
-  const state = $("#__APOLLO_STATE__");
-  if (state.length !== 0) {
-    content = state.html();
-  }
-  return content;
-}
-
-const dig = (o, ...args) => {
-  return args.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), o);
-};
-
-const getRootUrl = input => {
-  return !input.country || input.country === COUNTRY.CZ
+function getRootUrl(input) {
+  return !input.country || input.country === Country.CZ
     ? BASE_URL
     : BASE_URL_SK;
-};
+}
 
-const handleHomePage = async (requestQueue, request, $, input, stats) => {
+function homepageRequests(document, input) {
   log.debug("Home page");
-  const jsonMainMenu = $('script[id="main-menu-state"]').html();
+  const jsonMainMenu = document.querySelector(
+    'script[id="main-menu-state"]'
+  ).innerHTML;
   const mainMenu = JSON.parse(jsonMainMenu);
   const rootUrl = getRootUrl(input);
-  let links = [];
+  const links = [];
   if (mainMenu) {
-    const categories = dig(
-      mainMenu,
-      "fragmentContextData",
-      "DataProvider",
-      "categories"
-    );
+    const categories =
+      mainMenu["fragmentContextData"]["DataProvider"]["categories"];
     for (const category of categories) {
       if (category.columns.length > 0) {
         for (const column of category.columns) {
           for (const subCat of column.subCategories) {
-            if (subCat.isLink) {
-              if (!subCat.link.includes("https")) {
-                links.push({
-                  url: `${rootUrl}${subCat.link}`,
-                  userData: {
-                    label: CATEGORY_PAGE
-                  }
-                });
-              }
+            if (subCat.isLink && !subCat.link.includes("https")) {
+              links.push({
+                url: `${rootUrl}${subCat.link}`,
+                userData: {
+                  label: Labels.CATEGORY_PAGE
+                }
+              });
             }
             for (const pt of subCat.productTypes) {
               if (!pt.link.includes("https")) {
                 links.push({
                   url: `${rootUrl}${pt.link}`,
                   userData: {
-                    label: CATEGORY_PAGE
+                    label: Labels.CATEGORY_PAGE
                   }
                 });
               }
@@ -199,7 +93,7 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
           links.push({
             url: `${rootUrl}${category.link}`,
             userData: {
-              label: CATEGORY_PAGE
+              label: Labels.CATEGORY_PAGE
             }
           });
         }
@@ -207,135 +101,39 @@ const handleHomePage = async (requestQueue, request, $, input, stats) => {
     }
   }
   log.info(`Found categories ${links.length}`);
-
-  if (links.length === 0) {
-    await Apify.setValue("empty-categories", $("body").html());
-    throw "empty categories";
-  }
-  if (input && input.development && input.debug) {
-    links = links.slice(0, 1);
-    log.info("Development mode, find products only in 1 category.");
-  }
-  stats.add("categories", links.length);
-  stats.add("pages", links.length);
-  // eslint-disable-next-line no-return-await
-  await links.forEach(async l => await requestQueue.addRequest(l));
-};
-
-const handleCategoryPage = async (
-  requestQueue,
-  request,
-  $,
-  input,
-  stats,
-  queueIds,
-  s3
-) => {
-  const paginationNext = $('[rel="next"]').attr("href");
-  // if paginationNext is undefined, then there are no more pages
-  if (paginationNext) {
-    await requestQueue.addRequest(
-      {
-        url: paginationNext,
-        userData: {
-          label: CATEGORY_PAGE
-        }
-      },
-      { forefront: true }
-    );
-    log.debug(`Found next pagination page ${paginationNext}`);
-    stats.inc("pages");
-  }
-
-  const productsUrls = $("div[data-product] a")
-    .map(function () {
-      const url = new URL(request.url);
-      return `${url.origin}` + $(this).attr("href");
-    })
-    .get();
-  for (const productUrl of productsUrls) {
-    await requestQueue.addRequest(
-      {
-        url: productUrl,
-        userData: { label: DETAIL_PAGE }
-      },
-      { forefront: true }
-    );
-  }
-  log.debug(`Queued ${productsUrls.length}x products detail`);
-  stats.add("pages", productsUrls.length);
-};
-
-/**
- * Check if debug mode is active
- * @return {boolean}
- */
-function isDebugMode() {
-  return log.getLevel() === log.LEVELS.DEBUG;
+  return links;
 }
 
-const handleProductInDetailPage = async (
-  requestQueue,
-  request,
-  $,
-  session,
-  response,
-  input,
-  proxyConfiguration,
-  stats,
-  crawledProducts,
-  processedIds,
-  s3
-) => {
-  const results = [];
-
-  async function handleProductUsingWindowObject() {
-    log.debug("Handled by windowObject");
-    const dataStringFromScriptTag = await getScriptContent($);
-    // await Apify.setValue(`${Math.random()}_debug`, dataStringFromScriptTag, { contentType: 'text/html' });
-    if (dataStringFromScriptTag === undefined) {
-      log.error(
-        "We can't scrape product using this method: handleProductUsingWindowObject"
-      );
-      return;
+function handleProductUsingWindowObject(document, input) {
+  log.debug("Handled by windowObject");
+  const dataStringFromScriptTag =
+    document.querySelector("#__APOLLO_STATE__")?.innerHTML;
+  const productData = JSON.parse(dataStringFromScriptTag.replace(/;/g, ""));
+  let productGeneralData = Object.entries(productData).find(
+    ([_key, value]) => value?.category
+  );
+  productGeneralData = (productGeneralData || ["", {}])[1];
+  const variants = [];
+  let itemBrand = "";
+  for (const key in productData) {
+    if (key.includes("Brand:")) {
+      itemBrand = productData[key].name;
     }
-    const mainImage = $("#pd-image-main");
-    const productData = JSON.parse(dataStringFromScriptTag.replace(/;/g, ""));
-    let productGeneralData = Object.entries(productData).find(
-      entry =>
-        productData.hasOwnProperty(entry[0]) &&
-        /^Product:\{"id":"\d+"\}$/.test(entry[0]) &&
-        entry[1] &&
-        entry[1].category
-    );
-    productGeneralData = (productGeneralData || ["", {}])[1];
-    const variants = [];
-    let itemBrand = "";
-    for (const key in productData) {
-      if (key.includes("Brand:")) {
-        itemBrand = productData[key].name;
-      }
-      if (productData.hasOwnProperty(key) && /^Variant:\d+$/.test(key)) {
-        variants.push(Number.parseInt(key.replace("Variant:", ""), 10));
-      }
+    if (productData.hasOwnProperty(key) && /^Variant:\d+$/.test(key)) {
+      variants.push(parseInt(key.replace("Variant:", ""), 10));
     }
-    let category = [];
-    // if (productGeneralData.category && productGeneralData.subCategory) {
-    //   category = [...productGeneralData.category, ...productGeneralData.subCategory].join('/')
-    // }
-    ["category", "subCategory", "type"].forEach(key => {
-      if (productGeneralData.hasOwnProperty(key)) {
-        category.push(productGeneralData[key].join("/"));
-      }
-    });
-    category = category.join("/");
+  }
+  const category = ["category", "subCategory", "type"]
+    .filter(key => productGeneralData[key])
+    .map(key => productGeneralData[key].join("/"))
+    .join("/");
 
-    const rootUrl = getRootUrl(input);
+  const rootUrl = getRootUrl(input);
 
-    for (const variant of variants) {
+  return variants
+    .map(variant => {
       const variantGeneralData = productData[`Variant:${variant}`];
-      /* eslint no-continue: off */
-      if (!variantGeneralData.canBuy) continue;
+      if (!variantGeneralData.canBuy) return;
       const productName = `${itemBrand} ${
         variantGeneralData.name ? variantGeneralData.name : ""
       } ${
@@ -348,23 +146,21 @@ const handleProductInDetailPage = async (
       const product = {
         itemId: `${variantGeneralData.id}`,
         itemUrl: `${rootUrl}${variantGeneralData.url}`,
-        itemName: productName.trimRight(),
+        itemName: productName.trim(),
         discounted: false,
         currentPrice: null,
         originalPrice: null,
         currency: null,
         img: null
       };
-      if (mainImage.length !== 0) {
-        product.img = mainImage.attr("src");
-      }
-      if (category.length > 0) {
-        product.category = category;
-      }
-      const currentPrice = variantGeneralData.price.value; //productData[variantGeneralData.price.id].value;
+      product.img = document
+        .querySelector("#pd-image-main")
+        ?.getAttribute("src");
+      product.category = category;
+      const currentPrice = variantGeneralData.price.value;
       const originalPrice =
         variantGeneralData.originalPrice !== null
-          ? variantGeneralData.originalPrice.value // productData[variantGeneralData.originalPrice.id].value
+          ? variantGeneralData.originalPrice.value
           : null;
       product.discounted =
         originalPrice !== null ? currentPrice < originalPrice : false;
@@ -372,304 +168,68 @@ const handleProductInDetailPage = async (
       product.originalPrice = product.discounted ? originalPrice : null;
       product.currency =
         variantGeneralData.price && variantGeneralData.price.currency;
-      //if (isDebugMode()) product["#debug"] = { productData };
-      if (product.currentPrice === null) {
-        product.currentPrice = "Price not defined.";
-      }
       product.inStock = true;
-      results.push(product);
-      crawledProducts++;
-    }
-  }
+      return product;
+    })
+    .filter(Boolean);
+}
 
-  async function handleProductUsingHTML() {
-    log.debug("Handled by HTML");
-    if (!$('a[href="#variants"]').exists()) {
-      log.error(
-        "We can't scrape product using this method: handleProductUsingHTML"
-      );
-      return;
-    }
-    const mainImage = $("#pd-image-main");
-    const variantsWrapper = $("#variants");
-    const variants = variantsWrapper.find("li").get();
+function handleProductUsingHTML(document, request) {
+  log.debug("Handled by HTML");
+  return document.querySelector("#variants li").map(variant => {
+    const product = {
+      itemId: `${variant
+        .querySelector('input[name="nComID"]')
+        .getAttribute("value")}`,
+      itemUrl: `${request.url}`,
+      itemName: `${variant
+        .querySelector('input[name="NameItem"]')
+        .getAttribute("value")}`,
+      discounted: false,
+      currentPrice: 0,
+      originalPrice: null
+    };
 
-    for (const variant of variants) {
-      const product = {
-        itemId: `${$(variant).find('input[name="nComID"]').attr("value")}`,
-        itemUrl: `${request.url}`,
-        itemName: `${$(variant).find('input[name="NameItem"]').attr("value")}`,
-        discounted: false,
-        currentPrice: 0,
-        originalPrice: null
-      };
-
-      if (mainImage.length !== 0) {
-        product.img = mainImage.attr("src");
-      }
-      const currentPrice = Number.parseInt(
-        $(variant).find('input[name="price"]').attr("value"),
-        10
-      );
-      const originalPrice = $(variant).find(".price span span strong").exists()
-        ? Number.parseInt($(variant).find(".price span span strong").text(), 10)
-        : null;
-      product.discounted =
-        originalPrice !== null ? currentPrice < originalPrice : false;
-      product.currentPrice = currentPrice;
-      product.originalPrice = product.discounted ? originalPrice : null;
-
-      //if (isDebugMode()) product["#debugData"] = {};
-      if (product.currentPrice === null) {
-        product.currentPrice = "Price not defined.";
-      }
-      product.inStock = true;
-      results.push(product);
-      crawledProducts++;
-    }
-  }
-
-  if ($("div#pdVariantsTile").exists()) {
-    //find all variants
-    const productVariants = $("div#pdVariantsTile li a")
-      .map(function () {
-        const url = new URL(request.url);
-        return url.origin + $(this).attr("href");
-      })
-      .get();
-    for (const variant of productVariants) {
-      await requestQueue.addRequest(
-        {
-          url: variant,
-          userData: { label: DETAIL_PAGE }
-        },
-        { forefront: true }
-      );
-    }
-    log.debug(`Queued ${productVariants.length}x products detail variants`);
-    stats.add("pages", productVariants.length);
-  }
-
-  if ($.html().includes('id="__APOLLO_STATE__"')) {
-    await handleProductUsingWindowObject();
-  } else if ($('a[href="#variants"]').exists()) {
-    await handleProductUsingHTML();
-  }
-  const country = input.country ?? COUNTRY.CZ;
-  if (input.type === "CZECHITAS") {
-    // solve reviews
-    log.info(`Grab reviews for ${request.url}`);
-    // eslint-disable-next-line max-len
-    const jsonData =
-      $('main>script[type="application/ld+json"]').length !== 0
-        ? JSON.parse($('main>script[type="application/ld+json"]').html())
-        : null;
-    const token =
-      $('input[name="userJwtToken"]').length !== 0
-        ? $('input[name="userJwtToken"]').val()
-        : null;
-    if (jsonData.offers && jsonData.offers.length !== 0) {
-      const variantList = [];
-      for (const variant of results) {
-        for (const item of jsonData.offers) {
-          if (`https://www.notino.cz${item.url}` === variant.itemUrl) {
-            log.info(
-              `Match https://www.notino.cz${item.url}, ${variant.itemUrl}`
-            );
-            variant.sku = item.sku;
-            const { sku } = item;
-            variant.reviews = await getReviews({
-              sku,
-              token,
-              session,
-              proxyConfiguration
-            });
-            //            await Apify.pushData(variant);
-            variantList.push(variant);
-          } else {
-            log.info(
-              `NO Match https://www.notino.cz${item.url}, ${variant.itemUrl}`
-            );
-          }
-        }
-      }
-      await pushProducts(variantList, country, stats, processedIds, s3, input);
-    }
-  } else {
-    await pushProducts(results, country, stats, processedIds, s3, input);
-  }
-};
-
-const handleCount = async (requestQueue, request, $) => {
-  log.info("Downloading sitemap root");
-
-  $("sitemap").each((ix, el) => {
-    const url = $(el).find("loc").html();
-
-    if (url.indexOf("detail") > -1) {
-      requestQueue.addRequest({
-        url,
-        userData: {
-          label: COUNT_PRODUCT
-        }
-      });
-    }
+    product.img = document.querySelector("#pd-image-main")?.getAttribute("src");
+    const currentPrice = parseInt(
+      variant.querySelector('input[name="price"]').getAttribute("value"),
+      10
+    );
+    const originalPriceEl = variant.querySelector(".price span span strong");
+    const originalPrice = originalPriceEl
+      ? parseInt(originalPriceEl.innerText, 10)
+      : null;
+    product.discounted =
+      originalPrice !== null ? currentPrice < originalPrice : false;
+    product.currentPrice = currentPrice ?? null;
+    product.originalPrice = product.discounted ? originalPrice : null;
+    product.inStock = true;
+    return product;
   });
-};
+}
 
-const handleCountProduct = async (
-  requestQueue,
-  request,
-  $,
-  processedIds,
-  stats
-) => {
-  $("url").each((ix, el) => {
-    const url = $(el).find("loc").html();
-
-    if (!processedIds.has(url)) {
-      processedIds.add(url);
-
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  });
-};
-
-const handlePageFunction = async (
-  requestQueue,
-  request,
-  $,
-  session,
-  response,
-  input,
-  proxyConfiguration,
-  stats,
-  crawledProducts,
-  queueIds,
-  processedIds,
-  s3
-) => {
-  log.info(`Processing ${request.url}, ${request.userData.label}`);
-  const { statusCode } = response;
-  if (![404, 200].includes(statusCode)) {
-    session.retire();
-    request.retryCount--;
-    await Apify.utils.sleep(5000);
-    throw new Error("Blocked.");
-  }
-  switch (request.userData.label) {
-    case HOME_PAGE: {
-      await handleHomePage(requestQueue, request, $, input, stats);
-      break;
-    }
-    case BF:
-    case CATEGORY_PAGE:
-      await handleCategoryPage(
-        requestQueue,
-        request,
-        $,
-        input,
-        stats,
-        queueIds,
-        s3
-      );
-      break;
-    case DETAIL_PAGE: {
-      await handleProductInDetailPage(
-        requestQueue,
-        request,
-        $,
-        session,
-        response,
-        input,
-        proxyConfiguration,
-        stats,
-        crawledProducts,
-        processedIds,
-        s3
-      );
-      break;
-    }
-    case COUNT:
-      await handleCount(requestQueue, request, $);
-      break;
-    case COUNT_PRODUCT:
-      await handleCountProduct(requestQueue, request, $, processedIds, stats);
-      break;
-  }
-};
-
-const handleFailedRequestFunction = async ({ request }) => {
-  log.error(`Request ${request.url} failed too many times`);
-  await Apify.pushData({
-    "#debug": Apify.utils.createRequestDebugInfo(request)
-  });
-};
-
-Apify.main(async function main() {
+async function main() {
   log.info("ACTOR - start");
 
   const processedIds = new Set();
-  const queueIds = new Set();
 
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
-    country = COUNTRY.CZ,
-    type = ActorType.FULL, // FULL | BF | TEST | COUNT
+    country = Country.CZ,
+    type = ActorType.Full,
     debug = true,
-    development = false,
+    development = process.env.TEST,
     proxyGroups = ["CZECH_LUMINATI"],
-    //proxyGroups = ["RESIDENTIAL"],
-    maxConcurrency = 10,
     maxRequestRetries = 3
-  } = input ?? {};
+  } = input;
 
   if (development || debug) {
-    Apify.utils.log.setLevel(Apify.utils.log.LEVELS.DEBUG);
-  }
-
-  console.log("input", input);
-
-  const crawledProducts = 0;
-
-  const requestQueue = await Apify.openRequestQueue();
-  switch (type) {
-    case ActorType.BF:
-      await requestQueue.addRequest({
-        url: country === COUNTRY.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
-        userData: {
-          label: BF
-        }
-      });
-      break;
-
-    case ActorType.TEST:
-      await requestQueue.addRequest({
-        url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
-        userData: { label: CATEGORY_PAGE }
-      });
-      break;
-
-    case ActorType.COUNT:
-      await requestQueue.addRequest({
-        url: country === COUNTRY.CZ ? SITEMAP_URL_CZ : SITEMAP_URL_SK,
-        userData: { label: COUNT }
-      });
-      break;
-
-    default:
-      const rootUrl = country === COUNTRY.CZ ? BASE_URL : BASE_URL_SK;
-      await requestQueue.addRequest({
-        url: rootUrl,
-        userData: { label: HOME_PAGE }
-      });
+    log.setLevel(LogLevel.DEBUG);
   }
 
   const stats = await withPersistedStats(x => x, {
@@ -677,66 +237,184 @@ Apify.main(async function main() {
     categoriesDone: 0,
     items: 0,
     pages: 0,
-    itemsDuplicity: 0
+    itemsDuplicity: 0,
+    crawledProducts: 0,
+    JSON: 0,
+    HTML: 0
   });
 
-  /*
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
-  */
-
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
-  const crawler = new Apify.CheerioCrawler({
-    requestQueue,
-    maxConcurrency: development ? 1 : maxConcurrency,
+
+  const crawler = new HttpCrawler({
+    proxyConfiguration,
+    maxRequestsPerMinute: 600,
     maxRequestRetries,
     useSessionPool: true,
     sessionPoolOptions: {
-      maxPoolSize: 1000
+      maxPoolSize: 600
     },
     ignoreSslErrors: true,
     persistCookiesPerSession: true,
-    proxyConfiguration,
-    handlePageFunction:
-      // eslint-disable-next-line max-len
-      async ({ request, $, session, response }) => {
-        await handlePageFunction(
-          requestQueue,
-          request,
-          extendCheerio($),
-          session,
-          response,
-          input,
-          proxyConfiguration,
-          stats,
-          crawledProducts,
-          queueIds,
-          processedIds,
-          s3
-        );
-      },
-    // This function is called if the page processing failed more than maxRequestRetries+1 times.
-    handleFailedRequestFunction
+    async requestHandler({ request, body, crawler }) {
+      log.info(`Processing ${request.url}, ${request.userData.label}`);
+      const { document } = parseHTML(body.toString());
+      switch (request.userData.label) {
+        case Labels.HOME_PAGE: {
+          {
+            const requests = homepageRequests(document, input);
+            stats.add("categories", requests.length);
+            stats.add("pages", requests.length);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
+            });
+          }
+          break;
+        }
+        case Labels.BF:
+        case Labels.CATEGORY_PAGE:
+          {
+            const paginationNext = document
+              .querySelector('[rel="next"]')
+              ?.getAttribute("href");
+            if (paginationNext) {
+              await crawler.requestQueue.addRequest(
+                {
+                  url: paginationNext,
+                  userData: {
+                    label: Labels.CATEGORY_PAGE
+                  }
+                },
+                { forefront: true }
+              );
+              log.debug(`Found next pagination page ${paginationNext}`);
+              stats.inc("pages");
+            }
+
+            const requests = document
+              .querySelectorAll("div[data-product] a")
+              .map(a => {
+                const url = new URL(request.url);
+                return {
+                  url: `${url.origin}${a.href}`,
+                  userData: { label: Labels.DETAIL_PAGE }
+                };
+              });
+            await crawler.requestQueue.addRequests(requests);
+            log.debug(`Queued ${requests.length}x products detail`);
+            stats.add("pages", requests.length);
+          }
+          break;
+        case Labels.DETAIL_PAGE: {
+          {
+            if (document.querySelector("div#pdVariantsTile")) {
+              const productVariants = document
+                .querySelectorAll("div#pdVariantsTile li a")
+                .map(a => {
+                  const url = new URL(request.url);
+                  return {
+                    url: `${url.origin}${a.href}`,
+                    userData: { label: Labels.DETAIL_PAGE }
+                  };
+                });
+              await crawler.requestQueue.addRequests(productVariants);
+              log.debug(
+                `Queued ${productVariants.length}x products detail variants`
+              );
+              stats.add("pages", productVariants.length);
+            }
+
+            let results = [];
+            if (document.querySelector("#__APOLLO_STATE__")?.innerHTML) {
+              results = handleProductUsingWindowObject(document, input);
+              stats.add("JSON", results.length);
+            } else if (document.querySelector('a[href="#variants"]')) {
+              results = handleProductUsingHTML(document, request);
+              stats.add("HTML", results.length);
+            } else {
+              log.error("Unknown product detail page");
+            }
+            stats.add("crawledProducts", results.length);
+            await saveProducts(s3, results, stats, processedIds);
+          }
+          break;
+        }
+        case Labels.COUNT:
+          log.info("Downloading sitemap root");
+          const requests = document
+            .querySelectorAll("sitemap loc")
+            .map(loc => {
+              const url = loc.innerHTML;
+              if (url.includes("detail")) {
+                return {
+                  url,
+                  userData: {
+                    label: Labels.COUNT_PRODUCT
+                  }
+                };
+              }
+            })
+            .filter(Boolean);
+          await crawler.requestQueue.addRequests(requests);
+          break;
+        case Labels.COUNT_PRODUCT:
+          const urls = document
+            .querySelectorAll("url loc")
+            .map(loc => loc.innerHTML);
+          const uniqueUrls = new Set(urls);
+          stats.add("items", uniqueUrls.size);
+          stats.add("itemsDuplicity", urls.length - uniqueUrls.size);
+          break;
+      }
+    },
+    async failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
+    }
   });
 
   log.info("Crawling start");
-  await crawler.run();
+  const startingRequests = [];
+  switch (type) {
+    case ActorType.BlackFriday:
+      startingRequests.push({
+        url: country === Country.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
+        userData: {
+          label: Labels.BF
+        }
+      });
+      break;
+    case ActorType.Test:
+      startingRequests.push({
+        url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
+        userData: { label: Labels.CATEGORY_PAGE }
+      });
+      break;
+    case ActorType.Count:
+      startingRequests.push({
+        url: country === Country.CZ ? SITEMAP_URL_CZ : SITEMAP_URL_SK,
+        userData: { label: Labels.COUNT }
+      });
+      break;
+    default:
+      const rootUrl = country === Country.CZ ? BASE_URL : BASE_URL_SK;
+      startingRequests.push({
+        url: rootUrl,
+        userData: { label: Labels.HOME_PAGE }
+      });
+  }
+  await crawler.run(startingRequests);
 
   log.info("Crawling finished.");
 
   const tableName = `notino${
-    country === COUNTRY.CZ ? "" : `_${country.toLowerCase()}`
-  }${type === ActorType.BF ? "_bf" : ""}`;
+    country === Country.CZ ? "" : `_${country.toLowerCase()}`
+  }${type === ActorType.BlackFriday ? "_bf" : ""}`;
 
-  await stats.save();
+  await stats.save(true);
 
-  // TODO: check if type=CZECHITAS is still relevant
-  if (!development && type !== "CZECHITAS" && type !== ActorType.COUNT) {
+  if (!development && type !== ActorType.Count) {
     await Promise.all([
       invalidateCDN(
         cloudfront,
@@ -750,4 +428,6 @@ Apify.main(async function main() {
 
   log.info("invalidated Data CDN");
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);

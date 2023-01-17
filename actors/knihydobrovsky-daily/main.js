@@ -128,7 +128,7 @@ async function main() {
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
-    maxRequestsPerMinute: 400,
+    maxRequestsPerMinute: 600,
     async requestHandler({ request, body, crawler }) {
       const {
         url,
