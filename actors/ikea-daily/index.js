@@ -11,12 +11,10 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, Dataset, log, LogLevel, KeyValueStore } from "apify";
+import { Dataset, log, LogLevel, KeyValueStore } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 
-/** @typedef { import("apify").Request } RequestLike */
-
-/** @enum */
+/** @enum {string} */
 const Type = {
   Daily: "DAILY",
   Count: "COUNT",
@@ -24,7 +22,7 @@ const Type = {
   Test: "TEST"
 };
 
-/** @enum */
+/** @enum {string} */
 const Label = {
   Start: "START",
   Index: "INDEX",
@@ -92,14 +90,15 @@ function parseProduct(x) {
   };
 }
 
-async function processIndex(json, requestQueue) {
+function processIndex(json) {
+  const requests = [];
   const { moreProducts } = json;
   const products = moreProducts.productWindow;
   for (const product of products) {
     const data = parseProduct(product);
 
     // ehnance product data from detail page
-    await requestQueue.addRequest({
+    requests.push({
       url: product.pipUrl,
       userData: { label: Label.Detail, product: data }
     });
@@ -107,7 +106,7 @@ async function processIndex(json, requestQueue) {
     // enhance product variants data
     const { variants } = product.gprDescription;
     for (const variant of variants) {
-      await requestQueue.addRequest({
+      requests.push({
         url: variant.pipUrl,
         userData: {
           label: Label.Detail,
@@ -125,20 +124,21 @@ async function processIndex(json, requestQueue) {
       });
     }
   }
+  return requests;
 }
 
-async function processTotalCount(body, requestQueue, country, stats) {
+function processTotalCount(body, country) {
+  const requests = [];
   const document = html(body);
   const count = getTotalCount(document);
-  stats.add("total-count", count);
   const pages = Math.ceil(count / 100);
   for (let page = 1; page <= pages; page++) {
-    await requestQueue.addRequest({
+    requests.push({
       url: feedUrl(country, page),
       userData: { label: Label.Index }
     });
   }
-  return pages;
+  return requests;
 }
 
 function getCategory(document) {
@@ -154,35 +154,33 @@ function getCategory(document) {
  * @param {Stats} stats
  * @returns {Promise<*>}
  */
-async function processDetail(request, body, stats) {
+async function processDetail(request, body) {
   const { product } = request.userData;
   const document = html(body);
   const category = getCategory(document);
   Object.assign(product, { category });
   await Dataset.pushData(product);
-  stats.inc("items");
   return product;
 }
 
-async function handleResponse({
-  request,
-  body,
-  json,
-  requestQueue,
-  country,
-  stats
-}) {
+async function handleResponse({ request, body, json, requestQueue, country }) {
   log.debug("handling request", {
     url: request.url,
     label: request.userData.label
   });
   switch (request.userData.label) {
-    case Label.Start:
-      return processTotalCount(body, requestQueue, country, stats);
-    case Label.Index:
-      return processIndex(json, requestQueue);
+    case Label.Start: {
+      const requests = processTotalCount(body, country);
+      const { processedRequests } = await requestQueue.addRequests(requests);
+      return processedRequests.length;
+    }
+    case Label.Index: {
+      const requests = processIndex(json);
+      await requestQueue.addRequests(requests);
+      return;
+    }
     case Label.Detail:
-      return processDetail(request, body, stats);
+      return processDetail(request, body);
   }
 }
 
@@ -194,9 +192,14 @@ function processResult(type, stats, startUrl) {
       };
     case Type.Daily:
       return async (label, data) => {
-        if (label === Label.Detail) {
-          stats.inc("items");
-          await Dataset.pushData(data);
+        switch (label) {
+          case Label.Start:
+            stats.add("totalItems", data);
+            break;
+          case Label.Detail:
+            stats.inc("items");
+            await Dataset.pushData(data);
+            break;
         }
       };
     case Type.Count:
@@ -227,7 +230,6 @@ export async function main() {
   const input = (await KeyValueStore.getInput()) ?? {};
   const {
     maxRequestRetries = 3,
-    maxConcurrency = 100,
     country = "cz",
     type = Type.Daily,
     testUrls = [testCategory]
@@ -243,23 +245,20 @@ export async function main() {
     totalCount: 0
   });
 
-  const requestQueue = await Actor.openRequestQueue();
   const processData = processResult(type, stats, startUrl(country));
 
   const crawler = new HttpCrawler({
-    requestQueue,
-    maxConcurrency,
+    maxRequestsPerMinute: 600,
     maxRequestRetries,
-    async requestHandler({ request, body, json }) {
+    async requestHandler({ crawler, request, body, json }) {
       const { userData, url } = request;
       log.info(`processing request ${url}`);
       const result = await handleResponse({
         request,
         body,
         json,
-        requestQueue,
-        country,
-        stats
+        requestQueue: crawler.requestQueue,
+        country
       });
       return processData(userData.label, result);
     },
