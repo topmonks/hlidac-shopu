@@ -32,6 +32,7 @@ export async function handler(event) {
     "dpr": "2"
   });
 
+  // TODO: switch to Cloudflare {@link https://blog.cloudflare.com/introducing-workers-browser-rendering-api/}
   const resp = await fetch(`${process.env.HOST}/?${request}`, {
     signal: abort.signal
   });
