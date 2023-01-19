@@ -79,14 +79,14 @@ function html(body) {
 function parseProduct(x) {
   return {
     itemId: x.itemNoGlobal,
-    itemName: x.mainImageAlt ?? x.imageAlt,
     itemUrl: x.pipUrl,
+    itemName: x.mainImageAlt ?? x.imageAlt,
     img: x.mainImageUrl,
-    inStock: x.onlineSellable,
-    currentPrice: x.priceNumeral,
-    originalPrice: cleanPrice(x.prevPrice?.wholeNumber),
-    currency: x.currencyCode,
-    discounted: Boolean(x.prevPrice)
+    currentPrice: cleanPrice(x.salesPrice.current.wholeNumber),
+    originalPrice: cleanPrice(x.salesPrice.previous?.wholeNumber),
+    currency: x.salesPrice.currencyCode,
+    discounted: Boolean(x.salesPrice.previous),
+    inStock: x.onlineSellable
   };
 }
 
@@ -115,9 +115,12 @@ function processIndex(json) {
             itemUrl: variant.pipUrl,
             itemName: variant.mainImageAlt ?? variant.imageAlt ?? data.itemName,
             img: variant.imageUrl ?? data.imageUrl,
-            currentPrice: cleanPrice(variant.price?.wholeNumber),
-            originalPrice: cleanPrice(variant.prevPrice?.wholeNumber),
-            discounted: Boolean(variant.prevPrice),
+            currentPrice: cleanPrice(variant.salesPrice.current?.wholeNumber),
+            originalPrice: cleanPrice(
+              variant.salesPrice?.previous?.wholeNumber
+            ),
+            currency: variant.salesPrice.currencyCode,
+            discounted: Boolean(variant.salesPrice?.previous),
             inStock: variant.onlineSellable
           })
         }
@@ -148,10 +151,8 @@ function getCategory(document) {
 }
 
 /**
- *
  * @param {RequestLike} request
  * @param {string | Buffer} body
- * @param {Stats} stats
  * @returns {Promise<*>}
  */
 async function processDetail(request, body) {
