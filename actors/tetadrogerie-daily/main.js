@@ -7,40 +7,34 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import Apify from "apify";
-import cheerio from "cheerio";
+import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { PlaywrightCrawler } from "@crawlee/playwright";
 import { URL, URLSearchParams } from "url";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { parseHTML } from "linkedom/cached";
 
-/** @typedef { import("apify").CheerioHandlePage } CheerioHandlePage */
-/** @typedef { import("apify").CheerioHandlePageInputs } CheerioHandlePageInputs */
-/** @typedef { import("apify").RequestQueue } RequestQueue */
+const RootUrl = "https://www.tetadrogerie.cz";
 
-const { log } = Apify.utils;
-let stats = {};
-const processedIds = new Set();
-
-const HOST = "https://www.tetadrogerie.cz";
-
-const makeListingBfUrl = function (baseUrl, currentPage = 1, pageSize = 60) {
+function listingBfUrl(baseUrl, currentPage = 1, pageSize = 60) {
   const url = new URL(baseUrl);
   let params = new URLSearchParams(url.search);
-  //Add/Update parameters.
-  params.set("stranka", currentPage);
-  params.set("pocet", pageSize);
+  params.set("stranka", currentPage.toString());
+  params.set("pocet", pageSize.toString());
   // change the search property of the main url
   url.search = params.toString();
   return url.toString();
-};
+}
 
-const makeListingUrl = (baseUrl, currentPage = 1, pageSize = 60) =>
-  new URL(
+function listingUrl(baseUrl, currentPage = 1, pageSize = 60) {
+  return new URL(
     `${baseUrl}?${new URLSearchParams({
-      stranka: currentPage,
-      pocet: pageSize,
+      stranka: currentPage.toString(),
+      pocet: pageSize.toString(),
       razeni: "price"
     })}`,
-    HOST
+    RootUrl
   ).href;
+}
 
 const categoryLinkSelectors = [
   "ul.j-cat-3>li>a",
@@ -48,191 +42,87 @@ const categoryLinkSelectors = [
   "ul.j-shop-categories-menu>li>a"
 ];
 
-function* traverseCategories($, $menu) {
+function categoryRequests(document) {
+  const requests = [];
   for (const selector of categoryLinkSelectors) {
-    for (const category of $menu.find(selector).toArray()) {
-      yield $(category).attr("href");
+    for (const category of Array.from(
+      document.querySelectorAll(`.j-eshop-menu ${selector}`)
+    )) {
+      requests.push(category.href);
     }
   }
+  return requests;
 }
 
-function* paginateResults(count) {
-  const length = Math.ceil(count / 60);
-  for (let i = 1; i <= length; i++) {
-    yield i;
-  }
-}
-
-function parseItem($, category) {
-  return el => {
-    const $el = $(el);
-    const actionPrice = parseFloat(
-      $el.find(".sx-item-price-action").text().replace(/\s+/g, "")
-    );
-    const initialPrice = parseFloat(
-      $el.find(".sx-item-price-initial").first().text().replace(/\s+/g, "")
-    );
-    const originalPrice = actionPrice ? initialPrice / 100 : null;
-    const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
-    const itemUrl = new URL($el.find(".sx-item-title").attr("href"), HOST).href;
-    return {
-      itemId: $el.find(".j-product").data("skuid"),
-      itemName: $el.find(".sx-item-title").text(),
-      img: $el.find("img").attr("src"),
-      itemUrl,
-      currentPrice,
-      originalPrice: originalPrice > currentPrice ? originalPrice : null,
-      discounted: originalPrice > currentPrice,
-      inStock: true,
-      category
-    };
+function parseItem(el, category) {
+  const actionPrice = parseFloat(
+    el
+      .querySelectorAll(".sx-item-price-action")
+      ?.at(-1)
+      ?.innerText?.replace(/\s+/g, "")
+  );
+  const initialPrice = parseFloat(
+    el.querySelector(".sx-item-price-initial")?.innerText?.replace(/\s+/g, "")
+  );
+  const originalPrice = actionPrice ? initialPrice / 100 : null;
+  const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
+  console.assert(currentPrice, "missing price");
+  const itemUrl = new URL(el.querySelector(".sx-item-title").href, RootUrl)
+    .href;
+  return {
+    itemId: el.querySelector(".j-product").getAttribute("data-skuid"),
+    itemName: el.querySelector(".sx-item-title").innerText,
+    img: el.querySelector("img").getAttribute("src"),
+    itemUrl,
+    currentPrice,
+    originalPrice: originalPrice > currentPrice ? originalPrice : null,
+    discounted: originalPrice > currentPrice,
+    inStock: true,
+    category
   };
 }
 
-function parseItems($) {
-  let category = $(".CMSBreadCrumbsLink")
-    .get()
-    .map(x => $(x).text());
-  const currentCategory = $(".CMSBreadCrumbsCurrentItem")
-    .get()
-    .map(x => $(x).text());
+function parseItems(document) {
+  let category = document
+    .querySelectorAll(".CMSBreadCrumbsLink")
+    .map(x => x.innerText);
+  const currentCategory = document
+    .querySelectorAll(".CMSBreadCrumbsCurrentItem")
+    .map(x => x.innerText);
   category.push(currentCategory);
-  return $(".j-products .j-item")
-    .get()
-    .map(parseItem($, category.join(" > ")));
+  const categories = category.join(" > ");
+  return document
+    .querySelectorAll(".j-products .j-item")
+    .map(el => parseItem(el, categories));
 }
 
-/**
- * Creates Page Function for scraping
- * @param {RequestQueue} requestQueue
- * @param {S3Client} s3
- * @returns {CheerioHandlePage}
- */
-async function pageFunction(requestQueue, s3) {
-  /**
-   *  @param {CheerioHandlePageInputs} context
-   *  @returns {Promise<void>}
-   */
-  async function handler(context) {
-    const { request, response, page } = context;
-    const { step, category, currentPage } = request.userData;
-    await page.waitForSelector(".sx-item-price-group");
-    const text = await page.content();
-    const $ = cheerio.load(text);
-    if (response.status() !== 200) {
-      log.info(text);
-    }
-
-    const itemsCount = parseInt(
-      $(".j-product-count-main").text().match(/(\d+)/)[1],
-      10
-    );
-
-    if (step === "START") {
-      log.info("Pagination info", { allItemsCount: itemsCount });
-      for (const category of traverseCategories($, $(".j-eshop-menu"))) {
-        await requestQueue.addRequest({
-          url: makeListingUrl(category),
-          userData: {
-            category,
-            currentPage: 1
-          }
-        });
-        stats.categories++;
-      }
-    } else if (step === "BF") {
-      log.info("Pagination info", { itemsCount, currentPage });
-      if (!currentPage) {
-        // push pages of sub categories to the front of the queue
-        // so they are processed before higher categories
-        const paginateResultsData = paginateResults(itemsCount);
-        let lastPage = 1;
-        //Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
-        for (const page of paginateResultsData) {
-          lastPage = page;
-        }
-        if (lastPage !== 1) {
-          log.info(
-            "Add last pagination to queue: " +
-              makeListingBfUrl(request.url, lastPage)
-          );
-          await requestQueue.addRequest({
-            url: makeListingBfUrl(request.url, lastPage),
-            userData: {
-              currentPage: page,
-              category: "BF"
-            }
-          });
-        }
-      }
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Dataset.pushData(product),
+        uploadToS3v2(s3, product, { priceCurrency: "CZK" })
+      );
+      stats.inc("items");
     } else {
-      log.info("Pagination info", { category, itemsCount, currentPage });
-      if (currentPage === 1 && itemsCount > 60 && category !== "BF") {
-        // push pages of sub categories to the front of the queue
-        // so they are processed before higher categories
-        const paginateResultsData = paginateResults(itemsCount);
-        let lastPage = 1;
-        //Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
-        for (const page of paginateResultsData) {
-          lastPage = page;
-        }
-        if (lastPage !== 1) {
-          log.info(
-            "Add last pagination to queue: " +
-              makeListingUrl(category, lastPage)
-          );
-          await requestQueue.addRequest(
-            {
-              url: makeListingUrl(category, lastPage),
-              userData: {
-                category,
-                currentPage: lastPage
-              }
-            },
-            { forefront: true }
-          );
-        }
-      }
-      // we don't need to block pushes, we will await them all at the end
-      const requests = [];
-      // push only unique items
-      const parsedItems = parseItems($);
-      stats.totalItems += parsedItems.length;
-      const unprocessedProducts = parsedItems.filter(
-        x => !processedIds.has(x.itemId)
-      );
-      const duplicityItemsCount =
-        parsedItems.length - unprocessedProducts.length;
-      if (duplicityItemsCount > 0) {
-        log.info(
-          `Found ${duplicityItemsCount}x duplicity items, ${request.url}`
-        );
-      }
-      stats.itemsDuplicity += duplicityItemsCount;
-
-      for (const detail of unprocessedProducts) {
-        requests.push(
-          Apify.pushData(detail),
-          uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
-        );
-
-        // remember processed product IDs
-        processedIds.add(detail.itemId);
-      }
-      stats.items += unprocessedProducts.length;
-      log.info(
-        `Found ${unprocessedProducts.length}x unique items, ${request.url}`
-      );
-      // await all requests, so we don't end before they end
-      await Promise.all(requests);
+      stats.inc("itemsDuplicity");
     }
   }
-
-  return handler;
+  await Promise.all(requests);
 }
 
-Apify.main(async function main() {
+const itemsPerPage = 60;
+
+// Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
+function lastPageNumber(count) {
+  return Math.ceil(count / itemsPerPage);
+}
+
+async function main() {
   rollbar.init();
+  const processedIds = new Set();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
   const cloudfront = new CloudFrontClient({
@@ -240,90 +130,144 @@ Apify.main(async function main() {
     maxAttempts: 3
   });
 
-  const input = await Apify.getInput();
+  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = false,
+    development = process.env.TEST,
     debug = false,
     test = false,
     maxRequestRetries = 3,
-    maxConcurrency = 10,
-    type = ActorType.FULL,
+    type = ActorType.Full,
     bfUrl = "https://www.tetadrogerie.cz/eshop/produkty?offerID=ESH210007"
-  } = input ?? {};
+  } = input;
 
   if (development || debug) {
-    log.setLevel(Apify.utils.log.LEVELS.DEBUG);
+    log.setLevel(LogLevel.DEBUG);
   }
 
-  stats = (await Apify.getValue("STATS")) || {
+  const stats = await withPersistedStats(x => x, {
     categories: 0,
     items: 0,
     itemsDuplicity: 0,
     totalItems: 0,
     failed: 0
-  };
+  });
 
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    useApifyProxy: !development
+  });
 
-  /** @type {RequestQueue} */
-  const requestQueue = await Apify.openRequestQueue();
+  const crawler = new PlaywrightCrawler({
+    proxyConfiguration,
+    maxRequestsPerMinute: 600,
+    maxRequestRetries,
+    navigationTimeoutSecs: 120,
+    launchContext: {
+      launchOptions: {
+        headless: true
+      }
+    },
+    async requestHandler({ request, page }) {
+      const { step, category, currentPage } = request.userData;
+      log.info("Processing page", { url: request.url, step });
+      await page.waitForSelector(".sx-item-price-group");
+      const text = await page.content();
+      const { document } = parseHTML(text);
+
+      const itemsCount = parseInt(
+        document
+          .querySelector(".j-product-count-main")
+          .innerText.match(/(\d+)/)[1],
+        10
+      );
+
+      if (step === "START") {
+        log.info("Pagination info", { allItemsCount: itemsCount });
+        const requests = categoryRequests(document).map(category => ({
+          url: listingUrl(category),
+          userData: {
+            category,
+            currentPage: 1
+          }
+        }));
+        stats.add("categories", requests.length);
+        await crawler.requestQueue.addRequests(requests);
+      } else if (step === "BF") {
+        log.info("Pagination info", { itemsCount, currentPage });
+        if (!currentPage) {
+          const lastPage = lastPageNumber(itemsCount);
+          if (lastPage) {
+            const url = listingBfUrl(request.url, lastPage);
+            log.info(`Add last pagination to queue: ${url}`);
+            await crawler.requestQueue.addRequest({
+              url: url,
+              userData: {
+                currentPage: page,
+                category: "BF"
+              }
+            });
+          }
+        }
+      } else {
+        log.info("Pagination info", { category, itemsCount, currentPage });
+        if (
+          currentPage === 1 &&
+          itemsCount > itemsPerPage &&
+          category !== "BF"
+        ) {
+          const lastPage = lastPageNumber(itemsCount);
+          if (lastPage) {
+            const url = listingUrl(category, lastPage);
+            log.info(`Add last pagination to queue: ${url}`);
+            await crawler.requestQueue.addRequest(
+              {
+                url: url,
+                userData: {
+                  category,
+                  currentPage: lastPage
+                }
+              },
+              { forefront: true }
+            );
+          }
+        }
+
+        const parsedItems = parseItems(document);
+        await saveProducts(s3, parsedItems, stats, processedIds);
+        log.info(`Found ${parsedItems.length} items, ${request.url}`);
+      }
+    },
+    async failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
+    }
+  });
+
+  const startingRequests = [];
   if (development && test) {
-    await requestQueue.addRequest({
+    startingRequests.push({
       url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/myti-nadobi/doplnky-do-mycky?pocet=40&razeni=price"
     });
-  } else if (type === ActorType.BF) {
-    await requestQueue.addRequest({
+  } else if (type === ActorType.BlackFriday) {
+    startingRequests.push({
       url: `${bfUrl}&pocet=60&razeni=price`,
       userData: {
         step: "BF"
       }
     });
   } else {
-    await requestQueue.addRequest({
-      url: makeListingUrl("/eshop", 1, 20),
+    startingRequests.push({
+      url: listingUrl("/eshop", 1, 20),
       userData: {
         step: "START"
       }
     });
   }
-
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    useApifyProxy: false
-  });
-
-  const crawler = new Apify.PlaywrightCrawler({
-    requestQueue,
-    proxyConfiguration,
-    maxConcurrency,
-    maxRequestRetries,
-    navigationTimeoutSecs: 120,
-    launchContext: {
-      useChrome: true,
-      launchOptions: {
-        headless: true
-      }
-    },
-    handlePageFunction: await pageFunction(requestQueue, s3),
-
-    handleFailedRequestFunction: async ({ request }) => {
-      stats.failed++;
-      log.error(`Request ${request.url} failed multiple times`, request);
-    }
-  });
-
-  await crawler.run();
+  await crawler.run(startingRequests);
   log.info("crawler finished");
-
-  await Apify.setValue("STATS", stats);
-  log.info(JSON.stringify(stats));
 
   if (!development) {
     let tableName = "teta_cz";
-    if (type === ActorType.BF) {
+    if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;
     }
     await Promise.all([
@@ -333,4 +277,6 @@ Apify.main(async function main() {
     log.info("invalidated Data CDN");
   }
   log.info("Finished.");
-});
+}
+
+await Actor.main(main);
