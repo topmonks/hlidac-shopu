@@ -7390,12 +7390,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.28.20":
-  version: 0.28.20
-  resolution: "@types/ramda@npm:0.28.20"
+"@types/ramda@npm:0.28.21":
+  version: 0.28.21
+  resolution: "@types/ramda@npm:0.28.21"
   dependencies:
     ts-toolbelt: ^6.15.1
-  checksum: 02c1e958a09724079acd975aefd2e9ae1327097f941c661ca596e2a8e16df3bd0f0755a16ab378eeb562d8624d7614a3159de2a0129e7d8522a2d79699390818
+  checksum: 71bae1e5bd4ddfe1e0a6d36820ce36b402bddf4710409876ca801ed70332dbf13c93ee1314c6adab95aa59f8d257a1fc98ae2b8abb80ef9d63a42a6460fb72c8
   languageName: node
   linkType: hard
 
@@ -15376,7 +15376,7 @@ __metadata:
     "@topmonks/pulumi-aws": 2.2.5
     "@types/firefox-webext-browser": 109.0.0
     "@types/node": 18.11.18
-    "@types/ramda": 0.28.20
+    "@types/ramda": 0.28.21
     "@types/whatwg-url": 11.0.0
     "@typescript-eslint/eslint-plugin": 5.48.1
     "@typescript-eslint/parser": 5.48.1
