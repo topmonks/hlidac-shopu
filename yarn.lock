@@ -5026,7 +5026,7 @@ __metadata:
     apify-cli: 0.13.0
     got-scraping: 3.2.12
     linkedom: 0.14.21
-    playwright: 1.27.1
+    playwright: 1.29.2
   languageName: unknown
   linkType: soft
 
@@ -9056,9 +9056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1295.0":
-  version: 2.1295.0
-  resolution: "aws-sdk@npm:2.1295.0"
+"aws-sdk@npm:2.1296.0":
+  version: 2.1296.0
+  resolution: "aws-sdk@npm:2.1296.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9070,7 +9070,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: ef3262d784de7a6efda5f9940f31bf03417dd931b18e9540bdc76168349378f8d10177081cdda3cf3dfa67a29f6fb8c6a7b57b0e77dc909ff9a6d4fe6debca8a
+  checksum: 577245d6b7274ff0a50c698924f501257f551ebcc09972d96b9392df97602a3c8bf148736e50a83a5bd4b8f61d134657dbd8372cf572f246789e380bd005255d
   languageName: node
   linkType: hard
 
@@ -15385,7 +15385,7 @@ __metadata:
     "@typescript-eslint/parser": 5.48.2
     abort-controller: 3.0.0
     ava: 5.1.1
-    aws-sdk: 2.1295.0
+    aws-sdk: 2.1296.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
@@ -19979,32 +19979,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.27.1":
-  version: 1.27.1
-  resolution: "playwright-core@npm:1.27.1"
-  bin:
-    playwright: cli.js
-  checksum: fd65d3eb29978e0e7a755158625e8922a66ca9d599b7c24ddf920822b261d81c51a5964ef8e0e5ed9b2b12dc64541c5949b6a898d965e107f43261964e8c29a0
-  languageName: node
-  linkType: hard
-
 "playwright-core@npm:1.29.2":
   version: 1.29.2
   resolution: "playwright-core@npm:1.29.2"
   bin:
     playwright: cli.js
   checksum: 19e00e162a24eb99878408518930346c1d2c8ce83bb02993e3dd890c99df4530240cfebe4ec4e5aca01656462695b6328fb8f913cf2e229c2c73941623ac524e
-  languageName: node
-  linkType: hard
-
-"playwright@npm:1.27.1":
-  version: 1.27.1
-  resolution: "playwright@npm:1.27.1"
-  dependencies:
-    playwright-core: 1.27.1
-  bin:
-    playwright: cli.js
-  checksum: 7bb31998e1783f96443bd1a38f0d7838d1b6fd0cf410ac83ef480c0f0e3e930b809b7e42ccda35b9e272c84aaa8f15e0ee8bdddc19a60b224eecc57d285bf92f
   languageName: node
   linkType: hard
 
