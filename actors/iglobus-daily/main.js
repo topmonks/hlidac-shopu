@@ -83,6 +83,20 @@ function extractProductUrl(onclickAttr) {
   return `${rootUrl}${match[1]}`;
 }
 
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  }
+  await Promise.all(requests);
+}
+
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -101,12 +115,14 @@ async function main() {
     type = ActorType.Full
   } = input;
 
+  const processedIds = new Set();
   const stats = await withPersistedStats(
     x => x,
     (await KeyValueStore.getValue("STATS")) || {
       categories: 0,
       pages: 0,
       items: 0,
+      itemsDuplicity: 0,
       countItems: 0
     }
   );
@@ -201,13 +217,8 @@ async function main() {
           }
 
           const products = extractItems(document, userData.category);
-          const requests = [Dataset.pushData(products)];
-          for (const product of products) {
-            requests.push(uploadToS3v2(s3, product));
-            stats.inc("items");
-          }
           log.info(`Found ${products.length} products`);
-          await Promise.all(requests);
+          await saveProducts(s3, products, stats, processedIds);
           break;
         case Labels.COUNT:
           const count = document("span.category-number-of-products")

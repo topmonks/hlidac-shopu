@@ -136,18 +136,24 @@ function categoryItemsRequests(document) {
     }));
 }
 
-async function saveItems(s3, stats, products) {
-  const requests = [Dataset.pushData(products)];
-  stats.add("items", products.length);
-  for (const s3item of products) {
-    requests.push(
-      uploadToS3v2(s3, s3item, {
-        priceCurrency: s3item.currency,
-        inStock: true
-      })
-    );
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Dataset.pushData(product),
+        uploadToS3v2(s3, product, {
+          priceCurrency: product.currency,
+          inStock: true
+        })
+      );
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
   }
-  return Promise.all(requests);
+  await Promise.all(requests);
 }
 
 async function main() {
@@ -158,9 +164,11 @@ async function main() {
     maxAttempts: 3
   });
 
+  const processedIds = new Set();
   const stats = await withPersistedStats(x => x, {
     categories: 0,
-    items: 0
+    items: 0,
+    itemsDuplicity: 0
   });
 
   const userInput = (await KeyValueStore.getInput()) ?? {};
@@ -227,7 +235,7 @@ async function main() {
             await crawler.requestQueue.addRequests(requests);
           } else {
             const products = extractItems(document, userInput, stats);
-            await saveItems(s3, stats, products);
+            await saveProducts(s3, products, stats, processedIds);
 
             const href = document
               .querySelector("a.in-paging__control__item--arrow-next")
@@ -284,7 +292,7 @@ async function main() {
   await crawler.run(startingRequests);
   log.info("crawler finished");
 
-  await stats.save();
+  await stats.save(true);
 
   if (!development) {
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopName(rootUrl));

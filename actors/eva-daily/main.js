@@ -75,10 +75,16 @@ function extractProducts(document) {
   return products;
 }
 
-async function saveProducts(s3, products) {
-  const requests = [Dataset.pushData(products)];
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [];
   for (const product of products) {
-    requests.push(uploadToS3v2(s3, product));
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
   }
   await Promise.all(requests);
 }
@@ -99,10 +105,12 @@ async function main() {
     type = ActorType.Full
   } = input;
 
+  const processedIds = new Set();
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     pages: 0,
-    items: 0
+    items: 0,
+    itemsDuplicity: 0
   });
 
   log.info("ACTOR - setUp crawler");
@@ -127,7 +135,7 @@ async function main() {
         log.info(`${request.url} Found ${products.length} products`);
         if (!products.length) session.markBad();
         stats.inc("pages");
-        await saveProducts(s3, products);
+        await saveProducts(s3, products, stats, processedIds);
       } else if (request.userData.label === "CATEGORY") {
         // Add subcategories if this category has also products
         const subcategories = document
@@ -157,7 +165,7 @@ async function main() {
         const products = extractProducts(document);
         log.info(`${request.url} Found ${products.length} products`);
         if (!products.length) session.markBad();
-        await saveProducts(s3, products);
+        await saveProducts(s3, products, stats, processedIds);
       } else if (request.userData.label === "START") {
         const links = document
           .querySelectorAll("#mele > div.lmitem > a")

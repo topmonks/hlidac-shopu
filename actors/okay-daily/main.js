@@ -147,15 +147,17 @@ function extractProducts({ json, country }) {
 
 async function saveProducts({ stats, products, processedIds }) {
   stats.add("totalItems", products.length);
+  const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      await Dataset.pushData(product);
+      requests.push(Dataset.pushData(product));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
     }
   }
+  await Promise.all(requests);
 }
 
 async function enqueueMoreRequests({

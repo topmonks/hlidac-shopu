@@ -34,11 +34,11 @@ const Country = {
 };
 
 async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [Dataset.pushData(products)];
+  const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(uploadToS3v2(s3, product));
+      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
@@ -240,7 +240,8 @@ async function main() {
     itemsDuplicity: 0,
     crawledProducts: 0,
     JSON: 0,
-    HTML: 0
+    HTML: 0,
+    failed: 0
   });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -371,6 +372,7 @@ async function main() {
     },
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

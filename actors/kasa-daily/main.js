@@ -96,13 +96,21 @@ function handleProducts(document) {
   return items;
 }
 
-async function saveItems(s3, stats, products) {
-  const requests = [Dataset.pushData(products)];
-  stats.add("items", products.length);
-  for (const s3item of products) {
-    requests.push(uploadToS3v2(s3, s3item, { priceCurrency: "CZK" }));
+async function saveProducts(s3, products, stats, processedIds) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Dataset.pushData(product),
+        uploadToS3v2(s3, product, { priceCurrency: "CZK" })
+      );
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
   }
-  return Promise.all(requests);
+  await Promise.all(requests);
 }
 
 function handleCategories(categories) {
@@ -150,11 +158,13 @@ async function main() {
     type = ActorType.Full
   } = input;
 
+  const processedIds = new Set();
   const stats = await withPersistedStats(
     x => x,
     (await KeyValueStore.getValue("STATS")) || {
       pages: 0,
-      items: 0
+      items: 0,
+      itemsDuplicity: 0
     }
   );
 
@@ -210,7 +220,7 @@ async function main() {
           document.querySelectorAll(".pagination .pg_button").at(-1)
             ?.innerText ?? 0;
         const products = handleProducts(document);
-        await saveItems(s3, stats, products);
+        await saveProducts(s3, products, stats, processedIds);
         if (maxPage !== 0) {
           const pagiPages = [];
           for (let i = 2; i <= maxPage; i++) {
@@ -227,7 +237,7 @@ async function main() {
       } else if (request.userData.label === "LAST_CATEGORY_PAGE") {
         log.info(`START with page ${request.url}`);
         const products = handleProducts(document);
-        await saveItems(s3, stats, products);
+        await saveProducts(s3, products, stats, processedIds);
       } else if (request.userData.label === ActorType.BlackFriday) {
         log.info(`START BF ${request.url}`);
         const categories = document
