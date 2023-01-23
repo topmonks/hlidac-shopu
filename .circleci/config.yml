@@ -245,9 +245,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      # - run:
-      #     working_directory: "apple"
-      #     command: bundle install
       - restore_cache:
           keys:
             - v1-gem-cache-apple-{{ checksum "apple/Gemfile.lock" }}
