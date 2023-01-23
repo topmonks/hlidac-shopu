@@ -4,6 +4,8 @@ import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -143,19 +145,23 @@ function parseProducts(document, country) {
 export async function main() {
   const rollbar = Rollbar.init();
 
-  const input = (await Actor.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    debug = false,
-    maxRequestRetries = 3,
+    development,
+    debug,
+    maxRequestRetries,
     type = ActorType.Full,
-    proxyGroups = ["CZECH_LUMINATI"],
+    proxyGroups,
     country = Country.CZ
-  } = input;
+  } = await getInput();
 
   if (development || debug) {
     log.setLevel(LogLevel.DEBUG);
   }
+
+  const stats = await withPersistedStats(x => x, {
+    urls: 0,
+    failed: 0
+  });
 
   log.info("ACTOR - setUp crawler");
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -209,10 +215,12 @@ export async function main() {
           }
           break;
       }
+      stats.inc("urls");
     },
     async failedRequestHandler({ request }, error) {
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

@@ -1,11 +1,14 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { parseHTML } from "linkedom/cached";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 export const Label = {
   Category: "CATEGORY",
@@ -60,32 +63,28 @@ function extractCategoryProducts(
   { category, paginationUrl },
   createUrl
 ) {
-  const extract = element => ({
-    itemUrl: createUrl(element.querySelector(".tile-title a").href),
-    itemId: element
+  return document.querySelectorAll("#tiles .new-tile").map(el => ({
+    itemUrl: createUrl(el.querySelector(".tile-title a").href),
+    itemId: el
       .querySelector("[data-product-code]")
       .getAttribute("data-product-code"),
-    itemName: element.querySelector(".tile-title a")?.textContent?.trim(),
+    itemName: el.querySelector(".tile-title a")?.textContent?.trim(),
     inStock:
-      element
-        .querySelector(".btn.btn-buy")
-        ?.classList?.has("item-not-on-stock") == false,
+      el.querySelector(".btn.btn-buy")?.classList?.has("item-not-on-stock") ==
+      false,
     currentPrice: cleanPrice(
-      element.querySelector(".total-price .price .price-vatin")?.textContent
+      el.querySelector(".total-price .price .price-vatin")?.textContent
     ),
     originalPrice: cleanPrice(
-      element.querySelector(".total-price .price-before .price-vatin")
-        ?.textContent
+      el.querySelector(".total-price .price-before .price-vatin")?.textContent
     ),
     get discounted() {
       return this.currentPrice < this.originalPrice;
     },
-    img: element.querySelector(".img-wrapper img")?.src,
+    img: el.querySelector(".img-wrapper img")?.src,
     category,
     paginationUrl
-  });
-
-  return Array.from(document.querySelectorAll("#tiles .new-tile")).map(extract);
+  }));
 }
 
 /**
@@ -98,15 +97,8 @@ function extractCategorySubcategories(document, createUrl) {
     createUrl(link.href)
   );
 }
-async function handleCategory(
-  body,
-  log,
-  session,
-  stats,
-  createUrl,
-  requestQueue,
-  enqueueLinks
-) {
+
+async function handleCategory(body, log, stats, createUrl, requestQueue) {
   const html = body.toString();
   const { document } = parseHTML(html);
 
@@ -135,7 +127,7 @@ async function handleCategory(
   const products = extractCategoryProducts(document, pagination, createUrl);
   log.info(`Extracted ${products.length} products`);
 
-  for (let product of products) {
+  for (const product of products) {
     await Dataset.pushData(product);
     stats.inc("items");
 
@@ -158,6 +150,9 @@ async function handleCategory(
   // }
 }
 
+/**
+ * @param {ActorType} type
+ */
 function getPostfix(type) {
   switch (type) {
     case ActorType.BlackFriday:
@@ -169,6 +164,9 @@ function getPostfix(type) {
   }
 }
 
+/**
+ * @param {string} type
+ */
 function getTableName(type) {
   const postfix = getPostfix(type);
   return `czc${postfix}`;
@@ -176,63 +174,37 @@ function getTableName(type) {
 
 export async function main() {
   const rollbar = Rollbar.init();
-  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
-    maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    proxyGroups,
     type = ActorType.BlackFriday,
     urls = []
-  } = input;
+  } = await getInput();
 
-  const requestQueue = await Actor.openRequestQueue();
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
-    duplicates: 0,
     pages: 0,
     items: 0,
     denied: 0,
     ok: 0,
-    errors: 0
+    failed: 0
   });
 
-  switch (type) {
-    case ActorType.BlackFriday: {
-      if (urls.length === 0) {
-        await requestQueue.addRequest({
-          url: `https://czc.cz/black-friday/produkty`,
-          userData: { label: Label.Category }
-        });
-      }
-      break;
-    }
-    default:
-      if (urls.length === 0) {
-        log.info("No URLs provided");
-      }
-  }
-
   const crawler = new HttpCrawler({
-    requestQueue,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 50,
       persistStateKeyValueStoreId: "czc-sessions"
     },
     proxyConfiguration,
-    maxConcurrency,
-    async requestHandler({
-      request,
-      response,
-      body,
-      session,
-      log,
-      enqueueLinks
-    }) {
+    maxRequestsPerMinute: 600,
+    async requestHandler({ request, response, body, session, log }) {
       const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
@@ -246,27 +218,33 @@ export async function main() {
 
       const createUrl = s => new URL(s, request.url).href;
 
-      switch (label) {
-        case Label.Category:
-          return handleCategory(
-            body,
-            log,
-            session,
-            stats,
-            createUrl,
-            requestQueue,
-            enqueueLinks
-          );
-        default:
-          throw new Error(`Page type "${label}" not yet implemented`);
+      if (label === Label.Category) {
+        return handleCategory(
+          body,
+          log,
+          stats,
+          createUrl,
+          crawler.requestQueue
+        );
       }
+      throw new Error(`Page type "${label}" not yet implemented`);
     },
     async failedRequestHandler({ request, log }, error) {
       rollbar.error(error, request);
-      log.error(`Request ${request.url} ${error.message} failed 4 times`);
+      log.error(
+        `Request ${request.url} ${error.message} failed multiple times`
+      );
+      stats.inc("failed");
     }
   });
 
+  if (urls.length === 0) {
+    if (type === ActorType.BlackFriday) {
+      urls.push(`https://czc.cz/black-friday/produkty`);
+    } else {
+      log.info("No URLs provided");
+    }
+  }
   await crawler.addRequests(
     urls.map(url => ({ url, userData: { label: Label.Category } }))
   );

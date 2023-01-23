@@ -11,11 +11,13 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { URL, URLSearchParams } from "url";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
-const COUNTRY = {
+/** @enum {string} */
+const Country = {
   CZ: "CZ",
   SK: "SK",
   PL: "PL",
@@ -24,22 +26,26 @@ const COUNTRY = {
   AT: "AT"
 };
 
-const LABELS = {
+/** @enum {string} */
+const Lables = {
   START: "START",
   CATEGORY: "CATEGORY"
 };
 
+/**
+ * @param {Country} country
+ */
 function getCountrySlug(country) {
   switch (country.toUpperCase()) {
-    case COUNTRY.CZ:
+    case Country.CZ:
       return "cs-cz";
-    case COUNTRY.SK:
+    case Country.SK:
       return "sk-sk";
-    case COUNTRY.HU:
+    case Country.HU:
       return "hu-hu";
-    case COUNTRY.DE:
+    case Country.DE:
       return "de-de";
-    case COUNTRY.AT:
+    case Country.AT:
       return "de-at";
   }
 }
@@ -61,13 +67,14 @@ function makeListingUrl(
   )}`;
 }
 
+/**
+ * @param {Country} country
+ * @param {string} url
+ */
 function createProductUrl(country, url) {
-  switch (country.toUpperCase()) {
-    case COUNTRY.SK:
-      return new URL(url, "https://mojadm.sk").href;
-    default:
-      return new URL(url, `https://dm.${country.toLowerCase()}`).href;
-  }
+  return country.toUpperCase() === Country.SK
+    ? new URL(url, "https://mojadm.sk").href
+    : new URL(url, `https://dm.${country.toLowerCase()}`).href;
 }
 
 function* traverseCategories(categories, names = []) {
@@ -120,8 +127,6 @@ async function handleProducts(
   detailUrl
 ) {
   const { products, currentPage, totalPages } = json;
-  // we don't need to block pushes, we will await them all at the end
-  const requests = [];
   stats.add("items", products.length);
   if (products.length > 0) {
     if (currentPage === 0 && totalPages > 1) {
@@ -140,62 +145,82 @@ async function handleProducts(
         );
       }
     }
-    for (const item of products) {
-      if (!processedIds.has(item.gtin)) {
-        processedIds.add(item.gtin);
-        stats.inc("itemsUnique");
-        const detail = parseItem(item, country, category);
-        if (!detailUrl.deref()) detailUrl.reset(detail.itemUrl);
-        requests.push(
-          // push data to dataset to be ready for upload to Keboola
-          Dataset.pushData(detail),
-          // upload JSON+LD data to CDN
-          uploadToS3v2(s3, detail, {
-            brand: item.brandName,
-            name: item.name,
-            gtin: item.gtin
-          })
-        );
-      } else {
-        stats.inc("itemsDuplicity");
-      }
-    }
-    log.debug(`Found ${requests.length / 2} unique products at ${request.url}`);
-
-    // await all requests, so we don't end before they end
-    await Promise.all(requests);
+    const uniqueCount = await saveProducts({
+      s3,
+      products,
+      stats,
+      processedIds,
+      detailUrl,
+      country,
+      category
+    });
+    log.debug(
+      `Found ${products.length} products (${uniqueCount} unique) at ${request.url}`
+    );
   }
 }
 
-async function handleCategory(json, requestQueue, country, category) {
+async function saveProducts({
+  s3,
+  products,
+  stats,
+  processedIds,
+  detailUrl,
+  country,
+  category
+}) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.gtin)) {
+      processedIds.add(product.gtin);
+      const detail = parseItem(product, country, category);
+      if (!detailUrl.deref()) detailUrl.reset(detail.itemUrl);
+      requests.push(
+        Dataset.pushData(detail),
+        uploadToS3v2(s3, detail, {
+          brand: product.brandName,
+          name: product.name,
+          gtin: product.gtin
+        })
+      );
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  }
+  const responses = await Promise.all(requests);
+  return responses.length / 2;
+}
+
+function categoryRequest(json, country, category) {
   const { mainData } = json;
   const result = mainData
     .map(x => x.query?.query)
     .filter(Boolean)
     .shift();
+  if (!result) return;
 
-  if (result) {
-    let tempProductQuery = {};
-    const resultValue = result.split(":")[3];
-    if (result.includes(":allCategories") && resultValue) {
-      tempProductQuery = { "allCategories.id": resultValue };
-    } else if (result.includes(":brand") && resultValue) {
-      const brand = resultValue.split("|")[0];
-      tempProductQuery = { "brandName": brand };
-    }
-    await requestQueue.addRequest({
-      url: makeListingUrl(country, tempProductQuery, 0),
-      userData: {
-        country,
-        category,
-        productQuery: tempProductQuery
-      }
-    });
+  let tempProductQuery = {};
+  const resultValue = result.split(":")[3];
+  if (result.includes(":allCategories") && resultValue) {
+    tempProductQuery = { "allCategories.id": resultValue };
+  } else if (result.includes(":brand") && resultValue) {
+    const brand = resultValue.split("|")[0];
+    tempProductQuery = { "brandName": brand };
   }
+  return {
+    url: makeListingUrl(country, tempProductQuery, 0),
+    userData: {
+      country,
+      category,
+      productQuery: tempProductQuery
+    }
+  };
 }
 
-async function handleStart(type, navigation, stats, requestQueue, country) {
+function startRequests(type, navigation, stats, country) {
   log.info(`Pagination info ${type}`);
+  const requests = [];
   const { children } = navigation;
   // we are traversing recursively from leaves to trunk
   for (const category of traverseCategories(children)) {
@@ -203,34 +228,36 @@ async function handleStart(type, navigation, stats, requestQueue, country) {
     stats.inc("categories");
     // we need to await here to prevent higher categories
     // to be enqueued sooner than sub-categories
-    await requestQueue.addRequest({
+    requests.push({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
         country
       )}${category.link}/?json`,
       userData: {
         country,
         category: category.breadcrumbs.toString(),
-        label: LABELS.CATEGORY
+        label: Lables.CATEGORY
       }
     });
   }
+  return requests;
 }
 
-async function enqueInitialRequest(type, requestQueue, country) {
-  if (type === ActorType.FULL) {
-    await requestQueue.addRequest({
+function startingRequests(type, country) {
+  const requests = [];
+  if (type === ActorType.Full) {
+    requests.push({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
         country
       )}/?view=navigation&json`,
       userData: {
         country,
         productQuery: "",
-        label: LABELS.START
+        label: Lables.START
       }
     });
-  } else if (type === ActorType.TEST) {
+  } else if (type === ActorType.Test) {
     const productQuery = { "brandName": "SEINZ." };
-    await requestQueue.addRequest({
+    requests.push({
       url: makeListingUrl(country, productQuery, 0),
       userData: {
         country,
@@ -239,6 +266,7 @@ async function enqueInitialRequest(type, requestQueue, country) {
       }
     });
   }
+  return requests;
 }
 
 async function main() {
@@ -254,25 +282,25 @@ async function main() {
     categories: 0,
     items: 0,
     itemsUnique: 0,
-    itemsDuplicity: 0
+    itemsDuplicity: 0,
+    failed: 0
   });
   const processedIds = new Set();
   const detailUrl = defAtom(null);
 
-  const input = (await KeyValueStore.getInput()) ?? {};
-  const { debug = false, country = COUNTRY.CZ, type = ActorType.FULL } = input;
+  const {
+    debug,
+    country = Country.CZ,
+    type = ActorType.Full
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Actor.openRequestQueue();
-  await enqueInitialRequest(type, requestQueue, country);
-
   const crawler = new HttpCrawler({
-    requestQueue,
     maxRequestsPerMinute: 400,
-    async requestHandler({ request, json }) {
+    async requestHandler({ request, json, crawler }) {
       log.info(`Processing ${request.url}...`);
       const {
         userData: { country, label, category, productQuery }
@@ -281,21 +309,24 @@ async function main() {
       if (!json) return;
       const { type, navigation } = json;
       switch (label) {
-        case LABELS.START:
-          return await handleStart(
-            type,
-            navigation,
-            stats,
-            requestQueue,
-            country
-          );
-        case LABELS.CATEGORY:
-          return await handleCategory(json, requestQueue, country, category);
+        case Lables.START:
+          {
+            const requests = startRequests(type, navigation, stats, country);
+            await crawler.requestQueue.addRequests(requests);
+          }
+          break;
+        case Lables.CATEGORY:
+          {
+            const request = categoryRequest(json, country, category);
+            if (!request) return;
+            await crawler.requestQueue.addRequest(request);
+          }
+          break;
         default:
           return await handleProducts(
             json,
             stats,
-            requestQueue,
+            crawler.requestQueue,
             country,
             productQuery,
             category,
@@ -308,10 +339,12 @@ async function main() {
     },
     failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 
-  await crawler.run();
+  const requests = startingRequests(type, country);
+  await crawler.run(requests);
   log.info("crawler finished");
 
   await Promise.all([
@@ -321,7 +354,6 @@ async function main() {
   ]);
 
   log.info("invalidated Data CDN");
-  log.info("Finished.");
 }
 
-await Actor.main(main);
+await Actor.main(main, { statusMessage: "DONE" });

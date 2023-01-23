@@ -1,20 +1,24 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "../common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { parseHTML } from "linkedom/cached";
 
-export const Label = {
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
+
+/** @enum {string} */
+const Label = {
   Category: "CATEGORY",
   Detail: "DETAIL",
   Pagination: "PAGINATION"
 };
 
-export const extractItem = item => (Array.isArray(item) ? item[0] : item);
+const extractItem = item => (Array.isArray(item) ? item[0] : item);
 
 function getOffer(jsonld, microdata) {
   const product = extractItem(jsonld.get("Product"));
@@ -29,9 +33,9 @@ function getOffer(jsonld, microdata) {
 /**
  * Extracts prices from structured data
  * @param {Map<string, any>} structuredData
- * @returns {* | null}
+ * @returns {object}
  */
-export function extractStructuredData(structuredData) {
+function extractStructuredData(structuredData) {
   const metaTags = structuredData.get("metatags");
   const jsonLd = structuredData.get("jsonld");
   const microdata = structuredData.get("microdata");
@@ -58,8 +62,9 @@ export function extractStructuredData(structuredData) {
       .join(" > "),
     itemCode: extractItem(jsonLd.get("Product"))?.sku,
     rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
-    inStock: offer?.availability === "http://schema.org/InStock",
-    discontinued: offer?.availability === "http://schema.org/Discontinued",
+    inStock: offer.get("availability") === "http://schema.org/InStock",
+    discontinued:
+      offer.get("availability") === "http://schema.org/Discontinued",
     currentPrice: cleanPrice(currentPrice),
     originalPrice: cleanPrice(referralPrice),
     currency
@@ -67,8 +72,8 @@ export function extractStructuredData(structuredData) {
 }
 
 /**
- * @param {String} encodedString
- * @return {String}
+ * @param {string} encodedString
+ * @return {string}
  */
 function decodeEntities(encodedString) {
   const translate_re = /&(nbsp|amp|quot|lt|gt);/g;
@@ -104,7 +109,6 @@ function extractDOM(document) {
 /**
  * @param {Document} document
  * @param {Map} structuredData
- * @return {any}
  */
 function extractDetail(document, structuredData) {
   const domParts = extractDOM(document);
@@ -176,7 +180,7 @@ function createPaginationPayload({ categoryId, page }) {
   });
 }
 
-async function handleDetail(body, session, stats) {
+async function handleDetail(body, stats) {
   const html = body.toString();
   const { document } = parseHTML(html);
   const structuredData = parseStructuredData(document);
@@ -235,6 +239,9 @@ async function handleCategory(
   stats.inc("categories");
 }
 
+/**
+ * @param {ActorType} type
+ */
 function getPostfix(type) {
   switch (type) {
     case ActorType.BlackFriday:
@@ -246,66 +253,52 @@ function getPostfix(type) {
   }
 }
 
+/**
+ * @param {string} country
+ * @param {ActorType} type
+ */
 function getTableName(country, type) {
   const countryCode = country.toLowerCase();
   const postfix = getPostfix(type);
   return `alza_${countryCode}${postfix}`;
 }
 
-export async function main() {
+async function main() {
   const rollbar = Rollbar.init();
-  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
+    development,
+    proxyGroups,
     country = "CZ",
-    maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.BlackFriday,
     urls = []
-  } = input;
+  } = await getInput();
 
-  const requestQueue = await Actor.openRequestQueue();
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     details: 0,
-    duplicates: 0,
     pages: 0,
     items: 0,
     denied: 0,
     ok: 0,
     zeroItems: 0,
-    errors: 0
+    errors: 0,
+    failed: 0
   });
 
-  switch (type) {
-    case ActorType.BlackFriday: {
-      if (urls.length === 0) {
-        await requestQueue.addRequest({
-          url: `https://www.alza.${country.toLowerCase()}/black-friday`,
-          userData: { label: Label.Category }
-        });
-      }
-      break;
-    }
-    default:
-      if (urls.length === 0) {
-        log.info("No URLs provided");
-      }
-  }
-
   const crawler = new HttpCrawler({
-    requestQueue,
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 50,
       persistStateKeyValueStoreId: "alza-sessions"
     },
     proxyConfiguration,
-    maxConcurrency,
+    maxRequestsPerMinute: 600,
     async requestHandler({
       request,
       response,
@@ -334,21 +327,33 @@ export async function main() {
             session,
             stats,
             createUrl,
-            requestQueue
+            crawler.requestQueue
           );
         case Label.Pagination:
           return handlePagination(json, createUrl, enqueueLinks, stats);
         case Label.Detail:
-          return handleDetail(body, session, stats);
+          return handleDetail(body, stats);
       }
     },
     async failedRequestHandler({ request, log }, error) {
+      log.error(
+        `Request ${request.url} ${error.message} failed multiple times`
+      );
       rollbar.error(error, request);
-      log.error(`Request ${request.url} ${error.message} failed 4 times`);
+      stats.inc("failed");
     }
   });
 
-  await crawler.run(urls);
+  if (urls.length === 0) {
+    if (type === ActorType.BlackFriday) {
+      urls.push(`https://www.alza.${country.toLowerCase()}/black-friday`);
+    } else {
+      log.info("No URLs provided");
+    }
+  }
+  await crawler.run(
+    urls.map(url => ({ url, userData: { label: Label.Category } }))
+  );
   await stats.save(true);
 
   try {

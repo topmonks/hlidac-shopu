@@ -10,11 +10,12 @@ const defaultStats = {
   itemsDuplicity: 0,
   totalItems: 0,
   denied: 0,
-  ok: 0
+  ok: 0,
+  failed: 0
 };
 
-const inc = x => x + 1;
-const dec = x => x - 1;
+const inc = (x = 0) => x + 1;
+const dec = (x = 0) => x - 1;
 
 export class Stats {
   constructor(init) {
@@ -31,7 +32,7 @@ export class Stats {
   }
 
   add(key, value) {
-    this.stats.swapIn(key, x => x + value);
+    this.stats.swapIn(key, (x = 0) => x + value);
   }
 
   get() {

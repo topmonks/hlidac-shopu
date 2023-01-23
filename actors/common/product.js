@@ -2,10 +2,12 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
 import { shopOrigin, itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
+import { Dataset } from "apify";
 
 /** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
 /** @typedef { import("@aws-sdk/client-cloudfront").CloudFrontClient } CloudFrontClient */
 /** @typedef { import("schema-dts").Product} Product */
+/** @typedef { import("./stats").Stats} Stats */
 
 const isDisabled = process.env.DISABLE_LINKED_DATA || process.env.TEST;
 
@@ -77,6 +79,35 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
     "jsonld",
     toProduct(item, extraData)
   );
+}
+
+/**
+ * Save products to dataset and upload them to S3 (if not disabled).
+ * @param {{s3: S3Client, products: object[], stats: Stats, processedIds: Set<string>, s3ExtraData?: object}} options
+ * @returns {Promise<number>}
+ */
+export async function saveProducts({
+  s3,
+  products,
+  stats,
+  processedIds,
+  s3ExtraData = {}
+}) {
+  const requests = [];
+  for (const product of products) {
+    if (!processedIds.has(product.itemId)) {
+      processedIds.add(product.itemId);
+      requests.push(
+        Dataset.pushData(product),
+        uploadToS3v2(s3, product, s3ExtraData)
+      );
+      stats.inc("items");
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  }
+  const responses = await Promise.all(requests);
+  return responses.length / 2;
 }
 
 /**

@@ -1,4 +1,8 @@
+import { KeyValueStore } from "apify";
+
 /** @typedef {import("./stats.js").Stats} Stats */
+/** @typedef {import("node:http").IncomingMessage} IncomingMessage */
+
 /**
  *
  * @param session
@@ -27,4 +31,23 @@ export function restPageUrls(totalCount, urlFn) {
     urls.push(urlFn(pageNr));
   }
   return urls;
+}
+
+/**
+ * Get Apify input with default values.
+ * @param {object=} overrides
+ */
+export async function getInput(overrides) {
+  return Object.assign(
+    {
+      type: process.env.TYPE,
+      development: Boolean(process.env.TEST),
+      proxyGroups: ["CZECH_LUMINATI"],
+      maxRequestRetries: 3,
+      debug: Boolean(process.env.DEBUG),
+      urls: []
+    },
+    await KeyValueStore.getInput(),
+    overrides
+  );
 }
