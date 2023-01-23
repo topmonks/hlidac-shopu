@@ -4884,7 +4884,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -4892,22 +4892,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/actors-common@npm:2.0.8":
-  version: 2.0.8
-  resolution: "@hlidac-shopu/actors-common@npm:2.0.8"
-  dependencies:
-    "@hlidac-shopu/lib": 1.3.8
-    "@thi.ng/atom": 5.1.27
-    apify: 3.1.1
-    rollbar: 2.26.0
-  peerDependencies:
-    "@aws-sdk/client-cloudfront": ^3.112.0
-    "@aws-sdk/client-s3": ^3.112.0
-  checksum: 2bd7740a7849944b9facc468ee4be4be1564bd4fd0f5fa99e28b5320b3bb4f28540ee7587591d73b3cfd9a2c6dd6e3091949aa869f88b8422c5069ff3fb1b6ce
-  languageName: node
-  linkType: hard
-
-"@hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@2.1.0, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -4929,7 +4914,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.11.18
@@ -4971,7 +4956,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -4987,7 +4972,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.11.18
@@ -5004,7 +4989,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5020,7 +5005,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5035,7 +5020,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/cheerio": 3.1.4
     "@crawlee/playwright": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5050,7 +5035,7 @@ __metadata:
   resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5064,7 +5049,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5089,7 +5074,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5105,7 +5090,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5122,7 +5107,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5137,7 +5122,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5153,7 +5138,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5169,7 +5154,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5183,7 +5168,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5197,7 +5182,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5211,7 +5196,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5240,7 +5225,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/playwright": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5256,7 +5241,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5274,7 +5259,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5289,7 +5274,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5304,7 +5289,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     apify: 3.1.1
     linkedom: 0.14.21
@@ -5318,7 +5303,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     apify: 3.1.1
     linkedom: 0.14.21
   languageName: unknown
@@ -5329,7 +5314,7 @@ __metadata:
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
     "@crawlee/playwright": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5344,7 +5329,7 @@ __metadata:
   resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
   dependencies:
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5359,7 +5344,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5374,7 +5359,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.11.18
     apify: 3.1.1
@@ -5391,7 +5376,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
     "@crawlee/utils": 3.1.2
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@thi.ng/atom": 5.1.28
     "@thi.ng/transducers": 8.3.30
     "@types/node": 18.11.18
@@ -5417,7 +5402,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/http": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5432,7 +5417,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
     "@crawlee/playwright": 3.1.4
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5447,7 +5432,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
@@ -5467,7 +5452,7 @@ __metadata:
   dependencies:
     "@crawlee/utils": 3.1.2
     "@fast-csv/format": 4.3.5
-    "@hlidac-shopu/actors-common": 2.0.8
+    "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     apify: 3.1.1
     byte-size: 8.1.0
@@ -6765,7 +6750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/api@npm:^8.6.2, @thi.ng/api@npm:^8.6.3":
+"@thi.ng/api@npm:^8.6.3":
   version: 8.6.3
   resolution: "@thi.ng/api@npm:8.6.3"
   checksum: dcaf304f7be925088702e9c5b613640efdd0b394eb0d5fa27141289f12eb3e3dbd9df25d6106aed7ce0b458231e9024f7234d5f5a5c605efd449e0b54423cfff
@@ -6783,19 +6768,6 @@ __metadata:
     "@thi.ng/errors": ^2.2.8
     "@thi.ng/random": ^3.3.21
   checksum: d9ac0c3e713e179f0686454699c43fccb1dfaa2c26d2aa40d3359b5debb5823ec870f245d8661a261969721c25adcb8b97bc117de50e2cdf8f856b7d48a0de86
-  languageName: node
-  linkType: hard
-
-"@thi.ng/atom@npm:5.1.27":
-  version: 5.1.27
-  resolution: "@thi.ng/atom@npm:5.1.27"
-  dependencies:
-    "@thi.ng/api": ^8.6.2
-    "@thi.ng/equiv": ^2.1.16
-    "@thi.ng/errors": ^2.2.7
-    "@thi.ng/paths": ^5.1.27
-    tslib: ^2.4.1
-  checksum: 51b984a637b7ec4f6e295ebaac5104f8871def2a40774030bab5842a32e02cd99f13a0c26196c93255ad6c76ba6f3c7f24ca6a368e7f9b96cac67fd9974a3a10
   languageName: node
   linkType: hard
 
@@ -6840,14 +6812,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.16, @thi.ng/equiv@npm:^2.1.17":
+"@thi.ng/equiv@npm:^2.1.17":
   version: 2.1.17
   resolution: "@thi.ng/equiv@npm:2.1.17"
   checksum: 89590bec51a4e5ddd9619941f2189c2c9f7df3f837472ccfee1f8580589bdc8768f9dc4f36c63ea0e893928ff5c795c558a19e9bbfa92dbcc02a7922eb0cf225
   languageName: node
   linkType: hard
 
-"@thi.ng/errors@npm:^2.2.7, @thi.ng/errors@npm:^2.2.8":
+"@thi.ng/errors@npm:^2.2.8":
   version: 2.2.8
   resolution: "@thi.ng/errors@npm:2.2.8"
   checksum: 187a4df7da91c0cfb24b7540b1e89f896db10dc3a5fad8bfc80ad47e46ced13638f37fb4ff662d005d23c8ebe20d265cc74751b82344223e1b6f846b3dc43012
@@ -6870,7 +6842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.27, @thi.ng/paths@npm:^5.1.28":
+"@thi.ng/paths@npm:^5.1.28":
   version: 5.1.28
   resolution: "@thi.ng/paths@npm:5.1.28"
   dependencies:
@@ -21893,25 +21865,6 @@ __metadata:
   bin:
     rimraf: ./bin.js
   checksum: 3ea587b981a19016297edb96d1ffe48af7e6af69660e3b371dbfc73722a73a0b0e9be5c88089fbeeb866c389c1098e07f64929c7414290504b855f54f901ab10
-  languageName: node
-  linkType: hard
-
-"rollbar@npm:2.26.0":
-  version: 2.26.0
-  resolution: "rollbar@npm:2.26.0"
-  dependencies:
-    async: ~3.2.3
-    console-polyfill: 0.3.0
-    decache: ^3.0.5
-    error-stack-parser: ^2.0.4
-    json-stringify-safe: ~5.0.0
-    lru-cache: ~2.2.1
-    request-ip: ~2.0.1
-    source-map: ^0.5.7
-  dependenciesMeta:
-    decache:
-      optional: true
-  checksum: 27f5ba99c6eedf3fb49f3b7bfab7fdc6d8418c7828947c2f2ba24b5163c835a01b6811677cded6a9ef974db6d44c1215f3fc2dff95f0c45e1c7e70ca26c9db39
   languageName: node
   linkType: hard
 
