@@ -4474,9 +4474,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/android-arm64@npm:0.17.2"
+"@esbuild/android-arm64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/android-arm64@npm:0.17.3"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
@@ -4488,9 +4488,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/android-arm@npm:0.17.2"
+"@esbuild/android-arm@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/android-arm@npm:0.17.3"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
@@ -4502,9 +4502,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/android-x64@npm:0.17.2"
+"@esbuild/android-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/android-x64@npm:0.17.3"
   conditions: os=android & cpu=x64
   languageName: node
   linkType: hard
@@ -4516,9 +4516,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-arm64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/darwin-arm64@npm:0.17.2"
+"@esbuild/darwin-arm64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/darwin-arm64@npm:0.17.3"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -4530,9 +4530,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/darwin-x64@npm:0.17.2"
+"@esbuild/darwin-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/darwin-x64@npm:0.17.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -4544,9 +4544,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-arm64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/freebsd-arm64@npm:0.17.2"
+"@esbuild/freebsd-arm64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/freebsd-arm64@npm:0.17.3"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -4558,9 +4558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/freebsd-x64@npm:0.17.2"
+"@esbuild/freebsd-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/freebsd-x64@npm:0.17.3"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4572,9 +4572,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-arm64@npm:0.17.2"
+"@esbuild/linux-arm64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-arm64@npm:0.17.3"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
@@ -4586,9 +4586,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-arm@npm:0.17.2"
+"@esbuild/linux-arm@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-arm@npm:0.17.3"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
@@ -4600,9 +4600,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ia32@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-ia32@npm:0.17.2"
+"@esbuild/linux-ia32@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-ia32@npm:0.17.3"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
@@ -4614,9 +4614,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-loong64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-loong64@npm:0.17.2"
+"@esbuild/linux-loong64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-loong64@npm:0.17.3"
   conditions: os=linux & cpu=loong64
   languageName: node
   linkType: hard
@@ -4628,9 +4628,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-mips64el@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-mips64el@npm:0.17.2"
+"@esbuild/linux-mips64el@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-mips64el@npm:0.17.3"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
@@ -4642,9 +4642,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ppc64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-ppc64@npm:0.17.2"
+"@esbuild/linux-ppc64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-ppc64@npm:0.17.3"
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
@@ -4656,9 +4656,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-riscv64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-riscv64@npm:0.17.2"
+"@esbuild/linux-riscv64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-riscv64@npm:0.17.3"
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
@@ -4670,9 +4670,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-s390x@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-s390x@npm:0.17.2"
+"@esbuild/linux-s390x@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-s390x@npm:0.17.3"
   conditions: os=linux & cpu=s390x
   languageName: node
   linkType: hard
@@ -4684,9 +4684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/linux-x64@npm:0.17.2"
+"@esbuild/linux-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/linux-x64@npm:0.17.3"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -4698,9 +4698,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/netbsd-x64@npm:0.17.2"
+"@esbuild/netbsd-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/netbsd-x64@npm:0.17.3"
   conditions: os=netbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4712,9 +4712,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openbsd-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/openbsd-x64@npm:0.17.2"
+"@esbuild/openbsd-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/openbsd-x64@npm:0.17.3"
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4726,9 +4726,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/sunos-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/sunos-x64@npm:0.17.2"
+"@esbuild/sunos-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/sunos-x64@npm:0.17.3"
   conditions: os=sunos & cpu=x64
   languageName: node
   linkType: hard
@@ -4740,9 +4740,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-arm64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/win32-arm64@npm:0.17.2"
+"@esbuild/win32-arm64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/win32-arm64@npm:0.17.3"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -4754,9 +4754,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-ia32@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/win32-ia32@npm:0.17.2"
+"@esbuild/win32-ia32@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/win32-ia32@npm:0.17.3"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
@@ -4768,9 +4768,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.17.2":
-  version: 0.17.2
-  resolution: "@esbuild/win32-x64@npm:0.17.2"
+"@esbuild/win32-x64@npm:0.17.3":
+  version: 0.17.3
+  resolution: "@esbuild/win32-x64@npm:0.17.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -5212,7 +5212,7 @@ __metadata:
     "@open-wc/testing": 3.1.7
     "@web/test-runner": 0.15.0
     "@web/test-runner-junit-reporter": 0.5.0
-    chart.js: 4.1.2
+    chart.js: 4.2.0
     chartjs-adapter-date-fns: 3.0.0
     lit: 2.6.1
   languageName: unknown
@@ -5436,7 +5436,7 @@ __metadata:
     "@types/node": 18.11.18
     apify: 3.1.1
     apify-cli: 0.13.0
-    fingerprint-generator: 2.1.7
+    fingerprint-generator: 2.1.8
     fingerprint-injector: 2.1.7
     playwright: 1.29.2
     proxy-agent: ^5.0.0
@@ -9056,9 +9056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1296.0":
-  version: 2.1296.0
-  resolution: "aws-sdk@npm:2.1296.0"
+"aws-sdk@npm:2.1298.0":
+  version: 2.1298.0
+  resolution: "aws-sdk@npm:2.1298.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9070,7 +9070,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 577245d6b7274ff0a50c698924f501257f551ebcc09972d96b9392df97602a3c8bf148736e50a83a5bd4b8f61d134657dbd8372cf572f246789e380bd005255d
+  checksum: 77abd4690fcafcfb6e023c4747cd8be69874f6b35abc4273bed0f90d2bc3a8656c0e279f0f063f38e1c378694295eab101e583932b498616c0db0ded574758a5
   languageName: node
   linkType: hard
 
@@ -10143,12 +10143,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.1.2":
-  version: 4.1.2
-  resolution: "chart.js@npm:4.1.2"
+"chart.js@npm:4.2.0":
+  version: 4.2.0
+  resolution: "chart.js@npm:4.2.0"
   dependencies:
     "@kurkle/color": ^0.3.0
-  checksum: 938ac88baf04eb8d784a8d89064696375bc12545421186f5ec9b69ba9b6f7b7da960754f351b59b1df2b1c314dfa848aab44267076888e664d5253bc6a4059dd
+  checksum: 281b023c013de8700a5208a45d35248b02119fadb574d0c104c7e0720605e085195ce546fd3aa27625e9db1188fdd5f7491a411463b9c30b7654a5f4b13d8d80
   languageName: node
   linkType: hard
 
@@ -12464,32 +12464,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.17.2":
-  version: 0.17.2
-  resolution: "esbuild@npm:0.17.2"
+"esbuild@npm:0.17.3":
+  version: 0.17.3
+  resolution: "esbuild@npm:0.17.3"
   dependencies:
-    "@esbuild/android-arm": 0.17.2
-    "@esbuild/android-arm64": 0.17.2
-    "@esbuild/android-x64": 0.17.2
-    "@esbuild/darwin-arm64": 0.17.2
-    "@esbuild/darwin-x64": 0.17.2
-    "@esbuild/freebsd-arm64": 0.17.2
-    "@esbuild/freebsd-x64": 0.17.2
-    "@esbuild/linux-arm": 0.17.2
-    "@esbuild/linux-arm64": 0.17.2
-    "@esbuild/linux-ia32": 0.17.2
-    "@esbuild/linux-loong64": 0.17.2
-    "@esbuild/linux-mips64el": 0.17.2
-    "@esbuild/linux-ppc64": 0.17.2
-    "@esbuild/linux-riscv64": 0.17.2
-    "@esbuild/linux-s390x": 0.17.2
-    "@esbuild/linux-x64": 0.17.2
-    "@esbuild/netbsd-x64": 0.17.2
-    "@esbuild/openbsd-x64": 0.17.2
-    "@esbuild/sunos-x64": 0.17.2
-    "@esbuild/win32-arm64": 0.17.2
-    "@esbuild/win32-ia32": 0.17.2
-    "@esbuild/win32-x64": 0.17.2
+    "@esbuild/android-arm": 0.17.3
+    "@esbuild/android-arm64": 0.17.3
+    "@esbuild/android-x64": 0.17.3
+    "@esbuild/darwin-arm64": 0.17.3
+    "@esbuild/darwin-x64": 0.17.3
+    "@esbuild/freebsd-arm64": 0.17.3
+    "@esbuild/freebsd-x64": 0.17.3
+    "@esbuild/linux-arm": 0.17.3
+    "@esbuild/linux-arm64": 0.17.3
+    "@esbuild/linux-ia32": 0.17.3
+    "@esbuild/linux-loong64": 0.17.3
+    "@esbuild/linux-mips64el": 0.17.3
+    "@esbuild/linux-ppc64": 0.17.3
+    "@esbuild/linux-riscv64": 0.17.3
+    "@esbuild/linux-s390x": 0.17.3
+    "@esbuild/linux-x64": 0.17.3
+    "@esbuild/netbsd-x64": 0.17.3
+    "@esbuild/openbsd-x64": 0.17.3
+    "@esbuild/sunos-x64": 0.17.3
+    "@esbuild/win32-arm64": 0.17.3
+    "@esbuild/win32-ia32": 0.17.3
+    "@esbuild/win32-x64": 0.17.3
   dependenciesMeta:
     "@esbuild/android-arm":
       optional: true
@@ -12537,7 +12537,7 @@ __metadata:
       optional: true
   bin:
     esbuild: bin/esbuild
-  checksum: 28568b5a286d024b81f3c290326046675b70d034b8af2b6533f1d772a09cf411e771c35bb011eb04dbb6bd21895b24cceec046128ce288a3f24f96845b8e788e
+  checksum: 7ba0dc84982cd380e300beee746d1a13834a6016652529e9f4be26d50a53136064c199c211beb5cf22048f37ed50c2cc109396757d402e545aee538de7ff31f4
   languageName: node
   linkType: hard
 
@@ -13662,14 +13662,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.7, fingerprint-generator@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "fingerprint-generator@npm:2.1.7"
+"fingerprint-generator@npm:2.1.8":
+  version: 2.1.8
+  resolution: "fingerprint-generator@npm:2.1.8"
   dependencies:
-    generative-bayesian-network: ^2.1.7
-    header-generator: ^2.1.7
+    generative-bayesian-network: ^2.1.8
+    header-generator: ^2.1.8
     tslib: ^2.4.0
-  checksum: 0abd10348b3916a59d87cf7e907e191c2550a8664c50e8fc0506fa74da94d6f980b2ee5d8cb2033576cc9bd2b963509152ddae433fa74bf2394c6997a2ca0f35
+  checksum: 78094ed90f781ccb9f82b7122d29b626735de893bac33e31017ee8738dc5a5b05cb883a1441b62ea7c79954cc6afa5482056c06114328101d7f652adb3d01015
   languageName: node
   linkType: hard
 
@@ -13681,6 +13681,17 @@ __metadata:
     header-generator: ^2.1.4
     tslib: ^2.4.0
   checksum: fd4760c6380d9932a506804a5fbb6f9b9bfc71c309bf88ac16410b112ed194da40030924b490fc3e53603a3e49f6b19e542c46ed9f0b5c6640fc49180693b5d9
+  languageName: node
+  linkType: hard
+
+"fingerprint-generator@npm:^2.1.7":
+  version: 2.1.7
+  resolution: "fingerprint-generator@npm:2.1.7"
+  dependencies:
+    generative-bayesian-network: ^2.1.7
+    header-generator: ^2.1.7
+    tslib: ^2.4.0
+  checksum: 0abd10348b3916a59d87cf7e907e191c2550a8664c50e8fc0506fa74da94d6f980b2ee5d8cb2033576cc9bd2b963509152ddae433fa74bf2394c6997a2ca0f35
   languageName: node
   linkType: hard
 
@@ -14205,6 +14216,16 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: f2379df539f066295023bfec2f1db96109d7c9945463f84e1f6a25352a8b03bcc3bc2c07f5c24234a9c5a4fa3f73d27883f440abb02a3804e028bfdfec21271a
+  languageName: node
+  linkType: hard
+
+"generative-bayesian-network@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "generative-bayesian-network@npm:2.1.8"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: 8b45b979fee4c8b4fb96c0e6f2fa3a73ccf8393e152516bfaeb6685d87f6c659c4b1f705fd3f35c61905ef12c87b600e6aae99f4354474c85a2234bf29541d3b
   languageName: node
   linkType: hard
 
@@ -15361,6 +15382,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"header-generator@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "header-generator@npm:2.1.8"
+  dependencies:
+    browserslist: ^4.21.1
+    generative-bayesian-network: ^2.1.8
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 8ab93a84e41b2cc67b0822627b86001d4779a765d691cd58d08e254dd87f12baada9954881d192b5b105ec43b4823d741d65f1212dee442c235df72b8093b52f
+  languageName: node
+  linkType: hard
+
 "hlidac-shopu@workspace:.":
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
@@ -15385,13 +15418,13 @@ __metadata:
     "@typescript-eslint/parser": 5.48.2
     abort-controller: 3.0.0
     ava: 5.1.1
-    aws-sdk: 2.1296.0
+    aws-sdk: 2.1298.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
     date-fns: 2.29.3
     dotenv-cli: 6.0.0
-    esbuild: 0.17.2
+    esbuild: 0.17.3
     eslint: 8.32.0
     eslint-config-prettier: 8.6.0
     eslint-plugin-compat: 4.0.2
