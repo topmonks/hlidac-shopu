@@ -6527,7 +6527,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:4.0.2, @rollup/plugin-alias@npm:^4.0.2":
+"@rollup/plugin-alias@npm:4.0.3":
+  version: 4.0.3
+  resolution: "@rollup/plugin-alias@npm:4.0.3"
+  dependencies:
+    slash: ^4.0.0
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 3efabf35bfe2a40722609397328513dcb72ed4e2d1e35082cd1c60b231af9041214285b3e74d8702e0f00e214ee5ef3022fbc442a1beb8d1b641e85cf2b10cbf
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-alias@npm:^4.0.2":
   version: 4.0.2
   resolution: "@rollup/plugin-alias@npm:4.0.2"
   dependencies:
@@ -15405,7 +15419,7 @@ __metadata:
     "@pulumi/aws": 5.27.0
     "@pulumi/awsx": 0.40.1
     "@pulumi/pulumi": 3.52.1
-    "@rollup/plugin-alias": 4.0.2
+    "@rollup/plugin-alias": 4.0.3
     "@rollup/plugin-node-resolve": 15.0.1
     "@rollup/plugin-replace": 5.0.2
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=6420b69505cb3683ba68179f48b39da8a96e8e1b"
