@@ -239,36 +239,12 @@ jobs:
           channel: ntf-hlidac-shopu
 
   publish-apple-apps:
-    macos:
-      xcode: "14.2.0"
+    machine:
+      image: ubuntu-2204:2022.10.2
     steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - v1-gem-cache-apple-{{ checksum "apple/Gemfile.lock" }}
       - run:
-          name: Build and Release Apple apps
-          working_directory: "apple"
-          command: |
-            echo $PWD
-            ruby --version
-            bundle --version
-            fastlane --version
-            bundle install
-            echo "$FASTLANE_APP_STORE_API_KEY" > fastlane/ApiKey.json
-            bundle exec fastlane mac release --verbose
-            bundle exec fastlane ios release --verbose
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-          channel: ntf-hlidac-shopu
-      - save_cache:
-          paths:
-            - ~/.bundle
-          key: v1-gem-cache-apple-{{ checksum "apple/Gemfile.lock" }}
-
+          name: Reffer to xcode cloud
+          command: echo "Go to Xcode Cloud"
   provision:
     machine:
       image: ubuntu-2204:2022.10.2
@@ -440,7 +416,6 @@ workflows:
       - publish-apple-apps:
           context:
             - org-global
-            - org-fastlane
           requires:
             - test-lib
             - build-web-extension
@@ -449,18 +424,6 @@ workflows:
               ignore: /.*/
             tags:
               only: /^extension-.*/
-      - publish-apple-apps-manually:
-          type: approval
-      - publish-apple-apps:
-          context:
-            - org-global
-            - org-fastlane
-          requires:
-            - build-web-extension
-            - publish-apple-apps-manually
-          filters:
-            branches:
-              only: /.*/
       - build-website:
           context: org-global
           requires:
