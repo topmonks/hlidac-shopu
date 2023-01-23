@@ -11987,24 +11987,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:6.0.0":
-  version: 6.0.0
-  resolution: "dotenv-cli@npm:6.0.0"
+"dotenv-cli@npm:7.0.0":
+  version: 7.0.0
+  resolution: "dotenv-cli@npm:7.0.0"
   dependencies:
     cross-spawn: ^7.0.3
     dotenv: ^16.0.0
-    dotenv-expand: ^8.0.1
-    minimist: ^1.2.5
+    dotenv-expand: ^10.0.0
+    minimist: ^1.2.6
   bin:
     dotenv: cli.js
-  checksum: 3db5a363eedd24d428001a956d9b8c72094983bfe0e0e722cda7803b614daf85dde9c9beb5d9fa28a139a5c594533ecd8f9d8430a90c244175e81c9a40abc5b1
+  checksum: de4ed19bc08cef509e6bee8bf26df0523e502556abbc732a86f8eee50fc3b3b0b3824803100e39f2d09ef1335b558b9e10d1ba51a4a2338c0ebbae6b5c520b19
   languageName: node
   linkType: hard
 
-"dotenv-expand@npm:^8.0.1":
-  version: 8.0.3
-  resolution: "dotenv-expand@npm:8.0.3"
-  checksum: 128ce90ac825b543de3ece0154a51b056ab0dc36bb26d97a68cd0b8707327ecd3c182fb6ac63b26a0fcdfa85064419906a1065cb634f1f9dc08ad311375f1fc0
+"dotenv-expand@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "dotenv-expand@npm:10.0.0"
+  checksum: 2a38b470efe0abcb1ac8490421a55e1d764dc9440fd220942bce40965074f3fb00b585f4346020cb0f0f219966ee6b4ee5023458b3e2953fe5b3214de1b314ee
   languageName: node
   linkType: hard
 
@@ -15420,7 +15420,7 @@ __metadata:
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
     date-fns: 2.29.3
-    dotenv-cli: 6.0.0
+    dotenv-cli: 7.0.0
     esbuild: 0.17.3
     eslint: 8.32.0
     eslint-config-prettier: 8.6.0
