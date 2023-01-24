@@ -4,18 +4,24 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
   cleanPrice,
   invalidateCDN,
-  uploadToS3v2
+  saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, log } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 const canonicalUrl = x => new URL(x, "https://www.knihydobrovsky.cz");
 const canonical = x => canonicalUrl(x).href;
 
+/**
+ * @param {Document} document
+ */
 function handleStart(document) {
   return document
     .querySelectorAll("#main div.row-main li a")
@@ -32,6 +38,9 @@ function handleStart(document) {
     }));
 }
 
+/**
+ * @param {Document} document
+ */
 function extractProducts(document) {
   return document
     .querySelectorAll("li[data-productinfo]")
@@ -73,61 +82,37 @@ function extractProducts(document) {
     .filter(x => x.itemId);
 }
 
-async function saveItems(s3, stats, products, handledIds) {
-  const newProducts = products.filter(x => !handledIds.has(x.itemId));
-  const requests = [Dataset.pushData(newProducts)];
-  stats.add("items", newProducts.length);
-  for (const product of newProducts) {
-    handledIds.add(product.itemId);
-    requests.push(uploadToS3v2(s3, product, { category: "" }));
-  }
-  return Promise.all(requests);
-}
-
 async function main() {
   rollbar.init();
-
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
+  const processedIds = await useState("processedIds", new Set());
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    maxRequestRetries,
+    proxyGroups,
     type = ActorType.Full,
     bfUrls = []
-  } = input;
+  } = await getInput();
 
-  const handledIds = new Set(
-    (await KeyValueStore.getValue("handledIds")) || []
-  );
-  Actor.on("persistState", async () => {
-    await KeyValueStore.setValue("handledIds", Array.from(handledIds));
+  const stats = await withPersistedStats(x => x, {
+    categories: 0,
+    pages: 0,
+    items: 0,
+    failed: 0
   });
-
-  const stats = await withPersistedStats(
-    x => x,
-    (await KeyValueStore.getValue("STATS")) || {
-      categories: 0,
-      pages: 0,
-      items: 0,
-      failed: 0
-    }
-  );
 
   log.info("ACTOR - setUp crawler");
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: development ? undefined : proxyGroups,
+    groups: proxyGroups,
     useApifyProxy: !development
   });
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
+    useSessionPool: true,
+    persistCookiesPerSession: true,
     maxRequestsPerMinute: 600,
     async requestHandler({ request, body, crawler }) {
       const {
@@ -159,27 +144,9 @@ async function main() {
           }
           const products = extractProducts(document);
           log.info(`${request.url} Found ${products.length} products`);
-          await saveItems(s3, stats, products, handledIds);
+          await saveProducts({ s3, stats, products, processedIds });
           break;
         case "SUBLIST":
-          const bookGenres = document.querySelector("#bookGenres");
-          // unused?
-          if (bookGenres) {
-            log.error("SUBLIST", { url: request.url });
-            Actor.exit();
-            const links = bookGenres
-              .next("nav")
-              .find("a")
-              .map(a => canonical(a.href));
-            stats.add("categories", links.length);
-            log.info(`Found ${links.length} categories from sublist`);
-            const requests = links.map(link => ({
-              url: link,
-              userData: { label: "SUBLIST" }
-            }));
-            await crawler.requestQueue.addRequests(requests);
-          }
-
           stats.inc("pages");
           log.info(
             `Adding pagination page ${request.url}?sort=2&currentPage=1`
@@ -187,7 +154,6 @@ async function main() {
           await crawler.requestQueue.addRequest(
             {
               url: `${request.url}?sort=2&currentPage=1`,
-              uniqueKey: `${request.url}?sort=2&currentPage=1`,
               userData: { label: "LIST" }
             },
             { forefront: true }
@@ -203,6 +169,7 @@ async function main() {
     },
     async failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 
@@ -253,6 +220,10 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
     log.info("invalidated Data CDN");
 

@@ -3,15 +3,16 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 
 export const BlackFridayCategoryID = 187082;
 export const PageSize = 100;
 
-/** @enum */
+/** @enum {string} */
 export const Label = {
   Category: "CATEGORY",
   Detail: "DETAIL",
@@ -172,28 +173,20 @@ export function extractDetail(
   };
 }
 
-function* pages(totalCount) {
-  const pages = Math.ceil(totalCount / PageSize);
-  for (let page = 2; page <= pages; page++) {
-    yield page;
-  }
-}
-
 export async function main() {
   const rollbar = Rollbar.init();
-  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
+    development,
     country = "CZ",
-    maxConcurrency = 10,
-    proxyGroups = ["CZECH_LUMINATI"],
+    proxyGroups,
     type = ActorType.BlackFriday,
-    urls = []
-  } = input;
+    urls
+  } = await getInput();
 
-  const requestQueue = await Actor.openRequestQueue();
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const stats = await withPersistedStats(x => x, {
@@ -208,10 +201,9 @@ export async function main() {
   });
 
   const crawler = new HttpCrawler({
-    requestQueue,
     proxyConfiguration,
-    maxConcurrency,
-    async requestHandler({ session, request, response, json, log }) {
+    maxRequestsPerMinute: 600,
+    async requestHandler({ session, request, response, json, log, crawler }) {
       const { label, categoryId, page } = request.userData;
       log.info("processing page", {
         url: request.url,
@@ -225,19 +217,18 @@ export async function main() {
         case Label.Category: {
           stats.inc("categories");
           const { totalCount, products } = json;
-          for (const page of pages(totalCount)) {
-            await requestQueue.addRequest(
-              categoryPaginationRequest(categoryId, page)
-            );
-          }
-          return requestQueue.addRequest(
+          const requests = restPageUrls(totalCount, page =>
+            categoryPaginationRequest(categoryId, page)
+          );
+          await crawler.requestQueue.addRequests(requests, { forefront: true });
+          return crawler.requestQueue.addRequest(
             categoryItemsRequest(products.map(x => x.id))
           );
         }
         case Label.Pagination: {
           stats.inc("pages");
           const { products } = json;
-          return requestQueue.addRequest(
+          return crawler.requestQueue.addRequest(
             categoryItemsRequest(products.map(x => x.id))
           );
         }
@@ -252,7 +243,7 @@ export async function main() {
     async failedRequestHandler({ request }, error) {
       stats.inc("failed");
       rollbar.error(error, request);
-      log.error(`Request ${request.url} failed 4 times. ${error.message}`);
+      log.error(`Request ${request.url} failed multiple times.`, error);
     }
   });
 

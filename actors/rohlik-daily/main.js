@@ -7,14 +7,15 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler } from "@crawlee/http";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { HttpCrawler, useState } from "@crawlee/http";
+import { Actor, Dataset, log } from "apify";
 import { choices, partition, take, transduce, push } from "@thi.ng/transducers";
 import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
 import { co, Channel } from "core-async";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
 
-/** @typedef { import("@aws-sdk/client-s3").S3Client } S3Client */
+/** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
 /** @enum {string} */
 const Label = {
@@ -156,8 +157,7 @@ function productsCountInCategoryRequest(categoryId) {
 }
 
 /**
- * @param {{categoryId: string, categoriesById: Object.<string, Category>}}
- * @returns {{url: string, userData: {label: Label.Count, categoryId: string}[]}}
+ * @param {{categoriesById: Object.<string, Category>, stats: Stats}}
  */
 function categoriesCountRequests({ categoriesById, stats }) {
   const categories = Object.values(categoriesById);
@@ -182,40 +182,36 @@ function categoriesCountRequests({ categoriesById, stats }) {
 const productsPerRequest = 15;
 
 /**
- * @param {{productIds: number[], categoryId: string, requestedProductsIds: Set<number>, stats: Stats}}
- * @returns {{urls: string[], userData: {label: Label.Detail, categoryId: string}}
+ * @param {{productIds: number[], categoryId: string, stats: Stats}}
  */
-function detailRequests({
-  productIds,
-  categoryId,
-  requestedProductsIds,
-  stats
-}) {
+function detailRequests({ productIds, categoryId, stats }) {
   stats.inc("categoryPagesCount");
-  const newProductIds = productIds.filter(
-    item => !requestedProductsIds.has(item)
-  );
-  const urls = [];
+  const requests = [];
   for (const productIdsBatch of partition(
     productsPerRequest,
     true,
-    newProductIds
+    productIds
   )) {
     const productsParams = new URLSearchParams();
-    productIdsBatch.forEach(id => {
-      requestedProductsIds.add(id);
+    for (const id of productIdsBatch) {
       productsParams.append("products", id.toString());
-    });
-    urls.push(`https://www.rohlik.cz/api/v1/products/prices?${productsParams}`);
-    urls.push(`https://www.rohlik.cz/api/v1/products?${productsParams}`);
-  }
-  return {
-    urls,
-    userData: {
-      label: Label.Detail,
-      categoryId
     }
-  };
+    requests.push({
+      url: `https://www.rohlik.cz/api/v1/products/prices?${productsParams}`,
+      userData: {
+        label: Label.Detail,
+        categoryId
+      }
+    });
+    requests.push({
+      url: `https://www.rohlik.cz/api/v1/products?${productsParams}`,
+      userData: {
+        label: Label.Detail,
+        categoryId
+      }
+    });
+  }
+  return requests;
 }
 
 function mergeProductsData({ productList, items, itemsForSaving }) {
@@ -248,24 +244,16 @@ function takeRandomIfDev(isDevelopment, coll, n = 50) {
 
 async function main() {
   rollbar.init();
-
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
-  const input = (await KeyValueStore.getInput()) ?? {};
-  const {
-    development = process.env.TEST || process.env.DEBUG,
-    proxyGroups = ["CZECH_LUMINATI"]
-  } = input;
+  const { development, proxyGroups } = await getInput();
 
   const stats = await withPersistedStats(x => x, {
     categoriesTotal: 0,
     subCategoriesTotal: 0,
     categoryPagesCount: 0,
-    items: 0
+    items: 0,
+    failed: 0
   });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -273,8 +261,8 @@ async function main() {
     useApifyProxy: !development
   });
 
-  let categoriesById = await KeyValueStore.getValue("categoriesById");
-  const requestedProductsIds = new Set();
+  let categoriesById = await useState("categoriesById");
+  const processedIds = await useState("processedIds", new Set());
   const items = defAtom([]);
   const itemsForSaving = new Channel(500);
 
@@ -288,8 +276,13 @@ async function main() {
           item,
           categoriesById
         });
+        if (processedIds.has(item.itemId)) return;
         Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)])
-          .then(() => stats.inc("items"))
+          .then(() => {
+            processedIds.add(item.itemId);
+            stats.inc("items");
+            return;
+          })
           .catch(e => {
             log.error(e);
           });
@@ -303,6 +296,7 @@ async function main() {
     proxyConfiguration,
     maxRequestsPerMinute: development ? Infinity : 300,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 100
     },
@@ -313,7 +307,6 @@ async function main() {
       switch (userData.label) {
         case Label.Main:
           categoriesById = json.navigation;
-          KeyValueStore.setValue("categoriesById", categoriesById);
           await crawler.requestQueue.addRequests(
             takeRandomIfDev(
               development,
@@ -321,7 +314,8 @@ async function main() {
                 categoriesById,
                 stats
               })
-            )
+            ),
+            { forefront: true }
           );
           break;
         case Label.Count:
@@ -334,13 +328,13 @@ async function main() {
           );
           break;
         case Label.List:
-          await enqueueLinks(
+          await crawler.requestQueue.addRequests(
             detailRequests({
               productIds: json.productIds,
               categoryId,
-              requestedProductsIds,
               stats
-            })
+            }),
+            { forefront: true }
           );
           break;
         case Label.Detail:
@@ -357,6 +351,7 @@ async function main() {
         `Request ${request.url} failed ${request.retryCount} times`,
         error
       );
+      stats.inc("failed");
     }
   });
 
@@ -370,6 +365,10 @@ async function main() {
   ]);
 
   try {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await sleep(5000);
     itemsForSaving.close();
     await Promise.all([

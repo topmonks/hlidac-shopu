@@ -83,7 +83,7 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
 
 /**
  * Save products to dataset and upload them to S3 (if not disabled).
- * @param {{s3: S3Client, products: object[], stats: Stats, processedIds: Set<string>, s3ExtraData?: object}} options
+ * @param {{s3: S3Client, products: object[], stats: Stats, processedIds: Set<string>, s3mergeFn?: (product: object) => object}} options
  * @returns {Promise<number>}
  */
 export async function saveProducts({
@@ -91,16 +91,16 @@ export async function saveProducts({
   products,
   stats,
   processedIds,
-  s3ExtraData = {}
+  s3mergeFn
 }) {
   const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(
-        Dataset.pushData(product),
-        uploadToS3v2(s3, product, s3ExtraData)
-      );
+      const s3Data = s3mergeFn
+        ? Object.assign(product, s3mergeFn(product))
+        : product;
+      requests.push(Dataset.pushData(product), uploadToS3v2(s3, s3Data));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");

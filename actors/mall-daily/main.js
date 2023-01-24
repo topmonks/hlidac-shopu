@@ -5,6 +5,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { gql } from "graphql-tag";
 import { Dataset, HttpCrawler } from "@crawlee/http";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
 
 const PAGE_LIMIT = 80;
 const GET_CAMPAIGN = gql`
@@ -85,6 +86,9 @@ const GET_CAMPAIGN = gql`
   }
 `;
 
+/**
+ * @param {number} page
+ */
 function getVariables(page) {
   return {
     "allFilters": false,
@@ -101,6 +105,9 @@ function getVariables(page) {
   };
 }
 
+/**
+ * @param {number} page
+ */
 function getPayload(page) {
   return JSON.stringify({
     query: GET_CAMPAIGN.loc.source.body,
@@ -108,6 +115,10 @@ function getPayload(page) {
   });
 }
 
+/**
+ * @param {string} country
+ * @param {number} page
+ */
 function createRequest(country, page) {
   const tld = country.toLowerCase();
   return {
@@ -148,16 +159,14 @@ function extractProduct(item, country) {
 async function main() {
   const rollbar = Rollbar.init();
 
-  const input = await Actor.getInput();
   const {
-    development = false,
-    maxRequestRetries = 3,
-    maxConcurrency = 10,
+    development,
+    debug,
+    maxRequestRetries,
+    proxyGroups,
     country = "CZ",
-    proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.BlackFriday,
-    debug = true
-  } = input ?? {};
+    type = ActorType.BlackFriday
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -172,25 +181,17 @@ async function main() {
     itemsDuplicity: 0
   });
 
-  const requestQueue = await Actor.openRequestQueue();
-
-  if (new Set([ActorType.BlackFriday, ActorType.Test]).has(type)) {
-    const page = 1;
-    await requestQueue.addRequest(createRequest(country, page));
-  } else {
-    throw new Error(`ActorType ${type} not yet implemented`);
-  }
-
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
   const crawler = new HttpCrawler({
-    requestQueue,
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
+    maxRequestsPerMinute: 600,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 100,
       persistStateKeyValueStoreId: "mall-sessions",
@@ -198,13 +199,8 @@ async function main() {
         maxUsageCount: 50
       }
     },
-    async requestHandler({ request, response, json, session }) {
-      if (response.statusCode === 403) {
-        stats.inc("denied");
-        session.isBlocked();
-        throw new Error("Access Denied");
-      }
-      if (response.statusCode === 200) stats.inc("ok");
+    async requestHandler({ request, response, json, session, crawler }) {
+      stats.inc("ok");
       session.setCookiesFromResponse(response);
 
       stats.inc("pages");
@@ -225,7 +221,7 @@ async function main() {
       log.debug(hasMorePages ? "Has more pages." : "That was last page");
 
       if (hasMorePages && type !== ActorType.Test) {
-        await requestQueue.addRequest(createRequest(country, page + 1));
+        await crawler.requestQueue.addRequest(createRequest(country, page + 1));
       }
 
       for (const item of items) {
@@ -246,7 +242,14 @@ async function main() {
     }
   });
 
-  await crawler.run();
+  const startingRequests = [];
+  if (new Set([ActorType.BlackFriday, ActorType.Test]).has(type)) {
+    const page = 1;
+    startingRequests.push(createRequest(country, page));
+  } else {
+    throw new Error(`ActorType ${type} not yet implemented`);
+  }
+  await crawler.run(startingRequests);
   await stats.save(true);
 
   log.info("invalidated Data CDN");

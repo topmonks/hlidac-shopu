@@ -4190,18 +4190,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/cheerio@npm:3.1.4":
-  version: 3.1.4
-  resolution: "@crawlee/cheerio@npm:3.1.4"
-  dependencies:
-    "@crawlee/http": ^3.1.4
-    "@crawlee/types": ^3.1.2
-    cheerio: 1.0.0-rc.12
-    htmlparser2: ^8.0.1
-  checksum: a457f7f098183a354885bcfce3f4947d333aa0140bc994f90a14b70ee1e38743f9232346ba1d760378506a420699f6ea68b1c049d228ca44d31604ed9650c4ca
-  languageName: node
-  linkType: hard
-
 "@crawlee/core@npm:^3.1.1":
   version: 3.1.1
   resolution: "@crawlee/core@npm:3.1.1"
@@ -4260,7 +4248,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.1.4, @crawlee/http@npm:^3.1.4":
+"@crawlee/http@npm:3.1.4":
   version: 3.1.4
   resolution: "@crawlee/http@npm:3.1.4"
   dependencies:
@@ -5018,7 +5006,6 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.254.0
     "@aws-sdk/client-s3": 3.254.0
-    "@crawlee/cheerio": 3.1.4
     "@crawlee/playwright": 3.1.4
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.11.18
@@ -5143,7 +5130,6 @@ __metadata:
     apify: 3.1.1
     apify-cli: 0.13.0
     linkedom: 0.14.21
-    nth-check: 2.1.1
   languageName: unknown
   linkType: soft
 
@@ -18971,15 +18957,6 @@ __metadata:
     gauge: ^4.0.0
     set-blocking: ^2.0.0
   checksum: f1a4078a73ebc89896a832bbf869f491c32ecb12e0434b9a7499878ce8f29f22e72befe3c53cd8cdc9dbf4b4057297e783ab0b6746a8b067734de6205af4d538
-  languageName: node
-  linkType: hard
-
-"nth-check@npm:2.1.1":
-  version: 2.1.1
-  resolution: "nth-check@npm:2.1.1"
-  dependencies:
-    boolbase: ^1.0.0
-  checksum: 5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
   languageName: node
   linkType: hard
 

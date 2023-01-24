@@ -3,14 +3,17 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  uploadToS3v2
+  saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { Actor, log, LogLevel } from "apify";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 /** @enum {string} */
 export const Labels = {
@@ -43,6 +46,9 @@ export const PRODUCTS_URLS = {
   ITEM_PREFIX: "https://www.prozdravi.cz"
 };
 
+/**
+ * @param {Document} document
+ */
 function getProductJSON(document) {
   let correctScript;
   const scripts = document.querySelectorAll("script");
@@ -51,20 +57,19 @@ function getProductJSON(document) {
       correctScript = s.innerHTML;
     }
   }
-  if (correctScript) {
-    let resultJson = correctScript.replace(SCRIPT_WITH_JSON.PREFIX, "");
-    resultJson = resultJson.replace(SCRIPT_WITH_JSON.POSTFIX, "");
-    resultJson = resultJson.replaceAll(
-      SCRIPT_WITH_JSON.UNDEFINED,
-      `"${SCRIPT_WITH_JSON.UNDEFINED}"`
-    );
-    return resultJson;
-  }
+  if (!correctScript) return;
+  let resultJson = correctScript.replace(SCRIPT_WITH_JSON.PREFIX, "");
+  resultJson = resultJson.replace(SCRIPT_WITH_JSON.POSTFIX, "");
+  resultJson = resultJson.replaceAll(
+    SCRIPT_WITH_JSON.UNDEFINED,
+    `"${SCRIPT_WITH_JSON.UNDEFINED}"`
+  );
+  return resultJson;
 }
 
 function getCategory(sections) {
   // create category from the first top down path from the tree
-  let result = [];
+  const result = [];
   let prevParent = "initial";
   for (const section in sections) {
     const item = sections[section];
@@ -82,7 +87,7 @@ function scrapeListing({ request, document }) {
   const resultJson = getProductJSON(document);
   const json = JSON.parse(resultJson);
   const totalItems = json.products.listingData.totalItems;
-  let totalPages = Math.floor(totalItems / PRODUCTS_PER_PAGE);
+  const totalPages = Math.floor(totalItems / PRODUCTS_PER_PAGE);
   log.info(`Pocet produktu:${totalItems}`);
   log.info(`Pocet stranek produktu:${totalPages}`);
   for (let i = 1; i <= totalPages; i++) {
@@ -96,6 +101,9 @@ function scrapeListing({ request, document }) {
   return requests;
 }
 
+/**
+ * @param {Document} document
+ */
 function scrapeProducts(document) {
   const resultJson = getProductJSON(document);
   const json = JSON.parse(resultJson);
@@ -124,37 +132,18 @@ function scrapeProducts(document) {
   });
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
-}
-
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
+  const processedIds = await useState("processedIds", new Set());
 
-  const processedIds = new Set();
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    debug = false,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    debug,
+    maxRequestRetries,
+    proxyGroups,
     type = ActorType.Full
-  } = input;
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -177,6 +166,7 @@ async function main() {
     maxRequestRetries,
     proxyConfiguration,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     async requestHandler({ request, body, crawler }) {
       const { document } = parseHTML(body.toString());
       const { label } = request.userData;
@@ -190,7 +180,7 @@ async function main() {
           break;
         case Labels.PRODUCTS:
           const products = scrapeProducts(document);
-          await saveProducts(s3, products, stats, processedIds);
+          await saveProducts({ s3, products, stats, processedIds });
           break;
       }
     },
@@ -223,6 +213,10 @@ async function main() {
   log.info("Crawl finished.");
 
   if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "prozdravi.cz");
     log.info("invalidated Data CDN");
 

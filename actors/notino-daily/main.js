@@ -1,14 +1,19 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import {
+  invalidateCDN,
+  saveProducts
+} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { S3Client } from "@aws-sdk/client-s3";
-import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 /** @enum {string} */
 const Labels = {
@@ -33,37 +38,27 @@ const Country = {
   SK: "SK"
 };
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
+/**
+ * @param {Country} country
+ */
+function getRootUrl(country) {
+  return !country || country === Country.CZ ? BASE_URL : BASE_URL_SK;
 }
 
-function getRootUrl(input) {
-  return !input.country || input.country === Country.CZ
-    ? BASE_URL
-    : BASE_URL_SK;
-}
-
-function homepageRequests(document, input) {
+/**
+ * @param {Document} document
+ * @param {Country} country
+ */
+function homepageRequests(document, country) {
   log.debug("Home page");
   const jsonMainMenu = document.querySelector(
     'script[id="main-menu-state"]'
   ).innerHTML;
   const mainMenu = JSON.parse(jsonMainMenu);
-  const rootUrl = getRootUrl(input);
+  const rootUrl = getRootUrl(country);
   const links = [];
   if (mainMenu) {
-    const categories =
-      mainMenu["fragmentContextData"]["DataProvider"]["categories"];
+    const categories = mainMenu.fragmentContextData.DataProvider.categories;
     for (const category of categories) {
       if (category.columns.length > 0) {
         for (const column of category.columns) {
@@ -88,15 +83,13 @@ function homepageRequests(document, input) {
             }
           }
         }
-      } else {
-        if (!category.link.includes("https")) {
-          links.push({
-            url: `${rootUrl}${category.link}`,
-            userData: {
-              label: Labels.CATEGORY_PAGE
-            }
-          });
-        }
+      } else if (!category.link.includes("https")) {
+        links.push({
+          url: `${rootUrl}${category.link}`,
+          userData: {
+            label: Labels.CATEGORY_PAGE
+          }
+        });
       }
     }
   }
@@ -104,7 +97,11 @@ function homepageRequests(document, input) {
   return links;
 }
 
-function handleProductUsingWindowObject(document, input) {
+/**
+ * @param {Document} document
+ * @param {Country} country
+ */
+function handleProductUsingWindowObject(document, country) {
   log.debug("Handled by windowObject");
   const dataStringFromScriptTag =
     document.querySelector("#__APOLLO_STATE__")?.innerHTML;
@@ -128,7 +125,7 @@ function handleProductUsingWindowObject(document, input) {
     .map(key => productGeneralData[key].join("/"))
     .join("/");
 
-  const rootUrl = getRootUrl(input);
+  const rootUrl = getRootUrl(country);
 
   return variants
     .map(variant => {
@@ -174,6 +171,10 @@ function handleProductUsingWindowObject(document, input) {
     .filter(Boolean);
 }
 
+/**
+ * @param {Document} document
+ * @param {import("@crawlee/http").Request} request
+ */
 function handleProductUsingHTML(document, request) {
   log.debug("Handled by HTML");
   return document.querySelector("#variants li").map(variant => {
@@ -215,18 +216,15 @@ async function main() {
 
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({ region: "eu-central-1" });
-
-  const input = (await KeyValueStore.getInput()) ?? {};
 
   const {
+    debug,
+    development,
+    proxyGroups,
+    maxRequestRetries,
     country = Country.CZ,
-    type = ActorType.Full,
-    debug = true,
-    development = process.env.TEST,
-    proxyGroups = ["CZECH_LUMINATI"],
-    maxRequestRetries = 3
-  } = input;
+    type = ActorType.Full
+  } = await getInput();
 
   if (development || debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -254,18 +252,18 @@ async function main() {
     maxRequestsPerMinute: 600,
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 600
     },
     ignoreSslErrors: true,
-    persistCookiesPerSession: true,
     async requestHandler({ request, body, crawler }) {
       log.info(`Processing ${request.url}, ${request.userData.label}`);
       const { document } = parseHTML(body.toString());
       switch (request.userData.label) {
         case Labels.HOME_PAGE: {
           {
-            const requests = homepageRequests(document, input);
+            const requests = homepageRequests(document, country);
             stats.add("categories", requests.length);
             stats.add("pages", requests.length);
             await crawler.requestQueue.addRequests(requests, {
@@ -327,18 +325,18 @@ async function main() {
               stats.add("pages", productVariants.length);
             }
 
-            let results = [];
+            let products = [];
             if (document.querySelector("#__APOLLO_STATE__")?.innerHTML) {
-              results = handleProductUsingWindowObject(document, input);
-              stats.add("JSON", results.length);
+              products = handleProductUsingWindowObject(document, country);
+              stats.add("JSON", products.length);
             } else if (document.querySelector('a[href="#variants"]')) {
-              results = handleProductUsingHTML(document, request);
-              stats.add("HTML", results.length);
+              products = handleProductUsingHTML(document, request);
+              stats.add("HTML", products.length);
             } else {
               log.error("Unknown product detail page");
             }
-            stats.add("crawledProducts", results.length);
-            await saveProducts(s3, results, stats, processedIds);
+            stats.add("crawledProducts", products.length);
+            await saveProducts({ s3, products, stats, processedIds });
           }
           break;
         }
@@ -417,6 +415,10 @@ async function main() {
   await stats.save(true);
 
   if (!development && type !== ActorType.Count) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await Promise.all([
       invalidateCDN(
         cloudfront,

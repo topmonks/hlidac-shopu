@@ -3,15 +3,19 @@ import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
   invalidateCDN,
-  uploadToS3v2
+  saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, log, LogLevel } from "apify";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
+/** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
 /** @enum {string} */
 const Country = {
@@ -47,11 +51,15 @@ function parsePrice(text) {
   );
 }
 
-function extractItems(document, userInput, stats) {
+/**
+ * @param {Document} document
+ * @param {Country} country
+ * @param {Stats} stats
+ */
+function extractItems(document, country, stats) {
   const products = document.querySelectorAll(".list-products__item__in");
   if (!products.length) return [];
 
-  const { country = Country.CZ } = userInput;
   const category = document
     .querySelectorAll(".box-breadcrumb__item")
     .map(item => item.innerText.trim());
@@ -115,20 +123,22 @@ function extractItems(document, userInput, stats) {
  * @param {{type: ActorType, country: Country}} userInput
  * @return {string}
  */
-function getTableName(userInput) {
-  const { type, country = Country.CZ } = userInput;
-  let tableName = `mountfield_${country.toLowerCase()}`;
+function getTableName({ type, country }) {
+  const tableName = `mountfield_${country.toLowerCase()}`;
   if (type === ActorType.BlackFriday) {
-    tableName = `${tableName}_bf`;
+    return `${tableName}_bf`;
   }
   return tableName;
 }
 
+/**
+ * @param {Document} document
+ */
 function categoryItemsRequests(document) {
   return document
     .querySelectorAll(".list-categories__item__block")
     .map(cat => ({
-      url: cat.getAttribute("href"),
+      url: cat.href,
       userData: {
         label: Labels.CATEGORY,
         mainCategory: cat.querySelector("h3").innerText?.trim()
@@ -136,33 +146,9 @@ function categoryItemsRequests(document) {
     }));
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(
-        Dataset.pushData(product),
-        uploadToS3v2(s3, product, {
-          priceCurrency: product.currency,
-          inStock: true
-        })
-      );
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
-}
-
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   const processedIds = new Set();
   const stats = await withPersistedStats(x => x, {
@@ -171,16 +157,15 @@ async function main() {
     itemsDuplicity: 0
   });
 
-  const userInput = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    debug = false,
+    development,
+    debug,
+    maxRequestRetries,
+    proxyGroups,
     country = Country.CZ,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full,
     bfUrl = "https://www.mountfield.cz/black-friday"
-  } = userInput;
+  } = await getInput();
 
   if (development || debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -197,6 +182,7 @@ async function main() {
     maxRequestsPerMinute: 400,
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     proxyConfiguration,
     async requestHandler({ request, body, crawler }) {
       const {
@@ -234,8 +220,17 @@ async function main() {
             log.debug(`Found categories ${categories.length}`);
             await crawler.requestQueue.addRequests(requests);
           } else {
-            const products = extractItems(document, userInput, stats);
-            await saveProducts(s3, products, stats, processedIds);
+            const products = extractItems(document, country, stats);
+            await saveProducts({
+              s3,
+              products,
+              stats,
+              processedIds,
+              s3mergeFn: product => ({
+                priceCurrency: product.currency,
+                inStock: true
+              })
+            });
 
             const href = document
               .querySelector("a.in-paging__control__item--arrow-next")
@@ -295,10 +290,14 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopName(rootUrl));
     log.info("invalidated Data CDN");
 
-    const tableName = getTableName(userInput);
+    const tableName = getTableName({ type, country });
     await uploadToKeboola(tableName);
   }
   log.info("Finished.");

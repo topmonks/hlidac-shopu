@@ -85,7 +85,7 @@ async function appleDownloads(request, resp, requestQueue) {
     .then(x => csv.parse(x.toString(), { delimiter: "\t", columns: true }));
   const downloads = data
     .filter(x => x["Apple Identifier"] === "1488295734")
-    .map(x => parseInt(x["Units"]))
+    .map(x => parseInt(x.Units))
     .reduce((acc, x) => acc + x, 0);
   return [
     {

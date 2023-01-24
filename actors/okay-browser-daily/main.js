@@ -1,4 +1,3 @@
-// @ts-check
 import { Actor, log, LogLevel, Dataset } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -7,6 +6,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { DOMParser, parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
 
 /** @enum {string} */
 const Country = {
@@ -125,17 +125,17 @@ async function main() {
 
   const stats = await withPersistedStats(x => x, {
     urls: 0,
-    items: 0
+    items: 0,
+    failed: 0
   });
 
-  const input = (await Actor.getInput()) || {};
   const {
+    development,
+    proxyGroups,
+    maxRequestRetries,
     country = Country.CZ,
-    development = process.env.TEST || process.env.DEBUG,
-    proxyGroups = ["CZECH_LUMINATI"],
-    maxRequestRetries = 3,
     customTableName = null
-  } = input;
+  } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
@@ -173,6 +173,7 @@ async function main() {
   const crawler = new PlaywrightCrawler({
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     proxyConfiguration,
     browserPoolOptions: {
       useFingerprints: true,
@@ -237,8 +238,9 @@ async function main() {
       }
     },
     async failedRequestHandler({ request, log }, error) {
-      rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
+      rollbar.error(error, request);
+      stats.inc("failed");
     }
   });
 

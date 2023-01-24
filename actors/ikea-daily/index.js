@@ -11,8 +11,13 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Dataset, log, LogLevel, KeyValueStore } from "apify";
+import { Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
+/** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
+/** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 
 /** @enum {string} */
 const Type = {
@@ -43,11 +48,18 @@ const locales = new Map([
   ["at", "at/de"]
 ]);
 
+/**
+ * @param {string} country
+ */
 function startUrl(country) {
   const locale = locales.get(country);
   return `https://www.ikea.com/${locale}/cat/products-index-index/`;
 }
 
+/**
+ * @param {string} country
+ * @param {number} page
+ */
 function feedUrl(country, page) {
   const locale = locales.get(country);
   const start = (page - 1) * 100;
@@ -144,6 +156,9 @@ function processTotalCount(body, country) {
   return requests;
 }
 
+/**
+ * @param {Document} document
+ */
 function getCategory(document) {
   return Array.from(document.querySelectorAll(".bc-breadcrumb__list-item"))
     .map(el => el.innerText.trim())
@@ -151,7 +166,7 @@ function getCategory(document) {
 }
 
 /**
- * @param {RequestLike} request
+ * @param {import("@crawlee/http").RequestOptions} request
  * @param {string | Buffer} body
  * @returns {Promise<*>}
  */
@@ -185,6 +200,11 @@ async function handleResponse({ request, body, json, requestQueue, country }) {
   }
 }
 
+/**
+ * @param {Type} type
+ * @param {Stats} stats
+ * @param {string} startUrl
+ */
 function processResult(type, stats, startUrl) {
   switch (type) {
     case Type.Test:
@@ -228,13 +248,12 @@ function processResult(type, stats, startUrl) {
 export async function main() {
   rollbar.init();
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    maxRequestRetries = 3,
+    maxRequestRetries,
     country = "cz",
     type = Type.Daily,
     testUrls = [testCategory]
-  } = input;
+  } = await getInput();
 
   if (process.env.DEBUG) {
     log.setLevel(LogLevel.DEBUG);
@@ -242,8 +261,8 @@ export async function main() {
 
   const stats = await withPersistedStats(x => x, {
     items: 0,
-    errors: 0,
-    totalCount: 0
+    totalCount: 0,
+    failed: 0
   });
 
   const processData = processResult(type, stats, startUrl(country));
@@ -264,7 +283,7 @@ export async function main() {
       return processData(userData.label, result);
     },
     async failedRequestHandler({ request }, error) {
-      stats.inc("errors");
+      stats.inc("failed");
       log.error(`failed request ${request.url}`, error);
     }
   });

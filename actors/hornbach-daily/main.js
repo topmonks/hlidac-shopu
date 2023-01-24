@@ -1,4 +1,4 @@
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -11,6 +11,7 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @enum {string} */
 const Country = {
@@ -84,7 +85,6 @@ function catProductsFromSubCategoriesRequests({ request }) {
   return categoriesFromBottomToTop.map(category => {
     log.debug(`Queued products of very bottom category "${category.title}"`);
     return {
-      uniqueKey: `products in ${category.title}`,
       url: category.link,
       userData: {
         label: Labels.CAT_PRODUCTS,
@@ -118,27 +118,23 @@ function catProductsRequests({ document, request }) {
 
   const { category } = request.userData;
 
-  const requests = [];
   if (request.userData.page === 1) {
     log.debug(`Category URL is ${category.link}`);
     const pagesCount = Math.ceil(categoryProductsCount / 72);
     log.debug(`Category has ${pagesCount} pages`);
 
-    for (let page = 2; page <= pagesCount; page++) {
-      requests.push({
-        uniqueKey: `products in ${category.title} on ${page}. page`,
+    return restPageUrls(pagesCount, page => {
+      return {
         url: `${category.link}?page=${page}`,
         userData: {
           label: Labels.CAT_PRODUCTS,
           category,
           page
         }
-      });
-    }
-  } else {
-    log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
+      };
+    });
   }
-  return requests;
+  log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
 }
 
 function extractProducts({ document, input, request, stats, detailUrl }) {
@@ -186,29 +182,19 @@ function filterTestRequests({ requests, input, take = 1 }) {
   return input.type === ActorType.Test ? requests.slice(0, take) : requests;
 }
 
-async function getInput(defaults) {
-  return Object.assign(
-    defaults,
-    {
-      type: process.env.TYPE ?? defaults.type
-    },
-    await KeyValueStore.getInput()
-  );
-}
-
 async function main() {
   rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
-    items: 0
+    items: 0,
+    failed: 0
   });
   const detailUrl = defAtom(null);
 
   const input = await getInput({
     type: ActorType.Full,
-    country: Country.CZ,
-    debug: false
+    country: Country.CZ
   });
 
   if (input.debug) {
@@ -286,6 +272,7 @@ async function main() {
     },
     async failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

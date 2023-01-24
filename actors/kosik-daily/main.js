@@ -11,6 +11,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 const baseUrl = "https://www.kosik.cz/";
 
@@ -77,21 +78,18 @@ async function main() {
     maxAttempts: 3
   });
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    proxyGroups,
     type = ActorType.Full,
     bfUrls = ["https://www.kosik.cz/listy/bf-nanecisto-2021"]
-  } = input;
+  } = await getInput();
 
-  const stats = await withPersistedStats(
-    x => x,
-    (await KeyValueStore.getValue("STATS")) || {
-      pages: 0,
-      items: 0
-    }
-  );
+  const stats = await withPersistedStats(x => x, {
+    pages: 0,
+    items: 0,
+    failed: 0
+  });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -100,40 +98,50 @@ async function main() {
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
-    // maxRequestsPerMinute: 400,
+    maxRequestsPerMinute: 400,
     additionalMimeTypes: ["application/json", "text/plain"],
     async requestHandler({ crawler, request, json }) {
       const { step } = request.userData;
       log.info(`Processing ${request.url}...`);
-      if (step === "CATEGORIES") {
-        const requests = categoriesRequests(json);
-        stats.add("pages", requests.length);
-        log.info(`Adding ${requests.length} category requests`);
-        await crawler.requestQueue.addRequests(requests);
-      } else if (step === "DETAIL") {
-        if (json?.more) {
-          stats.inc("pages");
-          await crawler.requestQueue.addRequest({
-            url: json.more,
-            userData: { step: "DETAIL" }
-          });
-        }
+      switch (step) {
+        case "CATEGORIES":
+          {
+            const requests = categoriesRequests(json);
+            stats.add("pages", requests.length);
+            log.info(`Adding ${requests.length} category requests`);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
+            });
+          }
+          break;
+        case "DETAIL":
+          {
+            if (json?.more) {
+              stats.inc("pages");
+              await crawler.requestQueue.addRequest({
+                url: json.more,
+                userData: { step: "DETAIL" }
+              });
+            }
 
-        const breadcrumbs =
-          json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
-        const items = json.products?.items || [];
-        stats.add("items", items.length);
-        for (const item of items) {
-          const detail = parseItem(item, breadcrumbs);
-          await Promise.all([
-            Dataset.pushData(detail),
-            uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
-          ]);
-        }
+            const breadcrumbs =
+              json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
+            const items = json.products?.items || [];
+            stats.add("items", items.length);
+            for (const item of items) {
+              const detail = parseItem(item, breadcrumbs);
+              await Promise.all([
+                Dataset.pushData(detail),
+                uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
+              ]);
+            }
+          }
+          break;
       }
     },
     failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

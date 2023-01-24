@@ -7,12 +7,16 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { gotScraping } from "got-scraping";
 import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseHTML, DOMParser } from "linkedom/cached";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
+/** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
 const urlBase = "https://www.electroworld.cz";
 
@@ -32,6 +36,9 @@ const productImgToken = ".product-box__img-box img";
 const productAvailability =
   ".product-box__availability a span.complex-link__underline";
 
+/**
+ * @param {Document} document
+ */
 async function scrapeProductListPage(document) {
   const requests = [];
   const categories = [];
@@ -105,10 +112,10 @@ async function scrapeProductListPage(document) {
       ?.replace("Hodnocení: ", "")
       ?.replace(", počet hodnocení:", "")
       ?.split(" z ");
-    let rating = null;
-    if (ratingStr?.length === 2) {
-      rating = (parseFloat(ratingStr[0]) / parseFloat(ratingStr[1])) * 100;
-    }
+    const rating =
+      ratingStr?.length === 2
+        ? (parseFloat(ratingStr[0]) / parseFloat(ratingStr[1])) * 100
+        : null;
     // String casting is according to the spec o.0
     // https://docs.google.com/document/d/1qIwqARBTDSnkUrFItE1ZJZF1svLIYj3lD8fr82HUMtk/edit#
     product.rating = String(rating);
@@ -152,6 +159,9 @@ async function saveProducts(s3, products, stats, processedIds) {
   await Promise.all(requests);
 }
 
+/**
+ * @param {Document} document
+ */
 function subCategoryRequest(document) {
   return document.querySelectorAll(categoryToken).map(cat => {
     const link = cat.querySelector("a");
@@ -160,21 +170,23 @@ function subCategoryRequest(document) {
   });
 }
 
+/**
+ * @param {Document} document
+ * @param {string} firstPageURL
+ */
 function productListRequests(document, firstPageURL) {
   const pages = document.querySelectorAll(pagingToken);
   if (pages.length === 0) return [];
 
   const maxPages = Number(pages.at(-2).innerText) + 1;
-  const requests = [];
-  for (let i = 2; i < maxPages; i++) {
+  return restPageUrls(maxPages, i => {
     const url = `${firstPageURL}?page=${i}`;
     log.info(`Adding page ${url} to queue.`);
-    requests.push({
+    return {
       userData: { label: "nthPage", pageN: i },
       url
-    });
-  }
-  return requests;
+    };
+  });
 }
 
 async function handlePage({
@@ -212,12 +224,15 @@ async function handlePage({
   stats.inc("pages");
 }
 
+/**
+ * @param {Document} document
+ */
 function mkBreadcrumbsList(document) {
   const categories = [];
   const categoriesArr = document.querySelector(
     ".breadcrumb__list.l-in-box.u-maw-1310px.ol--reset"
   ).children;
-  categoriesArr.forEach(i => {
+  for (const i of categoriesArr) {
     if (i > 0) {
       categories.push(
         document
@@ -226,10 +241,13 @@ function mkBreadcrumbsList(document) {
           .innerText.replace(new RegExp(String.fromCharCode(160), ""))
       );
     }
-  });
+  }
   return categories;
 }
 
+/**
+ * @param {Document} document
+ */
 function mkImages(document) {
   const images = document
     .querySelectorAll("#product-other-imgs a")
@@ -237,12 +255,19 @@ function mkImages(document) {
   return images.slice(0, images.length - 1);
 }
 
+/**
+ * @param {string | number} str
+ * @param {string} ratingStr
+ */
 function stripVoteCountStr(str, ratingStr) {
   return [/%0A/g, /%09/g, /%97/g, /%C3/g, `${ratingStr}%`]
     .reduce((acc, s) => acc.replace(s, ""), encodeURIComponent(str))
     .substr(2);
 }
 
+/**
+ * @param {Document} document
+ */
 function mkRating(document) {
   let ratingStr = document
     .querySelector(".rating-stars__percents")
@@ -267,14 +292,15 @@ function mkProperty(name, value) {
   };
 }
 
+/**
+ * @param {Document} document
+ */
 function mkProperties(document) {
   const properties = [];
   const baseParams = document.querySelectorAll(
     ".product-params__main-wrap > ul li"
   );
-  const otherParams = document.querySelectorAll(".ca-box tbody");
-
-  baseParams.forEach(el => {
+  for (const el of baseParams) {
     const p = el.querySelector("div > div");
     properties.push(
       mkProperty(
@@ -282,9 +308,10 @@ function mkProperties(document) {
         p.querySelector("strong").innerText
       )
     );
-  });
+  }
 
-  otherParams.forEach(el => {
+  const otherParams = document.querySelectorAll(".ca-box tbody");
+  for (const el of otherParams) {
     const trs = el.querySelectorAll("tr");
     trs.each(tr => {
       properties.push(
@@ -294,7 +321,7 @@ function mkProperties(document) {
         )
       );
     });
-  });
+  }
 
   return properties;
 }
@@ -308,13 +335,13 @@ function fetchDetail(document, request) {
   const rating = mkRating(document);
   const images = mkImages(document);
   if (images.length === 0) {
-    images.push(json["offers"]["image"]);
+    images.push(json.offers.image);
   }
 
   return {
     "@context": "http://schema.org",
     "@type": "itemPage",
-    "identifier": json["identifier"],
+    "identifier": json.identifier,
     "url": request.url,
     "breadcrumbs": {
       "@context": "http://schema.org",
@@ -324,8 +351,8 @@ function fetchDetail(document, request) {
     "mainEntity": {
       "@context": "http://schema.org",
       "@type": "Product",
-      "name": json["name"],
-      "description": json["description"],
+      "name": json.name,
+      "description": json.description,
       images,
       "aggregateRating": {
         "@type": "AggregateRating",
@@ -334,17 +361,17 @@ function fetchDetail(document, request) {
       },
       "offers": {
         "@type": "Offer",
-        "priceCurrency": json["offers"]["priceCurrency"],
-        "price": json["price"],
-        "url": json["offers"]["url"],
+        "priceCurrency": json.offers.priceCurrency,
+        "price": json.price,
+        "url": json.offers.url,
         "itemCondition": "http://schema.org/NewCondition",
         "availability": "http://schema.org/InStock"
       },
-      "brand": json["brand"]["name"],
-      "sku": json["sku"],
+      "brand": json.brand.name,
+      "sku": json.sku,
       "mpn": null,
-      "gtin13": json["gtin13"],
-      "category": json["offers"]["category"],
+      "gtin13": json.gtin13,
+      "category": json.offers.category,
       "additionalProperty": mkProperties(document),
       "mainContentOfPage": [
         {
@@ -361,6 +388,9 @@ function fetchDetail(document, request) {
 export const parseXML = (xml, globals = null) =>
   new DOMParser().parseFromString(xml, "text/xml", globals).defaultView;
 
+/**
+ * @param {Stats} stats
+ */
 async function countProducts(stats) {
   const { body } = await gotScraping({
     url: `${urlBase}/sitemap.xml`
@@ -368,22 +398,22 @@ async function countProducts(stats) {
   const { document } = parseXML(body);
   const productXmlUrls = [];
 
-  document.querySelectorAll("sitemap loc").forEach(loc => {
+  for (const loc of document.querySelectorAll("sitemap loc")) {
     const url = loc.innerText.trim();
     if (url.includes("products")) {
       productXmlUrls.push(url);
     }
-  });
+  }
   log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
 
-  for await (const xmlUrl of productXmlUrls) {
+  for (const xmlUrl of productXmlUrls) {
     const { body } = await gotScraping({
       url: xmlUrl
     });
     const { document } = parseXML(body);
     stats.add("items", document.querySelectorAll("url").length);
   }
-  log.info(`Total items ${stats.items}x`);
+  log.info(`Total items ${stats.get().items}x`);
 }
 
 async function main() {
@@ -394,11 +424,10 @@ async function main() {
     region: "eu-central-1",
     maxAttempts: 3
   });
-  const input = (await KeyValueStore.getInput()) || {};
   const {
-    development = process.env.TEST,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    maxRequestRetries,
+    proxyGroups,
     type = ActorType.Full,
     startUrls = [
       "https://www.electroworld.cz/smart-inteligentni-domacnost",
@@ -414,7 +443,7 @@ async function main() {
       "https://www.electroworld.cz/samsung-galaxy-a52-128-gb-cerna"
     ],
     bfUrls = ["https://www.electroworld.cz/blackfriday-2021/sort-by_cheapest"]
-  } = input;
+  } = await getInput();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -431,77 +460,75 @@ async function main() {
     useApifyProxy: !development
   });
 
-  let crawler;
-  if (type === ActorType.BlackFriday) {
-    crawler = new PlaywrightCrawler({
-      proxyConfiguration,
-      maxRequestsPerMinute: 600,
-      maxRequestRetries,
-      navigationTimeoutSecs: 120,
-      launchContext: {
-        useChrome: true,
-        launchOptions: {
-          headless: true
-        }
-      },
-      async requestHandler({ request, page }) {
-        await page.waitForSelector(".product-box__price-bundle");
-        await page.waitForSelector("ul.pagination");
-        const text = await page.content();
-        const { document } = parseHTML(text);
-        await handlePage({
-          s3,
-          document,
-          crawler,
-          request,
-          stats,
-          type,
-          processedIds
+  const crawler =
+    type === ActorType.BlackFriday
+      ? new PlaywrightCrawler({
+          proxyConfiguration,
+          maxRequestsPerMinute: 600,
+          maxRequestRetries,
+          navigationTimeoutSecs: 120,
+          launchContext: {
+            useChrome: true,
+            launchOptions: {
+              headless: true
+            }
+          },
+          async requestHandler({ request, page }) {
+            await page.waitForSelector(".product-box__price-bundle");
+            await page.waitForSelector("ul.pagination");
+            const text = await page.content();
+            const { document } = parseHTML(text);
+            await handlePage({
+              s3,
+              document,
+              crawler,
+              request,
+              stats,
+              type,
+              processedIds
+            });
+          },
+          async failedRequestHandler({ request }, error) {
+            log.error(`Request ${request.url} failed multiple times`, error);
+            stats.inc("failed");
+          }
+        })
+      : new HttpCrawler({
+          proxyConfiguration,
+          maxRequestsPerMinute: 600,
+          maxRequestRetries,
+          async requestHandler({ body, request }) {
+            const { document } = parseHTML(body.toString());
+            if (type === ActorType.Full || type === "TEST_FULL") {
+              await handlePage({
+                s3,
+                document,
+                crawler,
+                request,
+                stats,
+                type,
+                processedIds
+              });
+            } else if (type === "DETAIL") {
+              const detail = fetchDetail(document, request);
+              await Dataset.pushData(detail);
+            }
+          },
+          async failedRequestHandler({ request }, error) {
+            log.error(`Request ${request.url} failed multiple times`, error);
+            stats.inc("failed");
+          }
         });
-      },
-      async failedRequestHandler({ request }, error) {
-        log.error(`Request ${request.url} failed multiple times`, error);
-        stats.inc("failed");
-      }
-    });
-  } else {
-    crawler = new HttpCrawler({
-      proxyConfiguration,
-      maxRequestsPerMinute: 600,
-      maxRequestRetries,
-      async requestHandler({ body, request }) {
-        const { document } = parseHTML(body.toString());
-        if (type === ActorType.Full || type === "TEST_FULL") {
-          await handlePage({
-            s3,
-            document,
-            crawler,
-            request,
-            stats,
-            type,
-            processedIds
-          });
-        } else if (type === "DETAIL") {
-          const detail = fetchDetail(document, request);
-          await Dataset.pushData(detail);
-        }
-      },
-      async failedRequestHandler({ request }, error) {
-        log.error(`Request ${request.url} failed multiple times`, error);
-        stats.inc("failed");
-      }
-    });
-  }
 
   log.info("Starting the crawl.");
   const startingRequests = [];
   if (type === ActorType.Full) {
-    for (let i = 0; i < startUrls.length; i++) {
-      startingRequests.push({ url: startUrls[i] });
+    for (const startUrl of startUrls) {
+      startingRequests.push({ url: startUrl });
     }
   } else if (type === "DETAIL") {
-    for (let i = 0; i < detailURLs.length; i++) {
-      startingRequests.push({ url: detailURLs[i] });
+    for (const detailUrl of detailURLs) {
+      startingRequests.push({ url: detailUrl });
     }
   } else if (type === "COUNT") {
     await countProducts(stats);
@@ -511,8 +538,8 @@ async function main() {
       url: "https://www.electroworld.cz/smart-televize?p5%5B43814%5D=hisense"
     });
   } else if (type === ActorType.BlackFriday) {
-    for (let i = 0; i < bfUrls.length; i++) {
-      startingRequests.push({ url: bfUrls[i] });
+    for (const bfUrl of bfUrls) {
+      startingRequests.push({ url: bfUrl });
     }
   }
   await crawler.run(startingRequests);

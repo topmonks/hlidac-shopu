@@ -1,19 +1,22 @@
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
+import {
+  invalidateCDN,
+  saveProducts
+} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, KeyValueStore, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { S3Client } from "@aws-sdk/client-s3";
 import {
   cleanPriceText,
-  cleanUnitPriceText,
-  uploadToS3v2
+  cleanUnitPriceText
 } from "@hlidac-shopu/actors-common/product.js";
 import { URL } from "url";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 const rootUrl = "https://shop.iglobus.cz";
 
@@ -83,20 +86,6 @@ function extractProductUrl(onclickAttr) {
   return `${rootUrl}${match[1]}`;
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
-}
-
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
@@ -105,15 +94,13 @@ async function main() {
     maxAttempts: 3
   });
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST,
-    maxRequestRetries = 3,
-    maxConcurrency = 25,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    maxRequestRetries,
+    proxyGroups,
     store = Stores.ZLI,
     type = ActorType.Full
-  } = input;
+  } = await getInput();
 
   const processedIds = new Set();
   const stats = await withPersistedStats(
@@ -139,7 +126,7 @@ async function main() {
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
-    maxConcurrency,
+    maxRequestsPerMinute: 600,
     async requestHandler({ crawler, request, body }) {
       const { document } = parseHTML(body.toString());
       const { url, userData } = request;
@@ -147,7 +134,7 @@ async function main() {
       log.info("Page opened.", { label, category, url });
       switch (label) {
         case Labels.START:
-          if (type === ActorType.COUNT) {
+          if (type === ActorType.Count) {
             const requests = document
               .querySelectorAll(
                 "a.navigation-multilevel-node__link-inner--lvl-2"
@@ -202,15 +189,14 @@ async function main() {
 
             const paginationLink = new URL(lastPageLink, rootUrl);
             const pagesTotal = paginationLink.searchParams.get("page");
-            const requests = [];
-            for (let i = 2; i <= Number(pagesTotal); i++) {
+            const requests = restPageUrls(pagesTotal, i => {
               paginationLink.searchParams.set("page", i.toString());
               userData.page = i;
-              requests.push({
+              return {
                 url: paginationLink.href,
                 userData
-              });
-            }
+              };
+            });
             await crawler.requestQueue.addRequests(requests, {
               forefront: true
             });
@@ -218,7 +204,7 @@ async function main() {
 
           const products = extractItems(document, userData.category);
           log.info(`Found ${products.length} products`);
-          await saveProducts(s3, products, stats, processedIds);
+          await saveProducts({ s3, products, stats, processedIds });
           break;
         case Labels.COUNT:
           const count = document("span.category-number-of-products")

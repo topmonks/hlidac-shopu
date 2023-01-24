@@ -3,15 +3,16 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import {
   invalidateCDN,
-  uploadToS3v2
+  saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler";
 
 /** @enum {string} */
 export const Labels = {
@@ -97,7 +98,6 @@ function subCategoryRequests(document, request, country) {
 
 function categoryRequests(document, request) {
   let maxPage = 0;
-  const pages = [];
 
   const paginationLinks = document.querySelectorAll(
     "#pagination ul.pagination li a.pagination__link"
@@ -106,15 +106,13 @@ function categoryRequests(document, request) {
     maxPage = parseInt(paginationLinks.at(-1).innerText, 10);
   }
 
-  for (let i = 2; i <= maxPage; i++) {
-    pages.push({
-      url: `${request.url}?page=${i}`,
-      userData: {
-        label: Labels.CATEGORY_PAGE,
-        category: request.userData.category
-      }
-    });
-  }
+  const pages = restPageUrls(maxPage, i => ({
+    url: `${request.url}?page=${i}`,
+    userData: {
+      label: Labels.CATEGORY_PAGE,
+      category: request.userData.category
+    }
+  }));
   log.info(
     `Found ${pages.length} pages for category ${request.userData.category}.`
   );
@@ -173,26 +171,25 @@ function extractProduts(document, request, country) {
       if (Number.isNaN(currentPrice) || currentPrice <= 0) {
         log.warning(`Skip product without price [${name}] ${request.url}`);
         return;
-      } else {
-        const originalPrice = getOriginalPrice(item, country);
-        const itemUrl = buildUrl(rootWebUrl(country), link);
-        const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
-
-        return {
-          itemId: id,
-          itemName: name,
-          itemUrl,
-          shop: shopName(itemUrl),
-          slug: itemSlug(itemUrl),
-          img: buildUrl(rootWebUrl(country), imgLink),
-          shortDesc,
-          availability,
-          category: request.userData.category,
-          originalPrice: isDiscounted ? originalPrice : null,
-          currentPrice,
-          discounted: isDiscounted
-        };
       }
+      const originalPrice = getOriginalPrice(item, country);
+      const itemUrl = buildUrl(rootWebUrl(country), link);
+      const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
+
+      return {
+        itemId: id,
+        itemName: name,
+        itemUrl,
+        shop: shopName(itemUrl),
+        slug: itemSlug(itemUrl),
+        img: buildUrl(rootWebUrl(country), imgLink),
+        shortDesc,
+        availability,
+        category: request.userData.category,
+        originalPrice: isDiscounted ? originalPrice : null,
+        currentPrice,
+        discounted: isDiscounted
+      };
     })
     .filter(Boolean);
 }
@@ -256,40 +253,21 @@ function extractProductFromDetail(document, request, country) {
   return result;
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
-}
-
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
-  const input = (await KeyValueStore.getInput()) || {};
   const {
-    development = process.env.TEST,
-    debug = false,
+    development,
+    debug,
+    proxyGroups,
     test = false,
     country = Country.CZ,
     maxRequestRetries = 4,
-    proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full,
     bfUrls = ["https://www.pilulka.cz/akce-a-slevy-black-friday"],
     parseDetails = false
-  } = input;
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -311,6 +289,7 @@ async function main() {
     proxyConfiguration,
     maxRequestsPerMinute: 300,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     maxRequestRetries,
     async requestHandler({ body, request, crawler, enqueueLinks }) {
       const { document } = parseHTML(body.toString());
@@ -351,7 +330,7 @@ async function main() {
               });
             }
             const products = extractProduts(document, request, country);
-            await saveProducts(s3, products, stats, processedIds);
+            await saveProducts({ s3, products, stats, processedIds });
           }
           break;
         case Labels.CATEGORY_PAGE:
@@ -370,7 +349,7 @@ async function main() {
             }
             const products = extractProduts(document, request, country);
             log.info(`Found ${products.length} products on ${request.url}`);
-            await saveProducts(s3, products, stats, processedIds);
+            await saveProducts({ s3, products, stats, processedIds });
           }
           break;
         case Labels.PRODUCT_DETAIL:
@@ -380,7 +359,12 @@ async function main() {
               request,
               country
             );
-            await saveProducts(s3, [product], stats, processedIds);
+            await saveProducts({
+              s3,
+              products: [product],
+              stats,
+              processedIds
+            });
           }
           break;
       }
@@ -408,6 +392,10 @@ async function main() {
   await crawler.run(requests);
 
   if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await invalidateCDN(
       cloudfront,
       "EQYSHWUECAQC9",

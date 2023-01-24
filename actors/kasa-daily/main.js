@@ -2,15 +2,18 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
-  uploadToS3v2,
-  invalidateCDN
+  invalidateCDN,
+  saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 const web = "https://www.kasa.cz";
 const limit = "limit=96";
@@ -45,45 +48,46 @@ function extractItems(products, breadcrums) {
       const isBazar = item
         .querySelectorAll(".labels > .label-red")
         .some(label => label.innerText.trim() === bazar);
-      if (parseInt(itemId) > 0 || !isBazar) {
-        const name = item
-          .querySelector("h2.product-box-title")
-          .innerText.trim();
-        const itemUrl = link.getAttribute("href");
-        const actualPriceSpan = item.querySelector("p.main-price");
-        const oldPriceSpan = item.querySelector(
-          "div.before-price span.text-strike"
+      if (!(parseInt(itemId) > 0 || !isBazar)) return;
+
+      const name = item.querySelector("h2.product-box-title").innerText.trim();
+      const itemUrl = link.getAttribute("href");
+      const actualPriceSpan = item.querySelector("p.main-price");
+      const oldPriceSpan = item.querySelector(
+        "div.before-price span.text-strike"
+      );
+      const itemImgUrl = item.querySelector(".product-box-thumb img");
+      result.inStock = parseAvailability(
+        item.querySelector("div.availability span").getAttribute("class")
+      );
+      if (oldPriceSpan) {
+        result.originalPrice = parseFloat(
+          oldPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
         );
-        const itemImgUrl = item.querySelector(".product-box-thumb img");
-        result.inStock = parseAvailability(
-          item.querySelector("div.availability span").getAttribute("class")
+        result.currentPrice = parseFloat(
+          actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
         );
-        if (oldPriceSpan) {
-          result.originalPrice = parseFloat(
-            oldPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
-          );
-          result.currentPrice = parseFloat(
-            actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
-          );
-          result.discounted = true;
-        } else {
-          result.currentPrice = parseFloat(
-            actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
-          );
-          result.originalPrice = null;
-          result.discounted = false;
-        }
-        result.img = itemImgUrl.getAttribute("src");
-        result.itemId = itemId;
-        result.itemUrl = `${web}${itemUrl}`;
-        result.itemName = name;
-        result.category = breadcrums.join(" > ");
-        return result;
+        result.discounted = true;
+      } else {
+        result.currentPrice = parseFloat(
+          actualPriceSpan.innerText.replace("Kč", "").replace(" ", "").trim()
+        );
+        result.originalPrice = null;
+        result.discounted = false;
       }
+      result.img = itemImgUrl.getAttribute("src");
+      result.itemId = itemId;
+      result.itemUrl = `${web}${itemUrl}`;
+      result.itemName = name;
+      result.category = breadcrums.join(" > ");
+      return result;
     })
     .filter(Boolean);
 }
 
+/**
+ * @param {Document} document
+ */
 function handleProducts(document) {
   const breadCrums = document
     .querySelectorAll(".col-main-content-right > ol.breadcrumb > li")
@@ -96,27 +100,10 @@ function handleProducts(document) {
   return items;
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(
-        Dataset.pushData(product),
-        uploadToS3v2(s3, product, { priceCurrency: "CZK" })
-      );
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  await Promise.all(requests);
-}
-
 function handleCategories(categories) {
   const subCategories = [];
   const lastCategories = [];
-  categories.forEach(category => {
+  for (const category of categories) {
     const link = category.querySelector("a");
     const href = link.getAttribute("href");
     const menuItemId = category.getAttribute("id");
@@ -136,7 +123,7 @@ function handleCategories(categories) {
         }
       });
     }
-  });
+  }
   log.info(`Found ${subCategories.length} subCategories.`);
   log.info(`Found ${lastCategories.length} lastCategories.`);
   return subCategories.concat(lastCategories);
@@ -150,23 +137,19 @@ async function main() {
     maxAttempts: 3
   });
 
-  const input = (await KeyValueStore.getInput()) || {};
   const {
-    development = process.env.TEST,
+    development,
+    proxyGroups,
     maxRequestRetries = 2,
-    proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full
-  } = input;
+  } = await getInput();
 
   const processedIds = new Set();
-  const stats = await withPersistedStats(
-    x => x,
-    (await KeyValueStore.getValue("STATS")) || {
-      pages: 0,
-      items: 0,
-      itemsDuplicity: 0
-    }
-  );
+  const stats = await withPersistedStats(x => x, {
+    pages: 0,
+    items: 0,
+    itemsDuplicity: 0
+  });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -180,85 +163,102 @@ async function main() {
     async requestHandler({ crawler, body, request }) {
       stats.inc("pages");
       const { document } = parseHTML(body.toString());
-      if (request.userData.label === "START") {
-        log.info("START scrapping Kasa.cz");
-        const mainCategories = document
-          .querySelectorAll(
-            ".main-content .col-sidebar-left ul.main-menu-nav > li > a"
-          )
-          .map(link => {
-            const href = link.getAttribute("href");
-            if (!href.includes(akce) && !href.includes(aktuality)) {
-              return {
-                url: `${web}${href}`,
-                userData: {
-                  label: "MAIN_CATEGORY"
+      switch (request.userData.label) {
+        case "START":
+          {
+            log.info("START scrapping Kasa.cz");
+            const mainCategories = document
+              .querySelectorAll(
+                ".main-content .col-sidebar-left ul.main-menu-nav > li > a"
+              )
+              .map(link => {
+                const href = link.getAttribute("href");
+                if (!href.includes(akce) && !href.includes(aktuality)) {
+                  return {
+                    url: `${web}${href}`,
+                    userData: {
+                      label: "MAIN_CATEGORY"
+                    }
+                  };
                 }
-              };
-            }
-          })
-          .filter(Boolean);
-        log.info(`Found ${mainCategories.length} mainCategories.`);
-        await crawler.requestQueue.addRequests(mainCategories);
-      } else if (request.userData.label === "MAIN_CATEGORY") {
-        log.info(`START with main category ${request.url}`);
-        const categories = document.querySelectorAll(
-          "ul.sidebar-menu-tree > li:not(.is-extra)"
-        );
-        const requests = handleCategories(categories);
-        await crawler.requestQueue.addRequests(requests);
-      } else if (request.userData.label === "SUB_CATEGORY") {
-        log.info(`START with sub category ${request.url}`);
-        const items = document.querySelectorAll(
-          `#${request.userData.categoryMenuId} > ul > li:not(.is-extra)`
-        );
-        const requests = handleCategories(items);
-        await crawler.requestQueue.addRequests(requests);
-      } else if (request.userData.label === LastCategory) {
-        log.info(`START with last category ${request.url}`);
-        const maxPage =
-          document.querySelectorAll(".pagination .pg_button").at(-1)
-            ?.innerText ?? 0;
-        const products = handleProducts(document);
-        await saveProducts(s3, products, stats, processedIds);
-        if (maxPage !== 0) {
-          const pagiPages = [];
-          for (let i = 2; i <= maxPage; i++) {
-            pagiPages.push({
-              url: `${request.url}&strana=${i}`,
-              userData: {
-                label: "LAST_CATEGORY_PAGE"
-              }
-            });
+              })
+              .filter(Boolean);
+            log.info(`Found ${mainCategories.length} mainCategories.`);
+            await crawler.requestQueue.addRequests(mainCategories);
           }
-          console.info(`Found ${pagiPages.length} category pages`);
-          await crawler.requestQueue.addRequests(pagiPages);
-        }
-      } else if (request.userData.label === "LAST_CATEGORY_PAGE") {
-        log.info(`START with page ${request.url}`);
-        const products = handleProducts(document);
-        await saveProducts(s3, products, stats, processedIds);
-      } else if (request.userData.label === ActorType.BlackFriday) {
-        log.info(`START BF ${request.url}`);
-        const categories = document
-          .querySelectorAll(".html_obsah .wsw > div > a")
-          .map(a => {
-            if (!a.getAttribute("href").includes("doprava")) {
-              return {
-                url: `${web}${a.getAttribute("href")}?${limit}`,
+          break;
+        case "MAIN_CATEGORY":
+          {
+            log.info(`START with main category ${request.url}`);
+            const categories = document.querySelectorAll(
+              "ul.sidebar-menu-tree > li:not(.is-extra)"
+            );
+            const requests = handleCategories(categories);
+            await crawler.requestQueue.addRequests(requests);
+          }
+          break;
+        case "SUB_CATEGORY":
+          {
+            log.info(`START with sub category ${request.url}`);
+            const items = document.querySelectorAll(
+              `#${request.userData.categoryMenuId} > ul > li:not(.is-extra)`
+            );
+            const requests = handleCategories(items);
+            await crawler.requestQueue.addRequests(requests);
+          }
+          break;
+        case LastCategory:
+          {
+            log.info(`START with last category ${request.url}`);
+            const maxPage =
+              document.querySelectorAll(".pagination .pg_button").at(-1)
+                ?.innerText ?? 0;
+            const products = handleProducts(document);
+            await saveProducts({ s3, products, stats, processedIds });
+            if (maxPage !== 0) {
+              const pagiPages = restPageUrls(maxPage, i => ({
+                url: `${request.url}&strana=${i}`,
                 userData: {
-                  label: "LAST_CATEGORY"
+                  label: "LAST_CATEGORY_PAGE"
                 }
-              };
+              }));
+              console.info(`Found ${pagiPages.length} category pages`);
+              await crawler.requestQueue.addRequests(pagiPages);
             }
-          })
-          .filter(Boolean);
-        log.info(`Found ${categories.length} BF categories`);
-        await crawler.requestQueue.addRequests(categories);
+          }
+          break;
+        case "LAST_CATEGORY_PAGE":
+          {
+            log.info(`START with page ${request.url}`);
+            const products = handleProducts(document);
+            await saveProducts({ s3, products, stats, processedIds });
+          }
+          break;
+        case ActorType.BlackFriday:
+          {
+            log.info(`START BF ${request.url}`);
+            const categories = document
+              .querySelectorAll(".html_obsah .wsw > div > a")
+              .map(a => {
+                if (!a.getAttribute("href").includes("doprava")) {
+                  return {
+                    url: `${web}${a.getAttribute("href")}?${limit}`,
+                    userData: {
+                      label: "LAST_CATEGORY"
+                    }
+                  };
+                }
+              })
+              .filter(Boolean);
+            log.info(`Found ${categories.length} BF categories`);
+            await crawler.requestQueue.addRequests(categories);
+          }
+          break;
       }
     },
     failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

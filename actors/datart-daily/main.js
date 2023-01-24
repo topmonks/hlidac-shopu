@@ -6,7 +6,7 @@ import {
   saveProducts
 } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, log } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -182,12 +182,8 @@ function startingRequest({ rootUrl, country, type }) {
 
 export async function main() {
   rollbar.init();
-  const processedIds = new Set();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
+  const processedIds = await useState("processedIds", new Set());
 
   const {
     development,
@@ -217,11 +213,12 @@ export async function main() {
     proxyConfiguration,
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     maxRequestsPerMinute: 400,
     sessionPoolOptions: {
       maxPoolSize: 200
     },
-    async requestHandler({ request, log, body, enqueueLinks }) {
+    async requestHandler({ request, log, body, enqueueLinks, crawler }) {
       if (request.userData.label === Labels.COUNT) {
         await countAllProducts({ body, stats });
         return;
@@ -345,6 +342,10 @@ export async function main() {
     }
 
     if (!development) {
+      const cloudfront = new CloudFrontClient({
+        region: "eu-central-1",
+        maxAttempts: 3
+      });
       await invalidateCDN(
         cloudfront,
         "EQYSHWUECAQC9",

@@ -5,6 +5,7 @@ import { Actor, Dataset, log, KeyValueStore, LogLevel } from "apify";
 import { parseHTML } from "linkedom/cached";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @enum {string} */
 const Labels = {
@@ -169,13 +170,13 @@ function mainNavigationRequests(document) {
   }));
 }
 
-function enqueueCategories(document, level, cats, catLevel, requests = []) {
+function categoryRequests(document, level, cats, catLevel, requests = []) {
   for (const c of cats) {
     const name = document.querySelector("div > a, > span");
     const isSelected = name.classList.contains("s-anchor--selected");
     const subCats = c.querySelectorAll("ul > li");
     if (isSelected && subCats.length > 0) {
-      enqueueCategories(document, level, subCats, catLevel + 1, requests);
+      categoryRequests(document, level, subCats, catLevel + 1, requests);
     } else if (!isSelected && subCats.length === 0 && catLevel > level) {
       log.info(`enqueue category: ${name.innerText.trim()}`);
       requests.push({
@@ -194,7 +195,7 @@ function enqueueCategories(document, level, cats, catLevel, requests = []) {
 function scrapeShopMainCategory({ document, request }) {
   const { level } = request.userData;
   const cats = document.querySelectorAll("#category > ul > li");
-  return enqueueCategories(document, level, cats, 0);
+  return categoryRequests(document, level, cats, 0);
 }
 
 function shopSectionRequests({ document, request }, { stats }) {
@@ -352,7 +353,7 @@ function extractProducts({ document, stats, processedIds }) {
 async function main() {
   const rollbar = Rollbar.init();
   const processedIds = new Set();
-  const input = (await KeyValueStore.getInput()) ?? {};
+
   const {
     development = process.env.TEST,
     debug = false,
@@ -360,7 +361,7 @@ async function main() {
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full,
     urls
-  } = input;
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);

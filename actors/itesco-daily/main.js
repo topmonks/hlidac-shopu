@@ -7,33 +7,23 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { S3Client } from "@aws-sdk/client-s3";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler";
 
-/**
- * @param {number} start
- * @param {number} stop
- * @param {number=} step
- * @returns number[]
- */
-function range(start, stop, step = 1) {
-  return Array.from(
-    { length: (stop - start) / step + 1 },
-    (_, i) => start + i * step
-  );
-}
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
-/** @enum */
+/** @enum {string} */
 const Country = {
   CZ: "CZ",
   SK: "SK"
 };
 
-/** @enum */
+/** @enum {string} */
 const Labels = {
   Start: "START",
   Pagination: "PAGINATION",
@@ -41,7 +31,7 @@ const Labels = {
   PageBF: "PAGE_BF"
 };
 
-/** @enum */
+/** @enum {string} */
 const StartUrls = {
   CZ: "https://nakup.itesco.cz/groceries/cs-CZ/shop/ovoce-a-zelenina?include-children=true",
   SK: "https://potravinydomov.itesco.sk/groceries/sk-SK/shop/ovocie-a-zelenina?include-children=true"
@@ -49,27 +39,26 @@ const StartUrls = {
 
 function flattenChildren(array) {
   let result = [];
-  array.forEach(a => {
+  for (const a of array) {
     result.push(a);
     if (Array.isArray(a.children)) {
       result = result.concat(flattenChildren(a.children));
     }
-  });
+  }
   return result;
 }
 
 function findArraysUrl(urlsCatHtml, country) {
   const { navList } = urlsCatHtml.taxonomy;
   const childrenArr = [];
-  flattenChildren(navList).map(item => {
+  for (const item of flattenChildren(navList)) {
     if (item.children) {
       for (const url of item.children) {
         childrenArr.push(url);
       }
     }
-  });
-  let arr = [].concat(childrenArr);
-  arr = arr.map(item => {
+  }
+  const arr = [].concat(childrenArr).map(item => {
     return item.url.includes("/all") ? item.url : item.allUrl;
   });
 
@@ -192,14 +181,22 @@ function extractItems({ document, country, uniqueItems, stats }) {
     .filter(Boolean);
 }
 
+/**
+ * @param {string} country
+ * @param {ActorType} type
+ */
 function getTableName(country, type) {
   const tableName = country === Country.CZ ? "itesco" : "itesco_sk";
-  if (type === ActorType.BF) {
+  if (type === ActorType.BlackFriday) {
     return `${tableName}_bf`;
   }
   return tableName;
 }
 
+/**
+ * @param {Document} document
+ * @param {Country} country
+ */
 function startUrls(document, country) {
   const script = document
     .querySelector("body")
@@ -218,32 +215,32 @@ async function pushAndUpload(s3, items) {
 /**
  * @param {string} url
  * @param {string} lastPage
- * @returns string[]
+ * @returns {string[]}
  */
 function pagesUrls(url, lastPage) {
   const parsedLastPage = parseInt(lastPage);
-  if (parsedLastPage > 1 && url.indexOf("?page=") === -1) {
-    return range(2, parsedLastPage + 1).map(page => `${url}?page=${page}`);
+  if (parsedLastPage > 1 && url.includes("?page=")) {
+    return restPageUrls(parsedLastPage, page => `${url}?page=${page}`);
   }
 }
 
 async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
   let startingRequest;
-  if (type === ActorType.FULL) {
+  if (type === ActorType.Full) {
     startingRequest = {
       url: country === Country.CZ ? StartUrls.CZ : StartUrls.SK,
       userData: {
         label: Labels.Start
       }
     };
-  } else if (type === ActorType.BF) {
+  } else if (type === ActorType.BlackFriday) {
     startingRequest = {
       url: bfUrl,
       userData: {
         label: Labels.PageBF
       }
     };
-  } else if (type === ActorType.TEST) {
+  } else if (type === ActorType.Test) {
     startingRequest = {
       url: testUrl,
       userData: {
@@ -254,6 +251,10 @@ async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
   await crawler.run([startingRequest]);
 }
 
+/**
+ * @param {Document} document
+ * @param {Country} country
+ */
 function extractBFItems(document, country) {
   return document
     .querySelectorAll(".a-productListing__productsGrid__element")
@@ -306,34 +307,30 @@ async function main() {
     maxAttempts: 3
   });
   const stats = await withPersistedStats(x => x, {
-    offers: 0
+    offers: 0,
+    failed: 0
   });
   const uniqueItems = new Set();
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST || process.env.DEBUG,
-    maxConcurrency = 10,
+    development,
+    proxyGroups,
     maxRequestRetries = 5,
     country = Country.CZ,
-    proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
+    type = ActorType.Full,
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
     testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/alkoholicke-napoje/whisky-a-bourbon/bourbon/all"
-  } = input;
+  } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const requestQueue = await Actor.openRequestQueue();
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
   const crawler = new HttpCrawler({
-    requestQueue,
-    maxConcurrency,
     maxRequestRetries,
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
@@ -404,8 +401,7 @@ async function main() {
               document,
               country,
               uniqueItems,
-              stats,
-              request
+              stats
             });
             log.debug(`Found ${items.length} storing them, ${request.url}`);
             await pushAndUpload(s3, items);
@@ -413,14 +409,15 @@ async function main() {
           break;
       }
     },
-    failedRequestHandler({ request }, error) {
+    failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 
   await startCrawler(crawler, { type, country, bfUrl, testUrl });
 
-  stats.save(true);
+  await stats.save(true);
 
   if (!development) {
     await invalidateCDN(

@@ -1,4 +1,4 @@
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
@@ -8,8 +8,12 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 /** @enum {string} */
 const Labels = {
@@ -40,6 +44,9 @@ const ignoredCategories = new Set([
   "aktionen-c400070426.html"
 ]);
 
+/**
+ * @param {string} country
+ */
 function getCurrencyISO(country) {
   switch (country) {
     case "cz":
@@ -61,16 +68,24 @@ function getCurrencyISO(country) {
   }
 }
 
-function parsePrice(price, userInput) {
-  const { country = "cz" } = userInput;
-  let result = price.replace(/\s/, "").replace(",", ".");
-  result = result.match(/[\d+|.]+/)[0];
-  result = parseFloat(result);
+/**
+ * @param {string} price
+ * @param {string} country
+ */
+function parsePrice(price, country) {
+  const result = parseFloat(
+    price
+      .replace(/\s/, "")
+      .replace(",", ".")
+      .match(/[\d+|.]+/)[0]
+  );
   return country === "de" ? result / 100 : result;
 }
 
-function getCoffeeCategory(userInput) {
-  const { country = "cz" } = userInput;
+/**
+ * @param {string} country
+ */
+function getCoffeeCategory(country) {
   switch (country) {
     case "cz":
       return "Káva";
@@ -91,9 +106,8 @@ function getCoffeeCategory(userInput) {
   }
 }
 
-function navigationRequests({ json, userInput }) {
+function navigationRequests({ json, country }) {
   const requests = [];
-  const { country = "cz" } = userInput;
   for (const { children } of json.list) {
     for (const { href } of children) {
       if (ignoredCategories.has(href)) continue;
@@ -117,6 +131,9 @@ function navigationRequests({ json, userInput }) {
   return requests;
 }
 
+/**
+ * @param {Document} document
+ */
 function categoryRequests(document) {
   const menu = document.querySelectorAll(
     ".c-tp-sidebarnavigation > ul > li > ul > li > a"
@@ -129,6 +146,9 @@ function categoryRequests(document) {
   }));
 }
 
+/**
+ * @param {Document} document
+ */
 function categoryCatRequests(document) {
   const selectedCategory = document.querySelectorAll("a.active ~ ul > li > a");
   return selectedCategory.map(s => ({
@@ -162,14 +182,13 @@ function paginationRequests({ document, pageNumber, url }) {
         page
       }
     });
-    page += 1;
+    page++;
     productsCount += 30;
   }
   return requests;
 }
 
-function productsFromListing({ document, handledIdsSet, currency, userInput }) {
-  const { country = "cz" } = userInput;
+function productsFromListing({ document, handledIdsSet, currency, country }) {
   const breadcrumbItems = document.querySelectorAll(
     ".c-tp-breadcrumb-item > a"
   );
@@ -200,12 +219,12 @@ function productsFromListing({ document, handledIdsSet, currency, userInput }) {
       discounted: false,
       originalPrice: null,
       currency,
-      currentPrice: parsePrice(currentPrice, userInput),
+      currentPrice: parsePrice(currentPrice, country),
       category: breadcrumbItems.map(p => p.innerText.trim()).join(" > ")
     };
     if (oldPrice && oldPrice.length > 0) {
       result.discounted = true;
-      result.originalPrice = parsePrice(oldPrice, userInput);
+      result.originalPrice = parsePrice(oldPrice, country);
     }
     items.push(result);
   }
@@ -216,9 +235,8 @@ function productsFromCoffeeCategory({
   document,
   handledIdsSet,
   currency,
-  userInput
+  country
 }) {
-  const { country = "cz" } = userInput;
   const products = document.querySelectorAll(".m-tp-productbox002");
   const items = [];
   for (const p of products) {
@@ -256,12 +274,12 @@ function productsFromCoffeeCategory({
       originalPrice: null,
       discounted: false,
       currency,
-      currentPrice: parsePrice(currentPrice, userInput),
-      category: getCoffeeCategory(userInput)
+      currentPrice: parsePrice(currentPrice, country),
+      category: getCoffeeCategory(country)
     };
     if (oldPrice && oldPrice.length > 0) {
       result.discounted = true;
-      result.originalPrice = parsePrice(oldPrice, userInput);
+      result.originalPrice = parsePrice(oldPrice, country);
     }
     items.push(result);
   }
@@ -284,19 +302,20 @@ async function savaProducts({ products, s3 }) {
 
 async function main() {
   rollbar.init();
-
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
+  const handledIdsSet = await useState("HANDLED_PRODUCT_IDS", new Set());
+
+  const stats = await withPersistedStats(x => x, {
+    urls: 0,
+    failed: 0
   });
 
-  const userInput = (await KeyValueStore.getInput()) || {};
-  const { country = "cz", type, development = process.env.TEST } = userInput;
+  const {
+    country = "cz",
+    type,
+    development = process.env.TEST
+  } = await getInput();
   const currency = getCurrencyISO(country);
-
-  const handledIds = (await Actor.getValue("HANDLED_PRODUCT_IDS")) || [];
-  const handledIdsSet = new Set(handledIds);
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: ["CZECH_LUMINATI"],
@@ -307,6 +326,7 @@ async function main() {
     proxyConfiguration,
     maxRequestsPerMinute: 200,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     async requestHandler({ request, log, body, json }) {
       const { label, page } = request.userData;
       const { document } = parseHTML(body.toString());
@@ -320,13 +340,14 @@ async function main() {
                 document,
                 pageNumber: page,
                 url: request.url
-              })
+              }),
+              { forefront: true }
             );
             const products = productsFromListing({
               document,
               handledIdsSet,
               currency,
-              userInput
+              country
             });
             await savaProducts({ products, s3 });
           }
@@ -335,7 +356,7 @@ async function main() {
           await crawler.addRequests(categoryRequests(document));
           break;
         case Labels.NAVIGATION:
-          await crawler.addRequests(navigationRequests({ json, userInput }));
+          await crawler.addRequests(navigationRequests({ json, country }));
           break;
         case Labels.COFFEE_CATEGORY:
           {
@@ -343,7 +364,7 @@ async function main() {
               document,
               handledIdsSet,
               currency,
-              userInput
+              country
             });
             const subCategoriesRequests = document
               .querySelectorAll(
@@ -364,9 +385,11 @@ async function main() {
         case Labels.CATEGORY_CAT:
           await crawler.addRequests(categoryCatRequests(document));
       }
+      stats.inc("urls");
     },
     async failedRequestHandler({ request, log }, error) {
       log.info(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 
@@ -388,10 +411,16 @@ async function main() {
   await crawler.run([startingRequest]);
   log.info("crawler finished");
 
-  await Promise.all([
-    invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`),
-    uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`)
-  ]);
+  if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
+    await Promise.all([
+      invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`),
+      uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`)
+    ]);
+  }
   log.info("invalidated Data CDN");
   log.info("Finished.");
 }

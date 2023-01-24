@@ -6,12 +6,15 @@ import {
   uploadToS3v2,
   cleanPrice
 } from "@hlidac-shopu/actors-common/product.js";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler";
+
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 /** @enum {string} */
 const Labels = {
@@ -27,14 +30,14 @@ function startRequests({ document, homePageUrl }) {
       ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
     )
     .map(a => ({
-      href: a.getAttribute("href"),
+      href: a.href,
       dataWebtrekk: a.getAttribute("data-webtrekk")
     }));
   if (!categoryLinkList.length) {
     categoryLinkList = document
       .querySelectorAll("ul.first-level > li > a")
       .map(a => ({
-        href: a.getAttribute("href")
+        href: a.href
       }));
   }
   return categoryLinkList
@@ -68,7 +71,7 @@ function listUrls({ request, document, processedIds }) {
   return document
     .querySelectorAll("li.product > a")
     .filter(a => a.getAttribute("data-ui-name"))
-    .map(a => a.getAttribute("href"))
+    .map(a => a.href)
     .filter(url => !processedIds.has(url))
     .map(url => {
       processedIds.add(url);
@@ -90,7 +93,7 @@ function extractProduct({ url, document }) {
   }
   const discountedPrice = document.querySelector(".saving + del")?.innerText;
   const originalPrice = discountedPrice ? cleanPrice(discountedPrice) : null;
-  let img = document.querySelector(".ads-slider__link").getAttribute("href");
+  let img = document.querySelector(".ads-slider__link").href;
   if (!img) {
     img = document.querySelector(".ads-slider__image").getAttribute("data-src");
   }
@@ -117,6 +120,9 @@ function extractProduct({ url, document }) {
   };
 }
 
+/**
+ * @param {string} url
+ */
 function getItemIdFromUrl(url) {
   return url.match(/p\/(\d+)(#\/)?$/)?.[1];
 }
@@ -129,7 +135,7 @@ function variantsUrls({ url, document, processedIds }) {
     .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
     )
     .map(a => {
-      const productUrl = a.getAttribute("href");
+      const productUrl = a.href;
       if (!productUrl) {
         return;
       }
@@ -174,17 +180,16 @@ async function main() {
   const stats = await withPersistedStats(x => x, {
     urls: 0,
     items: 0,
-    totalItems: 0
+    totalItems: 0,
+    failed: 0
   });
 
-  const input = (await KeyValueStore.getInput()) ?? {};
-
   const {
-    development = process.env.TEST || process.env.DEBUG,
-    proxyGroups = ["CZECH_LUMINATI"],
-    maxRequestRetries = 3
-  } = input;
-  const country = input?.country?.toLowerCase() ?? "cz";
+    development,
+    proxyGroups,
+    maxRequestRetries,
+    country = "cz"
+  } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
@@ -204,6 +209,8 @@ async function main() {
     requestHandlerTimeoutSecs: 45,
     proxyConfiguration,
     maxRequestRetries,
+    useSessionPool: true,
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 150
     },
@@ -301,6 +308,7 @@ async function main() {
     },
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
+      stats.inc("failed");
     }
   });
 

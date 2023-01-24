@@ -11,6 +11,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseHTML } from "linkedom/cached";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -139,13 +140,13 @@ function startingRequests(type, stats) {
 async function main() {
   rollbar.init();
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const input = (await KeyValueStore.getInput()) ?? {};
+
   const {
-    development = process.env.TEST,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
+    development,
+    maxRequestRetries,
+    proxyGroups,
     type = ActorType.Full
-  } = input;
+  } = await getInput();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,

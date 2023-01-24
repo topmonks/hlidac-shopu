@@ -6,16 +6,18 @@ import {
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
 import { DOMParser, parseHTML } from "linkedom/cached";
-import { Actor, Dataset, KeyValueStore, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import zlib from "zlib";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
-import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
-/** @enum */
+/** @typedef {import("linkedom/types/interface/document").Document} Document */
+
+/** @enum {string} */
 const Labels = {
   Category: "category",
   Categories: "categories",
@@ -25,7 +27,7 @@ const Labels = {
 };
 
 /**
- * @param {Buffer} buffer
+ * @param {string | Buffer} buffer
  * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
  */
 function allCategoriesRequests(buffer) {
@@ -53,14 +55,14 @@ function allCategoriesRequests(buffer) {
  */
 function startingRequest({ type, bfUrl }) {
   switch (type) {
-    case ActorType.BF:
+    case ActorType.BlackFriday:
       return {
         url: bfUrl,
         userData: {
           label: Labels.SaleCategory
         }
       };
-    case ActorType.TEST:
+    case ActorType.Test:
       return {
         url: "https://www.mironet.cz/graficke-karty+c14402/",
         userData: {
@@ -68,7 +70,7 @@ function startingRequest({ type, bfUrl }) {
           baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
         }
       };
-    case ActorType.FULL:
+    case ActorType.Full:
       return {
         url: "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz",
         userData: {
@@ -127,7 +129,7 @@ function categoryRequests({ document, requestUrl, rootUrl }) {
     });
   }
 
-  log.debug(`Enqueue ${requestUrl.url} as a page`);
+  log.debug(`Enqueue ${requestUrl} as a page`);
   return [
     {
       url: requestUrl,
@@ -152,7 +154,7 @@ function pageUrls({ document, request }) {
   const { baseUrl } = request.userData;
   return restPageUrls(pageNum, pageNr => {
     const url = new URL(baseUrl);
-    url.searchParams.append("PgID", pageNr);
+    url.searchParams.append("PgID", pageNr.toString());
     return url.href;
   });
 }
@@ -161,10 +163,6 @@ async function main() {
   rollbar.init();
 
   const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   const stats = await withPersistedStats(x => x, {
     urls: 0,
@@ -174,14 +172,13 @@ async function main() {
     failed: 0
   });
 
-  const input = (await KeyValueStore.getInput()) ?? {};
   const {
-    development = process.env.TEST || process.env.DEBUG,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
+    development,
+    maxRequestRetries,
+    proxyGroups,
+    type = ActorType.Full,
     bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
-  } = input;
+  } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
 
@@ -200,6 +197,7 @@ async function main() {
     proxyConfiguration,
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 200
     },
@@ -307,6 +305,7 @@ async function main() {
         `Request ${request.url} failed ${request.retryCount} times`,
         error
       );
+      stats.inc("failed");
     }
   });
 
@@ -318,9 +317,13 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
+    const cloudfront = new CloudFrontClient({
+      region: "eu-central-1",
+      maxAttempts: 3
+    });
     await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shop);
     log.info("invalidated Data CDN");
-    await uploadToKeboola(type !== ActorType.FULL ? "mironet_bf" : "mironet");
+    await uploadToKeboola(type !== ActorType.Full ? "mironet_bf" : "mironet");
     log.info("upload to Keboola finished");
   }
   log.info("ACTOR - Finished");

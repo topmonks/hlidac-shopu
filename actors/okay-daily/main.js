@@ -7,60 +7,64 @@ import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { HttpCrawler } from "@crawlee/http";
 import { calculateTagSalePrice } from "./index.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
-const COUNTRY = {
+/** @enum {string} */
+const Country = {
   CZ: "CZ",
   SK: "SK"
 };
 
+/**
+ * @param {Country} country
+ */
 function getBaseUrl(country) {
   switch (country) {
-    case COUNTRY.CZ:
+    case Country.CZ:
       return "https://www.okay.cz";
-    case COUNTRY.SK:
+    case Country.SK:
       return "https://www.okay.sk";
   }
 }
 
+/**
+ * @param {Country} country
+ */
 function getShopUri(country) {
   switch (country) {
-    case COUNTRY.CZ:
+    case Country.CZ:
       return "okay-elektro-cz.myshopify.com";
-    case COUNTRY.SK:
+    case Country.SK:
       return "okay-dev-sk.myshopify.com";
   }
 }
 
 const INTERESTED_TAGS = {
   [ActorType.Test]: {
-    [COUNTRY.CZ]: ["COL1:1573"],
-    [COUNTRY.SK]: ["COL1:2102"]
+    [Country.CZ]: ["COL1:1573"],
+    [Country.SK]: ["COL1:2102"]
   },
-  [ActorType.BF]: {
-    [COUNTRY.CZ]: [
+  [ActorType.BlackFriday]: {
+    [Country.CZ]: [
       "BDT:Black Friday#1{2655}",
       "BDT:Black Friday#1{2657}",
       "BDT:Black Friday#1{2581}",
       "BDT:Black Friday#3{2425}"
     ],
-    [COUNTRY.SK]: [
+    [Country.SK]: [
       "BDT:Black Friday#1{2663}",
       "BDT:Black Friday#1{2665}",
       "BDT:Black Friday#1{2589}"
     ]
   },
   [ActorType.Full]: {
-    [COUNTRY.CZ]: null,
-    [COUNTRY.SK]: null
+    [Country.CZ]: null,
+    [Country.SK]: null
   }
 };
 
 function getInterestedTags(type, country) {
   return INTERESTED_TAGS[type][country];
-}
-
-function getCurrency(country) {
-  return country === COUNTRY.CZ ? "CZK" : "EUR";
 }
 
 function requests(country, params) {
@@ -132,13 +136,13 @@ function extractProducts({ json, country }) {
       img: product.images["1"],
       itemName: product.title,
       originalPrice:
-        country === COUNTRY.CZ ? Math.round(originalPrice) : originalPrice,
+        country === Country.CZ ? Math.round(originalPrice) : originalPrice,
       currentPrice:
-        country === COUNTRY.CZ ? Math.round(currentPrice) : currentPrice,
+        country === Country.CZ ? Math.round(currentPrice) : currentPrice,
       get discounted() {
         return this.currentPrice < this.originalPrice;
       },
-      currency: getCurrency(country),
+      currency: country === Country.CZ ? "CZK" : "EUR",
       category: product.product_type,
       inStock
     };
@@ -168,14 +172,13 @@ async function enqueueMoreRequests({
   country
 }) {
   const paginationCount = Math.ceil(json.total_product / params.limit);
-  if (paginationCount > 1 && params.page === 1) {
-    log.info(`Adding ${paginationCount - 1}x pagination pages `);
-    for (let page = 2; page <= paginationCount; page++) {
-      await requestQueue.addRequests(
-        requests(country, Object.assign({}, params, { page }))
-      );
-    }
-  }
+  if (!(paginationCount > 1 && params.page === 1)) return;
+
+  log.info(`Adding ${paginationCount - 1}x pagination pages `);
+  const paginationRequests = restPageUrls(paginationCount, page =>
+    requests(country, Object.assign({}, params, { page }))
+  );
+  await requestQueue.addRequests(paginationRequests);
 }
 
 async function main() {
@@ -185,18 +188,18 @@ async function main() {
     urls: 0,
     totalItems: 0,
     items: 0,
-    itemsDuplicity: 0
+    itemsDuplicity: 0,
+    failed: 0
   });
 
-  const input = (await Actor.getInput()) ?? {};
   const {
-    country = COUNTRY.CZ,
+    development,
+    proxyGroups,
+    maxRequestRetries,
+    country = Country.CZ,
     type = ActorType.Full,
-    development = process.env.TEST || process.env.DEBUG,
-    proxyGroups = ["CZECH_LUMINATI"],
-    maxRequestRetries = 3,
     customTableName = null
-  } = input;
+  } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
@@ -213,6 +216,7 @@ async function main() {
     maxRequestsPerMinute: 600,
     maxRequestRetries,
     useSessionPool: true,
+    persistCookiesPerSession: true,
     proxyConfiguration,
     async requestHandler({ request, json, log, crawler }) {
       const { params } = request.userData;
@@ -233,8 +237,9 @@ async function main() {
       });
     },
     async failedRequestHandler({ request }, error) {
-      rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
+      rollbar.error(error, request);
+      stats.inc("failed");
     }
   });
 
