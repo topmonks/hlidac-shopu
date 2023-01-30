@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/fetch@npm:3.3.1":
-  version: 3.3.1
-  resolution: "@adobe/fetch@npm:3.3.1"
+"@adobe/fetch@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@adobe/fetch@npm:4.0.0"
   dependencies:
     debug: 4.3.4
-    http-cache-semantics: 4.1.0
+    http-cache-semantics: 4.1.1
     lru-cache: 7.14.1
-  checksum: 17806f3177e2abdd57e9809669a5424e0a585308c93325a933f8e3eadece053d652ca849a0bea5ee2ecf20f618f76994d4f0921635197e0cd3acf8fcd9fcb2b6
+  checksum: dbcbe002d8f860e9d359616808c60ed6239681208193fde33bec5394caf169f37f862a4aac881b858748d6fef047bb15835b1a9cd3dd53625486bed9bf321fb1
   languageName: node
   linkType: hard
 
@@ -4882,7 +4882,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/fetch": 3.3.1
+    "@adobe/fetch": 4.0.0
     "@aws-sdk/client-dynamodb": 3.259.0
     "@aws-sdk/client-s3": 3.259.0
     "@aws-sdk/util-dynamodb": 3.259.0
@@ -5039,7 +5039,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/fetch": 3.3.1
+    "@adobe/fetch": 4.0.0
     "@aws-sdk/client-cloudfront": 3.259.0
     "@aws-sdk/client-s3": 3.259.0
     "@crawlee/http": 3.1.4
@@ -15293,7 +15293,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/fetch": 3.3.1
+    "@adobe/fetch": 4.0.0
     "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
@@ -15442,7 +15442,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-cache-semantics@npm:4.1.0, http-cache-semantics@npm:^4.0.0, http-cache-semantics@npm:^4.1.0":
+"http-cache-semantics@npm:4.1.1":
+  version: 4.1.1
+  resolution: "http-cache-semantics@npm:4.1.1"
+  checksum: 83ac0bc60b17a3a36f9953e7be55e5c8f41acc61b22583060e8dedc9dd5e3607c823a88d0926f9150e571f90946835c7fe150732801010845c72cd8bbff1a236
+  languageName: node
+  linkType: hard
+
+"http-cache-semantics@npm:^4.0.0, http-cache-semantics@npm:^4.1.0":
   version: 4.1.0
   resolution: "http-cache-semantics@npm:4.1.0"
   checksum: 974de94a81c5474be07f269f9fd8383e92ebb5a448208223bfb39e172a9dbc26feff250192ecc23b9593b3f92098e010406b0f24bd4d588d631f80214648ed42
