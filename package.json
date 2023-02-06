@@ -14,7 +14,7 @@
     "url": "https://github.com/topmonks/hlidac-shopu/issues"
   },
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
-  "packageManager": "yarn@3.3.1",
+  "packageManager": "yarn@3.4.1",
   "dependencies": {
     "@adobe/fetch": "4.0.1",
     "@pulumi/aws": "5.29.0",
@@ -22,7 +22,7 @@
     "@pulumi/pulumi": "3.53.1",
     "@topmonks/pulumi-aws": "2.2.5",
     "abort-controller": "3.0.0",
-    "aws-sdk": "2.1306.0",
+    "aws-sdk": "2.1309.0",
     "date-fns": "2.29.3",
     "formdata-node": "5.0.0",
     "postcss-css-variables": "0.18.0",
@@ -60,7 +60,7 @@
     "linkedom": "0.14.21",
     "npm-run-all": "4.1.5",
     "prettier": "2.8.3",
-    "puppeteer": "19.6.2",
+    "puppeteer": "19.6.3",
     "rollbar": "2.26.1",
     "source-map-explorer": "2.5.3",
     "stylelint": "14.16.1",
