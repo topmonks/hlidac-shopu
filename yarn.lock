@@ -9001,9 +9001,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1306.0":
-  version: 2.1306.0
-  resolution: "aws-sdk@npm:2.1306.0"
+"aws-sdk@npm:2.1309.0":
+  version: 2.1309.0
+  resolution: "aws-sdk@npm:2.1309.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9015,7 +9015,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 7476f3e11792e3719bcca1c2e4dccd036fad5c9314c1afa78d86a2fac1fade98f5bede1075e15294704cf1ee7b7438b068c291d9119dff318841941ec088d399
+  checksum: ad24e9629a89ab937395cffe8f43c7fedabdb161578af66bd7378af174a98c1e2dbe0799809fc12ef46959ca3de2c2841ee3527d1eb15081e33d5509afdacdb9
   languageName: node
   linkType: hard
 
@@ -15363,7 +15363,7 @@ __metadata:
     "@typescript-eslint/parser": 5.50.0
     abort-controller: 3.0.0
     ava: 5.1.1
-    aws-sdk: 2.1306.0
+    aws-sdk: 2.1309.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
@@ -15384,7 +15384,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.18.0
     prettier: 2.8.3
-    puppeteer: 19.6.2
+    puppeteer: 19.6.3
     ramda: 0.28.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -20701,9 +20701,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:19.6.2":
-  version: 19.6.2
-  resolution: "puppeteer-core@npm:19.6.2"
+"puppeteer-core@npm:19.6.3":
+  version: 19.6.3
+  resolution: "puppeteer-core@npm:19.6.3"
   dependencies:
     cross-fetch: 3.1.5
     debug: 4.3.4
@@ -20715,7 +20715,7 @@ __metadata:
     tar-fs: 2.1.1
     unbzip2-stream: 1.4.3
     ws: 8.11.0
-  checksum: 92325f78de3e468a2444136012806ad9b0b1c694b3647022e71aa3f04b776781a9241b9b7984e5c7800acc4c9cfc3176752da37bcca7cb2a8c92e6e3e6c65be4
+  checksum: afad54c829b9ad476a2a84c753760f1543b1afe68eda11ad77adb9cc87912b4d1899a71d137afedc44a75a1566b28e53ee9be73ca894a77901c62df05ad18c96
   languageName: node
   linkType: hard
 
@@ -20739,16 +20739,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:19.6.2":
-  version: 19.6.2
-  resolution: "puppeteer@npm:19.6.2"
+"puppeteer@npm:19.6.3":
+  version: 19.6.3
+  resolution: "puppeteer@npm:19.6.3"
   dependencies:
     cosmiconfig: 8.0.0
     https-proxy-agent: 5.0.1
     progress: 2.0.3
     proxy-from-env: 1.1.0
-    puppeteer-core: 19.6.2
-  checksum: 7ed12a8be7d243d82d4569e3f30fe376b96515b88562cbd6dca60e9fc052b232669db736666c9212d4d23366ed30764e3f5a6633e1195cf0709cba49771a8fa2
+    puppeteer-core: 19.6.3
+  checksum: 5d4ffcfcb297d5dffac73c5860316b5d4ad868b84bb82e9467c93b36e6a0a16efc3252269cd4feab53a1d661ee2dde40c6d764b2ffd60cef177fdba07f195648
   languageName: node
   linkType: hard
 
@@ -24327,11 +24327,11 @@ __metadata:
 
 "typescript@patch:typescript@^4.6.2#~builtin<compat/typescript>":
   version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=0102e9"
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=1a91c8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 301459fc3eb3b1a38fe91bf96d98eb55da88a9cb17b4ef80b4d105d620f4d547ba776cc27b44cc2ef58b66eda23fe0a74142feb5e79a6fb99f54fc018a696afa
+  checksum: c981e82b77a5acdcc4e69af9c56cdecf5b934a87a08e7b52120596701e389a878b8e3f860e73ffb287bf649cc47a8c741262ce058148f71de4cdd88bb9c75153
   languageName: node
   linkType: hard
 
