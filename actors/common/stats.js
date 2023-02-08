@@ -20,7 +20,7 @@ const dec = (x = 0) => x - 1;
 export class Stats {
   constructor(init) {
     this.stats = defAtom(init);
-    this.interval = setInterval(() => this.log(), 20 * 1000);
+    this.interval = setInterval(() => this.log(), 20_000);
   }
 
   inc(key) {
