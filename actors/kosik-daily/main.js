@@ -1,12 +1,6 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -16,16 +10,22 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 const baseUrl = "https://www.kosik.cz/";
 
 const slug = url => url.substring(1);
-const listingUrl = ({ url }) =>
-  `${baseUrl}api/web/page/products?slug=${slug(url)}&limit=60`;
-
 const slugBF = url => new URL(url).pathname.substring(1);
-const listingBFUrl = url =>
-  `${baseUrl}api/web/page/products?slug=${slugBF(url)}&limit=60`;
+const listingUrl = ({ url }, fn = slug) =>
+  new URL(
+    `/api/web/page/products?${new URLSearchParams({
+      slug: fn(url),
+      limit: 60
+    })}`,
+    baseUrl
+  ).href;
+const listingBFUrl = url => listingUrl({ url }, slugBF);
 
 function* categoriesTree(root) {
   for (const category of root) {
-    if (category.subcategories) yield* categoriesTree(category.subcategories);
+    if (category.subcategories) {
+      yield* categoriesTree(category.subcategories);
+    }
     yield listingUrl(category);
   }
 }
@@ -71,12 +71,6 @@ function parseItem(item, breadcrumbs) {
 
 async function main() {
   rollbar.init();
-
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   const {
     development,
@@ -130,10 +124,7 @@ async function main() {
             stats.add("items", items.length);
             for (const item of items) {
               const detail = parseItem(item, breadcrumbs);
-              await Promise.all([
-                Dataset.pushData(detail),
-                uploadToS3v2(s3, detail, { priceCurrency: "CZK" })
-              ]);
+              await Dataset.pushData(detail);
             }
           }
           break;
@@ -167,14 +158,9 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kosik.cz");
-    log.info("invalidated Data CDN");
-
     try {
-      let tableName = `kosik`;
-      if (type === ActorType.BlackFriday) {
-        tableName = `${tableName}_bf`;
-      }
+      const suffix = type === ActorType.BlackFriday ? "_bf" : "";
+      const tableName = `kosik${suffix}`;
       await uploadToKeboola(tableName);
       log.info("upload to Keboola finished");
     } catch (err) {
