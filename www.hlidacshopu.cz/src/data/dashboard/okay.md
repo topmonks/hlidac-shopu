@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1cY2dZkaxG91kfG7PzUBjHy-uOTdL8cxu8W
 rating: 2
 ---
 
-Okay.cz s platností EU směrnice vypnuli vyčíslení slev, nicméně dále inzerují "Slevy více než 92 milionů" a u produktů v akci ("Cenový hit", "Výprodej") neuvádí minimální prodejní cenu za posledních 30 dní před akcí, ačkoliv směrnice jasně stanovuje, že takto označené produkty musí mít slevu vyčíslenou.
+Okay.cz s platností EU směrnice vypnuli vyčíslení slev v přehledu produktů, ačkoliv u zlevněných produktů směrnice tuto povinnost ukládá, slevy vyčísluje pouze v detailu produktu.
 
 Slovy e-shopu:
 
