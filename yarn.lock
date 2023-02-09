@@ -4887,7 +4887,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.264.0
     "@aws-sdk/util-dynamodb": 3.264.0
     "@hlidac-shopu/lib": 1.3.8
-    ava: 5.1.1
+    ava: 5.2.0
     c8: 7.12.0
     chai: 4.3.7
     date-fns: 2.29.3
@@ -8934,9 +8934,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ava@npm:5.1.1":
-  version: 5.1.1
-  resolution: "ava@npm:5.1.1"
+"ava@npm:5.2.0":
+  version: 5.2.0
+  resolution: "ava@npm:5.2.0"
   dependencies:
     acorn: ^8.8.1
     acorn-walk: ^8.2.0
@@ -8990,7 +8990,7 @@ __metadata:
       optional: true
   bin:
     ava: entrypoints/cli.mjs
-  checksum: cae5771ea651418c966dc7779128121f933aba7a39d86d8663c2097435bfc7264b0893b966d9ade3325a1051854d82b220e2db779482414a6283cb388ba00fb3
+  checksum: d5991f1f3d7ca0e63e0df185c5c025a9c80614dd42537336a9b96ea29e8a8d5ad680c1e775dacabb55f3b1b2d63764e468f201d52a44166c8a88d4e9309cde61
   languageName: node
   linkType: hard
 
@@ -9001,9 +9001,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1309.0":
-  version: 2.1309.0
-  resolution: "aws-sdk@npm:2.1309.0"
+"aws-sdk@npm:2.1310.0":
+  version: 2.1310.0
+  resolution: "aws-sdk@npm:2.1310.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9015,7 +9015,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: ad24e9629a89ab937395cffe8f43c7fedabdb161578af66bd7378af174a98c1e2dbe0799809fc12ef46959ca3de2c2841ee3527d1eb15081e33d5509afdacdb9
+  checksum: 648141461eaaaac1bcd8a2f1df460bb4603176541a28ed0aa7c344cc9fe19d69b2a463cb975c767bfb913ebc462103474fcd0315d07918c5fa35b0fef5f00f56
   languageName: node
   linkType: hard
 
@@ -15362,8 +15362,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     abort-controller: 3.0.0
-    ava: 5.1.1
-    aws-sdk: 2.1309.0
+    ava: 5.2.0
+    aws-sdk: 2.1310.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
