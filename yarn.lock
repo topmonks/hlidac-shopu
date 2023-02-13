@@ -4113,7 +4113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/basic@npm:^3.2.1, @crawlee/basic@npm:^3.2.2":
+"@crawlee/basic@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/basic@npm:3.2.2"
   dependencies:
@@ -4131,7 +4131,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/browser-pool@npm:^3.2.1, @crawlee/browser-pool@npm:^3.2.2":
+"@crawlee/browser-pool@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/browser-pool@npm:3.2.2"
   dependencies:
@@ -4160,7 +4160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/browser@npm:^3.2.1":
+"@crawlee/browser@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/browser@npm:3.2.2"
   dependencies:
@@ -4234,14 +4234,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@crawlee/http@npm:3.2.1"
+"@crawlee/http@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@crawlee/http@npm:3.2.2"
   dependencies:
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.0.0
-    "@crawlee/basic": ^3.2.1
-    "@crawlee/types": ^3.2.1
+    "@crawlee/basic": ^3.2.2
+    "@crawlee/types": ^3.2.2
     "@types/content-type": ^1.1.5
     content-type: ^1.0.4
     got-scraping: ^3.2.9
@@ -4250,7 +4250,7 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
     type-fest: ^3.0.0
-  checksum: 351ccd451403ea261be2d1121777c2781fb37657cb09a1960a98c1da9328abfaa4191ae8ecfbdbe3f5a9d8aa2f2c113f78e0a1058ea973c693bd67c361c2d400
+  checksum: 649903f44fa84ef466b3249fc2709b7a32c7e0be81227107ea949c3a510aea1d2f67204d90ed3cc50f8cd44223f1f4f49e02282a9574691f3db20c465b72b9a0
   languageName: node
   linkType: hard
 
@@ -4307,16 +4307,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/playwright@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@crawlee/playwright@npm:3.2.1"
+"@crawlee/playwright@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@crawlee/playwright@npm:3.2.2"
   dependencies:
     "@apify/datastructures": ^2.0.0
     "@apify/log": ^2.0.0
-    "@crawlee/browser": ^3.2.1
-    "@crawlee/browser-pool": ^3.2.1
-    "@crawlee/types": ^3.2.1
-    "@crawlee/utils": ^3.2.1
+    "@crawlee/browser": ^3.2.2
+    "@crawlee/browser-pool": ^3.2.2
+    "@crawlee/types": ^3.2.2
+    "@crawlee/utils": ^3.2.2
     cheerio: 1.0.0-rc.12
     jquery: ^3.6.0
     ow: ^0.28.1
@@ -4326,7 +4326,7 @@ __metadata:
   peerDependenciesMeta:
     playwright:
       optional: true
-  checksum: 3663faf7667be3a3db919c20099509b3b870d5ea3e0f91dccbb4dc558d99f330254f4985fbd1945b45a78768cee95c7bb520505995745a02bf0820debaa22835
+  checksum: 052540a6b2a61a2b27e372ea407383b37cd1b42ef73ba229a292d64b9a5c0f20cf47012b523cfa07fcf2922a4130b1c6c9e66f6c5ac64732ae9d02cc75978cf6
   languageName: node
   linkType: hard
 
@@ -4348,7 +4348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:^3.2.1, @crawlee/types@npm:^3.2.2":
+"@crawlee/types@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/types@npm:3.2.2"
   dependencies:
@@ -4357,18 +4357,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@crawlee/utils@npm:3.2.1"
+"@crawlee/utils@npm:3.2.2, @crawlee/utils@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@crawlee/utils@npm:3.2.2"
   dependencies:
     "@apify/log": ^2.0.0
     "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.2.1
+    "@crawlee/types": ^3.2.2
     cheerio: 1.0.0-rc.12
     got-scraping: ^3.2.9
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: b5fdc18ee1dad87125ffb547f3c56d97ccb9934ebb62cf8aab11c3e6be8248f6abd913ac67c089fbec297b934698db340e000c3ae9ec693795be73ecde39926f
+  checksum: 4b3a44f751770e23fb821beb27734850b6d528b922fc77ae9a5262cda6ee803b7fa3da02a549c8d69c2811a4e4631c8d2c13021370d63d900e62a900c60f4551
   languageName: node
   linkType: hard
 
@@ -4397,21 +4397,6 @@ __metadata:
     got-scraping: ^3.2.9
     tslib: ^2.4.0
   checksum: 73106cec0f890974fac7b3cac3bc107ee42d64e946a175cd3773e1684dee3c77642ce6c8f61b8247c5eacc1ac9768d727760c4f7e0b160609dc3f3ce55e91025
-  languageName: node
-  linkType: hard
-
-"@crawlee/utils@npm:^3.2.1, @crawlee/utils@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "@crawlee/utils@npm:3.2.2"
-  dependencies:
-    "@apify/log": ^2.0.0
-    "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.2.2
-    cheerio: 1.0.0-rc.12
-    got-scraping: ^3.2.9
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 4b3a44f751770e23fb821beb27734850b6d528b922fc77ae9a5262cda6ee803b7fa3da02a549c8d69c2811a4e4631c8d2c13021370d63d900e62a900c60f4551
   languageName: node
   linkType: hard
 
@@ -4463,9 +4448,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/android-arm64@npm:0.17.6"
+"@esbuild/android-arm64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/android-arm64@npm:0.17.7"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
@@ -4477,9 +4462,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/android-arm@npm:0.17.6"
+"@esbuild/android-arm@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/android-arm@npm:0.17.7"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
@@ -4491,9 +4476,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/android-x64@npm:0.17.6"
+"@esbuild/android-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/android-x64@npm:0.17.7"
   conditions: os=android & cpu=x64
   languageName: node
   linkType: hard
@@ -4505,9 +4490,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-arm64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/darwin-arm64@npm:0.17.6"
+"@esbuild/darwin-arm64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/darwin-arm64@npm:0.17.7"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -4519,9 +4504,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/darwin-x64@npm:0.17.6"
+"@esbuild/darwin-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/darwin-x64@npm:0.17.7"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -4533,9 +4518,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-arm64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/freebsd-arm64@npm:0.17.6"
+"@esbuild/freebsd-arm64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/freebsd-arm64@npm:0.17.7"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -4547,9 +4532,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/freebsd-x64@npm:0.17.6"
+"@esbuild/freebsd-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/freebsd-x64@npm:0.17.7"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4561,9 +4546,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-arm64@npm:0.17.6"
+"@esbuild/linux-arm64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-arm64@npm:0.17.7"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
@@ -4575,9 +4560,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-arm@npm:0.17.6"
+"@esbuild/linux-arm@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-arm@npm:0.17.7"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
@@ -4589,9 +4574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ia32@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-ia32@npm:0.17.6"
+"@esbuild/linux-ia32@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-ia32@npm:0.17.7"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
@@ -4603,9 +4588,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-loong64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-loong64@npm:0.17.6"
+"@esbuild/linux-loong64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-loong64@npm:0.17.7"
   conditions: os=linux & cpu=loong64
   languageName: node
   linkType: hard
@@ -4617,9 +4602,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-mips64el@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-mips64el@npm:0.17.6"
+"@esbuild/linux-mips64el@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-mips64el@npm:0.17.7"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
@@ -4631,9 +4616,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ppc64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-ppc64@npm:0.17.6"
+"@esbuild/linux-ppc64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-ppc64@npm:0.17.7"
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
@@ -4645,9 +4630,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-riscv64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-riscv64@npm:0.17.6"
+"@esbuild/linux-riscv64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-riscv64@npm:0.17.7"
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
@@ -4659,9 +4644,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-s390x@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-s390x@npm:0.17.6"
+"@esbuild/linux-s390x@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-s390x@npm:0.17.7"
   conditions: os=linux & cpu=s390x
   languageName: node
   linkType: hard
@@ -4673,9 +4658,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/linux-x64@npm:0.17.6"
+"@esbuild/linux-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/linux-x64@npm:0.17.7"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -4687,9 +4672,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/netbsd-x64@npm:0.17.6"
+"@esbuild/netbsd-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/netbsd-x64@npm:0.17.7"
   conditions: os=netbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4701,9 +4686,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openbsd-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/openbsd-x64@npm:0.17.6"
+"@esbuild/openbsd-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/openbsd-x64@npm:0.17.7"
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -4715,9 +4700,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/sunos-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/sunos-x64@npm:0.17.6"
+"@esbuild/sunos-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/sunos-x64@npm:0.17.7"
   conditions: os=sunos & cpu=x64
   languageName: node
   linkType: hard
@@ -4729,9 +4714,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-arm64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/win32-arm64@npm:0.17.6"
+"@esbuild/win32-arm64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/win32-arm64@npm:0.17.7"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -4743,9 +4728,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-ia32@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/win32-ia32@npm:0.17.6"
+"@esbuild/win32-ia32@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/win32-ia32@npm:0.17.7"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
@@ -4757,9 +4742,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.17.6":
-  version: 0.17.6
-  resolution: "@esbuild/win32-x64@npm:0.17.6"
+"@esbuild/win32-x64@npm:0.17.7":
+  version: 0.17.7
+  resolution: "@esbuild/win32-x64@npm:0.17.7"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -4858,11 +4843,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -4888,13 +4873,13 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -4930,12 +4915,12 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -4946,13 +4931,13 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -4963,11 +4948,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     got-scraping: 3.2.12
     linkedom: 0.14.21
   languageName: unknown
@@ -4979,11 +4964,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -4993,11 +4978,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/playwright": 3.2.1
+    "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     got-scraping: 3.2.12
     linkedom: 0.14.21
     playwright: 1.30.0
@@ -5008,11 +4993,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -5022,11 +5007,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5047,11 +5032,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5063,12 +5048,12 @@ __metadata:
     "@adobe/fetch": 4.0.1
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
-    csv-parse: 5.3.4
+    apify-cli: 0.14.1
+    csv-parse: 5.3.5
     jsonwebtoken: 9.0.0
     linkedom: 0.14.21
   languageName: unknown
@@ -5080,11 +5065,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5095,12 +5080,12 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5111,11 +5096,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5126,11 +5111,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5144,7 +5129,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -5154,12 +5139,12 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -5172,7 +5157,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -5197,11 +5182,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/playwright": 3.2.1
+    "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
     playwright: 1.30.0
   languageName: unknown
@@ -5213,12 +5198,12 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     got-scraping: 3.2.12
     graphql: 16.6.0
     graphql-tag: 2.12.6
@@ -5231,11 +5216,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5246,11 +5231,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5261,7 +5246,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     apify: 3.1.2
@@ -5275,7 +5260,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     apify: 3.1.2
     linkedom: 0.14.21
@@ -5286,12 +5271,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
-    "@crawlee/playwright": 3.2.1
+    "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
     playwright: 1.30.0
   languageName: unknown
@@ -5301,12 +5286,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
   dependencies:
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
 
@@ -5316,11 +5301,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5331,12 +5316,12 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5347,14 +5332,14 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
-    "@crawlee/utils": 3.2.1
+    "@crawlee/http": 3.2.2
+    "@crawlee/utils": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@thi.ng/atom": 5.1.29
     "@thi.ng/transducers": 8.3.31
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     core-async: 2.0.6
     eslint: 8.33.0
   languageName: unknown
@@ -5374,11 +5359,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/http": 3.2.1
+    "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
   languageName: unknown
   linkType: soft
@@ -5389,11 +5374,11 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.266.1
     "@aws-sdk/client-s3": 3.266.1
-    "@crawlee/playwright": 3.2.1
+    "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     linkedom: 0.14.21
     playwright: 1.30.0
   languageName: unknown
@@ -5408,7 +5393,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.13.0
     apify: 3.1.2
-    apify-cli: 0.13.0
+    apify-cli: 0.14.1
     fingerprint-generator: 2.1.8
     fingerprint-injector: 2.1.7
     playwright: 1.30.0
@@ -5423,7 +5408,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@crawlee/utils": 3.2.1
+    "@crawlee/utils": 3.2.2
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.8
@@ -8386,9 +8371,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-cli@npm:0.13.0":
-  version: 0.13.0
-  resolution: "apify-cli@npm:0.13.0"
+"apify-cli@npm:0.14.1":
+  version: 0.14.1
+  resolution: "apify-cli@npm:0.14.1"
   dependencies:
     "@apify/actor-templates": ^0.1.3
     "@apify/consts": ^2.7.0
@@ -8404,12 +8389,10 @@ __metadata:
     apify-client: ^2.2.0
     archiver-promise: ^1.0.0
     chalk: ^4.1.2
-    child-process-promise: ^2.2.1
     cors: ^2.8.5
     cross-spawn: ^7.0.3
     detect-indent: ^6.1.0
     express: ^4.18.2
-    extract-zip: ^2.0.1
     globby: ^11.1.0
     got-scraping: ^3.2.9
     inquirer: ^7.3.3
@@ -8417,7 +8400,6 @@ __metadata:
     istextorbinary: ^6.0.0
     load-json-file: ^6.2.0
     mime: ^2.6.0
-    minimist: ^1.2.5
     open: ^8.4.0
     ow: ^0.28.1
     rimraf: ^3.0.2
@@ -8427,7 +8409,7 @@ __metadata:
     write-json-file: ^4.3.0
   bin:
     apify: src/bin/run
-  checksum: 303bc2731d4a4449e9bdbc532ef905819d0c80beb8a166eddf9b1b31f59323a7a7f3ff7a11a8bebfac1e8ce8e1e11f4a74095c2483ce0dcd1a5dd9bcfbb5578c
+  checksum: 8b3615407b5fb391a86d2fa738df34dd3498d727f37c9fa3fdba7f15450721e6d757ca2b2e9a019e28933f79bf9b6e3676853b2e4c086bc4e43aec61bf8ad06f
   languageName: node
   linkType: hard
 
@@ -9023,9 +9005,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1310.0":
-  version: 2.1310.0
-  resolution: "aws-sdk@npm:2.1310.0"
+"aws-sdk@npm:2.1312.0":
+  version: 2.1312.0
+  resolution: "aws-sdk@npm:2.1312.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9037,7 +9019,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 648141461eaaaac1bcd8a2f1df460bb4603176541a28ed0aa7c344cc9fe19d69b2a463cb975c767bfb913ebc462103474fcd0315d07918c5fa35b0fef5f00f56
+  checksum: 9e91efee52fb7603df9b41778598f762aecb655bb22dbd0c80e22abc50bcdd36e324a2e004bc695743f8cca25671448f0b5baaabba3ee73bb1e868fead0cd757
   languageName: node
   linkType: hard
 
@@ -10221,17 +10203,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"child-process-promise@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "child-process-promise@npm:2.2.1"
-  dependencies:
-    cross-spawn: ^4.0.2
-    node-version: ^1.0.0
-    promise-polyfill: ^6.0.1
-  checksum: fb72dda7ee78099f106d57bf3d7cc3225c16c9ddfe8e364e3535a52396482ee81aecd3eff0da7131ca17b7ba9fcbb8af827da63a03f0c3262c76268696898642
-  languageName: node
-  linkType: hard
-
 "chokidar@npm:3.5.3, chokidar@npm:^3.4.3, chokidar@npm:^3.5.1, chokidar@npm:^3.5.3":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
@@ -11170,16 +11141,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "cross-spawn@npm:4.0.2"
-  dependencies:
-    lru-cache: ^4.0.1
-    which: ^1.2.9
-  checksum: 8ce57b3e11c5c798542a21ddfdc1edef33ab6fe001958b31f3340a6ff684e3334a8baad2751efa78b6200aad442cf12b939396d758b0dd5c42c9b782c28fe06e
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:^6.0.5":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -11376,10 +11337,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:5.3.4":
-  version: 5.3.4
-  resolution: "csv-parse@npm:5.3.4"
-  checksum: 853648004d74dd02b06f51e45efff0cce79a4bbbd03eb344ae0f7e91733c90938b3fab424a9275d5b4cf7845c9d55acbdee90775a92bc8476a0d1d2cd335ec4e
+"csv-parse@npm:5.3.5":
+  version: 5.3.5
+  resolution: "csv-parse@npm:5.3.5"
+  checksum: 077e010db2ebbc9db708b719f2f650577c5ec8d176cd4363235d6644c36c642811d05ef1b6907390dd7466bde20a8dbb0f34994bc0e101521eb09e6691a02206
   languageName: node
   linkType: hard
 
@@ -12466,32 +12427,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.17.6":
-  version: 0.17.6
-  resolution: "esbuild@npm:0.17.6"
+"esbuild@npm:0.17.7":
+  version: 0.17.7
+  resolution: "esbuild@npm:0.17.7"
   dependencies:
-    "@esbuild/android-arm": 0.17.6
-    "@esbuild/android-arm64": 0.17.6
-    "@esbuild/android-x64": 0.17.6
-    "@esbuild/darwin-arm64": 0.17.6
-    "@esbuild/darwin-x64": 0.17.6
-    "@esbuild/freebsd-arm64": 0.17.6
-    "@esbuild/freebsd-x64": 0.17.6
-    "@esbuild/linux-arm": 0.17.6
-    "@esbuild/linux-arm64": 0.17.6
-    "@esbuild/linux-ia32": 0.17.6
-    "@esbuild/linux-loong64": 0.17.6
-    "@esbuild/linux-mips64el": 0.17.6
-    "@esbuild/linux-ppc64": 0.17.6
-    "@esbuild/linux-riscv64": 0.17.6
-    "@esbuild/linux-s390x": 0.17.6
-    "@esbuild/linux-x64": 0.17.6
-    "@esbuild/netbsd-x64": 0.17.6
-    "@esbuild/openbsd-x64": 0.17.6
-    "@esbuild/sunos-x64": 0.17.6
-    "@esbuild/win32-arm64": 0.17.6
-    "@esbuild/win32-ia32": 0.17.6
-    "@esbuild/win32-x64": 0.17.6
+    "@esbuild/android-arm": 0.17.7
+    "@esbuild/android-arm64": 0.17.7
+    "@esbuild/android-x64": 0.17.7
+    "@esbuild/darwin-arm64": 0.17.7
+    "@esbuild/darwin-x64": 0.17.7
+    "@esbuild/freebsd-arm64": 0.17.7
+    "@esbuild/freebsd-x64": 0.17.7
+    "@esbuild/linux-arm": 0.17.7
+    "@esbuild/linux-arm64": 0.17.7
+    "@esbuild/linux-ia32": 0.17.7
+    "@esbuild/linux-loong64": 0.17.7
+    "@esbuild/linux-mips64el": 0.17.7
+    "@esbuild/linux-ppc64": 0.17.7
+    "@esbuild/linux-riscv64": 0.17.7
+    "@esbuild/linux-s390x": 0.17.7
+    "@esbuild/linux-x64": 0.17.7
+    "@esbuild/netbsd-x64": 0.17.7
+    "@esbuild/openbsd-x64": 0.17.7
+    "@esbuild/sunos-x64": 0.17.7
+    "@esbuild/win32-arm64": 0.17.7
+    "@esbuild/win32-ia32": 0.17.7
+    "@esbuild/win32-x64": 0.17.7
   dependenciesMeta:
     "@esbuild/android-arm":
       optional: true
@@ -12539,7 +12500,7 @@ __metadata:
       optional: true
   bin:
     esbuild: bin/esbuild
-  checksum: 13c4c3bcaa7ff291810d2c8294a1eb997b4672c60a9285b32d8eafcbc552e4468e06efe9d1a15067f5cbd41adcb12ddb4362618845e2e916e437f281c9aa80ab
+  checksum: 5b019eebf71db2133eae984be1fb1734b18aaa7e3b13e50318e52b4c35e042e9db00da3ca0f257f6efc6acf262ecbd1f00435709df7520316d344acf26e3c710
   languageName: node
   linkType: hard
 
@@ -13263,7 +13224,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extract-zip@npm:2.0.1, extract-zip@npm:^2.0.1":
+"extract-zip@npm:2.0.1":
   version: 2.0.1
   resolution: "extract-zip@npm:2.0.1"
   dependencies:
@@ -15413,13 +15374,13 @@ __metadata:
     "@typescript-eslint/parser": 5.51.0
     abort-controller: 3.0.0
     ava: 5.2.0
-    aws-sdk: 2.1310.0
+    aws-sdk: 2.1312.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
     date-fns: 2.29.3
     dotenv-cli: 7.0.0
-    esbuild: 0.17.6
+    esbuild: 0.17.7
     eslint: 8.33.0
     eslint-config-prettier: 8.6.0
     eslint-plugin-compat: 4.1.1
@@ -17779,16 +17740,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^4.0.1":
-  version: 4.1.5
-  resolution: "lru-cache@npm:4.1.5"
-  dependencies:
-    pseudomap: ^1.0.2
-    yallist: ^2.1.2
-  checksum: 4bb4b58a36cd7dc4dcec74cbe6a8f766a38b7426f1ff59d4cf7d82a2aa9b9565cd1cb98f6ff60ce5cd174524868d7bc9b7b1c294371851356066ca9ac4cf135a
-  languageName: node
-  linkType: hard
-
 "lru-cache@npm:^5.1.1":
   version: 5.1.1
   resolution: "lru-cache@npm:5.1.1"
@@ -18750,13 +18701,6 @@ __metadata:
   version: 2.0.10
   resolution: "node-releases@npm:2.0.10"
   checksum: d784ecde25696a15d449c4433077f5cce620ed30a1656c4abf31282bfc691a70d9618bae6868d247a67914d1be5cc4fde22f65a05f4398cdfb92e0fc83cadfbc
-  languageName: node
-  linkType: hard
-
-"node-version@npm:^1.0.0":
-  version: 1.2.0
-  resolution: "node-version@npm:1.2.0"
-  checksum: 74e92d2a7f0fe0fce3aafd6dcc30b3b440999df68b3d92fcefcad2a52b37bc29c6b542f33760229390bfdc1a4d993fb65b9c199b1f0d568969d07fc1c04bc1e7
   languageName: node
   linkType: hard
 
@@ -20578,13 +20522,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise-polyfill@npm:^6.0.1":
-  version: 6.1.0
-  resolution: "promise-polyfill@npm:6.1.0"
-  checksum: 6f1899cca37e48f67a424842282acd525d8d99d3536f2d97e37a117cfc4a0006683330ceaf5a15fbc09b4450f319a680292f9970a5f8e9cf90acbce0bdb0f751
-  languageName: node
-  linkType: hard
-
 "promise-retry@npm:^2.0.1":
   version: 2.0.1
   resolution: "promise-retry@npm:2.0.1"
@@ -20685,13 +20622,6 @@ __metadata:
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
   checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
-  languageName: node
-  linkType: hard
-
-"pseudomap@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "pseudomap@npm:1.0.2"
-  checksum: 856c0aae0ff2ad60881168334448e898ad7a0e45fe7386d114b150084254c01e200c957cf378378025df4e052c7890c5bd933939b0e0d2ecfcc1dc2f0b2991f5
   languageName: node
   linkType: hard
 
@@ -25800,13 +25730,6 @@ __metadata:
   version: 5.0.8
   resolution: "y18n@npm:5.0.8"
   checksum: 54f0fb95621ee60898a38c572c515659e51cc9d9f787fb109cef6fde4befbe1c4602dc999d30110feee37456ad0f1660fa2edcfde6a9a740f86a290999550d30
-  languageName: node
-  linkType: hard
-
-"yallist@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "yallist@npm:2.1.2"
-  checksum: 9ba99409209f485b6fcb970330908a6d41fa1c933f75e08250316cce19383179a6b70a7e0721b89672ebb6199cc377bf3e432f55100da6a7d6e11902b0a642cb
   languageName: node
   linkType: hard
 
