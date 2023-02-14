@@ -7354,12 +7354,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.28.22":
-  version: 0.28.22
-  resolution: "@types/ramda@npm:0.28.22"
+"@types/ramda@npm:0.28.23":
+  version: 0.28.23
+  resolution: "@types/ramda@npm:0.28.23"
   dependencies:
     ts-toolbelt: ^6.15.1
-  checksum: 6ee8aa774ca6a981fe7586a1296965e043e2479f56eb4b4c897a54a1a3f094e2a6a180b8c9eddf9bd3a273d6f9939ee6d5f526327e9055392a8e8292cd7c9eca
+  checksum: 61d7416c0f4f189c6524e093c7546ca2f159553e54d7933836d46aac1332611aa7b02fd8c8bfa98c0865f262fd9e99e06e3d9538deba0bab1f6153cbcf841160
   languageName: node
   linkType: hard
 
@@ -9005,9 +9005,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1312.0":
-  version: 2.1312.0
-  resolution: "aws-sdk@npm:2.1312.0"
+"aws-sdk@npm:2.1313.0":
+  version: 2.1313.0
+  resolution: "aws-sdk@npm:2.1313.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9019,7 +9019,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 9e91efee52fb7603df9b41778598f762aecb655bb22dbd0c80e22abc50bcdd36e324a2e004bc695743f8cca25671448f0b5baaabba3ee73bb1e868fead0cd757
+  checksum: 30c7b9a10418a5570cfb0a6eae4a039e6495bfb1d36f39dd98391cf748392418759bb9934a39a03f4ed9706cb6585224a87528a5ef054ac3fa8a49191081683c
   languageName: node
   linkType: hard
 
@@ -15368,13 +15368,13 @@ __metadata:
     "@topmonks/pulumi-aws": 2.2.5
     "@types/firefox-webext-browser": 109.0.0
     "@types/node": 18.13.0
-    "@types/ramda": 0.28.22
+    "@types/ramda": 0.28.23
     "@types/whatwg-url": 11.0.0
     "@typescript-eslint/eslint-plugin": 5.51.0
     "@typescript-eslint/parser": 5.51.0
     abort-controller: 3.0.0
     ava: 5.2.0
-    aws-sdk: 2.1312.0
+    aws-sdk: 2.1313.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
