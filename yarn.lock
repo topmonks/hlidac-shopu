@@ -5341,7 +5341,7 @@ __metadata:
     apify: 3.1.2
     apify-cli: 0.14.1
     core-async: 2.0.6
-    eslint: 8.33.0
+    eslint: 8.34.0
   languageName: unknown
   linkType: soft
 
@@ -5432,7 +5432,7 @@ __metadata:
     "@material/snackbar": 14.0.0
     "@material/top-app-bar": 14.0.0
     "@thi.ng/atom": 5.1.31
-    eslint: 8.33.0
+    eslint: 8.34.0
     eslint-config-prettier: 8.6.0
     eslint-plugin-compat: 4.1.1
     eslint-plugin-es: 4.1.0
@@ -12853,9 +12853,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.33.0":
-  version: 8.33.0
-  resolution: "eslint@npm:8.33.0"
+"eslint@npm:8.34.0":
+  version: 8.34.0
+  resolution: "eslint@npm:8.34.0"
   dependencies:
     "@eslint/eslintrc": ^1.4.1
     "@humanwhocodes/config-array": ^0.11.8
@@ -12898,7 +12898,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 727e63ab8b7acf281442323c5971f6afdd5b656fbcebc4476cf54e35af51b2f180617433fc5e1952f0449ca3f43a905527f9407ea4b8a7ea7562fc9c3f278d4c
+  checksum: 4e13e9eb05ac2248efbb6acae0b2325091235d5c47ba91a4775c7d6760778cbcd358a773ebd42f4629d2ad89e27c02f5d66eb1f737d75d9f5fc411454f83b2e5
   languageName: node
   linkType: hard
 
@@ -15381,7 +15381,7 @@ __metadata:
     date-fns: 2.29.3
     dotenv-cli: 7.0.0
     esbuild: 0.17.7
-    eslint: 8.33.0
+    eslint: 8.34.0
     eslint-config-prettier: 8.6.0
     eslint-plugin-compat: 4.1.1
     eslint-plugin-es: 4.1.0
@@ -15400,7 +15400,7 @@ __metadata:
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
     stylelint: 14.16.1
-    stylelint-config-prettier: 9.0.4
+    stylelint-config-prettier: 9.0.5
     web-ext: 7.5.0
     web-ext-submit: 7.5.0
   languageName: unknown
@@ -23329,15 +23329,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-prettier@npm:9.0.4":
-  version: 9.0.4
-  resolution: "stylelint-config-prettier@npm:9.0.4"
+"stylelint-config-prettier@npm:9.0.5":
+  version: 9.0.5
+  resolution: "stylelint-config-prettier@npm:9.0.5"
   peerDependencies:
-    stylelint: ">=11.0.0"
+    stylelint: ">= 11.x < 15"
   bin:
     stylelint-config-prettier: bin/check.js
     stylelint-config-prettier-check: bin/check.js
-  checksum: cf94f646f6b1756a9e41940524a8c276ec05be9a2a02907fee6cb4ebdc39e3a9049c96ec97e79cc3f3c0487f5870c81b3d68b0a65d1ee81cd9d7700420788cee
+  checksum: 3d04e463e0bb7e42a5ddec49eea6ef4ea07705d887e8a3ff1fcb82278a5e2bec1a36b8498ea7ed2d24878de29d7c94ac75b1d3ac4f8b19c3a84970595b29261f
   languageName: node
   linkType: hard
 
