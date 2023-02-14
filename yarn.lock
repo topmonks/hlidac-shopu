@@ -15415,7 +15415,7 @@ __metadata:
     ramda: 0.28.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
-    stylelint: 15.0.0
+    stylelint: 15.1.0
     stylelint-config-prettier: 9.0.5
     web-ext: 7.5.0
     web-ext-submit: 7.5.0
@@ -23364,9 +23364,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint@npm:15.0.0":
-  version: 15.0.0
-  resolution: "stylelint@npm:15.0.0"
+"stylelint@npm:15.1.0":
+  version: 15.1.0
+  resolution: "stylelint@npm:15.1.0"
   dependencies:
     "@csstools/css-parser-algorithms": ^2.0.1
     "@csstools/css-tokenizer": ^2.0.1
@@ -23412,7 +23412,7 @@ __metadata:
     write-file-atomic: ^5.0.0
   bin:
     stylelint: bin/stylelint.js
-  checksum: 843afe1d41a772a69fafd2d58be67d5a45018f0ea546a2d41f2274cad0e24f7e0d5e6c93b17b34189fda83566fcbd722a57b3f47302a120342ffc99402c262c1
+  checksum: 65cb90cf52fd6214999affd4463090ad52fa2735471987a79860028ed8b4149670158fd56e2c2c7f0efff3d7070329ba167a0fa1c4bfc0cd79dc841ed113a20e
   languageName: node
   linkType: hard
 
