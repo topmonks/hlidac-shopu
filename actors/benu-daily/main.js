@@ -5,7 +5,7 @@ import {
   invalidateCDN,
   uploadToS3v2
 } from "@hlidac-shopu/actors-common/product.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
+import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -52,8 +52,10 @@ function extractProduct(document) {
     .textContent.trim();
   const jsonData = JSON.parse(script);
   const itemId = jsonData.identifier;
+  console.log("itemId:", itemId); // TODO: remove!
   const itemUrl = jsonData.url;
-  if (!itemId || !itemUrl) return;
+  console.log("itemUrl:", itemUrl); // TODO: remove!
+  if (!itemId || !itemUrl) return null;
   const { offers } = jsonData;
   const currentPrice = offers.price;
   const originalPriceEl = document.querySelector(
@@ -150,9 +152,9 @@ async function main() {
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
+    urls: 0,
     pages: 0,
     items: 0,
-    itemsDuplicity: 0,
     failed: 0
   });
 
@@ -235,17 +237,21 @@ async function main() {
           {
             log.info(`START with product ${request.url}`);
             const result = extractProduct(document);
-            await Promise.all([
-              uploadToS3v2(s3, result, {
-                priceCurrency: "CZK",
-                inStock: true
-              }),
-              Dataset.pushData(result)
-            ]);
+            if (result) {
+              await Promise.all([
+                uploadToS3v2(s3, result, {
+                  priceCurrency: "CZK",
+                  inStock: true
+                }),
+                Dataset.pushData(result)
+              ]);
+              stats.inc("items");
+            }
             log.info(`END with product ${request.url}`);
           }
           break;
       }
+      stats.inc("urls");
     },
     failedRequestHandler({ request, log }, error) {
       log.error(
