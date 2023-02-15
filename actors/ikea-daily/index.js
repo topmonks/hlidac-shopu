@@ -13,7 +13,7 @@ import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -53,7 +53,7 @@ const locales = new Map([
  */
 function startUrl(country) {
   const locale = locales.get(country);
-  return `https://www.ikea.com/${locale}/cat/products-index-index/`;
+  return `https://sik.search.blue.cdtapps.com/${locale}/special?special=all&size=24&subcategories-style=tree-navigation&c=lf&v=20220826&sort=RELEVANCE`;
 }
 
 /**
@@ -65,17 +65,6 @@ function feedUrl(country, page) {
   const start = (page - 1) * 100;
   const end = start + 100;
   return `https://sik.search.blue.cdtapps.com/${locale}/special/more-products?special=all&start=${start}&end=${end}&subcategories-style=tree-navigation&c=lf&v=20211124&sort=RELEVANCE`;
-}
-
-/**
- * Get total items count from document
- * @param {Document} document
- * @returns {number} Total count
- */
-function getTotalCount(document) {
-  const productList = document.querySelector(".js-product-list[data-category]");
-  const { totalCount } = JSON.parse(productList.dataset.category);
-  return totalCount;
 }
 
 /**
@@ -142,10 +131,9 @@ function processIndex(json) {
   return requests;
 }
 
-function processTotalCount(body, country) {
+function processTotalCount(json, country) {
   const requests = [];
-  const document = html(body);
-  const count = getTotalCount(document);
+  const count = json.specialPage.productCount;
   const pages = Math.ceil(count / 100);
   for (let page = 1; page <= pages; page++) {
     requests.push({
@@ -186,8 +174,13 @@ async function handleResponse({ request, body, json, requestQueue, country }) {
   });
   switch (request.userData.label) {
     case Label.Start: {
-      const requests = processTotalCount(body, country);
-      const { processedRequests } = await requestQueue.addRequests(requests);
+      const requests = processTotalCount(json, country);
+      const { processedRequests, ...rest } = await requestQueue.addRequests(
+        requests,
+        {
+          forefront: true
+        }
+      );
       return processedRequests.length;
     }
     case Label.Index: {
