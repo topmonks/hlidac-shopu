@@ -52,9 +52,7 @@ function extractProduct(document) {
     .textContent.trim();
   const jsonData = JSON.parse(script);
   const itemId = jsonData.identifier;
-  console.log("itemId:", itemId); // TODO: remove!
   const itemUrl = jsonData.url;
-  console.log("itemUrl:", itemUrl); // TODO: remove!
   if (!itemId || !itemUrl) return null;
   const { offers } = jsonData;
   const currentPrice = offers.price;
@@ -193,7 +191,9 @@ async function main() {
             });
             log.info(`Found ${allCategories.length} allCategories.`);
             stats.add("categories", allCategories.length);
-            await crawler.requestQueue.addRequests(allCategories);
+            await crawler.requestQueue.addRequests(allCategories, {
+              forefront: true
+            });
           }
           break;
         case Labels.PAGE:

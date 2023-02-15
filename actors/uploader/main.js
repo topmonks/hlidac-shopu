@@ -71,14 +71,9 @@ async function processItems(
   stats
 ) {
   const validItems = [];
-  const uniqueIds = new Set();
   // update the objects to be properly flatten and remove failed items
   const start = Date.now();
   for (let item of items.reverse()) {
-    // use latest items
-    if (uniqueIds.has(item.itemId)) continue;
-    uniqueIds.add(item.itemId);
-
     // we can do some transformation here
     let priceFeedOnly = false;
     switch (tableName) {
