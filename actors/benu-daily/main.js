@@ -51,7 +51,7 @@ function extractProduct(document) {
     .querySelector("#snippet-productRichSnippet-richSnippet")
     .textContent.trim();
   const jsonData = JSON.parse(script);
-  const itemId = jsonData.identifier;
+  const itemId = jsonData.identifier; // can have several identical IDs and differ only in the URL
   const itemUrl = jsonData.url;
   if (!itemId || !itemUrl) return null;
   const { offers } = jsonData;

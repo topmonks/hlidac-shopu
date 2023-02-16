@@ -10,7 +10,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
-import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -286,7 +286,7 @@ function productsFromCoffeeCategory({
   return items;
 }
 
-async function savaProducts({ products, s3 }) {
+async function saveProducts({ products, s3 }) {
   return Promise.allSettled([
     Dataset.pushData(products),
     Promise.allSettled(
@@ -349,7 +349,7 @@ async function main() {
               currency,
               country
             });
-            await savaProducts({ products, s3 });
+            await saveProducts({ products, s3 });
           }
           break;
         case Labels.CATEGORY:
@@ -378,7 +378,7 @@ async function main() {
               }));
             await Promise.allSettled([
               crawler.addRequests(subCategoriesRequests),
-              savaProducts({ products, s3 })
+              saveProducts({ products, s3 })
             ]);
           }
           break;

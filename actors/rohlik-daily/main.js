@@ -13,7 +13,7 @@ import { choices, partition, take, transduce, push } from "@thi.ng/transducers";
 import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
 import { co, Channel } from "core-async";
-import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 

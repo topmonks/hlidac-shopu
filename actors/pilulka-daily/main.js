@@ -12,7 +12,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @enum {string} */
 export const Labels = {

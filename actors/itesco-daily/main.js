@@ -13,7 +13,7 @@ import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { S3Client } from "@aws-sdk/client-s3";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 

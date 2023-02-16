@@ -12,7 +12,7 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
-import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 

@@ -5,7 +5,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { gql } from "graphql-tag";
 import { Dataset, HttpCrawler } from "@crawlee/http";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 const PAGE_LIMIT = 80;
 const GET_CAMPAIGN = gql`
