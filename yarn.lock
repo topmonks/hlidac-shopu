@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/fetch@npm:4.0.1":
-  version: 4.0.1
-  resolution: "@adobe/fetch@npm:4.0.1"
+"@adobe/fetch@npm:4.0.2":
+  version: 4.0.2
+  resolution: "@adobe/fetch@npm:4.0.2"
   dependencies:
     debug: 4.3.4
     http-cache-semantics: 4.1.1
     lru-cache: 7.14.1
-  checksum: 07729e622a27c3359b309b268f4b7ad3b1a4c07fbf6d28815c24964cfcb9af1574108fc8def848fe9163f4fc9ccb2d232c1bdf6e753386c041d1a7354a2a767a
+  checksum: a2a0729f48e5f65b557d9125653f45e99333851239a5e742ae4607ed1149f1395ee25529c0a534bc7e82a13c4b7a4216da727401ab78e8fca10d4965435b7ed2
   languageName: node
   linkType: hard
 
@@ -4914,7 +4914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/fetch": 4.0.1
+    "@adobe/fetch": 4.0.2
     "@aws-sdk/client-dynamodb": 3.267.0
     "@aws-sdk/client-s3": 3.267.0
     "@aws-sdk/util-dynamodb": 3.267.0
@@ -5071,7 +5071,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/fetch": 4.0.1
+    "@adobe/fetch": 4.0.2
     "@aws-sdk/client-cloudfront": 3.267.0
     "@aws-sdk/client-s3": 3.267.0
     "@crawlee/http": 3.2.2
@@ -9024,9 +9024,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1313.0":
-  version: 2.1313.0
-  resolution: "aws-sdk@npm:2.1313.0"
+"aws-sdk@npm:2.1314.0":
+  version: 2.1314.0
+  resolution: "aws-sdk@npm:2.1314.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9038,7 +9038,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 30c7b9a10418a5570cfb0a6eae4a039e6495bfb1d36f39dd98391cf748392418759bb9934a39a03f4ed9706cb6585224a87528a5ef054ac3fa8a49191081683c
+  checksum: bfe8bda40f3baca4d247435ccef7bf7b4572e18321e7788281f17a4f53621de5c6ae4a553c2bef051804966c739092352e80af0910998af634b9fd4acbc59d4e
   languageName: node
   linkType: hard
 
@@ -15380,7 +15380,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/fetch": 4.0.1
+    "@adobe/fetch": 4.0.2
     "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
@@ -15400,7 +15400,7 @@ __metadata:
     "@typescript-eslint/parser": 5.51.0
     abort-controller: 3.0.0
     ava: 5.2.0
-    aws-sdk: 2.1313.0
+    aws-sdk: 2.1314.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
