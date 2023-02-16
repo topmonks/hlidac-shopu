@@ -453,6 +453,10 @@ async function main() {
     tableName
   } = input;
 
+  if (!tableName) {
+    throw new Error("tableName is missing in INPUT");
+  }
+
   const limit = manualLimit ?? 10000;
 
   const loadedStats = await Actor.getValue("STATS");
