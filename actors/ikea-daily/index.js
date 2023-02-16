@@ -9,7 +9,6 @@ import {
 } from "@hlidac-shopu/actors-common/product.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
@@ -196,9 +195,9 @@ async function handleResponse({ request, body, json, requestQueue, country }) {
 /**
  * @param {Type} type
  * @param {Stats} stats
- * @param {string} startUrl
+ * @param {string} country
  */
-function processResult(type, stats, startUrl) {
+function processResult(type, stats, country) {
   switch (type) {
     case Type.Test:
       return async (label, data) => {
@@ -232,7 +231,7 @@ function processResult(type, stats, startUrl) {
       return async (label, data) => {
         if (label === Label.Detail) {
           await uploadToS3v2(s3, toProduct(data));
-          await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopName(startUrl));
+          await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `ikea_${country}`);
         }
       };
   }
@@ -258,7 +257,7 @@ export async function main() {
     failed: 0
   });
 
-  const processData = processResult(type, stats, startUrl(country));
+  const processData = processResult(type, stats, country);
 
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 600,
@@ -287,10 +286,7 @@ export async function main() {
       : [{ url: startUrl(country), userData: { label: Label.Start } }];
   await crawler.run(sources);
 
-  await Promise.all([
-    stats.save(true),
-    uploadToKeboola(shopName(startUrl(country)))
-  ]);
+  await Promise.all([stats.save(true), uploadToKeboola(`ikea_${country}`)]);
 
   // COUNT
   // push totalCount to dataset
