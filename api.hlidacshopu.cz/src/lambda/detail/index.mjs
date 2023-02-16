@@ -73,6 +73,17 @@ export async function handler(event) {
     );
   }
 
+  const slug = shop.itemId ?? shop.itemUrl;
+  if (!slug) {
+    return withCORS(["GET", "OPTIONS"])(
+      notFound({
+        error: "Missing slug",
+        shop
+      })
+    );
+  }
+  console.log("slug", slug);
+
   if (params.currentPrice && params.currentPrice !== "null") {
     // store parsed data by extension
     putParsedData(db, shop, params).catch(err =>
@@ -83,8 +94,6 @@ export async function handler(event) {
   try {
     const now = Date.now();
     console.time(`data fetching ${now}`);
-    const slug = shop.itemId ?? shop.itemUrl;
-    console.log("slug", slug);
     const [meta, priceHistory, extraData] = await Promise.all([
       getMetadataFromS3(s3, shop.origin, slug),
       getHistoricalDataFromS3(s3, shop.origin, slug),
