@@ -16,15 +16,14 @@ let result;
 async function build() {
   try {
     const start = process.hrtime();
-    result = await esbuild.build({
+    result = await esbuild.context({
       color: true,
       entryPoints: [entryPoint],
       outfile: output,
       bundle: true,
       sourcemap: true,
       target: ["es2017", "firefox57", "safari12"],
-      charset: "utf8",
-      incremental: true
+      charset: "utf8"
     });
     fs.copyFileSync(output, outputFF);
     const end = process.hrtime(start);
