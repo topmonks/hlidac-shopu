@@ -3,37 +3,24 @@ import { Shop } from "./shop.mjs";
 
 export class Tchibo extends Shop {
   async scrape() {
-    const elem = document.querySelector(".c-tp-simplebutton--order");
+    const elem = document.querySelector(".pdp-buybox__add-to-cart-container");
     if (!elem) return;
     const itemUrl = document.location.href;
-    const itemId = itemUrl.match(/-p(\d+)\.html/)?.[1];
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice(".c-tp-price-currentprice");
-    const originalPrice = cleanPrice(".c-tp-price-oldprice .c-tp-price-output");
+    const itemId = itemUrl.split("/").at(-2);
+    const title = document
+      .querySelector(".pdp-buybox__title")
+      .textContent.trim();
+    const currentPrice = cleanPrice(".tp-price-current");
+    const originalPrice = cleanPrice(".tp-price-previous .tp-price-value");
     const imageUrl = document.querySelector(
-      ".m-tp-productimagegallery-preview-wrapper > a > img"
+      ".tp-imagegallery-main-container img"
     )?.src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
   inject(renderMarkup) {
-    let elem = document.querySelector(
-      ".m-tp-base-column--leftaligned .c-tp-simplebutton--order"
-    );
-    console.log(elem);
-    if (elem) {
-      const markup = renderMarkup();
-      elem.insertAdjacentElement("afterend", markup);
-      return elem;
-    }
-
-    // eng variant
-    elem = document.querySelector("#carButtons .testdrive-bonus");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const table = document.querySelector("#carButtons table");
-    table.style.position = "relative";
+    const elem = document.querySelector(".crosschannel-panel");
     const markup = renderMarkup();
     elem.insertAdjacentElement("afterend", markup);
     return elem;

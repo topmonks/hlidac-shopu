@@ -10,7 +10,8 @@ export class Shop {
   inject(renderMarkup) {
     const [position, selector, extraStyles] = this.injectionPoint;
     const elem = document.querySelector(selector);
-    if (!elem) throw new Error(`Element to add chart not found; selector: ${selector}`);
+    if (!elem)
+      throw new Error(`Element to add chart not found; selector: ${selector}`);
     elem.insertAdjacentElement(position, renderMarkup(extraStyles));
     return elem;
   }
