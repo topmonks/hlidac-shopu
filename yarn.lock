@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/fetch@npm:4.0.2":
-  version: 4.0.2
-  resolution: "@adobe/fetch@npm:4.0.2"
+"@adobe/fetch@npm:4.0.3":
+  version: 4.0.3
+  resolution: "@adobe/fetch@npm:4.0.3"
   dependencies:
     debug: 4.3.4
     http-cache-semantics: 4.1.1
     lru-cache: 7.14.1
-  checksum: a2a0729f48e5f65b557d9125653f45e99333851239a5e742ae4607ed1149f1395ee25529c0a534bc7e82a13c4b7a4216da727401ab78e8fca10d4965435b7ed2
+  checksum: e01a7b912ea5bfdecdc87042928bbee5f90e17df48a0d6c138fd98e0725357fe93ee3097eb459d2d6b605a95af73129f8cd281da9d0bf0a9a136e4720d752edb
   languageName: node
   linkType: hard
 
@@ -4914,7 +4914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/fetch": 4.0.2
+    "@adobe/fetch": 4.0.3
     "@aws-sdk/client-dynamodb": 3.267.0
     "@aws-sdk/client-s3": 3.267.0
     "@aws-sdk/util-dynamodb": 3.267.0
@@ -5071,7 +5071,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/fetch": 4.0.2
+    "@adobe/fetch": 4.0.3
     "@aws-sdk/client-cloudfront": 3.267.0
     "@aws-sdk/client-s3": 3.267.0
     "@crawlee/http": 3.2.2
@@ -15380,7 +15380,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/fetch": 4.0.2
+    "@adobe/fetch": 4.0.3
     "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
