@@ -1,9 +1,9 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, log, KeyValueStore, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import { parseHTML } from "linkedom/cached";
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { HttpCrawler } from "@crawlee/http";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
@@ -379,27 +379,16 @@ async function main() {
     useApifyProxy: !development && !debug
   });
 
-  const crawler = new PlaywrightCrawler({
-    maxRequestsPerMinute: 300,
+  const crawler = new HttpCrawler({
+    maxRequestsPerMinute: 400,
     proxyConfiguration,
     maxRequestRetries,
-    navigationTimeoutSecs: 120,
-    launchContext: {
-      launchOptions: { headless: false }
-    },
     async requestHandler(context) {
-      const { request, page, log, saveSnapshot } = context;
+      const { request, page, log, saveSnapshot, body } = context;
       const { label } = request.userData;
       log.info("processing page", { url: request.url, label });
 
-      await page.waitForLoadState("networkidle", { timeout: 0 });
-
-      if (debug) {
-        await page.locator(".cookie-alert-decline-button").click();
-        await saveSnapshot({});
-      }
-      const html = await page.content();
-      const { document } = parseHTML(html);
+      const { document } = parseHTML(body.toString());
 
       switch (label) {
         case Labels.DETAIL:
@@ -436,9 +425,6 @@ async function main() {
           }
           const products = extractProducts({ document, stats, processedIds });
           await Dataset.pushData(products);
-          break;
-        case Labels.LIDL_SHOP_DETAIL:
-          // return scrapeShopDetail({ ...context, document });
           break;
         case Labels.LIDL_SHOP_MAIN_CAT:
           await crawler.requestQueue.addRequests(
