@@ -1,9 +1,13 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Prozdravi extends Shop {
+export class Prozdravi extends AsyncShop {
   get injectionPoint() {
     return ["afterend", ".justify-content-end"];
+  }
+
+  get waitForSelector() {
+    return ".delivery-info";
   }
 
   async scrape() {
