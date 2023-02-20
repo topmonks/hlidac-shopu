@@ -4920,7 +4920,7 @@ __metadata:
     "@aws-sdk/util-dynamodb": 3.271.0
     "@hlidac-shopu/lib": 1.3.10
     ava: 5.2.0
-    c8: 7.12.0
+    c8: 7.13.0
     chai: 4.3.7
     date-fns: 2.29.3
     ramda: 0.28.0
@@ -5420,7 +5420,7 @@ __metadata:
     "@types/node": 18.13.0
     apify: 3.1.2
     apify-cli: 0.14.1
-    fingerprint-generator: 2.1.8
+    fingerprint-generator: 2.1.10
     fingerprint-injector: 2.1.7
     playwright: 1.30.0
     proxy-agent: ^5.0.0
@@ -9024,9 +9024,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1315.0":
-  version: 2.1315.0
-  resolution: "aws-sdk@npm:2.1315.0"
+"aws-sdk@npm:2.1317.0":
+  version: 2.1317.0
+  resolution: "aws-sdk@npm:2.1317.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9038,7 +9038,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: d45298bf87961b18fac50383739d0ec77b016679ba646264ea257e1e810b0a8f231f49127b11b145ad36e07432377cd4740c78a07118d71fd9ffae3efbc20fcb
+  checksum: 52f618993cf92bffd22d67bb0e37a88435f56bb486216bc1da38dbd1b638012d0127c22eecda3ec0cea02880874fc5203ec5bd0582425c9154180eadd5407c0e
   languageName: node
   linkType: hard
 
@@ -9765,9 +9765,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c8@npm:7.12.0":
-  version: 7.12.0
-  resolution: "c8@npm:7.12.0"
+"c8@npm:7.13.0":
+  version: 7.13.0
+  resolution: "c8@npm:7.13.0"
   dependencies:
     "@bcoe/v8-coverage": ^0.2.3
     "@istanbuljs/schema": ^0.1.3
@@ -9783,7 +9783,7 @@ __metadata:
     yargs-parser: ^20.2.9
   bin:
     c8: bin/c8.js
-  checksum: 3b7fa9ad7cff2cb0bb579467e6b544498fbd46e9353a809ad3b8cf749df4beadd074cde277356b0552f3c8055b1b3ec3ebaf2209e9ad4bdefed92dbf64d283ab
+  checksum: 491abf4cf3097cdcfd24dbac49162f1383861c22c77fdd9280bcd38240e1e07d2c6a59da5d4df59a61a8204e2fc297d31fd526e495faf8d2f20dcc12a37b144c
   languageName: node
   linkType: hard
 
@@ -10335,16 +10335,6 @@ __metadata:
   dependencies:
     got: ^11.8.2
   checksum: 3acf54abf642c8e2e95f6d68068b9a10d296411ee32941e3a40ae645bd4de6e050c99fee1a612845f1ab188acc1cf4832495718211118a927f3c2a07fa14cdd0
-  languageName: node
-  linkType: hard
-
-"chromium-bidi@npm:0.4.3":
-  version: 0.4.3
-  resolution: "chromium-bidi@npm:0.4.3"
-  peerDependencies:
-    devtools-protocol: "*"
-    mitt: "*"
-  checksum: 280c3b5c2315847cf25b5e356a43f915dea1205f27a8fb10443fad6832d8e08c1878e3b62104c50a27bf4fd6d07868882187b5226195a5bacb9f572f9940f7fb
   languageName: node
   linkType: hard
 
@@ -13641,14 +13631,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.8":
-  version: 2.1.8
-  resolution: "fingerprint-generator@npm:2.1.8"
+"fingerprint-generator@npm:2.1.10":
+  version: 2.1.10
+  resolution: "fingerprint-generator@npm:2.1.10"
   dependencies:
-    generative-bayesian-network: ^2.1.8
-    header-generator: ^2.1.8
+    generative-bayesian-network: ^2.1.10
+    header-generator: ^2.1.10
     tslib: ^2.4.0
-  checksum: 78094ed90f781ccb9f82b7122d29b626735de893bac33e31017ee8738dc5a5b05cb883a1441b62ea7c79954cc6afa5482056c06114328101d7f652adb3d01015
+  checksum: af17fe8f8462cf2819a025ab3b6d5be13b89961e2e44a9c797a5d1b9307bf26393f35d111ca62af900e04922bfd176d84cc181be4126441a0d1435813733aadb
   languageName: node
   linkType: hard
 
@@ -14189,6 +14179,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"generative-bayesian-network@npm:^2.1.10":
+  version: 2.1.10
+  resolution: "generative-bayesian-network@npm:2.1.10"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: 71ce9a3c2f56d77b996933bac0dfac410f818cdde6f6632dd0ae3aed2a0171f57860e68985dc5d77f783c582b6cd2334e8dee89add2af1f1c1db18ef5dc7ae76
+  languageName: node
+  linkType: hard
+
 "generative-bayesian-network@npm:^2.1.4":
   version: 2.1.4
   resolution: "generative-bayesian-network@npm:2.1.4"
@@ -14206,16 +14206,6 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: f2379df539f066295023bfec2f1db96109d7c9945463f84e1f6a25352a8b03bcc3bc2c07f5c24234a9c5a4fa3f73d27883f440abb02a3804e028bfdfec21271a
-  languageName: node
-  linkType: hard
-
-"generative-bayesian-network@npm:^2.1.8":
-  version: 2.1.8
-  resolution: "generative-bayesian-network@npm:2.1.8"
-  dependencies:
-    adm-zip: ^0.5.9
-    tslib: ^2.4.0
-  checksum: 8b45b979fee4c8b4fb96c0e6f2fa3a73ccf8393e152516bfaeb6685d87f6c659c4b1f705fd3f35c61905ef12c87b600e6aae99f4354474c85a2234bf29541d3b
   languageName: node
   linkType: hard
 
@@ -15327,6 +15317,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"header-generator@npm:^2.1.10":
+  version: 2.1.10
+  resolution: "header-generator@npm:2.1.10"
+  dependencies:
+    browserslist: ^4.21.1
+    generative-bayesian-network: ^2.1.10
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: bb92c9ab9cca5c0d01a56d4727a40d4c909ebc333f806435374c228eb9421942e418d23d0066c1300190016b5b7513084f91afd8e9aed2712d7b20f195e46d72
+  languageName: node
+  linkType: hard
+
 "header-generator@npm:^2.1.3":
   version: 2.1.3
   resolution: "header-generator@npm:2.1.3"
@@ -15363,18 +15365,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"header-generator@npm:^2.1.8":
-  version: 2.1.8
-  resolution: "header-generator@npm:2.1.8"
-  dependencies:
-    browserslist: ^4.21.1
-    generative-bayesian-network: ^2.1.8
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 8ab93a84e41b2cc67b0822627b86001d4779a765d691cd58d08e254dd87f12baada9954881d192b5b105ec43b4823d741d65f1212dee442c235df72b8093b52f
-  languageName: node
-  linkType: hard
-
 "hlidac-shopu@workspace:.":
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
@@ -15399,7 +15389,7 @@ __metadata:
     "@typescript-eslint/parser": 5.52.0
     abort-controller: 3.0.0
     ava: 5.2.0
-    aws-sdk: 2.1315.0
+    aws-sdk: 2.1317.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
@@ -15420,7 +15410,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.18.0
     prettier: 2.8.4
-    puppeteer: 19.7.0
+    puppeteer: 19.7.1
     ramda: 0.28.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -20729,11 +20719,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:19.7.0":
-  version: 19.7.0
-  resolution: "puppeteer-core@npm:19.7.0"
+"puppeteer-core@npm:19.7.1":
+  version: 19.7.1
+  resolution: "puppeteer-core@npm:19.7.1"
   dependencies:
-    chromium-bidi: 0.4.3
     cross-fetch: 3.1.5
     debug: 4.3.4
     devtools-protocol: 0.0.1094867
@@ -20745,11 +20734,14 @@ __metadata:
     unbzip2-stream: 1.4.3
     ws: 8.11.0
   peerDependencies:
+    chromium-bidi: 0.4.3
     typescript: ">= 4.7.4"
   peerDependenciesMeta:
+    chromium-bidi:
+      optional: true
     typescript:
       optional: true
-  checksum: a4d41a1f4b5e4088a2fe11b774efaea0b7634236a6da1f8e27590e1d737bf7fe3593829c8ffca53e7a945bf8c6c174891ba1bc0ed7e73c03af81d077af5da782
+  checksum: 5910357f691d6437e7a80aab08b07003ef3362d30ff030fce4cfceec71e425ba0acb111409040f21c3f620e079cfe5a31bc0fa2a9b2dde414e9b92d63fc9dbee
   languageName: node
   linkType: hard
 
@@ -20773,16 +20765,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:19.7.0":
-  version: 19.7.0
-  resolution: "puppeteer@npm:19.7.0"
+"puppeteer@npm:19.7.1":
+  version: 19.7.1
+  resolution: "puppeteer@npm:19.7.1"
   dependencies:
     cosmiconfig: 8.0.0
     https-proxy-agent: 5.0.1
     progress: 2.0.3
     proxy-from-env: 1.1.0
-    puppeteer-core: 19.7.0
-  checksum: 46d8ad795126864a1da58777b60b12671e5c96ece4b2c352fe1cf0b8d4f6db5b4c2fe78bd5dbde69dadc479a3db6138c21e28786d8827996c2f733da0e02074f
+    puppeteer-core: 19.7.1
+  checksum: 4ea02c6f436fe02c393fd617cc4d7f349a0e0b8b707893f4a068ae05fffd37a8e3cca6e0aeaf2f530de1649e9592050784bfdbf44a4d85cffd1f457e731caec1
   languageName: node
   linkType: hard
 
