@@ -171,6 +171,9 @@ async function main() {
   }
 
   const crawler = new PlaywrightCrawler({
+    autoscaledPoolOptions: {
+      autoscaleIntervalSecs: 5
+    },
     maxRequestRetries,
     useSessionPool: true,
     persistCookiesPerSession: true,
