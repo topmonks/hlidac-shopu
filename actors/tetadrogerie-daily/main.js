@@ -160,6 +160,9 @@ async function main() {
   });
 
   const crawler = new PlaywrightCrawler({
+    autoscaledPoolOptions: {
+      autoscaleIntervalSecs: 5
+    },
     proxyConfiguration,
     maxRequestsPerMinute: 600,
     maxRequestRetries,
