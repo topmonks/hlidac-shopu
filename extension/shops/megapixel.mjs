@@ -9,7 +9,7 @@ export class Megapixel extends Shop {
   async scrape() {
     const elem = document.querySelector("div#snippet--price");
     if (!elem) return;
-    const linkElement = document.querySelector("a.service-list__link");
+    const linkElement = document.querySelector("link[rel=canonical]");
     if (!linkElement) return;
     const url = new URL(linkElement.href);
     const itemId = url.searchParams.get("produkt");
