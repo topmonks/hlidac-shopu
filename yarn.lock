@@ -5442,8 +5442,8 @@ __metadata:
     "@types/node": 18.14.1
     apify: 3.1.2
     apify-cli: 0.14.1
-    fingerprint-generator: 2.1.10
-    fingerprint-injector: 2.1.7
+    fingerprint-generator: 2.1.12
+    fingerprint-injector: 2.1.12
     playwright: 1.31.1
     proxy-agent: ^5.0.0
     random-mua: ^0.5.0
@@ -13674,14 +13674,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.10":
-  version: 2.1.10
-  resolution: "fingerprint-generator@npm:2.1.10"
+"fingerprint-generator@npm:2.1.12":
+  version: 2.1.12
+  resolution: "fingerprint-generator@npm:2.1.12"
   dependencies:
     generative-bayesian-network: ^2.1.10
-    header-generator: ^2.1.10
+    header-generator: ^2.1.12
     tslib: ^2.4.0
-  checksum: af17fe8f8462cf2819a025ab3b6d5be13b89961e2e44a9c797a5d1b9307bf26393f35d111ca62af900e04922bfd176d84cc181be4126441a0d1435813733aadb
+  checksum: 83b74ac6a21ec343a304c218542f296b74d49e13335371c1507195ae52dd9b5bffdb6312b8829d0c525a56066f11a90812e349e36cada19a838f54829d572aea
   languageName: node
   linkType: hard
 
@@ -13696,22 +13696,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "fingerprint-generator@npm:2.1.7"
+"fingerprint-generator@npm:^2.1.12":
+  version: 2.1.14
+  resolution: "fingerprint-generator@npm:2.1.14"
   dependencies:
-    generative-bayesian-network: ^2.1.7
-    header-generator: ^2.1.7
+    generative-bayesian-network: ^2.1.13
+    header-generator: ^2.1.14
     tslib: ^2.4.0
-  checksum: 0abd10348b3916a59d87cf7e907e191c2550a8664c50e8fc0506fa74da94d6f980b2ee5d8cb2033576cc9bd2b963509152ddae433fa74bf2394c6997a2ca0f35
+  checksum: e56520c99ea83c2c859bf33a0eac38a79f629dec7503d741767891ba7d95a5cea1d0e89b56505c2786ea1fe51568a49718cd247abf677ab7d2bd04532192eb0e
   languageName: node
   linkType: hard
 
-"fingerprint-injector@npm:2.1.7":
-  version: 2.1.7
-  resolution: "fingerprint-injector@npm:2.1.7"
+"fingerprint-injector@npm:2.1.12":
+  version: 2.1.12
+  resolution: "fingerprint-injector@npm:2.1.12"
   dependencies:
-    fingerprint-generator: ^2.1.7
+    fingerprint-generator: ^2.1.12
     tslib: ^2.4.0
   peerDependencies:
     playwright: ^1.22.2
@@ -13721,7 +13721,7 @@ __metadata:
       optional: true
     puppeteer:
       optional: true
-  checksum: bda11d3885e386c13ab1c2815ed2d630a225cec722505e3c02963e8a975e0f9c131e67cdb38403091a4c6ec2cc8e4d8cfa45f9d38bfc712886326f4bcb5a707d
+  checksum: 947fcb528e22e860972f30a5ef05f2d1ae546532ef7f42ea4370f85cf643620d0ef5777dd6ed5689bb3da74d3486c32b6207361b3207b95297ca78001f73c3f2
   languageName: node
   linkType: hard
 
@@ -14232,6 +14232,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"generative-bayesian-network@npm:^2.1.13":
+  version: 2.1.13
+  resolution: "generative-bayesian-network@npm:2.1.13"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: 8e6d0837e14504a94885d566acb075b51e866806db16dda3bf4634870150a924e51c8ca4d716b17f1453ea4b0aadbd223a5acd2ecaef7c67a6dc23a7e105bdd4
+  languageName: node
+  linkType: hard
+
 "generative-bayesian-network@npm:^2.1.4":
   version: 2.1.4
   resolution: "generative-bayesian-network@npm:2.1.4"
@@ -14239,16 +14249,6 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: dea5dae033966d6598124efb69428005f1ecb6f4ccd3af4ef8fd1012ae3deb56f207ddb934587a5512aea0728af905fab2882985ba2ad5af5e26a7aeb43ff788
-  languageName: node
-  linkType: hard
-
-"generative-bayesian-network@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "generative-bayesian-network@npm:2.1.7"
-  dependencies:
-    adm-zip: ^0.5.9
-    tslib: ^2.4.0
-  checksum: f2379df539f066295023bfec2f1db96109d7c9945463f84e1f6a25352a8b03bcc3bc2c07f5c24234a9c5a4fa3f73d27883f440abb02a3804e028bfdfec21271a
   languageName: node
   linkType: hard
 
@@ -15360,15 +15360,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"header-generator@npm:^2.1.10":
-  version: 2.1.10
-  resolution: "header-generator@npm:2.1.10"
+"header-generator@npm:^2.1.12, header-generator@npm:^2.1.14":
+  version: 2.1.14
+  resolution: "header-generator@npm:2.1.14"
   dependencies:
     browserslist: ^4.21.1
-    generative-bayesian-network: ^2.1.10
+    generative-bayesian-network: ^2.1.13
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: bb92c9ab9cca5c0d01a56d4727a40d4c909ebc333f806435374c228eb9421942e418d23d0066c1300190016b5b7513084f91afd8e9aed2712d7b20f195e46d72
+  checksum: c5dbadfcf1edefc119809724c82fbdf95e9af73d6a3651beaaec0051a5c4061cdc7c48c7cc0574780915608cc505cebece782371b9e55c3e0bda9dfac2d4082f
   languageName: node
   linkType: hard
 
@@ -15393,18 +15393,6 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: fd3e4949edad1d30abb3f5f72d9d7ca9392dccbd96b3e7f5095a21b0d3f92c2cc5123283947e0e12403a55e89804051562bcf3ea9a7d35751d9c4d3474403631
-  languageName: node
-  linkType: hard
-
-"header-generator@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "header-generator@npm:2.1.7"
-  dependencies:
-    browserslist: ^4.21.1
-    generative-bayesian-network: ^2.1.7
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 09b3250e0b4acc5943f7dac17d4a2f5e693258c84345af8e68d38dd7c7a6008baa98a53de997764afbb2cf33fdf49eaea4905b679b5641719e03c574957a6428
   languageName: node
   linkType: hard
 
