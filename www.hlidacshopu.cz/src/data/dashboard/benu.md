@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1cnmXQTNWO49igK_RVkBvAMFUCO4Y_gjkDl
 rating: 2
 ---
 
-Benu.cz upravilo svou metodiku výpočtu slev, nicméně stále se neshodneme na více jak 30% slev. Většina neshod jsou inzerované slevy, které jsou ale reálným zdražením.
+Benu.cz upravilo svou metodiku výpočtu slev, přiblížilo se tak pravidlům dle EU směrnice. Nicméně stále ještě nacházíme produkty v akci, které reálně nejsou zlevněné.
 
 Slovy e-shopu:
 
