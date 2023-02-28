@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq
 rating: 3
 ---
 
-Alza.cz se připravovala na novou EU směrnici již v průběhu roku 2021. Nyní počítá slevy v souladu s EU s měrnicí pro všechny nabízené produkty, nejen v ČR. Neshody u některých produktů jsou způsobeny menšími rozdíly v metodice (postupné zlěvňování a drobné slevy, které Alza.cz neukazuje vůbec)
+Alza.cz se připravovala na novou EU směrnici již v průběhu roku 2021. Nyní počítá slevy v souladu s EU směrnicí pro všechny nabízené produkty, nejen v ČR. Neshody u některých produktů jsou způsobeny menšími rozdíly v metodice (postupné zlěvňování a drobné slevy, které Alza.cz neukazuje vůbec)
 
 Slovy e-shopu:
 
