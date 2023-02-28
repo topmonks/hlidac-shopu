@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/fetch@npm:4.0.3":
-  version: 4.0.3
-  resolution: "@adobe/fetch@npm:4.0.3"
+"@adobe/fetch@npm:4.0.4":
+  version: 4.0.4
+  resolution: "@adobe/fetch@npm:4.0.4"
   dependencies:
     debug: 4.3.4
     http-cache-semantics: 4.1.1
-    lru-cache: 7.14.1
-  checksum: e01a7b912ea5bfdecdc87042928bbee5f90e17df48a0d6c138fd98e0725357fe93ee3097eb459d2d6b605a95af73129f8cd281da9d0bf0a9a136e4720d752edb
+    lru-cache: 7.17.0
+  checksum: 85bdc46db8053a51681cd92444673a978544b026fbe4d08e5c60aff7e0227936668398f0a557ee891c85e8dbedddf7e2de3e39c4804248badae0975c2fa539be
   languageName: node
   linkType: hard
 
@@ -4937,7 +4937,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/fetch": 4.0.3
+    "@adobe/fetch": 4.0.4
     "@aws-sdk/client-dynamodb": 3.278.0
     "@aws-sdk/client-s3": 3.278.0
     "@aws-sdk/util-dynamodb": 3.278.0
@@ -5094,7 +5094,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/fetch": 4.0.3
+    "@adobe/fetch": 4.0.4
     "@aws-sdk/client-cloudfront": 3.278.0
     "@aws-sdk/client-s3": 3.278.0
     "@crawlee/http": 3.2.2
@@ -5442,8 +5442,8 @@ __metadata:
     "@types/node": 18.14.1
     apify: 3.1.2
     apify-cli: 0.14.1
-    fingerprint-generator: 2.1.12
-    fingerprint-injector: 2.1.12
+    fingerprint-generator: 2.1.13
+    fingerprint-injector: 2.1.13
     playwright: 1.31.1
     proxy-agent: ^5.0.0
     random-mua: ^0.5.0
@@ -9056,9 +9056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1322.0":
-  version: 2.1322.0
-  resolution: "aws-sdk@npm:2.1322.0"
+"aws-sdk@npm:2.1323.0":
+  version: 2.1323.0
+  resolution: "aws-sdk@npm:2.1323.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -9070,7 +9070,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: a85f5af8b580adc551a15a57b58c9fd99fb07d728db34df31c37a3d543f5ae95e0dde88e221aadb0641af8dbc2c24cc7ebf5d20b8545e78d00b8fb92cc02545d
+  checksum: 2c4c7687d35f148571bcc48c258966e121b780c2d9b0b8cb81fe3089863f67d8d63e6b4ebd395d298e659c818eb4d3389d3d13c6592b5edd471f605182bd8aa3
   languageName: node
   linkType: hard
 
@@ -13674,14 +13674,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.12":
-  version: 2.1.12
-  resolution: "fingerprint-generator@npm:2.1.12"
+"fingerprint-generator@npm:2.1.13":
+  version: 2.1.13
+  resolution: "fingerprint-generator@npm:2.1.13"
   dependencies:
-    generative-bayesian-network: ^2.1.10
-    header-generator: ^2.1.12
+    generative-bayesian-network: ^2.1.13
+    header-generator: ^2.1.13
     tslib: ^2.4.0
-  checksum: 83b74ac6a21ec343a304c218542f296b74d49e13335371c1507195ae52dd9b5bffdb6312b8829d0c525a56066f11a90812e349e36cada19a838f54829d572aea
+  checksum: c547ac67a7ff605ac305a96c133b4c8130a45d994b4a7d42b40d22ca96627f405799f50f224df11e82b200d2f35924b30be5c75038bcd6016f1039e1b781a212
   languageName: node
   linkType: hard
 
@@ -13696,7 +13696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:^2.1.12":
+"fingerprint-generator@npm:^2.1.13":
   version: 2.1.14
   resolution: "fingerprint-generator@npm:2.1.14"
   dependencies:
@@ -13707,11 +13707,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-injector@npm:2.1.12":
-  version: 2.1.12
-  resolution: "fingerprint-injector@npm:2.1.12"
+"fingerprint-injector@npm:2.1.13":
+  version: 2.1.13
+  resolution: "fingerprint-injector@npm:2.1.13"
   dependencies:
-    fingerprint-generator: ^2.1.12
+    fingerprint-generator: ^2.1.13
     tslib: ^2.4.0
   peerDependencies:
     playwright: ^1.22.2
@@ -13721,7 +13721,7 @@ __metadata:
       optional: true
     puppeteer:
       optional: true
-  checksum: 947fcb528e22e860972f30a5ef05f2d1ae546532ef7f42ea4370f85cf643620d0ef5777dd6ed5689bb3da74d3486c32b6207361b3207b95297ca78001f73c3f2
+  checksum: 51c76118717cc576d32c0f547552fdc3c68b2e0c7d0447d7befbdadd1bf89cd17a97b2b98e6e6c896f9b27fc6788bb98bcd4f6328ea87622b369e067dadd67b8
   languageName: node
   linkType: hard
 
@@ -14219,16 +14219,6 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: cffc3eba5daf64ea2661236740517cd859c0e9ff1255283c3a5530f990450d1c138d78349fdf018a054f8e21aa626674dad47024ed7f1a9472077fa7a4754472
-  languageName: node
-  linkType: hard
-
-"generative-bayesian-network@npm:^2.1.10":
-  version: 2.1.10
-  resolution: "generative-bayesian-network@npm:2.1.10"
-  dependencies:
-    adm-zip: ^0.5.9
-    tslib: ^2.4.0
-  checksum: 71ce9a3c2f56d77b996933bac0dfac410f818cdde6f6632dd0ae3aed2a0171f57860e68985dc5d77f783c582b6cd2334e8dee89add2af1f1c1db18ef5dc7ae76
   languageName: node
   linkType: hard
 
@@ -15360,7 +15350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"header-generator@npm:^2.1.12, header-generator@npm:^2.1.14":
+"header-generator@npm:^2.1.13, header-generator@npm:^2.1.14":
   version: 2.1.14
   resolution: "header-generator@npm:2.1.14"
   dependencies:
@@ -15400,7 +15390,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/fetch": 4.0.3
+    "@adobe/fetch": 4.0.4
     "@babel/core": 7.21.0
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
@@ -15420,7 +15410,7 @@ __metadata:
     "@typescript-eslint/parser": 5.53.0
     abort-controller: 3.0.0
     ava: 5.2.0
-    aws-sdk: 2.1322.0
+    aws-sdk: 2.1323.0
     chokidar: 3.5.3
     chrome-webstore-upload-cli: 2.1.0
     commander: 10.0.0
@@ -17779,10 +17769,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:7.14.1":
-  version: 7.14.1
-  resolution: "lru-cache@npm:7.14.1"
-  checksum: d72c6713c6a6d86836a7a6523b3f1ac6764768cca47ec99341c3e76db06aacd4764620e5e2cda719a36848785a52a70e531822dc2b33fb071fa709683746c104
+"lru-cache@npm:7.17.0":
+  version: 7.17.0
+  resolution: "lru-cache@npm:7.17.0"
+  checksum: 28c2a98ad313b8d61beac1f08257b6f0ca990e39d24a9bc831030b6e209447cfb11c6d9d1a774282189bfc9609d1dfd17ebe485228dd68f7b96b6b9b7740894e
   languageName: node
   linkType: hard
 
