@@ -4,7 +4,7 @@ link: https://docs.google.com/spreadsheets/d/1q3WIq7XNTUhEDcA8PEKwN1QvwFeXqlZzuI
 rating: 2
 ---
 
-Mountfield.cz ještě před platností EU směrnice zavedl slevy pouze pro věrnostní karty, kdy věrnostní ceny/slevy nezobrazoval na eshopu. Na novoroční výprodej slevovou politiku změnil zpět na zobrazování slev pro všechny. Neshody ve slevách vznikají cyklickým opakováním slev.
+Mountfield.cz ještě před platností EU směrnice zavedl slevy pouze pro věrnostní karty, kdy věrnostní ceny/slevy nezobrazoval na eshopu. Na novoroční výprodej slevovou politiku změnil zpět na zobrazování klubových slev. Neshody ve slevách vznikají cyklickým opakováním slev či reálným navýšením prodejní ceny - v naprosté většině se ale jedná o klubové slevy, na které se pravidla dle EU směrnice bohužel nevztahují.
 
 Slovy e-shopu:
 
