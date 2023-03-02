@@ -1,10 +1,10 @@
 ---
 shop: megapixel.cz
 link: https://docs.google.com/spreadsheets/d/1oGytWLUXldr1Jt-HeSaSK5DGQl0Wprty8SB43VWBa30/edit?usp=sharing
-rating: 3
+rating: 2
 ---
 
-Megapixel.cz se již snaží splňovat novou EU směrnici. Ve slevě má pouze 2 % produktů a ve vetšině slev se shodneme.
+Megapixel.cz se snaží splňovat novou EU směrnici, aktuálně má přiliš vysoký podíl neshod ve slevě a problematické slevy opravuje.
 
 Slovy e-shopu:
 
