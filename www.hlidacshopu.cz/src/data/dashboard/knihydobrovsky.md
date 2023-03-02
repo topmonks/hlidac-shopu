@@ -8,4 +8,4 @@ KnihyDobrovsky.cz s platností EU směrnice přestali vyčíslovat slevy, což j
 
 Slovy e-shopu:
 
-> 05/2022: "Filozofií naší společnosti vždy byla maximální transparentnost vůči zákazníků a v tom chceme i nadále pokračovat. Nyní je v rámci každého produktu spuštěn graf, který umožňuje kontrolu MOC a minimální akční ceny, kde jsou zohledněny i všechny typy slevových akcí (1+3 atd.). V implementaci změn spojených s novou EU směrnicí budeme pokračovat v těchto dnech a týdnech."
+> 03/2023: "V rámci komunikace slev a maximální transparentnosti vůči zákazníkům se snažíme dělat opravdu maximum a to i nad rámec aktuální legislativy. V rámci e-shopu bude ještě doplněna minimální prodejní sleva za 30 dní, aby vše bylo opravdu přehledné. Zároveň se snažíme diskutovat s partnery i zákazníky a implementovat jejich nápady či připomínky."
