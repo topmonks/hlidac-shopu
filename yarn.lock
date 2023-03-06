@@ -4878,12 +4878,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:^1.3.8":
+  version: 1.8.11
+  resolution: "@grpc/grpc-js@npm:1.8.11"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.0
+    "@types/node": ">=12.12.47"
+  checksum: b2ff645ac3a10f8f6ae380945dff2ef2faf2be118b3e7870efecaf2b9a601ab8a4f00d297c3e3f83665a4c5584a9948da336a9df81debb73e5172683bc674c3c
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:~1.3.8":
   version: 1.3.8
   resolution: "@grpc/grpc-js@npm:1.3.8"
   dependencies:
     "@types/node": ">=12.12.47"
   checksum: 12df94227d99ce410dd146f31a27dc34b5dbcbbea6190fd9604ace8d902ce5614272054cead9ddf0ed6db4562ea5bdccf593d71905a23ab1125686d2125d4cd5
+  languageName: node
+  linkType: hard
+
+"@grpc/proto-loader@npm:^0.7.0":
+  version: 0.7.5
+  resolution: "@grpc/proto-loader@npm:0.7.5"
+  dependencies:
+    "@types/long": ^4.0.1
+    lodash.camelcase: ^4.3.0
+    long: ^4.0.0
+    protobufjs: ^7.0.0
+    yargs: ^16.2.0
+  bin:
+    proto-loader-gen-types: build/bin/proto-loader-gen-types.js
+  checksum: ca3a16fc18526a835d006802d15dcf21cb3e2a7a803a988bf34397ebeb07ae94062b3f06db3d1a9b8ec3c40bd96354ca69d9e2ac06ef4c3a74a990d9e55ca2fd
   languageName: node
   linkType: hard
 
@@ -6494,11 +6519,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.55.0":
-  version: 3.55.0
-  resolution: "@pulumi/pulumi@npm:3.55.0"
+"@pulumi/pulumi@npm:3.56.0":
+  version: 3.56.0
+  resolution: "@pulumi/pulumi@npm:3.56.0"
   dependencies:
-    "@grpc/grpc-js": ~1.3.8
+    "@grpc/grpc-js": ^1.3.8
     "@logdna/tail-file": ^2.0.6
     "@opentelemetry/api": ^1.2.0
     "@opentelemetry/exporter-zipkin": ^1.6.0
@@ -6521,7 +6546,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 25f6c4ab6b498daba62f0dc7f97dd5d55fecc7200cc4832b1acab3f57b45fd9764e6c26bdf25fb0ad33568b3a8bc8c0e4ddc81cd2e1c98e4704375c467ec0e40
+  checksum: 98d6f7a1639e274d6b326b4d717d4d2bb8ef6a08dadbd42bd7a70f89c80a9af4d7711b9813e11b9682da36159048eac8816d9f01fe555eeb4c02d0fd46a687fc
   languageName: node
   linkType: hard
 
@@ -15430,7 +15455,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@pulumi/aws": 5.30.0
     "@pulumi/awsx": 0.40.1
-    "@pulumi/pulumi": 3.55.0
+    "@pulumi/pulumi": 3.56.0
     "@rollup/plugin-alias": 4.0.3
     "@rollup/plugin-node-resolve": 15.0.1
     "@rollup/plugin-replace": 5.0.2
@@ -17770,6 +17795,13 @@ __metadata:
   version: 4.0.0
   resolution: "long@npm:4.0.0"
   checksum: 16afbe8f749c7c849db1f4de4e2e6a31ac6e617cead3bdc4f9605cb703cd20e1e9fc1a7baba674ffcca57d660a6e5b53a9e236d7b25a295d3855cca79cc06744
+  languageName: node
+  linkType: hard
+
+"long@npm:^5.0.0":
+  version: 5.2.1
+  resolution: "long@npm:5.2.1"
+  checksum: 9264da12d1b7df67e5aa6da4498144293caf1ad12e7f092efe4e9a2d32c53f0bbf7334f7cef997080a2a3af061142558ab366efa71698d98b1cdb883477445a7
   languageName: node
   linkType: hard
 
@@ -20664,6 +20696,26 @@ __metadata:
     pbjs: bin/pbjs
     pbts: bin/pbts
   checksum: 80e9d9610c3eb66f9eae4e44a1ae30381cedb721b7d5f635d781fe4c507e2c77bb7c879addcd1dda79733d3ae589d9e66fd18d42baf99b35df7382a0f9920795
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:^7.0.0":
+  version: 7.2.2
+  resolution: "protobufjs@npm:7.2.2"
+  dependencies:
+    "@protobufjs/aspromise": ^1.1.2
+    "@protobufjs/base64": ^1.1.2
+    "@protobufjs/codegen": ^2.0.4
+    "@protobufjs/eventemitter": ^1.1.0
+    "@protobufjs/fetch": ^1.1.0
+    "@protobufjs/float": ^1.0.2
+    "@protobufjs/inquire": ^1.1.0
+    "@protobufjs/path": ^1.1.2
+    "@protobufjs/pool": ^1.1.0
+    "@protobufjs/utf8": ^1.1.0
+    "@types/node": ">=13.7.0"
+    long: ^5.0.0
+  checksum: 86166e8f3e46789fa4d117ae72c17356db36bf87c0e0710d224be32e543b1c378a94e66dc2b1de5af45edfc25f56acfc7e688c50c956426a3ae97bc474f4445c
   languageName: node
   linkType: hard
 
