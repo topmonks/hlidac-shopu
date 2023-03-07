@@ -172,14 +172,18 @@ async function main() {
           {
             log.info("START scraping benu.cz");
             let categories = document.querySelectorAll(
-              "div.submenu li:not(.title) > a"
+              "div.main-menu__submenu li > a"
             );
             if (type === ActorType.Test) {
               log.info("type === TEST");
               categories = categories.slice(0, 1);
             }
-            const allCategories = categories.map(category => {
+            // Use flatMap to remove invalid categories
+            const allCategories = categories.flatMap(category => {
               const link = category.getAttribute("href");
+              if (link === "#" || link === "/") {
+                return [];
+              }
               const url = link.includes("https") ? link : `${web}${link}`;
               return {
                 url,
