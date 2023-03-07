@@ -1,10 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -139,7 +133,6 @@ function startingRequests(type, stats) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
   const {
     development,
@@ -179,11 +172,9 @@ async function main() {
               categories = categories.slice(0, 1);
             }
             // Use flatMap to remove invalid categories
-            const allCategories = categories.flatMap(category => {
+            const allCategories = categories.map(category => {
               const link = category.getAttribute("href");
-              if (link === "#" || link === "/") {
-                return [];
-              }
+              if (link === "#" || link === "/") return;
               const url = link.includes("https") ? link : `${web}${link}`;
               return {
                 url,
@@ -192,7 +183,7 @@ async function main() {
                   mainCategory: category.innerText.trim()
                 }
               };
-            });
+            }).filter(Boolean);
             log.info(`Found ${allCategories.length} allCategories.`);
             stats.add("categories", allCategories.length);
             await crawler.requestQueue.addRequests(allCategories, {
@@ -242,13 +233,7 @@ async function main() {
             log.info(`START with product ${request.url}`);
             const result = extractProduct(document);
             if (result) {
-              await Promise.all([
-                uploadToS3v2(s3, result, {
-                  priceCurrency: "CZK",
-                  inStock: true
-                }),
-                Dataset.pushData(result)
-              ]);
+              await Dataset.pushData(result);
               stats.inc("items");
             }
             log.info(`END with product ${request.url}`);
@@ -266,17 +251,11 @@ async function main() {
     }
   });
 
-  const resuests = startingRequests(type, stats);
-  await crawler.run(resuests);
+  await crawler.run(startingRequests(type, stats));
   log.info("crawler finished");
 
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
   await Promise.all([
     stats.save(true),
-    invalidateCDN(cloudfront, "EQYSHWUECAQC9", "benu.cz"),
     uploadToKeboola(type === ActorType.BlackFriday ? "benu_cz_bf" : "benu_cz")
   ]);
 }
