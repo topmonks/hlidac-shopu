@@ -350,9 +350,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.282.0":
-  version: 3.282.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.282.0"
+"@aws-sdk/client-dynamodb@npm:3.284.0":
+  version: 3.284.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.284.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -392,7 +392,7 @@ __metadata:
     "@aws-sdk/util-waiter": 3.272.0
     tslib: ^2.3.1
     uuid: ^8.3.2
-  checksum: 0277f77aa1d98a73c9a59488add8b46b903c290e2cf2401cb2b45bedeeb83eeebffb22188b4257b7909e5e8b628416111ccd9c80b10283321fe88dbdbb6859d9
+  checksum: b626d7decb146b8e65fa7c4d812b206877c1edc5da484725643eca95619abe071aba61889a5853d8da04352191906f8e1214b098b45195f029fa8ea2477ac083
   languageName: node
   linkType: hard
 
@@ -1301,12 +1301,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.282.0":
-  version: 3.282.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.282.0"
+"@aws-sdk/util-dynamodb@npm:3.284.0":
+  version: 3.284.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.284.0"
   dependencies:
     tslib: ^2.3.1
-  checksum: 75571d67795ff9db06ddbc2dac9e81f20331b9d6c0ccb03e887bd936021329aba398e03991efb306fec07e6a11df212357c6214ec5d86b714cfdc574551e190c
+  checksum: d1d41ec142aaa5946d5ae1ba740d32e05ebc25c07baba0042950ce35e6d5087d72ce719f69b3a796fe12634e90bb0f744065f6dc23a040f02488c17f38ed2f03
   languageName: node
   linkType: hard
 
@@ -4987,9 +4987,9 @@ __metadata:
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
     "@adobe/fetch": 4.0.4
-    "@aws-sdk/client-dynamodb": 3.282.0
+    "@aws-sdk/client-dynamodb": 3.284.0
     "@aws-sdk/client-s3": 3.282.0
-    "@aws-sdk/util-dynamodb": 3.282.0
+    "@aws-sdk/util-dynamodb": 3.284.0
     "@hlidac-shopu/lib": 1.3.10
     ava: 5.2.0
     c8: 7.13.0
