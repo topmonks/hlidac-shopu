@@ -172,18 +172,20 @@ async function main() {
               categories = categories.slice(0, 1);
             }
             // Use flatMap to remove invalid categories
-            const allCategories = categories.map(category => {
-              const link = category.getAttribute("href");
-              if (link === "#" || link === "/") return;
-              const url = link.includes("https") ? link : `${web}${link}`;
-              return {
-                url,
-                userData: {
-                  label: Labels.PAGE,
-                  mainCategory: category.innerText.trim()
-                }
-              };
-            }).filter(Boolean);
+            const allCategories = categories
+              .map(category => {
+                const link = category.getAttribute("href");
+                if (link === "#" || link === "/") return;
+                const url = link.includes("https") ? link : `${web}${link}`;
+                return {
+                  url,
+                  userData: {
+                    label: Labels.PAGE,
+                    mainCategory: category.innerText.trim()
+                  }
+                };
+              })
+              .filter(Boolean);
             log.info(`Found ${allCategories.length} allCategories.`);
             stats.add("categories", allCategories.length);
             await crawler.requestQueue.addRequests(allCategories, {
