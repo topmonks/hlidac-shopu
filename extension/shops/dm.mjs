@@ -42,7 +42,7 @@ export class Dm extends StatefulShop {
       .querySelector("meta[itemprop=price]")
       .content.trim();
     const originalPriceSource = elem.querySelector(
-      "div[data-dmid='sellout-price-container']"
+      "div[data-dmid='price-sellout']"
     );
     const originalPrice = originalPriceSource
       ? cleanPriceText(originalPriceSource.textContent.trim())
