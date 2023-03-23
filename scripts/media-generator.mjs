@@ -8,7 +8,12 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://cc.cz/e-shopy-utoci-povanocnimi-vyprodeji-vetsina-obchodu-ale-klame-pise-jeden-z-sefu-alzy/"
+  "https://www.slowfemme.com/magazine/proc-nakupujeme-roli-hraji-slevy-stres",
+  "https://www.geekboy.cz/clanek/rozsireni-do-prohlizece/#hlidac-shopu",
+  "https://ct24.ceskatelevize.cz/domaci/3555471-umele-navysovane-ceny-pred-slevovymi-akcemi-dostanou-stopku",
+  "https://www.startupinsider.cz/digital/na-black-friday-2022-evropske-komisi-pomahal-dohlizet-tym-ceskeho-hlidace-shopu-548674",
+  "https://www.focus-age.cz/m-journal/aktuality/5-let-zkusenosti-s-hlidacem-shopu-premenili-cesi-do-projektu--ktery-pomahal-evropske-komisi-dohlizet-na-zakonnost-slev-behem-black-friday__s288x16930.html",
+  "https://cc.cz/cesi-upozornuji-na-klamave-slevy-e-shopu-jejich-projekt-otestovala-evropska-komise-v-11-zemich/",
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
