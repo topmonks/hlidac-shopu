@@ -233,6 +233,82 @@ export function createApi(domainName: string, options?: any) {
   };
 }
 
+export function createSQSIngest(options = {}) {
+  const defaultLambdaRole = new aws.iam.Role(
+    hsName("default-lambda-sqs-role", options),
+    {
+      assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
+        aws.iam.Principals.LambdaPrincipal
+      )
+    }
+  );
+
+  new aws.iam.RolePolicyAttachment(
+    hsName("lambda-sqs-basic-execution-attachment", options),
+    {
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+      role: defaultLambdaRole
+    }
+  );
+
+  new aws.iam.RolePolicyAttachment(hsName("lambda-s3-access", options), {
+    policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
+    role: defaultLambdaRole
+  });
+
+  new aws.iam.RolePolicyAttachment(hsName("lambda-sqs-access", options), {
+    policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess,
+    role: defaultLambdaRole
+  });
+
+  const buildAssets = (fileName: string) =>
+    lambdaBuilder.buildCodeAsset(
+      path.join(__dirname, "src", "lambda", "sqs", fileName),
+      true
+    );
+
+  const defaultLambdaOpts = {
+    publish: true,
+    runtime: "nodejs18.x",
+    architectures: ["arm64"],
+    role: defaultLambdaRole.arn,
+    handler: "index.handler"
+  };
+
+  const ingestQueue = new aws.sqs.Queue("ingest", {
+    messageRetentionSeconds: 60 * 60 * 20 // 20 hours
+  });
+  const uploaderLambda = new aws.lambda.Function(
+    hsName(`sqs-ingest-uploader-lambda`, options),
+    {
+      ...defaultLambdaOpts,
+      code: buildAssets("ingest-uploader/index.mjs"),
+      memorySize: 256,
+      timeout: 60
+    }
+  );
+  ingestQueue.onEvent("upload-changed", uploaderLambda);
+
+  const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz");
+  const extractorLambda = new aws.lambda.Function(
+    hsName(`sqs-ingest-extractor-lambda`, options),
+    {
+      ...defaultLambdaOpts,
+      code: buildAssets("ingest-extractor/index.mjs"),
+      memorySize: 2048,
+      timeout: 900,
+      environment: {
+        variables: {
+          SQS_URL: ingestQueue.url
+        }
+      }
+    }
+  );
+  ingestBucket.onObjectCreated("ingest", extractorLambda);
+
+  return ingestQueue;
+}
+
 interface RouteHandlerArgs {
   timeout?: number;
   environment?: lambda.FunctionEnvironment;

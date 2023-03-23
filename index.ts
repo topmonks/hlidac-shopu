@@ -8,7 +8,8 @@ import { createWebsite } from "./www.hlidacshopu.cz";
 import {
   createApi,
   createDatabase,
-  createDatastore
+  createDatastore,
+  createSQSIngest
 } from "./api.hlidacshopu.cz";
 
 registerAutoTags({
@@ -26,6 +27,7 @@ Website.createRedirect("api2.hlidacshopu.cz", {
   target: "https://api.hlidacshopu.cz/v2"
 });
 let web = createWebsite("www.hlidacshopu.cz");
+let sqs = createSQSIngest();
 
 export const certificateArn = certificate;
 export const apiGatewayUrl = api.apiGateway.url;
@@ -43,3 +45,4 @@ export const dataDistributionID = store.dataDistributionID;
 export const blackFridayDataTable = db.blackFridayDataTable;
 export const extensionParsingDataTable = db.extensionParsingDataTable;
 export const apiHitCounterDataTable = db.apiHitCounterDataTable;
+export const sqsIngestQueueUrl = sqs.url;
