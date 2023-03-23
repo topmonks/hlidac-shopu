@@ -275,8 +275,10 @@ export function createSQSIngest(options = {}) {
     handler: "index.handler"
   };
 
+  const uploaderTimeout = 60;
   const ingestQueue = new aws.sqs.Queue("ingest", {
-    messageRetentionSeconds: 60 * 60 * 20 // 20 hours
+    messageRetentionSeconds: 60 * 60 * 20, // 20 hours
+    visibilityTimeoutSeconds: uploaderTimeout
   });
   const uploaderLambda = new aws.lambda.Function(
     hsName(`sqs-ingest-uploader-lambda`, options),
@@ -284,7 +286,7 @@ export function createSQSIngest(options = {}) {
       ...defaultLambdaOpts,
       code: buildAssets("ingest-uploader/index.mjs"),
       memorySize: 256,
-      timeout: 60
+      timeout: uploaderTimeout
     }
   );
   ingestQueue.onEvent("upload-changed", uploaderLambda);
