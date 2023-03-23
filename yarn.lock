@@ -7290,9 +7290,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:5.31.0":
-  version: 5.31.0
-  resolution: "@pulumi/aws@npm:5.31.0"
+"@pulumi/aws@npm:5.32.0":
+  version: 5.32.0
+  resolution: "@pulumi/aws@npm:5.32.0"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -7300,7 +7300,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 7d3dd877747524b80bea7c3fc4156272bd9d9d9116f2a80063b2fda64c91a0d6a37f8f75b22b882c432d19bedb39be19a9ce8c770c95d0fc0ab4e5d8a7e30afd
+  checksum: 1435292d1fc6536f69155a40bb5093806f01dc051026be4774b368592b3f3a4c4ee104c2370fc932bd852c8e98149cdaaaa9aed557dfd126457d06df9ff0913f
   languageName: node
   linkType: hard
 
@@ -16285,7 +16285,7 @@ __metadata:
     "@babel/core": 7.21.0
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
-    "@pulumi/aws": 5.31.0
+    "@pulumi/aws": 5.32.0
     "@pulumi/awsx": 0.40.1
     "@pulumi/pulumi": 3.58.0
     "@rollup/plugin-alias": 4.0.3
