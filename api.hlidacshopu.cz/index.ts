@@ -285,13 +285,16 @@ export function createSQSIngest(options = {}) {
     {
       ...defaultLambdaOpts,
       code: buildAssets("ingest-uploader/index.mjs"),
-      memorySize: 256,
+      memorySize: 128,
       timeout: uploaderTimeout
     }
   );
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
-  const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz");
+  const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
+    bucket: "ingest.hlidacshopu.cz",
+    acl: "private"
+  });
   const extractorLambda = new aws.lambda.Function(
     hsName(`sqs-ingest-extractor-lambda`, options),
     {
