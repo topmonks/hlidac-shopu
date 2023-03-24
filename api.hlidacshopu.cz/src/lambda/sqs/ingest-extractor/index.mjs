@@ -19,6 +19,7 @@ export async function handler(event, _context) {
   for (const record of event.Records) {
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
+    console.log(`Extracting files from ${key}`);
     const zip = (await getZip(bucket, key)).pipe(
       unzipperParse({ forceStream: true })
     );
@@ -28,22 +29,25 @@ export async function handler(event, _context) {
         continue;
       }
       const content = await entry.buffer().then(b => b.toString());
-      const params = {
-        MessageBody: JSON.stringify({
-          path: entry.path,
-          content
-        }),
-        QueueUrl: process.env.SQS_URL
-      };
-      buffer.push(sqs.sendMessage(params).catch(err => console.error(err)));
-      if (buffer.length >= 1000) {
+      buffer.push(
+        sqs
+          .sendMessage({
+            MessageBody: JSON.stringify({
+              path: entry.path,
+              content
+            }),
+            QueueUrl: process.env.SQS_URL
+          })
+          .catch(err => console.error(err))
+      );
+      if (buffer.length >= 5120) {
         console.time("waiting");
         await Promise.allSettled(buffer);
         console.timeEnd("waiting");
         buffer = [];
       }
     }
-    console.log(`All files for ${key} have been extracted`);
+    console.log(`All files from ${key} have been extracted`);
   }
   await Promise.allSettled(buffer);
 }

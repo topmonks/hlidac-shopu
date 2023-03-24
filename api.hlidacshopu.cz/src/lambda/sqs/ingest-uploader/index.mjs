@@ -34,7 +34,7 @@ export async function handler(event, _context) {
   const uploads = [];
   for (const record of event.Records) {
     const { content, path } = JSON.parse(record.body);
-    const filename = `ingest2/${path}`;
+    const filename = `ingest3/${path}`;
     const storedHash = readStoredHash(filename);
     const computedHash = createHash("md5").update(content).digest("base64");
     if ((await storedHash) !== computedHash) {
