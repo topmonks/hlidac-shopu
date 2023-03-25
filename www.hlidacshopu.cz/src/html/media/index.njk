@@ -1,6 +1,7 @@
 {% extends 'layouts/master.njk' %}
 {% block title %}Hlídač shopů v médiích{% endblock %}
 {% set bodyClass = "media-page" %}
+{% set currentYear = 2023 %}
 
 {% block styles %}
   <link rel="stylesheet" href="/assets/css/media.css">
@@ -42,14 +43,14 @@
           </div>
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <ul>
-              {% for year in range(2022, 2016, -1) %}
+              {% for year in range(currentYear, 2016, -1) %}
                 {% if media[year].length %}
                   <li><a href="#rok-{{ year }}">{{ year }}</a></li>
                 {% endif %}
               {% endfor %}</ul>
           </div>
         </div>
-        {% for year in range(2022, 2016, -1) %}
+        {% for year in range(currentYear, 2016, -1) %}
           {% if media[year].length %}
             <div id="rok-{{ year }}" class="media-item">
               <h2 class="media-heading">{{ year }}</h2>
