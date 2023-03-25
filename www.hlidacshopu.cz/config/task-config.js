@@ -1,8 +1,16 @@
+/** @typedef {import("@typed/nunjucks").Environment} Environment */
+
 const esbuild = require("gulp-esbuild");
 const mode = require("gulp-mode")();
 const cssvariables = require("postcss-css-variables");
 const pathConfig = require("./path-config.json");
 const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
+
+const longDateFormatter = new Intl.DateTimeFormat("cs", {
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+});
 
 const config = {
   images: true,
@@ -58,16 +66,13 @@ const config = {
   html: {
     collections: ["media", "images", "assets", "build", "dashboard"],
     nunjucksRender: {
+      /** @param {Environment} env */
+      manageEnv(env) {
+        env.addGlobal("currentYear", new Date().getFullYear());
+      },
       filters: {
         longDate(str) {
-          return new Intl.DateTimeFormat("cs", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          }).format(new Date(str));
-        },
-        year() {
-          return new Date().getFullYear();
+          return longDateFormatter.format(new Date(str));
         }
       }
     },

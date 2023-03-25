@@ -8904,6 +8904,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nunjucks@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@types/nunjucks@npm:3.2.2"
+  checksum: e0fdc68f01635b34ea6f5e8845ed6d2e8d11be6347b2f28c8093636454e2401f02c26a2ad6aa459da56f2459f2d59bf72914b6e4774bcd058fa12e2ae5f0f6ef
+  languageName: node
+  linkType: hard
+
 "@types/parse5@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/parse5@npm:6.0.3"
@@ -16950,6 +16957,7 @@ __metadata:
     "@topmonks/pulumi-aws": 2.2.5
     "@types/firefox-webext-browser": 111.0.0
     "@types/node": 18.14.1
+    "@types/nunjucks": ^3.2.2
     "@types/ramda": 0.28.23
     "@types/whatwg-url": 11.0.0
     "@typescript-eslint/eslint-plugin": 5.56.0
