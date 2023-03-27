@@ -8,7 +8,7 @@ const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
  *
  * @param {string} bucket
  * @param {string} table
- * @param {Buffer} data
+ * @param {Blob} data
  * @param {string}fileName
  * @param {boolean} isGzipped
  * @returns {Promise<void>}
@@ -27,20 +27,18 @@ export async function keboolaUploader(
       const tableId = `${bucket}.${table}`;
       const size = Buffer.byteLength(data);
 
-      const body = new URLSearchParams();
+      const body = new FormData();
       body.append("tableId", tableId);
-      body.append("filename", isGzipped ? `${fileName}.gz` : fileName);
-      body.append("contentType", isGzipped ? undefined : "text/csv");
+      body.append("data", data, isGzipped ? `${fileName}.gz` : fileName);
       body.append("incremental", "1");
-      console.log("body:", body); // TODO: remove!
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
         headers: {
-          "Content-Type": "x-www-form-urlencoded",
+          contentType: isGzipped ? "application/gzip" : "text/csv",
           "X-StorageApi-Token": KEBOOLA_KEY
         },
-        body: body.toString()
+        body
       });
       log.info(`HTTP ${resp.status}`);
       if (!resp.ok) {
