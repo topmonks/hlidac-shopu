@@ -25,7 +25,6 @@ export async function keboolaUploader(
     try {
       const start = Date.now();
       const tableId = `${bucket}.${table}`;
-      const size = Buffer.byteLength(data);
 
       const body = new FormData();
       body.append("tableId", tableId);
@@ -35,7 +34,7 @@ export async function keboolaUploader(
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
         headers: {
-          contentType: isGzipped ? "application/gzip" : "text/csv",
+          contentType: isGzipped ? undefined : "text/csv",
           "X-StorageApi-Token": KEBOOLA_KEY
         },
         body
@@ -46,7 +45,7 @@ export async function keboolaUploader(
         throw new Error(message);
       }
       const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-      const { value, unit } = byteSize(size);
+      const { value, unit } = byteSize(data.size);
       log.info(`Uploaded ${value}${unit} to ${tableId} in ${elapsed}s.`);
       return;
     } catch (err) {
