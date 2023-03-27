@@ -1,8 +1,6 @@
 import { sleep } from "@crawlee/utils";
 import { Actor, log } from "apify";
 import byteSize from "byte-size";
-import { fetch } from "fetch-h2";
-import FormData from "form-data";
 
 const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
 
@@ -29,17 +27,18 @@ export async function keboolaUploader(
       const tableId = `${bucket}.${table}`;
       const size = Buffer.byteLength(data);
 
-      const body = new FormData();
+      const body = new URLSearchParams();
       body.append("tableId", tableId);
-      body.append("data", data, {
-        filename: isGzipped ? `${fileName}.gz` : fileName,
-        contentType: isGzipped ? undefined : "text/csv"
-      });
-      body.append("incremental", 1);
+      body.append("filename", isGzipped ? `${fileName}.gz` : fileName);
+      body.append("contentType", isGzipped ? undefined : "text/csv");
+      body.append("incremental", "1");
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
-        headers: body.getHeaders({ "X-StorageApi-Token": KEBOOLA_KEY }),
+        headers: {
+          "Content-Type": "x-www-form-urlencoded",
+          "X-StorageApi-Token": KEBOOLA_KEY
+        },
         body
       });
       log.info(`HTTP ${resp.status}`);

@@ -5591,8 +5591,6 @@ __metadata:
     apify: 3.1.2
     byte-size: 8.1.0
     date-fns: 2.29.3
-    fetch-h2: 3.0.2
-    form-data: 4.0.0
     node-gzip: 1.1.2
   languageName: unknown
   linkType: soft
@@ -7631,13 +7629,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tough-cookie@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "@types/tough-cookie@npm:4.0.1"
-  checksum: 7570c1c2d74201f4ead3512cf8e4c99e97d92ab8a02ae2fb987fd720ced0ca1a2baf250c98a861a170b86762606c9bf6d32207675f13dffc5ab75c08c96578d2
-  languageName: node
-  linkType: hard
-
 "@types/tough-cookie@npm:^4.0.2":
   version: 4.0.2
   resolution: "@types/tough-cookie@npm:4.0.2"
@@ -8371,13 +8362,6 @@ __metadata:
     require-from-string: ^2.0.2
     uri-js: ^4.2.2
   checksum: 5e0ff226806763be73e93dd7805b634f6f5921e3e90ca04acdf8db81eed9d8d3f0d4c5f1213047f45ebbf8047ffe0c840fa1ef2ec42c3a644899f69aa72b5bef
-  languageName: node
-  linkType: hard
-
-"already@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "already@npm:2.2.1"
-  checksum: 34f16dd91d8dd48f74b0f5a751872697c745cd815e758d32552166789928690254bdddc964423bdece5b201ae583ddc477f4f97ecc5d6d54ec0edcf1bd3ddb77
   languageName: node
   linkType: hard
 
@@ -10075,13 +10059,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"callguard@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "callguard@npm:2.0.0"
-  checksum: 0dccd585ff46f89b64ce2cf212c6bb36d4ba6c681b1b811ed225f15e1fc6a458714dfd93c3e0c54790bb1da307a6223e51a6d1b589bc5a9a8b93d32cb77d756d
-  languageName: node
-  linkType: hard
-
 "callsites@npm:^3.0.0, callsites@npm:^3.1.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
@@ -10914,7 +10891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"combined-stream@npm:^1.0.6, combined-stream@npm:^1.0.8, combined-stream@npm:~1.0.6":
+"combined-stream@npm:^1.0.6, combined-stream@npm:~1.0.6":
   version: 1.0.8
   resolution: "combined-stream@npm:1.0.8"
   dependencies:
@@ -13630,21 +13607,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fetch-h2@npm:3.0.2":
-  version: 3.0.2
-  resolution: "fetch-h2@npm:3.0.2"
-  dependencies:
-    "@types/tough-cookie": ^4.0.0
-    already: ^2.2.1
-    callguard: ^2.0.0
-    get-stream: ^6.0.1
-    through2: ^4.0.2
-    to-arraybuffer: ^1.0.1
-    tough-cookie: ^4.0.0
-  checksum: 7814fd95e51b3b4529eb3807b7b2b044d548decf284fa39b5d8946f80e4ae44f4eb9e0d813a709cfee2c6a2de53c1a4e74181a657c5c022ac1355bd4d647561e
-  languageName: node
-  linkType: hard
-
 "figures@npm:^3.0.0":
   version: 3.2.0
   resolution: "figures@npm:3.2.0"
@@ -14060,17 +14022,6 @@ __metadata:
   version: 2.1.2
   resolution: "form-data-encoder@npm:2.1.2"
   checksum: 5c6401e3ebd2ba2adfa151c9fbd1df5adae8b1dd7bca5b18ab25ad1f9b83e20ddffb6b9ff77f5006b93d7ec2032e22828c9543c0bd4b2bc5b05335c31a3ba5b9
-  languageName: node
-  linkType: hard
-
-"form-data@npm:4.0.0":
-  version: 4.0.0
-  resolution: "form-data@npm:4.0.0"
-  dependencies:
-    asynckit: ^0.4.0
-    combined-stream: ^1.0.8
-    mime-types: ^2.1.12
-  checksum: 01135bf8675f9d5c61ff18e2e2932f719ca4de964e3be90ef4c36aacfc7b9cb2fceb5eca0b7e0190e3383fe51c5b37f4cb80b62ca06a99aaabfcfd6ac7c9328c
   languageName: node
   linkType: hard
 
@@ -24124,13 +24075,6 @@ __metadata:
     is-absolute: ^1.0.0
     is-negated-glob: ^1.0.0
   checksum: 0a8bef172909e43d711bfd33792643f2eec35b9109bde927dabfd231e6ad643b7a657f306c93c6e7b89f71d3de74ac94060fe9637bca8c37b036523993664323
-  languageName: node
-  linkType: hard
-
-"to-arraybuffer@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "to-arraybuffer@npm:1.0.1"
-  checksum: 31433c10b388722729f5da04c6b2a06f40dc84f797bb802a5a171ced1e599454099c6c5bc5118f4b9105e7d049d3ad9d0f71182b77650e4fdb04539695489941
   languageName: node
   linkType: hard
 
