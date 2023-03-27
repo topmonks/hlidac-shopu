@@ -32,6 +32,7 @@ export async function keboolaUploader(
       body.append("filename", isGzipped ? `${fileName}.gz` : fileName);
       body.append("contentType", isGzipped ? undefined : "text/csv");
       body.append("incremental", "1");
+      console.log("body:", body); // TODO: remove!
 
       const resp = await fetch(KEBOOLA_URI, {
         method: "POST",
@@ -39,7 +40,7 @@ export async function keboolaUploader(
           "Content-Type": "x-www-form-urlencoded",
           "X-StorageApi-Token": KEBOOLA_KEY
         },
-        body
+        body: body.toString()
       });
       log.info(`HTTP ${resp.status}`);
       if (!resp.ok) {
