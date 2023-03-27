@@ -34,11 +34,10 @@ export async function handler(event, _context) {
   const uploads = [];
   for (const record of event.Records) {
     const { content, path } = JSON.parse(record.body);
-    const filename = `ingest3/${path}`;
-    const storedHash = readStoredHash(filename);
+    const storedHash = readStoredHash(path);
     const computedHash = createHash("md5").update(content).digest("base64");
     if ((await storedHash) !== computedHash) {
-      uploads.push(uploadFile(filename, content, computedHash));
+      uploads.push(uploadFile(path, content, computedHash));
     }
   }
   await Promise.allSettled(uploads);
