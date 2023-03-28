@@ -1,19 +1,14 @@
 import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestEvent } CloudFrontRequestEvent */
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */
 
-const aws = require("aws-sdk");
-const https = require("https");
-
-const db = new aws.DynamoDB.DocumentClient({
+const db = new DynamoDBClient({
   apiVersion: "latest",
-  region: "eu-central-1",
-  httpOptions: {
-    agent: new https.Agent({ keepAlive: true })
-  }
+  region: "eu-central-1"
 });
 
 const content = ({ url, name, imageUrl }) => `<\!DOCTYPE html>
