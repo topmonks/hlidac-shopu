@@ -5,14 +5,14 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@adobe/fetch@npm:4.0.4":
-  version: 4.0.4
-  resolution: "@adobe/fetch@npm:4.0.4"
+"@adobe/fetch@npm:4.0.6":
+  version: 4.0.6
+  resolution: "@adobe/fetch@npm:4.0.6"
   dependencies:
     debug: 4.3.4
     http-cache-semantics: 4.1.1
-    lru-cache: 7.17.0
-  checksum: 85bdc46db8053a51681cd92444673a978544b026fbe4d08e5c60aff7e0227936668398f0a557ee891c85e8dbedddf7e2de3e39c4804248badae0975c2fa539be
+    lru-cache: 8.0.4
+  checksum: 6e6d08924223d12d1a9e79ecaef07dbe06597a5f6248a8580560b3609156bff6e29cb92fc720ba22dd45e56e25e83d74e60daed9933a5be3cab1b475d730cb8e
   languageName: node
   linkType: hard
 
@@ -5458,7 +5458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@adobe/fetch": 4.0.4
+    "@adobe/fetch": 4.0.6
     "@aws-sdk/client-dynamodb": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
     "@aws-sdk/client-sqs": 3.299.0
@@ -5618,7 +5618,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@adobe/fetch": 4.0.4
+    "@adobe/fetch": 4.0.6
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
     "@crawlee/http": 3.2.2
@@ -15905,7 +15905,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@adobe/fetch": 4.0.4
+    "@adobe/fetch": 4.0.6
     "@babel/core": 7.21.3
     "@babel/preset-env": 7.20.2
     "@esm-bundle/chai": 4.3.4-fix.0
@@ -18292,10 +18292,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:7.17.0":
-  version: 7.17.0
-  resolution: "lru-cache@npm:7.17.0"
-  checksum: 28c2a98ad313b8d61beac1f08257b6f0ca990e39d24a9bc831030b6e209447cfb11c6d9d1a774282189bfc9609d1dfd17ebe485228dd68f7b96b6b9b7740894e
+"lru-cache@npm:8.0.4":
+  version: 8.0.4
+  resolution: "lru-cache@npm:8.0.4"
+  checksum: dee2b905a8cd688c5847faa46ba3cfeaa0766283b244bfd6177420e04e9d923fc901a9a578fc3963d70959631595240ead37abaf43e21968bb9805bbd9519856
   languageName: node
   linkType: hard
 
