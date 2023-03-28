@@ -1,15 +1,15 @@
 import * as pulumi from "@pulumi/pulumi";
 import { buildSync } from "esbuild";
 
-function build(entrypoint: string, minify: boolean) {
+function build(entrypoint: string, minify: boolean, external: string[] = []) {
   const result = buildSync({
     bundle: true,
     minify,
     charset: "utf8",
     platform: "node",
-    target: "node16.14",
+    target: "node18.12",
     mainFields: ["module", "main"],
-    external: ["aws-sdk"],
+    external,
     entryPoints: [entrypoint],
     write: false
   });
@@ -18,9 +18,12 @@ function build(entrypoint: string, minify: boolean) {
 
 export function buildCodeAsset(
   entrypoint: string,
-  minify = false
+  minify = false,
+  external: string[] = []
 ): pulumi.asset.AssetArchive {
   return new pulumi.asset.AssetArchive({
-    "index.js": new pulumi.asset.StringAsset(build(entrypoint, minify))
+    "index.js": new pulumi.asset.StringAsset(
+      build(entrypoint, minify, external)
+    )
   });
 }

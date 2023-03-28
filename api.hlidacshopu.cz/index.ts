@@ -114,7 +114,14 @@ export function createApi(domainName: string, options?: any) {
   const buildAssets = (fileName: string) =>
     lambdaBuilder.buildCodeAsset(
       path.join(__dirname, "src", "lambda", fileName),
-      true
+      true,
+      [
+        "@aws-sdk/client-dynamodb",
+        "@aws-sdk/util-dynamodb",
+        "@aws-sdk/client-sqs",
+        "@aws-sdk/client-s3",
+        "@aws-sdk/client-cloudfront"
+      ]
     );
 
   const getRouteHandler = (
@@ -261,10 +268,11 @@ export function createSQSIngest(options = {}) {
     role: defaultLambdaRole
   });
 
-  const buildAssets = (fileName: string) =>
+  const buildAssets = (fileName: string, external: string[] = []) =>
     lambdaBuilder.buildCodeAsset(
       path.join(__dirname, "src", "lambda", "sqs", fileName),
-      true
+      true,
+      external
     );
 
   const defaultLambdaOpts = {
@@ -284,7 +292,13 @@ export function createSQSIngest(options = {}) {
     hsName(`sqs-ingest-uploader-lambda`, options),
     {
       ...defaultLambdaOpts,
-      code: buildAssets("ingest-uploader/index.mjs"),
+      code: buildAssets("ingest-uploader/index.mjs", [
+        "@aws-sdk/client-dynamodb",
+        "@aws-sdk/util-dynamodb",
+        "@aws-sdk/client-sqs",
+        "@aws-sdk/client-s3",
+        "@aws-sdk/client-cloudfront"
+      ]),
       memorySize: 128,
       timeout: uploaderTimeout
     }
