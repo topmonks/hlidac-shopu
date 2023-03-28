@@ -66,6 +66,7 @@ export function createDatabase() {
 
 export function createDatastore() {
   const website = Website.create(config.get("data_bucket") ?? "", {});
+  if (!website) return;
   return pulumi.Output.create({
     dataBucket: website.contentBucket,
     dataDistributionID: website.cloudFrontId
