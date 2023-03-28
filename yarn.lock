@@ -69,6 +69,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apify/consts@npm:^2.12.0, @apify/consts@npm:^2.9.0":
+  version: 2.12.0
+  resolution: "@apify/consts@npm:2.12.0"
+  checksum: 72d608b153af2140c3b13eab7306e7d3555454a0033623ad888901917d40ec37c52670ab2b927508751c25dc9356c62d701a2e3208d1f714a7e2bba230c62d23
+  languageName: node
+  linkType: hard
+
 "@apify/consts@npm:^2.3.0":
   version: 2.3.0
   resolution: "@apify/consts@npm:2.3.0"
@@ -134,13 +141,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apify/log@npm:^2.1.0, @apify/log@npm:^2.1.4, @apify/log@npm:^2.2.2":
+"@apify/log@npm:^2.1.4, @apify/log@npm:^2.2.2":
   version: 2.2.2
   resolution: "@apify/log@npm:2.2.2"
   dependencies:
     "@apify/consts": ^2.5.0
     ansi-colors: ^4.1.1
   checksum: 87570c98d86ac2b6b2c867f8d895bfb592baf0861510d510b2acc8406b1cb109cf565df22d5d1918346b3303f96f5b10e7db70c8d866134af731d4f2e3962605
+  languageName: node
+  linkType: hard
+
+"@apify/log@npm:^2.2.6":
+  version: 2.2.9
+  resolution: "@apify/log@npm:2.2.9"
+  dependencies:
+    "@apify/consts": ^2.12.0
+    ansi-colors: ^4.1.1
+  checksum: 581ba6a67f43e2371cc22764289b1e7bdb9593595a1aa2f852bb4b18caab0e8645c6df2cd0ee29a2c8888822c9d8c63867b2396eb5f6595afb320bae429b088a
   languageName: node
   linkType: hard
 
@@ -4652,35 +4669,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@crawlee/core@npm:3.1.1"
-  dependencies:
-    "@apify/consts": ^2.0.0
-    "@apify/datastructures": ^2.0.0
-    "@apify/log": ^2.0.0
-    "@apify/pseudo_url": ^2.0.0
-    "@apify/timeout": ^0.3.0
-    "@apify/utilities": ^2.0.0
-    "@crawlee/memory-storage": ^3.1.1
-    "@crawlee/types": ^3.1.1
-    "@crawlee/utils": ^3.1.1
-    "@types/tough-cookie": ^4.0.2
-    "@vladfrangu/async_event_emitter": ^2.0.0
-    csv-stringify: ^6.2.0
-    fs-extra: ^10.1.0
-    json5: ^2.2.1
-    minimatch: ^5.1.0
-    ow: ^0.28.1
-    stream-chain: ^2.2.5
-    stream-json: ^1.7.4
-    tldts: ^5.7.80
-    tough-cookie: ^4.0.0
-    type-fest: ^3.0.0
-  checksum: 9083e9a0f2ced1ab6dd693153be568deacf0d5a5ea3fbf6eabd73ac2f082c830297f185ce74d2c421f3422ee476c85fd7c0b301d66754a2c0f17c323fa7bf814
-  languageName: node
-  linkType: hard
-
 "@crawlee/core@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/core@npm:3.2.2"
@@ -4708,6 +4696,36 @@ __metadata:
     tslib: ^2.4.0
     type-fest: ^3.0.0
   checksum: 33c21ace2a1dacb4862a84e2fd3aa59cc6cd86422eb7b3dbfb7258c84ca4dde1e5a82554da37c907a8027ecb3e8abcd5696286dbf77b7ed126081801676840fa
+  languageName: node
+  linkType: hard
+
+"@crawlee/core@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/core@npm:3.3.0"
+  dependencies:
+    "@apify/consts": ^2.0.0
+    "@apify/datastructures": ^2.0.0
+    "@apify/log": ^2.0.0
+    "@apify/pseudo_url": ^2.0.0
+    "@apify/timeout": ^0.3.0
+    "@apify/utilities": ^2.0.0
+    "@crawlee/memory-storage": ^3.3.0
+    "@crawlee/types": ^3.3.0
+    "@crawlee/utils": ^3.3.0
+    "@types/tough-cookie": ^4.0.2
+    "@vladfrangu/async_event_emitter": ^2.0.0
+    csv-stringify: ^6.2.0
+    fs-extra: ^11.0.0
+    json5: ^2.2.3
+    minimatch: ^7.0.0
+    ow: ^0.28.1
+    stream-chain: ^2.2.5
+    stream-json: ^1.7.4
+    tldts: ^5.7.80
+    tough-cookie: ^4.0.0
+    tslib: ^2.4.0
+    type-fest: ^3.0.0
+  checksum: d9e8c551e8655ce70c1bebb575a8565c8721747913e5cefd191e7d28b75d8815fc8406fa37511cd6a2d1c4544749b31975b16ee799e7587fe198d284576814a6
   languageName: node
   linkType: hard
 
@@ -4748,24 +4766,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/memory-storage@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@crawlee/memory-storage@npm:3.1.1"
-  dependencies:
-    "@apify/log": ^2.0.0
-    "@crawlee/types": ^3.1.1
-    "@crawlee/utils": ^3.1.1
-    "@sapphire/shapeshift": ^3.0.0
-    content-type: ^1.0.4
-    fs-extra: ^10.1.0
-    json5: ^2.2.1
-    mime-types: ^2.1.35
-    proper-lockfile: ^4.1.2
-    tslib: ^2.4.0
-  checksum: fe11d191cbd4ec830710ecbdb1821bdb3f97a97edca61ef762fcebfa62bda7154fe1cf059f4c046517e6add613c1d24fa2f2e50ac061c0d0969827c5de497ea9
-  languageName: node
-  linkType: hard
-
 "@crawlee/memory-storage@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/memory-storage@npm:3.2.2"
@@ -4781,6 +4781,24 @@ __metadata:
     proper-lockfile: ^4.1.2
     tslib: ^2.4.0
   checksum: 0b71f6e0beb5f5260eb4fee5faa042e882cb21039f9ab60e21553d94ff35abb759ac04d5442750855951d9d6ad3bfaec6d973d3825c32d9173eb1936a778a4e4
+  languageName: node
+  linkType: hard
+
+"@crawlee/memory-storage@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/memory-storage@npm:3.3.0"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@crawlee/types": ^3.3.0
+    "@sapphire/async-queue": ^1.5.0
+    "@sapphire/shapeshift": ^3.0.0
+    content-type: ^1.0.4
+    fs-extra: ^11.0.0
+    json5: ^2.2.3
+    mime-types: ^2.1.35
+    proper-lockfile: ^4.1.2
+    tslib: ^2.4.0
+  checksum: 3e23a9bc27fa1d6f12d08a94f25803f7066d72150f86283419ae008ce0868aad90a9156fc5e106b248aef6cf89409f505fa9e31f72b3ef034a4c426f3ba68a6c
   languageName: node
   linkType: hard
 
@@ -4816,21 +4834,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@crawlee/types@npm:3.1.1"
-  dependencies:
-    tslib: ^2.4.0
-  checksum: df49a4ca1719359abbfe832229269d7fc5061de23062de1b302b86239367faa98e88d4813f0136d4f36c36ce74016767677485af277061bb444888ff5b726a68
-  languageName: node
-  linkType: hard
-
 "@crawlee/types@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/types@npm:3.2.2"
   dependencies:
     tslib: ^2.4.0
   checksum: ef1c86cc2e2740f12c7ec02448d11e8892a5b2424486bb2189d148c25ed95221390572f79e47bd495a7e550611c96669109838a049d0aa4db60b5a82135139d0
+  languageName: node
+  linkType: hard
+
+"@crawlee/types@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/types@npm:3.3.0"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: f522f7501d10bbb828667a9065147c36625285eacc050eba4a0e4f6293d3504d656f7a23be4e1665e9c157ca9a04f528efd09134ee7e742ebc5d36cdb98ff990
   languageName: node
   linkType: hard
 
@@ -4863,17 +4881,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@crawlee/utils@npm:3.1.1"
+"@crawlee/utils@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/utils@npm:3.3.0"
   dependencies:
     "@apify/log": ^2.0.0
     "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.1.1
+    "@crawlee/types": ^3.3.0
     cheerio: 1.0.0-rc.12
     got-scraping: ^3.2.9
+    ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: 73106cec0f890974fac7b3cac3bc107ee42d64e946a175cd3773e1684dee3c77642ce6c8f61b8247c5eacc1ac9768d727760c4f7e0b160609dc3f3ce55e91025
+  checksum: dea7bdfce5e5da1c8e112c756dd634d187c3fbfe9ba7db66e7ccf5e1f87ddebf82f2b1355944e7e4a2d0032897eadff94f06a815ea833ca81c5b87c4ecf64fdf
   languageName: node
   linkType: hard
 
@@ -5416,7 +5435,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5429,7 +5448,7 @@ __metadata:
     "@hlidac-shopu/lib": 1.3.10
     "@thi.ng/atom": 5.1.33
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     rollbar: 2.26.1
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.112.0
@@ -5448,7 +5467,7 @@ __metadata:
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5492,7 +5511,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5509,7 +5528,7 @@ __metadata:
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5524,7 +5543,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     got-scraping: 3.2.12
     linkedom: 0.14.22
@@ -5540,7 +5559,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5554,7 +5573,7 @@ __metadata:
     "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     got-scraping: 3.2.12
     linkedom: 0.14.22
@@ -5569,7 +5588,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5583,7 +5602,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5608,7 +5627,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5624,7 +5643,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     csv-parse: 5.3.5
     jsonwebtoken: 9.0.0
@@ -5641,7 +5660,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5657,7 +5676,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5672,7 +5691,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5687,7 +5706,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5701,7 +5720,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.299.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5716,7 +5735,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5729,7 +5748,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.299.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5758,7 +5777,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5774,7 +5793,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     got-scraping: 3.2.12
     graphql: 16.6.0
@@ -5791,7 +5810,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5806,7 +5825,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5821,7 +5840,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
-    apify: 3.1.2
+    apify: 3.1.4
     linkedom: 0.14.22
   languageName: unknown
   linkType: soft
@@ -5834,7 +5853,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.299.0
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
-    apify: 3.1.2
+    apify: 3.1.4
     linkedom: 0.14.22
   languageName: unknown
   linkType: soft
@@ -5847,7 +5866,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
     playwright: 1.31.1
@@ -5862,7 +5881,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
   languageName: unknown
   linkType: soft
@@ -5876,7 +5895,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5892,7 +5911,7 @@ __metadata:
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5910,7 +5929,7 @@ __metadata:
     "@thi.ng/atom": 5.1.33
     "@thi.ng/transducers": 8.3.34
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     core-async: 2.0.6
     eslint: 8.36.0
@@ -5934,7 +5953,7 @@ __metadata:
     "@crawlee/http": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
   languageName: unknown
@@ -5949,7 +5968,7 @@ __metadata:
     "@crawlee/playwright": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     linkedom: 0.14.22
     playwright: 1.31.1
@@ -5964,7 +5983,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.299.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
-    apify: 3.1.2
+    apify: 3.1.4
     apify-cli: 0.14.1
     fingerprint-generator: 2.1.13
     fingerprint-injector: 2.1.13
@@ -5984,7 +6003,7 @@ __metadata:
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
-    apify: 3.1.2
+    apify: 3.1.4
     byte-size: 8.1.0
     date-fns: 2.29.3
     node-gzip: 1.1.2
@@ -7203,6 +7222,13 @@ __metadata:
     rollup:
       optional: true
   checksum: edea15e543bebc7dcac3b0ac8bc7b8e8e6dbd46e2864dbe5dd28072de1fbd5b0e10d545a610c0edaa178e8a7ac432e2a2a52e547ece1308471412caba47db8ce
+  languageName: node
+  linkType: hard
+
+"@sapphire/async-queue@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@sapphire/async-queue@npm:1.5.0"
+  checksum: 983dbd1fd1b1798496e5edb6a0db7e4d90015160e1028f20475eab0a92625513f1e8d938bc0305811a9cec461c94e01b1e4191615ff03ba49356f568f3255250
   languageName: node
   linkType: hard
 
@@ -9024,40 +9050,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-client@npm:^2.6.0":
-  version: 2.6.1
-  resolution: "apify-client@npm:2.6.1"
+"apify-client@npm:^2.6.3":
+  version: 2.6.4
+  resolution: "apify-client@npm:2.6.4"
   dependencies:
-    "@apify/consts": ^1.4.0
-    "@apify/log": ^2.1.0
-    agentkeepalive: ^4.1.4
-    async-retry: ^1.3.1
+    "@apify/consts": ^2.9.0
+    "@apify/log": ^2.2.6
+    "@crawlee/types": ^3.3.0
+    agentkeepalive: ^4.2.1
+    async-retry: ^1.3.3
     axios: ^0.21.1
-    content-type: ^1.0.4
+    content-type: ^1.0.5
     ow: ^0.28.2
-    tslib: ^2.4.0
-  checksum: c224e063536defb9a75c1a8a17e94b93af4c7f21333751bb778326ba2d56b3db9a1e6dd672c6f6d3d7c6bb783a55f50e10994ff8206fb6a18ac75a57fb1ef61b
+    tslib: ^2.5.0
+  checksum: 2c5cf7d31572c0ee80effbd9c94b78bffe46ce2de9bd2f683a18b08573b164b7b462275328df09a579a57f6bb0f3744e4edcd1f6d80b6c8804c741e9ecdbd4c4
   languageName: node
   linkType: hard
 
-"apify@npm:3.1.2":
-  version: 3.1.2
-  resolution: "apify@npm:3.1.2"
+"apify@npm:3.1.4":
+  version: 3.1.4
+  resolution: "apify@npm:3.1.4"
   dependencies:
     "@apify/consts": ^2.4.1
     "@apify/input_secrets": ^1.1.0
     "@apify/log": ^2.1.4
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.2.2
-    "@crawlee/core": ^3.1.1
-    "@crawlee/types": ^3.1.1
-    "@crawlee/utils": ^3.1.1
-    apify-client: ^2.6.0
+    "@crawlee/core": ^3.3.0
+    "@crawlee/types": ^3.3.0
+    "@crawlee/utils": ^3.3.0
+    apify-client: ^2.6.3
     ow: ^0.28.1
     semver: ^7.3.7
     tslib: ^2.4.0
     ws: ^7.5.9
-  checksum: bd7ad696ebca67ff9365eb2ed9ce356232dcd5981c9c837d3f7c89bb56d8e52c47c7645a609fb2c10d0a675130643cf72866a40aee48132f200f3807bba8d84d
+  checksum: 6c13640a04403c23a2d6b442eea5fc91225a9ac7f5d777382e0f314dd8097ebf15a0f7fdf55bf14a6a189beaabc2f0c22cc55e5a8b6ffac64a5e010e8d71ae5b
   languageName: node
   linkType: hard
 
@@ -9436,7 +9463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-retry@npm:^1.3.1":
+"async-retry@npm:^1.3.1, async-retry@npm:^1.3.3":
   version: 1.3.3
   resolution: "async-retry@npm:1.3.3"
   dependencies:
@@ -11541,6 +11568,13 @@ __metadata:
   version: 1.0.4
   resolution: "content-type@npm:1.0.4"
   checksum: 3d93585fda985d1554eca5ebd251994327608d2e200978fdbfba21c0c679914d5faf266d17027de44b34a72c7b0745b18584ecccaa7e1fdfb6a68ac7114f12e0
+  languageName: node
+  linkType: hard
+
+"content-type@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "content-type@npm:1.0.5"
+  checksum: 566271e0a251642254cde0f845f9dd4f9856e52d988f4eb0d0dcffbb7a1f8ec98de7a5215fc628f3bce30fe2fb6fd2bc064b562d721658c59b544e2d34ea2766
   languageName: node
   linkType: hard
 
@@ -18816,7 +18850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1, minimatch@npm:^5.1.0":
+"minimatch@npm:^5.0.1":
   version: 5.1.0
   resolution: "minimatch@npm:5.1.0"
   dependencies:
@@ -18831,6 +18865,15 @@ __metadata:
   dependencies:
     brace-expansion: ^2.0.1
   checksum: 707b026e0adc610be6c02f24173d84811e5b8cc2e434881e47ef00a72be5fbea9323b7158d7bf065782b1e1d5c50d7d80cd72f2602255f2fddfb1d2f02e9092c
+  languageName: node
+  linkType: hard
+
+"minimatch@npm:^7.0.0":
+  version: 7.4.3
+  resolution: "minimatch@npm:7.4.3"
+  dependencies:
+    brace-expansion: ^2.0.1
+  checksum: daa954231b6859e3ba0e5fbd2486986d3cae283bb69acb7ed3833c84a293f8d7edb8514360ea62c01426ba791446b2a1e1cc0d718bed15c0212cef35c59a6b95
   languageName: node
   linkType: hard
 
