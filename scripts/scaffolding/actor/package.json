@@ -9,12 +9,12 @@
     "@aws-sdk/client-cloudfront": "3.299.0",
     "@aws-sdk/client-s3": "3.299.0",
     "@hlidac-shopu/actors-common": "2.1.0",
-    "apify": "3.1.2",
-    "got-scraping": "3.2.12"
+    "apify": "3.1.4",
+    "got-scraping": "3.2.13"
   },
   "devDependencies": {
-    "@types/node": "18.14.1",
-    "apify-cli": "^0.14.0"
+    "@types/node": "18.15.9",
+    "apify-cli": "^0.15.0"
   },
   "scripts": {
     "start": "node main.js",

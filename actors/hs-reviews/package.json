@@ -7,19 +7,19 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@adobe/fetch": "4.0.4",
+    "@adobe/fetch": "4.0.6",
     "@aws-sdk/client-cloudfront": "3.299.0",
     "@aws-sdk/client-s3": "3.299.0",
-    "@crawlee/http": "3.2.2",
+    "@crawlee/http": "3.3.0",
     "@hlidac-shopu/actors-common": "2.1.0",
-    "apify": "3.1.2",
-    "csv-parse": "5.3.5",
+    "apify": "3.1.4",
+    "csv-parse": "5.3.6",
     "jsonwebtoken": "9.0.0",
-    "linkedom": "0.14.22"
+    "linkedom": "0.14.25"
   },
   "devDependencies": {
-    "@types/node": "18.14.1",
-    "apify-cli": "0.14.1"
+    "@types/node": "18.15.9",
+    "apify-cli": "0.15.1"
   },
   "scripts": {
     "start": "node main.js",
