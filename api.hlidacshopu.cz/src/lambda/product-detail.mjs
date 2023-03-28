@@ -1,8 +1,4 @@
-import {
-  GetItemCommand,
-  QueryCommand,
-  PutItemCommand
-} from "@aws-sdk/client-dynamodb";
+import { GetItemCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
@@ -13,6 +9,7 @@ import startOfDay from "date-fns/esm/startOfDay/index.js";
 import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
+/** @typedef { import("@aws-sdk/client-dynamodb/commands/GetItemCommand").GetItemCommandOutput } GetItemCommandOutput */
 /** @typedef { import("@aws-sdk/client-s3/S3Client").S3Client } S3Client */
 /** @typedef { import("@hlidac-shopu/lib/shops.mjs").Shop } Shop */
 /** @typedef { import("@hlidac-shopu/lib/shops.mjs").ShopParams } ShopParams */
@@ -27,67 +24,8 @@ export function pkey(name, itemId) {
 }
 
 /**
- * @param {string} name
- * @param {string} itemUrl
- * @param {string | null | undefined} itemId
- * @returns {QueryCommand}
- */
-function getMetadataQuery(name, itemUrl, itemId) {
-  return new QueryCommand({
-    TableName: "all_shops_metadata",
-    ExpressionAttributeValues: marshall({
-      ":pkey": metadata.pkey(name, itemUrl),
-      ...(itemId ? { ":itemId": itemId } : {})
-    }),
-    KeyConditionExpression:
-      "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
-  });
-}
-
-/**
- * @param {DynamoDBClient} db
- * @param {string} name
- * @param {string} itemUrl
- * @param {string | null} itemId
- * @returns {Promise}
- */
-export async function getMetadata(db, name, itemUrl, itemId) {
-  const query = getMetadataQuery(name, itemUrl, itemId);
-  return db
-    .send(query)
-    .then(x => x.Items && unmarshall(x.Items[0]))
-    .catch(() => ({}));
-}
-
-/**
- * @param {string} name
- * @param {string} itemId
- * @returns {GetItemCommand}
- */
-export function getHistoricalDataQuery(name, itemId) {
-  return new GetItemCommand({
-    TableName: "all_shops",
-    Key: marshall({ "p_key": pkey(name, itemId) })
-  });
-}
-
-/**
- * @param {DynamoDBClient} db
- * @param {string} name
- * @param {string} itemId
- * @returns {Promise}
- */
-export function getHistoricalData(db, name, itemId) {
-  const query = getHistoricalDataQuery(name, itemId);
-  return db
-    .send(query)
-    .then(x => x.Item && unmarshall(x.Item))
-    .catch(() => ({}));
-}
-
-/**
  *
- * @param {Readable} stream
+ * @param {GetItemCommandOutput} stream
  * @returns {Promise<string>}
  */
 const streamToString = stream =>
