@@ -1,15 +1,11 @@
-import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { S3 } from "@aws-sdk/client-s3";
 
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestEvent } CloudFrontRequestEvent */
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */
 
-const db = new DynamoDBClient({
-  apiVersion: "latest",
-  region: "eu-central-1"
-});
+const s3 = new S3({ region: "eu-central-1", maxAttempts: 3 });
 
 const content = ({ url, name, imageUrl }) => `<\!DOCTYPE html>
 <html lang="cs">
@@ -29,19 +25,15 @@ const content = ({ url, name, imageUrl }) => `<\!DOCTYPE html>
 </html>
 `;
 
-function queryDatabase(name, itemUrl, itemId) {
-  return db
-    .query({
-      TableName: "all_shops_metadata",
-      ExpressionAttributeValues: {
-        ":pkey": metadata.pkey(name, itemUrl),
-        ...(itemId ? { ":itemId": itemId } : {})
-      },
-      KeyConditionExpression:
-        "pkey = :pkey" + (itemId ? " AND itemId = :itemId" : "")
-    })
-    .promise()
-    .then(x => x.Items && x.Items[0]);
+async function getMetadata(origin, itemUrl, itemId) {
+  const resp = await s3.getObject({
+    Bucket: "data.hlidacshopu.cz",
+    Key: `items/${origin}/${itemId}/meta.json`
+  });
+  if (resp.$metadata.httpStatusCode === 200) {
+    const content = await resp.Body.transformToString();
+    return JSON.parse(content)?.itemName;
+  }
 }
 
 /**
@@ -57,8 +49,14 @@ async function createMetadataResponse(url) {
         statusDescription: "Not Found"
       };
     }
-    const { key, title, itemUrl, itemId } = shopDetail;
-    const { itemName } = await queryDatabase(key, itemUrl, itemId);
+    const { title, itemUrl, itemId, origin } = shopDetail;
+    const itemName = await getMetadata(origin, itemUrl, itemId);
+    if (!itemName) {
+      return {
+        status: "404",
+        statusDescription: "Not Found"
+      };
+    }
     const query = new URLSearchParams({ url });
     return {
       status: "200",
@@ -73,6 +71,7 @@ async function createMetadataResponse(url) {
       })
     };
   } catch (err) {
+    console.error(err);
     return {
       status: "400",
       statusDescription: "Invalid Request"
