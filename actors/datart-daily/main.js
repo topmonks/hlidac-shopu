@@ -1,12 +1,6 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
-import { Actor, log } from "apify";
-import { HttpCrawler, useState } from "@crawlee/http";
+import { Actor, log, Dataset } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -182,8 +176,6 @@ function startingRequest({ rootUrl, country, type }) {
 
 export async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const processedIds = await useState("processedIds", new Set());
 
   const {
     development,
@@ -198,7 +190,8 @@ export async function main() {
     pages: 0,
     items: 0,
     itemsDuplicity: 0,
-    failed: 0
+    failed: 0,
+    blocked: 0
   });
 
   const rootUrl = country === Country.CZ ? rootCZ : rootSK;
@@ -216,9 +209,11 @@ export async function main() {
     persistCookiesPerSession: true,
     maxRequestsPerMinute: 400,
     sessionPoolOptions: {
-      maxPoolSize: 200
+      sessionOptions: {
+        maxUsageCount: 200
+      }
     },
-    async requestHandler({ request, log, body, enqueueLinks, crawler }) {
+    async requestHandler({ request, log, body, enqueueLinks, session }) {
       if (request.userData.label === Labels.COUNT) {
         await countAllProducts({ body, stats });
         return;
@@ -293,15 +288,13 @@ export async function main() {
         request.userData.label === Labels.CATEGORY_NEXT
       ) {
         const products = extractItems(document, rootUrl, country);
-        const count = await saveProducts({
-          s3,
-          products,
-          stats,
-          processedIds
-        });
-        log.info(
-          `${request.url} Found ${products.length} products (${count} unique)`
-        );
+        await Dataset.pushData(products);
+        if (!products.length && !document.querySelector("[data-webname]")) {
+          log.warning("Looks like we are blocked");
+          stats.inc("blocked");
+          session.retire();
+        }
+        log.info(`${request.url} Found ${products.length} products`);
       }
       if (request.userData.label === Labels.BF) {
         log.info(`START BF ${request.url}`);
@@ -342,16 +335,6 @@ export async function main() {
     }
 
     if (!development) {
-      const cloudfront = new CloudFrontClient({
-        region: "eu-central-1",
-        maxAttempts: 3
-      });
-      await invalidateCDN(
-        cloudfront,
-        "EQYSHWUECAQC9",
-        `datart.${country.toLowerCase()}`
-      );
-      log.info("invalidated Data CDN");
       await uploadToKeboola(tableName);
       log.info("upload to Keboola finished");
     }
