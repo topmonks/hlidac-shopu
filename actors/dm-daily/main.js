@@ -1,15 +1,9 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  uploadToS3v2,
-  invalidateCDN,
-  currencyToISO4217
-} from "@hlidac-shopu/actors-common/product.js";
+import { currencyToISO4217 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
@@ -94,7 +88,7 @@ function parseItem(p, country, category) {
     itemId: p.gtin,
     itemName: `${p.brandName} ${p.name}`,
     itemUrl: createProductUrl(country, p.relativeProductUrl),
-    img: p.imageUrlTemplates[0].replace(
+    img: p.imageUrlTemplates[0]?.replace(
       "{transformations}",
       "f_auto,q_auto,c_fit,w_260,h_270"
     ),
@@ -122,7 +116,6 @@ async function handleProducts(
   productQuery,
   category,
   processedIds,
-  s3,
   request,
   detailUrl
 ) {
@@ -146,7 +139,6 @@ async function handleProducts(
       }
     }
     const uniqueCount = await saveProducts({
-      s3,
       products,
       stats,
       processedIds,
@@ -161,7 +153,6 @@ async function handleProducts(
 }
 
 async function saveProducts({
-  s3,
   products,
   stats,
   processedIds,
@@ -175,14 +166,7 @@ async function saveProducts({
       processedIds.add(product.gtin);
       const detail = parseItem(product, country, category);
       if (!detailUrl.deref()) detailUrl.reset(detail.itemUrl);
-      requests.push(
-        Dataset.pushData(detail),
-        uploadToS3v2(s3, detail, {
-          brand: product.brandName,
-          name: product.name,
-          gtin: product.gtin
-        })
-      );
+      requests.push(Dataset.pushData(detail));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
@@ -272,12 +256,6 @@ function startingRequests(type, country) {
 async function main() {
   rollbar.init();
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     items: 0,
@@ -291,14 +269,22 @@ async function main() {
   const {
     debug,
     country = Country.CZ,
-    type = ActorType.Full
+    type = ActorType.Full,
+    development = false,
+    proxyGroups = ["CZECH_LUMINATI"]
   } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
+
   const crawler = new HttpCrawler({
+    proxyConfiguration,
     maxRequestsPerMinute: 400,
     async requestHandler({ request, json, crawler }) {
       log.info(`Processing ${request.url}...`);
@@ -331,7 +317,6 @@ async function main() {
             productQuery,
             category,
             processedIds,
-            s3,
             request,
             detailUrl
           );
@@ -347,11 +332,10 @@ async function main() {
   await crawler.run(requests);
   log.info("crawler finished");
 
-  await Promise.all([
-    stats.save(),
-    invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopOrigin(detailUrl.deref())),
-    uploadToKeboola(shopName(detailUrl.deref()))
-  ]);
+  if (Actor.isAtHome()) {
+    log.info("uploading data to Keboola");
+    uploadToKeboola(shopName(detailUrl.deref()));
+  }
 
   log.info("invalidated Data CDN");
 }
