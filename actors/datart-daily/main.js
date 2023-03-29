@@ -180,7 +180,7 @@ export async function main() {
   const {
     development,
     maxRequestRetries,
-    proxyGroups,
+    proxyGroups = ["CZECH_LUMINATI"],
     country = Country.CZ,
     type = ActorType.Full
   } = await getInput();
@@ -213,7 +213,14 @@ export async function main() {
         maxUsageCount: 200
       }
     },
-    async requestHandler({ request, log, body, enqueueLinks, session }) {
+    async requestHandler({
+      request,
+      log,
+      body,
+      enqueueLinks,
+      session,
+      crawler
+    }) {
       if (request.userData.label === Labels.COUNT) {
         await countAllProducts({ body, stats });
         return;
@@ -224,14 +231,14 @@ export async function main() {
           .querySelectorAll(
             "div.microsite-katalog ul.category-submenu > li > a"
           )
-          .map(a => `${rootUrl}${a.href}`);
+          .map(a => ({
+            url: `${rootUrl}${a.href}`,
+            userData: {
+              label: Labels.CATEGORY
+            }
+          }));
         log.info(`${request.url} Found ${urls.length} categories`);
-        await enqueueLinks({
-          urls,
-          userData: {
-            label: Labels.CATEGORY
-          }
-        });
+        await crawler.requestQueue.addRequests(urls, { forefront: true });
       }
       if (request.userData.label === Labels.CATEGORY) {
         // Add subcategories if this category has also products
@@ -239,15 +246,15 @@ export async function main() {
           "div.subcategory-box-list .subcategoryWrapper a"
         );
         if (subcategories.length > 0) {
-          const urls = subcategories.map(a => `${rootUrl}${a.href}`);
-          stats.add("categories", urls.length);
-          log.info(`${request.url} Found ${urls.length} subcategories`);
-          await enqueueLinks({
-            urls,
+          const urls = subcategories.map(a => ({
+            url: `${rootUrl}${a.href}`,
             userData: {
               label: Labels.CATEGORY
             }
-          });
+          }));
+          stats.add("categories", urls.length);
+          log.info(`${request.url} Found ${urls.length} subcategories`);
+          await crawler.requestQueue.addRequests(urls, { forefront: true });
           return; // Nothing more we can do for this page
         }
         // Add categories if this page has only categories and no products
@@ -255,15 +262,15 @@ export async function main() {
           "div.category-tree-box-list a"
         );
         if (categoryTree.length > 0) {
-          const urls = categoryTree.map(a => `${rootUrl}${a.href}`);
-          stats.add("categories", urls.length);
-          log.info(`${request.url} Found ${urls.length} categories`);
-          await enqueueLinks({
-            urls,
+          const urls = categoryTree.map(a => ({
+            url: `${rootUrl}${a.href}`,
             userData: {
               label: Labels.CATEGORY
             }
-          });
+          }));
+          stats.add("categories", urls.length);
+          log.info(`${request.url} Found ${urls.length} categories`);
+          await crawler.requestQueue.addRequests(urls, { forefront: true });
           return; // Nothing more we can do for this page
         }
         // No more categories and subcategories continue with find maxPaginationPage
