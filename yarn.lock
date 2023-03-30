@@ -5383,7 +5383,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": 1.3.10
-    lit-element: 3.2.2
+    lit-element: 3.3.0
     lit-html: 2.6.1
   languageName: unknown
   linkType: soft
@@ -5939,6 +5939,13 @@ __metadata:
   version: 1.0.0
   resolution: "@lit-labs/ssr-dom-shim@npm:1.0.0"
   checksum: ccba6675ad631c6f7360af4e12e328e88d877a52ec992ae9254a1be9902ef699b7916d851b073803dd91244d0f709de2c0539a7db643889cfe341ff6e1a74eb5
+  languageName: node
+  linkType: hard
+
+"@lit-labs/ssr-dom-shim@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@lit-labs/ssr-dom-shim@npm:1.1.0"
+  checksum: 7d6f2331418164ee65816db0670b0a958572c6b91c95e3b41bc1874c6f1465febbe8ac88d4f8367d69fbaba44820d7b255c5e384beab61fa7ee4135d1694b603
   languageName: node
   linkType: hard
 
@@ -17653,13 +17660,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.2.2":
-  version: 3.2.2
-  resolution: "lit-element@npm:3.2.2"
+"lit-element@npm:3.3.0":
+  version: 3.3.0
+  resolution: "lit-element@npm:3.3.0"
   dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.1.0
     "@lit/reactive-element": ^1.3.0
-    lit-html: ^2.2.0
-  checksum: e1df57c02ad5ae4c42b49a5066b3b623bccf7fa6610bbc3f65bc22cbbe1546ecd6a7f717b1f01863929262f416c4b8b7a39ff166114215f93cc22f4e5b3825c3
+    lit-html: ^2.7.0
+  checksum: 5a483c34dd55412599978e02858d841a932199dedca0b86ec54639096bc36c301f57915c0ee0463d8a57ac265d57f3468c8378224816c732c73df641a2549d62
   languageName: node
   linkType: hard
 
@@ -17688,6 +17696,15 @@ __metadata:
   dependencies:
     "@types/trusted-types": ^2.0.2
   checksum: f5291201f4fe5bde77a77d3befe515bf8d22d75f4f9c3c98230fd9ba865fb424002fa7d5c9b7cbf01225cd7fa81b09757f8f0c52b79560c57c7ca279fd3c2cdf
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "lit-html@npm:2.7.0"
+  dependencies:
+    "@types/trusted-types": ^2.0.2
+  checksum: 8a0f83c0f6110f8d02484803c2b309c6d21011bd03681cb790c5303e4a6e4f94956cb2dcb05e67f6c4066f382193a7e5c8987ab0ca244f2fe6e85b99e2feecdd
   languageName: node
   linkType: hard
 
