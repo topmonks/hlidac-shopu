@@ -59,7 +59,7 @@ export async function handler(event, _context) {
           })
           .catch(err => console.error(err))
       );
-      if (buffer.length >= 5120) {
+      if (buffer.length >= 10000) {
         console.time("waiting");
         await Promise.allSettled(buffer);
         console.timeEnd("waiting");
