@@ -6,8 +6,8 @@
   "description": "This is the tsbohemia.cz actor.",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.299.0",
-    "@aws-sdk/client-s3": "3.299.0",
+    "@aws-sdk/client-cloudfront": "3.300.0",
+    "@aws-sdk/client-s3": "3.300.0",
     "@hlidac-shopu/actors-common": "2.1.0",
     "apify": "3.1.4",
     "fingerprint-generator": "2.1.17",
