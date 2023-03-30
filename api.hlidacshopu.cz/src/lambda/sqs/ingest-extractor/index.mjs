@@ -25,6 +25,7 @@ export async function handler(event, _context) {
     );
     for await (const entry of zip) {
       if (entry.type !== "File") {
+        console.log("entry.path:", entry.path); // TODO: remove!
         entry.autodrain();
         continue;
       }
@@ -33,7 +34,7 @@ export async function handler(event, _context) {
         sqs
           .sendMessage({
             MessageBody: JSON.stringify({
-              path: entry.path,
+              path: entry.path.split("/").slice(1).join("/"),
               content
             }),
             QueueUrl: process.env.SQS_URL
