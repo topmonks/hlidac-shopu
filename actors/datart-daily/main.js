@@ -207,10 +207,10 @@ export async function main() {
     maxRequestRetries,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    maxRequestsPerMinute: 200,
+    maxRequestsPerMinute: 150,
     sessionPoolOptions: {
       sessionOptions: {
-        maxUsageCount: 200
+        maxUsageCount: 150
       }
     },
     async requestHandler({
@@ -297,10 +297,9 @@ export async function main() {
         const products = extractItems(document, rootUrl, country);
         await Dataset.pushData(products);
         if (!products.length && !document.querySelector("[data-webname]")) {
-          log.warning("Looks like we are blocked");
-          stats.inc("blocked");
           session.retire();
-          throw new Error("Blocked");
+          stats.inc("blocked");
+          throw new Error("Looks like we are blocked");
         }
         log.info(`${request.url} Found ${products.length} products`);
       }
