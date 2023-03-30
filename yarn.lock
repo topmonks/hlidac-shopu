@@ -4625,6 +4625,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/basic@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/basic@npm:3.3.0"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@apify/timeout": ^0.3.0
+    "@apify/utilities": ^2.0.0
+    "@crawlee/core": ^3.3.0
+    "@crawlee/types": ^3.3.0
+    "@crawlee/utils": ^3.3.0
+    got-scraping: ^3.2.9
+    ow: ^0.28.1
+    tslib: ^2.4.0
+    type-fest: ^3.0.0
+  checksum: 9bd27028584e0d5bc2705d29fc38018ab4df5ab29690b3db7080f33adb9bc69388d90ff846466d96f65eac95e31d979d0343a5de6bf9fb5babeec6f125bdf291
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser-pool@npm:^3.2.2":
   version: 3.2.2
   resolution: "@crawlee/browser-pool@npm:3.2.2"
@@ -4729,14 +4747,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.2.2":
-  version: 3.2.2
-  resolution: "@crawlee/http@npm:3.2.2"
+"@crawlee/http@npm:3.3.0":
+  version: 3.3.0
+  resolution: "@crawlee/http@npm:3.3.0"
   dependencies:
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.0.0
-    "@crawlee/basic": ^3.2.2
-    "@crawlee/types": ^3.2.2
+    "@crawlee/basic": ^3.3.0
+    "@crawlee/types": ^3.3.0
     "@types/content-type": ^1.1.5
     content-type: ^1.0.4
     got-scraping: ^3.2.9
@@ -4745,7 +4763,7 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
     type-fest: ^3.0.0
-  checksum: 649903f44fa84ef466b3249fc2709b7a32c7e0be81227107ea949c3a510aea1d2f67204d90ed3cc50f8cd44223f1f4f49e02282a9574691f3db20c465b72b9a0
+  checksum: 3b110f7a81fb8bb46c3e8e076c072b75e137186ec0853eaa41c16d8aee1f5e8067a63587aed9e95ea3112ab05b7069de335a4c2bdfd53819c6d1fad479065d47
   languageName: node
   linkType: hard
 
@@ -5278,7 +5296,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5308,7 +5326,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -5353,7 +5371,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5369,7 +5387,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -5384,7 +5402,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
   dependencies:
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5398,7 +5416,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5427,7 +5445,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5441,7 +5459,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5466,7 +5484,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5482,7 +5500,7 @@ __metadata:
     "@adobe/fetch": 4.0.6
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5499,7 +5517,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5514,7 +5532,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5530,7 +5548,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5545,7 +5563,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5573,7 +5591,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5616,7 +5634,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5631,7 +5649,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5649,7 +5667,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5664,7 +5682,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5679,7 +5697,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     apify: 3.1.4
@@ -5693,7 +5711,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     apify: 3.1.4
     linkedom: 0.14.25
@@ -5719,7 +5737,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
   dependencies:
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5734,7 +5752,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
@@ -5749,7 +5767,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.14.1
@@ -5765,7 +5783,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@crawlee/utils": 3.2.2
     "@hlidac-shopu/actors-common": 2.1.0
     "@thi.ng/atom": 5.1.33
@@ -5792,7 +5810,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.299.0
     "@aws-sdk/client-s3": 3.299.0
-    "@crawlee/http": 3.2.2
+    "@crawlee/http": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
     "@types/node": 18.14.1
     apify: 3.1.4
