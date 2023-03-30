@@ -19,8 +19,8 @@ export async function handler(event, _context) {
   const rollbar = Rollbar.init();
 
   let buffer = [];
-  let warnBadPath = false;
   for (const record of event.Records) {
+    let warnBadPath = false;
     let count = 0;
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
@@ -38,11 +38,15 @@ export async function handler(event, _context) {
       count++;
       let path = entry.path;
       const pathParts = entry.path.split("/");
-      if (pathParts.at(-1) !== "items") {
+      if (pathParts[0] !== "items") {
         if (!warnBadPath)
           console.error("Invalid paths... example:", entry.path);
         warnBadPath = true;
         path = pathParts.slice(1).join("/");
+        if (!path.startsWith("items")) {
+          rollbar.error("Totally invalid path... example:", entry.path);
+          break;
+        }
       }
       buffer.push(
         sqs
@@ -63,9 +67,9 @@ export async function handler(event, _context) {
       }
     }
     console.log(`All files from ${key} have been extracted (${count} items})`);
-  }
-  if (warnBadPath) {
-    rollbar.error("Invalid path found");
+    if (warnBadPath) {
+      rollbar.error(`Invalid path found for ${key}`);
+    }
   }
   await Promise.allSettled(buffer);
 }
