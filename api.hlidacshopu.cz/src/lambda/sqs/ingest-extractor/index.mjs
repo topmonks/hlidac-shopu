@@ -1,6 +1,7 @@
 import { S3 } from "@aws-sdk/client-s3";
 import { SQS } from "@aws-sdk/client-sqs";
 import { Parse as unzipperParse } from "unzipper";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 
 const s3 = new S3({ region: "eu-central-1", maxAttempts: 3 });
 const sqs = new SQS({ region: "eu-central-1", maxAttempts: 3 });
@@ -15,7 +16,10 @@ function getZip(bucket, key) {
 }
 
 export async function handler(event, _context) {
+  const rollbar = Rollbar.init();
+
   let buffer = [];
+  let warnBadPath = false;
   for (const record of event.Records) {
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
@@ -30,11 +34,18 @@ export async function handler(event, _context) {
         continue;
       }
       const content = await entry.buffer().then(b => b.toString());
+      let path = entry.path;
+      const pathParts = entry.path.split("/");
+      if (pathParts.at(-1) !== "items") {
+        console.error("Invalid path:", entry.path);
+        warnBadPath = true;
+        path = pathParts.slice(1).join("/");
+      }
       buffer.push(
         sqs
           .sendMessage({
             MessageBody: JSON.stringify({
-              path: entry.path.split("/").slice(1).join("/"),
+              path,
               content
             }),
             QueueUrl: process.env.SQS_URL
@@ -49,6 +60,9 @@ export async function handler(event, _context) {
       }
     }
     console.log(`All files from ${key} have been extracted`);
+  }
+  if (warnBadPath) {
+    rollbar.error("Invalid path found");
   }
   await Promise.allSettled(buffer);
 }

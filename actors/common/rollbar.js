@@ -6,7 +6,8 @@ export default {
       accessToken:
         process.env.ROLLBAR_ACCESS_TOKEN ?? "16376a37ab5c4ee790501771e9bb84f9",
       captureUncaught: true,
-      captureUnhandledRejections: true
+      captureUnhandledRejections: true,
+      verbose: true
     });
   }
 };
