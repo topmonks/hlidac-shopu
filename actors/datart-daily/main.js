@@ -300,6 +300,7 @@ export async function main() {
           log.warning("Looks like we are blocked");
           stats.inc("blocked");
           session.retire();
+          throw new Error("Blocked");
         }
         log.info(`${request.url} Found ${products.length} products`);
       }

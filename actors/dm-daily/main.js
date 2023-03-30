@@ -336,8 +336,6 @@ async function main() {
     log.info("uploading data to Keboola");
     uploadToKeboola(shopName(detailUrl.deref()));
   }
-
-  log.info("invalidated Data CDN");
 }
 
 await Actor.main(main, { statusMessage: "DONE" });
