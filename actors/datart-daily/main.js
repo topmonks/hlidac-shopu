@@ -208,6 +208,7 @@ export async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     maxRequestsPerMinute: 150,
+    maxConcurrency: 25,
     sessionPoolOptions: {
       sessionOptions: {
         maxUsageCount: 150
