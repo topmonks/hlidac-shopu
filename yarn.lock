@@ -5210,7 +5210,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": 1.3.10
-    "@thi.ng/atom": 5.1.33
+    "@thi.ng/atom": 5.1.34
     "@types/node": 18.15.10
     apify: 3.1.4
     rollbar: 2.26.1
@@ -5686,7 +5686,7 @@ __metadata:
     "@crawlee/http": 3.3.0
     "@crawlee/utils": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
-    "@thi.ng/atom": 5.1.33
+    "@thi.ng/atom": 5.1.34
     "@thi.ng/transducers": 8.4.0
     "@types/node": 18.15.10
     apify: 3.1.4
@@ -5780,7 +5780,7 @@ __metadata:
     "@material/layout-grid": 14.0.0
     "@material/snackbar": 14.0.0
     "@material/top-app-bar": 14.0.0
-    "@thi.ng/atom": 5.1.33
+    "@thi.ng/atom": 5.1.34
     eslint: 8.36.0
     eslint-config-prettier: 8.8.0
     eslint-plugin-compat: 4.1.2
@@ -7104,16 +7104,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.1.33":
-  version: 5.1.33
-  resolution: "@thi.ng/atom@npm:5.1.33"
+"@thi.ng/atom@npm:5.1.34":
+  version: 5.1.34
+  resolution: "@thi.ng/atom@npm:5.1.34"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-    "@thi.ng/equiv": ^2.1.20
-    "@thi.ng/errors": ^2.2.13
-    "@thi.ng/paths": ^5.1.33
+    "@thi.ng/api": ^8.7.5
+    "@thi.ng/equiv": ^2.1.21
+    "@thi.ng/errors": ^2.2.14
+    "@thi.ng/paths": ^5.1.34
     tslib: ^2.5.0
-  checksum: 3ac6803d25c69a1f9e554b0c9e68efe1379463531f4ff6e834bc7bb6f671030daf7f8e83b507c623a66fbf65f98e12296b20632ec2dc28bae172fc646f85f152
+  checksum: 76af549514646efa4fcd20988b9f81096b2dd7e4cb515c3aeb6ff14d50f2530110828d584a86045f18d6afc0b46a1b36b2651657f3f2711336858501be59434a
   languageName: node
   linkType: hard
 
@@ -7145,7 +7145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.20, @thi.ng/equiv@npm:^2.1.21":
+"@thi.ng/equiv@npm:^2.1.21":
   version: 2.1.21
   resolution: "@thi.ng/equiv@npm:2.1.21"
   checksum: ec86fe9ed787008e0217b0433bf608798b45f5d7e75aa47545bab5f545e2ead81e752071a36d6fe98c655a6993dafd6e621902db366d9a5f61096079f63c7b89
@@ -7175,7 +7175,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.33":
+"@thi.ng/paths@npm:^5.1.34":
   version: 5.1.34
   resolution: "@thi.ng/paths@npm:5.1.34"
   dependencies:
