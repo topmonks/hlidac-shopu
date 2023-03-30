@@ -5534,7 +5534,7 @@ __metadata:
     "@web/test-runner-junit-reporter": 0.5.0
     chart.js: 4.2.1
     chartjs-adapter-date-fns: 3.0.0
-    lit: 2.6.1
+    lit: 2.7.0
   languageName: unknown
   linkType: soft
 
@@ -17648,7 +17648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.3.0":
+"lit-element@npm:3.3.0, lit-element@npm:^3.3.0":
   version: 3.3.0
   resolution: "lit-element@npm:3.3.0"
   dependencies:
@@ -17687,23 +17687,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.6.0":
-  version: 2.6.1
-  resolution: "lit-html@npm:2.6.1"
-  dependencies:
-    "@types/trusted-types": ^2.0.2
-  checksum: 32291eb5bcaa7fcc1d433522a9a62c3c3d240e49bb8c57ccea5c10014823d94f62f17e2d5361781cb6ee0b3c9078ef839de6164d5374371d650471904515e48e
-  languageName: node
-  linkType: hard
-
-"lit@npm:2.6.1":
-  version: 2.6.1
-  resolution: "lit@npm:2.6.1"
+"lit@npm:2.7.0":
+  version: 2.7.0
+  resolution: "lit@npm:2.7.0"
   dependencies:
     "@lit/reactive-element": ^1.6.0
-    lit-element: ^3.2.0
-    lit-html: ^2.6.0
-  checksum: 74f2813152a48f195784f01b6b4ff7e4e7d8fa90ac272b725d1953fa3e1d6c9dca60b77da435f34144fcdd38705480889a8ea986835676932a8559c897cea517
+    lit-element: ^3.3.0
+    lit-html: ^2.7.0
+  checksum: 916f459ded2e9700fe695070963dcb2edcea2dd1d127db6885cf10e94766d5ca9f438ebf659dca264c6402708254927b0ffed6595b6bcaac422e6f203dbbf6ee
   languageName: node
   linkType: hard
 
