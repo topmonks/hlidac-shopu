@@ -66,7 +66,7 @@ export async function handler(event, _context) {
         buffer = [];
       }
     }
-    console.log(`All files from ${key} have been extracted (${count} items})`);
+    console.log(`All files from ${key} have been extracted (${count} items)`);
     if (warnBadPath) {
       rollbar.error(`Invalid path found for ${key}`);
     }

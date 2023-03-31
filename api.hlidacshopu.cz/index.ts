@@ -316,7 +316,7 @@ export function createSQSIngest(options = {}) {
       ...defaultLambdaOpts,
       code: buildAssets("ingest-extractor/index.mjs"),
       runtime: "nodejs16.x", // waiting for a new version of `unzipper`
-      memorySize: 4096,
+      memorySize: 1769,
       timeout: 900,
       environment: {
         variables: {
