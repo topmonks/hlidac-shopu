@@ -1,6 +1,6 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Actor, log, Dataset } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -174,6 +174,24 @@ function startingRequest({ rootUrl, country, type }) {
   }
 }
 
+async function enqueueNewUrls({
+  requestQueue,
+  processedUrls,
+  urls,
+  forefront = false
+}) {
+  const newUrls = [];
+  for (const request of urls) {
+    if (!processedUrls.has(request.url)) {
+      processedUrls.add(request.url);
+      newUrls.push(request);
+    } else {
+      log.info(`URL ${request.url} already enqueued`);
+    }
+  }
+  await requestQueue.addRequests(newUrls, { forefront });
+}
+
 export async function main() {
   rollbar.init();
 
@@ -184,6 +202,7 @@ export async function main() {
     country = Country.CZ,
     type = ActorType.Full
   } = await getInput();
+  const processedUrls = await useState("processedUrls", new Set());
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -207,21 +226,14 @@ export async function main() {
     maxRequestRetries,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    maxRequestsPerMinute: 150,
-    maxConcurrency: 25,
+    maxRequestsPerMinute: 100,
+    maxConcurrency: 20,
     sessionPoolOptions: {
       sessionOptions: {
-        maxUsageCount: 150
+        maxUsageCount: 100
       }
     },
-    async requestHandler({
-      request,
-      log,
-      body,
-      enqueueLinks,
-      session,
-      crawler
-    }) {
+    async requestHandler({ request, log, body, session, crawler }) {
       if (request.userData.label === Labels.COUNT) {
         await countAllProducts({ body, stats });
         return;
@@ -239,7 +251,12 @@ export async function main() {
             }
           }));
         log.info(`${request.url} Found ${urls.length} categories`);
-        await crawler.requestQueue.addRequests(urls, { forefront: true });
+        await enqueueNewUrls({
+          requestQueue: crawler.requestQueue,
+          processedUrls,
+          urls,
+          forefront: true
+        });
       }
       if (request.userData.label === Labels.CATEGORY) {
         // Add subcategories if this category has also products
@@ -255,7 +272,12 @@ export async function main() {
           }));
           stats.add("categories", urls.length);
           log.info(`${request.url} Found ${urls.length} subcategories`);
-          await crawler.requestQueue.addRequests(urls, { forefront: true });
+          await enqueueNewUrls({
+            requestQueue: crawler.requestQueue,
+            processedUrls,
+            urls,
+            forefront: true
+          });
           return; // Nothing more we can do for this page
         }
         // Add categories if this page has only categories and no products
@@ -271,24 +293,30 @@ export async function main() {
           }));
           stats.add("categories", urls.length);
           log.info(`${request.url} Found ${urls.length} categories`);
-          await crawler.requestQueue.addRequests(urls, { forefront: true });
+          await enqueueNewUrls({
+            requestQueue: crawler.requestQueue,
+            processedUrls,
+            urls,
+            forefront: true
+          });
           return; // Nothing more we can do for this page
         }
         // No more categories and subcategories continue with find maxPaginationPage
         const lastPagination = getLastPageNumber(
           document.querySelectorAll("div.pagination-wrapper ul.pagination a")
         );
-        const urls = restPageUrls(
-          lastPagination,
-          i => `${request.url}?showPage&page=${i}&limit=16`
-        );
-        stats.add("pages", urls.length);
-        log.info(`${request.url} Adding ${urls.length} pagination pages`);
-        await enqueueLinks({
-          urls,
+        const urls = restPageUrls(lastPagination, i => ({
+          url: `${request.url}?showPage&page=${i}&limit=16`,
           userData: {
             label: Labels.CATEGORY_NEXT
           }
+        }));
+        stats.add("pages", urls.length);
+        log.info(`${request.url} Adding ${urls.length} pagination pages`);
+        await enqueueNewUrls({
+          requestQueue: crawler.requestQueue,
+          processedUrls,
+          urls
         });
       }
       if (
@@ -306,15 +334,18 @@ export async function main() {
       }
       if (request.userData.label === Labels.BF) {
         log.info(`START BF ${request.url}`);
-        const urls = document
-          .querySelectorAll(".ms-category-box")
-          .map(a => `${rootUrl}${a.href}`);
-        log.info(`Found ${urls.length} BF categories`);
-        await enqueueLinks({
-          urls,
+        const urls = document.querySelectorAll(".ms-category-box").map(a => ({
+          url: `${rootUrl}${a.href}`,
           userData: {
             label: Labels.CATEGORY
           }
+        }));
+        log.info(`Found ${urls.length} BF categories`);
+        await enqueueNewUrls({
+          requestQueue: crawler.requestQueue,
+          processedUrls,
+          urls,
+          forefront: true
         });
       }
     },
