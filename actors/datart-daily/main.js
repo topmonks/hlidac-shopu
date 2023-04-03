@@ -178,14 +178,16 @@ async function enqueueNewUrls({
   requestQueue,
   processedUrls,
   urls,
-  forefront = false
+  forefront = false,
+  stats
 }) {
   const newUrls = [];
   for (const request of urls) {
-    if (!processedUrls.has(request.url)) {
-      processedUrls.add(request.url);
+    if (!processedUrls[request.url]) {
+      processedUrls[request.url] = true;
       newUrls.push(request);
     } else {
+      stats.inc("urlDuplicity");
       log.info(`URL ${request.url} already enqueued`);
     }
   }
@@ -202,13 +204,16 @@ export async function main() {
     country = Country.CZ,
     type = ActorType.Full
   } = await getInput();
-  const processedUrls = await useState("processedUrls", new Set());
+  const processedUrls = await useState("processedUrls", {});
+  const processedIds = await useState("processedIds", {});
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     pages: 0,
     items: 0,
+    urlDuplicity: 0,
     itemsDuplicity: 0,
+    itemsChanged: 0,
     failed: 0,
     blocked: 0
   });
@@ -255,7 +260,8 @@ export async function main() {
           requestQueue: crawler.requestQueue,
           processedUrls,
           urls,
-          forefront: true
+          forefront: true,
+          stats
         });
       }
       if (request.userData.label === Labels.CATEGORY) {
@@ -276,7 +282,8 @@ export async function main() {
             requestQueue: crawler.requestQueue,
             processedUrls,
             urls,
-            forefront: true
+            forefront: true,
+            stats
           });
           return; // Nothing more we can do for this page
         }
@@ -297,7 +304,8 @@ export async function main() {
             requestQueue: crawler.requestQueue,
             processedUrls,
             urls,
-            forefront: true
+            forefront: true,
+            stats
           });
           return; // Nothing more we can do for this page
         }
@@ -316,7 +324,8 @@ export async function main() {
         await enqueueNewUrls({
           requestQueue: crawler.requestQueue,
           processedUrls,
-          urls
+          urls,
+          stats
         });
       }
       if (
@@ -324,7 +333,23 @@ export async function main() {
         request.userData.label === Labels.CATEGORY_NEXT
       ) {
         const products = extractItems(document, rootUrl, country);
-        await Dataset.pushData(products);
+        for (const product of products) {
+          if (processedIds[product.itemId] !== product.currentPrice) {
+            if (processedIds[product.itemId]) {
+              stats.inc("itemsChanged");
+              log.info(
+                `Product ${product.itemId} changed price from ${
+                  processedIds[product.itemId]
+                } to ${product.currentPrice}`
+              );
+            }
+            processedIds[product.itemId] = product.currentPrice;
+            await Dataset.pushData(product);
+          } else {
+            stats.inc("itemsDuplicity");
+            log.info(`ID ${product.itemId} already saved`);
+          }
+        }
         if (!products.length && !document.querySelector("[data-webname]")) {
           session.retire();
           stats.inc("blocked");
@@ -345,7 +370,8 @@ export async function main() {
           requestQueue: crawler.requestQueue,
           processedUrls,
           urls,
-          forefront: true
+          forefront: true,
+          stats
         });
       }
     },
