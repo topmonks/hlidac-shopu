@@ -1,10 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler, useState } from "@crawlee/http";
@@ -244,7 +238,6 @@ function takeRandomIfDev(isDevelopment, coll, n = 50) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
   const { development, proxyGroups } = await getInput();
 
@@ -277,7 +270,7 @@ async function main() {
           categoriesById
         });
         if (processedIds.has(item.itemId)) return;
-        Promise.all([Dataset.pushData(product), uploadToS3v2(s3, product)])
+        Dataset.pushData(product)
           .then(() => {
             processedIds.add(item.itemId);
             stats.inc("items");
@@ -365,17 +358,9 @@ async function main() {
   ]);
 
   try {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
     await sleep(5000);
     itemsForSaving.close();
-    await Promise.all([
-      stats.save(true),
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "rohlik.cz"),
-      uploadToKeboola("rohlik")
-    ]);
+    await Promise.all([stats.save(true), uploadToKeboola("rohlik")]);
 
     log.info("invalidated Data CDN");
     log.info("upload to Keboola finished");

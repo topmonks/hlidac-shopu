@@ -1,14 +1,7 @@
 import { parseHTML } from "linkedom/cached";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import {
-  cleanPrice,
-  toProduct,
-  uploadToS3v2,
-  invalidateCDN
-} from "@hlidac-shopu/actors-common/product.js";
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
@@ -22,7 +15,6 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 const Type = {
   Daily: "DAILY",
   Count: "COUNT",
-  LinkedData: "LINKED_DATA",
   Test: "TEST"
 };
 
@@ -222,18 +214,6 @@ function processResult(type, stats, country) {
           await Dataset.pushData({ numberOfProducts: data });
         }
       };
-    case Type.LinkedData:
-      const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-      const cloudfront = new CloudFrontClient({
-        region: "eu-central-1",
-        maxAttempts: 3
-      });
-      return async (label, data) => {
-        if (label === Label.Detail) {
-          await uploadToS3v2(s3, toProduct(data));
-          await invalidateCDN(cloudfront, "EQYSHWUECAQC9", `ikea_${country}`);
-        }
-      };
   }
 }
 
@@ -295,8 +275,4 @@ export async function main() {
   // start scraping index in loop
   // push data to DataSet
   // upload to Keboola
-
-  // LINKED_DATA
-  // start scraping index in loop
-  // upload to S3 and invalidate CDN
 }

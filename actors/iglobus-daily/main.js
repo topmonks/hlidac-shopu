@@ -1,13 +1,8 @@
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, KeyValueStore, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
-import { S3Client } from "@aws-sdk/client-s3";
+import { HttpCrawler, useState } from "@crawlee/http";
 import {
   cleanPriceText,
   cleanUnitPriceText
@@ -88,12 +83,6 @@ function extractProductUrl(onclickAttr) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-
   const {
     development,
     maxRequestRetries,
@@ -102,7 +91,7 @@ async function main() {
     type = ActorType.Full
   } = await getInput();
 
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(
     x => x,
     (await KeyValueStore.getValue("STATS")) || {
@@ -204,7 +193,7 @@ async function main() {
 
           const products = extractItems(document, userData.category);
           log.info(`Found ${products.length} products`);
-          await saveProducts({ s3, products, stats, processedIds });
+          await saveUniqProducts({ products, stats, processedIds });
           break;
         case Labels.COUNT:
           const count = document("span.category-number-of-products")
@@ -247,8 +236,6 @@ async function main() {
   log.debug("STATS saved!");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "iglobus.cz");
-    log.info("invalidated Data CDN");
     await uploadToKeboola("globus_cz");
     log.info("upload to Keboola finished");
   }

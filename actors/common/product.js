@@ -82,6 +82,7 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
 }
 
 /**
+ * @deprecated
  * Save products to dataset and upload them to S3 (if not disabled).
  * @param {{s3: S3Client, products: object[], stats: Stats, processedIds: Set<string>, s3mergeFn?: (product: object) => object}} options
  * @returns {Promise<number>}
@@ -108,6 +109,26 @@ export async function saveProducts({
   }
   const responses = await Promise.all(requests);
   return responses.length / 2;
+}
+
+/**
+ * Save unique products to dataset
+ * @param {{products: object[], stats: Stats, processedIds: Object<string, Object>}} options
+ * @returns {Promise<number>}
+ */
+export async function saveUniqProducts({ products, stats, processedIds }) {
+  for (const product of products) {
+    if (processedIds[product.itemId] !== product.currentPrice) {
+      if (processedIds[product.itemId]) {
+        stats.inc("itemsChanged");
+      }
+      processedIds[product.itemId] = product.currentPrice;
+      await Dataset.pushData(product).catch(e => console.error(e));
+    } else {
+      stats.inc("itemsDuplicity");
+    }
+  }
+  return products.length;
 }
 
 /**

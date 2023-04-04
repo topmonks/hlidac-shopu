@@ -1,10 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import { DOMParser, parseHTML } from "linkedom/cached";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import zlib from "zlib";
@@ -162,8 +156,6 @@ function pageUrls({ document, request }) {
 async function main() {
   rollbar.init();
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-
   const stats = await withPersistedStats(x => x, {
     urls: 0,
     pages: 0,
@@ -281,11 +273,6 @@ async function main() {
                 ...dataItem,
                 shop,
                 slug
-              }),
-              uploadToS3v2(s3, dataItem, {
-                priceCurrency: "CZK",
-                category: dataItem.breadCrumbs.join(" > "),
-                inStock: true
               })
             ];
           } else {

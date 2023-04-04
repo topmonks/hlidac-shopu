@@ -1,16 +1,10 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
@@ -148,9 +142,8 @@ function categoryItemsRequests(document) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     items: 0,
@@ -221,15 +214,10 @@ async function main() {
             await crawler.requestQueue.addRequests(requests);
           } else {
             const products = extractItems(document, country, stats);
-            await saveProducts({
-              s3,
+            await saveUniqProducts({
               products,
               stats,
-              processedIds,
-              s3mergeFn: product => ({
-                priceCurrency: product.currency,
-                inStock: true
-              })
+              processedIds
             });
 
             const href = document
@@ -290,13 +278,6 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shopName(rootUrl));
-    log.info("invalidated Data CDN");
-
     const tableName = getTableName({ type, country });
     await uploadToKeboola(tableName);
   }

@@ -1,11 +1,5 @@
 import { Actor, Dataset, log } from "apify";
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { HttpCrawler, useState } from "@crawlee/http";
@@ -198,8 +192,8 @@ function productsFromListing({ document, handledIdsSet, currency, country }) {
   const items = [];
   for (const product of productList) {
     const itemId = product.getAttribute("data-product-id");
-    if (handledIdsSet.has(itemId)) continue;
-    handledIdsSet.add(itemId);
+    if (handledIdsSet[itemId]) continue;
+    handledIdsSet[itemId] = true;
     const image = product.querySelector(".m-tp-productbox002-image");
     const url = image.parentNode.getAttribute("href");
     const itemName = image.getAttribute("alt");
@@ -244,8 +238,8 @@ function productsFromCoffeeCategory({
     const itemId = titleObject
       .querySelector("a[data-pds-link]")
       .getAttribute("data-pds-link");
-    if (handledIdsSet.has(itemId)) continue;
-    handledIdsSet.add(itemId);
+    if (handledIdsSet[itemId]) continue;
+    handledIdsSet[itemId] = true;
     const title = titleObject.querySelector("a").getAttribute("title");
     const itemUrl = titleObject.querySelector("a").getAttribute("href");
     if (itemUrl === undefined) break;
@@ -286,24 +280,9 @@ function productsFromCoffeeCategory({
   return items;
 }
 
-async function saveProducts({ products, s3 }) {
-  return Promise.allSettled([
-    Dataset.pushData(products),
-    Promise.allSettled(
-      products.map(result => {
-        uploadToS3v2(s3, result, {
-          inStock: true,
-          priceCurrency: result.currency
-        });
-      })
-    )
-  ]);
-}
-
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const handledIdsSet = await useState("HANDLED_PRODUCT_IDS", new Set());
+  const handledIdsSet = await useState("HANDLED_PRODUCT_IDS", {});
 
   const stats = await withPersistedStats(x => x, {
     urls: 0,
@@ -349,7 +328,7 @@ async function main() {
               currency,
               country
             });
-            await saveProducts({ products, s3 });
+            await Dataset.pushData(products);
           }
           break;
         case Labels.CATEGORY:
@@ -378,7 +357,7 @@ async function main() {
               }));
             await Promise.allSettled([
               crawler.addRequests(subCategoriesRequests),
-              saveProducts({ products, s3 })
+              Dataset.pushData(products)
             ]);
           }
           break;
@@ -412,14 +391,7 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await Promise.all([
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", `tchibo.${country}`),
-      uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`)
-    ]);
+    await uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`);
   }
   log.info("invalidated Data CDN");
   log.info("Finished.");

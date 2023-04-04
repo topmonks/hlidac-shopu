@@ -1,16 +1,11 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { S3Client } from "@aws-sdk/client-s3";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -212,10 +207,9 @@ function handleProductUsingHTML(document, request) {
 async function main() {
   log.info("ACTOR - start");
 
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
 
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
   const {
     debug,
@@ -336,7 +330,7 @@ async function main() {
               log.error("Unknown product detail page");
             }
             stats.add("crawledProducts", products.length);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
           }
           break;
         }
@@ -415,19 +409,7 @@ async function main() {
   await stats.save(true);
 
   if (!development && type !== ActorType.Count) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await Promise.all([
-      invalidateCDN(
-        cloudfront,
-        "EQYSHWUECAQC9",
-        `notino.${country.toLowerCase()}`
-      ),
-
-      uploadToKeboola(tableName)
-    ]);
+    await uploadToKeboola(tableName);
   }
 
   log.info("invalidated Data CDN");

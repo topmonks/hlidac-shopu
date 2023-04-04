@@ -1,10 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
@@ -131,8 +126,7 @@ function lastPageNumber(count) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const processedIds = await useState("processedIds", new Set());
+  const processedIds = await useState("processedIds", {});
 
   const {
     development,
@@ -247,7 +241,7 @@ async function main() {
             }
 
             const products = parseItems(document);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
             log.info(`Found ${products.length} items, ${request.url}`);
           }
           break;
@@ -283,18 +277,11 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
     let tableName = "teta_cz";
     if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;
     }
-    await Promise.all([
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tetadrogerie.cz"),
-      uploadToKeboola(tableName)
-    ]);
+    await uploadToKeboola(tableName);
     log.info("invalidated Data CDN");
   }
   log.info("Finished.");

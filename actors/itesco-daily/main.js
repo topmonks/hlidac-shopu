@@ -1,9 +1,4 @@
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  uploadToS3v2,
-  invalidateCDN,
-  cleanPrice
-} from "@hlidac-shopu/actors-common/product.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
@@ -12,7 +7,6 @@ import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
-import { S3Client } from "@aws-sdk/client-s3";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -205,13 +199,6 @@ function startUrls(document, country) {
   return findArraysUrl(urlsCatHtml, country);
 }
 
-async function pushAndUpload(s3, items) {
-  await Promise.all([
-    Dataset.pushData(items),
-    ...items.map(item => uploadToS3v2(s3, item))
-  ]);
-}
-
 /**
  * @param {string} url
  * @param {string} lastPage
@@ -301,11 +288,6 @@ function extractBFItems(document, country) {
 async function main() {
   rollbar.init();
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
   const stats = await withPersistedStats(x => x, {
     offers: 0,
     failed: 0
@@ -376,7 +358,7 @@ async function main() {
               uniqueItems,
               stats
             });
-            await pushAndUpload(s3, items);
+            await Dataset.pushData(items);
           }
           break;
         case Labels.PageBF:
@@ -392,7 +374,7 @@ async function main() {
               }
             });
             const items = extractBFItems(document, country);
-            await pushAndUpload(s3, items);
+            await Dataset.pushData(items);
           }
           break;
         case Labels.Pagination:
@@ -404,7 +386,7 @@ async function main() {
               stats
             });
             log.debug(`Found ${items.length} storing them, ${request.url}`);
-            await pushAndUpload(s3, items);
+            await Dataset.pushData(items);
           }
           break;
       }
@@ -416,16 +398,9 @@ async function main() {
   });
 
   await startCrawler(crawler, { type, country, bfUrl, testUrl });
-
   await stats.save(true);
 
   if (!development) {
-    await invalidateCDN(
-      cloudfront,
-      "EQYSHWUECAQC9",
-      `itesco.${country.toLowerCase()}`
-    );
-    log.info("invalidated Data CDN");
     await uploadToKeboola(getTableName(country, type));
     log.info("upload to Keboola finished");
   }

@@ -1,12 +1,7 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, log } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { parseHTML } from "linkedom/cached";
@@ -131,11 +126,6 @@ function handleCategories(categories) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   const {
     development,
@@ -144,7 +134,7 @@ async function main() {
     type = ActorType.Full
   } = await getInput();
 
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(x => x, {
     pages: 0,
     items: 0,
@@ -214,7 +204,7 @@ async function main() {
               document.querySelectorAll(".pagination .pg_button").at(-1)
                 ?.innerText ?? 0;
             const products = handleProducts(document);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
             if (maxPage !== 0) {
               const pagiPages = restPageUrls(maxPage, i => ({
                 url: `${request.url}&strana=${i}`,
@@ -231,7 +221,7 @@ async function main() {
           {
             log.info(`START with page ${request.url}`);
             const products = handleProducts(document);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
           }
           break;
         case ActorType.BlackFriday:
@@ -283,8 +273,6 @@ async function main() {
   log.info("Crawl finished.");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "kasa.cz");
-    log.info("invalidated Data CDN");
     await uploadToKeboola(type !== ActorType.Full ? "kasa_bf" : "kasacz");
     log.info("upload to Keboola finished");
   }

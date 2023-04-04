@@ -1,16 +1,13 @@
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import {
   cleanPrice,
-  invalidateCDN,
-  saveProducts
+  saveUniqProducts
 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
@@ -84,8 +81,7 @@ function extractProducts(document) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const processedIds = await useState("processedIds", new Set());
+  const processedIds = await useState("processedIds", {});
 
   const {
     development,
@@ -144,7 +140,7 @@ async function main() {
           }
           const products = extractProducts(document);
           log.info(`${request.url} Found ${products.length} products`);
-          await saveProducts({ s3, stats, products, processedIds });
+          await saveUniqProducts({ stats, products, processedIds });
           break;
         case "SUBLIST":
           stats.inc("pages");
@@ -220,13 +216,6 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "knihydobrovsky.cz");
-    log.info("invalidated Data CDN");
-
     try {
       await uploadToKeboola(
         type === ActorType.BlackFriday

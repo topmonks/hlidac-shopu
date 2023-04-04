@@ -1,19 +1,14 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  cleanPrice
-} from "@hlidac-shopu/actors-common/product.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { gotScraping } from "got-scraping";
-import { uploadToS3v2 } from "@hlidac-shopu/actors-common/product.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseHTML, DOMParser } from "linkedom/cached";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { PlaywrightCrawler } from "@crawlee/playwright";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -140,17 +135,12 @@ async function scrapeProductListPage(document) {
   return requests;
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
+async function saveProducts(products, stats, processedIds) {
   const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(
-        Dataset.pushData(product),
-        uploadToS3v2(s3, product, {
-          inStock: product.available
-        })
-      );
+      requests.push(Dataset.pushData(product));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
@@ -190,7 +180,6 @@ function productListRequests(document, firstPageURL) {
 }
 
 async function handlePage({
-  s3,
   document,
   crawler,
   request,
@@ -203,7 +192,7 @@ async function handlePage({
       `Scraping ${request.userData.pageN} product list page: ${request.url}`
     );
     const products = await scrapeProductListPage(document);
-    await saveProducts(s3, products, stats, processedIds);
+    await saveProducts(products, stats, processedIds);
   } else {
     const productElements = document.querySelectorAll(productItemToken);
     const isSubCategoryPage = productElements.length === 0;
@@ -218,7 +207,7 @@ async function handlePage({
       const requests = productListRequests(document, request.url);
       await crawler.requestQueue.addRequests(requests);
       const products = await scrapeProductListPage(document);
-      await saveProducts(s3, products, stats, processedIds);
+      await saveProducts(products, stats, processedIds);
     }
   }
   stats.inc("pages");
@@ -419,11 +408,6 @@ async function countProducts(stats) {
 async function main() {
   rollbar.init();
   const processedIds = new Set();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
   const {
     development,
     maxRequestRetries,
@@ -549,8 +533,6 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "electroworld.cz");
-    log.info("invalidated Data CDN");
     await uploadToKeboola(
       type === ActorType.BlackFriday ? "electroworld_cz_bf" : "electroworld_cz"
     );

@@ -1,10 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
@@ -134,8 +129,7 @@ function scrapeProducts(document) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const processedIds = await useState("processedIds", new Set());
+  const processedIds = await useState("processedIds", {});
 
   const {
     development,
@@ -180,7 +174,7 @@ async function main() {
           break;
         case Labels.PRODUCTS:
           const products = scrapeProducts(document);
-          await saveProducts({ s3, products, stats, processedIds });
+          await saveUniqProducts({ products, stats, processedIds });
           break;
       }
     },
@@ -213,13 +207,6 @@ async function main() {
   log.info("Crawl finished.");
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "prozdravi.cz");
-    log.info("invalidated Data CDN");
-
     let tableName = "prozdravi_cz";
     if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;

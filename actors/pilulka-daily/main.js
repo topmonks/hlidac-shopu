@@ -1,12 +1,7 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  saveProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "linkedom/cached";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -255,7 +250,6 @@ function extractProductFromDetail(document, request, country) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
 
   const {
     development,
@@ -273,7 +267,7 @@ async function main() {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(x => x, {
     items: 0,
     itemsDuplicity: 0,
@@ -330,7 +324,7 @@ async function main() {
               });
             }
             const products = extractProduts(document, request, country);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
           }
           break;
         case Labels.CATEGORY_PAGE:
@@ -349,7 +343,7 @@ async function main() {
             }
             const products = extractProduts(document, request, country);
             log.info(`Found ${products.length} products on ${request.url}`);
-            await saveProducts({ s3, products, stats, processedIds });
+            await saveUniqProducts({ products, stats, processedIds });
           }
           break;
         case Labels.PRODUCT_DETAIL:
@@ -359,8 +353,7 @@ async function main() {
               request,
               country
             );
-            await saveProducts({
-              s3,
+            await saveUniqProducts({
               products: [product],
               stats,
               processedIds
@@ -392,17 +385,6 @@ async function main() {
   await crawler.run(requests);
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await invalidateCDN(
-      cloudfront,
-      "EQYSHWUECAQC9",
-      `pilulka.${country.toLowerCase()}`
-    );
-    log.info("invalidated Data CDN");
-
     let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
     if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;

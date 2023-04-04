@@ -1,10 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
+import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -75,12 +70,12 @@ function extractProducts(document) {
   return products;
 }
 
-async function saveProducts(s3, products, stats, processedIds) {
+async function saveProducts(products, stats, processedIds) {
   const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, product));
+      requests.push(Dataset.pushData(product));
       stats.inc("items");
     } else {
       stats.inc("itemsDuplicity");
@@ -91,12 +86,6 @@ async function saveProducts(s3, products, stats, processedIds) {
 
 async function main() {
   rollbar.init();
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-
   const input = (await KeyValueStore.getInput()) || {};
   const {
     development = process.env.TEST,
@@ -135,7 +124,7 @@ async function main() {
         log.info(`${request.url} Found ${products.length} products`);
         if (!products.length) session.markBad();
         stats.inc("pages");
-        await saveProducts(s3, products, stats, processedIds);
+        await saveProducts(products, stats, processedIds);
       } else if (request.userData.label === "CATEGORY") {
         // Add subcategories if this category has also products
         const subcategories = document
@@ -165,7 +154,7 @@ async function main() {
         const products = extractProducts(document);
         log.info(`${request.url} Found ${products.length} products`);
         if (!products.length) session.markBad();
-        await saveProducts(s3, products, stats, processedIds);
+        await saveProducts(products, stats, processedIds);
       } else if (request.userData.label === "START") {
         const links = document
           .querySelectorAll("#mele > div.lmitem > a")

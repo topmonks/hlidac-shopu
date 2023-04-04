@@ -1,11 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  invalidateCDN,
-  uploadToS3v2,
-  cleanPrice
-} from "@hlidac-shopu/actors-common/product.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -170,12 +164,6 @@ async function main() {
 
   rollbar.init();
 
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
-
   const processedIds = new Set();
   const stats = await withPersistedStats(x => x, {
     urls: 0,
@@ -297,10 +285,7 @@ async function main() {
             });
             if (product) {
               stats.inc("items");
-              await Promise.all([
-                Dataset.pushData(product),
-                uploadToS3v2(s3, product)
-              ]);
+              await Dataset.pushData(product);
             }
           }
           break;
@@ -322,10 +307,6 @@ async function main() {
   log.info("crawler finished");
 
   await stats.save();
-
-  const directoryName = `obi${country === "it" ? "-italia" : ""}.${country}`;
-  await invalidateCDN(cloudfront, "EQYSHWUECAQC9", directoryName);
-  log.info(`invalidated Data CDN ${directoryName}`);
 
   if (!development) {
     const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
