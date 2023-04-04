@@ -7,6 +7,7 @@ import { Actor, log } from "apify";
 import byteSize from "byte-size";
 import { addMinutes, format } from "date-fns";
 import gzip from "node-gzip";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 import { keboolaUploader } from "./src/uploader.js";
 import { mironetValidator } from "./src/validators/mironetValidator.js";
@@ -440,6 +441,19 @@ async function loadItems(
   }
 }
 
+async function saveItemsCount(shop, downloaded) {
+  const db = new DynamoDBClient({ region: "eu-central-1", maxAttempts: 3 });
+  const params = {
+    TableName: "daily_shop_items_count",
+    Item: {
+      shop: { S: shop },
+      date: { S: new Date().toISOString().split("T")[0] },
+      count: { N: downloaded.toString() }
+    }
+  };
+  await db.send(new PutItemCommand(params));
+}
+
 async function main() {
   const input = await Actor.getValue("INPUT");
   const {
@@ -508,6 +522,7 @@ async function main() {
       },
       stats
     );
+    await saveItemsCount(tableName, stats.downloaded);
   } finally {
     clearInterval(progressInterval);
   }

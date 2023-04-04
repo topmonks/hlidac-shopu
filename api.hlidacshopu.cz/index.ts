@@ -57,10 +57,25 @@ export function createDatabase() {
     readCapacity: 1
   });
 
+  const dailyShopItemsCountTable = new aws.dynamodb.Table(
+    "daily_shop_items_count",
+    {
+      name: "daily_shop_items_count",
+      hashKey: "shop",
+      rangeKey: "date",
+      attributes: [
+        { name: "shop", type: "S" },
+        { name: "date", type: "S" }
+      ],
+      billingMode: "PAY_PER_REQUEST"
+    }
+  );
+
   return pulumi.Output.create({
     blackFridayDataTable: blackFridayDataTable.name,
     extensionParsingDataTable: extensionParsedDataTable.name,
-    apiHitCounterDataTable: apiHitCounterDataTable.name
+    apiHitCounterDataTable: apiHitCounterDataTable.name,
+    dailyShopItemsCountTable: dailyShopItemsCountTable.name
   });
 }
 
