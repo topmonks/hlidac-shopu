@@ -1,6 +1,5 @@
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { fetch } from "@adobe/fetch";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,

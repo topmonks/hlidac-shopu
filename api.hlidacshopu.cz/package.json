@@ -4,7 +4,6 @@
   "description": "Lambdas for handling API Gateway endpoints",
   "type": "module",
   "dependencies": {
-    "@adobe/fetch": "4.0.6",
     "@aws-sdk/client-dynamodb": "3.303.0",
     "@aws-sdk/client-s3": "3.304.0",
     "@aws-sdk/client-sqs": "3.303.0",

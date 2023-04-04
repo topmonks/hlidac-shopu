@@ -1,4 +1,3 @@
-import { fetch } from "@adobe/fetch";
 import { program } from "commander/esm.mjs";
 
 const tableTypes = new Map([

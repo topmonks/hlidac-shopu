@@ -1,4 +1,3 @@
-import { fetch, AbortController } from "@adobe/fetch";
 import { withCORS } from "../http.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */

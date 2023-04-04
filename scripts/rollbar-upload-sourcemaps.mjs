@@ -2,7 +2,6 @@
 import path from "path";
 import fs from "fs";
 import url from "url";
-import { fetch } from "@adobe/fetch";
 import { FormData } from "formdata-node";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));

@@ -1,4 +1,4 @@
-import AWS from "aws-sdk";
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import https from "https";
 import fs from "fs";
@@ -7,44 +7,44 @@ import path from "path";
 //Parse arguments from command line
 function getArgs() {
   const args = {};
-  process.argv
-    .slice(2, process.argv.length)
-    .forEach(arg => {
-      // long arg
-      if (arg.slice(0, 2) === "--") {
-        const longArg = arg.split("=");
-        const longArgFlag = longArg[0].slice(2, longArg[0].length);
-        const longArgValue = longArg.length > 1 ? longArg[1] : true;
-        args[longArgFlag] = longArgValue;
-      }
-      // flags
-      else if (arg[0] === "-") {
-        const flags = arg.slice(1, arg.length).split("");
-        flags.forEach(flag => {
-          args[flag] = true;
-        });
-      }
-    });
+  process.argv.slice(2, process.argv.length).forEach(arg => {
+    // long arg
+    if (arg.slice(0, 2) === "--") {
+      const longArg = arg.split("=");
+      const longArgFlag = longArg[0].slice(2, longArg[0].length);
+      args[longArgFlag] = longArg.length > 1 ? longArg[1] : true;
+    }
+    // flags
+    else if (arg[0] === "-") {
+      const flags = arg.slice(1, arg.length).split("");
+      flags.forEach(flag => {
+        args[flag] = true;
+      });
+    }
+  });
   return args;
 }
 const args = getArgs();
 
 function prepareDir(dir) {
-  if (!fs.existsSync(dir)){
+  if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }
 }
 
 //Get all items from DynamoDB paginated to save Provisioned read capacity
-const getPaginatedResults = async (fn) => {
+const getPaginatedResults = async fn => {
   const EMPTY = Symbol("empty");
   const res = [];
   for await (const lf of (async function* () {
     let NextMarker = EMPTY;
     let count = 0;
     while (NextMarker || NextMarker === EMPTY) {
-      const { marker, results, count: ct } =
-        await fn(NextMarker !== EMPTY ? NextMarker : undefined, count);
+      const {
+        marker,
+        results,
+        count: ct
+      } = await fn(NextMarker !== EMPTY ? NextMarker : undefined, count);
 
       yield* results;
 
@@ -71,38 +71,41 @@ const config = {
   }
 };
 
-AWS.config.update(config);
-// Create the Document Client interface for DynamoDB
-const ddbDocumentClient = new AWS.DynamoDB.DocumentClient();
+const db = new DynamoDBClient({ region: "eu-central-1", maxAttempts: 3 });
 
 // use argument "from" from commandline or set current month
 const now = new Date();
-const currentDate = `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(-2)}`;
+const currentDate = `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(
+  -2
+)}`;
 const fromDate = args.from ?? null;
-console.log("Start counting extension hits for shops from", fromDate ? `date: ${fromDate}` : "beginning");
+console.log(
+  "Start counting extension hits for shops from",
+  fromDate ? `date: ${fromDate}` : "beginning"
+);
 
 const dbQueryParams = {
   TableName: "api_hit_counter",
   ExpressionAttributeValues: {
-    ":v1": "alza.cz"
+    ":v1": { S: "alza.cz" }
   },
   ExpressionAttributeNames: {
     "#shop": "shop"
   },
   KeyConditionExpression: "#shop = :v1"
 };
-if(fromDate !== null) {
-  dbQueryParams.ExpressionAttributeValues[":v2"] = fromDate;
+if (fromDate !== null) {
+  dbQueryParams.ExpressionAttributeValues[":v2"] = { S: fromDate };
   dbQueryParams.ExpressionAttributeNames["#date"] = "date";
   dbQueryParams.KeyConditionExpression = "#shop = :v1 AND #date >= :v2";
 }
 const shopHits = {};
 
 async function queryDatabase() {
-  return await getPaginatedResults(async (ExclusiveStartKey) => {
-    const queryResponse = await ddbDocumentClient
-      .query({ ExclusiveStartKey, ...dbQueryParams })
-      .promise();
+  return await getPaginatedResults(async ExclusiveStartKey => {
+    const queryResponse = await db.send(
+      new QueryCommand({ ExclusiveStartKey, ...dbQueryParams })
+    );
     return {
       marker: queryResponse.LastEvaluatedKey,
       results: queryResponse.Items
@@ -112,7 +115,7 @@ async function queryDatabase() {
 
 for (const shop of shops) {
   if (shop[0].includes(".")) {
-    dbQueryParams.ExpressionAttributeValues[":v1"] = shop[0];
+    dbQueryParams.ExpressionAttributeValues[":v1"] = { S: shop[0] };
 
     const items = await queryDatabase();
     for (const item of items) {
@@ -122,12 +125,12 @@ for (const shop of shops) {
       const itemMonth = ("0" + (itemDate.getMonth() + 1)).slice(-2);
       const itemYear = itemDate.getFullYear();
       //Create key for shopHits object
-      const groupDate = `${itemYear}-${itemMonth}`
-      if(!shopHits[groupDate]) {
+      const groupDate = `${itemYear}-${itemMonth}`;
+      if (!shopHits[groupDate]) {
         shopHits[groupDate] = [];
       }
       let shopIndex = shopHits[groupDate].findIndex(x => x.name === shop[0]);
-      if(shopIndex === -1){
+      if (shopIndex === -1) {
         shopHits[groupDate].push({ name: shop[0], hits: 0 });
         shopIndex = 0;
       }
@@ -140,11 +143,11 @@ for (const groupDate in shopHits) {
   shopHits[groupDate].sort((a, b) => b.hits - a.hits);
 }
 //Create directory for output
-const dirPath = './scripts/stats'
+const dirPath = "./scripts/stats";
 prepareDir(dirPath);
 //Create file path
 const fileDate = `${Object.keys(shopHits)[0]}-${currentDate}`;
-const fileName = `extension-hits-${fileDate}-${Date.now()}.json`
+const fileName = `extension-hits-${fileDate}-${Date.now()}.json`;
 const filePath = path.resolve(dirPath, fileName);
 //Write JSON to a file
 fs.writeFileSync(filePath, JSON.stringify(shopHits, null, 2), "utf8");
