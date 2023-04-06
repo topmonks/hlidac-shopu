@@ -5834,7 +5834,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": 1.3.10
-    lit-element: 3.3.0
+    lit-element: 3.3.1
     lit-html: 2.7.0
   languageName: unknown
   linkType: soft
@@ -18068,14 +18068,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.3.0, lit-element@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "lit-element@npm:3.3.0"
+"lit-element@npm:3.3.1":
+  version: 3.3.1
+  resolution: "lit-element@npm:3.3.1"
   dependencies:
     "@lit-labs/ssr-dom-shim": ^1.1.0
     "@lit/reactive-element": ^1.3.0
     lit-html: ^2.7.0
-  checksum: 5a483c34dd55412599978e02858d841a932199dedca0b86ec54639096bc36c301f57915c0ee0463d8a57ac265d57f3468c8378224816c732c73df641a2549d62
+  checksum: c5731de5126d59ca9b2e6ae6fa61042101f7c63aaa5918fc84668f193debddb930dd217fba0f5be4bba1f90d84d40155ccb25bac56d4cb42cf2e9e41096227df
   languageName: node
   linkType: hard
 
@@ -18086,6 +18086,17 @@ __metadata:
     "@lit/reactive-element": ^1.3.0
     lit-html: ^2.2.0
   checksum: 64bd0f05f7a93921a5853e92f4b86b75affc088805f5ce0249c62a02a1d44445dea5c8319badc4cae6e5663afeb60296e3e0f63fd3af265b89fa482c8a846c3d
+  languageName: node
+  linkType: hard
+
+"lit-element@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "lit-element@npm:3.3.0"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.1.0
+    "@lit/reactive-element": ^1.3.0
+    lit-html: ^2.7.0
+  checksum: 5a483c34dd55412599978e02858d841a932199dedca0b86ec54639096bc36c301f57915c0ee0463d8a57ac265d57f3468c8378224816c732c73df641a2549d62
   languageName: node
   linkType: hard
 
