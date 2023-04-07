@@ -1,6 +1,9 @@
 import { S3 } from "@aws-sdk/client-s3";
 import { SQS } from "@aws-sdk/client-sqs";
 import { Parse as unzipperParse } from "unzipper";
+import Rollbar from "../../../rollbar.mjs";
+
+const rollbar = Rollbar.init({ lambdaName: "ingest-extractor" });
 
 const s3 = new S3({ region: "eu-central-1", maxAttempts: 3 });
 const sqs = new SQS({ region: "eu-central-1", maxAttempts: 3 });
@@ -15,10 +18,20 @@ function getZip(bucket, key) {
 }
 
 function enqueueMessage(buffer, items) {
+  const messageBody = JSON.stringify({ items });
+  const byteLength = new TextEncoder().encode(messageBody).byteLength;
+  console.log(`Enqueuing ${items.length} items with total size ${byteLength}`);
+  if (byteLength > 256 * 1024) {
+    rollbar.error(
+      `SQS message is probably too big ${byteLength} bytes (shop URL example: ${
+        items.at(-1).path
+      })`
+    );
+  }
   buffer.push(
     sqs
       .sendMessage({
-        MessageBody: JSON.stringify({ items }),
+        MessageBody: messageBody,
         QueueUrl: process.env.SQS_URL
       })
       .catch(err => console.error(err))
@@ -28,6 +41,7 @@ function enqueueMessage(buffer, items) {
 export async function handler(event, _context) {
   let buffer = [];
   let items = [];
+  let size = 0;
   for (const record of event.Records) {
     let count = 0;
     const bucket = record.s3.bucket.name;
@@ -43,12 +57,16 @@ export async function handler(event, _context) {
       }
       const content = await entry.buffer().then(b => b.toString());
       count++;
-      items.push({ path: entry.path, content });
-      if (items.length >= 10) {
+      const payload = { path: entry.path, content };
+      size += JSON.stringify(payload).length;
+      items.push(payload);
+      // max message size is 256KB, but leave some reserve
+      if (size >= 225 * 1024 || items.length >= 1000) {
         enqueueMessage(buffer, items);
         items = [];
+        size = 0;
       }
-      if (buffer.length >= 10000) {
+      if (buffer.length >= 100) {
         console.time("waiting");
         await Promise.allSettled(buffer);
         console.timeEnd("waiting");
@@ -61,3 +79,22 @@ export async function handler(event, _context) {
   if (items.length) enqueueMessage(buffer, items);
   await Promise.allSettled(buffer);
 }
+
+/*
+AWS_PROFILE=hlidac-shopu node src/lambda/sqs/ingest-extractor/index.mjs
+
+await handler({
+  Records: [
+    {
+      s3: {
+        bucket: {
+          name: "ingest.hlidacshopu.cz"
+        },
+        object: {
+          key: "alza.sk_metadata.zip"
+        }
+      }
+    }
+  ]
+});
+*/
