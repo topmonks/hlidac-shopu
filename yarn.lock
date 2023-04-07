@@ -5798,7 +5798,7 @@ __metadata:
     apify-cli: 0.15.1
     got-scraping: 3.2.13
     linkedom: 0.14.25
-    playwright: 1.32.1
+    playwright: 1.32.2
   languageName: unknown
   linkType: soft
 
@@ -6089,7 +6089,7 @@ __metadata:
     apify: 3.1.4
     apify-cli: 0.15.1
     linkedom: 0.14.25
-    playwright: 1.32.1
+    playwright: 1.32.2
   languageName: unknown
   linkType: soft
 
@@ -6191,7 +6191,7 @@ __metadata:
     apify: 3.1.4
     apify-cli: 0.15.1
     linkedom: 0.14.25
-    playwright: 1.32.1
+    playwright: 1.32.2
   languageName: unknown
   linkType: soft
 
@@ -6207,7 +6207,7 @@ __metadata:
     apify-cli: 0.15.1
     fingerprint-generator: 2.1.18
     fingerprint-injector: 2.1.18
-    playwright: 1.32.1
+    playwright: 1.32.2
     proxy-agent: ^5.0.0
     random-mua: ^0.5.0
     tough-cookie: ^4.1.2
@@ -20632,23 +20632,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.32.1":
-  version: 1.32.1
-  resolution: "playwright-core@npm:1.32.1"
+"playwright-core@npm:1.32.2":
+  version: 1.32.2
+  resolution: "playwright-core@npm:1.32.2"
   bin:
     playwright: cli.js
-  checksum: 796185e605df3c970885845c1fbf2de53db5d089d37946850483797c91b81ab9dc87c3440695e96a8c92613324ef3deaea698afaf2c379548a23f8ce074931de
+  checksum: ff000cbf280e5d558fe70fd3edf14910a2e86ec68b04e28327176268345be7b3f88a5d22d78e8dae677dd633dce6cd493237df199773b55312f2ae1ab85d711f
   languageName: node
   linkType: hard
 
-"playwright@npm:1.32.1":
-  version: 1.32.1
-  resolution: "playwright@npm:1.32.1"
+"playwright@npm:1.32.2":
+  version: 1.32.2
+  resolution: "playwright@npm:1.32.2"
   dependencies:
-    playwright-core: 1.32.1
+    playwright-core: 1.32.2
   bin:
     playwright: cli.js
-  checksum: bb2cef8812abf60cf07bbf6edb4ac480ccbf0b129e001fd4f2d499c8888918bc87dcc0f346b5954e6b67cd67528c8263593b091f3c83609a91c8a276196c8951
+  checksum: 36967299a5c4c02830bcb7fb94b96d6c6a7a2d7e749feb924509e89b1fdc34f8ee2218cfaf75e5f32572663568b468ad28fdc170bced41869d5ed69f9a7ff384
   languageName: node
   linkType: hard
 
