@@ -5835,7 +5835,7 @@ __metadata:
   dependencies:
     "@hlidac-shopu/lib": 1.3.10
     lit-element: 3.3.1
-    lit-html: 2.7.0
+    lit-html: 2.7.1
   languageName: unknown
   linkType: soft
 
@@ -6249,7 +6249,7 @@ __metadata:
     eslint-plugin-lit: 1.8.2
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-promise: 6.1.1
-    lit-html: 2.7.0
+    lit-html: 2.7.1
     workbox-window: 6.5.4
   languageName: unknown
   linkType: soft
@@ -18100,12 +18100,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.7.0, lit-html@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "lit-html@npm:2.7.0"
+"lit-html@npm:2.7.1":
+  version: 2.7.1
+  resolution: "lit-html@npm:2.7.1"
   dependencies:
     "@types/trusted-types": ^2.0.2
-  checksum: 8a0f83c0f6110f8d02484803c2b309c6d21011bd03681cb790c5303e4a6e4f94956cb2dcb05e67f6c4066f382193a7e5c8987ab0ca244f2fe6e85b99e2feecdd
+  checksum: 9641bc8e385304899b05c3a268ede7e766a145a1d98449caa1e3d32109197502311a1d35d8ba57a93c884143e6e2d1543e7b025d3607c6675e3d112c0ac2f129
   languageName: node
   linkType: hard
 
@@ -18115,6 +18115,15 @@ __metadata:
   dependencies:
     "@types/trusted-types": ^2.0.2
   checksum: f5291201f4fe5bde77a77d3befe515bf8d22d75f4f9c3c98230fd9ba865fb424002fa7d5c9b7cbf01225cd7fa81b09757f8f0c52b79560c57c7ca279fd3c2cdf
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "lit-html@npm:2.7.0"
+  dependencies:
+    "@types/trusted-types": ^2.0.2
+  checksum: 8a0f83c0f6110f8d02484803c2b309c6d21011bd03681cb790c5303e4a6e4f94956cb2dcb05e67f6c4066f382193a7e5c8987ab0ca244f2fe6e85b99e2feecdd
   languageName: node
   linkType: hard
 
