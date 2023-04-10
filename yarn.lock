@@ -6254,7 +6254,7 @@ __metadata:
     "@thi.ng/atom": 5.1.34
     eslint: 8.37.0
     eslint-config-prettier: 8.8.0
-    eslint-plugin-compat: 4.1.2
+    eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
     eslint-plugin-lit: 1.8.2
     eslint-plugin-prettier: 4.2.1
@@ -6677,17 +6677,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdn/browser-compat-data@npm:^3.3.14":
-  version: 3.3.14
-  resolution: "@mdn/browser-compat-data@npm:3.3.14"
-  checksum: 0363cc9cb3cef308b78b3ba82af0542ad928bacecc95ee1e849c134c3eb866f4771df9fb064fd4da42fdb28e2d6932e0abb6e47ed47fbc42a26a9b0a5aee1e9f
-  languageName: node
-  linkType: hard
-
 "@mdn/browser-compat-data@npm:^5.2.34":
   version: 5.2.35
   resolution: "@mdn/browser-compat-data@npm:5.2.35"
   checksum: d42d52106452e7fe482ea5d8a8c45d2c12d138b326f02334bf8c05860dca0fb2238a07804c3e6c905c14173608c649df5c597e57078cdf2483110a7900f4ee0e
+  languageName: node
+  linkType: hard
+
+"@mdn/browser-compat-data@npm:^5.2.47":
+  version: 5.2.49
+  resolution: "@mdn/browser-compat-data@npm:5.2.49"
+  checksum: ee8a66e8ac5d707ccdb407622f50893525b310ee0e1539907f2bffd770a43385be3a587ce482dff28202d41c3e83215fa7ba0f873e0e92ce87cc03efe9ebdf85
   languageName: node
   linkType: hard
 
@@ -7868,6 +7868,13 @@ __metadata:
   version: 0.2.0
   resolution: "@trysound/sax@npm:0.2.0"
   checksum: 11226c39b52b391719a2a92e10183e4260d9651f86edced166da1d95f39a0a1eaa470e44d14ac685ccd6d3df7e2002433782872c0feeb260d61e80f21250e65c
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node14@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@tsconfig/node14@npm:1.0.3"
+  checksum: 19275fe80c4c8d0ad0abed6a96dbf00642e88b220b090418609c4376e1cef81bf16237bf170ad1b341452feddb8115d8dd2e5acdfdea1b27422071163dc9ba9d
   languageName: node
   linkType: hard
 
@@ -9698,12 +9705,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ast-metadata-inferer@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "ast-metadata-inferer@npm:0.7.0"
+"ast-metadata-inferer@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "ast-metadata-inferer@npm:0.8.0"
   dependencies:
-    "@mdn/browser-compat-data": ^3.3.14
-  checksum: 9bb633b680d537cd6d5066e48ed6ae68d7ddae663a380bdba78d4f40b53d4c03845dc3a7307d55ecf1248b447ee28d62bb20ade8b880abc2df629cda9414e32e
+    "@mdn/browser-compat-data": ^5.2.34
+  checksum: 8b9f38b5c7d33e2fad80174bb2613fad962c6ef728175281dd7957548608c95d958190b5269b74f6e24d037f6e650b45eb39440c1e206e3f9799aedde27fa54a
   languageName: node
   linkType: hard
 
@@ -10881,10 +10888,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001451":
-  version: 1.0.30001456
-  resolution: "caniuse-lite@npm:1.0.30001456"
-  checksum: c2cc479962149abd09a25b64699ee7484d9c433db2bad0a489f7b51b09a463c991f6efd7b8e201bc1a1ccf3294263f88503a3adf0a57db9046939ee7e58b76a6
+"caniuse-lite@npm:^1.0.30001473":
+  version: 1.0.30001477
+  resolution: "caniuse-lite@npm:1.0.30001477"
+  checksum: 22db0feccf43b0c16a46bb59b4e26ae05011f41c6947f1dd176d5056e0db58c3415a5ff7ee5a60903a6bda7311b71705d1d29fc4c43a8b8a1bdeef8c1d93f6a8
   languageName: node
   linkType: hard
 
@@ -13533,20 +13540,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-compat@npm:4.1.2":
-  version: 4.1.2
-  resolution: "eslint-plugin-compat@npm:4.1.2"
+"eslint-plugin-compat@npm:4.1.4":
+  version: 4.1.4
+  resolution: "eslint-plugin-compat@npm:4.1.4"
   dependencies:
-    "@mdn/browser-compat-data": ^5.2.34
-    ast-metadata-inferer: ^0.7.0
+    "@mdn/browser-compat-data": ^5.2.47
+    "@tsconfig/node14": ^1.0.3
+    ast-metadata-inferer: ^0.8.0
     browserslist: ^4.21.5
-    caniuse-lite: ^1.0.30001451
+    caniuse-lite: ^1.0.30001473
     find-up: ^5.0.0
     lodash.memoize: 4.1.2
     semver: 7.3.8
   peerDependencies:
     eslint: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 385c29d7392ce161cf24bb118fa98f45a817106fbb131919be03c4b332c0e2baa4609e57ee182cb1c26a788d6030569a08a1598561014fe0a2fa648c11502de2
+  checksum: 25df48509996fd540839abf59aeb5257df3fd7826792c94aabd045ab11b94f7dfbba77ccebcce52be18ae2048b91a6d8f3cf8864b70fd0d3f798c76027f51925
   languageName: node
   linkType: hard
 
@@ -16116,7 +16124,7 @@ __metadata:
     esbuild: 0.17.15
     eslint: 8.37.0
     eslint-config-prettier: 8.8.0
-    eslint-plugin-compat: 4.1.2
+    eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
     eslint-plugin-lit: 1.8.2
     eslint-plugin-prettier: 4.2.1
