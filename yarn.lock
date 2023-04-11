@@ -4985,7 +4985,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": 1.3.10
-    "@thi.ng/atom": 5.1.34
+    "@thi.ng/atom": 5.2.0
     "@types/node": 18.15.11
     apify: 3.1.4
     rollbar: 2.26.1
@@ -5459,7 +5459,7 @@ __metadata:
     "@crawlee/http": 3.3.0
     "@crawlee/utils": 3.3.0
     "@hlidac-shopu/actors-common": 2.1.0
-    "@thi.ng/atom": 5.1.34
+    "@thi.ng/atom": 5.2.0
     "@thi.ng/transducers": 8.4.2
     "@types/node": 18.15.11
     apify: 3.1.4
@@ -5554,7 +5554,7 @@ __metadata:
     "@material/layout-grid": 14.0.0
     "@material/snackbar": 14.0.0
     "@material/top-app-bar": 14.0.0
-    "@thi.ng/atom": 5.1.34
+    "@thi.ng/atom": 5.2.0
     eslint: 8.38.0
     eslint-config-prettier: 8.8.0
     eslint-plugin-compat: 4.1.4
@@ -6913,13 +6913,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/api@npm:^8.7.5":
-  version: 8.7.5
-  resolution: "@thi.ng/api@npm:8.7.5"
-  checksum: 18df466cf969e848d4c4afbabb8f094e8a446212227547a49535eba86f481d42c3b0959ab4e70c86fd919dbb958478fa5a92e88d972fa668502b417a50d0785e
-  languageName: node
-  linkType: hard
-
 "@thi.ng/api@npm:^8.7.6":
   version: 8.7.6
   resolution: "@thi.ng/api@npm:8.7.6"
@@ -6941,25 +6934,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.1.34":
-  version: 5.1.34
-  resolution: "@thi.ng/atom@npm:5.1.34"
+"@thi.ng/atom@npm:5.2.0":
+  version: 5.2.0
+  resolution: "@thi.ng/atom@npm:5.2.0"
   dependencies:
-    "@thi.ng/api": ^8.7.5
-    "@thi.ng/equiv": ^2.1.21
-    "@thi.ng/errors": ^2.2.14
-    "@thi.ng/paths": ^5.1.34
+    "@thi.ng/api": ^8.7.6
+    "@thi.ng/equiv": ^2.1.22
+    "@thi.ng/errors": ^2.2.15
+    "@thi.ng/paths": ^5.1.35
     tslib: ^2.5.0
-  checksum: 76af549514646efa4fcd20988b9f81096b2dd7e4cb515c3aeb6ff14d50f2530110828d584a86045f18d6afc0b46a1b36b2651657f3f2711336858501be59434a
-  languageName: node
-  linkType: hard
-
-"@thi.ng/checks@npm:^3.3.11":
-  version: 3.3.11
-  resolution: "@thi.ng/checks@npm:3.3.11"
-  dependencies:
-    tslib: ^2.5.0
-  checksum: ea914e4eb7d59a66b342ee31a6a8f97e6e1f65130a6c07c927698e293b29928f5f9caccc13f6ec1058d9becb30f09d107edf33a82161b6e06c079a78c41213d6
+  checksum: 0dfdbda207db68b9dedb3c0ee0ca6ac642056d8ec797da3f6294e68c7e94448c94af0311a112fa0e66d78c39761888c65b27ff60defb444da2c43e7333e29b13
   languageName: node
   linkType: hard
 
@@ -6991,24 +6975,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.21":
-  version: 2.1.21
-  resolution: "@thi.ng/equiv@npm:2.1.21"
-  checksum: ec86fe9ed787008e0217b0433bf608798b45f5d7e75aa47545bab5f545e2ead81e752071a36d6fe98c655a6993dafd6e621902db366d9a5f61096079f63c7b89
-  languageName: node
-  linkType: hard
-
 "@thi.ng/equiv@npm:^2.1.22":
   version: 2.1.22
   resolution: "@thi.ng/equiv@npm:2.1.22"
   checksum: d2abb44f83924f48f1fcc84c2bab3f819752a2965920089e233545d6c07261cb004a0e2e96b8ca65d901a91f1de1471894d231a521bc94a42bdc27e1f99c780c
-  languageName: node
-  linkType: hard
-
-"@thi.ng/errors@npm:^2.2.14":
-  version: 2.2.14
-  resolution: "@thi.ng/errors@npm:2.2.14"
-  checksum: 3c7b18e20f08d41e6603b887ba66b81b492c1c1ed01a4a8e40cfc22f905917e6df0d3d3806e245560db8ca0bca10d898b81d164a60df8356cdb669805266c827
   languageName: node
   linkType: hard
 
@@ -7035,14 +7005,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.34":
-  version: 5.1.34
-  resolution: "@thi.ng/paths@npm:5.1.34"
+"@thi.ng/paths@npm:^5.1.35":
+  version: 5.1.35
+  resolution: "@thi.ng/paths@npm:5.1.35"
   dependencies:
-    "@thi.ng/api": ^8.7.5
-    "@thi.ng/checks": ^3.3.11
-    "@thi.ng/errors": ^2.2.14
-  checksum: a5aecb1a21212a91708beb7476f7ac608815be0a3204d6c810f00197c96003e062d56ff88c8e08eae213c71d6684b92b49a54c7cd50c4fb85ce5acc2712cf11e
+    "@thi.ng/api": ^8.7.6
+    "@thi.ng/checks": ^3.3.12
+    "@thi.ng/errors": ^2.2.15
+  checksum: 490db2455e92d1c46731c288a3f31c9f6a633edab5ed4a4ab97e0ba73cbec88e65c1f856ef47587ed5dc0fd09b622d0248112232d0c06f1ce6e4eb2f9a9d2fa8
   languageName: node
   linkType: hard
 
