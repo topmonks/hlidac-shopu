@@ -304,12 +304,6 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    const cloudfront = new CloudFrontClient({
-      region: "eu-central-1",
-      maxAttempts: 3
-    });
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", shop);
-    log.info("invalidated Data CDN");
     await uploadToKeboola(type !== ActorType.Full ? "mironet_bf" : "mironet");
     log.info("upload to Keboola finished");
   }

@@ -1,5 +1,4 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { invalidateCDN } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -215,8 +214,6 @@ async function main() {
 
   stats.save(true);
   if (!development && type !== "COUNT") {
-    await invalidateCDN(cloudfront, "EQYSHWUECAQC9", "eva.cz");
-    log.info("invalidated Data CDN");
     await uploadToKeboola("eva_cz");
     log.info("upload to Keboola finished");
   }

@@ -463,7 +463,6 @@ async function main() {
             const text = await page.content();
             const { document } = parseHTML(text);
             await handlePage({
-              s3,
               document,
               crawler,
               request,
@@ -485,7 +484,6 @@ async function main() {
             const { document } = parseHTML(body.toString());
             if (type === ActorType.Full || type === "TEST_FULL") {
               await handlePage({
-                s3,
                 document,
                 crawler,
                 request,
