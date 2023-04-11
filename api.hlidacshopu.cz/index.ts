@@ -67,7 +67,61 @@ export function createDatabase() {
         { name: "shop", type: "S" },
         { name: "date", type: "S" }
       ],
-      billingMode: "PAY_PER_REQUEST"
+      billingMode: "PAY_PER_REQUEST",
+      streamEnabled: true,
+      streamViewType: "NEW_IMAGE"
+    }
+  );
+
+  const defaultLambdaRole = new aws.iam.Role(
+    hsName("default-lambda-dynamodb-role"),
+    {
+      assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
+        aws.iam.Principals.LambdaPrincipal
+      )
+    }
+  );
+
+  new aws.iam.RolePolicyAttachment(
+    hsName("lambda-dynamodb-basic-execution-attachment"),
+    {
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+      role: defaultLambdaRole
+    }
+  );
+
+  new aws.iam.RolePolicyAttachment(
+    hsName("lambda-dynamodb-read-write-attachment"),
+    {
+      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
+      role: defaultLambdaRole
+    }
+  );
+
+  dailyShopItemsCountTable.onEvent(
+    "notify-about-missing-items",
+    new aws.lambda.Function("notify-about-missing-items", {
+      publish: true,
+      runtime: aws.lambda.Runtime.NodeJS18dX,
+      architectures: ["arm64"],
+      role: defaultLambdaRole.arn,
+      handler: "index.handler",
+      code: lambdaBuilder.buildCodeAsset(
+        path.join(
+          __dirname,
+          "src",
+          "lambda",
+          "dynamodb",
+          "notify-lower-actors-results.mjs"
+        ),
+        true,
+        ["@aws-sdk/client-dynamodb"]
+      ),
+      memorySize: 128,
+      timeout: 15
+    }),
+    {
+      startingPosition: "LATEST"
     }
   );
 
