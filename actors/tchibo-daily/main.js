@@ -194,15 +194,19 @@ function productsFromListing({ document, handledIdsSet, currency, country }) {
     const itemId = product.getAttribute("data-product-id");
     if (handledIdsSet[itemId]) continue;
     handledIdsSet[itemId] = true;
-    const image = product.querySelector(".m-tp-productbox002-image");
+    const image = product.querySelector(
+      ".m-tp-productbox002-image, .m-tp-productbox-imageitem"
+    );
     const url = image.parentNode.getAttribute("href");
     const itemName = image.getAttribute("alt");
-    const img = image.getAttribute("data-src");
+    const img = image.getAttribute("src");
     const currentPrice = product
-      .querySelector(".c-tp-price-currentprice")
+      .querySelector(
+        ".c-tp-price-currentprice, .m-tp-productbox-info-currentprice"
+      )
       .innerText.trim();
     const oldPrice = product
-      .querySelector(".c-tp-price-oldprice")
+      .querySelector(".c-tp-price-oldprice, .m-tp-productbox-info-oldprice")
       ?.innerText?.trim();
     const result = {
       itemId,
@@ -237,7 +241,11 @@ function productsFromCoffeeCategory({
     const titleObject = p.querySelector(".m-tp-productbox002-title");
     const itemId = titleObject
       .querySelector("a[data-pds-link]")
-      .getAttribute("data-pds-link");
+      ?.getAttribute("data-pds-link");
+    if (!itemId) {
+      log.warning(`No itemId found for title: ${titleObject.innerText}`);
+      continue;
+    }
     if (handledIdsSet[itemId]) continue;
     handledIdsSet[itemId] = true;
     const title = titleObject.querySelector("a").getAttribute("title");
