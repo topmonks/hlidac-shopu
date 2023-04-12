@@ -38,7 +38,7 @@ function enqueueMessage(buffer, items) {
   );
 }
 
-export async function handler(event, _context) {
+async function handleEvents(event, _context) {
   let buffer = [];
   let items = [];
   for (const record of event.Records) {
@@ -89,10 +89,12 @@ export async function handler(event, _context) {
   await Promise.allSettled(buffer);
 }
 
+export const handler = rollbar.lambdaHandler(handleEvents);
+
 /*
 AWS_PROFILE=hlidac-shopu node src/lambda/sqs/ingest-extractor/index.mjs
 
-await handler({
+await handleEvents({
   Records: [
     {
       s3: {
