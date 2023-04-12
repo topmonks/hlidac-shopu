@@ -48,34 +48,36 @@ export async function handler(event, _context) {
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
     console.log(`Extracting files from ${key}`);
-    const zip = (await getZip(bucket, key)).pipe(
-      unzipperParse({ forceStream: true })
-    );
-    for await (const entry of zip) {
-      if (entry.type !== "File") {
-        entry.autodrain();
-        continue;
-      }
-      const content = await entry.buffer().then(b => b.toString());
-      count++;
-      const payload = { path: entry.path, content };
-      items.push(payload);
-      const size = new TextEncoder().encode(JSON.stringify(payload)).byteLength;
-      msgSize += size;
-      if (size > maxMessageSize) maxMessageSize = size;
-      // max message msgSize is 256KB, but leave some reserve
-      if (msgSize + maxMessageSize >= 225 * 1024 || items.length >= 1000) {
-        enqueueMessage(buffer, items);
-        items = [];
-        msgSize = 0;
-      }
-      if (buffer.length >= 100) {
-        console.time("waiting");
-        await Promise.allSettled(buffer);
-        console.timeEnd("waiting");
-        buffer = [];
-      }
-    }
+    const zip = (await getZip(bucket, key)).pipe(unzipperParse());
+    await zip
+      .on("entry", async entry => {
+        if (entry.type !== "File") {
+          entry.autodrain();
+          return;
+        }
+        const content = await entry.buffer().then(b => b.toString());
+        count++;
+        const payload = { path: entry.path, content };
+        items.push(payload);
+        const size = new TextEncoder().encode(
+          JSON.stringify(payload)
+        ).byteLength;
+        msgSize += size;
+        if (size > maxMessageSize) maxMessageSize = size;
+        // max message msgSize is 256KB, but leave some reserve
+        if (msgSize + maxMessageSize >= 225 * 1024 || items.length >= 1000) {
+          enqueueMessage(buffer, items);
+          items = [];
+          msgSize = 0;
+        }
+        if (buffer.length >= 100) {
+          console.time("waiting");
+          await Promise.allSettled(buffer);
+          console.timeEnd("waiting");
+          buffer = [];
+        }
+      })
+      .promise();
     console.log(`All files from ${key} have been extracted (${count} items)`);
   }
 
