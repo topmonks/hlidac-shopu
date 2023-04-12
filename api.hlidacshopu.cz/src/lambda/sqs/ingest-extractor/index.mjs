@@ -61,7 +61,7 @@ export async function handler(event, _context) {
       size += JSON.stringify(payload).length;
       items.push(payload);
       // max message size is 256KB, but leave some reserve
-      if (size >= 225 * 1024 || items.length >= 1000) {
+      if (size >= 200 * 1024 || items.length >= 1000) {
         enqueueMessage(buffer, items);
         items = [];
         size = 0;
