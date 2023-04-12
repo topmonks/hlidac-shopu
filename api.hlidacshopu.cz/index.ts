@@ -338,11 +338,17 @@ export function createSQSIngest(options = {}) {
     role: defaultLambdaRole
   });
 
-  const buildAssets = (fileName: string, external: string[] = []) =>
+  const buildAssets = (fileName: string) =>
     lambdaBuilder.buildCodeAsset(
       path.join(__dirname, "src", "lambda", "sqs", fileName),
       true,
-      external
+      [
+        "@aws-sdk/client-dynamodb",
+        "@aws-sdk/util-dynamodb",
+        "@aws-sdk/client-sqs",
+        "@aws-sdk/client-s3",
+        "@aws-sdk/client-cloudfront"
+      ]
     );
 
   const defaultLambdaOpts = {
@@ -362,13 +368,7 @@ export function createSQSIngest(options = {}) {
     hsName(`sqs-ingest-uploader-lambda`, options),
     {
       ...defaultLambdaOpts,
-      code: buildAssets("ingest-uploader/index.mjs", [
-        "@aws-sdk/client-dynamodb",
-        "@aws-sdk/util-dynamodb",
-        "@aws-sdk/client-sqs",
-        "@aws-sdk/client-s3",
-        "@aws-sdk/client-cloudfront"
-      ]),
+      code: buildAssets("ingest-uploader/index.mjs"),
       memorySize: 128,
       timeout: uploaderTimeout
     }

@@ -41,9 +41,9 @@ function enqueueMessage(buffer, items) {
 export async function handler(event, _context) {
   let buffer = [];
   let items = [];
-  let msgSize = 0;
-  let maxMessageSize = 0;
   for (const record of event.Records) {
+    let msgSize = 0;
+    let maxMessageSize = 0;
     let count = 0;
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
@@ -71,18 +71,21 @@ export async function handler(event, _context) {
           msgSize = 0;
         }
         if (buffer.length >= 100) {
-          console.time("waiting");
+          console.log("waiting for buffer");
           await Promise.allSettled(buffer);
-          console.timeEnd("waiting");
           buffer = [];
         }
       })
-      .promise();
-    console.log(`All files from ${key} have been extracted (${count} items)`);
+      .promise()
+      .then(() =>
+        console.log(
+          `All files from ${key} have been extracted (${count} items). Max message size: ${maxMessageSize} bytes.`
+        )
+      )
+      .catch(err => rollbar.error(err));
   }
 
   if (items.length) enqueueMessage(buffer, items);
-  console.log(`Max message size was: ${maxMessageSize}`);
   await Promise.allSettled(buffer);
 }
 
