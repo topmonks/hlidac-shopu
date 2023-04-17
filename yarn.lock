@@ -15477,7 +15477,7 @@ __metadata:
     gulp-mode: 1.1.0
     linkedom: 0.14.25
     npm-run-all: 4.1.5
-    postcss-css-variables: 0.18.0
+    postcss-css-variables: 0.19.0
     prettier: 2.8.7
     puppeteer: 19.8.5
     ramda: 0.29.0
@@ -20167,16 +20167,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-css-variables@npm:0.18.0":
-  version: 0.18.0
-  resolution: "postcss-css-variables@npm:0.18.0"
+"postcss-css-variables@npm:0.19.0":
+  version: 0.19.0
+  resolution: "postcss-css-variables@npm:0.19.0"
   dependencies:
     balanced-match: ^1.0.0
     escape-string-regexp: ^1.0.3
     extend: ^3.0.1
   peerDependencies:
     postcss: ^8.2.6
-  checksum: 7caed162700c6ac5d5ee8b53c7f9926b0f19196ee8e221bcd452d2235bafc2f376efa54862b7ef721a0807cab2e60cebb7e2e4cef69daa2c969d391da7aa01c6
+  checksum: c7bb13c43bf107ed15800e421c3cee9db38f1efb5849512b9bacab0fa3f4f6a58b4581b813783cd72d8749f20dc04df766c78c650cb4d728f72fc63e80fb7f7a
   languageName: node
   linkType: hard
 
