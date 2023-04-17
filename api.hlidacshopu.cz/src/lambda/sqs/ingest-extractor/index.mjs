@@ -48,9 +48,11 @@ async function handleEvents(event, _context) {
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
     console.log(`Extracting files from ${key}`);
-    const zip = (await getZip(bucket, key)).pipe(unzipperParse());
-    await zip
-      .on("entry", async entry => {
+    const zip = (await getZip(bucket, key)).pipe(
+      unzipperParse({ forceStream: true })
+    );
+    try {
+      for await (const entry of zip) {
         if (entry.type !== "File") {
           entry.autodrain();
           return;
@@ -75,14 +77,18 @@ async function handleEvents(event, _context) {
           await Promise.allSettled(buffer);
           buffer = [];
         }
-      })
-      .promise()
-      .then(() =>
-        console.log(
-          `All files from ${key} have been extracted (${count} items). Max message size: ${maxMessageSize} bytes.`
-        )
-      )
-      .catch(err => rollbar.error(err));
+      }
+    } catch (e) {
+      // till https://github.com/ZJONSSON/node-unzipper/issues/228 is fixed
+      if (e.message.includes("Premature close")) {
+        console.warn("Ignoring error", e);
+      } else {
+        rollbar.error(e);
+      }
+    }
+    console.log(
+      `All files from ${key} have been extracted (${count} items). Max message size: ${maxMessageSize} bytes.`
+    );
   }
 
   if (items.length) enqueueMessage(buffer, items);
@@ -102,7 +108,7 @@ await handleEvents({
           name: "ingest.hlidacshopu.cz"
         },
         object: {
-          key: "mironet.cz_pricehistory.zip"
+          key: "siko.cz_pricehistory_1.zip"
         }
       }
     }

@@ -377,14 +377,22 @@ export function createSQSIngest(options = {}) {
 
   const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
     bucket: "ingest.hlidacshopu.cz",
-    acl: "private"
+    acl: "private",
+    lifecycleRules: [
+      {
+        enabled: true,
+        expiration: {
+          days: 2
+        }
+      }
+    ]
   });
   const extractorLambda = new aws.lambda.Function(
     hsName(`sqs-ingest-extractor-lambda`, options),
     {
       ...defaultLambdaOpts,
       code: buildAssets("ingest-extractor/index.mjs"),
-      memorySize: 1024,
+      memorySize: 512,
       timeout: 900,
       environment: {
         variables: {

@@ -1,5 +1,8 @@
 import { S3 } from "@aws-sdk/client-s3";
 import { createHash } from "crypto";
+import Rollbar from "../../../rollbar.mjs";
+
+const rollbar = Rollbar.init({ lambdaName: "ingest-uploader" });
 
 const bucket = "data.hlidacshopu.cz";
 
@@ -30,7 +33,7 @@ function uploadFile(key, body, hash) {
   }
 }
 
-export async function handler(event, _context) {
+async function handleEvents(event, _context) {
   const uploads = [];
   for (const record of event.Records) {
     for (const item of JSON.parse(record.body).items) {
@@ -44,3 +47,5 @@ export async function handler(event, _context) {
   }
   await Promise.allSettled(uploads);
 }
+
+export const handler = rollbar.lambdaHandler(handleEvents);
