@@ -6,9 +6,9 @@
   "description": "This is the lekarna.cz actor.",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.312.0",
-    "@aws-sdk/client-s3": "3.312.0",
-    "@hlidac-shopu/actors-common": "2.1.0",
+    "@aws-sdk/client-cloudfront": "3.315.0",
+    "@aws-sdk/client-s3": "3.315.0",
+    "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.4"
   },
   "devDependencies": {

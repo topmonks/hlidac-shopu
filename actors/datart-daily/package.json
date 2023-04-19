@@ -7,10 +7,9 @@
   "type": "module",
   "dependencies": {
     "@crawlee/http": "3.3.1",
-    "@hlidac-shopu/actors-common": "2.1.0",
+    "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.4",
-    "got-scraping": "3.2.13",
-    "linkedom": "0.14.25"
+    "got-scraping": "3.2.13"
   },
   "devDependencies": {
     "@types/node": "18.15.11",

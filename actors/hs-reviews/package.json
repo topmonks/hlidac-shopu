@@ -7,14 +7,13 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.312.0",
-    "@aws-sdk/client-s3": "3.312.0",
+    "@aws-sdk/client-cloudfront": "3.315.0",
+    "@aws-sdk/client-s3": "3.315.0",
     "@crawlee/http": "3.3.1",
-    "@hlidac-shopu/actors-common": "2.1.0",
+    "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.4",
-    "csv-parse": "5.3.6",
-    "jsonwebtoken": "9.0.0",
-    "linkedom": "0.14.25"
+    "csv-parse": "5.3.8",
+    "jsonwebtoken": "9.0.0"
   },
   "devDependencies": {
     "@types/node": "18.15.11",

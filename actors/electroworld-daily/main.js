@@ -6,7 +6,7 @@ import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { gotScraping } from "got-scraping";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML, DOMParser } from "linkedom/cached";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 
@@ -373,9 +373,6 @@ function fetchDetail(document, request) {
     }
   };
 }
-
-export const parseXML = (xml, globals = null) =>
-  new DOMParser().parseFromString(xml, "text/xml", globals).defaultView;
 
 /**
  * @param {Stats} stats

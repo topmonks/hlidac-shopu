@@ -7,7 +7,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
 import { Actor, Dataset, log } from "apify";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 

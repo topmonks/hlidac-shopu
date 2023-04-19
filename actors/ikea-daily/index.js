@@ -1,4 +1,4 @@
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";

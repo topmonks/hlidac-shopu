@@ -3,7 +3,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 

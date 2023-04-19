@@ -5,7 +5,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { gotScraping } from "got-scraping";
-import { DOMParser, parseHTML } from "linkedom/cached";
+import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -27,9 +27,6 @@ const Country = {
 
 const rootCZ = "https://www.datart.cz";
 const rootSK = "https://www.datart.sk";
-
-export const parseXML = (xml, globals = null) =>
-  new DOMParser().parseFromString(xml, "text/xml", globals).defaultView;
 
 async function countAllProducts({ body, stats }) {
   const { document } = parseXML(body.toString());
@@ -60,7 +57,7 @@ async function countAllProducts({ body, stats }) {
  * @param {Document} document
  * @param {string} rootUrl
  * @param {Country} country
- * @returns {Object[]>}
+ * @returns {Object[]}
  */
 function extractItems(document, rootUrl, country) {
   const categories = document

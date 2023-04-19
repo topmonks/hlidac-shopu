@@ -3,7 +3,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 

@@ -6,7 +6,7 @@ import {
   CreateInvalidationCommand
 } from "@aws-sdk/client-cloudfront";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import * as csv from "csv-parse/sync";
 import jwt from "jsonwebtoken";
 import { URLSearchParams } from "url";

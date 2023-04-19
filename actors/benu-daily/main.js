@@ -4,7 +4,7 @@ import { HttpCrawler } from "@crawlee/http";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */

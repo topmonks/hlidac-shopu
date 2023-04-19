@@ -1,6 +1,6 @@
 import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import {
   cleanPriceText,

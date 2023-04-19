@@ -6,7 +6,7 @@ import { Actor, log, LogLevel } from "apify";
 import { PlaywrightCrawler, useState } from "@crawlee/playwright";
 import { URL, URLSearchParams } from "url";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */

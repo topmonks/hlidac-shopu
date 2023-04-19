@@ -1,5 +1,5 @@
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { DOMParser, parseHTML } from "linkedom/cached";
+import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import zlib from "zlib";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -27,7 +27,7 @@ const Labels = {
 function allCategoriesRequests(buffer) {
   log.info("Loading Sitemap");
   const markup = zlib.unzipSync(buffer).toString();
-  const document = new DOMParser().parseFromString(markup, "text/xml");
+  const { document } = parseXML(markup);
   return document
     .getElementsByTagNameNS("", "url")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))

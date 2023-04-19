@@ -4,7 +4,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
 import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "linkedom/cached";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 

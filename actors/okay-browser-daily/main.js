@@ -5,7 +5,7 @@ import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { PlaywrightCrawler } from "@crawlee/playwright";
-import { DOMParser, parseHTML } from "linkedom/cached";
+import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @enum {string} */
@@ -45,7 +45,7 @@ function getBaseUrl(country) {
  * @param {string} body
  */
 function productsSitemapsUrls(body) {
-  const document = new DOMParser().parseFromString(body, "text/xml");
+  const { document } = parseXML(body);
   return document
     .getElementsByTagNameNS("", "sitemap")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
@@ -57,7 +57,7 @@ function productsSitemapsUrls(body) {
  * @param {string} body
  */
 function productUrlsFromSitemap(body) {
-  const document = new DOMParser().parseFromString(body, "text/xml");
+  const { document } = parseXML(body);
   return document
     .getElementsByTagNameNS("", "url")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
