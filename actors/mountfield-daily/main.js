@@ -5,7 +5,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "linkedom";
+import { parseHTML } from "linkedom/cached";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
