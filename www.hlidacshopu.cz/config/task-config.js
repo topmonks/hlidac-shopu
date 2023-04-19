@@ -1,4 +1,4 @@
-/** @typedef {import("@typed/nunjucks").Environment} Environment */
+/** @typedef {import("@types/nunjucks").Environment} Environment */
 
 const esbuild = require("gulp-esbuild");
 const mode = require("gulp-mode")();
