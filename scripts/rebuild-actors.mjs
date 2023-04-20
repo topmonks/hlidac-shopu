@@ -10,17 +10,24 @@ const resp = await fetch(
 const { data } = await resp.json();
 for (const { id, name } of data.items) {
   if (alreadyBuilt.has(name)) continue;
-  const { data: version } = await fetch(
+  const { data: versions } = await fetch(
     `https://api.apify.com/v2/acts/${id}/versions?token=${token}`
   ).then(resp => resp.json());
-  const ver = version.items.map(x => x.versionNumber)[version.total - 1];
-  console.log("Rebuild", { name, ver });
+  const version = versions.items.map(x => x.versionNumber)[versions.total - 1];
+  console.log("Rebuild", { name, version });
+  const params = new URLSearchParams({
+    token,
+    version,
+    tag: "latest",
+    useCache: true,
+    waitForFinish: 80
+  });
   const resp = await fetch(
-    `https://api.apify.com/v2/acts/${id}/builds?token=${token}&version=${ver}&useCache=true&tag=latest`,
+    `https://api.apify.com/v2/acts/${id}/builds?${params}`,
     { method: "POST" }
   );
   if (!resp.ok) {
-    console.error("Failed to rebuild", { name, ver, msg: await resp.json() });
+    console.error("Failed to rebuild", { name, version, msg: await resp.json() });
   }
 }
 
