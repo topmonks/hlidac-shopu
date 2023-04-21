@@ -29,7 +29,7 @@ function findSUKL(document) {
   const rows = document.querySelectorAll(".info-table tr");
   for (const row of rows) {
     const key = row.querySelector("th").innerText;
-    if (key.includes("SUKL")) {
+    if (key.includes("SÚKL")) {
       return row.querySelector("td").innerText;
     }
   }
@@ -80,7 +80,7 @@ function extractProduct(document) {
  */
 function productListingRequests(document) {
   const productsOnPage = document
-    .querySelectorAll("ul.products > li div.spc a.detail")
+    .querySelectorAll(".product-list a.product-box__link")
     .map(product => {
       const spc = product.getAttribute("href");
       const url = `${web}${spc}`;
