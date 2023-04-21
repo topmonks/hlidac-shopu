@@ -23,8 +23,8 @@ const listingBFUrl = url => listingUrl({ url }, slugBF);
 
 function* categoriesTree(root) {
   for (const category of root) {
-    if (category.subcategories) {
-      yield* categoriesTree(category.subcategories);
+    if (category.subCategories) {
+      yield* categoriesTree(category.subCategories);
     }
     yield listingUrl(category);
   }
@@ -148,7 +148,7 @@ async function main() {
     }
   } else {
     startingRequests.push({
-      url: "https://www.kosik.cz/api/web/menu/main",
+      url: "https://www.kosik.cz/api/front/menu/main",
       userData: {
         step: "CATEGORIES"
       }
