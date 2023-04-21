@@ -5201,6 +5201,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
   dependencies:
+    "@crawlee/http": 3.3.1
     "@crawlee/playwright": 3.3.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.15.11
@@ -5326,6 +5327,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
+    "@crawlee/http": 3.3.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.15.11
     apify: 3.1.4
