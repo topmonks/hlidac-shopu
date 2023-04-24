@@ -14,7 +14,7 @@
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@open-wc/testing": "3.1.8",
     "@web/test-runner": "0.16.0",
-    "@web/test-runner-junit-reporter": "0.5.2"
+    "@web/test-runner-junit-reporter": "0.6.0"
   },
   "scripts": {
     "test": "wtr **/*.test.mjs --coverage --node-resolve"
