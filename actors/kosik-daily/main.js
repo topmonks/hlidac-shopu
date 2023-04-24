@@ -23,8 +23,9 @@ const listingBFUrl = url => listingUrl({ url }, slugBF);
 
 function* categoriesTree(root) {
   for (const category of root) {
-    if (category.subCategories) {
-      yield* categoriesTree(category.subCategories);
+    const subcategories = category.subcategories ?? category.subCategories;
+    if (subcategories) {
+      yield* categoriesTree(subcategories);
     }
     yield listingUrl(category);
   }
