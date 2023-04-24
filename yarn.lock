@@ -6693,9 +6693,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@puppeteer/browsers@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@puppeteer/browsers@npm:0.4.1"
+"@puppeteer/browsers@npm:0.5.0":
+  version: 0.5.0
+  resolution: "@puppeteer/browsers@npm:0.5.0"
   dependencies:
     debug: 4.3.4
     extract-zip: 2.0.1
@@ -6712,7 +6712,7 @@ __metadata:
       optional: true
   bin:
     browsers: lib/cjs/main-cli.js
-  checksum: bd72815d0aaac66651ef775e2816703daaaceef0d94b39b5a6baf3d9f9c2242866f3e0691e9aae6409cdffd1d96f3e7e00bddb8f0c0b5b2b427e9298bcc3c8a2
+  checksum: d75fde03be4be106ca907834739251c2bb0b33a09fa23315c5dbe8b8b4cfed2f1b26af62e1dbe5fccc227e9bc87b51da0815461b982477eb01439bfdd6e7b01a
   languageName: node
   linkType: hard
 
@@ -15570,7 +15570,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.7
-    puppeteer: 19.9.1
+    puppeteer: 19.10.1
     ramda: 0.29.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -20930,11 +20930,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:19.9.1":
-  version: 19.9.1
-  resolution: "puppeteer-core@npm:19.9.1"
+"puppeteer-core@npm:19.10.1":
+  version: 19.10.1
+  resolution: "puppeteer-core@npm:19.10.1"
   dependencies:
-    "@puppeteer/browsers": 0.4.1
+    "@puppeteer/browsers": 0.5.0
     chromium-bidi: 0.4.6
     cross-fetch: 3.1.5
     debug: 4.3.4
@@ -20950,7 +20950,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 731c62a3b70dd07390a91a151927b39f15d348126b0eae37e65d55988286f0f8dce5917557a500f41f9e9d529c02858d478c83bb19f49daa9d37cd3bf6ffa509
+  checksum: b913bc566e6202b073021c4978845c3db905b85816631a05d50e0ddb05fa3760d620eb887b073e58352133f50c354daa843b74bab542c7b6756d3d26eb576f8b
   languageName: node
   linkType: hard
 
@@ -20978,17 +20978,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:19.9.1":
-  version: 19.9.1
-  resolution: "puppeteer@npm:19.9.1"
+"puppeteer@npm:19.10.1":
+  version: 19.10.1
+  resolution: "puppeteer@npm:19.10.1"
   dependencies:
-    "@puppeteer/browsers": 0.4.1
+    "@puppeteer/browsers": 0.5.0
     cosmiconfig: 8.1.3
     https-proxy-agent: 5.0.1
     progress: 2.0.3
     proxy-from-env: 1.1.0
-    puppeteer-core: 19.9.1
-  checksum: 76efe8f65d564548883071de7081bb892a513e83a00f032d11c79baae84bce1582ef02316138aaccdc5a45ab028e9dad2e0ffdcc98128cfb5027fd1670f6c2b9
+    puppeteer-core: 19.10.1
+  checksum: b0b10c6be44ecd619936ad31e6a8d7079cae4cc0fd887552e1afb3e2359773e71bcd5478f34170712369947a110b92ec8c76dbe699fe59f4a4dc5d2fd73761fe
   languageName: node
   linkType: hard
 
