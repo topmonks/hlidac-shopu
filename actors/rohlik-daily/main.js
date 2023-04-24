@@ -121,19 +121,17 @@ function categoriesRequests({ count, categoryId, categoriesById }) {
     `${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`
   );
   const limitPerPage = 100;
-  const urls = [];
+  const requests = [];
   for (let i = 0; i * limitPerPage < count; i++) {
-    urls.push(
-      `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products?page=${i}`
-    );
+    requests.push({
+      url: `https://www.rohlik.cz/api/v1/categories/normal/${categoryId}/products?page=${i}`,
+      userData: {
+        label: Label.List,
+        categoryId
+      }
+    });
   }
-  return {
-    urls,
-    userData: {
-      label: Label.List,
-      categoryId
-    }
-  };
+  return requests;
 }
 
 /**
@@ -254,8 +252,8 @@ async function main() {
     useApifyProxy: !development
   });
 
-  let categoriesById = await useState("categoriesById");
-  const processedIds = await useState("processedIds", new Set());
+  let categoriesById = await useState("categoriesById", {});
+  const processedIds = await useState("processedIds", {});
   const items = defAtom([]);
   const itemsForSaving = new Channel(500);
 
@@ -269,12 +267,12 @@ async function main() {
           item,
           categoriesById
         });
-        if (processedIds.has(item.itemId)) return;
+        if (processedIds[item.itemId]) return;
         Dataset.pushData(product)
           .then(() => {
-            processedIds.add(item.itemId);
+            processedIds[item.itemId] = true;
             stats.inc("items");
-            return;
+            return true;
           })
           .catch(e => {
             log.error(e);
@@ -299,7 +297,7 @@ async function main() {
       log.info(`Processing ${request.url}`);
       switch (userData.label) {
         case Label.Main:
-          categoriesById = json.navigation;
+          Object.assign(categoriesById, json.navigation);
           await crawler.requestQueue.addRequests(
             takeRandomIfDev(
               development,
@@ -312,7 +310,7 @@ async function main() {
           );
           break;
         case Label.Count:
-          await enqueueLinks(
+          await crawler.requestQueue.addRequests(
             categoriesRequests({
               count: json.results,
               categoryId,
