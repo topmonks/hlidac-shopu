@@ -114,7 +114,7 @@ export function normalizeItem({ item, categoriesById }) {
 
 /**
  * @param {{categoryId: string, count: number, categoriesById: Object.<string, Category>}}
- * @returns {{urls: string[], userData: {label: Label.List, categoryId: string}}
+ * @returns {{url: string, userData: {label: string, categoryId: string}}[]}
  */
 function categoriesRequests({ count, categoryId, categoriesById }) {
   log.info(
@@ -291,7 +291,7 @@ async function main() {
     sessionPoolOptions: {
       maxPoolSize: 100
     },
-    async requestHandler({ request, json, enqueueLinks, crawler }) {
+    async requestHandler({ request, json, crawler }) {
       const { userData } = request;
       const { categoryId } = userData;
       log.info(`Processing ${request.url}`);

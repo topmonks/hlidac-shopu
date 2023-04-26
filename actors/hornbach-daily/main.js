@@ -9,7 +9,6 @@ import {
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { defAtom } from "@thi.ng/atom";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
@@ -85,7 +84,7 @@ function catProductsFromSubCategoriesRequests({ request }) {
   return categoriesFromBottomToTop.map(category => {
     log.debug(`Queued products of very bottom category "${category.title}"`);
     return {
-      url: category.link,
+      url: `${category.link}?page=1`,
       userData: {
         label: Labels.CAT_PRODUCTS,
         category,
@@ -118,26 +117,26 @@ function catProductsRequests({ document, request }) {
 
   const { category } = request.userData;
 
+  log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
   if (request.userData.page === 1) {
     log.debug(`Category URL is ${category.link}`);
     const pagesCount = Math.ceil(categoryProductsCount / 72);
     log.debug(`Category has ${pagesCount} pages`);
 
-    return restPageUrls(pagesCount, page => {
-      return {
-        url: `${category.link}?page=${page}`,
-        userData: {
-          label: Labels.CAT_PRODUCTS,
-          category,
-          page
-        }
-      };
-    });
+    return restPageUrls(pagesCount, page => ({
+      url: `${category.link}?page=${page}`,
+      userData: {
+        label: Labels.CAT_PRODUCTS,
+        category,
+        page
+      }
+    }));
+  } else {
+    return [];
   }
-  log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
 }
 
-function extractProducts({ document, input, request, stats, detailUrl }) {
+function extractProducts({ document, input, request, stats }) {
   const { category } = request.userData;
   const currency = Currency[input.country.toUpperCase()];
   const productNodes = document.querySelectorAll(
@@ -146,7 +145,7 @@ function extractProducts({ document, input, request, stats, detailUrl }) {
   return productNodes
     .map(itemNode => {
       const href = itemNode.querySelector("a").getAttribute("href");
-      const itemId = href.split("/").filter(Boolean).reverse()[0];
+      const itemId = href.split("/").filter(Boolean).at(-1);
 
       stats.inc("items");
       const detail = {
@@ -170,15 +169,12 @@ function extractProducts({ document, input, request, stats, detailUrl }) {
 
       log.debug("Got product detail", detail);
 
-      if (!detailUrl.deref()) {
-        detailUrl.reset(detail.itemUrl);
-      }
       return detail;
     })
     .filter(Boolean);
 }
 
-function filterTestRequests({ requests, input, take = 1 }) {
+function filterTestRequests({ requests, input, take = 2 }) {
   return input.type === ActorType.Test ? requests.slice(0, take) : requests;
 }
 
@@ -190,7 +186,6 @@ async function main() {
     items: 0,
     failed: 0
   });
-  const detailUrl = defAtom(null);
 
   const input = await getInput({
     type: ActorType.Full,
@@ -211,11 +206,12 @@ async function main() {
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 600,
     async requestHandler({ request, crawler, body, log }) {
-      log.info(`Processing ${request.url}...`);
+      const label = request.userData.label;
+      log.info(`Processing ${request.url} (${label})`);
       const { document } = parseHTML(body.toString());
 
-      switch (request.userData.label) {
-        case Labels.TOP_CATEGORIES: // 1.
+      switch (label) {
+        case Labels.TOP_CATEGORIES:
           {
             const requests = topCategoriesRequests({ document, input });
             await crawler.requestQueue.addRequests(
@@ -226,7 +222,7 @@ async function main() {
             );
           }
           break;
-        case Labels.SUB_CATEGORIES: // 2.
+        case Labels.SUB_CATEGORIES:
           {
             const links = document.querySelectorAll(
               `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
@@ -252,7 +248,7 @@ async function main() {
             }
           }
           break;
-        case Labels.CAT_PRODUCTS: // 3.
+        case Labels.CAT_PRODUCTS:
           {
             const requests = catProductsRequests({ document, request });
             await crawler.requestQueue.addRequests(
@@ -262,12 +258,13 @@ async function main() {
               document,
               input,
               request,
-              stats,
-              detailUrl
+              stats
             });
             await Dataset.pushData(products);
           }
           break;
+        default:
+          log.warning(`Unknown label ${label}`);
       }
     },
     async failedRequestHandler({ request, log }, error) {
@@ -276,9 +273,10 @@ async function main() {
     }
   });
 
+  const startUrl = completeUrl(input.country, "/c/");
   await crawler.run([
     {
-      url: completeUrl(input.country, "/c/"),
+      url: startUrl,
       userData: {
         label: Labels.TOP_CATEGORIES
       }
@@ -286,10 +284,7 @@ async function main() {
   ]);
   log.info("crawler finished");
 
-  await Promise.all([
-    stats.save(true),
-    uploadToKeboola(shopName(detailUrl.deref()))
-  ]);
+  await Promise.all([stats.save(true), uploadToKeboola(shopName(startUrl))]);
   log.info("Finished.");
 }
 
