@@ -186,7 +186,7 @@ async function main() {
         }
       }
     },
-    failedRequestHandler({ request }, error) {
+    failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
     }
   });
