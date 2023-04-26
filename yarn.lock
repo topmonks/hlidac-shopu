@@ -3554,7 +3554,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@lit/reactive-element": 1.6.1
     "@open-wc/testing": 3.1.8
-    "@web/test-runner": 0.16.0
+    "@web/test-runner": 0.16.1
     "@web/test-runner-junit-reporter": 0.6.0
     chart.js: 4.2.1
     chartjs-adapter-date-fns: 3.0.0
@@ -5960,7 +5960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/browser-logs@npm:^0.3.0, @web/browser-logs@npm:^0.3.1":
+"@web/browser-logs@npm:^0.3.1":
   version: 0.3.1
   resolution: "@web/browser-logs@npm:0.3.1"
   dependencies:
@@ -5969,7 +5969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/config-loader@npm:^0.2.0, @web/config-loader@npm:^0.2.1":
+"@web/config-loader@npm:^0.2.1":
   version: 0.2.1
   resolution: "@web/config-loader@npm:0.2.1"
   dependencies:
@@ -6044,7 +6044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:^0.2.0":
+"@web/dev-server@npm:^0.2.1":
   version: 0.2.1
   resolution: "@web/dev-server@npm:0.2.1"
   dependencies:
@@ -6214,7 +6214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-mocha@npm:^0.8.0":
+"@web/test-runner-mocha@npm:^0.8.1":
   version: 0.8.1
   resolution: "@web/test-runner-mocha@npm:0.8.1"
   dependencies:
@@ -6224,17 +6224,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@web/test-runner@npm:0.16.0"
+"@web/test-runner@npm:0.16.1":
+  version: 0.16.1
+  resolution: "@web/test-runner@npm:0.16.1"
   dependencies:
-    "@web/browser-logs": ^0.3.0
-    "@web/config-loader": ^0.2.0
-    "@web/dev-server": ^0.2.0
+    "@web/browser-logs": ^0.3.1
+    "@web/config-loader": ^0.2.1
+    "@web/dev-server": ^0.2.1
     "@web/test-runner-chrome": ^0.13.0
     "@web/test-runner-commands": ^0.7.0
-    "@web/test-runner-core": ^0.11.0
-    "@web/test-runner-mocha": ^0.8.0
+    "@web/test-runner-core": ^0.11.1
+    "@web/test-runner-mocha": ^0.8.1
     camelcase: ^6.2.0
     command-line-args: ^5.1.1
     command-line-usage: ^7.0.1
@@ -6247,7 +6247,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: 94dc5a77fa4ed5e1729acbeaae0ae77fdba328a823974ee57bd52dee46a955dbaa106900cbb71d2198509fd99fe2997c5facb5c228748deb8151c9100c711c4f
+  checksum: 42bb329c3fc2da09bbd530a14d37b0c3af972de5b13063c1d7296edb7c1dc6622d5bcd0d02321f77c9cee2eb08cd95fdbea385ee994a03658470117474bc2ceb
   languageName: node
   linkType: hard
 
