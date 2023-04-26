@@ -1,26 +1,20 @@
-import Apify from "apify";
-import { Session } from "apify/build/session_pool/session.js";
+import { Actor } from "apify";
+import { Session } from "@crawlee/core";
 import { PlaywrightPlugin, PuppeteerPlugin } from "browser-pool";
 import FingerprintGenerator from "fingerprint-generator";
 import { FingerprintInjector } from "fingerprint-injector";
 import playwright from "playwright";
 import cheerio from "cheerio";
 import { gotScraping } from "got-scraping";
-import { S3Client } from "@aws-sdk/client-s3";
-import { CloudFrontClient } from "@aws-sdk/client-cloudfront";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import {
-  invalidateCDN,
-  uploadToS3v2
-} from "@hlidac-shopu/actors-common/product.js";
 import { getCheerioObject } from "./scraper.js";
 import { BASE_URL, LABELS } from "./src/const.js";
 import { getRandomInt } from "./src/utils.js";
 import { CaptchaSolver } from "./src/captcha-solver.js";
 
-const { log } = Apify.utils;
+const { log } = Apify;
 let stats = {
   categories: 0,
   pages: 0,
@@ -92,7 +86,7 @@ async function handleBlackFriday($, requestQueue) {
   }
 }
 
-async function handleDetail($, requestQueue, request, s3) {
+async function handleDetail($, requestQueue, request) {
   // Check for subcategories
   const subcategories = $("div.strcont > div.subcats").find("a");
   if (subcategories.length > 0) {
@@ -186,10 +180,7 @@ async function handleDetail($, requestQueue, request, s3) {
     // Save data to dataset
     if (!processedIds.has(product.itemId)) {
       processedIds.add(product.itemId);
-      requests.push(
-        Apify.pushData(product),
-        uploadToS3v2(s3, product, { priceCurrency: "CZK" })
-      );
+      requests.push(Apify.pushData(product));
       stats.items++;
     } else {
       stats.itemsDuplicity++;
@@ -257,14 +248,8 @@ async function prepareStartURLs(type, requestQueue, feedUrl) {
   return requestListSources;
 }
 
-Apify.main(async function main() {
+Actor.main(async function main() {
   rollbar.init();
-
-  const s3 = new S3Client({ region: "eu-central-1", maxAttempts: 3 });
-  const cloudfront = new CloudFrontClient({
-    region: "eu-central-1",
-    maxAttempts: 3
-  });
 
   log.info("ACTOR - Start");
   const input = await Apify.getInput();
@@ -573,14 +558,10 @@ Apify.main(async function main() {
     let tableName = "tsbohemia";
     if (type === LABELS.PRICE) {
       tableName = `${tableName}_cz_price`;
-    } else if (type === ActorType.BF) {
+    } else if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;
     }
-    await Promise.all([
-      invalidateCDN(cloudfront, "EQYSHWUECAQC9", "tsbohemia.cz"),
-      uploadToKeboola(tableName)
-    ]);
-    log.info("invalidated Data CDN");
+    await uploadToKeboola(tableName);
   }
 
   log.info("ACTOR - Finished");
