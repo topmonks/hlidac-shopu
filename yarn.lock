@@ -2761,19 +2761,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/cheerio@npm:3.3.1":
-  version: 3.3.1
-  resolution: "@crawlee/cheerio@npm:3.3.1"
-  dependencies:
-    "@crawlee/http": ^3.3.1
-    "@crawlee/types": ^3.3.1
-    cheerio: ^1.0.0-rc.12
-    htmlparser2: ^8.0.1
-    tslib: ^2.4.0
-  checksum: f31de7bd4893e7163e20d23a2a67ea3c391853b7b0bfa938b0822227e07868b3ab0639bebdc0cd3b502cb975918dc6d2e252abf7535182d788a554360f7a0f5b
-  languageName: node
-  linkType: hard
-
 "@crawlee/core@npm:3.3.1, @crawlee/core@npm:^3.3.0, @crawlee/core@npm:^3.3.1":
   version: 3.3.1
   resolution: "@crawlee/core@npm:3.3.1"
@@ -2805,7 +2792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.3.1, @crawlee/http@npm:^3.3.1":
+"@crawlee/http@npm:3.3.1":
   version: 3.3.1
   resolution: "@crawlee/http@npm:3.3.1"
   dependencies:
@@ -3539,7 +3526,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lekarna-daily@workspace:actors/lekarna-daily"
   dependencies:
-    "@crawlee/cheerio": 3.3.1
+    "@crawlee/http": 3.3.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.0
     apify: 3.1.4

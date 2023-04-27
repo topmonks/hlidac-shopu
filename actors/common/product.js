@@ -82,52 +82,24 @@ export async function uploadToS3v2(s3, item, extraData = {}) {
 }
 
 /**
- * @deprecated
- * Save products to dataset and upload them to S3 (if not disabled).
- * @param {{s3: S3Client, products: object[], stats: Stats, processedIds: Set<string>, s3mergeFn?: (product: object) => object}} options
- * @returns {Promise<number>}
- */
-export async function saveProducts({
-  s3,
-  products,
-  stats,
-  processedIds,
-  s3mergeFn
-}) {
-  const requests = [];
-  for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      const s3Data = s3mergeFn
-        ? Object.assign(product, s3mergeFn(product))
-        : product;
-      requests.push(Dataset.pushData(product), uploadToS3v2(s3, s3Data));
-      stats.inc("items");
-    } else {
-      stats.inc("itemsDuplicity");
-    }
-  }
-  const responses = await Promise.all(requests);
-  return responses.length / 2;
-}
-
-/**
  * Save unique products to dataset
  * @param {{products: object[], stats: Stats, processedIds: Object<string, Object>}} options
  * @returns {Promise<number>}
  */
 export async function saveUniqProducts({ products, stats, processedIds }) {
+  const newProducts = [];
   for (const product of products) {
     if (processedIds[product.itemId] !== product.currentPrice) {
       if (processedIds[product.itemId]) {
         stats.inc("itemsChanged");
       }
       processedIds[product.itemId] = product.currentPrice;
-      await Dataset.pushData(product).catch(e => console.error(e));
+      newProducts.push(product);
     } else {
       stats.inc("itemsDuplicity");
     }
   }
+  await Dataset.pushData(newProducts);
   return products.length;
 }
 

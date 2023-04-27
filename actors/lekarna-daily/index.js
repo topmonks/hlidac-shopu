@@ -1,246 +1,212 @@
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, log } from "apify";
+import { Actor, log } from "apify";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { CheerioCrawler } from "@crawlee/cheerio";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { HttpCrawler, useState } from "@crawlee/http";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 
-export const web = "https://www.lekarna.cz";
-const processedIds = new Set();
+const web = "https://www.lekarna.cz";
 
-async function extractItems($, $products, breadCrumbs, stats) {
-  const itemsArray = [];
-  $products.each(async function() {
-    const result = {};
-    const $item = $(this);
-    const itemUrl = $item.find("meta[itemprop=url]").attr("content");
-    const name = $item.find("h2").text().trim();
-    const cartBut = $item.find("input[name=\"productSkuId\"]");
-    let id;
-    if (cartBut.length !== 0) {
-      id = cartBut.attr("value");
-    } else if ($item.find("a[data-gtm]").length !== 0) {
-      const itemJsonObject = JSON.parse(
-        $item.find("a[data-gtm]").attr("data-gtm")
-      );
-      const products =
-        itemJsonObject.ecommerce.click &&
-        itemJsonObject.ecommerce.click.products
-          ? itemJsonObject.ecommerce.click.products
-          : [];
-      const filtredProducts = products.filter(item =>
-        item.variant.indexOf("Dlouhodobě nedostupný")
-      );
-      id = filtredProducts.length !== 0 ? filtredProducts[0].id : null;
-    }
-
-    const $actualPriceSpan = $item.find("span[itemprop=price]");
-    const $oldPriceSpan = $item.find("span.text-gray-500.line-through");
-
-    if ($actualPriceSpan.length > 0) {
-      const itemImgUrl = $item.find("picture source").last().attr("srcset");
-      result.itemId = id;
-      result.itemName = name;
-      result.itemUrl = itemUrl.includes("https") ? itemUrl : `${web}${itemUrl}`;
-      result.img = itemImgUrl;
-      result.category = breadCrumbs;
-      result.currentPrice = parseFloat($actualPriceSpan.attr("content"));
-      result.currency = $item
-        .find("span[itemprop=priceCurrency]")
-        .attr("content");
-      if ($oldPriceSpan.length > 0) {
-        result.originalPrice = parseFloat(
-          $oldPriceSpan.text().replace("Kč", "").replace(/\s/g, "").trim()
+function extractItems({ products, breadCrumbs }) {
+  return products
+    .map(item => {
+      const result = {};
+      const itemUrl = item
+        ?.querySelector("meta[itemprop=url]")
+        ?.getAttribute("content");
+      if (!itemUrl) return;
+      const name = item.querySelector("h2").textContent.trim();
+      const cartBut = item.querySelector('input[name="productSkuId"]');
+      let id;
+      if (cartBut) {
+        id = cartBut.getAttribute("value");
+      } else if (item.querySelector("a[data-gtm]")) {
+        const itemJsonObject = JSON.parse(
+          item.querySelector("a[data-gtm]").getAttribute("data-gtm")
         );
-        result.discounted = true;
-      } else {
-        result.originalPrice = null;
-        result.discounted = false;
+        const products =
+          itemJsonObject.ecommerce.click &&
+          itemJsonObject.ecommerce.click.products
+            ? itemJsonObject.ecommerce.click.products
+            : [];
+        const filteredProducts = products.filter(item =>
+          item.variant.indexOf("Dlouhodobě nedostupný")
+        );
+        id = filteredProducts.length !== 0 ? filteredProducts[0].id : null;
       }
-      itemsArray.push(result);
-    } else {
-      //Skipped itemprop="itemListElement" that's not product
-      stats.inc("itemsSkipped");
-    }
-  });
-  return itemsArray;
+
+      const actualPriceSpan = item.querySelector("span[itemprop=price]");
+      const oldPriceSpan = item.querySelector(
+        "span.text-gray-500.line-through"
+      );
+
+      if (actualPriceSpan) {
+        const itemImgUrl = item
+          .querySelectorAll("picture source")
+          .at(-1)
+          .getAttribute("srcset");
+        result.itemId = id;
+        result.itemName = name;
+        result.itemUrl = itemUrl.includes("https")
+          ? itemUrl
+          : `${web}${itemUrl}`;
+        result.img = itemImgUrl;
+        result.category = breadCrumbs;
+        result.currentPrice = parseFloat(
+          actualPriceSpan.getAttribute("content")
+        );
+        result.currency = item
+          .querySelector("span[itemprop=priceCurrency]")
+          .getAttribute("content");
+        if (oldPriceSpan) {
+          result.originalPrice = parseFloat(
+            oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim()
+          );
+          result.discounted = true;
+        } else {
+          result.originalPrice = null;
+          result.discounted = false;
+        }
+        return result;
+      }
+    })
+    .filter(Boolean);
 }
 
-async function extractBfItems($, $products, breadCrumbs, stats) {
-  const itemsArray = [];
-  $products.each(async function() {
-    const result = {};
-    const $item = $(this);
-    const itemHeader = $item.find("h2 a");
-    const itemOriginalPrice = $item.find("p.items-center span.line-through");
-    const originalPrice = itemOriginalPrice
-      ? parseFloat(
-        itemOriginalPrice.text().replace("Kč", "").replace(/\s/g, "").trim()
-      )
-      : null;
-    const itemJsonObject = JSON.parse(itemHeader.attr("data-datalayer"));
-    const itemJson = itemJsonObject.ecommerce.products[0];
-    const currentPrice = parseFloat(itemJson.price);
-    const itemUrl = itemHeader.attr("href");
+function extractBfItems(products) {
+  return products
+    .map(item => {
+      const result = {};
+      const itemHeader = item.querySelector("h2 a");
+      const itemOriginalPrice = item.querySelector(
+        "p.items-center span.line-through"
+      );
+      const originalPrice = itemOriginalPrice
+        ? parseFloat(
+            itemOriginalPrice.textContent
+              .replace("Kč", "")
+              .replace(/\s/g, "")
+              .trim()
+          )
+        : null;
+      const itemJsonObject = JSON.parse(
+        itemHeader.getAttribute("data-datalayer")
+      );
+      const itemJson = itemJsonObject.ecommerce.products[0];
+      const currentPrice = parseFloat(itemJson.price);
+      const itemUrl = itemHeader.getAttribute("href");
 
-    const itemImgUrl = $item.find("picture img").attr("src");
+      const itemImgUrl = item.querySelector("picture img").getAttribute("src");
 
-    if (parseFloat(itemJson.price) > 0) {
-      result.itemId = itemJson.id;
-      result.itemName = itemJson.name;
-      result.itemUrl = `https://lekarna.cz/${itemUrl}`;
-      result.img = itemImgUrl;
-      result.category = itemJson.categories;
-      result.currentPrice = currentPrice;
-      result.originalPrice = originalPrice;
-      result.discounted = originalPrice > currentPrice;
-      result.currency = "CZK";
-      result.inStock = itemJson.availability === "InStock";
-      itemsArray.push(result);
-    } else {
-      log.info(`Skipp non price product [${itemJson.name}]`);
-      stats.inc("itemsSkipped");
-    }
-  });
-  return itemsArray;
+      if (parseFloat(itemJson.price) > 0) {
+        result.itemId = itemJson.id;
+        result.itemName = itemJson.name;
+        result.itemUrl = `https://lekarna.cz/${itemUrl}`;
+        result.img = itemImgUrl;
+        result.category = itemJson.categories;
+        result.currentPrice = currentPrice;
+        result.originalPrice = originalPrice;
+        result.discounted = originalPrice > currentPrice;
+        result.currency = "CZK";
+        result.inStock = itemJson.availability === "InStock";
+        return result;
+      } else {
+        log.info(`Skipp non price product [${itemJson.name}]`);
+      }
+    })
+    .filter(Boolean);
 }
 
-export async function handleStart($, requestQueue, stats, log) {
-  const getCategories = $("nav.items-center > ul > li > span > a");
-  for (const cat of getCategories) {
-    const url = $(cat).attr("href");
-    console.log(url);
-    await requestQueue.addRequest({
-      url,
+function handleStart(document) {
+  return document
+    .querySelectorAll("nav.items-center > ul > li > span > a")
+    .map(cat => ({
+      url: cat.href,
       userData: {
         label: "PAGE"
       }
-    });
-    stats.inc("pages");
-  }
-  log.info(`Enqueued ${getCategories.length} categories`);
+    }));
 }
 
-export async function handleSubCategory($, requestQueue, request, stats, log) {
-  const getSubcategories = $("#snippet--subcategories a");
-  let subCatCount = 0;
+function handleSubCategory(document) {
+  const getSubcategories = document.querySelectorAll(
+    "#snippet--subcategories a"
+  );
+  const requests = [];
   for (const subCat of getSubcategories) {
-    const url = $(subCat).attr("href");
+    const url = subCat.href;
     if (!url.includes("?")) {
-      subCatCount++;
-      await requestQueue.addRequest(
-        {
-          url: url.includes("https") ? url : `${web}${url}`,
-          userData: {
-            label: "PAGE"
-          }
-        },
-        { forefront: true }
-      );
-      stats.inc("pages");
-    }
-  }
-  log.info(`Enqueued ${subCatCount} subcategories`);
-}
-
-export async function handlePagination($, requestQueue, request, type, stats, log) {
-  let maxPage = 0;
-  const snippetListing =
-    type === ActorType.Full
-      ? $("#snippet--productListing")
-      : $("#snippet--itemListing");
-  snippetListing.find("ul.flex.flex-wrap.items-stretch li").each(function() {
-    //Try parse Number value from paginator
-    const liValue = Number($(this).text().trim());
-    //Save highest page value
-    if (liValue > maxPage) {
-      maxPage = liValue;
-    }
-  });
-  //Handle pagination pages
-  if (maxPage > 0) {
-    for (let i = 2; i <= maxPage; i++) {
-      await requestQueue.addRequest(
-        {
-          url: `${request.url}?strana=${i}`,
-          userData: {
-            label: "PAGI_PAGE",
-            category: request.userData.category
-          }
-        },
-        { forefront: true }
-      );
-      stats.inc("pages");
-    }
-    log.info(`Found ${maxPage - 1} pagination pages.`);
-  }
-}
-
-export async function handleProducts($, requestQueue, request, type, stats, log) {
-  const itemListElements =
-    type === ActorType.Full
-      ? $("[itemprop=\"itemListElement\"]")
-      : $(
-        "#snippet--itemListing div.flex.flex-col.flex-wrap.items-stretch.w-full"
-      );
-  if (itemListElements.length > 0) {
-    let breadCrumbs = [];
-    try {
-      $(
-        "ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']"
-      ).each(function() {
-        const attrContent = $(this).attr("content")?.trim();
-        if (
-          attrContent &&
-          attrContent !== "" &&
-          attrContent !== "Úvodní strana"
-        ) {
-          breadCrumbs.push(attrContent);
-        }
-
-        const text = $(this).text()?.trim();
-        if (text && text !== "") {
-          breadCrumbs.push(text);
+      requests.push({
+        url: url.includes("https") ? url : `${web}${url}`,
+        userData: {
+          label: "PAGE"
         }
       });
-      if (breadCrumbs.length > 0) {
-        breadCrumbs = breadCrumbs.join(" > ");
-      } else {
-        breadCrumbs = "";
-      }
-
-      const products =
-        type === ActorType.Full
-          ? await extractItems($, itemListElements, breadCrumbs, stats)
-          : await extractBfItems($, itemListElements, breadCrumbs, stats);
-      // we don't need to block pushes, we will await them all at the end
-      const requests = [];
-      for (const product of products) {
-        // Save data to dataset
-        if (!processedIds.has(product.itemId)) {
-          processedIds.add(product.itemId);
-          requests.push(Dataset.pushData(product));
-        } else {
-          stats.inc("itemsDuplicity");
-        }
-      }
-      stats.add("items", requests.length / 2);
-      log.info(`Found ${requests.length / 2} unique products`);
-      // await all requests, so we don't end before they end
-      await Promise.all(requests);
-    } catch (e) {
-      log.error(e.message);
-      log.error(`Failed extraction of items. ${request.url}`);
     }
   }
+  return requests;
+}
+
+function handlePagination({ document, request, type }) {
+  const snippetListingClass =
+    type === ActorType.Full
+      ? "#snippet--productListing"
+      : "#snippet--itemListing";
+  const maxPage = document
+    .querySelectorAll(
+      `${snippetListingClass} ul.flex.flex-wrap.items-stretch li`
+    )
+    .reduce((max, li) => Math.max(max, Number(li.textContent.trim())), 0);
+
+  if (maxPage > 0) log.info(`Found ${maxPage - 1} pagination pages.`);
+  return restPageUrls(maxPage, i => ({
+    url: `${request.url}?strana=${i}`,
+    userData: {
+      label: "PAGI_PAGE",
+      category: request.userData.category
+    }
+  }));
+}
+
+function handleProducts({ document, type }) {
+  const itemListElements =
+    type === ActorType.Full
+      ? document.querySelectorAll('[itemprop="itemListElement"]')
+      : document.querySelectorAll(
+          "#snippet--itemListing div.flex.flex-col.flex-wrap.items-stretch.w-full"
+        );
+  const breadCrumbs = document
+    .querySelectorAll(
+      "ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']"
+    )
+    .flatMap(item => {
+      const breadCrumbs = [];
+      const attrContent = item.getAttribute("content")?.trim();
+      if (attrContent && attrContent !== "Úvodní strana") {
+        breadCrumbs.push(attrContent);
+      }
+
+      const text = item.textContent?.trim();
+      if (text) {
+        breadCrumbs.push(text);
+      }
+      return breadCrumbs;
+    })
+    .join(" > ");
+
+  return type === ActorType.Full
+    ? extractItems({ products: itemListElements, breadCrumbs })
+    : extractBfItems(itemListElements);
 }
 
 /**
  * @param {string} url
  * @param {ActorType} type
  */
-export function getInitialUrls(url, type) {
+export function getInitialUrls({ url, type }) {
   if (type === ActorType.BlackFriday) {
     const bfUrl = "https://www.lekarna.cz/blackfriday/";
     return [
@@ -267,11 +233,11 @@ export function getInitialUrls(url, type) {
 export async function main() {
   rollbar.init();
 
+  const processedIds = useState("processedIds", {});
+
   const {
     development = false,
     debug = false,
-    maxRequestRetries = 3,
-    maxConcurrency = 10,
     proxyGroups = ["CZECH_LUMINATI"],
     type = ActorType.Full
   } = await getInput();
@@ -294,45 +260,65 @@ export async function main() {
     useApifyProxy: !development
   });
 
-  const crawler = new CheerioCrawler({
+  const crawler = new HttpCrawler({
     proxyConfiguration,
-    maxRequestRetries,
-    maxConcurrency,
-    async requestHandler({ $, request, crawler, log }) {
-      if (request.userData.label === "SUB_CATEGORY") {
-        log.info(`START with sub category ${request.url}`);
-        await handleSubCategory($, crawler.requestQueue, request, stats, log);
-      } else if (request.userData.label === "PAGE") {
-        log.info(`START with page ${request.url}`);
-        await handleSubCategory($, crawler.requestQueue, request, stats, log);
-        await handlePagination(
-          $,
-          crawler.requestQueue,
-          request,
-          type,
-          stats,
-          log
-        );
-        await handleProducts(
-          $,
-          crawler.requestQueue,
-          request,
-          type,
-          stats,
-          log
-        );
-      } else if (request.userData.label === "PAGI_PAGE") {
-        log.info(`START with page ${request.url}`);
-        await handleProducts(
-          $,
-          crawler.requestQueue,
-          request,
-          type,
-          stats,
-          log
-        );
-      } else if (request.userData.label === "START") {
-        await handleStart($, crawler.requestQueue, stats, log);
+    maxRequestsPerMinute: 400,
+    async requestHandler({ body, request, crawler, log }) {
+      const { document } = parseHTML(body.toString());
+      switch (request.userData.label) {
+        case "SUB_CATEGORY":
+          {
+            log.info(`START with sub category ${request.url}`);
+            const requests = handleSubCategory(document);
+            stats.add("pages", requests.length);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
+            });
+            log.info(`Enqueued ${requests.length} subcategories`);
+          }
+          break;
+        case "PAGE":
+          {
+            log.info(`START with page ${request.url}`);
+            const subCatReqs = handleSubCategory(document);
+            stats.add("pages", subCatReqs.length);
+            await crawler.requestQueue.addRequests(subCatReqs, {
+              forefront: true
+            });
+            log.info(`Enqueued ${subCatReqs.length} subcategories`);
+            const paginationReqs = handlePagination({
+              document,
+              request,
+              type
+            });
+            await crawler.requestQueue.addRequests(paginationReqs, {
+              forefront: true
+            });
+            const products = handleProducts({ document, type });
+            const newProductsCount = await saveUniqProducts({
+              products,
+              stats,
+              processedIds
+            });
+            stats.add("items", newProductsCount);
+            log.info(`Found ${newProductsCount} unique products`);
+          }
+          break;
+        case "PAGI_PAGE":
+          {
+            log.info(`START with page ${request.url}`);
+            const requests = handleProducts({ document, type });
+            stats.add("pages", requests.length);
+          }
+          break;
+        case "START":
+          {
+            const requests = handleStart(document);
+            stats.add("pages", requests.length);
+            await crawler.requestQueue.addRequests(requests);
+            log.info(`Enqueued ${requests.length} categories`);
+          }
+          break;
       }
     },
     async failedRequestHandler({ request, log }, error) {
@@ -340,7 +326,7 @@ export async function main() {
     }
   });
 
-  await crawler.run(getInitialUrls(web, type));
+  await crawler.run(getInitialUrls({ url: web, type }));
   await stats.save(true);
 
   const tableName =
