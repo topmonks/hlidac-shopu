@@ -13089,7 +13089,7 @@ __metadata:
     stylelint: 15.6.0
     stylelint-config-prettier: 9.0.5
     web-ext: 7.6.1
-    web-ext-submit: 7.6.1
+    web-ext-submit: 7.6.2
   languageName: unknown
   linkType: soft
 
@@ -22458,14 +22458,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext-submit@npm:7.6.1":
-  version: 7.6.1
-  resolution: "web-ext-submit@npm:7.6.1"
+"web-ext-submit@npm:7.6.2":
+  version: 7.6.2
+  resolution: "web-ext-submit@npm:7.6.2"
   dependencies:
-    web-ext: ^7.6.1
+    web-ext: ^7.6.2
   bin:
     web-ext-submit: extender.sh
-  checksum: a3764aa1e2569217448eb0e9d6e4a98201fe06b86f0cb5c9f214fc1f92d1e176adfd92c13bf7ce79bdcb863abe29b77139d9f86f27f2e4cda3d67f54a6ad2176
+  checksum: b7ec4c7c8a48f675e03587be419b51af61092905a09c7496b7de68ee01e1b4029b56cafe5a1ae924604dd85fe6de79d97667700a4a7b02a91a2cceb59db8aea6
   languageName: node
   linkType: hard
 
@@ -22511,7 +22511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:^7.6.1":
+"web-ext@npm:^7.6.2":
   version: 7.6.2
   resolution: "web-ext@npm:7.6.2"
   dependencies:
