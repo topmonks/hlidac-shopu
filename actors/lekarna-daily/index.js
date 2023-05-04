@@ -11,60 +11,68 @@ import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 const web = "https://www.lekarna.cz";
 
 function extractItems({ products, breadCrumbs }) {
-  return products.map(item => {
-    const result = {};
-    const itemUrl = item
-      .querySelector("meta[itemprop=url]")
-      .getAttribute("content");
-    const name = item.querySelector("h2").textContent.trim();
-    const cartBut = item.querySelector('input[name="productSkuId"]');
-    let id;
-    if (cartBut) {
-      id = cartBut.getAttribute("value");
-    } else if (item.querySelector("a[data-gtm]")) {
-      const itemJsonObject = JSON.parse(
-        item.querySelector("a[data-gtm]").getAttribute("data-gtm")
-      );
-      const products =
-        itemJsonObject.ecommerce.click &&
-        itemJsonObject.ecommerce.click.products
-          ? itemJsonObject.ecommerce.click.products
-          : [];
-      const filteredProducts = products.filter(item =>
-        item.variant.indexOf("Dlouhodobě nedostupný")
-      );
-      id = filteredProducts.length !== 0 ? filteredProducts[0].id : null;
-    }
-
-    const actualPriceSpan = item.querySelector("span[itemprop=price]");
-    const oldPriceSpan = item.querySelector("span.text-gray-500.line-through");
-
-    if (actualPriceSpan) {
-      const itemImgUrl = item
-        .querySelectorAll("picture source")
-        .at(-1)
-        .getAttribute("srcset");
-      result.itemId = id;
-      result.itemName = name;
-      result.itemUrl = itemUrl.includes("https") ? itemUrl : `${web}${itemUrl}`;
-      result.img = itemImgUrl;
-      result.category = breadCrumbs;
-      result.currentPrice = parseFloat(actualPriceSpan.getAttribute("content"));
-      result.currency = item
-        .querySelector("span[itemprop=priceCurrency]")
+  return products
+    .map(item => {
+      const result = {};
+      const itemUrl = item
+        .querySelector("meta[itemprop=url]")
         .getAttribute("content");
-      if (oldPriceSpan) {
-        result.originalPrice = parseFloat(
-          oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim()
+      const name = item.querySelector("h2").textContent.trim();
+      const cartBut = item.querySelector('input[name="productSkuId"]');
+      let id;
+      if (cartBut) {
+        id = cartBut.getAttribute("value");
+      } else if (item.querySelector("a[data-gtm]")) {
+        const itemJsonObject = JSON.parse(
+          item.querySelector("a[data-gtm]").getAttribute("data-gtm")
         );
-        result.discounted = true;
-      } else {
-        result.originalPrice = null;
-        result.discounted = false;
+        const products =
+          itemJsonObject.ecommerce.click &&
+          itemJsonObject.ecommerce.click.products
+            ? itemJsonObject.ecommerce.click.products
+            : [];
+        const filteredProducts = products.filter(item =>
+          item.variant.indexOf("Dlouhodobě nedostupný")
+        );
+        id = filteredProducts.length !== 0 ? filteredProducts[0].id : null;
       }
-      return result;
-    }
-  });
+
+      const actualPriceSpan = item.querySelector("span[itemprop=price]");
+      const oldPriceSpan = item.querySelector(
+        "span.text-gray-500.line-through"
+      );
+
+      if (actualPriceSpan) {
+        const itemImgUrl = item
+          .querySelectorAll("picture source")
+          .at(-1)
+          .getAttribute("srcset");
+        result.itemId = id;
+        result.itemName = name;
+        result.itemUrl = itemUrl.includes("https")
+          ? itemUrl
+          : `${web}${itemUrl}`;
+        result.img = itemImgUrl;
+        result.category = breadCrumbs;
+        result.currentPrice = parseFloat(
+          actualPriceSpan.getAttribute("content")
+        );
+        result.currency = item
+          .querySelector("span[itemprop=priceCurrency]")
+          .getAttribute("content");
+        if (oldPriceSpan) {
+          result.originalPrice = parseFloat(
+            oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim()
+          );
+          result.discounted = true;
+        } else {
+          result.originalPrice = null;
+          result.discounted = false;
+        }
+        return result;
+      }
+    })
+    .filter(Boolean);
 }
 
 function extractBfItems(products) {
@@ -131,7 +139,7 @@ function handleSubCategory(document) {
     const url = subCat.href;
     if (!url.includes("?")) {
       requests.push({
-        url: url.includes("https") ? url : `${web}${url}`,
+        url: url.startsWith("https") ? url : `${web}${url}`,
         userData: {
           label: "PAGE"
         }
@@ -150,9 +158,9 @@ function handlePagination({ document, request, type }) {
     .querySelectorAll(
       `${snippetListingClass} ul.flex.flex-wrap.items-stretch li`
     )
-    .reduce((max, li) => Math.max(max, Number(li.textContent.trim())), 0);
+    .at(-2)
+    ?.textContent?.trim();
 
-  if (maxPage > 0) log.info(`Found ${maxPage - 1} pagination pages.`);
   return restPageUrls(maxPage, i => ({
     url: `${request.url}?strana=${i}`,
     userData: {
@@ -239,7 +247,6 @@ export async function main() {
     urls: 0,
     pages: 0,
     items: 0,
-    itemsSkipped: 0,
     itemsDuplicity: 0,
     failed: 0
   });
@@ -255,24 +262,21 @@ export async function main() {
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
-    maxRequestsPerMinute: 400,
+    maxRequestsPerMinute: development ? Infinity : 400,
     async requestHandler({ body, request, crawler, log }) {
+      log.info(`Processing ${request.url}`);
       const { document } = parseHTML(body.toString());
       switch (request.userData.label) {
-        case "SUB_CATEGORY":
+        case "START":
           {
-            log.info(`START with sub category ${request.url}`);
-            const requests = handleSubCategory(document);
+            const requests = handleStart(document);
             stats.add("pages", requests.length);
-            await crawler.requestQueue.addRequests(requests, {
-              forefront: true
-            });
-            log.info(`Enqueued ${requests.length} subcategories`);
+            await crawler.requestQueue.addRequests(requests);
+            log.info(`Enqueued ${requests.length} categories`);
           }
           break;
         case "PAGE":
           {
-            log.info(`START with page ${request.url}`);
             const subCatReqs = handleSubCategory(document);
             stats.add("pages", subCatReqs.length);
             await crawler.requestQueue.addRequests(subCatReqs, {
@@ -284,6 +288,7 @@ export async function main() {
               request,
               type
             });
+            log.info(`Found ${paginationReqs.length} pagination pages.`);
             await crawler.requestQueue.addRequests(paginationReqs, {
               forefront: true
             });
@@ -299,17 +304,25 @@ export async function main() {
           break;
         case "PAGI_PAGE":
           {
-            log.info(`START with page ${request.url}`);
-            const requests = handleProducts({ document, type });
-            stats.add("pages", requests.length);
+            const products = handleProducts({ document, type });
+            const newProductsCount = await saveUniqProducts({
+              products,
+              stats,
+              processedIds
+            });
+            stats.add("items", newProductsCount);
+            log.info(`Found ${newProductsCount} unique products`);
           }
           break;
-        case "START":
+        case "SUB_CATEGORY":
           {
-            const requests = handleStart(document);
+            log.info(`START with sub category ${request.url}`);
+            const requests = handleSubCategory(document);
             stats.add("pages", requests.length);
-            await crawler.requestQueue.addRequests(requests);
-            log.info(`Enqueued ${requests.length} categories`);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
+            });
+            log.info(`Enqueued ${requests.length} subcategories`);
           }
           break;
       }

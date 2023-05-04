@@ -50,15 +50,20 @@ function extractProducts(document) {
         .querySelector("p.price strong")
         ?.innerText?.trim()
         ?.toLowerCase();
+      const itemId =
+        item
+          .querySelector("h3 a")
+          ?.getAttribute("href")
+          ?.match(/-(\d+)$/)?.[1] ??
+        canonicalUrl(
+          item.querySelector("a.buy-now")?.getAttribute("data-link")
+        )?.searchParams?.get("categoryBookList-itemPreview-productId");
+      if (!itemId) {
+        log.warning("Could not find item id");
+        return;
+      }
       return {
-        itemId:
-          item
-            .querySelector("h3 a")
-            .getAttribute("href")
-            .match(/-(\d+)$/)?.[1] ??
-          canonicalUrl(
-            item.querySelector("a.buy-now")?.getAttribute("data-link")
-          )?.searchParams?.get("categoryBookList-itemPreview-productId"),
+        itemId,
         itemUrl: canonical(item.querySelector("h3 a").getAttribute("href")),
         itemName: item.querySelector("span.name").innerText,
         img: item.querySelector("picture img").getAttribute("src"),
