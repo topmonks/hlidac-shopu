@@ -2,7 +2,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler, useState } from "@crawlee/http";
-import { Actor, Dataset, log } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 import { choices, partition, take, transduce, push } from "@thi.ng/transducers";
 import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
@@ -176,7 +176,7 @@ const productsPerRequest = 15;
 /**
  * @param {{productIds: number[], categoryId: string, stats: Stats}}
  */
-function detailRequests({ productIds, categoryId, stats }) {
+function detailRequests({ productIds, categoryId, stats, requestedIds }) {
   stats.inc("categoryPagesCount");
   const requests = [];
   for (const productIdsBatch of partition(
@@ -186,12 +186,18 @@ function detailRequests({ productIds, categoryId, stats }) {
   )) {
     const productsParams = new URLSearchParams();
     for (const id of productIdsBatch) {
-      productsParams.append("products", id.toString());
+      if (!requestedIds[id]) {
+        productsParams.append("products", id.toString());
+        requestedIds[id] = true;
+      } else {
+        stats.inc("productsAlreadyRequested");
+      }
     }
     requests.push({
       url: `https://www.rohlik.cz/api/v1/products/prices?${productsParams}`,
       userData: {
         label: Label.Detail,
+        type: "prices",
         categoryId
       }
     });
@@ -199,6 +205,7 @@ function detailRequests({ productIds, categoryId, stats }) {
       url: `https://www.rohlik.cz/api/v1/products?${productsParams}`,
       userData: {
         label: Label.Detail,
+        type: "products",
         categoryId
       }
     });
@@ -207,6 +214,11 @@ function detailRequests({ productIds, categoryId, stats }) {
 }
 
 function mergeProductsData({ productList, items, itemsForSaving }) {
+  if (!Array.isArray(productList)) {
+    log.warning(productList);
+    return;
+  }
+  log.info(`Received ${productList.length} products`);
   productList.forEach(item => {
     items.swap(_items => {
       const id = item.id ?? item.productId;
@@ -230,14 +242,18 @@ function mergeProductsData({ productList, items, itemsForSaving }) {
  * @param {number} [n=50]
  * @returns {T[]}
  */
-function takeRandomIfDev(isDevelopment, coll, n = 50) {
+function takeRandomIfDev(isDevelopment, coll, n = 200) {
   return isDevelopment ? transduce(take(n), push(), choices(coll)) : coll;
 }
 
 async function main() {
   rollbar.init();
 
-  const { development, proxyGroups } = await getInput();
+  const { development, proxyGroups, debug } = await getInput();
+
+  if (debug) {
+    log.setLevel(LogLevel.DEBUG);
+  }
 
   const stats = await withPersistedStats(x => x, {
     categoriesTotal: 0,
@@ -254,6 +270,8 @@ async function main() {
 
   let categoriesById = await useState("categoriesById", {});
   const processedIds = await useState("processedIds", {});
+  const requestedIds = await useState("requestedIds", {});
+  console.dir({ categoriesById, processedIds, requestedIds }, { depth: null });
   const items = defAtom([]);
   const itemsForSaving = new Channel(500);
 
@@ -262,15 +280,19 @@ async function main() {
     while (true) {
       try {
         const item = yield itemsForSaving.take();
-        if (!item) return;
+        if (!item) continue;
         const product = normalizeItem({
           item,
           categoriesById
         });
-        if (processedIds[item.itemId]) return;
+        const itemId = product.itemId;
+        if (processedIds[itemId]) {
+          stats.inc("itemsAlreadyProcessed");
+          continue;
+        }
         Dataset.pushData(product)
           .then(() => {
-            processedIds[item.itemId] = true;
+            processedIds[itemId] = true;
             stats.inc("items");
             return true;
           })
@@ -294,7 +316,7 @@ async function main() {
     async requestHandler({ request, json, crawler }) {
       const { userData } = request;
       const { categoryId } = userData;
-      log.info(`Processing ${request.url}`);
+      log.info(`Processing ${request.url} (${userData.label})`);
       switch (userData.label) {
         case Label.Main:
           Object.assign(categoriesById, json.navigation);
@@ -323,7 +345,8 @@ async function main() {
             detailRequests({
               productIds: json.productIds,
               categoryId,
-              stats
+              stats,
+              requestedIds
             }),
             { forefront: true }
           );

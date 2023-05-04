@@ -1,4 +1,4 @@
-import { KeyValueStore } from "apify";
+import { KeyValueStore, log, LogLevel } from "apify";
 
 /** @typedef {import("./stats.js").Stats} Stats */
 /** @typedef {import("node:http").IncomingMessage} IncomingMessage */
@@ -39,13 +39,17 @@ export function restPageUrls(totalCount, urlFn) {
  * @param {object=} overrides
  */
 export async function getInput(overrides) {
+  const debug = Boolean(process.env.DEBUG);
+  if (debug) {
+    log.setLevel(LogLevel.DEBUG);
+  }
   return Object.assign(
     {
       type: process.env.TYPE,
       development: Boolean(process.env.TEST),
       proxyGroups: ["CZECH_LUMINATI"],
       maxRequestRetries: 3,
-      debug: Boolean(process.env.DEBUG),
+      debug,
       urls: []
     },
     await KeyValueStore.getInput(),
