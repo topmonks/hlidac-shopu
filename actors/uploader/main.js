@@ -42,7 +42,6 @@ import { coopValidator } from "./src/validators/coopValidator.js";
 import { makroczValidator } from "./src/validators/makroczValidator.js";
 import { dmValidator } from "./src/validators/dmValidator.js";
 import { tetaValidator } from "./src/validators/tetaValidator.js";
-import { knihydobrovsky_dailyValidator } from "./src/validators/knihydobrovsky_dailyValidator.js";
 import { rozetkaValidator } from "./src/validators/rozetkaValidator.js";
 import { hornbachValidator } from "./src/validators/hornbachValidator.js";
 import { electroworldValidator } from "./src/validators/electroworldValidator.js";
@@ -226,9 +225,6 @@ async function processItems(
       case "teta_cz":
       case "teta_cz_bf":
         item = tetaValidator(item);
-        break;
-      case "knihydobrovsky_cz":
-        item = knihydobrovsky_dailyValidator(item);
         break;
       case "rozetka_ua":
         item = rozetkaValidator(item);

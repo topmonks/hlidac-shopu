@@ -46,6 +46,10 @@ function extractProducts(document) {
         cleanPrice(
           item.querySelector(".price-wrap .price-strike")?.innerText
         ) || null;
+      const currentPrice = item
+        .querySelector("p.price strong")
+        ?.innerText?.trim()
+        ?.toLowerCase();
       return {
         itemId:
           item
@@ -59,7 +63,7 @@ function extractProducts(document) {
         itemName: item.querySelector("span.name").innerText,
         img: item.querySelector("picture img").getAttribute("src"),
         currentPrice:
-          cleanPrice(item.querySelector("p.price strong")?.innerText) || null,
+          currentPrice === "zdarma" ? 0 : cleanPrice(currentPrice) ?? null,
         originalPrice,
         discounted: Boolean(originalPrice),
         rating: parseFloat(

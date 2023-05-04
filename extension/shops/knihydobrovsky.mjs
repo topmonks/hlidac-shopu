@@ -1,9 +1,4 @@
-import {
-  cleanPrice,
-  cleanUnitPrice,
-  isUnitPrice,
-  registerShop
-} from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Knihydobrovsky extends Shop {
@@ -25,13 +20,17 @@ export class Knihydobrovsky extends Shop {
     const jsonld = document.querySelectorAll(
       'script[type="application/ld+json"]'
     )[1];
+    const currentPrice = document
+      .querySelector("p.price strong")
+      ?.innerText?.trim()
+      ?.toLowerCase();
     if (jsonld) {
       try {
         const data = JSON.parse(jsonld.innerText);
         return {
           itemId: data.sku,
           title: data.name,
-          currentPrice: data.offers.price,
+          currentPrice: currentPrice === "zdarma" ? 0 : data.offers.price, // data always have previous price even if it's free now
           originalPrice: isNaN(originalPrice)
             ? null
             : originalPrice + data.offers.price,
