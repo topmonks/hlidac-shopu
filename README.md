@@ -31,7 +31,7 @@ We are using `package.json` `scripts` (run `yarn run` for a list) for project au
 
 You will need:
 
-* Node.js 16 (we use `nvm` for Node.js version management)
+* Node.js 18 (we use `nvm` for Node.js version management)
 * `yarn` (we use Workspaces. You can't use `npm`. Sorry)
 * Firefox
 * Chrome
@@ -56,9 +56,9 @@ Execution of this command might take a while. Built extension will be placed in 
 
 ## Building extensions
 
-All extensions (except Safari version) will be build to `./dist` folder by calling the `npm build` script.
+All extensions (except Safari version) will be built to `./dist` folder by calling the `npm build` script.
 
-Firefox supports Dark and Light themes for action icons and we are optimising action icons for these.
+Firefox supports Dark and Light themes for action icons, and we are optimising action icons for these.
 Chrome doesn't support action icons theming via `manifest.json` so we use `background.js` script to
 add support for themes programmatically. We are removing `background.js` script, and
 it's entry in manifest, in build step with other unnecessary files.
@@ -131,14 +131,12 @@ yarn start:www.hlidacshopu.cz
 ### Cloudinary
 
 Sites have ability to automatically upload images to Cloudinary and generate Cloudinary URLs.
-Cloudinary needs to be properly configured.
-Go to [Cloudinary console](https://cloudinary.com/console) (credentials are in TopMonks 1password vault)
-and copy the `Environment variable` with credentials. Insert copied credentials into `.env` file in root directory.
-Or use this command (copy it to console before you copy Cloudinary credentials, or simply write it):
+Cloudinary needs to be properly configured. Our Cloudinary credentials are stored in 1password team vault `Hlidac shopu`.
+Use [1password CLI](https://1password.com/downloads/command-line/) to get credentials 
+and set them as environment variables:
 
 ```bash
-# on macOS in ./hlidac-shopu
-pbpaste > .env
+op run --env-file=.env --no-masking -- yarn build:www.hlidacshopu.cz
 ```
 
 If this step is skipped you will get following error:

@@ -1,11 +1,11 @@
 /** @typedef {import("@types/nunjucks").Environment} Environment */
 
-const esbuild = require("gulp-esbuild");
-const mode = require("gulp-mode")();
-const cssvariables = require("postcss-css-variables");
-const pathConfig = require("./path-config.json");
-const projectPath = require("@topmonks/blendid/gulpfile.js/lib/projectPath.js");
+import gulp_mode from "gulp-mode";
+import cssvariables from "postcss-css-variables";
+import projectPath from "@topmonks/blendid/gulpfile.js/lib/projectPath.mjs";
+import pathConfig from "./path-config.json" assert { type: "json" };
 
+const mode = gulp_mode();
 const longDateFormatter = new Intl.DateTimeFormat("cs", {
   year: "numeric",
   month: "long",
@@ -66,9 +66,8 @@ const config = {
   html: {
     collections: ["media", "images", "assets", "build", "dashboard"],
     nunjucksRender: {
-      /** @param {Environment} env */
-      manageEnv(env) {
-        env.addGlobal("currentYear", new Date().getFullYear());
+      globals: {
+        currentYear: new Date().getFullYear()
       },
       filters: {
         longDate(str) {
@@ -108,29 +107,6 @@ const config = {
     }
   },
 
-  additionalTasks: {
-    initialize(gulp, pathConfig, taskConfig) {
-      const { src, task, dest } = gulp;
-      const paths = {
-        src: projectPath(pathConfig.src, pathConfig.esbuild.src, "*.js"),
-        dest: projectPath(pathConfig.dest, pathConfig.esbuild.dest)
-      };
-      task("esbuild-prod", () =>
-        src(paths.src)
-          .pipe(esbuild(taskConfig.esbuild.options))
-          .pipe(dest(paths.dest))
-      );
-      const gulpEsbuild = esbuild.createGulpEsbuild({ incremental: true });
-      task("esbuild", () =>
-        src(paths.src)
-          .pipe(gulpEsbuild(taskConfig.esbuild.options))
-          .pipe(dest(paths.dest))
-      );
-    },
-    development: { code: ["esbuild"] },
-    production: { code: ["esbuild-prod"] }
-  },
-
   watch: { tasks: ["esbuild"] },
 
   production: {
@@ -138,4 +114,4 @@ const config = {
   }
 };
 
-module.exports = config;
+export default config;
