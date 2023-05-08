@@ -4047,7 +4047,7 @@ __metadata:
     "@types/node": 18.16.3
     apify: 3.1.4
     apify-cli: 0.16.1
-    fingerprint-generator: 2.1.22
+    fingerprint-generator: 2.1.27
     fingerprint-injector: 2.1.22
     playwright: 1.33.0
     proxy-agent: 5.0.0
@@ -11915,7 +11915,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.22, fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.22":
+"fingerprint-generator@npm:2.1.27":
+  version: 2.1.27
+  resolution: "fingerprint-generator@npm:2.1.27"
+  dependencies:
+    generative-bayesian-network: ^2.1.26
+    header-generator: ^2.1.27
+    tslib: ^2.4.0
+  checksum: 731d5553600ce04c9e9893e3a139500892d20f9812b8b8624a1d411ae73e467ebf693508fd1cfe205accf70ee686e6b49bc1937528400f29ea0479b225e45054
+  languageName: node
+  linkType: hard
+
+"fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.22":
   version: 2.1.22
   resolution: "fingerprint-generator@npm:2.1.22"
   dependencies:
@@ -12393,6 +12404,16 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: 6de8e7a7e9d4345da32ed09305ee209beed5cb0883d5dbe7ca884b058a7ce2cd02970244e020b9b1afb9a56a1afd1479d20fed990bb2fbde50e24195898cea13
+  languageName: node
+  linkType: hard
+
+"generative-bayesian-network@npm:^2.1.26":
+  version: 2.1.26
+  resolution: "generative-bayesian-network@npm:2.1.26"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: 118cf6432ddb7288f14e4968893efc47ff3087f0492e3101a8e7198a4b0d82a068c3c15ecfb564847f329dfa08ad09e9b6869a4f35dea0882b5fbd314220690b
   languageName: node
   linkType: hard
 
@@ -13437,6 +13458,18 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: dae7997eff4dacd46cb5e7e8518d4cd0fe077160a65e8b112629c110afd39231096f211ed5993f9e3ecd07c672097d87cec110a2d44b57e8a22b12befec3268d
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^2.1.27":
+  version: 2.1.27
+  resolution: "header-generator@npm:2.1.27"
+  dependencies:
+    browserslist: ^4.21.1
+    generative-bayesian-network: ^2.1.26
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: ecb4a8d31a1c7cbcb9e4d01303dc18bd43364cc4083789059b8cc7512bac2259d106a76c947a38795aefc37247ff4e3a9458fca55d6cb2f527f70390cbadbb6c
   languageName: node
   linkType: hard
 
