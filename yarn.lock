@@ -4048,7 +4048,7 @@ __metadata:
     apify: 3.1.4
     apify-cli: 0.16.1
     fingerprint-generator: 2.1.27
-    fingerprint-injector: 2.1.22
+    fingerprint-injector: 2.1.27
     playwright: 1.33.0
     proxy-agent: 5.0.0
     random-mua: 0.5.0
@@ -11915,7 +11915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.27":
+"fingerprint-generator@npm:2.1.27, fingerprint-generator@npm:^2.1.27":
   version: 2.1.27
   resolution: "fingerprint-generator@npm:2.1.27"
   dependencies:
@@ -11937,7 +11937,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-injector@npm:2.1.22, fingerprint-injector@npm:^2.0.5":
+"fingerprint-injector@npm:2.1.27":
+  version: 2.1.27
+  resolution: "fingerprint-injector@npm:2.1.27"
+  dependencies:
+    fingerprint-generator: ^2.1.27
+    tslib: ^2.4.0
+  peerDependencies:
+    playwright: ^1.22.2
+    puppeteer: ">= 9.x"
+  peerDependenciesMeta:
+    playwright:
+      optional: true
+    puppeteer:
+      optional: true
+  checksum: 6ad87edeae6e46f49c9547ed949427a3eb40986ab1ed0d300c58feff28f0c32352d11977959a589c5fabfd16d87685ea4080f552a5b28e2ee77e22c5575ac14a
+  languageName: node
+  linkType: hard
+
+"fingerprint-injector@npm:^2.0.5":
   version: 2.1.22
   resolution: "fingerprint-injector@npm:2.1.22"
   dependencies:
