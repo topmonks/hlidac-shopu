@@ -5063,9 +5063,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.65.1":
-  version: 3.65.1
-  resolution: "@pulumi/pulumi@npm:3.65.1"
+"@pulumi/pulumi@npm:3.66.0":
+  version: 3.66.0
+  resolution: "@pulumi/pulumi@npm:3.66.0"
   dependencies:
     "@grpc/grpc-js": ^1.3.8
     "@logdna/tail-file": ^2.0.6
@@ -5090,7 +5090,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 7d67a66407b901570dce1e7fc60be980c1d3a46c19eba9992df32cc3ae7fd2fcc52a2fbb48e6b9fd32db6dd9245e3abd2302bcf64ae3b40e4b5dc21c27522d4d
+  checksum: c04e4eabb53de90449eea5510a7c4b8c916e7ffb6378199911b67a670ef777715745d745a17459d2837a8163ec46736e6a03f0de9e00ed1f9423470d961edeb3
   languageName: node
   linkType: hard
 
@@ -13500,7 +13500,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@pulumi/aws": 5.39.0
     "@pulumi/awsx": 1.0.2
-    "@pulumi/pulumi": 3.65.1
+    "@pulumi/pulumi": 3.66.0
     "@rollup/plugin-alias": 5.0.0
     "@rollup/plugin-node-resolve": 15.0.2
     "@rollup/plugin-replace": 5.0.2
