@@ -4049,7 +4049,7 @@ __metadata:
     fingerprint-generator: 2.1.27
     fingerprint-injector: 2.1.27
     playwright: 1.33.0
-    proxy-agent: 6.1.1
+    proxy-agent: 6.1.2
     random-mua: 0.5.0
     tough-cookie: 4.1.2
     uuid: 9.0.0
@@ -6779,7 +6779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-base@npm:^7.0.0, agent-base@npm:^7.0.1":
+"agent-base@npm:^7.0.1":
   version: 7.0.1
   resolution: "agent-base@npm:7.0.1"
   dependencies:
@@ -13761,7 +13761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-agent@npm:^6.0.0, http-proxy-agent@npm:^6.0.1":
+"http-proxy-agent@npm:^6.0.1":
   version: 6.0.1
   resolution: "http-proxy-agent@npm:6.0.1"
   dependencies:
@@ -13823,7 +13823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:^6.0.0, https-proxy-agent@npm:^6.1.0":
+"https-proxy-agent@npm:^6.1.0":
   version: 6.1.0
   resolution: "https-proxy-agent@npm:6.1.0"
   dependencies:
@@ -17634,7 +17634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pac-proxy-agent@npm:^6.0.0":
+"pac-proxy-agent@npm:^6.0.1":
   version: 6.0.1
   resolution: "pac-proxy-agent@npm:6.0.1"
   dependencies:
@@ -18787,19 +18787,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-agent@npm:6.1.1":
-  version: 6.1.1
-  resolution: "proxy-agent@npm:6.1.1"
+"proxy-agent@npm:6.1.2":
+  version: 6.1.2
+  resolution: "proxy-agent@npm:6.1.2"
   dependencies:
-    agent-base: ^7.0.0
+    agent-base: ^7.0.1
     debug: ^4.3.4
-    http-proxy-agent: ^6.0.0
-    https-proxy-agent: ^6.0.0
+    http-proxy-agent: ^6.0.1
+    https-proxy-agent: ^6.1.0
     lru-cache: ^7.14.1
-    pac-proxy-agent: ^6.0.0
+    pac-proxy-agent: ^6.0.1
     proxy-from-env: ^1.1.0
-    socks-proxy-agent: ^8.0.0
-  checksum: cd6fb30bdc75f4b3943435ad35432f0e4e33577b6249ebfd6d39c28bda272e3433c076098bf6510e4c5a00b48d82ba851897f49ea04a76721fab00f7380497a2
+    socks-proxy-agent: ^8.0.1
+  checksum: e01fa1e5c539efc5f6387acd7eb337a97f84204f26a3dacd8910ac21399f494d5067ea976fc9cd65dbc49b7cda0f5bc9716e388aac0f3750f82d085943a6d01b
   languageName: node
   linkType: hard
 
@@ -20694,7 +20694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks-proxy-agent@npm:^8.0.0, socks-proxy-agent@npm:^8.0.1":
+"socks-proxy-agent@npm:^8.0.1":
   version: 8.0.1
   resolution: "socks-proxy-agent@npm:8.0.1"
   dependencies:
