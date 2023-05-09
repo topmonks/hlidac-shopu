@@ -4064,13 +4064,6 @@ __metadata:
     "@types/node": 18.16.5
     apify: 3.1.4
     apify-cli: 0.16.1
-    fingerprint-generator: 2.1.27
-    fingerprint-injector: 2.1.27
-    playwright: 1.33.0
-    proxy-agent: 6.1.2
-    random-mua: 0.5.0
-    tough-cookie: 4.1.2
-    uuid: 9.0.0
   languageName: unknown
   linkType: soft
 
@@ -6797,15 +6790,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-base@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "agent-base@npm:7.0.1"
-  dependencies:
-    debug: ^4.3.4
-  checksum: 38d4eed432734b8115baa2a034ddee618f7a27f273c1d31b374f4cc431ed5c56aae4b66a3e8ffe02747e40fd6b4322daf4b44f77ba4375c543cbdfb89bddebf1
-  languageName: node
-  linkType: hard
-
 "agentkeepalive@npm:^4.2.1":
   version: 4.3.0
   resolution: "agentkeepalive@npm:4.3.0"
@@ -7793,13 +7777,6 @@ __metadata:
     mixin-deep: ^1.2.0
     pascalcase: ^0.1.1
   checksum: a4a146b912e27eea8f66d09cb0c9eab666f32ce27859a7dfd50f38cd069a2557b39f16dba1bc2aecb3b44bf096738dd207b7970d99b0318423285ab1b1994edd
-  languageName: node
-  linkType: hard
-
-"basic-ftp@npm:^5.0.2":
-  version: 5.0.3
-  resolution: "basic-ftp@npm:5.0.3"
-  checksum: 8b04e88eb85a64de9311721bb0707c9cd70453eefdd854cab85438e6f46fb6c597ddad57ed1acf0a9ede3c677b14e657f51051688a5f23d6f3ea7b5d9073b850
   languageName: node
   linkType: hard
 
@@ -9886,13 +9863,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"data-uri-to-buffer@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "data-uri-to-buffer@npm:5.0.1"
-  checksum: 10958f89c0047b84bd86d572b6b77c9bf238ebe7b55a9a9ab04c90fbf5ab1881783b72e31dc0febdffd30ec914930244f2f728e3629bb8911d922baba129426f
-  languageName: node
-  linkType: hard
-
 "date-fns@npm:2.30.0":
   version: 2.30.0
   resolution: "date-fns@npm:2.30.0"
@@ -10177,18 +10147,6 @@ __metadata:
     esprima: ^4.0.0
     vm2: ^3.9.17
   checksum: 99c27c9456095e32c4f6e01091d2b5c249f246b574487c52bca571e1e586b02d4b74a0ea7f22f30cc953c914383d02e2038d7d476a22f2704a8c1e88b671007d
-  languageName: node
-  linkType: hard
-
-"degenerator@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "degenerator@npm:4.0.1"
-  dependencies:
-    ast-types: ^0.13.2
-    escodegen: ^1.8.1
-    esprima: ^4.0.0
-    vm2: ^3.9.17
-  checksum: 6dcb78462a1896724a02bc56bffd420f671b55b09e5e0144ea3db637d4f4743b22747d831bd12ee76d32b17d3dd0899b6a56adae4a2d5f224f86056281baac50
   languageName: node
   linkType: hard
 
@@ -11993,17 +11951,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.27, fingerprint-generator@npm:^2.1.27":
-  version: 2.1.27
-  resolution: "fingerprint-generator@npm:2.1.27"
-  dependencies:
-    generative-bayesian-network: ^2.1.26
-    header-generator: ^2.1.27
-    tslib: ^2.4.0
-  checksum: 731d5553600ce04c9e9893e3a139500892d20f9812b8b8624a1d411ae73e467ebf693508fd1cfe205accf70ee686e6b49bc1937528400f29ea0479b225e45054
-  languageName: node
-  linkType: hard
-
 "fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.22":
   version: 2.1.22
   resolution: "fingerprint-generator@npm:2.1.22"
@@ -12012,24 +11959,6 @@ __metadata:
     header-generator: ^2.1.22
     tslib: ^2.4.0
   checksum: c837581ad640ebfdbae916542e7acc436087837825bf0fe633f83ddf8eb6d278a95599d24603a583867535a26b3dcc7ef704ec734212167c46f1b8ef2f7d955c
-  languageName: node
-  linkType: hard
-
-"fingerprint-injector@npm:2.1.27":
-  version: 2.1.27
-  resolution: "fingerprint-injector@npm:2.1.27"
-  dependencies:
-    fingerprint-generator: ^2.1.27
-    tslib: ^2.4.0
-  peerDependencies:
-    playwright: ^1.22.2
-    puppeteer: ">= 9.x"
-  peerDependenciesMeta:
-    playwright:
-      optional: true
-    puppeteer:
-      optional: true
-  checksum: 6ad87edeae6e46f49c9547ed949427a3eb40986ab1ed0d300c58feff28f0c32352d11977959a589c5fabfd16d87685ea4080f552a5b28e2ee77e22c5575ac14a
   languageName: node
   linkType: hard
 
@@ -12503,16 +12432,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"generative-bayesian-network@npm:^2.1.26":
-  version: 2.1.26
-  resolution: "generative-bayesian-network@npm:2.1.26"
-  dependencies:
-    adm-zip: ^0.5.9
-    tslib: ^2.4.0
-  checksum: 118cf6432ddb7288f14e4968893efc47ff3087f0492e3101a8e7198a4b0d82a068c3c15ecfb564847f329dfa08ad09e9b6869a4f35dea0882b5fbd314220690b
-  languageName: node
-  linkType: hard
-
 "gensync@npm:^1.0.0-beta.2":
   version: 1.0.0-beta.2
   resolution: "gensync@npm:1.0.0-beta.2"
@@ -12603,18 +12522,6 @@ __metadata:
     fs-extra: ^8.1.0
     ftp: ^0.3.10
   checksum: 5325b2906b08ca37529ca421cf52bc50376e75c6a945e0a8064e3f76b4bb67b8ab1e316a2fc7a307c8c606ab36d030720f39a57c97b027ff1134335e12102946
-  languageName: node
-  linkType: hard
-
-"get-uri@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "get-uri@npm:6.0.1"
-  dependencies:
-    basic-ftp: ^5.0.2
-    data-uri-to-buffer: ^5.0.1
-    debug: ^4.3.4
-    fs-extra: ^8.1.0
-  checksum: a8aec70e1c67386fbe67f66e344ecd671a19f4cfc8e0f0e14d070563af5123d540e77fbceb6e26566f29846fac864d2862699ab134d307f85c85e7d72ce23d14
   languageName: node
   linkType: hard
 
@@ -13569,18 +13476,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"header-generator@npm:^2.1.27":
-  version: 2.1.27
-  resolution: "header-generator@npm:2.1.27"
-  dependencies:
-    browserslist: ^4.21.1
-    generative-bayesian-network: ^2.1.26
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: ecb4a8d31a1c7cbcb9e4d01303dc18bd43364cc4083789059b8cc7512bac2259d106a76c947a38795aefc37247ff4e3a9458fca55d6cb2f527f70390cbadbb6c
-  languageName: node
-  linkType: hard
-
 "hlidac-shopu@workspace:.":
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
@@ -13797,16 +13692,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-agent@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "http-proxy-agent@npm:6.0.1"
-  dependencies:
-    agent-base: ^7.0.1
-    debug: ^4.3.4
-  checksum: 59f446ece640828b8265163259b2cca7bf27a141959fb863746cf83a762645983495c0755c8cdd322281c0817185c8e019be9c9a29b3d5208dbdd0e929f47f35
-  languageName: node
-  linkType: hard
-
 "http-proxy@npm:^1.18.1":
   version: 1.18.1
   resolution: "http-proxy@npm:1.18.1"
@@ -13856,16 +13741,6 @@ __metadata:
     agent-base: 6
     debug: 4
   checksum: 571fccdf38184f05943e12d37d6ce38197becdd69e58d03f43637f7fa1269cf303a7d228aa27e5b27bbd3af8f09fd938e1c91dcfefff2df7ba77c20ed8dfc765
-  languageName: node
-  linkType: hard
-
-"https-proxy-agent@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "https-proxy-agent@npm:6.1.0"
-  dependencies:
-    agent-base: ^7.0.1
-    debug: 4
-  checksum: ede8d54fcca7611cc1afeca8d522a43a5ce138e7d8fb393d5c6714ae824e893a35bc8fd261ce5f02ca48ab948e424f0e51be00c1beea1d52ea80cc1257d39ea6
   languageName: node
   linkType: hard
 
@@ -15968,7 +15843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.14.1, lru-cache@npm:^7.5.1, lru-cache@npm:^7.7.1":
+"lru-cache@npm:^7.5.1, lru-cache@npm:^7.7.1":
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
@@ -17670,21 +17545,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pac-proxy-agent@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "pac-proxy-agent@npm:6.0.1"
-  dependencies:
-    agent-base: ^7.0.1
-    debug: ^4.3.4
-    get-uri: ^6.0.1
-    http-proxy-agent: ^6.0.1
-    https-proxy-agent: ^6.1.0
-    pac-resolver: ^6.0.1
-    socks-proxy-agent: ^8.0.1
-  checksum: 8d181dad98f368beb0230f940964912d418913ca6c4f91df828bdebc961a6bcae8028a2e44569aebcd2a6eba1e53073428d5d6af60525168f792eca8c9cf8b05
-  languageName: node
-  linkType: hard
-
 "pac-resolver@npm:^5.0.0":
   version: 5.0.1
   resolution: "pac-resolver@npm:5.0.1"
@@ -17693,17 +17553,6 @@ __metadata:
     ip: ^1.1.5
     netmask: ^2.0.2
   checksum: e3bd8aada70d173cd4cec1ac810fb56161678b7a597060a740c4a31d9c5f8cd95687b2d0fd90b69c0cafe5ef787404074f38042ba08c8d378fed48973f58e493
-  languageName: node
-  linkType: hard
-
-"pac-resolver@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "pac-resolver@npm:6.0.1"
-  dependencies:
-    degenerator: ^4.0.1
-    ip: ^1.1.5
-    netmask: ^2.0.2
-  checksum: e7eaac9524f61d234e9d0c0cf39ff693d705bb5173be41ab346116c00d2d4f63c295f7c1c0437b9840634cd8dc3afe2c2f706c0983fe7891e8bf8d27203c7858
   languageName: node
   linkType: hard
 
@@ -18823,22 +18672,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-agent@npm:6.1.2":
-  version: 6.1.2
-  resolution: "proxy-agent@npm:6.1.2"
-  dependencies:
-    agent-base: ^7.0.1
-    debug: ^4.3.4
-    http-proxy-agent: ^6.0.1
-    https-proxy-agent: ^6.1.0
-    lru-cache: ^7.14.1
-    pac-proxy-agent: ^6.0.1
-    proxy-from-env: ^1.1.0
-    socks-proxy-agent: ^8.0.1
-  checksum: e01fa1e5c539efc5f6387acd7eb337a97f84204f26a3dacd8910ac21399f494d5067ea976fc9cd65dbc49b7cda0f5bc9716e388aac0f3750f82d085943a6d01b
-  languageName: node
-  linkType: hard
-
 "proxy-agent@npm:^5.0.0":
   version: 5.0.0
   resolution: "proxy-agent@npm:5.0.0"
@@ -18864,7 +18697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-from-env@npm:1.1.0, proxy-from-env@npm:^1.0.0, proxy-from-env@npm:^1.1.0":
+"proxy-from-env@npm:1.1.0, proxy-from-env@npm:^1.0.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
   checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
@@ -19106,15 +18939,6 @@ __metadata:
   version: 0.29.0
   resolution: "ramda@npm:0.29.0"
   checksum: 9ab26c06eb7545cbb7eebcf75526d6ee2fcaae19e338f165b2bf32772121e7b28192d6664d1ba222ff76188ba26ab307342d66e805dbb02c860560adc4d5dd57
-  languageName: node
-  linkType: hard
-
-"random-mua@npm:0.5.0":
-  version: 0.5.0
-  resolution: "random-mua@npm:0.5.0"
-  dependencies:
-    suni: ^1.1.0
-  checksum: 6894d5fa1d847c6e668013266f884dec2fd17bd309ed0b8834a7b3eb98ba73a3fa9ba24335add84336b98a1e64a703a482d39937231a1eaa335e86ec75c2fb19
   languageName: node
   linkType: hard
 
@@ -20730,18 +20554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks-proxy-agent@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "socks-proxy-agent@npm:8.0.1"
-  dependencies:
-    agent-base: ^7.0.1
-    debug: ^4.3.4
-    socks: ^2.7.1
-  checksum: f6538fd16cb545094d20b9a1ae97bb2c4ddd150622ad7cc6b64c89c889d8847b7bac179757838ce5487cbac49a499537e3991c975fe13b152b76b10027470dfb
-  languageName: node
-  linkType: hard
-
-"socks@npm:^2.3.3, socks@npm:^2.6.2, socks@npm:^2.7.1":
+"socks@npm:^2.3.3, socks@npm:^2.6.2":
   version: 2.7.1
   resolution: "socks@npm:2.7.1"
   dependencies:
@@ -21587,13 +21400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"suni@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "suni@npm:1.1.0"
-  checksum: 127db0f66a421cc604d5f00f6827d02cefe217f481edcc54613a86ab25c14defa23a6f81abd887d962466446c9d3d7ab28f5359de26e1750d8fb5eb4f3f5bd99
-  languageName: node
-  linkType: hard
-
 "supertap@npm:^3.0.1":
   version: 3.0.1
   resolution: "supertap@npm:3.0.1"
@@ -22151,7 +21957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tough-cookie@npm:4.1.2, tough-cookie@npm:^4.0.0":
+"tough-cookie@npm:^4.0.0":
   version: 4.1.2
   resolution: "tough-cookie@npm:4.1.2"
   dependencies:
@@ -22948,15 +22754,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 56d4e23aa7ac26fa2db6bd1778db34cb8c9f5a10df1770a27167874bf6705fc8f14a4ac414af58a0d96c7653b2bd4848510b29d1c2ef8c91ccb17429c1872b5e
-  languageName: node
-  linkType: hard
-
-"uuid@npm:9.0.0":
-  version: 9.0.0
-  resolution: "uuid@npm:9.0.0"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 

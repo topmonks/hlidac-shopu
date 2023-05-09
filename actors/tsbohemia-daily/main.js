@@ -1,562 +1,184 @@
-import { Actor } from "apify";
-import { Session } from "@crawlee/core";
-import { PlaywrightPlugin, PuppeteerPlugin } from "browser-pool";
-import FingerprintGenerator from "fingerprint-generator";
-import { FingerprintInjector } from "fingerprint-injector";
-import playwright from "playwright";
-import cheerio from "cheerio";
-import { gotScraping } from "got-scraping";
+import { Actor, log, Dataset } from "apify";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { getCheerioObject } from "./scraper.js";
-import { BASE_URL, LABELS } from "./src/const.js";
-import { getRandomInt } from "./src/utils.js";
-import { CaptchaSolver } from "./src/captcha-solver.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
-const { log } = Apify;
-let stats = {
-  categories: 0,
-  pages: 0,
-  pagination: 0,
-  items: 0,
-  itemsSkipped: 0,
-  itemsDuplicity: 0,
-  failed: 0
+/** @enum {string} */
+export const Labels = {
+  START: "START",
+  AFTER_START: "AFTER_START",
+  BF: "BF",
+  PAGE: "PAGE",
+  PRICE: "PRICE",
+  PRICE_START: "PRICE_START"
 };
-const processedIds = new Set();
 
-async function handleStart($, proxyConfiguration, requestQueue) {
-  const categoryIds = [];
-
-  $("a[data-strid]").each(function () {
-    categoryIds.push({
-      id: $(this).data("strid"),
-      name: $(this).text()
-    });
-  });
-
-  for (const category of categoryIds) {
-    const responseCheerio = await getCheerioObject(
+function prepareStartURLs({ type, feedUrl }) {
+  const requestListSources = [];
+  switch (type) {
+    case ActorType.BlackFriday:
       {
-        url: `https://www.tsbohemia.cz/default_jx.asp?show=sptnavigator&strid=${category.id}`
-      },
-      proxyConfiguration
-    );
-    responseCheerio(".level6 > li > a").each(async function () {
-      stats.categories++;
-      const subCatUrl = `${BASE_URL}${responseCheerio(this).attr("href")}`;
-      const finalUrl =
-        subCatUrl.indexOf("https") === -1
-          ? `https://www.tsbohemia.cz/${subCatUrl}`
-          : subCatUrl;
-      const subCategoryId = finalUrl.match("_c(.*).html")[1];
-      await requestQueue.addRequest({
-        url: `${finalUrl}`,
-        userData: {
-          label: LABELS.PAGE,
-          categoryName: category.name,
-          strid: subCategoryId
-        },
-        uniqueKey: Math.random().toString()
-      });
-    });
-  }
-}
-
-async function handleBlackFriday($, requestQueue) {
-  log.info("START BLACK FRIDAY");
-  const categories = [];
-  const tcs = $("ul.level9 a");
-  for (let i = 0; i < tcs.length; i++) {
-    const link = tcs[i];
-    categories.push($(link).attr("href"));
-  }
-  stats.categories += categories.length;
-  // Enqueue category links
-  for (const cat of categories) {
-    log.info(`Adding to the queue ${cat}`);
-    await requestQueue.addRequest({
-      url: cat.indexOf("https") === -1 ? `https://www.tsbohemia.cz${cat}` : cat,
-      userData: {
-        label: LABELS.PAGE,
-        name: "BF"
+        requestListSources.push({
+          userData: { label: Labels.BF },
+          url: "https://www.tsbohemia.cz/-black-friday_c41438.html"
+        });
       }
-    });
-  }
-}
-
-async function handleDetail($, requestQueue, request) {
-  // Check for subcategories
-  const subcategories = $("div.strcont > div.subcats").find("a");
-  if (subcategories.length > 0) {
-    for (const subcat of subcategories) {
-      const link = $(subcat).attr("href");
-      console.log(`${BASE_URL}${link}`);
-      await requestQueue.addRequest({
-        url: `${BASE_URL}${link}`,
+      break;
+    case Labels.PRICE:
+      {
+        requestListSources.push({
+          url: feedUrl,
+          userData: {
+            label: Labels.PRICE_START
+          }
+        });
+      }
+      break;
+    case ActorType.Test: {
+      requestListSources.push({
+        url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
         userData: {
-          label: LABELS.PAGE
+          label: Labels.PAGE,
+          strid: 5622
         }
       });
+      break;
     }
-    log.info(`Adding to the queue ${subcategories.length} subcategories`);
-  } else if (!request.url.includes("page") && $("p.reccount").length !== 0) {
-    // Enqueue pagination pages
-    try {
-      const paginationCount = Math.ceil(
-        parseInt($("p.reccount").first().text()) / 24
-      );
-      for (let i = 2; i <= paginationCount; i++) {
-        await requestQueue.addRequest(
-          {
-            url: `${request.url}?page=${i}#prodlistanchor`,
-            userData: {
-              label: LABELS.PAGE,
-              name: request.userData.name
-            },
-            uniqueKey: Math.random().toString()
-          },
-          { forefront: true }
-        );
-      }
-      log.info(`Adding to the queue ${paginationCount - 1} pagination`);
-      stats.pagination += paginationCount;
-    } catch (e) {
-      log.error(e.message);
-    }
-  }
-
-  const category = $(".navbar li a")
-    .get()
-    .map(x => $(x).text())
-    .splice(1)
-    .join(" > ");
-
-  const products = $(".prodbox").map(function () {
-    try {
-      let $product = $(this);
-      const itemId = $product.data("stiid");
-      const img = $product.find(".img img").first().data("src");
-      const itemUrl = new URL(
-        $product.find("h2 a").first().attr("href"),
-        "https://www.tsbohemia.cz/"
-      ).href;
-      const itemName = $product.find("h2 a").first().text().trim();
-      const sourcePriceData = $product.find(".price").data("price");
-      let priceData = null;
-      if (typeof sourcePriceData === "object") {
-        priceData = sourcePriceData;
-      } else if (
-        typeof sourcePriceData === "string" &&
-        sourcePriceData.length > 0
-      ) {
-        priceData = JSON.parse(sourcePriceData);
-      } else {
-        log.error(typeof sourcePriceData);
-        log.error(sourcePriceData);
-        console.log($product.html());
-      }
-      // Save data to dataset
-      return {
-        itemId,
-        itemUrl,
-        itemName,
-        img,
-        category,
-        currentPrice: priceData.ActualPrice,
-        originalPrice: priceData.OriginalPrice ?? null,
-        discounted: priceData.discount != null,
-        currency: priceData.CurCode
-      };
-    } catch (e) {
-      log.error(e);
-    }
-  });
-
-  // we don't need to block pushes, we will await them all at the end
-  const requests = [];
-  for (const product of products) {
-    // Save data to dataset
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      requests.push(Apify.pushData(product));
-      stats.items++;
-    } else {
-      stats.itemsDuplicity++;
-    }
-  }
-  log.info(`Found ${requests.length} unique products`);
-
-  // await all requests, so we don't end before they end
-  await Promise.all(requests);
-  // Iterate all products and extract data
-  await Apify.utils.sleep(getRandomInt(250, 950));
-}
-
-async function prepareStartURLs(type, requestQueue, feedUrl) {
-  let requestListSources = [];
-  if (type === ActorType.BF) {
-    await requestQueue.addRequest({
-      userData: { label: LABELS.BF },
-      url: "https://www.tsbohemia.cz/-black-friday_c41438.html"
-    });
-  } else if (type === LABELS.PRICE) {
-    const response = await gotScraping({
-      url: feedUrl
-    });
-    const { statusCode, body } = response;
-    if (statusCode !== 200) {
-      log.info(body.toString());
-      throw new Error("Session blocked, retiring.");
-    }
-    const ids = body.toString().replace(/"/g, "").split("\n").slice(1);
-    const uploadBatchSize = 24;
-    let pushedItemsCount = 0;
-
-    for (let i = pushedItemsCount; i < ids.length; i += uploadBatchSize) {
-      const start = i;
-      const end = i + uploadBatchSize;
-      const itemsToPush = ids.slice(start, end);
-
-      await requestQueue.addRequest({
-        url: "https://www.tsbohemia.cz/TsbStoitemPriceList_jx.asp",
-        userData: {
-          label: LABELS.PRICE,
-          ids: itemsToPush
-        },
-        uniqueKey: Math.random().toString()
-      });
-      log.info(`Pushing ${itemsToPush.length} from index ${start} to ${end}`);
-    }
-  } else if (type === ActorType.TEST) {
-    await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/elektronika-televize_c5622.html",
-      userData: {
-        label: LABELS.PAGE,
-        strid: 5622
-      }
-    });
-  } else {
-    await requestQueue.addRequest({
-      url: "https://www.tsbohemia.cz/",
-      userData: {
-        label: LABELS.START
-      }
-    });
   }
   return requestListSources;
 }
 
-Actor.main(async function main() {
+async function main() {
   rollbar.init();
 
   log.info("ACTOR - Start");
-  const input = await Apify.getInput();
   const {
-    development = false,
-    debug = false,
-    maxRequestRetries = 3,
-    maxConcurrency = 6,
     proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.FULL,
-    feedUrl = ""
-  } = input ?? {};
+    type = Labels.PRICE,
+    feedUrl = "https://s3.eu-central-1.amazonaws.com/data.hlidacshopu.cz/app/TSB-ids-december.csv",
+    development
+  } = await getInput();
 
-  log.info(`ACTOR - input: ${JSON.stringify(input)}`);
-  const requestQueue = await Apify.openRequestQueue();
-  const requestListSources = await prepareStartURLs(
-    type,
-    requestQueue,
-    feedUrl
-  );
-  const requestList = await Apify.openRequestList("LIST", requestListSources);
-  // Handle page context
-  const persistState = async () => {
-    await Apify.setValue("STATS", stats).then(() => log.debug("STATS saved!"));
-    log.info(JSON.stringify(stats));
-  };
-  Apify.events.on("persistState", persistState);
+  const stats = await withPersistedStats(x => x, {
+    items: 0,
+    failed: 0
+  });
 
   log.info("ACTOR - setUp crawler");
-  /** @type {ProxyConfiguration} */
-  const proxyConfiguration = await Apify.createProxyConfiguration({
-    groups: proxyGroups
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
   });
 
-  const fingerprintGenerator = new FingerprintGenerator({
-    devices: ["desktop"],
-    browsers: [{ name: "firefox", minVersion: 88 }],
-    operatingSystems: ["linux"]
-  });
-
-  const fingerprintInjector = new FingerprintInjector();
-  const captchaSolver = new CaptchaSolver();
-  // Create crawler
-  const crawler = new Apify.PlaywrightCrawler({
-    requestList,
-    requestQueue,
-    maxRequestRetries,
+  const crawler = new HttpCrawler({
+    maxRequestsPerMinute: 200,
+    maxConcurrency: 10,
     proxyConfiguration,
-    maxConcurrency,
-    handleRequestTimeoutSecs: 300,
-    handlePageTimeoutSecs: 300,
-    navigationTimeoutSecs: 300,
-    launchContext: {
-      launchOptions: {
-        headless: false
-      },
-      launcher: playwright.firefox
-    },
-    useSessionPool: true,
-    preNavigationHooks: [
-      async (context, gotoOptions) => {
-        const { browserController, session, request, page } = context;
-        const cookies = session.getPuppeteerCookies(request.url);
-        const validCookies = cookies.filter(cookie => cookie.name);
-        await browserController.setCookies(page, validCookies);
-
-        await page.route("**/*", (route, request) => {
-          const blockedResources = ["image", "media", "stylesheet", "font"];
-
-          if (blockedResources.includes(request.resourceType())) {
-            return route.abort().catch(() => {});
-          }
-
-          return route.continue().catch(() => {});
-        });
-      }
-    ],
-    postNavigationHooks: [
-      async crawlingContext => {
-        const { response, session, request, page } = crawlingContext;
-        const isCaptcha = response.status() === 403;
-        if (!isCaptcha) {
-          log.info("No captcha");
-          stats.pages++;
-          session.setCookiesFromResponse(response);
-          if (request.userData.label === LABELS.PAGE) {
-            await page.waitForLoadState("networkidle", { timeout: 0 });
-          }
-          return;
-        } else {
-          log.warning("Captcha found");
-          // solve using captcha solver .
-          const [, recaptchaFrame] = await page.frames();
-          await recaptchaFrame.waitForSelector("iframe[src*='/bframe']", {
-            state: "attached",
-            timeout: 60
-          });
-          const findSiteKey = () => {
-            const bframe = document.querySelector("iframe[src*='/bframe']");
-            const url = new URL(bframe.src);
-            return url.searchParams.get("k");
-          };
-
-          const solution = await captchaSolver.getSolution(
-            recaptchaFrame,
-            session.userData.fingerprint.userAgent,
-            findSiteKey
-          );
-          await recaptchaFrame.evaluate(solution => {
-            grecaptcha.getResponse = () => solution;
-            window.captchaCallback();
-          }, solution);
-          // DO not start the robotic logic right after solving
-          await Apify.utils.sleep(10000);
-          // Force the crawler to process the response by saying it is alright
-          response.status = () => 200;
-          log.info("Captcha solved!");
-        }
-      }
-    ],
+    additionalMimeTypes: ["text/csv"],
+    persistCookiesPerSession: true,
     sessionPoolOptions: {
-      maxPoolSize: 12,
-      createSessionFunction: async sessionPool => {
-        const session = new Session({ sessionPool });
-        session.userData.fingerprint =
-          fingerprintGenerator.getFingerprint().fingerprint;
-        return session;
+      sessionOptions: {
+        maxUsageCount: 50
       }
     },
-    // we need custom cookie persistance because of malformed cookie format.
-    persistCookiesPerSession: false,
-    browserPoolOptions: {
-      maxOpenPagesPerBrowser: 2,
-      preLaunchHooks: [
-        (pageId, launchContext) => {
-          const { useIncognitoPages, launchOptions, session } = launchContext;
-          const { fingerprint } = session.userData;
-          launchContext.useIncognitoPages = true;
-
-          if (useIncognitoPages) {
-            return;
-          }
-
-          launchContext.launchOptions = {
-            ...launchOptions,
-            userAgent: fingerprint.userAgent,
-            viewport: {
-              width: fingerprint.screen.width,
-              height: fingerprint.screen.height
-            }
-          };
-        }
-      ],
-      prePageCreateHooks: [
-        (pageId, browserController, pageOptions) => {
-          const { launchContext } = browserController;
-          const { fingerprint } = launchContext.session.userData;
-
-          if (launchContext.useIncognitoPages && pageOptions) {
-            pageOptions.userAgent = fingerprint.userAgent;
-            pageOptions.viewport = {
-              width: fingerprint.screen.width,
-              height: fingerprint.screen.height
-            };
-          }
-        }
-      ],
-      postPageCreateHooks: [
-        async (page, browserController) => {
-          const { browserPlugin, launchContext } = browserController;
-          const { fingerprint } = launchContext.session.userData;
-
-          if (browserPlugin instanceof PlaywrightPlugin) {
-            const { useIncognitoPages, isFingerprintInjected } = launchContext;
-
-            if (isFingerprintInjected) {
-              // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
-              return;
-            }
-            const context = page.context();
-            await fingerprintInjector.attachFingerprintToPlaywright(
-              context,
-              fingerprint
-            );
-
-            if (!useIncognitoPages) {
-              // If not incognitoPages are used we would add the injection script over and over which could cause memory leaks.
-              launchContext.extend({ isFingerprintInjected: true });
-            }
-          } else if (browserPlugin instanceof PuppeteerPlugin) {
-            await fingerprintInjector.attachFingerprintToPuppeteer(
-              page,
-              fingerprint
-            );
-          }
-        }
-      ]
-    },
-    async handlePageFunction({ page, request }) {
-      log.info(
-        `Handling page ${request.url} with label ${request.userData.label}`
-      );
-      if (request.userData.label === LABELS.PAGE) {
-        console.time("is-loaded");
-        await page.waitForSelector(".prodbox .price.is-loaded");
-        console.timeEnd("is-loaded");
-      }
-      const content = await page.content();
-      const $ = cheerio.load(content);
-
+    async requestHandler({ request, log, body, crawler, json }) {
+      log.info(`Processing ${request.url} (${request.userData.label})`);
       switch (request.userData.label) {
-        case LABELS.START:
-          return handleStart($, proxyConfiguration, requestQueue);
-        case LABELS.BF:
-          return handleBlackFriday($, requestQueue);
-        case LABELS.PAGE:
-          return handleDetail($, requestQueue, request, s3);
-      }
-    },
-    // This function is called if the page processing failed more than maxRequestRetries+1 times.
-    async handleFailedRequestFunction({ request }) {
-      log.error(`Request ${request.url} failed ${maxRequestRetries} times`);
-    }
-  });
+        case Labels.PRICE_START:
+          {
+            const ids = body
+              .toString()
+              .split("\n")
+              .slice(1)
+              .map(row => row.replace(/"/g, ""));
+            const uploadBatchSize = 24;
+            let pushedItemsCount = 0;
 
-  const crawlerBasic = new Apify.BasicCrawler({
-    requestQueue,
-    maxConcurrency,
-    maxRequestRetries,
-    async handleRequestFunction(context) {
-      const { request } = context;
-      const { ids } = request.userData;
-      const bodyList = "stiidlist=" + ids.join(",");
+            const requests = [];
+            for (
+              let i = pushedItemsCount;
+              i < ids.length;
+              i += uploadBatchSize
+            ) {
+              const start = i;
+              const end = i + uploadBatchSize;
+              const itemsToPush = ids.slice(start, end);
 
-      const response = await gotScraping({
-        url: "https://www.tsbohemia.cz/TsbStoitemPriceList_jx.asp",
-        responseType: "json",
-        proxyUrl: proxyConfiguration.newUrl(),
-        "headers": {
-          "accept": "*/*",
-          "accept-language": "cs,en-US;q=0.9,en;q=0.8",
-          "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-          "sec-fetch-dest": "empty",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-site": "same-origin",
-          "sec-gpc": "1",
-          "x-requested-with": "XMLHttpRequest",
-          "Referrer-Policy": "strict-origin-when-cross-origin"
-        },
-        "body": bodyList,
-        "method": "POST"
-      });
-      const { statusCode, body } = response;
-      if (statusCode !== 200) {
-        log.info(body.toString());
-        throw new Error("Session blocked, retiring.");
-      }
-      const priceList = body.StoitemPriceList;
-      const prices = [];
-      if (priceList.length > 0) {
-        for (const price of priceList) {
-          const item = {};
-          item.itemId = price.StiId;
-          item.currentPrice = Math.round(
-            (price.StiPrice + price.PriceRef + price.PriceRef2) *
-              (1 + price.TaxRate / 100)
-          );
-          if (price.StiPrice === price.SipPrice0) {
-            item.originalPrice = null;
-            item.discounted = false;
-          } else {
-            item.originalPrice = Math.round(
-              (price.SipPrice0 + price.PriceRef + price.PriceRef2) *
-                (1 + price.TaxRate / 100)
-            );
-            item.discounted = true;
+              requests.push({
+                url: "https://www.tsbohemia.cz/TsbStoitemPriceList_jx.asp",
+                method: "POST",
+                payload: `stiidlist=${itemsToPush.join(",")}`,
+                headers: {
+                  "accept": "*/*",
+                  "accept-language": "cs,en-US;q=0.9,en;q=0.8",
+                  "content-type":
+                    "application/x-www-form-urlencoded; charset=UTF-8",
+                  "sec-fetch-dest": "empty",
+                  "sec-fetch-mode": "cors",
+                  "sec-fetch-site": "same-origin",
+                  "sec-gpc": "1",
+                  "x-requested-with": "XMLHttpRequest",
+                  "Referrer-Policy": "strict-origin-when-cross-origin"
+                },
+                userData: {
+                  label: Labels.PRICE
+                },
+                uniqueKey: itemsToPush.toString()
+              });
+            }
+            await crawler.requestQueue.addRequests(requests);
           }
-          prices.push(item);
-        }
-        await Apify.pushData(prices);
-        log.info(`Found ${prices.length}x items price`);
-        stats.items += prices.length;
+          break;
+        case Labels.PRICE:
+          {
+            const priceList = json.StoitemPriceList;
+            const prices = priceList.map(price => {
+              const item = {};
+              item.itemId = price.StiId;
+              item.currentPrice = Math.round(
+                (price.StiPrice + price.PriceRef + price.PriceRef2) *
+                  (1 + price.TaxRate / 100)
+              );
+              if (price.StiPrice === price.SipPrice0) {
+                item.originalPrice = null;
+                item.discounted = false;
+              } else {
+                item.originalPrice = Math.round(
+                  (price.SipPrice0 + price.PriceRef + price.PriceRef2) *
+                    (1 + price.TaxRate / 100)
+                );
+                item.discounted = true;
+              }
+              return item;
+            });
+            await Dataset.pushData(prices);
+            log.info(`Found ${prices.length}x items price`);
+            stats.add("items", prices.length);
+          }
+          break;
       }
     },
-    async handleFailedRequestFunction({ request }) {
+    async failedRequestHandler({ request, log }) {
       log.error(`Request ${request.url} failed multiple times`, request);
+      stats.inc("failed");
     }
   });
 
-  // Run crawler
+  const startingRequests = prepareStartURLs({ type, feedUrl });
   log.info("ACTOR - Run crawler");
-  if (type === LABELS.PRICE) {
-    await crawlerBasic.run();
-  } else {
-    await crawler.run();
-  }
+  await crawler.run(startingRequests);
 
   log.info("ACTOR - End crawler");
 
-  await Apify.setValue("STATS", stats);
+  await stats.save(true);
   log.debug("STATS saved!");
-  log.info(JSON.stringify(stats));
 
   if (!development) {
-    // calling the keboola upload
     let tableName = "tsbohemia";
-    if (type === LABELS.PRICE) {
+    if (type === Labels.PRICE) {
       tableName = `${tableName}_cz_price`;
     } else if (type === ActorType.BlackFriday) {
       tableName = `${tableName}_bf`;
@@ -565,4 +187,6 @@ Actor.main(async function main() {
   }
 
   log.info("ACTOR - Finished");
-});
+}
+
+await Actor.main(main);
