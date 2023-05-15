@@ -5249,9 +5249,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@puppeteer/browsers@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@puppeteer/browsers@npm:1.1.0"
+"@puppeteer/browsers@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@puppeteer/browsers@npm:1.2.0"
   dependencies:
     debug: 4.3.4
     extract-zip: 2.0.1
@@ -5269,7 +5269,7 @@ __metadata:
       optional: true
   bin:
     browsers: lib/cjs/main-cli.js
-  checksum: 9f7497e5d38552a912444ed41fee0ce7fa2ebb33bbdd89f900e5dc103b01baf9a2d5aed568e7604c20574c90b1447714d8f409c980a32130d6498cf913e519bd
+  checksum: 2dce31ef4b17fd33a2665a751a88cb9f9ba51e7622441e6a5380ccd3b458266721900f80bfe3c259e2f437cc13b68be8d9e2e8e1778bef70562377d917b5d5e1
   languageName: node
   linkType: hard
 
@@ -13603,7 +13603,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
-    puppeteer: 20.1.2
+    puppeteer: 20.2.0
     ramda: 0.29.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -18877,11 +18877,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:20.1.2":
-  version: 20.1.2
-  resolution: "puppeteer-core@npm:20.1.2"
+"puppeteer-core@npm:20.2.0":
+  version: 20.2.0
+  resolution: "puppeteer-core@npm:20.2.0"
   dependencies:
-    "@puppeteer/browsers": 1.1.0
+    "@puppeteer/browsers": 1.2.0
     chromium-bidi: 0.4.7
     cross-fetch: 3.1.5
     debug: 4.3.4
@@ -18892,7 +18892,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: c9570721d54dadbd55138b94bc199dfccd9da6f6d7a0a58f0a7d0792af9099470f114b34274f73396001bdb6ca70f7db5b8aa186a3164b557f50328a47b6aa27
+  checksum: cc8f4799dc757b9235a015cece3c431a3230dad30279d4f0e64f47429e6c9cf93be10a45d13d9de184160d0c930768ab22c17a58f4c1d8383ab4f177f3819c96
   languageName: node
   linkType: hard
 
@@ -18920,14 +18920,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:20.1.2":
-  version: 20.1.2
-  resolution: "puppeteer@npm:20.1.2"
+"puppeteer@npm:20.2.0":
+  version: 20.2.0
+  resolution: "puppeteer@npm:20.2.0"
   dependencies:
-    "@puppeteer/browsers": 1.1.0
+    "@puppeteer/browsers": 1.2.0
     cosmiconfig: 8.1.3
-    puppeteer-core: 20.1.2
-  checksum: b2b9afe422cfb745fccc5805e10c32fda6644dbc123755dac126731d88fcfec26937f0ddfce0a90068477ef25d362bcaebbc33e0504881aa360f223987f43f25
+    puppeteer-core: 20.2.0
+  checksum: b21b35e49625d227b1cf44abbf33c685e603e8eceb5ad7324119b70a40962f9901b7f73042b6ccc368b9a8667a26acc837b1ab671514ad4fbf923c95703485e5
   languageName: node
   linkType: hard
 
