@@ -1,4 +1,4 @@
-import { getInput } from "../common/crawler.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
