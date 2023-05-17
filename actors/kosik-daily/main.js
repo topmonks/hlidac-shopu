@@ -13,7 +13,7 @@ const slug = url => url.substring(1);
 const slugBF = url => new URL(url).pathname.substring(1);
 const listingUrl = ({ url }, fn = slug) =>
   new URL(
-    `/api/web/page/products?${new URLSearchParams({
+    `/api/front/page/products?${new URLSearchParams({
       slug: fn(url),
       limit: 60
     })}`,
