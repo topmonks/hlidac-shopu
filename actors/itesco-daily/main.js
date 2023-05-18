@@ -317,9 +317,25 @@ async function main() {
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
     maxRequestsPerMinute: 500,
-    async requestHandler({ request, body, enqueueLinks }) {
+    async requestHandler({ request, body, enqueueLinks, crawler }) {
       const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
+      const redirectUrl = document
+        .querySelector('[http-equiv="refresh"]')
+        ?.content?.match(/URL='(.+)'/)?.[1];
+      if (redirectUrl) {
+        const url = `${new URL(request.url).origin}${redirectUrl}`;
+        log.info(`Redirecting to ${url}`);
+        await crawler.requestQueue.addRequest(
+          {
+            url,
+            userData: request.userData
+          },
+          { forefront: true }
+        );
+        return;
+      }
+
       switch (request.userData.label) {
         case Labels.Start:
           {
