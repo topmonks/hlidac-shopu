@@ -384,7 +384,7 @@ async function main() {
     proxyConfiguration,
     maxRequestRetries,
     async requestHandler(context) {
-      const { request, page, log, saveSnapshot, body } = context;
+      const { request, log, body } = context;
       const { label } = request.userData;
       log.info("processing page", { url: request.url, label });
 
@@ -410,7 +410,7 @@ async function main() {
             );
             await Dataset.pushData(products);
           }
-          const nextButton = document.querySelector("a.s-load-more__button");
+          const nextButton = document.querySelector(".s-load-more__button");
           if (nextButton) {
             await crawler.requestQueue.addRequest(
               {
