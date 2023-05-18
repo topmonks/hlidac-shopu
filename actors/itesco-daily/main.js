@@ -3,7 +3,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
@@ -312,26 +312,13 @@ async function main() {
     groups: proxyGroups,
     useApifyProxy: !development
   });
-  const crawler = new PlaywrightCrawler({
+  const crawler = new HttpCrawler({
     maxRequestRetries,
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
     maxRequestsPerMinute: 500,
-    browserPoolOptions: {
-      useFingerprints: true,
-      fingerprintOptions: {
-        fingerprintGeneratorOptions: { locales: ["cs-CZ", "sk-SK"] }
-      }
-    },
-    launchContext: {
-      useChrome: true,
-      launchOptions: {
-        javaScriptEnabled: false
-      }
-    },
-    async requestHandler({ request, body, enqueueLinks, page }) {
-      const content = await page.content();
-      const { document } = parseHTML(content);
+    async requestHandler({ request, body, enqueueLinks }) {
+      const { document } = parseHTML(body.toString());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
       switch (request.userData.label) {
         case Labels.Start:

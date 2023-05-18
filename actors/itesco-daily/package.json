@@ -6,10 +6,9 @@
   "description": "This is the itesco actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/playwright": "3.3.2",
+    "@crawlee/http": "3.3.2",
     "@hlidac-shopu/actors-common": "2.2.1",
-    "apify": "3.1.4",
-    "playwright": "1.33.0"
+    "apify": "3.1.4"
   },
   "devDependencies": {
     "@types/node": "18.16.9",
