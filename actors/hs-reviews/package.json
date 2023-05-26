@@ -7,8 +7,8 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.337.0",
-    "@aws-sdk/client-s3": "3.337.0",
+    "@aws-sdk/client-cloudfront": "3.338.0",
+    "@aws-sdk/client-s3": "3.338.0",
     "@crawlee/http": "3.3.2",
     "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.4",
