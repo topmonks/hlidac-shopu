@@ -6329,12 +6329,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.29.1":
-  version: 0.29.1
-  resolution: "@types/ramda@npm:0.29.1"
+"@types/ramda@npm:0.29.2":
+  version: 0.29.2
+  resolution: "@types/ramda@npm:0.29.2"
   dependencies:
-    types-ramda: ^0.29.2
-  checksum: e8473504d62aeb430345d20ef776209f2cc3a7b19e683f1c59130cb0a876556dd88a380bfde01ea64edc7daeac8dad838b7f6693850181039da83132356d78fb
+    types-ramda: ^0.29.3
+  checksum: 152151848a02aca8b7eb7e95e247a10c8e0f12e07d096a25c4c230cc3bd704009670c735737d3f843373a4598869c2b2d6f81e425fa17c762e4b57808400d968
   languageName: node
   linkType: hard
 
@@ -13919,7 +13919,7 @@ __metadata:
     "@types/firefox-webext-browser": 111.0.1
     "@types/node": 18.16.15
     "@types/nunjucks": ^3.2.2
-    "@types/ramda": 0.29.1
+    "@types/ramda": 0.29.2
     "@types/whatwg-url": 11.0.0
     "@typescript-eslint/eslint-plugin": 5.59.7
     "@typescript-eslint/parser": 5.59.7
@@ -22823,12 +22823,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"types-ramda@npm:^0.29.2":
-  version: 0.29.2
-  resolution: "types-ramda@npm:0.29.2"
+"types-ramda@npm:^0.29.3":
+  version: 0.29.3
+  resolution: "types-ramda@npm:0.29.3"
   dependencies:
     ts-toolbelt: ^9.6.0
-  checksum: 0b394d4be7d7f110eff2b3c13fe1a648dc14ac22da2acb5575f6621230d43e6bb1067d5a61b9793ba122efe46cda85b9e5eff7bb23d82ffa436e1f24140fff79
+  checksum: 2efb5182a02b9b11b0fd960c501c8a3c595f7fe82922526872020868a6a98c788b544c6beccb48360f1af9401d0c7f5e0be9b2ca484987f0339a71f48cec6199
   languageName: node
   linkType: hard
 
