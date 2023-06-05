@@ -3550,9 +3550,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.3.2, @crawlee/core@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "@crawlee/core@npm:3.3.2"
+"@crawlee/core@npm:3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/core@npm:3.3.3"
   dependencies:
     "@apify/consts": ^2.11.0
     "@apify/datastructures": ^2.0.0
@@ -3560,9 +3560,9 @@ __metadata:
     "@apify/pseudo_url": ^2.0.14
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.3.3
-    "@crawlee/memory-storage": ^3.3.2
-    "@crawlee/types": ^3.3.2
-    "@crawlee/utils": ^3.3.2
+    "@crawlee/memory-storage": ^3.3.3
+    "@crawlee/types": ^3.3.3
+    "@crawlee/utils": ^3.3.3
     "@sapphire/async-queue": ^1.5.0
     "@types/tough-cookie": ^4.0.2
     "@vladfrangu/async_event_emitter": ^2.0.0
@@ -3577,7 +3577,7 @@ __metadata:
     tough-cookie: ^4.0.0
     tslib: ^2.4.0
     type-fest: ^3.0.0
-  checksum: 6a82d1538793169d776416d9409cf243d9cbecf58231f87fde61645e15cb5c031ab7f4bfedf061431a7d1b6a93e3aa2e80700409508978a7bdf237ecf374c468
+  checksum: b61f9958781ac768fcb8224875dbcd90aee93ae156df6d8c47315f5ab8bc8ae66d5d3d5d8788f52c27fe4999b6767b5eb606c5c8dcc3b95e2941bd152d6d033f
   languageName: node
   linkType: hard
 
@@ -3609,6 +3609,37 @@ __metadata:
     tslib: ^2.4.0
     type-fest: ^3.0.0
   checksum: 4bbc83764437401c2daf732f3092fc36c1484d3272c8cfdb2fa8960c834b421ac3d64a66145c5939b261702edf1d7388dbdec775520857ab3dc8d657a5a041a0
+  languageName: node
+  linkType: hard
+
+"@crawlee/core@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "@crawlee/core@npm:3.3.2"
+  dependencies:
+    "@apify/consts": ^2.11.0
+    "@apify/datastructures": ^2.0.0
+    "@apify/log": ^2.2.8
+    "@apify/pseudo_url": ^2.0.14
+    "@apify/timeout": ^0.3.0
+    "@apify/utilities": ^2.3.3
+    "@crawlee/memory-storage": ^3.3.2
+    "@crawlee/types": ^3.3.2
+    "@crawlee/utils": ^3.3.2
+    "@sapphire/async-queue": ^1.5.0
+    "@types/tough-cookie": ^4.0.2
+    "@vladfrangu/async_event_emitter": ^2.0.0
+    csv-stringify: ^6.2.0
+    fs-extra: ^11.0.0
+    json5: ^2.2.3
+    minimatch: ^9.0.0
+    ow: ^0.28.1
+    stream-chain: ^2.2.5
+    stream-json: ^1.7.4
+    tldts: ^6.0.0
+    tough-cookie: ^4.0.0
+    tslib: ^2.4.0
+    type-fest: ^3.0.0
+  checksum: 6a82d1538793169d776416d9409cf243d9cbecf58231f87fde61645e15cb5c031ab7f4bfedf061431a7d1b6a93e3aa2e80700409508978a7bdf237ecf374c468
   languageName: node
   linkType: hard
 
@@ -3669,6 +3700,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/memory-storage@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/memory-storage@npm:3.3.3"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@crawlee/types": ^3.3.3
+    "@sapphire/async-queue": ^1.5.0
+    "@sapphire/shapeshift": ^3.0.0
+    content-type: ^1.0.4
+    fs-extra: ^11.0.0
+    json5: ^2.2.3
+    mime-types: ^2.1.35
+    proper-lockfile: ^4.1.2
+    tslib: ^2.4.0
+  checksum: e0ab7d8dfaf2c1ae6123b1f5f687e14ce4b4b9da3ce4c90487cbf301553e69357474821c58f6cb164fe360eb37d8b46f1195b039fedf42cf97671ea629fb0a58
+  languageName: node
+  linkType: hard
+
 "@crawlee/playwright@npm:3.3.2":
   version: 3.3.2
   resolution: "@crawlee/playwright@npm:3.3.2"
@@ -3710,6 +3759,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/types@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/types@npm:3.3.3"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: faefe1db34879e5bf653e44499dd5a1677f173a5aa3d865dfb86c37f842ae687ff694a3fb3c005f77cb19aef16b639c14c57577d5473aa96c271866a9719e03e
+  languageName: node
+  linkType: hard
+
 "@crawlee/utils@npm:3.3.2, @crawlee/utils@npm:^3.3.2":
   version: 3.3.2
   resolution: "@crawlee/utils@npm:3.3.2"
@@ -3737,6 +3795,21 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: 20fd9a53fbc1424374f3769d00d096419515c9814f3269ceeeecf626ba3061b6c0ee9f05523f8e18da7f8a0b9610bf2f5cf0e024883f0eecf5bb3fbac7f83e89
+  languageName: node
+  linkType: hard
+
+"@crawlee/utils@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/utils@npm:3.3.3"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@apify/ps-tree": ^1.1.4
+    "@crawlee/types": ^3.3.3
+    cheerio: ^1.0.0-rc.12
+    got-scraping: ^3.2.9
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 87eab7f9aed9614faa5d055a9586ae91b40a967466c45cfcfa9d2ec10f808af7dd73a62086cba7d928663e6c012056720ed5971b87bb08da496f3ffaec7fba65
   languageName: node
   linkType: hard
 
@@ -4754,7 +4827,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
-    "@crawlee/core": 3.3.2
+    "@crawlee/core": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
