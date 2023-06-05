@@ -3506,6 +3506,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/basic@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/basic@npm:3.3.3"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@apify/timeout": ^0.3.0
+    "@apify/utilities": ^2.0.0
+    "@crawlee/core": ^3.3.3
+    "@crawlee/types": ^3.3.3
+    "@crawlee/utils": ^3.3.3
+    got-scraping: ^3.2.9
+    ow: ^0.28.1
+    tslib: ^2.4.0
+    type-fest: ^3.0.0
+  checksum: 2154262b1838e9b9482230ef5fca245dffaa35d8330b0928ef9dbb7f4462053953e036c6fee4db69ed65f5b2ed567adf0c7d00c3cf5d121e677c7431233ea717
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser-pool@npm:^3.3.2":
   version: 3.3.2
   resolution: "@crawlee/browser-pool@npm:3.3.2"
@@ -3550,7 +3568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.3.3":
+"@crawlee/core@npm:3.3.3, @crawlee/core@npm:^3.3.3":
   version: 3.3.3
   resolution: "@crawlee/core@npm:3.3.3"
   dependencies:
@@ -3643,14 +3661,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.3.2":
-  version: 3.3.2
-  resolution: "@crawlee/http@npm:3.3.2"
+"@crawlee/http@npm:3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/http@npm:3.3.3"
   dependencies:
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.0.0
-    "@crawlee/basic": ^3.3.2
-    "@crawlee/types": ^3.3.2
+    "@crawlee/basic": ^3.3.3
+    "@crawlee/types": ^3.3.3
     "@types/content-type": ^1.1.5
     cheerio: ^1.0.0-rc.12
     content-type: ^1.0.4
@@ -3660,7 +3678,7 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
     type-fest: ^3.0.0
-  checksum: 1f88a16bd6fb9a52d4b01a97451005a076740e0cd43d80b6443ccd52c271dc3d1c9047ea1b25fbb3849cfa2a7f8c11146ea4f4c68df30a0ac121a8fda1293bd3
+  checksum: 4a7c4ead3181a9899899b405731997a76f92a4cb7dfb72f90f524dfc39c3cb71dd15cd55968f6273fd6a289ab98d43834c044b78620b479284faeee388239b92
   languageName: node
   linkType: hard
 
@@ -4337,7 +4355,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/aaaauto-daily@workspace:actors/aaaauto-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4380,7 +4398,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza@workspace:actors/alza"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -4422,7 +4440,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/benu-daily@workspace:actors/benu-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4435,7 +4453,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/czc-daily@workspace:actors/czc-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -4449,7 +4467,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4462,7 +4480,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4474,7 +4492,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@crawlee/playwright": 3.3.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
@@ -4489,7 +4507,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4501,7 +4519,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/eva-daily@workspace:actors/eva-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4523,7 +4541,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4537,7 +4555,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": 3.342.0
     "@aws-sdk/client-s3": 3.342.0
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4551,7 +4569,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/iglobus-daily@workspace:actors/iglobus-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4563,7 +4581,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/ikea-scraper@workspace:actors/ikea-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4576,7 +4594,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4588,7 +4606,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kasa-daily@workspace:actors/kasa-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4600,7 +4618,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4612,7 +4630,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4625,7 +4643,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lekarna-daily@workspace:actors/lekarna-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4652,7 +4670,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4664,7 +4682,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mall-daily@workspace:actors/mall-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4680,7 +4698,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4692,7 +4710,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4704,7 +4722,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/notino-daily@workspace:actors/notino-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     apify: 3.1.4
@@ -4715,7 +4733,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     apify: 3.1.4
   languageName: unknown
@@ -4739,7 +4757,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4752,7 +4770,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
@@ -4764,7 +4782,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.16
@@ -4777,7 +4795,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@crawlee/utils": 3.3.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.2
@@ -4802,7 +4820,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tchibo-daily@workspace:actors/tchibo-daily"
   dependencies:
-    "@crawlee/http": 3.3.2
+    "@crawlee/http": 3.3.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.16
     apify: 3.1.4
