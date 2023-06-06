@@ -1,3 +1,5 @@
+import { retry } from "@hlidac-shopu/lib/remoting.mjs";
+
 const token = process.argv[2];
 
 const alreadyBuilt = new Set([
@@ -13,7 +15,7 @@ for (const { id, name } of data.items) {
   const { data: versions } = await fetch(
     `https://api.apify.com/v2/acts/${id}/versions?token=${token}`
   ).then(resp => resp.json());
-  const version = versions.items.map(x => x.versionNumber)[versions.total - 1];
+  const version = versions.items.at(-1).versionNumber;
   console.log("Rebuild", { name, version });
   const params = new URLSearchParams({
     token,
@@ -22,12 +24,17 @@ for (const { id, name } of data.items) {
     useCache: true,
     waitForFinish: 80
   });
-  const resp = await fetch(
-    `https://api.apify.com/v2/acts/${id}/builds?${params}`,
-    { method: "POST" }
+  const resp = await retry(3, () =>
+    fetch(`https://api.apify.com/v2/acts/${id}/builds?${params}`, {
+      method: "POST"
+    })
   );
   if (!resp.ok) {
-    console.error("Failed to rebuild", { name, version, msg: await resp.json() });
+    console.error("Failed to rebuild", {
+      name,
+      version,
+      msg: await resp.json()
+    });
   }
 }
 
