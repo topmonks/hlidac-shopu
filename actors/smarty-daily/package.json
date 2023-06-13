@@ -1,0 +1,21 @@
+{
+  "name": "@hlidac-shopu/smarty-daily",
+  "version": "1.0.0",
+  "description": "",
+  "author": "TopMonks s.r.o. & contributors",
+  "license": "EPL-2.0",
+  "type": "module",
+  "dependencies": {
+    "@hlidac-shopu/actors-common": "2.2.1",
+    "@crawlee/linkedom": "3.4.0",
+    "apify": "3.1.7",
+    "linkedom": "0.14.26"
+  },
+  "devDependencies": {
+    "@types/node": "18.15.11",
+    "apify-cli": "0.15.1"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
