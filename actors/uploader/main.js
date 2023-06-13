@@ -10,7 +10,6 @@ import gzip from "node-gzip";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 import { keboolaUploader } from "./src/uploader.js";
-import { SmartyValidator } from "./src/validators/smartyValidator.js";
 import { mironetValidator } from "./src/validators/mironetValidator.js";
 import { rohlikValidator } from "./src/validators/rohlikValidator.js";
 import { rohlikDetailValidator } from "./src/validators/rohlikDetailValidator.js";
@@ -78,9 +77,6 @@ async function processItems(
     // we can do some transformation here
     let priceFeedOnly = false;
     switch (tableName) {
-      case "smarty-cz":
-        item = SmartyValidator(item);
-        break;
       case "mironet":
         item = mironetValidator(item);
         break;
