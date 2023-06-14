@@ -12,7 +12,7 @@ const LABEL_CUSTOM = {
 
 const baseUrl = "https://www.smarty.cz";
 
-async function crawl() {
+async function main() {
   rollbar.init();
   const crawler = new LinkeDOMCrawler({
     requestHandler: createLinkeDOMRouter({
@@ -75,4 +75,4 @@ async function crawl() {
   await uploadToKeboola("smarty_cz");
 }
 
-await Actor.main(crawl);
+await Actor.main(main);
