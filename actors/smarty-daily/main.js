@@ -4,6 +4,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 
+// Not using Labels from actors-common cause I need two separate labels for listing
 const LABEL_CUSTOM = {
   INDEX: `INDEX`,
   LISTING_PREFLIGHT: `LISTING_PREFLIGHT`,
