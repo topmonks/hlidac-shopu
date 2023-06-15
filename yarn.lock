@@ -4138,18 +4138,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.3.3, @crawlee/utils@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "@crawlee/utils@npm:3.3.3"
+"@crawlee/utils@npm:3.4.0, @crawlee/utils@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@crawlee/utils@npm:3.4.0"
   dependencies:
     "@apify/log": ^2.0.0
     "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.3.3
+    "@crawlee/types": ^3.4.0
     cheerio: ^1.0.0-rc.12
     got-scraping: ^3.2.9
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: 87eab7f9aed9614faa5d055a9586ae91b40a967466c45cfcfa9d2ec10f808af7dd73a62086cba7d928663e6c012056720ed5971b87bb08da496f3ffaec7fba65
+  checksum: 71f6e95e0f4fe936916b378fec36a151006c039b94d7818a63f38ceef8f24ef758f6ea688d81068a57d0bbbc85720c2741aa8acb53c860a89988d7b19b30f928
   languageName: node
   linkType: hard
 
@@ -4168,18 +4168,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@crawlee/utils@npm:3.4.0"
+"@crawlee/utils@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "@crawlee/utils@npm:3.3.3"
   dependencies:
     "@apify/log": ^2.0.0
     "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.4.0
+    "@crawlee/types": ^3.3.3
     cheerio: ^1.0.0-rc.12
     got-scraping: ^3.2.9
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: 71f6e95e0f4fe936916b378fec36a151006c039b94d7818a63f38ceef8f24ef758f6ea688d81068a57d0bbbc85720c2741aa8acb53c860a89988d7b19b30f928
+  checksum: 87eab7f9aed9614faa5d055a9586ae91b40a967466c45cfcfa9d2ec10f808af7dd73a62086cba7d928663e6c012056720ed5971b87bb08da496f3ffaec7fba65
   languageName: node
   linkType: hard
 
@@ -5148,7 +5148,7 @@ __metadata:
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
     "@crawlee/http": 3.4.0
-    "@crawlee/utils": 3.3.3
+    "@crawlee/utils": 3.4.0
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.2
     "@thi.ng/transducers": 8.4.5
@@ -5210,7 +5210,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": 3.350.0
-    "@crawlee/utils": 3.3.3
+    "@crawlee/utils": 3.4.0
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
