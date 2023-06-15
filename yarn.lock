@@ -290,9 +290,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.350.0":
-  version: 3.350.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.350.0"
+"@aws-sdk/client-dynamodb@npm:3.351.0":
+  version: 3.351.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.351.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -333,7 +333,7 @@ __metadata:
     "@smithy/types": ^1.0.0
     tslib: ^2.5.0
     uuid: ^8.3.2
-  checksum: 821a80017f91f167510c38e9ba7231bb0f8f0ab71323c7ee78a862f33328350da2fd9a1f54d088470ff1dd9d00c8e1aaeb9adfb42f444cb01c1fa0c1e057b82e
+  checksum: d2cbe6f392285a9b6a508de7f51e7be367821b02f612d7bb3cf112e1d53eb5432198ef2bfa47efea103fdfcebf3c61c1c1281a766e41fb77da895d0fa1c529c3
   languageName: node
   linkType: hard
 
@@ -1297,12 +1297,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.350.0":
-  version: 3.350.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.350.0"
+"@aws-sdk/util-dynamodb@npm:3.351.0":
+  version: 3.351.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.351.0"
   dependencies:
     tslib: ^2.5.0
-  checksum: 304fcf1a156b4ed85b006082f8cf34006ae19241f20123272bfff99717ac1bf275d173aa2bd31d29ad20666ef3b66304755c76f5d9a8c0a3ae03e594a456ada8
+  checksum: 98f382e9253a4146fdf46ab58b4ebf40c36e80a89e5f31a04419ccf9b90717b8d31bcb4767c9efc4ffd6fc48e331a19b8ed357099c0a8256b80707a1068007b7
   languageName: node
   linkType: hard
 
@@ -4673,10 +4673,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.350.0
+    "@aws-sdk/client-dynamodb": 3.351.0
     "@aws-sdk/client-s3": 3.350.0
     "@aws-sdk/client-sqs": 3.350.0
-    "@aws-sdk/util-dynamodb": 3.350.0
+    "@aws-sdk/util-dynamodb": 3.351.0
     "@hlidac-shopu/lib": 1.3.10
     ava: 5.3.0
     c8: 7.14.0
@@ -5118,7 +5118,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.350.0
+    "@aws-sdk/client-dynamodb": 3.351.0
     "@crawlee/utils": 3.4.0
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
@@ -14687,7 +14687,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.350.0
+    "@aws-sdk/client-dynamodb": 3.351.0
     "@babel/core": 7.22.5
     "@babel/preset-env": 7.22.5
     "@esm-bundle/chai": 4.3.4-fix.0
