@@ -14727,7 +14727,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
-    puppeteer: 20.6.0
+    puppeteer: 20.7.1
     ramda: 0.29.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -20098,9 +20098,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:20.6.0":
-  version: 20.6.0
-  resolution: "puppeteer-core@npm:20.6.0"
+"puppeteer-core@npm:20.7.1":
+  version: 20.7.1
+  resolution: "puppeteer-core@npm:20.7.1"
   dependencies:
     "@puppeteer/browsers": 1.4.1
     chromium-bidi: 0.4.11
@@ -20113,7 +20113,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 6dc7a164c21c5bd39fdf6822bd3379f7068aed8f3a516abd0724a25427e06140f04d1f7e38267c1efa1cb9e398cfce15171341e57626b4c36deb8edc11361df5
+  checksum: d57c586cfbd240f6fa44e776e13c4e6e40d8d3e106ab2cdd436f34e0bd3d187eb8a77c3bc52177c9d1faff0d82700b561f9c372991e1af2cf7a329828268e67d
   languageName: node
   linkType: hard
 
@@ -20141,14 +20141,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:20.6.0":
-  version: 20.6.0
-  resolution: "puppeteer@npm:20.6.0"
+"puppeteer@npm:20.7.1":
+  version: 20.7.1
+  resolution: "puppeteer@npm:20.7.1"
   dependencies:
     "@puppeteer/browsers": 1.4.1
     cosmiconfig: 8.2.0
-    puppeteer-core: 20.6.0
-  checksum: 1dffeb48dc55be80126592fe38b3f8756c682a82874d3da90a871b6b4b9a9dc79575ac02384d0161e60ae52849b562b101d483016b22f19d7cd0ea93a9d024f7
+    puppeteer-core: 20.7.1
+  checksum: 6990e0cff513a854f6761e94194e55498168d46df4a348931b97d30f12423a5347533c1352d8a005c5270a591a430124a87bfe6163d6b75adbfe25b26d6b0d4d
   languageName: node
   linkType: hard
 
