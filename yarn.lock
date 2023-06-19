@@ -9863,14 +9863,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromium-bidi@npm:0.4.11":
-  version: 0.4.11
-  resolution: "chromium-bidi@npm:0.4.11"
+"chromium-bidi@npm:0.4.12":
+  version: 0.4.12
+  resolution: "chromium-bidi@npm:0.4.12"
   dependencies:
     mitt: 3.0.0
   peerDependencies:
     devtools-protocol: "*"
-  checksum: 6511aa8ea80be273e822de589bd40fabdfc156efd497177447c257ca87a0ade97d551153bb12e8063268feff114333b77d19fad120e2df0ee0e6c873cd14bcb3
+  checksum: 8cbffd8d51a07eb05338217e48b06d53143bb4106f8798daecda48a0a86d3c8c5544bff4aa90ef146de41c2527cd5cbe13481ecdf962b4ab61eb32b1231d8607
   languageName: node
   linkType: hard
 
@@ -14778,7 +14778,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
-    puppeteer: 20.7.1
+    puppeteer: 20.7.2
     ramda: 0.29.0
     rollbar: 2.26.1
     source-map-explorer: 2.5.3
@@ -20173,12 +20173,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:20.7.1":
-  version: 20.7.1
-  resolution: "puppeteer-core@npm:20.7.1"
+"puppeteer-core@npm:20.7.2":
+  version: 20.7.2
+  resolution: "puppeteer-core@npm:20.7.2"
   dependencies:
     "@puppeteer/browsers": 1.4.1
-    chromium-bidi: 0.4.11
+    chromium-bidi: 0.4.12
     cross-fetch: 3.1.6
     debug: 4.3.4
     devtools-protocol: 0.0.1135028
@@ -20188,7 +20188,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: d57c586cfbd240f6fa44e776e13c4e6e40d8d3e106ab2cdd436f34e0bd3d187eb8a77c3bc52177c9d1faff0d82700b561f9c372991e1af2cf7a329828268e67d
+  checksum: 4260a1c4f04325319864354a0f5bb78635c44900ececab56b0da969c816aa5645d23c5975fcd121220173b4689000e7b57d7254c1652a6d0d8d84782bce31f47
   languageName: node
   linkType: hard
 
@@ -20216,14 +20216,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:20.7.1":
-  version: 20.7.1
-  resolution: "puppeteer@npm:20.7.1"
+"puppeteer@npm:20.7.2":
+  version: 20.7.2
+  resolution: "puppeteer@npm:20.7.2"
   dependencies:
     "@puppeteer/browsers": 1.4.1
     cosmiconfig: 8.2.0
-    puppeteer-core: 20.7.1
-  checksum: 6990e0cff513a854f6761e94194e55498168d46df4a348931b97d30f12423a5347533c1352d8a005c5270a591a430124a87bfe6163d6b75adbfe25b26d6b0d4d
+    puppeteer-core: 20.7.2
+  checksum: 6504a37a07b24927ba4e4ed2340766b7a2b2b56c4a80b3c4bf012ca72ff0cf1e2cb2a55c4187100bfca09ec3b41cb553c793889784305f953f63b7aef14fb073
   languageName: node
   linkType: hard
 
