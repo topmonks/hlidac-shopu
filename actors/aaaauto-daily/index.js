@@ -98,9 +98,9 @@ export function extractPrice(string) {
  * @param {string} country
  */
 function parseProducts(document, country) {
-  const offers = document.querySelectorAll(".card");
+  const offers = document.querySelectorAll(".card:has(a.fullSizeLink)");
   return offers.map(item => {
-    const link = item.querySelector("a.fullSizeLink").getAttribute("href");
+    const link = item.querySelector("a.fullSizeLink").href;
     const figure = item.querySelector("figure");
     const url = new URL(link);
     const itemId = url.searchParams.get("id");
