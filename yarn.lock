@@ -6141,9 +6141,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.72.2":
-  version: 3.72.2
-  resolution: "@pulumi/pulumi@npm:3.72.2"
+"@pulumi/pulumi@npm:3.73.0":
+  version: 3.73.0
+  resolution: "@pulumi/pulumi@npm:3.73.0"
   dependencies:
     "@grpc/grpc-js": ^1.3.8
     "@logdna/tail-file": ^2.0.6
@@ -6160,15 +6160,15 @@ __metadata:
     ini: ^2.0.0
     js-yaml: ^3.14.0
     minimist: ^1.2.6
-    normalize-package-data: ^2.4.0
+    normalize-package-data: ^3.0.0
     read-package-tree: ^5.3.1
     require-from-string: ^2.0.1
-    semver: ^6.1.0
+    semver: ^7.5.2
     source-map-support: ^0.5.6
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 0e07a1da65e871348d8c918696c4a258359cc9e269bdff69c7350dec4177fead64243097194bb24b2ea0413b20358b7304959ab6aa4cd945978a4515790f6871
+  checksum: 371083ad34d4233dd98bd9e2670713b7b34d488187d83223f49ee1df47cad0f79f9eb59aa41fa3c89911345c62aae88ced7a7617b3fee8943a6e759492ffb89b
   languageName: node
   linkType: hard
 
@@ -14751,7 +14751,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@pulumi/aws": 5.41.0
     "@pulumi/awsx": 1.0.2
-    "@pulumi/pulumi": 3.72.2
+    "@pulumi/pulumi": 3.73.0
     "@rollup/plugin-alias": 5.0.0
     "@rollup/plugin-node-resolve": 15.1.0
     "@rollup/plugin-replace": 5.0.2
@@ -21532,6 +21532,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 2d266937756689a76f124ffb4c1ea3e1bbb2b263219f90ada8a11aebebe1280b13bb76cca2ca96bdee3dbc554cbc0b24752eb895b2a51577aa644427e9229f2b
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.2":
+  version: 7.5.3
+  resolution: "semver@npm:7.5.3"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 9d58db16525e9f749ad0a696a1f27deabaa51f66e91d2fa2b0db3de3e9644e8677de3b7d7a03f4c15bc81521e0c3916d7369e0572dbde250d9bedf5194e2a8a7
   languageName: node
   linkType: hard
 
