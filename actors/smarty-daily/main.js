@@ -76,21 +76,19 @@ async function main() {
           log.error(`errorPage`, { html: document.innerHTML });
           return;
         }
-        const products = [];
-        document.querySelectorAll(`.item`).forEach((el) => {
+        const products = Array.from(document.querySelectorAll(`.item`)).map((el) => {
           const productJson = JSON.parse(el.getAttribute(`data-gaItem`));
           const urlRel = el.getAttribute(`data-url`);
-          const product = {
+          return {
             itemId: el.querySelector(`.icon.compare`).getAttribute(`data-id`),
             itemUrl: `${baseUrl}${urlRel}`,
             itemName: productJson.name,
             currentPrice: productJson.fullPrice,
-            originalPrice: el.querySelector(`.buy .price .d .o`) && cleanPriceText(el.querySelector(`.buy .price .d .o`)?.textContent),
+            originalPrice: el.querySelector(`.buy .price .d .o`) && parseFloat(cleanPriceText(el.querySelector(`.buy .price .d .o`)?.textContent)),
             currency: `CZK`,
             img: el.querySelector(`picture img`)?.getAttribute(`src`),
             inStock: productJson.available.includes(`Skladem`)
           };
-          products.push(product);
         });
         stats.add(`items`, products.length);
         await Actor.pushData(products);
@@ -105,7 +103,7 @@ async function main() {
   if (type === ActorType.Full) {
     await crawler.run([{ url: `${baseUrl}/Feed/Sitemap/Producers`, label: LABEL_CUSTOM.INDEX }]);
   } else if (type === ActorType.Test) {
-    await crawler.run([{ url: `${baseUrl}/Vyrobce/samsung#us=1&s=n&pg=all`, label: LABEL.LISTING }])
+    await crawler.run([{ url: `${baseUrl}/Vyrobce/samsung#us=1&s=n&pg=all`, label: LABEL.LISTING }]);
   } else {
     throw new Error(`Unknown actor type ${type}, supported types are ${ActorType.Full} and ${ActorType.Test}`);
   }
