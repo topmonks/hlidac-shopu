@@ -3,6 +3,9 @@ import { LinkeDOMCrawler, createLinkeDOMRouter } from "@crawlee/linkedom";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 // Not using Labels from actors-common cause I need two separate labels for listing
 const LABEL_CUSTOM = {
@@ -15,7 +18,28 @@ const baseUrl = "https://www.smarty.cz";
 
 async function main() {
   rollbar.init();
+
+  const {
+    development,
+    type = ActorType.Full,
+    proxyGroups,
+    maxRequestRetries,
+  } = await getInput();
+
+  const stats = await withPersistedStats(x => x, {
+    categories: 0, // in this actor, categories are brands
+    items: 0,
+    failed: 0
+  });
+
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups,
+    useApifyProxy: !development
+  });
+
   const crawler = new LinkeDOMCrawler({
+    proxyConfiguration,
+    maxRequestRetries,
     requestHandler: createLinkeDOMRouter({
       [LABEL_CUSTOM.INDEX]: async ({ window: { document }, crawler }) => {
         const urls = Array.from(document.querySelectorAll(`url loc`)).map((el) => el.innerText);
@@ -26,6 +50,7 @@ async function main() {
           url: `${url}#us=1&s=n&pg=all`,
           label: LABEL_CUSTOM.LISTING_PREFLIGHT
         })));
+        stats.add(`categories`, brandsUrls.length);
       },
       [LABEL_CUSTOM.LISTING_PREFLIGHT]: async ({ window: { document }, crawler }) => {
         const producerId = document.querySelector(`#fId`).value;
@@ -67,13 +92,27 @@ async function main() {
           };
           products.push(product);
         });
+        stats.add(`items`, products.length);
         await Actor.pushData(products);
       }
-    })
+    }),
+    failedRequestHandler({ request, log }, error) {
+      log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
+      stats.inc("failed");
+    }
   });
-  await crawler.run([{ url: `${baseUrl}/Feed/Sitemap/Producers`, label: LABEL_CUSTOM.INDEX }]);
-  // await crawler.run([{ url: `${baseUrl}/Vyrobce/samsung#us=1&s=n&pg=all`, label: LABEL.LISTING }]) // for testing
-  await uploadToKeboola("smarty_cz");
+
+  if (type === ActorType.Full) {
+    await crawler.run([{ url: `${baseUrl}/Feed/Sitemap/Producers`, label: LABEL_CUSTOM.INDEX }]);
+  } else if (type === ActorType.Test) {
+    await crawler.run([{ url: `${baseUrl}/Vyrobce/samsung#us=1&s=n&pg=all`, label: LABEL.LISTING }])
+  } else {
+    throw new Error(`Unknown actor type ${type}, supported types are ${ActorType.Full} and ${ActorType.Test}`);
+  }
+
+  if (!development) {
+    await uploadToKeboola("smarty_cz");
+  }
 }
 
 await Actor.main(main);
