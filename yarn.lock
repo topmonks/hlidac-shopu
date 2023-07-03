@@ -4597,6 +4597,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:^1.8.16":
+  version: 1.8.17
+  resolution: "@grpc/grpc-js@npm:1.8.17"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.0
+    "@types/node": ">=12.12.47"
+  checksum: 0ac8cd7342a33d7e507ec0ebb470721ae84eb964fd164e4b7b829cb35774c09df158124cbce859d9398c9a015f0e29d2308a3a17be35d54e030a7dc091e7e9a4
+  languageName: node
+  linkType: hard
+
 "@grpc/proto-loader@npm:^0.7.0":
   version: 0.7.6
   resolution: "@grpc/proto-loader@npm:0.7.6"
@@ -6141,11 +6151,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.73.0":
-  version: 3.73.0
-  resolution: "@pulumi/pulumi@npm:3.73.0"
+"@pulumi/pulumi@npm:3.74.0":
+  version: 3.74.0
+  resolution: "@pulumi/pulumi@npm:3.74.0"
   dependencies:
-    "@grpc/grpc-js": ^1.3.8
+    "@grpc/grpc-js": ^1.8.16
     "@logdna/tail-file": ^2.0.6
     "@opentelemetry/api": ^1.2.0
     "@opentelemetry/exporter-zipkin": ^1.6.0
@@ -6161,6 +6171,7 @@ __metadata:
     js-yaml: ^3.14.0
     minimist: ^1.2.6
     normalize-package-data: ^3.0.0
+    pkg-dir: ^7.0.0
     read-package-tree: ^5.3.1
     require-from-string: ^2.0.1
     semver: ^7.5.2
@@ -6168,7 +6179,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 371083ad34d4233dd98bd9e2670713b7b34d488187d83223f49ee1df47cad0f79f9eb59aa41fa3c89911345c62aae88ced7a7617b3fee8943a6e759492ffb89b
+  checksum: f0b2fefa5d23fc226a2000c55a7863f853d386d67ad64a3ddebb09986c0b367789046b7517287da4c2dc4c5c16a16c587b3c5b1f59202c79483797a604dc0634
   languageName: node
   linkType: hard
 
@@ -14762,7 +14773,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@pulumi/aws": 5.41.0
     "@pulumi/awsx": 1.0.2
-    "@pulumi/pulumi": 3.73.0
+    "@pulumi/pulumi": 3.74.0
     "@rollup/plugin-alias": 5.0.0
     "@rollup/plugin-node-resolve": 15.1.0
     "@rollup/plugin-replace": 5.0.2
@@ -19360,6 +19371,15 @@ __metadata:
     find-up: ^6.0.0
     load-json-file: ^7.0.0
   checksum: 6da0c064a74f6c7ae80d7d68c5853e14f7e762a2a80c6ca9e0aa827002b90b69c86fefe3bac830b10a6f1739e7f96a1f728637f2a141e50b0fdafe92a2c3eab6
+  languageName: node
+  linkType: hard
+
+"pkg-dir@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pkg-dir@npm:7.0.0"
+  dependencies:
+    find-up: ^6.3.0
+  checksum: 94298b20a446bfbbd66604474de8a0cdd3b8d251225170970f15d9646f633e056c80520dd5b4c1d1050c9fed8f6a9e5054b141c93806439452efe72e57562c03
   languageName: node
   linkType: hard
 
