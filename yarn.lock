@@ -6210,7 +6210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/instrumentation@npm:0.32.0":
+"@opentelemetry/instrumentation@npm:0.32.0, @opentelemetry/instrumentation@npm:^0.32.0":
   version: 0.32.0
   resolution: "@opentelemetry/instrumentation@npm:0.32.0"
   dependencies:
@@ -6452,14 +6452,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.74.0":
-  version: 3.74.0
-  resolution: "@pulumi/pulumi@npm:3.74.0"
+"@pulumi/pulumi@npm:3.75.0":
+  version: 3.75.0
+  resolution: "@pulumi/pulumi@npm:3.75.0"
   dependencies:
     "@grpc/grpc-js": ^1.8.16
     "@logdna/tail-file": ^2.0.6
     "@opentelemetry/api": ^1.2.0
     "@opentelemetry/exporter-zipkin": ^1.6.0
+    "@opentelemetry/instrumentation": ^0.32.0
     "@opentelemetry/instrumentation-grpc": ^0.32.0
     "@opentelemetry/resources": ^1.6.0
     "@opentelemetry/sdk-trace-base": ^1.6.0
@@ -6480,7 +6481,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: f0b2fefa5d23fc226a2000c55a7863f853d386d67ad64a3ddebb09986c0b367789046b7517287da4c2dc4c5c16a16c587b3c5b1f59202c79483797a604dc0634
+  checksum: 48e201e1161d3370ed9b02e527019a7bbe7e4bee11e5140d1b803ea642a49cd61084111c75d65fbc3b3991e48d057f053ae6770782b23693a8f3b5794a5bb28d
   languageName: node
   linkType: hard
 
@@ -15157,7 +15158,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@pulumi/aws": 5.42.0
     "@pulumi/awsx": 1.0.2
-    "@pulumi/pulumi": 3.74.0
+    "@pulumi/pulumi": 3.75.0
     "@rollup/plugin-alias": 5.0.0
     "@rollup/plugin-node-resolve": 15.1.0
     "@rollup/plugin-replace": 5.0.2
