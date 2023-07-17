@@ -4953,7 +4953,7 @@ __metadata:
     "@types/node": 18.16.18
     apify: 3.1.7
     apify-cli: 0.16.2
-    playwright: 1.35.1
+    playwright: 1.36.1
   languageName: unknown
   linkType: soft
 
@@ -5062,7 +5062,7 @@ __metadata:
     apify: 3.1.7
     apify-cli: 0.16.2
     got-scraping: 3.2.13
-    playwright: 1.35.1
+    playwright: 1.36.1
   languageName: unknown
   linkType: soft
 
@@ -5312,7 +5312,7 @@ __metadata:
     "@types/node": 18.16.18
     apify: 3.1.7
     apify-cli: 0.16.2
-    playwright: 1.35.1
+    playwright: 1.36.1
   languageName: unknown
   linkType: soft
 
@@ -5400,7 +5400,7 @@ __metadata:
     "@types/node": 18.16.18
     apify: 3.1.7
     apify-cli: 0.16.2
-    playwright: 1.35.1
+    playwright: 1.36.1
   languageName: unknown
   linkType: soft
 
@@ -19720,23 +19720,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.35.1":
-  version: 1.35.1
-  resolution: "playwright-core@npm:1.35.1"
+"playwright-core@npm:1.36.1":
+  version: 1.36.1
+  resolution: "playwright-core@npm:1.36.1"
   bin:
     playwright-core: cli.js
-  checksum: 179abc0051f00474e528935b507fa8cedc986b2803b020d7679878ba28cdd7036ad5a779792aad2ad281f8dc625eb1d2fb77663cb8de0d20c7ffbda7c18febdd
+  checksum: bbde807294053b50f0dbbc81f0dacc43fe525830ce1526e6ca74012582dd1645eae2391719cfb020051abea90704057cfabcbfe45ca530b37becc491e9459790
   languageName: node
   linkType: hard
 
-"playwright@npm:1.35.1":
-  version: 1.35.1
-  resolution: "playwright@npm:1.35.1"
+"playwright@npm:1.36.1":
+  version: 1.36.1
+  resolution: "playwright@npm:1.36.1"
   dependencies:
-    playwright-core: 1.35.1
+    playwright-core: 1.36.1
   bin:
     playwright: cli.js
-  checksum: 46e8ad6d4429acd8e6c8e680ed8107b13c62a22bb95172666411aedb8e9abd8f9c379e4905493a330e29c3dcf63b9a49a528f2f081d682d9f5da078c54760634
+  checksum: 21940ccd174eb03a52b13e26dc7e0e90db05298caeab1dd71d21e996b65d959b82aa133f3c9fafb99b5e0bd37265338802d3fbcee1b567e0f75212ddbde5ebae
   languageName: node
   linkType: hard
 
