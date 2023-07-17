@@ -5222,7 +5222,7 @@ __metadata:
     "@lit/reactive-element": 1.6.2
     "@open-wc/testing": 3.2.0
     "@web/test-runner": 0.16.1
-    "@web/test-runner-junit-reporter": 0.6.0
+    "@web/test-runner-junit-reporter": 0.6.1
     chart.js: 4.3.0
     chartjs-adapter-date-fns: 3.0.0
     lit: 2.7.6
@@ -7766,6 +7766,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/browser-logs@npm:^0.3.2":
+  version: 0.3.3
+  resolution: "@web/browser-logs@npm:0.3.3"
+  dependencies:
+    errorstacks: ^2.2.0
+  checksum: 08db1332f7151e8e0fb1ed61e6e10f736e44f5c9675423f3af0c24f3a764560ea115e956cf3a4d9cd7a0826c0126accf966ebdb0bfa25a72c7e79da47b2cee3b
+  languageName: node
+  linkType: hard
+
 "@web/config-loader@npm:^0.2.1":
   version: 0.2.1
   resolution: "@web/config-loader@npm:0.2.1"
@@ -7862,6 +7871,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-chrome@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@web/test-runner-chrome@npm:0.14.0"
+  dependencies:
+    "@web/test-runner-core": ^0.11.2
+    "@web/test-runner-coverage-v8": ^0.7.0
+    async-mutex: 0.4.0
+    chrome-launcher: ^0.15.0
+    puppeteer-core: ^20.0.0
+  checksum: bb02e6d7ecc606f316e64d70f0047fa3fc9e1a5cb7e3311d3547e6a4101ff69fff1fc49064d537e15dcc1f4cfc87c6a058fcbb1fd7ae97fd6aab841c8abf4d64
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-commands@npm:^0.7.0":
   version: 0.7.0
   resolution: "@web/test-runner-commands@npm:0.7.0"
@@ -7906,6 +7928,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-core@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "@web/test-runner-core@npm:0.11.2"
+  dependencies:
+    "@babel/code-frame": ^7.12.11
+    "@types/babel__code-frame": ^7.0.2
+    "@types/co-body": ^6.1.0
+    "@types/convert-source-map": ^2.0.0
+    "@types/debounce": ^1.2.0
+    "@types/istanbul-lib-coverage": ^2.0.3
+    "@types/istanbul-reports": ^3.0.0
+    "@web/browser-logs": ^0.3.2
+    "@web/dev-server-core": ^0.5.1
+    chokidar: ^3.4.3
+    cli-cursor: ^3.1.0
+    co-body: ^6.1.0
+    convert-source-map: ^2.0.0
+    debounce: ^1.2.0
+    dependency-graph: ^0.11.0
+    globby: ^11.0.1
+    ip: ^1.1.5
+    istanbul-lib-coverage: ^3.0.0
+    istanbul-lib-report: ^3.0.0
+    istanbul-reports: ^3.0.2
+    log-update: ^4.0.0
+    nanocolors: ^0.2.1
+    nanoid: ^3.1.25
+    open: ^8.0.2
+    picomatch: ^2.2.2
+    source-map: ^0.7.3
+  checksum: 1a0fb3c26500200535d2a0c438ed4515f8d2137272803724c758bb3b92310f95819e2d7928f10e47928fe99767be03bd1045eca7e11c360f0446b71f45445540
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-coverage-v8@npm:^0.6.0":
   version: 0.6.0
   resolution: "@web/test-runner-coverage-v8@npm:0.6.0"
@@ -7919,15 +7975,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:0.6.0":
-  version: 0.6.0
-  resolution: "@web/test-runner-junit-reporter@npm:0.6.0"
+"@web/test-runner-coverage-v8@npm:^0.7.0":
+  version: 0.7.1
+  resolution: "@web/test-runner-coverage-v8@npm:0.7.1"
   dependencies:
-    "@web/test-runner-chrome": ^0.13.0
+    "@web/test-runner-core": ^0.11.0
+    istanbul-lib-coverage: ^3.0.0
+    lru-cache: ^8.0.4
+    picomatch: ^2.2.2
+    v8-to-istanbul: ^9.0.1
+  checksum: 317b11502b1378097598458a54054353fdb94d3bf9e0954daa9a3b1dcc1f0664032cd18f48292e763b890a132a980f5a5ead6555c33e9fb064d0ca960a884292
+  languageName: node
+  linkType: hard
+
+"@web/test-runner-junit-reporter@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@web/test-runner-junit-reporter@npm:0.6.1"
+  dependencies:
+    "@web/test-runner-chrome": ^0.14.0
     "@web/test-runner-core": ^0.11.0
     array-flat-polyfill: ^1.0.1
     xml: ^1.0.1
-  checksum: 13a3829c773b70d1572649fd888ac69c964f9bdb0dfd41b37f2d7c03f51fc87bb9ee2acaf026880567616d183d185ce828913a2dc098ea8560ad13ef81e12010
+  checksum: fb7ce15c6f50f05f44de7adaeb9788c7bf61996a407cfcb7d25a12786c713ccc1c9b734f361801d6a337248e3c53cf85cbf7e23e688463528c12d22484ce1c00
   languageName: node
   linkType: hard
 
@@ -8834,6 +8903,15 @@ __metadata:
   version: 1.0.6
   resolution: "async-each@npm:1.0.6"
   checksum: d237e8c39348d5f1441edbd3893692912afbacaf83a2ccce8978ebeea804529a8838654b12208fbbc08c8b0411a1248948ee9bf9291ebe1921aabd5b613bc5db
+  languageName: node
+  linkType: hard
+
+"async-mutex@npm:0.4.0":
+  version: 0.4.0
+  resolution: "async-mutex@npm:0.4.0"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 813a71728b35a4fbfd64dba719f04726d9133c67b577fcd951b7028c4a675a13ee34e69beb82d621f87bf81f5d4f135c4c44be0448550c7db728547244ef71fc
   languageName: node
   linkType: hard
 
@@ -20538,7 +20616,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:20.8.2":
+"puppeteer-core@npm:20.8.2, puppeteer-core@npm:^20.0.0":
   version: 20.8.2
   resolution: "puppeteer-core@npm:20.8.2"
   dependencies:
