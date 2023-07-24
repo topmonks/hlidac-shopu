@@ -3538,24 +3538,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/basic@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/basic@npm:3.4.1"
-  dependencies:
-    "@apify/log": ^2.0.0
-    "@apify/timeout": ^0.3.0
-    "@apify/utilities": ^2.0.0
-    "@crawlee/core": ^3.4.1
-    "@crawlee/types": ^3.4.1
-    "@crawlee/utils": ^3.4.1
-    got-scraping: ^3.2.9
-    ow: ^0.28.1
-    tslib: ^2.4.0
-    type-fest: ^3.0.0
-  checksum: 402b69ac2798736afba6659eb0467b0383410f937ffffb660d325d67de5be22e693434e07e8f27f87ede2508ddb260fe346c04493228cea02c3bb29c8444f898
-  languageName: node
-  linkType: hard
-
 "@crawlee/basic@npm:^3.4.2":
   version: 3.4.2
   resolution: "@crawlee/basic@npm:3.4.2"
@@ -3574,13 +3556,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/browser-pool@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/browser-pool@npm:3.4.1"
+"@crawlee/browser-pool@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@crawlee/browser-pool@npm:3.4.2"
   dependencies:
     "@apify/log": ^2.0.0
     "@apify/timeout": ^0.3.0
-    "@crawlee/types": ^3.4.1
+    "@crawlee/types": ^3.4.2
     fingerprint-generator: ^2.0.6
     fingerprint-injector: ^2.0.5
     lodash.merge: ^4.6.2
@@ -3599,22 +3581,22 @@ __metadata:
       optional: true
     puppeteer:
       optional: true
-  checksum: 6903715f6caba20fbf458235c945d07bc7a2ca3b0097199a9bf18d9d558c1ca6e1c7cb702ad1f88aa1595f98f5b20f0fe5a0ba387c9ede92977bec885c17022c
+  checksum: 3297964a64edbfe4a9a884b84d12a03b084394fe066b58c18d633f74bc87204c3ebb32a5d82d87bf937bf03429604ac2de7cbd488218b5fcb67b690ab8f35e13
   languageName: node
   linkType: hard
 
-"@crawlee/browser@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/browser@npm:3.4.1"
+"@crawlee/browser@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@crawlee/browser@npm:3.4.2"
   dependencies:
     "@apify/timeout": ^0.3.0
-    "@crawlee/basic": ^3.4.1
-    "@crawlee/browser-pool": ^3.4.1
-    "@crawlee/types": ^3.4.1
-    "@crawlee/utils": ^3.4.1
+    "@crawlee/basic": ^3.4.2
+    "@crawlee/browser-pool": ^3.4.2
+    "@crawlee/types": ^3.4.2
+    "@crawlee/utils": ^3.4.2
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: 9210ea3964929414417736122fbcbb85e99e23fc61f7f5b8e98df907aaeadd19175746f28fc1596b4957e0ad11f34d6873ff96b290908a46b1a6cd1e330a25bc
+  checksum: d98765d9eb5f516521259e1db6a3f2b48ddb27ef49e63c9dda09164700de95af0db7d520300315ee515e0f76319ec3c8072e6a7c7262c56fac87b53f242511cd
   languageName: node
   linkType: hard
 
@@ -3680,37 +3662,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/core@npm:3.4.1"
-  dependencies:
-    "@apify/consts": ^2.11.0
-    "@apify/datastructures": ^2.0.0
-    "@apify/log": ^2.2.8
-    "@apify/pseudo_url": ^2.0.14
-    "@apify/timeout": ^0.3.0
-    "@apify/utilities": ^2.3.3
-    "@crawlee/memory-storage": ^3.4.1
-    "@crawlee/types": ^3.4.1
-    "@crawlee/utils": ^3.4.1
-    "@sapphire/async-queue": ^1.5.0
-    "@types/tough-cookie": ^4.0.2
-    "@vladfrangu/async_event_emitter": ^2.0.0
-    csv-stringify: ^6.2.0
-    fs-extra: ^11.0.0
-    json5: ^2.2.3
-    minimatch: ^9.0.0
-    ow: ^0.28.1
-    stream-chain: ^2.2.5
-    stream-json: ^1.7.4
-    tldts: ^6.0.0
-    tough-cookie: ^4.0.0
-    tslib: ^2.4.0
-    type-fest: ^3.0.0
-  checksum: 6d0c39d8fd845ed577209e533adbb51f1ec0bc42109a4d15a5803181845b82047a9afca335ab07514ea8cd488d8931423f40cc4427e45c1dd0912edfeb244f76
-  languageName: node
-  linkType: hard
-
 "@crawlee/http@npm:3.4.2":
   version: 3.4.2
   resolution: "@crawlee/http@npm:3.4.2"
@@ -3751,24 +3702,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/memory-storage@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/memory-storage@npm:3.4.1"
-  dependencies:
-    "@apify/log": ^2.0.0
-    "@crawlee/types": ^3.4.1
-    "@sapphire/async-queue": ^1.5.0
-    "@sapphire/shapeshift": ^3.0.0
-    content-type: ^1.0.4
-    fs-extra: ^11.0.0
-    json5: ^2.2.3
-    mime-types: ^2.1.35
-    proper-lockfile: ^4.1.2
-    tslib: ^2.4.0
-  checksum: 8a676851d2ad3f0163503a9284e759f9650b553243acaaf2617ae1c77b5ff417bb0698d65006b35c22631eab7391711a0604c9fc951685b8c66376601fe71ac2
-  languageName: node
-  linkType: hard
-
 "@crawlee/memory-storage@npm:^3.4.2":
   version: 3.4.2
   resolution: "@crawlee/memory-storage@npm:3.4.2"
@@ -3787,16 +3720,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/playwright@npm:3.4.1":
-  version: 3.4.1
-  resolution: "@crawlee/playwright@npm:3.4.1"
+"@crawlee/playwright@npm:3.4.2":
+  version: 3.4.2
+  resolution: "@crawlee/playwright@npm:3.4.2"
   dependencies:
     "@apify/datastructures": ^2.0.0
     "@apify/log": ^2.0.0
-    "@crawlee/browser": ^3.4.1
-    "@crawlee/browser-pool": ^3.4.1
-    "@crawlee/types": ^3.4.1
-    "@crawlee/utils": ^3.4.1
+    "@crawlee/browser": ^3.4.2
+    "@crawlee/browser-pool": ^3.4.2
+    "@crawlee/types": ^3.4.2
+    "@crawlee/utils": ^3.4.2
     cheerio: ^1.0.0-rc.12
     jquery: ^3.6.0
     ow: ^0.28.1
@@ -3806,7 +3739,7 @@ __metadata:
   peerDependenciesMeta:
     playwright:
       optional: true
-  checksum: f1abda1f14255546abf34a4d0e1991e96f6bd60336c1c10c031f61ee7efa3302a8850baccdc45fb7ea0c5ed040e859b9469232c940788322db5c3786d0fffe77
+  checksum: e8f24467ba44ad60723483c610cdba080de2bd16b947e692a5ad3b4bb387a688c06772a8c45bcfc64eb18525201bb45eb62e11e18ded90d29ea868ed0866043d
   languageName: node
   linkType: hard
 
@@ -3837,7 +3770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.4.1, @crawlee/utils@npm:^3.4.1":
+"@crawlee/utils@npm:3.4.1":
   version: 3.4.1
   resolution: "@crawlee/utils@npm:3.4.1"
   dependencies:
@@ -4598,7 +4531,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
   dependencies:
-    "@crawlee/playwright": 3.4.1
+    "@crawlee/playwright": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -4708,7 +4641,7 @@ __metadata:
   resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
   dependencies:
     "@crawlee/http": 3.4.2
-    "@crawlee/playwright": 3.4.1
+    "@crawlee/playwright": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.19
     apify: 3.1.7
@@ -4958,7 +4891,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
-    "@crawlee/playwright": 3.4.1
+    "@crawlee/playwright": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
     "@types/node": 18.16.19
@@ -5047,7 +4980,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@crawlee/playwright": 3.4.1
+    "@crawlee/playwright": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.19
     apify: 3.1.7
