@@ -353,19 +353,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.373.0":
-  version: 3.373.0
-  resolution: "@aws-sdk/client-s3@npm:3.373.0"
+"@aws-sdk/client-s3@npm:3.374.0":
+  version: 3.374.0
+  resolution: "@aws-sdk/client-s3@npm:3.374.0"
   dependencies:
     "@aws-crypto/sha1-browser": 3.0.0
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
     "@aws-sdk/client-sts": 3.370.0
     "@aws-sdk/credential-provider-node": 3.370.0
-    "@aws-sdk/hash-stream-node": 3.370.0
+    "@aws-sdk/hash-stream-node": 3.374.0
     "@aws-sdk/middleware-bucket-endpoint": 3.370.0
     "@aws-sdk/middleware-expect-continue": 3.370.0
-    "@aws-sdk/middleware-flexible-checksums": 3.370.0
+    "@aws-sdk/middleware-flexible-checksums": 3.374.0
     "@aws-sdk/middleware-host-header": 3.370.0
     "@aws-sdk/middleware-location-constraint": 3.370.0
     "@aws-sdk/middleware-logger": 3.370.0
@@ -411,7 +411,7 @@ __metadata:
     "@smithy/util-waiter": ^1.0.1
     fast-xml-parser: 4.2.5
     tslib: ^2.5.0
-  checksum: 38455e6d1ff3d0d0db0295f73607629ddb4ce96a94c21218548b3a8ed8c0983f9fcd2cb8b7fce2d9861eafa77aae14e196dd6dc1efd25ce9f5c13edf7c51d8b5
+  checksum: 19f02e92eb85827555379cde72479de92928d8180a1e2902e9ea515821d860336d8653544e907702cb72ec54da4b7f7fd6db8df91761e62a55246e54fb068884
   languageName: node
   linkType: hard
 
@@ -688,23 +688,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/hash-stream-node@npm:3.370.0":
-  version: 3.370.0
-  resolution: "@aws-sdk/hash-stream-node@npm:3.370.0"
+"@aws-sdk/hash-stream-node@npm:3.374.0":
+  version: 3.374.0
+  resolution: "@aws-sdk/hash-stream-node@npm:3.374.0"
   dependencies:
-    "@aws-sdk/types": 3.370.0
-    "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/hash-stream-node": ^1.0.1
     tslib: ^2.5.0
-  checksum: 97add2caadb15f5b6cbc551801dc672ba6e3664667c9be53c794cca9a1be827df932ac40148bae0e7586b6f7bebb2483257501d3c9e946dd1ba7fbb31a29de33
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/is-array-buffer@npm:3.310.0":
-  version: 3.310.0
-  resolution: "@aws-sdk/is-array-buffer@npm:3.310.0"
-  dependencies:
-    tslib: ^2.5.0
-  checksum: ddd1536ad16e29186fb5055bc279cfe9790b7c32552e1ee21e31d4e410e1df297b06c94c6117f854ec368d29e60a231dd8cc77e5b604a6260e7602876fd047f8
+  checksum: ffbdb1abdcbd06b1290e8d056321ee586310fc8ce4a822d9fe5f9f5445c4adf2da64f88d335a58e0959952e7301f3ff235ee353ceb4e4cb2a5b2905a220ffb70
   languageName: node
   linkType: hard
 
@@ -747,9 +737,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-flexible-checksums@npm:3.370.0":
-  version: 3.370.0
-  resolution: "@aws-sdk/middleware-flexible-checksums@npm:3.370.0"
+"@aws-sdk/middleware-flexible-checksums@npm:3.374.0":
+  version: 3.374.0
+  resolution: "@aws-sdk/middleware-flexible-checksums@npm:3.374.0"
   dependencies:
     "@aws-crypto/crc32": 3.0.0
     "@aws-crypto/crc32c": 3.0.0
@@ -759,7 +749,7 @@ __metadata:
     "@smithy/types": ^1.1.0
     "@smithy/util-utf8": ^1.0.1
     tslib: ^2.5.0
-  checksum: b8af3c7beda3baa8290735f98f97476108304fb96d522fb27a0d449d4e82262c0cc66d59f36688067ad073714653cf88050a73acfa5d6ba5f3e90f645778bced
+  checksum: b238feda82ffc98b99fa8bed0d9ff932852ef1aaebbec8c4dfa3ad16f9b0d26f63436f0e460df516edd6672134799a06311ca1efc91ee547e5fe9017ebf0f3a0
   languageName: node
   linkType: hard
 
@@ -946,16 +936,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-buffer-from@npm:3.310.0":
-  version: 3.310.0
-  resolution: "@aws-sdk/util-buffer-from@npm:3.310.0"
-  dependencies:
-    "@aws-sdk/is-array-buffer": 3.310.0
-    tslib: ^2.5.0
-  checksum: 9c3bd9c0664a0cbb5270eb285a662274bb9c46ae0d79e0275a85e74659a4b1f094bab900994780fd70dd0152dc6d2d33a8bc681d87f3911fa48eae9f6c3558d6
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/util-dynamodb@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/util-dynamodb@npm:3.370.0"
@@ -1019,16 +999,6 @@ __metadata:
   dependencies:
     tslib: ^2.3.1
   checksum: b6a1e580da1c9b62c749814182a7649a748ca4253edb4063aa521df97d25b76eae3359eb1680b86f71aac668e05cc05c514379bca39ebf4ba998ae4348412da8
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/util-utf8@npm:3.310.0":
-  version: 3.310.0
-  resolution: "@aws-sdk/util-utf8@npm:3.310.0"
-  dependencies:
-    "@aws-sdk/util-buffer-from": 3.310.0
-    tslib: ^2.5.0
-  checksum: 4045e79b8e3593e12233b359ba77d1b4c162fd9fcb4ab3b58b711c41b725552306dd91402b8d57ce5be080c76309f046a7a0c4ff704d12f9ba71e3b25b810086
   languageName: node
   linkType: hard
 
@@ -4511,7 +4481,7 @@ __metadata:
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
     "@aws-sdk/client-dynamodb": 3.370.0
-    "@aws-sdk/client-s3": 3.373.0
+    "@aws-sdk/client-s3": 3.374.0
     "@aws-sdk/client-sqs": 3.370.0
     "@aws-sdk/util-dynamodb": 3.370.0
     "@hlidac-shopu/lib": 1.3.10
@@ -4529,7 +4499,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
-    "@aws-sdk/client-s3": 3.373.0
+    "@aws-sdk/client-s3": 3.374.0
     "@hlidac-shopu/lib": 1.3.10
   languageName: unknown
   linkType: soft
@@ -4652,7 +4622,7 @@ __metadata:
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
     "@aws-sdk/client-cloudfront": 3.370.0
-    "@aws-sdk/client-s3": 3.373.0
+    "@aws-sdk/client-s3": 3.374.0
     "@crawlee/http": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.16.19
@@ -6398,6 +6368,17 @@ __metadata:
     "@smithy/util-utf8": ^1.0.2
     tslib: ^2.5.0
   checksum: 018ef3271c60e7c8df07c4b5f77b52010a8a6be53e9da3f7e361cda48a6df6f5a52870a7721110338725e83b88d5ef120c2312334b6618f3dfdf80d4e0725cab
+  languageName: node
+  linkType: hard
+
+"@smithy/hash-stream-node@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "@smithy/hash-stream-node@npm:1.0.2"
+  dependencies:
+    "@smithy/types": ^1.1.1
+    "@smithy/util-utf8": ^1.0.2
+    tslib: ^2.5.0
+  checksum: 106879ce4f5d41f090ae60f10a9d86455718901d04579d316cc4ce9e4bcbe21a6ea018552d30436b632e98a92f372748ecfe1cee345548c9cbdf2335d1965d67
   languageName: node
   linkType: hard
 
