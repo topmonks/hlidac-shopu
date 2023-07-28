@@ -4540,7 +4540,7 @@ __metadata:
     "@types/node": 18.17.0
     apify: 3.1.8
     apify-cli: 0.18.0
-    got-scraping: 3.2.13
+    got-scraping: 3.2.15
   languageName: unknown
   linkType: soft
 
@@ -4566,7 +4566,7 @@ __metadata:
     "@types/node": 18.17.0
     apify: 3.1.8
     apify-cli: 0.18.0
-    got-scraping: 3.2.13
+    got-scraping: 3.2.15
     playwright: 1.36.2
   languageName: unknown
   linkType: soft
@@ -4756,7 +4756,7 @@ __metadata:
     "@types/node": 18.17.0
     apify: 3.1.8
     apify-cli: 0.18.0
-    got-scraping: 3.2.13
+    got-scraping: 3.2.15
     graphql: 16.7.1
     graphql-tag: 2.12.6
   languageName: unknown
@@ -14591,7 +14591,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got-scraping@npm:3.2.13, got-scraping@npm:^3.2.9":
+"got-scraping@npm:3.2.15":
+  version: 3.2.15
+  resolution: "got-scraping@npm:3.2.15"
+  dependencies:
+    got-cjs: 12.5.4
+    header-generator: ^2.1.3
+    http2-wrapper: ^2.1.11
+    mimic-response: ^3.1.0
+    ow: ^0.28.1
+    quick-lru: ^5.1.1
+    tslib: ^2.4.0
+  checksum: 49ede7c4a539cb01eb46f2d4f163c4554fd022cd35be6bee6b3506a0991069dfa577dae4e1c758832eb308294cdcbfde396c84362ba7bf3de8fdb117b4d48422
+  languageName: node
+  linkType: hard
+
+"got-scraping@npm:^3.2.9":
   version: 3.2.13
   resolution: "got-scraping@npm:3.2.13"
   dependencies:
