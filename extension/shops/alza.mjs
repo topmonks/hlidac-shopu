@@ -32,9 +32,7 @@ function getDetailInfo() {
         .pricecatalog1 .c2
       `);
 
-  const imageUrl = document.querySelector("#imgMain").dataset["src"];
-
-  return { itemId, title, currentPrice, originalPrice, imageUrl };
+  return { itemId, title, currentPrice, originalPrice };
 }
 
 function getDailySlasherInfo() {
@@ -83,9 +81,8 @@ function getDetailItemInfo() {
   const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
   const currentPrice = cleanPrice(".price-box__price");
   const originalPrice = cleanPrice(".price-box__compare-price");
-  const imageUrl = document.querySelector("#imgMain").dataset["src"];
 
-  return { itemId, title, currentPrice, originalPrice, imageUrl };
+  return { itemId, title, currentPrice, originalPrice };
 }
 
 export class Alza extends Shop {
