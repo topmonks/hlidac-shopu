@@ -258,9 +258,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.379.1":
-  version: 3.379.1
-  resolution: "@aws-sdk/client-cloudfront@npm:3.379.1"
+"@aws-sdk/client-cloudfront@npm:3.380.0":
+  version: 3.380.0
+  resolution: "@aws-sdk/client-cloudfront@npm:3.380.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -302,7 +302,7 @@ __metadata:
     "@smithy/util-waiter": ^2.0.1
     fast-xml-parser: 4.2.5
     tslib: ^2.5.0
-  checksum: 34c3d1358d86ac5a88ff75d45ea6e65842e28f144e7fe83e97f5df5aeeb2e37edb3dbd857a898e6bbc25b1f1537b80a95496a0e46b688910434edc37e57b257a
+  checksum: 96283ceb1168d3ae10b2ce1f73504863e5d3087383441127e9a10a1036e115992de97de4985d4b22e16c1fc722fd555e50ad549cdfe8719f46e37d64486ca4ef
   languageName: node
   linkType: hard
 
@@ -4618,7 +4618,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": 3.379.1
+    "@aws-sdk/client-cloudfront": 3.380.0
     "@aws-sdk/client-s3": 3.379.1
     "@crawlee/http": 3.4.2
     "@hlidac-shopu/actors-common": 2.2.1
