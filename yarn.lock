@@ -4939,7 +4939,7 @@ __metadata:
     "@material/top-app-bar": 14.0.0
     "@thi.ng/atom": 5.2.3
     eslint: 8.45.0
-    eslint-config-prettier: 8.8.0
+    eslint-config-prettier: 8.9.0
     eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
     eslint-plugin-lit: 1.8.3
@@ -12690,14 +12690,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:8.8.0":
-  version: 8.8.0
-  resolution: "eslint-config-prettier@npm:8.8.0"
+"eslint-config-prettier@npm:8.9.0":
+  version: 8.9.0
+  resolution: "eslint-config-prettier@npm:8.9.0"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 1e94c3882c4d5e41e1dcfa2c368dbccbfe3134f6ac7d40101644d3bfbe3eb2f2ffac757f3145910b5eacf20c0e85e02b91293d3126d770cbf3dc390b3564681c
+  checksum: a675d0dabd76b700ef2d062b5ec6a634e105a8e8c070f95281fd2ccb614527fac60b4c758132058c50f0521fd19313f1f5be45ce9ebf081f2e5f77ae6eb7d8db
   languageName: node
   linkType: hard
 
@@ -15278,7 +15278,7 @@ __metadata:
     dotenv-cli: 7.2.1
     esbuild: 0.18.17
     eslint: 8.45.0
-    eslint-config-prettier: 8.8.0
+    eslint-config-prettier: 8.9.0
     eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
     eslint-plugin-lit: 1.8.3
