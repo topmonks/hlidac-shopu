@@ -3609,7 +3609,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.5.0":
+"@crawlee/core@npm:3.5.0, @crawlee/core@npm:^3.5.0":
   version: 3.5.0
   resolution: "@crawlee/core@npm:3.5.0"
   dependencies:
@@ -3668,37 +3668,6 @@ __metadata:
     tslib: ^2.4.0
     type-fest: ^4.0.0
   checksum: beb78e2ee6992cb60b057a5769db77069e14847f67a0f13e5e273b731520472d601676a8216046600030baa9c97b7d7fcb53bb6bf54aeb675ac25144810e9cb5
-  languageName: node
-  linkType: hard
-
-"@crawlee/core@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "@crawlee/core@npm:3.5.0"
-  dependencies:
-    "@apify/consts": ^2.20.0
-    "@apify/datastructures": ^2.0.0
-    "@apify/log": ^2.4.0
-    "@apify/pseudo_url": ^2.0.30
-    "@apify/timeout": ^0.3.0
-    "@apify/utilities": ^2.7.10
-    "@crawlee/memory-storage": ^3.5.0
-    "@crawlee/types": ^3.5.0
-    "@crawlee/utils": ^3.5.0
-    "@sapphire/async-queue": ^1.5.0
-    "@types/tough-cookie": ^4.0.2
-    "@vladfrangu/async_event_emitter": ^2.2.2
-    csv-stringify: ^6.2.0
-    fs-extra: ^11.0.0
-    json5: ^2.2.3
-    minimatch: ^9.0.0
-    ow: ^0.28.1
-    stream-chain: ^2.2.5
-    stream-json: ^1.7.4
-    tldts: ^6.0.0
-    tough-cookie: ^4.0.0
-    tslib: ^2.4.0
-    type-fest: ^4.0.0
-  checksum: 3d4109dbe87c2dfe8962f4f796e38bd9108647770db805243596c63e8e0246c0898f98c7454dc1d27053cfe14747cc23ab91609316192dac5e8faa2823aaf9c7
   languageName: node
   linkType: hard
 
@@ -3828,22 +3797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.4.2, @crawlee/utils@npm:^3.4.2":
-  version: 3.4.2
-  resolution: "@crawlee/utils@npm:3.4.2"
-  dependencies:
-    "@apify/log": ^2.0.0
-    "@apify/ps-tree": ^1.1.4
-    "@crawlee/types": ^3.4.2
-    cheerio: ^1.0.0-rc.12
-    got-scraping: ^3.2.9
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 9e462b83b19c268a9b156f937c2661aaeab7fd5c56727dbbf955c8fc24cadbd01957bc0edd67a4d93d95e46b8bce1529b1695ba3a4634b17eddff47902a66aeb
-  languageName: node
-  linkType: hard
-
-"@crawlee/utils@npm:^3.5.0":
+"@crawlee/utils@npm:3.5.0, @crawlee/utils@npm:^3.5.0":
   version: 3.5.0
   resolution: "@crawlee/utils@npm:3.5.0"
   dependencies:
@@ -3855,6 +3809,21 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: f86b33e6332da47dff6a4d99d3bb868bbcd469b4f544f4ff0330f559c80338168224d9e5114a05051a2797d0ef4b9b6eb89af00c9675ca40395d04dc6dc0abe5
+  languageName: node
+  linkType: hard
+
+"@crawlee/utils@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@crawlee/utils@npm:3.4.2"
+  dependencies:
+    "@apify/log": ^2.0.0
+    "@apify/ps-tree": ^1.1.4
+    "@crawlee/types": ^3.4.2
+    cheerio: ^1.0.0-rc.12
+    got-scraping: ^3.2.9
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 9e462b83b19c268a9b156f937c2661aaeab7fd5c56727dbbf955c8fc24cadbd01957bc0edd67a4d93d95e46b8bce1529b1695ba3a4634b17eddff47902a66aeb
   languageName: node
   linkType: hard
 
@@ -4994,7 +4963,7 @@ __metadata:
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
     "@crawlee/http": 3.5.0
-    "@crawlee/utils": 3.4.2
+    "@crawlee/utils": 3.5.0
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.3
     "@thi.ng/transducers": 8.4.7
@@ -5056,7 +5025,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": 3.379.1
-    "@crawlee/utils": 3.4.2
+    "@crawlee/utils": 3.5.0
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
