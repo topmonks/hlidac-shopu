@@ -112,7 +112,7 @@ function handleProductDetail({ processedIds, stats }) {
     );
     const originalPrice = cleanPriceText(
       document.querySelector(`.price-before, .superPrice__old__price`)
-        .textContent
+        ?.textContent ?? ""
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
     const breadcrumbs = data
