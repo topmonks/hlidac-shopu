@@ -4,7 +4,10 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
+import {
+  parseFloatText,
+  saveUniqProducts
+} from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
@@ -111,9 +114,11 @@ function handleProductDetail({ processedIds, stats }) {
     const { id: itemId } = document.querySelector(
       "[componentname='catalog.product']"
     );
-    const originalPrice = cleanPriceText(
-      document.querySelector(`.price-before, .superPrice__old__price`)
-        ?.textContent ?? ""
+    const originalPrice = parseFloatText(
+      cleanPriceText(
+        document.querySelector(`.price-before, .superPrice__old__price`)
+          ?.textContent ?? ""
+      )
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
     const breadcrumbs = data
