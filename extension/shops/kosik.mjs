@@ -34,15 +34,15 @@ export class Kosik extends StatefulShop {
     try {
       const data = {};
       data.itemId = elem
-        .querySelector("[itemprop=productID]")
-        .getAttribute("content");
-      data.title = elem.querySelector("[itemprop=name]").textContent;
+        .querySelector('[id^="product-detail-"]')
+        .id.match(/\d+/)[0];
+      data.title = elem.querySelector(".product-name").textContent;
       data.currentPrice = cleanPriceText(
-        elem.querySelector("[itemprop=price]").textContent
+        elem.querySelector(".product-price").textContent
       );
       data.originalPrice = cleanPrice(".product-header-box s");
       data.imageUrl = elem
-        .querySelector("[itemprop=image] img")
+        .querySelector("[data-tid=product-detail__product-image] img")
         .getAttribute("srcset")
         .split(",")
         .pop()
