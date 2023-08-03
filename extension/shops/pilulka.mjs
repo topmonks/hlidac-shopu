@@ -1,21 +1,23 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Pilulka extends Shop {
+export class Pilulka extends AsyncShop {
   get injectionPoint() {
-    return ["beforeend", ".product-detail__reduced h1+div+div"];
+    return ["afterend", ".service-detail__basket-box"];
+  }
+
+  get waitForSelector() {
+    return ".service-detail__basket-box";
   }
 
   async scrape() {
-    const title = document.querySelector(".product-detail__header").innerText;
-    const priceContainer = document.querySelector("div.js-product-prev");
-    const itemId = priceContainer.attributes["data-product-id"].textContent;
-    const currentPrice = cleanPrice(`.js-product-price-${itemId}`);
-    const originalPrice = cleanPrice(
-      document.querySelector(`.js-product-price-${itemId}`).nextElementSibling
-    );
-    const imageUrl = document.querySelector(".product-detail__images--img")
-      .dataset["src"];
+    const data = JSON.parse(document.querySelector("script[type='application/ld+json']").textContent);
+    const product = data.find(x => x["@type"] === "Product");
+    const title = product?.name;
+    const itemId = document.querySelector("[componentname='catalog.product']").id;
+    const currentPrice = product?.offers?.price;
+    const originalPrice = cleanPrice(`.price-before, .superPrice__old__price`);
+    const imageUrl = product?.image?.[0];
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
