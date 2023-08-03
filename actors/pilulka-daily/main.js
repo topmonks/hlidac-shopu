@@ -81,6 +81,11 @@ function handleProductsSitemap() {
   };
 }
 
+function toArray(o) {
+  if (Array.isArray(o)) return o;
+  return [o];
+}
+
 function handleProductDetail({ processedIds, stats }) {
   /** @param {HttpCrawlingContext} context */
   return async function ({ body, log, response }) {
@@ -88,9 +93,11 @@ function handleProductDetail({ processedIds, stats }) {
     const itemUrl = response.url;
     log.debug("Extracting product data", { url: itemUrl });
     const { document } = parseHTML(body.toString());
-    const data = JSON.parse(
-      document.querySelector("script[type='application/ld+json']")
-        ?.textContent ?? "[]"
+    const data = toArray(
+      JSON.parse(
+        document.querySelector("script[type='application/ld+json']")
+          ?.textContent ?? "[]"
+      )
     );
     const product = data.find(x => x["@type"] === "Product");
     const title = product?.name;
