@@ -33,6 +33,7 @@ function getDetailInfo() {
       `);
 
   return { itemId, title, currentPrice, originalPrice };
+
 }
 
 function getDailySlasherInfo() {
