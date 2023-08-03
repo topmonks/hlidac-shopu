@@ -101,5 +101,11 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{d6f0f975-91a3-4d78-96f7-5f1859ad18b6}",
+      "strict_min_version": "109.0"
+    }
+  }
 }
