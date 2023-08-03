@@ -8,7 +8,7 @@ import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { cleanPrice } from "@hlidac-shopu/extension/helpers.mjs";
+import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
 
@@ -110,8 +110,9 @@ function handleProductDetail({ processedIds, stats }) {
     const { id: itemId } = document.querySelector(
       "[componentname='catalog.product']"
     );
-    const originalPrice = cleanPrice(
+    const originalPrice = cleanPriceText(
       document.querySelector(`.price-before, .superPrice__old__price`)
+        .textContent
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
     const breadcrumbs = data
