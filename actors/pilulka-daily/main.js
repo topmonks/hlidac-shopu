@@ -92,7 +92,7 @@ function handleProductDetail({ processedIds, stats }) {
       document.querySelector("script[type='application/ld+json']")
         ?.textContent ?? "{}"
     );
-    const product = data.find(x => x["@type"] === "Product");
+    const product = data?.find(x => x["@type"] === "Product");
     const title = product?.name;
     const currentPrice = product?.offers?.price;
 
