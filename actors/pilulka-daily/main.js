@@ -86,7 +86,8 @@ function handleProductDetail({ processedIds, stats }) {
     log.debug("Extracting product data", { url: itemUrl });
     const { document } = parseHTML(body.toString());
     const data = JSON.parse(
-      document.querySelector("script[type='application/ld+json']").textContent
+      document.querySelector("script[type='application/ld+json']")
+        ?.textContent ?? "{}"
     );
     const product = data.find(x => x["@type"] === "Product");
     const title = product?.name;
