@@ -90,9 +90,9 @@ function handleProductDetail({ processedIds, stats }) {
     const { document } = parseHTML(body.toString());
     const data = JSON.parse(
       document.querySelector("script[type='application/ld+json']")
-        ?.textContent ?? "{}"
+        ?.textContent ?? "[]"
     );
-    const product = data?.find(x => x["@type"] === "Product");
+    const product = data.find(x => x["@type"] === "Product");
     const title = product?.name;
     const currentPrice = product?.offers?.price;
 
