@@ -32,7 +32,9 @@ function getDetailInfo() {
         .pricecatalog1 .c2
       `);
 
-  const imageUrl = document.querySelector("#imgMain").dataset["src"];
+  const imageUrl = document.querySelector(
+    "#detailPicture swiper-slide img"
+  )?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
 }
@@ -83,7 +85,9 @@ function getDetailItemInfo() {
   const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
   const currentPrice = cleanPrice(".price-box__price");
   const originalPrice = cleanPrice(".price-box__compare-price");
-  const imageUrl = document.querySelector("#imgMain").dataset["src"];
+  const imageUrl = document.querySelector(
+    "#detailPicture swiper-slide img"
+  )?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
 }
