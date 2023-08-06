@@ -4827,7 +4827,7 @@ __metadata:
     "@open-wc/testing": 3.2.0
     "@web/test-runner": 0.17.0
     "@web/test-runner-junit-reporter": 0.6.1
-    chart.js: 4.3.1
+    chart.js: 4.3.3
     chartjs-adapter-date-fns: 3.0.0
     lit: 2.7.6
   languageName: unknown
@@ -10220,12 +10220,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.3.1":
-  version: 4.3.1
-  resolution: "chart.js@npm:4.3.1"
+"chart.js@npm:4.3.3":
+  version: 4.3.3
+  resolution: "chart.js@npm:4.3.3"
   dependencies:
     "@kurkle/color": ^0.3.0
-  checksum: d0c9e727e1cf1bf4b8a85599f4ec89a48466d549aa78d2e0280b1269e2819ed28aa97d46f97993383be8d66e411a9dd539797d759e538eaf9649cfff9be1044d
+  checksum: 548605fc0a0a64fdc591a41159a2be86c1b408339d6e57b566c04dc157331b003db285a6139801d1700596acde8f0521bc6a156da29388025581619db6600073
   languageName: node
   linkType: hard
 
