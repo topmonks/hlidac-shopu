@@ -4823,7 +4823,7 @@ __metadata:
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
     "@esm-bundle/chai": 4.3.4-fix.0
-    "@lit/reactive-element": 1.6.2
+    "@lit/reactive-element": 1.6.3
     "@open-wc/testing": 3.2.0
     "@web/test-runner": 0.17.0
     "@web/test-runner-junit-reporter": 0.6.1
@@ -5199,12 +5199,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@lit/reactive-element@npm:1.6.2"
+"@lit/reactive-element@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@lit/reactive-element@npm:1.6.3"
   dependencies:
     "@lit-labs/ssr-dom-shim": ^1.0.0
-  checksum: 011a3ef0933fda86ec726d29ebc14e829e2f1ba23eca8ed8ed4d5c6f2a102c55cc6986000c5f4c8c3d0c549bc671f5d84d00ce91adc5bbd95970eec3662c0a92
+  checksum: 79b58631c38effeabad090070324431da8a22cf0ff665f5e4de35e4d791f984742b3d340c9c7fce996d1124a8da95febc582471b4c237236c770b1300b56ef6e
   languageName: node
   linkType: hard
 
