@@ -66,6 +66,7 @@ commands:
         default: []
     steps:
       - read_deployment_envs
+      - aws-cli/setup
       - aws-s3/sync:
           from: public/<< parameters.site_name >>
           to: s3://<< parameters.site_name >>
