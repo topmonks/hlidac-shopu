@@ -15,7 +15,7 @@ const listingUrl = ({ url }, fn = slug) =>
   new URL(
     `/api/front/page/products?${new URLSearchParams({
       slug: fn(url),
-      limit: 60
+      limit: 30
     })}`,
     baseUrl
   ).href;
