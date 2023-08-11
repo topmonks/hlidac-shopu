@@ -106,7 +106,7 @@ function extractItems(document, country, stats) {
     result.itemName = name;
     result.category = category.join(" > ");
     result.currency = country === Country.CZ ? "CZK" : "EUR";
-    result.img = item.querySelector("img").dataset.src;
+    result.img = item.querySelector("img").src;
     stats.inc("items");
     return result;
   });
