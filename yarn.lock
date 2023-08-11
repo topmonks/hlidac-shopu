@@ -5064,7 +5064,7 @@ __metadata:
     eslint-config-prettier: 8.10.0
     eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
-    eslint-plugin-lit: 1.8.3
+    eslint-plugin-lit: 1.9.1
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-promise: 6.1.1
     lit-html: 2.8.0
@@ -12939,16 +12939,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.8.3":
-  version: 1.8.3
-  resolution: "eslint-plugin-lit@npm:1.8.3"
+"eslint-plugin-lit@npm:1.9.1":
+  version: 1.9.1
+  resolution: "eslint-plugin-lit@npm:1.9.1"
   dependencies:
     parse5: ^6.0.1
     parse5-htmlparser2-tree-adapter: ^6.0.1
     requireindex: ^1.2.0
   peerDependencies:
     eslint: ">= 5"
-  checksum: 67f78b92b06224b3b83f2c914f508e94072aea106f3ea5aea42de55d3e83c73c91369b07f359a6ddeda5412c46f4f300c37d80715177cbb88834a5b497d262a0
+  checksum: 24f9426b52587b483a5e195a1164cbf23323879a2c5f114673e5fb5413ba56d2a57309f39393fcc5a7486508faa05ba3da40fd3168f3c87f3d41473052cf80be
   languageName: node
   linkType: hard
 
@@ -15517,7 +15517,7 @@ __metadata:
     eslint-config-prettier: 8.10.0
     eslint-plugin-compat: 4.1.4
     eslint-plugin-es: 4.1.0
-    eslint-plugin-lit: 1.8.3
+    eslint-plugin-lit: 1.9.1
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-promise: 6.1.1
     formdata-node: 5.0.1
