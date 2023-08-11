@@ -25,10 +25,11 @@ export async function keboolaUploader(
     try {
       const start = Date.now();
       const tableId = `${bucket}.${table}`;
+      const dataBlob = new Blob([data], { type: "application/gzip" });
 
       const body = new FormData();
       body.append("tableId", tableId);
-      body.append("data", data, isGzipped ? `${fileName}.gz` : fileName);
+      body.append("data", dataBlob, isGzipped ? `${fileName}.gz` : fileName);
       body.append("incremental", "1");
 
       const resp = await fetch(KEBOOLA_URI, {
@@ -41,22 +42,27 @@ export async function keboolaUploader(
       });
       log.info(`HTTP ${resp.status}`);
       if (!resp.ok) {
-        const { message } = await resp.json();
-        throw new Error(message);
+        const errorResponse = await resp.text();
+        throw new Error(`Problem during upload to Keboola: ${errorResponse}`);
       }
       const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-      const { value, unit } = byteSize(data.size);
+      const { value, unit } = byteSize(dataBlob.size);
       log.info(`Uploaded ${value}${unit} to ${tableId} in ${elapsed}s.`);
       return;
     } catch (err) {
       lastError = err;
-      log.error(
+      log.exception(
         `Upload to Keboola failed on ${i + 1} try, will wait awhile...`,
         err
       );
       await sleep((i + 1) * 10 * 1000);
       await Actor.setValue(`debugFile.csv${isGzipped ? ".gz" : ""}`, data, {
         contentType: "text/csv"
+      }).catch(error => {
+        log.exception(
+          `There was a problem with storing issued data to the KV store!`,
+          error
+        );
       });
     }
   }

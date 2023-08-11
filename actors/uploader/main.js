@@ -333,9 +333,9 @@ async function processItems(
       await keboolaUploader(
         KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
-        await writeToBuffer(validItems, { headers: true })
-          .then(b => gzip.gzip(b))
-          .then(b => new Blob([b], { type: "application/gzip" })),
+        await writeToBuffer(validItems, { headers: true }).then(buffer =>
+          gzip.gzip(buffer)
+        ),
         `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`,
         true
       );
