@@ -6,9 +6,10 @@
   "description": "This is the itesco actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.5.1",
+    "@crawlee/puppeteer": "3.5.1",
     "@hlidac-shopu/actors-common": "2.2.1",
-    "apify": "3.1.8"
+    "apify": "3.1.8",
+    "puppeteer": "*"
   },
   "devDependencies": {
     "@types/node": "18.17.5",

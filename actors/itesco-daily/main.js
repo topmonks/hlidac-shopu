@@ -3,7 +3,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { Actor, Dataset, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
+import { PuppeteerCrawler } from "@crawlee/puppeteer";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
@@ -310,15 +310,36 @@ async function main() {
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
+    countryCode: country,
     useApifyProxy: !development
   });
-  const crawler = new HttpCrawler({
+  const crawler = new PuppeteerCrawler({
     maxRequestRetries,
     proxyConfiguration,
     requestHandlerTimeoutSecs: 60,
     maxRequestsPerMinute: 500,
-    async requestHandler({ request, body, enqueueLinks, crawler }) {
-      const { document } = parseHTML(body.toString());
+    headless: true,
+    preNavigationHooks: [
+      async ({ blockRequests }) => {
+        await blockRequests({
+          extraUrlPatterns: [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".svg",
+            ".webp",
+            ".gif",
+            ".css",
+            "googlesyndication.com",
+            "googletagmanager.com",
+            "newrelic.com",
+            "sentry.io"
+          ]
+        });
+      }
+    ],
+    async requestHandler({ request, response, enqueueLinks, crawler }) {
+      const { document } = parseHTML(await response.text());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
       const redirectUrl = document
         .querySelector('[http-equiv="refresh"]')

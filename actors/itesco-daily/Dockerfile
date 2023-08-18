@@ -1,4 +1,4 @@
-FROM apify/actor-node:18
+FROM apify/actor-node-puppeteer-chrome:18
 
 COPY package.json ./
 

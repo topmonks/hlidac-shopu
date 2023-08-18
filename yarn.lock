@@ -3796,6 +3796,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/puppeteer@npm:3.5.1":
+  version: 3.5.1
+  resolution: "@crawlee/puppeteer@npm:3.5.1"
+  dependencies:
+    "@apify/datastructures": ^2.0.0
+    "@apify/log": ^2.4.0
+    "@crawlee/browser": ^3.5.1
+    "@crawlee/browser-pool": ^3.5.1
+    "@crawlee/types": ^3.5.1
+    "@crawlee/utils": ^3.5.1
+    cheerio: ^1.0.0-rc.12
+    devtools-protocol: "*"
+    idcac-playwright: ^0.1.2
+    jquery: ^3.6.0
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  peerDependencies:
+    puppeteer: <= 21.0
+  peerDependenciesMeta:
+    puppeteer:
+      optional: true
+  checksum: 10a36bd3263897c74f364558f6b57426e5bcd71127f2a26c6e06e9705280244ad0b759b2e3f9f958799683e4b22e20302e12a0a35b86b8b1b0e6eba414a49c89
+  languageName: node
+  linkType: hard
+
 "@crawlee/types@npm:^3.3.0, @crawlee/types@npm:^3.3.1":
   version: 3.3.1
   resolution: "@crawlee/types@npm:3.3.1"
@@ -4787,11 +4812,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@crawlee/http": 3.5.1
+    "@crawlee/puppeteer": 3.5.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.17.5
     apify: 3.1.8
     apify-cli: 0.18.0
+    puppeteer: "*"
   languageName: unknown
   linkType: soft
 
@@ -12119,6 +12145,13 @@ __metadata:
   bin:
     dev-ip: lib/dev-ip.js
   checksum: 274a6470c2143e4cdcb2b27e0bea137dbc2b42667eb59c890e703185054cb2bcaf2d8533e7ad2f532fe551a90542abc6b37053e8d73918a4fcfb7ffd76589620
+  languageName: node
+  linkType: hard
+
+"devtools-protocol@npm:*":
+  version: 0.0.1182435
+  resolution: "devtools-protocol@npm:0.0.1182435"
+  checksum: dc652b1f039da5aeac15c50a8b1d87e662d7494f99d030c253d49b996e6706d5012933be691ed291da89f6ab310148e33352e1da90a24d854e1b3d7043d3fd8e
   languageName: node
   linkType: hard
 
@@ -21161,7 +21194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:21.1.0":
+"puppeteer@npm:*, puppeteer@npm:21.1.0":
   version: 21.1.0
   resolution: "puppeteer@npm:21.1.0"
   dependencies:
