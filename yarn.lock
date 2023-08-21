@@ -3653,9 +3653,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.5.0, @crawlee/core@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "@crawlee/core@npm:3.5.0"
+"@crawlee/core@npm:3.5.1, @crawlee/core@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@crawlee/core@npm:3.5.1"
   dependencies:
     "@apify/consts": ^2.20.0
     "@apify/datastructures": ^2.0.0
@@ -3663,9 +3663,9 @@ __metadata:
     "@apify/pseudo_url": ^2.0.30
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.7.10
-    "@crawlee/memory-storage": ^3.5.0
-    "@crawlee/types": ^3.5.0
-    "@crawlee/utils": ^3.5.0
+    "@crawlee/memory-storage": ^3.5.1
+    "@crawlee/types": ^3.5.1
+    "@crawlee/utils": ^3.5.1
     "@sapphire/async-queue": ^1.5.0
     "@types/tough-cookie": ^4.0.2
     "@vladfrangu/async_event_emitter": ^2.2.2
@@ -3680,7 +3680,7 @@ __metadata:
     tough-cookie: ^4.0.0
     tslib: ^2.4.0
     type-fest: ^4.0.0
-  checksum: 3d4109dbe87c2dfe8962f4f796e38bd9108647770db805243596c63e8e0246c0898f98c7454dc1d27053cfe14747cc23ab91609316192dac5e8faa2823aaf9c7
+  checksum: 9814336793019392badd83827b7aaf907f46e011fd84cf8f7fd0c02f75038e66226657f7e14df1f4e1b2279ab005826d1096c2a2086a362fbb1eefbd30f27838
   languageName: node
   linkType: hard
 
@@ -3715,9 +3715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "@crawlee/core@npm:3.5.1"
+"@crawlee/core@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@crawlee/core@npm:3.5.0"
   dependencies:
     "@apify/consts": ^2.20.0
     "@apify/datastructures": ^2.0.0
@@ -3725,9 +3725,9 @@ __metadata:
     "@apify/pseudo_url": ^2.0.30
     "@apify/timeout": ^0.3.0
     "@apify/utilities": ^2.7.10
-    "@crawlee/memory-storage": ^3.5.1
-    "@crawlee/types": ^3.5.1
-    "@crawlee/utils": ^3.5.1
+    "@crawlee/memory-storage": ^3.5.0
+    "@crawlee/types": ^3.5.0
+    "@crawlee/utils": ^3.5.0
     "@sapphire/async-queue": ^1.5.0
     "@types/tough-cookie": ^4.0.2
     "@vladfrangu/async_event_emitter": ^2.2.2
@@ -3742,7 +3742,7 @@ __metadata:
     tough-cookie: ^4.0.0
     tslib: ^2.4.0
     type-fest: ^4.0.0
-  checksum: 9814336793019392badd83827b7aaf907f46e011fd84cf8f7fd0c02f75038e66226657f7e14df1f4e1b2279ab005826d1096c2a2086a362fbb1eefbd30f27838
+  checksum: 3d4109dbe87c2dfe8962f4f796e38bd9108647770db805243596c63e8e0246c0898f98c7454dc1d27053cfe14747cc23ab91609316192dac5e8faa2823aaf9c7
   languageName: node
   linkType: hard
 
@@ -5130,7 +5130,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
-    "@crawlee/core": 3.5.0
+    "@crawlee/core": 3.5.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.17.5
     apify: 3.1.8
