@@ -3814,15 +3814,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "@crawlee/types@npm:3.5.0"
-  dependencies:
-    tslib: ^2.4.0
-  checksum: 5b9d4b4e363973c0d303b782a8a17646dcd6991dd5c554f494b3a809a0b572c86275e4655338ce14e820c243c651a68eb44dd20d1aca950e89d55537531205ab
-  languageName: node
-  linkType: hard
-
 "@crawlee/types@npm:^3.5.1":
   version: 3.5.1
   resolution: "@crawlee/types@npm:3.5.1"
@@ -3832,18 +3823,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.5.0":
-  version: 3.5.0
-  resolution: "@crawlee/utils@npm:3.5.0"
+"@crawlee/utils@npm:3.5.1, @crawlee/utils@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@crawlee/utils@npm:3.5.1"
   dependencies:
     "@apify/log": ^2.4.0
     "@apify/ps-tree": ^1.2.0
-    "@crawlee/types": ^3.5.0
+    "@crawlee/types": ^3.5.1
     cheerio: ^1.0.0-rc.12
     got-scraping: ^3.2.9
     ow: ^0.28.1
     tslib: ^2.4.0
-  checksum: f86b33e6332da47dff6a4d99d3bb868bbcd469b4f544f4ff0330f559c80338168224d9e5114a05051a2797d0ef4b9b6eb89af00c9675ca40395d04dc6dc0abe5
+  checksum: 644bbc617bb6d86964dbb64f2628de7f801558e89b77f99486bc89b9545a8972d5ad78386c2738d44f77c1d0bcbf837b45ce6504c6505ea59fed805fbdba33df
   languageName: node
   linkType: hard
 
@@ -3859,21 +3850,6 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: 9e462b83b19c268a9b156f937c2661aaeab7fd5c56727dbbf955c8fc24cadbd01957bc0edd67a4d93d95e46b8bce1529b1695ba3a4634b17eddff47902a66aeb
-  languageName: node
-  linkType: hard
-
-"@crawlee/utils@npm:^3.5.1":
-  version: 3.5.1
-  resolution: "@crawlee/utils@npm:3.5.1"
-  dependencies:
-    "@apify/log": ^2.4.0
-    "@apify/ps-tree": ^1.2.0
-    "@crawlee/types": ^3.5.1
-    cheerio: ^1.0.0-rc.12
-    got-scraping: ^3.2.9
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 644bbc617bb6d86964dbb64f2628de7f801558e89b77f99486bc89b9545a8972d5ad78386c2738d44f77c1d0bcbf837b45ce6504c6505ea59fed805fbdba33df
   languageName: node
   linkType: hard
 
@@ -5013,7 +4989,7 @@ __metadata:
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
     "@crawlee/http": 3.5.1
-    "@crawlee/utils": 3.5.0
+    "@crawlee/utils": 3.5.1
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.7
     "@thi.ng/transducers": 8.5.5
@@ -5075,7 +5051,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": 3.391.0
-    "@crawlee/utils": 3.5.0
+    "@crawlee/utils": 3.5.1
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
