@@ -297,6 +297,7 @@ async function main() {
   const {
     development,
     proxyGroups,
+    proxyGroupCountry,
     maxRequestRetries = 5,
     country = Country.CZ,
     type = ActorType.Full,
@@ -310,8 +311,8 @@ async function main() {
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
-    countryCode: country,
-    useApifyProxy: !development
+    countryCode: proxyGroupCountry,
+    useApifyProxy: false
   });
   const crawler = new PuppeteerCrawler({
     maxRequestRetries,
