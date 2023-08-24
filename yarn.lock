@@ -3638,6 +3638,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/browser-pool@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "@crawlee/browser-pool@npm:3.5.2"
+  dependencies:
+    "@apify/log": ^2.4.0
+    "@apify/timeout": ^0.3.0
+    "@crawlee/types": ^3.5.2
+    fingerprint-generator: ^2.0.6
+    fingerprint-injector: ^2.0.5
+    lodash.merge: ^4.6.2
+    nanoid: ^3.3.4
+    ow: ^0.28.1
+    p-limit: ^3.1.0
+    proxy-chain: ^2.0.1
+    quick-lru: ^5.1.1
+    tiny-typed-emitter: ^2.1.0
+    tslib: ^2.4.0
+  peerDependencies:
+    playwright: <= 2.x
+    puppeteer: <= 21.1
+  peerDependenciesMeta:
+    playwright:
+      optional: true
+    puppeteer:
+      optional: true
+  checksum: 05adb8f5048520f977d9c67b304c8f0362d06f3397eac20f92cbe0368de509e8e187651fc9c0a1ee84f81b505c5fa69c50ce6d7ce2f0c439ef34db67e6e51808
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser@npm:^3.5.1":
   version: 3.5.1
   resolution: "@crawlee/browser@npm:3.5.1"
@@ -3650,6 +3679,21 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: ba164cba35746f67605dd18a965b92bee92f877c4fb17a897aa0fb17a44bdc6cbd428a34ab828097b1d6ea37bc6ee2f56d862fe858db245535a7290821eb43a3
+  languageName: node
+  linkType: hard
+
+"@crawlee/browser@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "@crawlee/browser@npm:3.5.2"
+  dependencies:
+    "@apify/timeout": ^0.3.0
+    "@crawlee/basic": ^3.5.2
+    "@crawlee/browser-pool": ^3.5.2
+    "@crawlee/types": ^3.5.2
+    "@crawlee/utils": ^3.5.2
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 2f2a3e503958ddbdce78c504a6781f95698d933153d9b4d7a291452823eaa0e0c7d62ea14fe1317f951a0aee1e4248e73a85cb1838af0c19398529bdd4b400ec
   languageName: node
   linkType: hard
 
@@ -3864,16 +3908,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/puppeteer@npm:3.5.1":
-  version: 3.5.1
-  resolution: "@crawlee/puppeteer@npm:3.5.1"
+"@crawlee/puppeteer@npm:3.5.2":
+  version: 3.5.2
+  resolution: "@crawlee/puppeteer@npm:3.5.2"
   dependencies:
     "@apify/datastructures": ^2.0.0
     "@apify/log": ^2.4.0
-    "@crawlee/browser": ^3.5.1
-    "@crawlee/browser-pool": ^3.5.1
-    "@crawlee/types": ^3.5.1
-    "@crawlee/utils": ^3.5.1
+    "@crawlee/browser": ^3.5.2
+    "@crawlee/browser-pool": ^3.5.2
+    "@crawlee/types": ^3.5.2
+    "@crawlee/utils": ^3.5.2
     cheerio: ^1.0.0-rc.12
     devtools-protocol: "*"
     idcac-playwright: ^0.1.2
@@ -3881,11 +3925,11 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   peerDependencies:
-    puppeteer: <= 21.0
+    puppeteer: <= 21.1
   peerDependenciesMeta:
     puppeteer:
       optional: true
-  checksum: 10a36bd3263897c74f364558f6b57426e5bcd71127f2a26c6e06e9705280244ad0b759b2e3f9f958799683e4b22e20302e12a0a35b86b8b1b0e6eba414a49c89
+  checksum: fa54e8f5b0bcd206ae3336b106fb0acc64b1fce22ece7aebdafb1b7c998f8dbe29e41b6965b74897f5bfe3f7c384b24916b4a77e769d99588f79c96f5dd95bae
   languageName: node
   linkType: hard
 
@@ -4904,7 +4948,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@crawlee/puppeteer": 3.5.1
+    "@crawlee/puppeteer": 3.5.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.17.6
     apify: 3.1.8
