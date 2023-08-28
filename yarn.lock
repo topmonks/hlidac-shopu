@@ -5029,7 +5029,7 @@ __metadata:
     "@crawlee/utils": 3.5.2
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.8
-    "@thi.ng/transducers": 8.6.0
+    "@thi.ng/transducers": 8.6.1
     "@types/node": 18.17.8
     apify: 3.1.8
     apify-cli: 0.18.0
@@ -7201,6 +7201,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thi.ng/api@npm:^8.9.5":
+  version: 8.9.5
+  resolution: "@thi.ng/api@npm:8.9.5"
+  checksum: bab9b714bd5dad5271fad4a6425b29e3628b89b508ac4417dc3eeaded34dd1280d45aeb3787a01b1b8cb4cdcd451a03dd9a1859c581e5588e8ec7518f41cf28f
+  languageName: node
+  linkType: hard
+
 "@thi.ng/arrays@npm:^2.5.20":
   version: 2.5.20
   resolution: "@thi.ng/arrays@npm:2.5.20"
@@ -7277,12 +7284,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/math@npm:^5.5.5":
-  version: 5.6.0
-  resolution: "@thi.ng/math@npm:5.6.0"
+"@thi.ng/math@npm:^5.6.0":
+  version: 5.6.1
+  resolution: "@thi.ng/math@npm:5.6.1"
   dependencies:
-    "@thi.ng/api": ^8.9.4
-  checksum: e5234e000e686ac06531a53b101100ec8464e344127942617ec6522b1cf9552aa1e6a3546d3452dfe7fde54f0166fd351d3d293a46fb767ce2cd1ad753155343
+    "@thi.ng/api": ^8.9.5
+  checksum: 23f91ff9563fa2612bfd486b8da25b2008732c5fd4a73fecf8028520cfd04617b84ca7c1ef563359c761b2935f9f411bc8927371f51534a504ee31bbd0925850
   languageName: node
   linkType: hard
 
@@ -7309,9 +7316,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:8.6.0":
-  version: 8.6.0
-  resolution: "@thi.ng/transducers@npm:8.6.0"
+"@thi.ng/transducers@npm:8.6.1":
+  version: 8.6.1
+  resolution: "@thi.ng/transducers@npm:8.6.1"
   dependencies:
     "@thi.ng/api": ^8.9.4
     "@thi.ng/arrays": ^2.5.20
@@ -7319,9 +7326,9 @@ __metadata:
     "@thi.ng/compare": ^2.1.37
     "@thi.ng/compose": ^2.1.39
     "@thi.ng/errors": ^2.3.4
-    "@thi.ng/math": ^5.5.5
+    "@thi.ng/math": ^5.6.0
     "@thi.ng/random": ^3.6.2
-  checksum: 6d24f9eba536e32bc472b6fc5207d1c75564a3a0759f90b10b08f0e12600465a3668e6eb9e186c386a96126266ccfdcdbe6ef59890713b95a35aed02ea36c7a8
+  checksum: 0d625a87e8bd6a74a94990ba9e77b81d6c65f5bc798089722119716ea2b991a1734a6bf1677d81b4c86be87ab4ebfe8f0ff5898fd6cf845abcaecb12fe0ac7e8
   languageName: node
   linkType: hard
 
