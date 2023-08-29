@@ -216,6 +216,7 @@ async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
   if (type === ActorType.Full) {
     startingRequest = {
       url: country === Country.CZ ? StartUrls.CZ : StartUrls.SK,
+      retryCount: -30,
       userData: {
         label: Labels.Start
       }
@@ -223,6 +224,7 @@ async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
   } else if (type === ActorType.BlackFriday) {
     startingRequest = {
       url: bfUrl,
+      retryCount: -30,
       userData: {
         label: Labels.PageBF
       }
@@ -230,6 +232,7 @@ async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
   } else if (type === ActorType.Test) {
     startingRequest = {
       url: testUrl,
+      retryCount: -30,
       userData: {
         label: Labels.Page
       }
@@ -320,6 +323,12 @@ async function main() {
     requestHandlerTimeoutSecs: 60,
     maxRequestsPerMinute: 500,
     headless: true,
+    useSessionPool: true,
+    sessionPoolOptions: {
+      sessionOptions: {
+        maxErrorScore: 1
+      }
+    },
     preNavigationHooks: [
       async ({ blockRequests }) => {
         await blockRequests({
@@ -428,6 +437,9 @@ async function main() {
           }
           break;
       }
+    },
+    async errorHandler({ response, session }) {
+      session.retireOnBlockedStatusCodes(response?.statusCode);
     },
     failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
