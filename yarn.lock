@@ -4888,7 +4888,7 @@ __metadata:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@lit/reactive-element": 1.6.3
     "@open-wc/testing": 3.2.0
-    "@web/test-runner": 0.17.0
+    "@web/test-runner": 0.17.1
     "@web/test-runner-junit-reporter": 0.6.1
     chart.js: 4.4.0
     chartjs-adapter-date-fns: 3.0.0
@@ -8097,9 +8097,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@web/dev-server@npm:0.3.0"
+"@web/dev-server@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@web/dev-server@npm:0.3.1"
   dependencies:
     "@babel/code-frame": ^7.12.11
     "@types/command-line-args": ^5.0.0
@@ -8118,7 +8118,7 @@ __metadata:
   bin:
     wds: dist/bin.js
     web-dev-server: dist/bin.js
-  checksum: a26bd0b89585f5812713724f85fb2d86adadc22d8a6111e9956faf3f35dc1de7075b74cdfd4de57fd3f2cd9e414617d6dd924dcf48fbfced80990ec4cd580e3b
+  checksum: 4f3f94506cfc9afd32cf825c72b3ae6af24f17298985c6eb3d10d8db08d657b8f976e22179946fdb842975d2097d3cf024cf8db2a83299293b5eb5ba93e50838
   languageName: node
   linkType: hard
 
@@ -8268,13 +8268,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.17.0":
-  version: 0.17.0
-  resolution: "@web/test-runner@npm:0.17.0"
+"@web/test-runner@npm:0.17.1":
+  version: 0.17.1
+  resolution: "@web/test-runner@npm:0.17.1"
   dependencies:
     "@web/browser-logs": ^0.3.3
     "@web/config-loader": ^0.2.1
-    "@web/dev-server": ^0.3.0
+    "@web/dev-server": ^0.3.1
     "@web/test-runner-chrome": ^0.14.0
     "@web/test-runner-commands": ^0.8.0
     "@web/test-runner-core": ^0.11.1
@@ -8291,7 +8291,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: 0584f7631fbe443b80e6f86700bbfafa54e8d187fc72f1fe6ddb208be068798c2db384a92af9f31303001d87f96294c4f368eb4e26875778966acdc3e789b588
+  checksum: efc77260cd60fa4598023e3930396625077a1ff58d541785ffe6a30192bd8ef8ef73df9ab667000b1dc30365e1791af174c5eceea65431f1872940c32c728d43
   languageName: node
   linkType: hard
 
