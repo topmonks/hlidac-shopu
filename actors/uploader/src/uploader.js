@@ -52,16 +52,16 @@ export async function keboolaUploader(
     } catch (err) {
       lastError = err;
       log.exception(
-        `Upload to Keboola failed on ${i + 1} try, will wait awhile...`,
-        err
+        err,
+        `Upload to Keboola failed on ${i + 1} try, will wait awhile...`
       );
       await sleep((i + 1) * 10 * 1000);
       await Actor.setValue(`debugFile.csv${isGzipped ? ".gz" : ""}`, data, {
         contentType: "text/csv"
       }).catch(error => {
         log.exception(
-          `There was a problem with storing issued data to the KV store!`,
-          error
+          error,
+          `There was a problem with storing issued data to the KV store!`
         );
       });
     }
