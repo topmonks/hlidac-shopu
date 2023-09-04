@@ -6108,16 +6108,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.0.2":
-  version: 6.0.2
-  resolution: "@pulumi/aws@npm:6.0.2"
+"@pulumi/aws@npm:6.0.3":
+  version: 6.0.3
+  resolution: "@pulumi/aws@npm:6.0.3"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     builtin-modules: 3.0.0
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 12832887383204a40b24162512f878b5871b38f6784263569ec1ee051ff6a02ab4cdfbfdd460681272aaf9917a9795d50c8727828f8b074932d7734b4770c4c9
+  checksum: 53e6d319296c790c01d5f4fe403be71a0c2893811ab370c4acfbf2644cdf1f06f598c50c731b8a7e393a2af166d27a345b9b70476c99a94f3e995fd2d1a5424a
   languageName: node
   linkType: hard
 
@@ -6158,9 +6158,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.79.0":
-  version: 3.79.0
-  resolution: "@pulumi/pulumi@npm:3.79.0"
+"@pulumi/pulumi@npm:3.80.0":
+  version: 3.80.0
+  resolution: "@pulumi/pulumi@npm:3.80.0"
   dependencies:
     "@grpc/grpc-js": ^1.8.16
     "@logdna/tail-file": ^2.0.6
@@ -6187,7 +6187,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 86b93045ef0c258db8c1b2247e8f2caf9828035f62db2aed3c3acc83b8f4fb59c835958cff667aba52f242e889a371b8f2077833ecdc0fad13744039f35d7469
+  checksum: 6a3060f6dccfd70a9d8a36212e9c92e613aab53407618a19b98601d9ec69f7b7094911019888f244fcfb9ac64e5bc264d34540688b1d1dbf2701c5c3f28f5dc1
   languageName: node
   linkType: hard
 
@@ -15628,9 +15628,9 @@ __metadata:
     "@babel/core": 7.22.11
     "@babel/preset-env": 7.22.14
     "@esm-bundle/chai": 4.3.4-fix.0
-    "@pulumi/aws": 6.0.2
+    "@pulumi/aws": 6.0.3
     "@pulumi/awsx": 1.0.5
-    "@pulumi/pulumi": 3.79.0
+    "@pulumi/pulumi": 3.80.0
     "@rollup/plugin-alias": 5.0.0
     "@rollup/plugin-node-resolve": 15.2.1
     "@rollup/plugin-replace": 5.0.2
