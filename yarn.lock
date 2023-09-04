@@ -3892,30 +3892,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "@crawlee/types@npm:3.5.2"
-  dependencies:
-    tslib: ^2.4.0
-  checksum: 78f8238227f963e9d6ccae6c3478b8cfeed8bed63e446b8846a14cc241ff7dc24dbe9bc8f1c6ab037c6562425655749ab790f2f49cebedd961ae8a8bbff582fd
-  languageName: node
-  linkType: hard
-
-"@crawlee/utils@npm:3.5.2":
-  version: 3.5.2
-  resolution: "@crawlee/utils@npm:3.5.2"
-  dependencies:
-    "@apify/log": ^2.4.0
-    "@apify/ps-tree": ^1.2.0
-    "@crawlee/types": ^3.5.2
-    cheerio: ^1.0.0-rc.12
-    got-scraping: ^3.2.9
-    ow: ^0.28.1
-    tslib: ^2.4.0
-  checksum: 7f3bd480675c42cc33155c3e1d8b7f0a70da32b3776ef1ac152513587b86bef2ca31232082afb7321bf7dcf9d6be776b515e35aa9841052f7ffbeb5201ce1499
-  languageName: node
-  linkType: hard
-
 "@crawlee/utils@npm:3.5.3":
   version: 3.5.3
   resolution: "@crawlee/utils@npm:3.5.3"
@@ -5083,7 +5059,7 @@ __metadata:
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
     "@crawlee/http": 3.5.3
-    "@crawlee/utils": 3.5.2
+    "@crawlee/utils": 3.5.3
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.9
     "@thi.ng/transducers": 8.6.3
@@ -5145,7 +5121,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": 3.398.0
-    "@crawlee/utils": 3.5.2
+    "@crawlee/utils": 3.5.3
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.10
