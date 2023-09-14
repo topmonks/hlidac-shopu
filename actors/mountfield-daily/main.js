@@ -74,11 +74,15 @@ function extractItems(document, country, stats) {
     const retailPriceSpan = item.querySelector(
       ".list-products__item__info__price__item--old"
     );
+    const recommendedRetailPriceSpan = item.querySelector(
+      ".box__future-price__list strong"
+    );
     retailPriceSpan?.querySelector("span")?.remove();
     const retailPrice = retailPriceSpan?.innerText;
 
     result.currentPrice = parsePrice(regularPrice);
     result.originalPrice = parsePrice(retailPrice);
+    result.originalPrice ??= parsePrice(recommendedRetailPriceSpan?.innerText);
     result.discounted = false;
 
     if (
