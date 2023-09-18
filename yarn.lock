@@ -6696,23 +6696,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@puppeteer/browsers@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@puppeteer/browsers@npm:1.7.0"
-  dependencies:
-    debug: 4.3.4
-    extract-zip: 2.0.1
-    progress: 2.0.3
-    proxy-agent: 6.3.0
-    tar-fs: 3.0.4
-    unbzip2-stream: 1.4.3
-    yargs: 17.7.1
-  bin:
-    browsers: lib/cjs/main-cli.js
-  checksum: 0a2aecc72fb94a8d94246188f94cfaad730d1d372b34df94ca51ff8a94596bf475a0fee162c317a768fa4b2a707bfa8afd582d594958f49e1019effadfe744b6
-  languageName: node
-  linkType: hard
-
 "@puppeteer/browsers@npm:1.7.1":
   version: 1.7.1
   resolution: "@puppeteer/browsers@npm:1.7.1"
@@ -16203,7 +16186,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
-    puppeteer: 21.2.0
+    puppeteer: 21.2.1
     ramda: 0.29.0
     rollbar: 2.26.2
     source-map-explorer: 2.5.3
@@ -16426,7 +16409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:7.0.1, https-proxy-agent@npm:^7.0.0":
+"https-proxy-agent@npm:7.0.1":
   version: 7.0.1
   resolution: "https-proxy-agent@npm:7.0.1"
   dependencies:
@@ -20379,22 +20362,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pac-proxy-agent@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "pac-proxy-agent@npm:7.0.0"
-  dependencies:
-    "@tootallnate/quickjs-emscripten": ^0.23.0
-    agent-base: ^7.0.2
-    debug: ^4.3.4
-    get-uri: ^6.0.1
-    http-proxy-agent: ^7.0.0
-    https-proxy-agent: ^7.0.0
-    pac-resolver: ^7.0.0
-    socks-proxy-agent: ^8.0.1
-  checksum: 45fe10ae58b1700d5419a9e5b525fb261b866ed6a65c1382fe45c3d5af9f81d9a58250d407941a363b1955e0315f3d97e02a2f20e4c7e2ba793bd46585db7ec8
-  languageName: node
-  linkType: hard
-
 "pac-proxy-agent@npm:^7.0.1":
   version: 7.0.1
   resolution: "pac-proxy-agent@npm:7.0.1"
@@ -21941,22 +21908,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-agent@npm:6.3.0":
-  version: 6.3.0
-  resolution: "proxy-agent@npm:6.3.0"
-  dependencies:
-    agent-base: ^7.0.2
-    debug: ^4.3.4
-    http-proxy-agent: ^7.0.0
-    https-proxy-agent: ^7.0.0
-    lru-cache: ^7.14.1
-    pac-proxy-agent: ^7.0.0
-    proxy-from-env: ^1.1.0
-    socks-proxy-agent: ^8.0.1
-  checksum: e3fb0633d665e352ed4efe23ae5616b8301423dfa4ff1c5975d093da8a636181a97391f7a91c6a7ffae17c1a305df855e95507f73bcdafda8876198c64b88f5b
-  languageName: node
-  linkType: hard
-
 "proxy-agent@npm:6.3.1":
   version: 6.3.1
   resolution: "proxy-agent@npm:6.3.1"
@@ -22061,20 +22012,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:21.2.0":
-  version: 21.2.0
-  resolution: "puppeteer-core@npm:21.2.0"
-  dependencies:
-    "@puppeteer/browsers": 1.7.0
-    chromium-bidi: 0.4.26
-    cross-fetch: 4.0.0
-    debug: 4.3.4
-    devtools-protocol: 0.0.1159816
-    ws: 8.14.0
-  checksum: eb64ffe24dca0b42940a77bcd878a1ba7a110e08ffcf2e471bceeafa75ca2a20d2405df8a009f96af8332fcdc0fd6ffb3394f99e421ddca0b13141485f6330e1
-  languageName: node
-  linkType: hard
-
 "puppeteer-core@npm:21.2.1":
   version: 21.2.1
   resolution: "puppeteer-core@npm:21.2.1"
@@ -22108,7 +22045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:*":
+"puppeteer@npm:*, puppeteer@npm:21.2.1":
   version: 21.2.1
   resolution: "puppeteer@npm:21.2.1"
   dependencies:
@@ -22116,17 +22053,6 @@ __metadata:
     cosmiconfig: 8.3.5
     puppeteer-core: 21.2.1
   checksum: 43a8ca132be52c2b07f35cda50c25c38009bc888433ad1106009c5ee76a252b2d8e9bab939ccacc408d17da6ad6671fdb773423289e87dd830c9e5f84781859c
-  languageName: node
-  linkType: hard
-
-"puppeteer@npm:21.2.0":
-  version: 21.2.0
-  resolution: "puppeteer@npm:21.2.0"
-  dependencies:
-    "@puppeteer/browsers": 1.7.0
-    cosmiconfig: 8.3.5
-    puppeteer-core: 21.2.0
-  checksum: f16660f4dea475906effc507920ad6cdebf7ac5531b0968cb80ca4954d0d241d0ad1f24e0020bbf64b9f5c7f20c0fedc83b9bdfb41efe7cdb43af0a425a9d57d
   languageName: node
   linkType: hard
 
@@ -23864,7 +23790,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks-proxy-agent@npm:8.0.1, socks-proxy-agent@npm:^8.0.1":
+"socks-proxy-agent@npm:8.0.1":
   version: 8.0.1
   resolution: "socks-proxy-agent@npm:8.0.1"
   dependencies:
@@ -26920,21 +26846,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
-  languageName: node
-  linkType: hard
-
-"ws@npm:8.14.0":
-  version: 8.14.0
-  resolution: "ws@npm:8.14.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: dd91d055396c42552d8e2d26a0ab10221e73ca356de3db9109e337b8d9df216a0a308ace46a5e0520ed18ffcae3f54c2fa45a96711f94a063c816ef13a30b700
   languageName: node
   linkType: hard
 
