@@ -8081,10 +8081,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/firefox-webext-browser@npm:111.0.1":
-  version: 111.0.1
-  resolution: "@types/firefox-webext-browser@npm:111.0.1"
-  checksum: 1730c2e303cb502dd3e85aeb6ac645e3526c1583da0ae02ea1203ac002485ba5bf045f7183840b6bde4055f43818b366db6dd112e0d611ec1d82c86c74a4589b
+"@types/firefox-webext-browser@npm:111.0.2":
+  version: 111.0.2
+  resolution: "@types/firefox-webext-browser@npm:111.0.2"
+  checksum: eb11040ac9cf66461b14ec1205cb031c80dfc2cb617580a520bd98d417b3e310489eeb1d1e3a7652d013ce4a5e92536e6f6798009a85cedfed6724b5cbc5fb6e
   languageName: node
   linkType: hard
 
@@ -16209,7 +16209,7 @@ __metadata:
     "@rollup/plugin-replace": 5.0.2
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=1cf462f7d145368df5c712d78059ae88b28d3b3b"
     "@topmonks/pulumi-aws": 3.0.0
-    "@types/firefox-webext-browser": 111.0.1
+    "@types/firefox-webext-browser": 111.0.2
     "@types/node": 18.17.16
     "@types/nunjucks": 3.2.3
     "@types/ramda": 0.29.4
