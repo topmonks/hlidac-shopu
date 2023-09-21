@@ -307,15 +307,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.414.0":
-  version: 3.414.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.414.0"
+"@aws-sdk/client-dynamodb@npm:3.415.0":
+  version: 3.415.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.415.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
     "@aws-sdk/client-sts": 3.414.0
     "@aws-sdk/credential-provider-node": 3.414.0
-    "@aws-sdk/middleware-endpoint-discovery": 3.413.0
+    "@aws-sdk/middleware-endpoint-discovery": 3.415.0
     "@aws-sdk/middleware-host-header": 3.413.0
     "@aws-sdk/middleware-logger": 3.413.0
     "@aws-sdk/middleware-recursion-detection": 3.413.0
@@ -351,7 +351,7 @@ __metadata:
     "@smithy/util-waiter": ^2.0.7
     tslib: ^2.5.0
     uuid: ^8.3.2
-  checksum: 5948bb435067c9cb413a742ac8bc9fb7b4853afcd6f3e106a359099ea39df1f4c496451c72d9086027519bd78898a7a2c59d32fd22872da26d735d3f57915ec4
+  checksum: a0a18331c50fa3b99f3f3cf7658ca011d471bfc0c9a28aff220f29936f29045f6d5e5d776b688fd3a4544903644d0443709519f45b7033af031efdf4fce3ea23
   languageName: node
   linkType: hard
 
@@ -668,16 +668,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-endpoint-discovery@npm:3.413.0":
-  version: 3.413.0
-  resolution: "@aws-sdk/middleware-endpoint-discovery@npm:3.413.0"
+"@aws-sdk/middleware-endpoint-discovery@npm:3.415.0":
+  version: 3.415.0
+  resolution: "@aws-sdk/middleware-endpoint-discovery@npm:3.415.0"
   dependencies:
     "@aws-sdk/endpoint-cache": 3.310.0
     "@aws-sdk/types": 3.413.0
+    "@smithy/node-config-provider": ^2.0.10
     "@smithy/protocol-http": ^3.0.3
     "@smithy/types": ^2.3.1
     tslib: ^2.5.0
-  checksum: 8cd835a501d855135b52b07019066ba32f40b15e2706480cb7ad538efbe5dfdb2b97d96eb5dbbc35648e1f109f2407dfb06124f623b79b9886a4fea45a11c5f9
+  checksum: f8c92466b505ae3c5820f4dfb9bfb60faace70001ab777b4f261eddc52afdc9f08ed8cf73d5a624f97e96383396d33ff02bf9cb48d575bf83cb8a38db9751af9
   languageName: node
   linkType: hard
 
@@ -930,12 +931,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.414.0":
-  version: 3.414.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.414.0"
+"@aws-sdk/util-dynamodb@npm:3.415.0":
+  version: 3.415.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.415.0"
   dependencies:
     tslib: ^2.5.0
-  checksum: 297e9f715a008ddaa0e9eccec9b8564257f34d2937cf61359f6adfb1827d7eb3cc1aaca8587e0f93e5ce9d1e80a253d719f95679e323ae1d03ec0e5f840ebd39
+  peerDependencies:
+    "@aws-sdk/client-dynamodb": ^3.0.0
+  checksum: e01bc477e7158a33b2984810835d042556a64e1196b6e3a7eb61e0d22c8c9020abeed17c01e22de167ac7c6323e63851724a6b3e2e92bf7357a24015dedc0c36
   languageName: node
   linkType: hard
 
@@ -5120,10 +5123,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.414.0
+    "@aws-sdk/client-dynamodb": 3.415.0
     "@aws-sdk/client-s3": 3.414.0
     "@aws-sdk/client-sqs": 3.414.0
-    "@aws-sdk/util-dynamodb": 3.414.0
+    "@aws-sdk/util-dynamodb": 3.415.0
     "@hlidac-shopu/lib": 1.3.10
     ava: 5.3.1
     c8: 8.0.1
@@ -5566,7 +5569,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.414.0
+    "@aws-sdk/client-dynamodb": 3.415.0
     "@crawlee/utils": 3.5.4
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
@@ -16224,7 +16227,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.414.0
+    "@aws-sdk/client-dynamodb": 3.415.0
     "@babel/core": 7.22.20
     "@babel/preset-env": 7.22.20
     "@esm-bundle/chai": 4.3.4-fix.0
