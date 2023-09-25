@@ -16729,7 +16729,7 @@ __metadata:
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
-    puppeteer: 21.3.3
+    puppeteer: 21.3.4
     ramda: 0.29.0
     rollbar: 2.26.2
     source-map-explorer: 2.5.3
@@ -22473,20 +22473,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:21.3.3":
-  version: 21.3.3
-  resolution: "puppeteer-core@npm:21.3.3"
-  dependencies:
-    "@puppeteer/browsers": 1.7.1
-    chromium-bidi: 0.4.28
-    cross-fetch: 4.0.0
-    debug: 4.3.4
-    devtools-protocol: 0.0.1179426
-    ws: 8.14.2
-  checksum: 0a4ab963cb20276a540414d2a25b96ec6e485f58a38c64dd4be6067fe8215a3bbbc2df5738fedfaa68c75442a8b399ee166a5ed504dc770e29db59f06c785958
-  languageName: node
-  linkType: hard
-
 "puppeteer-core@npm:21.3.4":
   version: 21.3.4
   resolution: "puppeteer-core@npm:21.3.4"
@@ -22520,7 +22506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:*":
+"puppeteer@npm:*, puppeteer@npm:21.3.4":
   version: 21.3.4
   resolution: "puppeteer@npm:21.3.4"
   dependencies:
@@ -22528,17 +22514,6 @@ __metadata:
     cosmiconfig: 8.3.6
     puppeteer-core: 21.3.4
   checksum: c727da9cbef43f0e7103d12b80d0b5406b7f0c6dbd4eb084f8d0cf70d3b7c7f4639eb389d9a8ddaa7c50f7b6d8068b2f5d9e8bc07a66a38abead8c1d57869f2a
-  languageName: node
-  linkType: hard
-
-"puppeteer@npm:21.3.3":
-  version: 21.3.3
-  resolution: "puppeteer@npm:21.3.3"
-  dependencies:
-    "@puppeteer/browsers": 1.7.1
-    cosmiconfig: 8.3.6
-    puppeteer-core: 21.3.3
-  checksum: 019372fe91ed4d6f11028768d862b4da4c5cdb88ea1f6e78d2e0a616ab3fa16b301a29923a37deb81c885cf90642c75b9370d41ee46ca369b5e302e94ab3773f
   languageName: node
   linkType: hard
 
