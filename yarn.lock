@@ -8382,12 +8382,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:11.0.0":
-  version: 11.0.0
-  resolution: "@types/whatwg-url@npm:11.0.0"
+"@types/whatwg-url@npm:11.0.1":
+  version: 11.0.1
+  resolution: "@types/whatwg-url@npm:11.0.1"
   dependencies:
     "@types/webidl-conversions": "*"
-  checksum: 392cc7c3afa5c194c4c21bc8dc4549c91f96cd89e576d89faf44abb40dab5fadaff3ccca58e475d9b02702b8a1b233167a919b441f648dff5f960e7c7d0485f1
+  checksum: c143f4a620f75c91bb5632fbf98484a3d0e4c3667851aea4328e34dd9c0d93efc1029e143f4e1a43011be9b03db64e1bbe74f264c7299445457955ba7409950f
   languageName: node
   linkType: hard
 
@@ -16010,7 +16010,7 @@ __metadata:
     "@types/node": 18.17.19
     "@types/nunjucks": 3.2.4
     "@types/ramda": 0.29.4
-    "@types/whatwg-url": 11.0.0
+    "@types/whatwg-url": 11.0.1
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
     ava: 5.3.1
