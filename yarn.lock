@@ -3755,6 +3755,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/basic@npm:3.5.5":
+  version: 3.5.5
+  resolution: "@crawlee/basic@npm:3.5.5"
+  dependencies:
+    "@apify/log": ^2.4.0
+    "@apify/timeout": ^0.3.0
+    "@apify/utilities": ^2.7.10
+    "@crawlee/core": 3.5.5
+    "@crawlee/types": 3.5.5
+    "@crawlee/utils": 3.5.5
+    got-scraping: ^3.2.15
+    ow: ^0.28.1
+    tldts: ^6.0.0
+    tslib: ^2.4.0
+    type-fest: ^4.0.0
+  checksum: 6964be270e62ef24482956c561db0492523846a999791a266320b01d7a449778aa5e70f66fa52f264c1cf6a80ad943dd0956e38b2bf9e2ed335490b817e9a742
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser-pool@npm:3.5.4":
   version: 3.5.4
   resolution: "@crawlee/browser-pool@npm:3.5.4"
@@ -3785,6 +3804,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/browser-pool@npm:3.5.5":
+  version: 3.5.5
+  resolution: "@crawlee/browser-pool@npm:3.5.5"
+  dependencies:
+    "@apify/log": ^2.4.0
+    "@apify/timeout": ^0.3.0
+    "@crawlee/core": 3.5.5
+    "@crawlee/types": 3.5.5
+    fingerprint-generator: ^2.0.6
+    fingerprint-injector: ^2.0.5
+    lodash.merge: ^4.6.2
+    nanoid: ^3.3.4
+    ow: ^0.28.1
+    p-limit: ^3.1.0
+    proxy-chain: ^2.0.1
+    quick-lru: ^5.1.1
+    tiny-typed-emitter: ^2.1.0
+    tslib: ^2.4.0
+  peerDependencies:
+    playwright: "*"
+    puppeteer: "*"
+  peerDependenciesMeta:
+    playwright:
+      optional: true
+    puppeteer:
+      optional: true
+  checksum: 90b5d5165f0ee788bab393edd607c834a27438c384aef77a0651e4160a7cbb24d291caaaa5f39822466ffe4dba9d9ee36547d26289a51e88e8ae4c9aaf14551f
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser@npm:3.5.4":
   version: 3.5.4
   resolution: "@crawlee/browser@npm:3.5.4"
@@ -3797,6 +3846,21 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: a322a562895084aa175e3bc5cb27d442865b91a6b05ec7b0fa0d54ca60feecd7e846107c98a6363e23ba11fd9c73cadf174e418553a16c62718aec8113cc9b85
+  languageName: node
+  linkType: hard
+
+"@crawlee/browser@npm:3.5.5":
+  version: 3.5.5
+  resolution: "@crawlee/browser@npm:3.5.5"
+  dependencies:
+    "@apify/timeout": ^0.3.0
+    "@crawlee/basic": 3.5.5
+    "@crawlee/browser-pool": 3.5.5
+    "@crawlee/types": 3.5.5
+    "@crawlee/utils": 3.5.5
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 7b8c24ae02d8febd49539a9ad61f0eabdc24cfde34ba18ee4bd3ee39868a71c79e2521778e686a151b2178cad5a645305ab4d9ea15d9865bd6af4e266df8a7a0
   languageName: node
   linkType: hard
 
@@ -3987,27 +4051,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/playwright@npm:3.5.4":
-  version: 3.5.4
-  resolution: "@crawlee/playwright@npm:3.5.4"
+"@crawlee/playwright@npm:3.5.5":
+  version: 3.5.5
+  resolution: "@crawlee/playwright@npm:3.5.5"
   dependencies:
     "@apify/datastructures": ^2.0.0
     "@apify/log": ^2.4.0
-    "@crawlee/browser": 3.5.4
-    "@crawlee/browser-pool": 3.5.4
-    "@crawlee/types": 3.5.4
-    "@crawlee/utils": 3.5.4
+    "@crawlee/browser": 3.5.5
+    "@crawlee/browser-pool": 3.5.5
+    "@crawlee/types": 3.5.5
+    "@crawlee/utils": 3.5.5
     cheerio: ^1.0.0-rc.12
     idcac-playwright: ^0.1.2
     jquery: ^3.6.0
     ow: ^0.28.1
     tslib: ^2.4.0
   peerDependencies:
-    playwright: <= 2.x
+    playwright: "*"
   peerDependenciesMeta:
     playwright:
       optional: true
-  checksum: a5e6341460b246b86a7a5d97885dcc44d97633cd1780672ade687f8c9e968d8b60fabcdd9d913642b1e283a2b60c02933b92e6e83a964bc0fba6d5a1f2ee1be3
+  checksum: 2eb68a37a879bd6ba6a05a3d15971519fd3c7309daf382671652c76dd448c052f71a34e0033be1810264f160939570a0971ed89f1e0fac55a228b1ae0908a43f
   languageName: node
   linkType: hard
 
@@ -5155,7 +5219,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
   dependencies:
-    "@crawlee/playwright": 3.5.4
+    "@crawlee/playwright": 3.5.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.11
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
@@ -5265,7 +5329,7 @@ __metadata:
   resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
   dependencies:
     "@crawlee/http": 3.5.4
-    "@crawlee/playwright": 3.5.4
+    "@crawlee/playwright": 3.5.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.18.1
     apify: 3.1.10
@@ -5516,7 +5580,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
-    "@crawlee/playwright": 3.5.4
+    "@crawlee/playwright": 3.5.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@hlidac-shopu/lib": 1.3.11
     "@types/node": 18.18.1
@@ -5605,7 +5669,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@crawlee/playwright": 3.5.4
+    "@crawlee/playwright": 3.5.5
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 18.18.1
     apify: 3.1.10
