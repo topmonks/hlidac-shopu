@@ -11080,6 +11080,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chromium-bidi@npm:0.4.31":
+  version: 0.4.31
+  resolution: "chromium-bidi@npm:0.4.31"
+  dependencies:
+    mitt: 3.0.1
+    urlpattern-polyfill: 9.0.0
+  peerDependencies:
+    devtools-protocol: "*"
+  checksum: 9761b602ccc7737af6abb16ea6485871ca70ee3ec37714ccb99265f28611fb2b109e40e5a6551535d0d571667b7faa54eceeab8142cc6b1253872bce7e1dcc96
+  languageName: node
+  linkType: hard
+
 "chunkd@npm:^2.0.1":
   version: 2.0.1
   resolution: "chunkd@npm:2.0.1"
@@ -21771,6 +21783,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"puppeteer-core@npm:21.3.8":
+  version: 21.3.8
+  resolution: "puppeteer-core@npm:21.3.8"
+  dependencies:
+    "@puppeteer/browsers": 1.7.1
+    chromium-bidi: 0.4.31
+    cross-fetch: 4.0.0
+    debug: 4.3.4
+    devtools-protocol: 0.0.1179426
+    ws: 8.14.2
+  checksum: 3a416ba43f96d51917590b8fae89188cca422a768e1a305e4013a26994d808e0a68989aaaf622fef700ce54ee67ef3831e74acde7660fcfad013a1490b385e56
+  languageName: node
+  linkType: hard
+
 "puppeteer-core@npm:^20.0.0":
   version: 20.8.2
   resolution: "puppeteer-core@npm:20.8.2"
@@ -21790,7 +21816,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:*, puppeteer@npm:21.3.6":
+"puppeteer@npm:*":
+  version: 21.3.8
+  resolution: "puppeteer@npm:21.3.8"
+  dependencies:
+    "@puppeteer/browsers": 1.7.1
+    cosmiconfig: 8.3.6
+    puppeteer-core: 21.3.8
+  checksum: 15b8d4ce7988e330acd30de92be8444247e27c27cb34c5f72549220acd807c3d84788c881357b479a26fd882cb0f20994a722c0dfbbe3dc883977e004e6acfec
+  languageName: node
+  linkType: hard
+
+"puppeteer@npm:21.3.6":
   version: 21.3.6
   resolution: "puppeteer@npm:21.3.6"
   dependencies:
