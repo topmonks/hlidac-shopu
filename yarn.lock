@@ -5193,7 +5193,7 @@ __metadata:
     "@types/node": 18.18.3
     apify: 3.1.12
     apify-cli: 0.18.1
-    csv-parse: 5.5.0
+    csv-parse: 5.5.1
     jsonwebtoken: 9.0.2
   languageName: unknown
   linkType: soft
@@ -12133,10 +12133,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:5.5.0":
-  version: 5.5.0
-  resolution: "csv-parse@npm:5.5.0"
-  checksum: a9cc73a332debdabe9658c532e7668c626c06616113b650fb2e063f3a1451d45a48080c1942a680e8ddeaf1665efef49f126e655c54c19e025d70cccc002ff4d
+"csv-parse@npm:5.5.1":
+  version: 5.5.1
+  resolution: "csv-parse@npm:5.5.1"
+  checksum: 5d06f478fd0d14927ac13aa975430c647441f294f02ff84b81c02920cb60b8915070279aafc094e0d0eccce66c89dda27616dafb81ce3e1e90873c05af21dfdd
   languageName: node
   linkType: hard
 
