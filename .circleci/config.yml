@@ -295,7 +295,7 @@ jobs:
         default: []
     executor: aws-cli/default
     environment:
-      ROLLBAR_ACCESS_TOKEN: "103d0a6fb0f7469abb633dcbc6920122"
+      ROLLBAR_ACCESS_TOKEN: "a0794c468c7e4517b5d8ad41f77981bc"
     steps:
       - checkout
       - attach_workspace:
