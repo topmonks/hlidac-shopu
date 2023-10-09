@@ -5004,7 +5004,7 @@ __metadata:
     "@thi.ng/atom": 5.2.9
     "@types/node": 18.18.3
     apify: 3.1.12
-    linkedom: 0.15.3
+    linkedom: 0.15.4
     rollbar: 2.26.2
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.112.0
@@ -16009,7 +16009,7 @@ __metadata:
     formdata-node: 5.0.1
     gulp-esbuild: 0.11.2
     gulp-mode: 1.1.0
-    linkedom: 0.15.3
+    linkedom: 0.15.4
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
@@ -18007,16 +18007,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.15.3":
-  version: 0.15.3
-  resolution: "linkedom@npm:0.15.3"
+"linkedom@npm:0.15.4":
+  version: 0.15.4
+  resolution: "linkedom@npm:0.15.4"
   dependencies:
     css-select: ^5.1.0
     cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^8.0.1
     uhyphen: ^0.2.0
-  checksum: c06f282e2810aa1f05770a5636e5c344821ddd655113e11f83ab3c0ffc4edfc0e43f8128b08c75cf5d6b916c674e324ad54d74d3b98142212c1c45a051847708
+  checksum: c04aa8aba5d49b49d1fc4e928b7ddb47c92e9a11c5cb78d72da3ba3e966c1db31d761bfd101d904ddbbdf233cbd4b443fa6fa081cfcb04b3ba329d06a135347f
   languageName: node
   linkType: hard
 
