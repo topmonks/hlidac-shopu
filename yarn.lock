@@ -5005,7 +5005,7 @@ __metadata:
     "@thi.ng/atom": 5.2.9
     "@types/node": 18.18.4
     apify: 3.1.12
-    linkedom: 0.15.4
+    linkedom: 0.15.6
     rollbar: 2.26.2
   peerDependencies:
     "@aws-sdk/client-cloudfront": ^3.112.0
@@ -5193,7 +5193,7 @@ __metadata:
     "@types/node": 18.18.4
     apify: 3.1.12
     apify-cli: 0.18.1
-    csv-parse: 5.5.1
+    csv-parse: 5.5.2
     jsonwebtoken: 9.0.2
   languageName: unknown
   linkType: soft
@@ -6499,16 +6499,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.4.0":
-  version: 6.4.0
-  resolution: "@pulumi/aws@npm:6.4.0"
+"@pulumi/aws@npm:6.4.1":
+  version: 6.4.1
+  resolution: "@pulumi/aws@npm:6.4.1"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     builtin-modules: 3.0.0
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 82d40008e559a0f77f6231b463547604328f3cd3d34ed613af82c043d67f4ad325a78bdf64ac57f13dbdeee1c10cf4936f578a09370b7dc6d54fe4871ec99947
+  checksum: 5edba84f04dc7a9e199fc44f8e319cf126d5cf229e47400a367de7b15765c15227d5152c50585ca77ae141311e769b7d322be10eb09ce16f44efe657dd40cc03
   languageName: node
   linkType: hard
 
@@ -6526,16 +6526,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@pulumi/awsx@npm:1.0.5"
+"@pulumi/awsx@npm:1.0.6":
+  version: 1.0.6
+  resolution: "@pulumi/awsx@npm:1.0.6"
   dependencies:
     "@pulumi/aws": ^5.35.0
     "@pulumi/docker": ^3.6.1
     "@pulumi/pulumi": ^3.0.0
     "@types/aws-lambda": ^8.10.23
     mime: ^2.0.0
-  checksum: a82280171bbbf98041968af6235cd34d13b8f7dfad589849451371aee718780852ff14b449711b501f6888158c523a560473b9db3993232922471f588e55ddf9
+  checksum: 4cd03b4944ddc2a34b5fc523ce5ee1cf9ec49bee35ac9c2ff2a85626c230193e11dc0e279536ec8739ba898a6385f00958a58fe4f88a6f79550b5b4c2048ce33
   languageName: node
   linkType: hard
 
@@ -6549,9 +6549,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.87.0":
-  version: 3.87.0
-  resolution: "@pulumi/pulumi@npm:3.87.0"
+"@pulumi/pulumi@npm:3.88.0":
+  version: 3.88.0
+  resolution: "@pulumi/pulumi@npm:3.88.0"
   dependencies:
     "@grpc/grpc-js": ^1.8.16
     "@logdna/tail-file": ^2.0.6
@@ -6578,7 +6578,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.8.3
     upath: ^1.1.0
-  checksum: 7f4a633fa615f80c1ef4a1627c4b1ff4d7da391bc35c6aae91607095fa1f6ae83012ebcdd57cd67363b3f973721359fdfc41987cc387d3a6f676a3e0f66dac39
+  checksum: 311a07e10d43264f18fa2580ad58fa6163c5f627a4d08daeb32913bc41324e379d72b08ace65249329c362ad5e0058cef5d0b254f60dcf3d43bd3716dd0c84b1
   languageName: node
   linkType: hard
 
@@ -6726,9 +6726,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-node-resolve@npm:15.2.2":
-  version: 15.2.2
-  resolution: "@rollup/plugin-node-resolve@npm:15.2.2"
+"@rollup/plugin-node-resolve@npm:15.2.3":
+  version: 15.2.3
+  resolution: "@rollup/plugin-node-resolve@npm:15.2.3"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     "@types/resolve": 1.20.2
@@ -6741,7 +6741,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 478281b12914114eb663e0f9dbdc9fd2c9be694025d7b76572c6574b61b410af349d68418b0157ece792d09cbaf808331d60c253dac95f89b95530a85b3d6231
+  checksum: 730f32c2f8fdddff07cf0fca86a5dac7c475605fb96930197a868c066e62eb6388c557545e4f7d99b7a283411754c9fbf98944ab086b6074e04fc1292e234aa8
   languageName: node
   linkType: hard
 
@@ -12139,10 +12139,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:5.5.1":
-  version: 5.5.1
-  resolution: "csv-parse@npm:5.5.1"
-  checksum: 5d06f478fd0d14927ac13aa975430c647441f294f02ff84b81c02920cb60b8915070279aafc094e0d0eccce66c89dda27616dafb81ce3e1e90873c05af21dfdd
+"csv-parse@npm:5.5.2":
+  version: 5.5.2
+  resolution: "csv-parse@npm:5.5.2"
+  checksum: de2eb0c29b049783ef101b7eb843456200dc9a4fc9f4b400473bb0521b41aadb77af560cf4edc49bac65cc457b32596519860120181b26ec3b372109ddf8e8ea
   languageName: node
   linkType: hard
 
@@ -15983,11 +15983,11 @@ __metadata:
     "@babel/core": 7.23.0
     "@babel/preset-env": 7.22.20
     "@esm-bundle/chai": 4.3.4-fix.0
-    "@pulumi/aws": 6.4.0
-    "@pulumi/awsx": 1.0.5
-    "@pulumi/pulumi": 3.87.0
+    "@pulumi/aws": 6.4.1
+    "@pulumi/awsx": 1.0.6
+    "@pulumi/pulumi": 3.88.0
     "@rollup/plugin-alias": 5.0.1
-    "@rollup/plugin-node-resolve": 15.2.2
+    "@rollup/plugin-node-resolve": 15.2.3
     "@rollup/plugin-replace": 5.0.3
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=1cf462f7d145368df5c712d78059ae88b28d3b3b"
     "@topmonks/pulumi-aws": 3.1.0
@@ -16015,7 +16015,7 @@ __metadata:
     formdata-node: 5.0.1
     gulp-esbuild: 0.11.2
     gulp-mode: 1.1.0
-    linkedom: 0.15.4
+    linkedom: 0.15.6
     npm-run-all: 4.1.5
     postcss-css-variables: 0.19.0
     prettier: 2.8.8
@@ -18013,16 +18013,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.15.4":
-  version: 0.15.4
-  resolution: "linkedom@npm:0.15.4"
+"linkedom@npm:0.15.6":
+  version: 0.15.6
+  resolution: "linkedom@npm:0.15.6"
   dependencies:
     css-select: ^5.1.0
     cssom: ^0.5.0
     html-escaper: ^3.0.3
     htmlparser2: ^8.0.1
     uhyphen: ^0.2.0
-  checksum: c04aa8aba5d49b49d1fc4e928b7ddb47c92e9a11c5cb78d72da3ba3e966c1db31d761bfd101d904ddbbdf233cbd4b443fa6fa081cfcb04b3ba329d06a135347f
+  checksum: ae4288ae0bc4c36cd7c443879b45b4ba714997d4096111e9e236c14412c220389169cd77bb65233cbf706615f2b3ce7f47d5f5e540f714935eb1ae82410d6511
   languageName: node
   linkType: hard
 
