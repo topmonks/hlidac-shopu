@@ -1,7 +1,17 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Tchibo extends Shop {
+export class Tchibo extends AsyncShop {
+  selector = ".crosschannel-panel";
+
+  get injectionPoint() {
+    return ["afterend", this.selector];
+  }
+
+  get waitForSelector() {
+    return this.selector;
+  }
+
   async scrape() {
     const elem = document.querySelector(".pdp-buybox__add-to-cart-container");
     if (!elem) return;
@@ -16,14 +26,8 @@ export class Tchibo extends Shop {
       ".tp-imagegallery-main-container img"
     )?.src;
 
+    console.log({ itemId, title, currentPrice, originalPrice, imageUrl });
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const elem = document.querySelector(".crosschannel-panel");
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
   }
 }
 
