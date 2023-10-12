@@ -1,56 +1,31 @@
-import { cleanPriceText, registerShop } from "../helpers.mjs";
-import { StatefulShop } from "./shop.mjs";
+import { registerShop, cleanPriceText } from "../helpers.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-const didRenderDetail = mutations =>
-  mutations.find(x =>
-    Array.from(x.addedNodes).find(
-      y =>
-        y.localName === "div" &&
-        y.dataset.dmid === "bottom-detail-page-reco-slider"
-    )
-  );
+export class Dm extends AsyncShop {
+  selector = "#dm-view [data-dmid='detail-availability-container']";
 
-const didMutate = mutations =>
-  mutations.find(x => Array.from(x.removedNodes).find(y => y.id === "dm-view"));
-
-export class Dm extends StatefulShop {
   get injectionPoint() {
-    return [
-      "beforeend",
-      "#dm-view [data-dmid='detail-availability-container']"
-    ];
+    return ["beforeend", this.selector];
   }
 
-  get detailSelector() {
-    return "div[itemtype='http://schema.org/Product']";
-  }
-
-  shouldRender(mutations) {
-    return didRenderDetail(mutations);
-  }
-
-  shouldCleanup(mutations) {
-    return didMutate(mutations);
+  get waitForSelector() {
+    return this.selector;
   }
 
   async scrape() {
-    const elem = document.querySelector(
-      "div[itemtype='http://schema.org/Product']"
+    const data = JSON.parse(
+      document.querySelector("[type='application/ld+json']").textContent
     );
-    if (!elem) return;
-    const itemId = elem.querySelector("meta[itemprop='gtin13']").content.trim();
-    const titleSource = elem.querySelectorAll("meta[itemprop='name']");
-    const title = `${titleSource[1].content.trim()} ${titleSource[0].content.trim()}`;
-    const currentPrice = elem
-      .querySelector("meta[itemprop=price]")
-      .content.trim();
-    const originalPriceSource = elem.querySelector(
-      "div[data-dmid='price-sellout']"
+    if (!data) return;
+    const itemId = data.gtin ?? data.sku;
+    const title = data.name;
+    const currentPrice = data.offers.price;
+    const originalPrice = cleanPriceText(
+      document
+        .querySelector('[data-dmid="price-sellout"]')
+        ?.textContent?.trim() ?? ""
     );
-    const originalPrice = originalPriceSource
-      ? cleanPriceText(originalPriceSource.textContent.trim())
-      : null;
-    const imageUrl = elem.querySelector("link[itemprop='image']").href;
+    const imageUrl = data.image;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
