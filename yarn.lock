@@ -7776,14 +7776,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@topmonks/pulumi-aws@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@topmonks/pulumi-aws@npm:3.1.0"
+"@topmonks/pulumi-aws@npm:3.1.1":
+  version: 3.1.1
+  resolution: "@topmonks/pulumi-aws@npm:3.1.1"
   peerDependencies:
     "@pulumi/aws": ">=5.30.0"
     "@pulumi/awsx": ">=1.0.0"
     "@pulumi/pulumi": ">=3.55.0"
-  checksum: a1329109b1eee1f259c5d33f3c9a5bddb6723b024d7956fa59d59ee7937116617ad9970a81c3d074b649e864b3e5e15dffd4d37f6c96a56c50c51b43bfed5706
+  checksum: 493fdca46b434da92ff8a20cb950bbaf44f1fa9e952d17783c7b89d96034ef1a51c96e8e28102393471fddd369ad842aff95ac8f0d254209ea539d292dfe1b4c
   languageName: node
   linkType: hard
 
@@ -15990,7 +15990,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 15.2.3
     "@rollup/plugin-replace": 5.0.3
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=1cf462f7d145368df5c712d78059ae88b28d3b3b"
-    "@topmonks/pulumi-aws": 3.1.0
+    "@topmonks/pulumi-aws": 3.1.1
     "@types/firefox-webext-browser": 111.0.2
     "@types/node": 18.18.4
     "@types/nunjucks": 3.2.4
