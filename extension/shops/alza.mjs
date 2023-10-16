@@ -55,11 +55,12 @@ function getMobileDetailInfo() {
   const elem = document.querySelector("#detailPage");
   if (!elem) return;
 
-  const itemId = location.href.match(/d(\d+)\.htm$/).pop();
+  const itemId =
+    location.href.match(/d(\d+)\.htm$/)?.at(-1) ??
+    new URLSearchParams(location.search).get("dq");
   const title = elem.querySelector("h1").innerText.trim();
-  const currentPrice = cleanPrice(".price .normal");
-  const originalPrice = cleanPrice(".price .compare");
-
+  const currentPrice = cleanPrice("#detailPage .js-price-withVat");
+  const originalPrice = cleanPrice("#detailPage .js-price-compare");
   return { itemId, title, currentPrice, originalPrice };
 }
 
@@ -104,7 +105,9 @@ export class Alza extends Shop {
   }
 
   isDetailPage() {
-    this.element = document.querySelector("#detailText .buy-buttons");
+    this.element = document.querySelector(
+      "#detailText .buy-buttons, .price-info-row"
+    );
     return Boolean(this.element);
   }
 

@@ -86,7 +86,7 @@ const config = {
     server: {
       baseDir: pathConfig.dest
     },
-    browser: ["google chrome canary"]
+    browser: ["google chrome"]
   },
 
   esbuild: {
