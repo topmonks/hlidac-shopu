@@ -5263,7 +5263,7 @@ __metadata:
   dependencies:
     "@esm-bundle/chai": 4.3.4-fix.0
     "@open-wc/testing": 3.2.0
-    "@web/test-runner": 0.17.1
+    "@web/test-runner": 0.17.2
     "@web/test-runner-junit-reporter": 0.6.1
     chart.js: 4.4.0
     chartjs-adapter-date-fns: 3.0.0
@@ -8558,9 +8558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@web/dev-server@npm:0.3.1"
+"@web/dev-server@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@web/dev-server@npm:0.3.3"
   dependencies:
     "@babel/code-frame": ^7.12.11
     "@types/command-line-args": ^5.0.0
@@ -8579,7 +8579,7 @@ __metadata:
   bin:
     wds: dist/bin.js
     web-dev-server: dist/bin.js
-  checksum: 4f3f94506cfc9afd32cf825c72b3ae6af24f17298985c6eb3d10d8db08d657b8f976e22179946fdb842975d2097d3cf024cf8db2a83299293b5eb5ba93e50838
+  checksum: 5bd741c1776bdcfa390d2c074914713a367fd4e3b46f9c87d8956699bfbdfe30f887b1c5303f3d07ad1223e1fe35a87679a8da66f30018d6c1c26a7aba55e6fd
   languageName: node
   linkType: hard
 
@@ -8616,13 +8616,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-commands@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "@web/test-runner-commands@npm:0.8.0"
+"@web/test-runner-commands@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@web/test-runner-commands@npm:0.8.1"
   dependencies:
     "@web/test-runner-core": ^0.11.1
     mkdirp: ^1.0.4
-  checksum: c121e90446c1c301d231c0ae7143ee9e776eb052c65d69db97aeef6c97b11920a75db8e6e2eec61fe0cee23931dc1ba9d81c4516059f3625235792a3a3b7a7bc
+  checksum: 7268d82f1bc7141681171ad16f0ec339e22e7cc61759ca1f0568bd5e0b789c2dc52b45c9ef29ec2299ccde936b33563083df7cd0624bc882017d52cfd72422cc
   languageName: node
   linkType: hard
 
@@ -8729,15 +8729,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.17.1":
-  version: 0.17.1
-  resolution: "@web/test-runner@npm:0.17.1"
+"@web/test-runner@npm:0.17.2":
+  version: 0.17.2
+  resolution: "@web/test-runner@npm:0.17.2"
   dependencies:
     "@web/browser-logs": ^0.3.3
     "@web/config-loader": ^0.2.1
-    "@web/dev-server": ^0.3.1
+    "@web/dev-server": ^0.3.3
     "@web/test-runner-chrome": ^0.14.0
-    "@web/test-runner-commands": ^0.8.0
+    "@web/test-runner-commands": ^0.8.1
     "@web/test-runner-core": ^0.11.1
     "@web/test-runner-mocha": ^0.8.1
     camelcase: ^6.2.0
@@ -8752,7 +8752,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: efc77260cd60fa4598023e3930396625077a1ff58d541785ffe6a30192bd8ef8ef73df9ab667000b1dc30365e1791af174c5eceea65431f1872940c32c728d43
+  checksum: 99da1889de093866b9ff2a1ff7b247e812323cf71c753afc35279085a0214552103548cf6d04bc564efbbe70e286eb3770aff8eece29ea92d1044dfacc6582a9
   languageName: node
   linkType: hard
 
