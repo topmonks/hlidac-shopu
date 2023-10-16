@@ -119,7 +119,7 @@
 		82CC140127FDB81B001A030F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		82CC140427FDB81B001A030F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		82CC140627FDB81B001A030F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		82CC140B27FDB81B001A030F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		82CC140B27FDB81B001A030F /* Hlidac Shopu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hlidac Shopu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		82CC140D27FDB81B001A030F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82CC141027FDB81B001A030F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		82CC141227FDB81B001A030F /* hlidac shopu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hlidac shopu.entitlements"; sourceTree = "<group>"; };
@@ -247,7 +247,7 @@
 			isa = PBXGroup;
 			children = (
 				82CC13F927FDB81B001A030F /* App.app */,
-				82CC140B27FDB81B001A030F /* App.app */,
+				82CC140B27FDB81B001A030F /* Hlidac Shopu.app */,
 				82CC141727FDB81B001A030F /* App Extension.appex */,
 				82CC142127FDB81B001A030F /* App Extension.appex */,
 				8291832327FF10E900CAFD3A /* App ShareExtension.appex */,
@@ -350,7 +350,7 @@
 			);
 			name = "macOS app";
 			productName = "hlidac shopu (macOS)";
-			productReference = 82CC140B27FDB81B001A030F /* App.app */;
+			productReference = 82CC140B27FDB81B001A030F /* Hlidac Shopu.app */;
 			productType = "com.apple.product-type.application";
 		};
 		82CC141627FDB81B001A030F /* App Extension (iOS) */ = {
@@ -1025,7 +1025,8 @@
 					WebKit,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
-				PRODUCT_NAME = App;
+				PRODUCT_MODULE_NAME = App;
+				PRODUCT_NAME = "Hlidac Shopu";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1064,7 +1065,8 @@
 					WebKit,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.topmonks.hlidac-shopu";
-				PRODUCT_NAME = App;
+				PRODUCT_MODULE_NAME = App;
+				PRODUCT_NAME = "Hlidac Shopu";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
