@@ -5219,6 +5219,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily"
+  dependencies:
+    "@crawlee/http": 3.5.7
+    "@hlidac-shopu/actors-common": 2.2.1
+    "@types/node": 18.18.5
+    apify: 3.1.12
+    apify-cli: 0.18.1
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
