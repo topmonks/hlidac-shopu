@@ -21,7 +21,9 @@ const canonical = x => canonicalUrl(x).href;
  */
 function handleStart(document) {
   return document
-    .querySelectorAll("#main div.row-main li a")
+    .querySelectorAll(
+      "#main div.row-main li a, #main div.row-main p a:has(img)"
+    )
     .map(a => a.href)
     .filter(
       x =>
@@ -35,17 +37,21 @@ function handleStart(document) {
     }));
 }
 
+function extractOriginalPrice({ item, type }) {
+  if (type === ActorType.BlackFriday)
+    return cleanPrice(item.querySelector(".price-common")?.innerText);
+  return cleanPrice(item.querySelector(".price-wrap .price-strike")?.innerText);
+}
+
 /**
  * @param {Document} document
+ * @param {ActorType} type
  */
-function extractProducts(document) {
+function extractProducts({ document, type }) {
   return document
     .querySelectorAll("li[data-productinfo]")
     .map(item => {
-      const originalPrice =
-        cleanPrice(
-          item.querySelector(".price-wrap .price-strike")?.innerText
-        ) || null;
+      const originalPrice = extractOriginalPrice({ item, type }) ?? null;
       const currentPrice = item
         .querySelector("p.price strong")
         ?.innerText?.trim()
@@ -74,8 +80,8 @@ function extractProducts(document) {
         rating: parseFloat(
           item
             .querySelector("span.stars.small span")
-            .getAttribute("style")
-            .split("width: ")[1]
+            ?.getAttribute("style")
+            ?.split("width: ")[1] ?? null
         ),
         currency: "CZK",
         inStock:
@@ -85,7 +91,7 @@ function extractProducts(document) {
         breadCrumbs: ""
       };
     })
-    .filter(x => x.itemId);
+    .filter(x => x?.itemId);
 }
 
 async function main() {
@@ -147,7 +153,7 @@ async function main() {
           } else {
             log.info("category finish", { url: request.url });
           }
-          const products = extractProducts(document);
+          const products = extractProducts({ document, type });
           log.info(`${request.url} Found ${products.length} products`);
           await saveUniqProducts({ stats, products, processedIds });
           break;
@@ -199,9 +205,9 @@ async function main() {
       });
     }
   } else if (type === ActorType.BlackFriday) {
-    //startingRequests.push({
-    //  url: "https://www.knihydobrovsky.cz/akce-a-slevy/detail/black-friday-prave-dnes"
-    //});
+    startingRequests.push({
+      url: "https://www.knihydobrovsky.cz/akce-a-slevy/detail/black-friday-prave-dnes"
+    });
     for (const url of bfUrls) {
       startingRequests.push({
         url,
