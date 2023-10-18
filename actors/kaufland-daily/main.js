@@ -8,6 +8,7 @@ import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
+
 const ROOT_URL = 'https://www.kaufland.cz/'
 
 const LABELS = {
@@ -16,29 +17,34 @@ const LABELS = {
   PRODUCTS: "PRODUCTS"
 };
 
-function handleCategories(document) {
+function handleTopLevelCategories(document) {
   return document
     .querySelectorAll('li.rd-footer_navigation-link-list-item > a')
     .map(cat => ({
       url: new URL(cat.href, ROOT_URL).href,
+      label: LABELS.CATEGORY,
       userData: {
-        label: LABELS.CATEGORY,
+        categories: [cat.querySelector('span').textContent().trim()],
       }
-    }))
+    }));
 }
 
-function handleSubcategories(document) {
+function handleSubcategories(document, prevCategories) {
   return document
     .querySelectorAll('li.rd-category-tree__list-item > a.rd-category-tree__anchor--level-1')
     .map(cat => ({
       url: new URL(cat.href, ROOT_URL).href,
+      label: LABELS.CATEGORY,
       userData: {
-        label: LABELS.CATEGORY,
+        categories: [
+          ...prevCategories,
+          cat.textContent.trim(),
+        ]
       }
-    }))
+    }));
 }
 
-function extractProducts(document) {
+function extractProducts(document, categories) {
   const productsInfoFromScript = {}
   const scriptWithProducts = document.querySelectorAll('script[data-n-head]')[1].textContent
   const productsFromScript = JSON.parse(scriptWithProducts);
@@ -72,7 +78,7 @@ function extractProducts(document) {
         originalPrice,
         currency: "CZK",
         currentPrice,
-        category: "",
+        category: categories,
         inStock,
       }
     });
@@ -107,7 +113,7 @@ function extractCategoryId(requestUrl, document) {
   return scriptWithCategoryId.match(regex)[1];
 }
 
-function createPaginationRequests(productsCount, totalProductCount, categoryId) {
+function createPaginationRequests(productsCount, totalProductCount, categoryId, categories) {
   const reminder = totalProductCount % productsCount > 0 ? 1 : 0;
   const nOfPages = (totalProductCount / productsCount) + reminder;
 
@@ -115,8 +121,9 @@ function createPaginationRequests(productsCount, totalProductCount, categoryId) 
   for (let i = 2; i < nOfPages; i++) {
     pageRequests.push({
       url: `https://www.kaufland.cz/category/${categoryId}/p${i}/`,
+      label: LABELS.PRODUCTS,
       userData: {
-        label: LABELS.PRODUCTS,
+        category: categories,
       }
     });
   };
@@ -158,18 +165,13 @@ async function main() {
     persistCookiesPerSession: true,
     proxyConfiguration,
     async requestHandler({ request, body, crawler }) {
-      const {
-        url,
-        userData: { label }
-      } = request;
-
       const { document } = parseHTML(body.toString());
-      log.debug(`Scraping [${label}] - ${url}`);
+      log.debug(`Scraping [${request.label}] - ${request.url}`);
 
-      switch (label) {
+      switch (request.label) {
         case LABELS.START:
           {
-            const requests = handleCategories(document).slice(0, 1);
+            const requests = handleTopLevelCategories(document).slice(0, 1);
             stats.add("categories", requests.length);
             await crawler.addRequests(requests);
             log.info(`${request.url} - Found ${requests.length} categories`);
@@ -177,9 +179,10 @@ async function main() {
           break;
 
         case LABELS.CATEGORY: {
+          const { categories = [] } = request.userData;
           const isProductPage = document.querySelectorAll('div.rd-category-tree__nav').length === 0;
           if (isProductPage) {
-            const products = extractProducts(document);
+            const products = extractProducts(document, categories);
             const savedCount = await saveProducts(products, stats, processedIds);
             log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
 
@@ -187,22 +190,24 @@ async function main() {
               document.querySelector('.product-count').textContent.replace(/\s+/g, ""),
               10);
 
-            const categoryId = extractCategoryId(request.url, document);
-            log.info(`${request.url} - Found category ID: ${categoryId}`);
-
-            const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId);
-            await crawler.addRequests(pageRequests);
-
+            if (totalProductCount > products.length) {
+              const categoryId = extractCategoryId(request.url, document);
+              log.debug(`${request.url} - Found category ID: ${categoryId}`);
+              const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId, categories);
+              await crawler.addRequests(pageRequests);
+            }
           } else {
-            const requests = handleSubcategories(document).slice(0, 1);
+            const requests = handleSubcategories(document, categories);
             stats.add("categories", requests.length);
             await crawler.addRequests(requests);
             log.info(`${request.url} - Found ${requests.length} categories`);
           }
           break;
+
         };
         case LABELS.PRODUCTS: {
-          const products = extractProducts(document);
+          const { categories } = request.userData;
+          const products = extractProducts(document, categories);
           const savedCount = await saveProducts(products, stats, processedIds);
           log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
         }
@@ -216,9 +221,7 @@ async function main() {
 
   const startingRequest = {
     url: "https://www.kaufland.cz/elektronika/",
-    userData: {
-      label: LABELS.CATEGORY,
-    }
+    label: LABELS.CATEGORY,
   };
   await crawler.run([startingRequest]);
   log.info("Crawler finished");
