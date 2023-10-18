@@ -86,7 +86,7 @@ function extractProducts(document, categories) {
       itemId: product.sku,
       itemUrl: product.offers.url,
       inStock: product.offers.availability === 'https://schema.org/InStock',
-      currentPrice: product.offers.price,
+      currentPrice: Number.parseFloat(product.offers.price),
       name: product.name,
     }
   }
