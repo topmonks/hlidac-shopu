@@ -30,6 +30,8 @@ function handleSubcategories(document, prevCategories, previousUrl) {
   const categories = document
     .querySelectorAll('.rd-category-tree__nav > ul > li:first-child a.rd-category-tree__anchor--level-1');
 
+  // sometimes links to other categories are loaded dynamically with js, so we need to check,
+  // if we actually scraped some links
   if (categories.length > 0) {
     return categories.map(cat => ({
       url: new URL(cat.href, ROOT_URL).href,
@@ -44,15 +46,20 @@ function handleSubcategories(document, prevCategories, previousUrl) {
     }));
   }
 
+  // the category elements we scraped previously have no links: we need to 
+  // find the ID of each category to construct its corresponding url, the IDs 
+  // can be retrieved from this script element 
   const scriptWithCategoryIds = document.querySelectorAll('script:not([src], [data-n-head], [type])')[1].textContent;
   return document
     .querySelectorAll('li.rd-category-tree__list-item > span')
     .reduce((results, cat) => {
       const categoryName = cat.textContent.trim();
+      // there are 2 ways how the ID can be stored in the script so that's why 2 regexes
       const regex = new RegExp(`\\s*${categoryName}\\s*\\",\\"\\\\u002Fcategory\\\\u002F(\\d+)`);
       const alternativeRegex = new RegExp(`\\s*${categoryName}\\s*\\",path:\\"\\\\u002Fcategory\\\\u002F(\\d+)`)
       const regexMatch =  scriptWithCategoryIds.match(regex) ?? scriptWithCategoryIds.match(alternativeRegex);
       if (!regexMatch) {
+        // should not happen or very rarely
         log.warning(`Was unable to find categoryId for ${categoryName}, skipping`);
         return results;
       }
@@ -73,6 +80,13 @@ function handleSubcategories(document, prevCategories, previousUrl) {
 }
 
 function extractProducts(document, categories) {
+  // to extract info about the products, we need to combine information from both
+  // the 'article' elements on the page and the script containing additional info about the products:
+  //
+  // article elements -> miss availability info and sometimes miss product IDs and URLs,
+  // script -> misses discounts.
+
+  // we use part of the image url as a way to connect script info <-> elements info 
   const keyFromImg = (imgUrl) => {
     return imgUrl.split('/').slice(-1);
   };
@@ -135,6 +149,10 @@ async function saveProducts(products, stats, processedIds) {
   return productsToSave.length;
 }
 
+// we need to extract category IDs to create pagination requests as they sometimes
+// mask the urls, for example they use 'https://www.kaufland.cz/mobily/' as the first 
+// page, but 'https://www.kaufland.cz/category/38371/p2/' as the second, we use script
+// element for that as well
 function extractCategoryId(requestUrl, document) {
   if (requestUrl.includes('category')) {
     const categoryId = new URL(requestUrl).pathname.split('/')[2];
@@ -209,8 +227,11 @@ async function main() {
       log.debug(`Scraping [${request.label}] - ${request.url}`);
 
       const { categories = [], pagination = false, previousUrl = '' } = request.userData;
+
+      // some categories are listed but actually don't exist (redirect to higher category),
+      // so we need to check for that
       if (request.loadedUrl === previousUrl) {
-        log.debug(`Skipping as ${request.url} redirected back to ${previousUrl}`);
+        log.info(`Skipping as ${request.url} redirected back to ${previousUrl}`);
         return;
       }
 
@@ -231,10 +252,13 @@ async function main() {
         return;
       }
 
+      // we are on a page with products so we scrape them
       const products = extractProducts(document, categories);
       const savedCount = await saveProducts(products, stats, processedIds);
       log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
 
+      // we need to create requests for other pages on page 1, so this is a check
+      // if we are on a page different than 1
       if (pagination) {
         return;
       }
@@ -243,6 +267,7 @@ async function main() {
         document.querySelector('.product-count').textContent.replace(/\s+/g, ""),
         10);
 
+      // check if there actually are more pages
       if (totalProductCount > products.length) {
         const categoryId = extractCategoryId(request.url, document);
         log.debug(`${request.url} - Found category ID: ${categoryId}`);
