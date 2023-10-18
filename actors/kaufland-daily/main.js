@@ -8,7 +8,6 @@ import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
-
 const ROOT_URL = 'https://www.kaufland.cz/'
 
 const LABELS = {
@@ -149,8 +148,6 @@ async function main() {
     type = ActorType.Full,
   } = await getInput();
 
-  console.log(development);
-
   if (development || debug) {
     log.setLevel(LogLevel.DEBUG);
   }
@@ -171,9 +168,13 @@ async function main() {
       switch (request.label) {
         case LABELS.START:
           {
-            const requests = handleTopLevelCategories(document).slice(0, 1);
+            const requests = handleTopLevelCategories(document);
             stats.add("categories", requests.length);
-            await crawler.addRequests(requests);
+            if (type === ActorType.Test) {
+              await crawler.addRequests(requests.slice(0, 1));
+            } else {
+              await crawler.addRequests(requests);
+            }
             log.info(`${request.url} - Found ${requests.length} categories`);
           }
           break;
@@ -194,12 +195,20 @@ async function main() {
               const categoryId = extractCategoryId(request.url, document);
               log.debug(`${request.url} - Found category ID: ${categoryId}`);
               const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId, categories);
-              await crawler.addRequests(pageRequests);
+              if (type === ActorType.Test) {
+                await crawler.addRequests(pageRequests.slice(0, 1));
+              } else {
+                await crawler.addRequests(pageRequests);
+              }
             }
           } else {
             const requests = handleSubcategories(document, categories);
             stats.add("categories", requests.length);
-            await crawler.addRequests(requests);
+            if (type === ActorType.Test) {
+              await crawler.addRequests(requests.slice(0, 1));
+            } else {
+              await crawler.addRequests(requests);
+            }
             log.info(`${request.url} - Found ${requests.length} categories`);
           }
           break;
