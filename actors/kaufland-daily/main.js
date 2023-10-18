@@ -4,7 +4,7 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, useState } from "@crawlee/http";
+import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 
 const ROOT_URL = 'https://www.kaufland.cz/';
@@ -47,13 +47,17 @@ function handleSubcategories(document, prevCategories, previousUrl) {
   const scriptWithCategoryIds = document.querySelectorAll('script:not([src], [data-n-head], [type])')[1].textContent;
   return document
     .querySelectorAll('li.rd-category-tree__list-item > span')
-    .map(cat => {
+    .reduce((results, cat) => {
       const categoryName = cat.textContent.trim();
       const regex = new RegExp(`\\s*${categoryName}\\s*\\",\\"\\\\u002Fcategory\\\\u002F(\\d+)`);
       const alternativeRegex = new RegExp(`\\s*${categoryName}\\s*\\",path:\\"\\\\u002Fcategory\\\\u002F(\\d+)`)
-      const regexMatch =  scriptWithCategoryIds.match(regex);
-      const categoryId = regexMatch ? regexMatch[1] : scriptWithCategoryIds.match(alternativeRegex)[1];
-      return {
+      const regexMatch =  scriptWithCategoryIds.match(regex) ?? scriptWithCategoryIds.match(alternativeRegex);
+      if (!regexMatch) {
+        log.warning(`Was unable to find categoryId for ${categoryName}, skipping`);
+        return results;
+      }
+      const categoryId = regexMatch[1];
+      results.push({
         url: new URL(`/category/${categoryId}/`, ROOT_URL).href,
         label: LABELS.CATEGORY,
         userData: {
@@ -63,9 +67,9 @@ function handleSubcategories(document, prevCategories, previousUrl) {
           ],
           previousUrl,
         }
-      }
-
-    });
+      });
+      return results;
+    }, []);
 }
 
 function extractProducts(document, categories) {
@@ -163,13 +167,16 @@ function createPaginationRequests(productsCount, totalProductCount, categoryId, 
 async function main() {
   rollbar.init();
 
-  const processedIds = await useState("processedIds", {});
+  const processedIds = await Actor.getValue("processedIds") || {};
+  Actor.on('persistState', async () => {
+    await Actor.setValue('processedIds', processedIds);
+  })
+
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     products: 0,
     duplicates: 0
   });
-
 
   const input = await Actor.getInput();
   const {
@@ -189,10 +196,15 @@ async function main() {
 
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 400,
-    maxRequestRetries: 8,
+    maxRequestRetries: 5,
     persistCookiesPerSession: true,
     proxyConfiguration,
-    async requestHandler({ request, body, crawler }) {
+    async requestHandler({ request, body, crawler, response }) {
+      if (response.statusCode === 404) {
+        log.warning(`${request.url} returned 404, skipping`);
+        return;
+      }
+
       const { document } = parseHTML(body.toString());
       log.debug(`Scraping [${request.label}] - ${request.url}`);
 
