@@ -6,14 +6,12 @@ import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler, useState } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 
-const ROOT_URL = 'https://www.kaufland.cz/'
+const ROOT_URL = 'https://www.kaufland.cz/';
 
 const LABELS = {
   START: "START",
   CATEGORY: "CATEGORY",
-  PRODUCTS: "PRODUCTS"
 };
 
 function handleTopLevelCategories(document) {
@@ -23,32 +21,63 @@ function handleTopLevelCategories(document) {
       url: new URL(cat.href, ROOT_URL).href,
       label: LABELS.CATEGORY,
       userData: {
-        categories: [cat.querySelector('span').textContent().trim()],
+        categories: [cat.textContent.trim()],
       }
     }));
 }
 
-function handleSubcategories(document, prevCategories) {
-  return document
-    .querySelectorAll('li.rd-category-tree__list-item > a.rd-category-tree__anchor--level-1')
-    .map(cat => ({
+function handleSubcategories(document, prevCategories, previousUrl) {
+  const categories = document
+    .querySelectorAll('.rd-category-tree__nav > ul > li:first-child a.rd-category-tree__anchor--level-1');
+
+  if (categories.length > 0) {
+    return categories.map(cat => ({
       url: new URL(cat.href, ROOT_URL).href,
       label: LABELS.CATEGORY,
       userData: {
         categories: [
           ...prevCategories,
           cat.textContent.trim(),
-        ]
+        ],
+        previousUrl,
       }
     }));
+  }
+
+  const scriptWithCategoryIds = document.querySelectorAll('script:not([src], [data-n-head], [type])')[1].textContent;
+  return document
+    .querySelectorAll('li.rd-category-tree__list-item > span')
+    .map(cat => {
+      const categoryName = cat.textContent.trim();
+      const regex = new RegExp(`\\s*${categoryName}\\s*\\",\\"\\\\u002Fcategory\\\\u002F(\\d+)`);
+      const alternativeRegex = new RegExp(`\\s*${categoryName}\\s*\\",path:\\"\\\\u002Fcategory\\\\u002F(\\d+)`)
+      const regexMatch =  scriptWithCategoryIds.match(regex);
+      const categoryId = regexMatch ? regexMatch[1] : scriptWithCategoryIds.match(alternativeRegex)[1];
+      return {
+        url: new URL(`/category/${categoryId}/`, ROOT_URL).href,
+        label: LABELS.CATEGORY,
+        userData: {
+          categories: [
+            ...prevCategories,
+            cat.textContent.trim(),
+          ],
+          previousUrl,
+        }
+      }
+
+    });
 }
 
 function extractProducts(document, categories) {
+  const keyFromImg = (imgUrl) => {
+    return imgUrl.split('/').slice(-1);
+  };
+
   const productsInfoFromScript = {}
   const scriptWithProducts = document.querySelectorAll('script[data-n-head]')[1].textContent
   const productsFromScript = JSON.parse(scriptWithProducts);
   for (const product of productsFromScript) {
-    const key = Array.isArray(product.image) ? product.image[0] : product.image;
+    const key = keyFromImg(Array.isArray(product.image) ? product.image[0] : product.image);
     productsInfoFromScript[key] = {
       itemId: product.sku,
       itemUrl: product.offers.url,
@@ -63,7 +92,8 @@ function extractProducts(document, categories) {
     .map(product => {
       const itemName = product.querySelector('.product__title').textContent.trim();
       const img = product.querySelector("source").srcset.trim();
-      const { itemId, itemUrl, inStock, currentPrice } = productsInfoFromScript[img];
+
+      const { itemId, itemUrl, inStock, currentPrice } = productsInfoFromScript[keyFromImg(img)];
 
       const discounted = product.querySelectorAll('.price__note--rrp').length > 0;
       const originalPrice = discounted ? cleanPrice(product.querySelector('.price__note--rrp').textContent) : null;
@@ -88,11 +118,11 @@ function extractProducts(document, categories) {
 async function saveProducts(products, stats, processedIds) {
   const productsToSave = [];
   for (const product of products) {
-    if (!processedIds.has(product.itemId)) {
-      processedIds.add(product.itemId);
-      productsToSave.push(product);
-    } else {
+    if (processedIds[product.itemId]) {
       stats.inc('duplicates');
+    } else {
+      processedIds[product.itemId] = true;
+      productsToSave.push(product);
     }
   }
 
@@ -120,9 +150,10 @@ function createPaginationRequests(productsCount, totalProductCount, categoryId, 
   for (let i = 2; i < nOfPages; i++) {
     pageRequests.push({
       url: `https://www.kaufland.cz/category/${categoryId}/p${i}/`,
-      label: LABELS.PRODUCTS,
+      label: LABELS.CATEGORY,
       userData: {
-        category: categories,
+        categories,
+        pagination: true,
       }
     });
   };
@@ -132,23 +163,23 @@ function createPaginationRequests(productsCount, totalProductCount, categoryId, 
 async function main() {
   rollbar.init();
 
-  // const processedIds = await useState("processedIds", {});
-  const processedIds = new Set();
+  const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     products: 0,
     duplicates: 0
   });
 
+
+  const input = await Actor.getInput();
   const {
     development = true,
-    debug,
-    maxRequestRetries,
-    proxyGroups,
+    debug = false,
+    proxyGroups = [],
     type = ActorType.Full,
-  } = await getInput();
+  } = input || {};
 
-  if (development || debug) {
+  if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
@@ -158,69 +189,58 @@ async function main() {
 
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 400,
-    maxRequestRetries,
+    maxRequestRetries: 8,
     persistCookiesPerSession: true,
     proxyConfiguration,
     async requestHandler({ request, body, crawler }) {
       const { document } = parseHTML(body.toString());
       log.debug(`Scraping [${request.label}] - ${request.url}`);
 
-      switch (request.label) {
-        case LABELS.START:
-          {
-            const requests = handleTopLevelCategories(document);
-            stats.add("categories", requests.length);
-            if (type === ActorType.Test) {
-              await crawler.addRequests(requests.slice(0, 1));
-            } else {
-              await crawler.addRequests(requests);
-            }
-            log.info(`${request.url} - Found ${requests.length} categories`);
-          }
-          break;
+      const { categories = [], pagination = false, previousUrl = '' } = request.userData;
+      if (request.loadedUrl === previousUrl) {
+        log.debug(`Skipping as ${request.url} redirected back to ${previousUrl}`);
+        return;
+      }
 
-        case LABELS.CATEGORY: {
-          const { categories = [] } = request.userData;
-          const isProductPage = document.querySelectorAll('div.rd-category-tree__nav').length === 0;
-          if (isProductPage) {
-            const products = extractProducts(document, categories);
-            const savedCount = await saveProducts(products, stats, processedIds);
-            log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
+      const hasSubcategories = document.querySelectorAll('div.rd-category-tree__nav').length > 0;
+      if (request.label === LABELS.START || hasSubcategories) {
+        const requests = request.label === LABELS.START
+          ? handleTopLevelCategories(document)
+          : handleSubcategories(document, categories, request.url);
 
-            const totalProductCount = Number.parseInt(
-              document.querySelector('.product-count').textContent.replace(/\s+/g, ""),
-              10);
+        stats.add("categories", requests.length);
 
-            if (totalProductCount > products.length) {
-              const categoryId = extractCategoryId(request.url, document);
-              log.debug(`${request.url} - Found category ID: ${categoryId}`);
-              const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId, categories);
-              if (type === ActorType.Test) {
-                await crawler.addRequests(pageRequests.slice(0, 1));
-              } else {
-                await crawler.addRequests(pageRequests);
-              }
-            }
-          } else {
-            const requests = handleSubcategories(document, categories);
-            stats.add("categories", requests.length);
-            if (type === ActorType.Test) {
-              await crawler.addRequests(requests.slice(0, 1));
-            } else {
-              await crawler.addRequests(requests);
-            }
-            log.info(`${request.url} - Found ${requests.length} categories`);
-          }
-          break;
-
-        };
-        case LABELS.PRODUCTS: {
-          const { categories } = request.userData;
-          const products = extractProducts(document, categories);
-          const savedCount = await saveProducts(products, stats, processedIds);
-          log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
+        if (type === ActorType.Test) {
+          await crawler.addRequests(requests.slice(0, 1));
+        } else {
+          await crawler.addRequests(requests);
         }
+        log.info(`${request.url} - Found ${requests.length} categories`);
+        return;
+      }
 
+      const products = extractProducts(document, categories);
+      const savedCount = await saveProducts(products, stats, processedIds);
+      log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
+
+      if (pagination) {
+        return;
+      }
+
+      const totalProductCount = Number.parseInt(
+        document.querySelector('.product-count').textContent.replace(/\s+/g, ""),
+        10);
+
+      if (totalProductCount > products.length) {
+        const categoryId = extractCategoryId(request.url, document);
+        log.debug(`${request.url} - Found category ID: ${categoryId}`);
+        const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId, categories);
+
+        if (type === ActorType.Test) {
+          await crawler.addRequests(pageRequests.slice(0, 3));
+        } else {
+          await crawler.addRequests(pageRequests);
+        }
       }
     },
     async failedRequestHandler({ request }, error) {
@@ -229,8 +249,8 @@ async function main() {
   });
 
   const startingRequest = {
-    url: "https://www.kaufland.cz/elektronika/",
-    label: LABELS.CATEGORY,
+    url: ROOT_URL, 
+    label: LABELS.START,
   };
   await crawler.run([startingRequest]);
   log.info("Crawler finished");
