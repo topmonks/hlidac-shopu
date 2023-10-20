@@ -4972,7 +4972,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@thi.ng/atom": 5.2.9
     "@types/node": 18.18.5
     apify: 3.1.12
@@ -4990,7 +4990,7 @@ __metadata:
   dependencies:
     "@crawlee/playwright": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.18.5
     apify: 3.1.12
@@ -5005,7 +5005,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.18.5
     apify: 3.1.12
@@ -5021,7 +5021,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.429.0
     "@aws-sdk/client-sqs": 3.429.0
     "@aws-sdk/util-dynamodb": 3.429.0
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     ava: 5.3.1
     c8: 8.0.1
     chai: 4.3.10
@@ -5037,7 +5037,7 @@ __metadata:
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
     "@aws-sdk/client-s3": 3.429.0
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
   languageName: unknown
   linkType: soft
 
@@ -5047,7 +5047,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5060,7 +5060,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@topmonks/eu-shop-monitoring-lib": 1.2.0
     "@types/node": 18.18.5
     apify: 3.1.12
@@ -5136,7 +5136,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     lit-html: 3.0.0
   languageName: unknown
   linkType: soft
@@ -5187,7 +5187,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5249,7 +5249,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5268,7 +5268,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@1.3.11, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@1.3.12, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -5300,7 +5300,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5340,7 +5340,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     apify: 3.1.12
   languageName: unknown
   linkType: soft
@@ -5361,7 +5361,7 @@ __metadata:
   dependencies:
     "@crawlee/playwright": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5375,7 +5375,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5400,7 +5400,7 @@ __metadata:
   dependencies:
     "@crawlee/http": 3.5.7
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -5428,7 +5428,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/root-edge-lambda@workspace:www.hlidacshopu.cz/root-edge-lambda"
   dependencies:
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
   languageName: unknown
   linkType: soft
 
@@ -5477,7 +5477,7 @@ __metadata:
     "@crawlee/utils": 3.5.7
     "@fast-csv/format": 4.3.5
     "@hlidac-shopu/actors-common": 2.2.1
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     apify: 3.1.12
     byte-size: 8.1.1
     date-fns: 2.30.0
@@ -5489,7 +5489,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hlidac-shopu/lib": 1.3.11
+    "@hlidac-shopu/lib": 1.3.12
     "@material/button": 14.0.0
     "@material/icon-button": 14.0.0
     "@material/layout-grid": 14.0.0
