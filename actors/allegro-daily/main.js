@@ -5,11 +5,10 @@ import { Actor, LogLevel, log } from "apify";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { FingerprintGenerator } from 'fingerprint-generator'
+import { FingerprintGenerator } from "fingerprint-generator";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
-
-const ROOT_URL = 'https://allegro.cz';
+const ROOT_URL = "https://allegro.cz";
 
 const Label = {
   Start: "Start",
@@ -22,9 +21,9 @@ async function main() {
   // fungerprint generator to generate headers to help with the blocking
   const fingerprintGenerator = new FingerprintGenerator({
     // chrome is getting blocked a lot for some reason
-    browsers: ['firefox', 'safari'],
-    operatingSystems: ['windows', 'macos', 'linux']
-  })
+    browsers: ["firefox", "safari"],
+    operatingSystems: ["windows", "macos", "linux"]
+  });
   const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
@@ -32,26 +31,26 @@ async function main() {
     development = true,
     debug = false,
     proxyGroups = [],
-    type = ActorType.Full,
+    type = ActorType.Full
   } = input || {};
   const inputtedCategories = input?.categories ?? [];
-  const categoriesToScrape = inputtedCategories.length > 0
-    ? inputtedCategories.map(cat => cat.toLowerCase())
-    : [];
+  const categoriesToScrape =
+    inputtedCategories.length > 0
+      ? inputtedCategories.map(cat => cat.toLowerCase())
+      : [];
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups,
+    groups: proxyGroups
   });
-
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     products: 0,
-    duplicates: 0,
+    duplicates: 0
   });
 
   const processedIds = (await Actor.getValue("processedIds")) || {};
@@ -73,16 +72,16 @@ async function main() {
     maxRequestsPerMinute: 350,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
-      maxPoolSize: 50,
+      maxPoolSize: 50
     },
     preNavigationHooks: [
       async ({ request }) => {
         const generatedHeaders = fingerprintGenerator.getFingerprint().headers;
         request.headers = {
-          'user-agent': generatedHeaders['user-agent'],
-          'accept': generatedHeaders['accept'],
-          'accept-encoding': generatedHeaders['accept-encoding'],
-          'accept-language': generatedHeaders['accept-language'],
+          "user-agent": generatedHeaders["user-agent"],
+          "accept": generatedHeaders["accept"],
+          "accept-encoding": generatedHeaders["accept-encoding"],
+          "accept-language": generatedHeaders["accept-language"]
         };
       }
     ],
@@ -95,25 +94,32 @@ async function main() {
           {
             const { document } = parseHTML(body.toString());
             const topLevelCategoriesRequests = document
-              .querySelectorAll('a[data-description="navigation-layers category link"]')
+              .querySelectorAll(
+                'a[data-description="navigation-layers category link"]'
+              )
               .map(cat => ({
                 url: new URL(cat.href, ROOT_URL).href,
                 label: Label.Category,
                 userData: {
-                  categories: [cat.querySelector('div').textContent.trim()],
+                  categories: [cat.querySelector("div").textContent.trim()]
                 }
               }));
 
-            const requestsToAdd = categoriesToScrape.length === 0
-              ? topLevelCategoriesRequests
-              : topLevelCategoriesRequests.filter(req => {
-                for (const toScrape of categoriesToScrape) {
-                  if (toScrape.includes(req.userData.categories[0].toLowerCase())) {
-                    return true;
-                  }
-                }
-                return false;
-              });
+            const requestsToAdd =
+              categoriesToScrape.length === 0
+                ? topLevelCategoriesRequests
+                : topLevelCategoriesRequests.filter(req => {
+                    for (const toScrape of categoriesToScrape) {
+                      if (
+                        toScrape.includes(
+                          req.userData.categories[0].toLowerCase()
+                        )
+                      ) {
+                        return true;
+                      }
+                    }
+                    return false;
+                  });
 
             if (type === ActorType.Test) {
               await crawler.addRequests(requestsToAdd.slice(0, 2));
@@ -121,17 +127,24 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            const filteredCategoriesLog = requestsToAdd.length === topLevelCategoriesRequests.length
-              ? 'added all (no filtering inputted)'
-              : `${requestsToAdd.length} added after filtering (${requestsToAdd.map(cat => cat.userData.categories[0]).join(', ')})`;
-            log.info(`${request.url} - Found ${topLevelCategoriesRequests.length} top level categories, ${filteredCategoriesLog}`);
+            const filteredCategoriesLog =
+              requestsToAdd.length === topLevelCategoriesRequests.length
+                ? "added all (no filtering inputted)"
+                : `${
+                    requestsToAdd.length
+                  } added after filtering (${requestsToAdd
+                    .map(cat => cat.userData.categories[0])
+                    .join(", ")})`;
+            log.info(
+              `${request.url} - Found ${topLevelCategoriesRequests.length} top level categories, ${filteredCategoriesLog}`
+            );
           }
           break;
         case Label.Category:
           {
             const { document } = parseHTML(body.toString());
             const categoryRequests = document
-              .querySelectorAll('a.carousel-item')
+              .querySelectorAll("a.carousel-item")
               .map(cat => {
                 const prevCategories = request.userData.categories ?? [];
                 return {
@@ -140,18 +153,22 @@ async function main() {
                   userData: {
                     categories: [
                       ...prevCategories,
-                      cat.getAttribute('data-analytics-view-custom-title').trim(),
+                      cat
+                        .getAttribute("data-analytics-view-custom-title")
+                        .trim()
                     ]
                   }
-                }
-              })
+                };
+              });
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(`${request.url} - Found ${categoryRequests.length} categories`)
+            log.info(
+              `${request.url} - Found ${categoryRequests.length} categories`
+            );
           }
           break;
         case Label.Subcategory:
@@ -165,20 +182,19 @@ async function main() {
                   url: new URL(cat.href, ROOT_URL).href,
                   label: Label.Product,
                   userData: {
-                    categories: [
-                      ...prevCategories,
-                      cat.textContent.trim(),
-                    ]
+                    categories: [...prevCategories, cat.textContent.trim()]
                   }
-                }
-              })
+                };
+              });
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(`${request.url} - Found ${categoryRequests.length} subcategories`)
+            log.info(
+              `${request.url} - Found ${categoryRequests.length} subcategories`
+            );
           }
           break;
         case Label.Product:
@@ -187,9 +203,12 @@ async function main() {
             const { categories = [], pagination = false } = request.userData;
 
             const products = [];
-            const productElements = document.querySelectorAll('article');
+            const productElements = document.querySelectorAll("article");
             for (const prod of productElements) {
-              const id = prod.getAttribute('data-analytics-view-custom-representative-offer-id') ?? prod.getAttribute('data-analytics-view-value');
+              const id =
+                prod.getAttribute(
+                  "data-analytics-view-custom-representative-offer-id"
+                ) ?? prod.getAttribute("data-analytics-view-value");
               const itemId = Number.parseInt(id.trim(), 10);
               if (processedIds[itemId]) {
                 stats.inc("duplicates");
@@ -197,31 +216,48 @@ async function main() {
               }
               processedIds[itemId] = true;
 
-              const originalPrice = cleanPrice(prod.querySelector('span[style="font-weight:normal;text-decoration:line-through;"]')?.textContent) ?? null;
-              const currentPrice = cleanPrice(prod.querySelector('span[aria-label] > span')?.textContent) ?? null;
-              const imageElement = prod.querySelector('img');
+              const originalPrice =
+                cleanPrice(
+                  prod.querySelector(
+                    'span[style="font-weight:normal;text-decoration:line-through;"]'
+                  )?.textContent
+                ) ?? null;
+              const currentPrice =
+                cleanPrice(
+                  prod.querySelector("span[aria-label] > span")?.textContent
+                ) ?? null;
+              const imageElement = prod.querySelector("img");
               products.push({
                 itemId,
-                itemName: prod.querySelector('h2 > a[href]').textContent.trim(),
-                itemUrl: prod.getAttribute('data-analytics-view-custom-product-offer-url').trim(),
-                img: imageElement.getAttribute('data-src') ?? imageElement.getAttribute('src'),
+                itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
+                itemUrl: prod
+                  .getAttribute("data-analytics-view-custom-product-offer-url")
+                  .trim(),
+                img:
+                  imageElement.getAttribute("data-src") ??
+                  imageElement.getAttribute("src"),
                 currentPrice,
                 inStock: !!currentPrice,
                 originalPrice,
                 discounted: !!originalPrice,
-                currency: 'CZK',
-                category: categories,
+                currency: "CZK",
+                category: categories
               });
             }
             await Actor.pushData(products);
             stats.add("products", products.length);
-            log.info(`${request.url} - found ${productElements.length} products, saved ${products.length}`);
+            log.info(
+              `${request.url} - found ${productElements.length} products, saved ${products.length}`
+            );
 
             if (pagination) {
               return;
             }
 
-            const pageCount = Number.parseInt(document.querySelector('div > div[role="navigation"] > span').textContent);
+            const pageCount = Number.parseInt(
+              document.querySelector('div > div[role="navigation"] > span')
+                .textContent
+            );
             const paginationRequests = [];
             for (let i = 2; i < pageCount + 1; i++) {
               paginationRequests.push({
@@ -229,16 +265,18 @@ async function main() {
                 label: Label.Product,
                 userData: {
                   categories,
-                  pagination: true,
+                  pagination: true
                 }
-              })
+              });
             }
             if (type === ActorType.Test) {
               await crawler.addRequests(paginationRequests.slice(0, 2));
             } else {
               await crawler.addRequests(paginationRequests);
             }
-            log.debug(`${request.url} - added ${paginationRequests.length} pagination requests`);
+            log.debug(
+              `${request.url} - added ${paginationRequests.length} pagination requests`
+            );
           }
           break;
       }
@@ -254,7 +292,7 @@ async function main() {
   await crawler.run([
     {
       url: ROOT_URL,
-      label: Label.Start,
+      label: Label.Start
     }
   ]);
   await stats.save(true);
