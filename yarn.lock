@@ -5066,6 +5066,7 @@ __metadata:
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
+    fingerprint-generator: ^2.1.42
   languageName: unknown
   linkType: soft
 
@@ -14759,6 +14760,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fingerprint-generator@npm:^2.1.42":
+  version: 2.1.42
+  resolution: "fingerprint-generator@npm:2.1.42"
+  dependencies:
+    generative-bayesian-network: ^2.1.42
+    header-generator: ^2.1.42
+    tslib: ^2.4.0
+  checksum: 0ff809684d43fe9793744a8fb8c5d6fdc4e194311b4d89152aebe8d2e52d4ef5767d87980af2f86f033a37e840921ef637de20a8462a16229a439f1ff1cd45f0
+  languageName: node
+  linkType: hard
+
 "fingerprint-injector@npm:^2.0.5":
   version: 2.1.22
   resolution: "fingerprint-injector@npm:2.1.22"
@@ -15253,6 +15265,16 @@ __metadata:
     adm-zip: ^0.5.9
     tslib: ^2.4.0
   checksum: 6de8e7a7e9d4345da32ed09305ee209beed5cb0883d5dbe7ca884b058a7ce2cd02970244e020b9b1afb9a56a1afd1479d20fed990bb2fbde50e24195898cea13
+  languageName: node
+  linkType: hard
+
+"generative-bayesian-network@npm:^2.1.42":
+  version: 2.1.42
+  resolution: "generative-bayesian-network@npm:2.1.42"
+  dependencies:
+    adm-zip: ^0.5.9
+    tslib: ^2.4.0
+  checksum: da96544dd5f0b3da36e9736ae1e0b0bf9c9d1ac54e1fb9b7adac12e48b9ad14020b10abf7a9231834b8b67da0cb8a738bff769a919757f6504e2ab2dd8496c7c
   languageName: node
   linkType: hard
 
@@ -16288,6 +16310,18 @@ __metadata:
     ow: ^0.28.1
     tslib: ^2.4.0
   checksum: dae7997eff4dacd46cb5e7e8518d4cd0fe077160a65e8b112629c110afd39231096f211ed5993f9e3ecd07c672097d87cec110a2d44b57e8a22b12befec3268d
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^2.1.42":
+  version: 2.1.42
+  resolution: "header-generator@npm:2.1.42"
+  dependencies:
+    browserslist: ^4.21.1
+    generative-bayesian-network: ^2.1.42
+    ow: ^0.28.1
+    tslib: ^2.4.0
+  checksum: 2e71eae27b12fa9ef665726926bd8748f405e7e69318b89b56dd35322d680f93c072d3363c2bccfab07a7d7f4d8168a8d5cc1f2d8a6b70601bf898f7ae6b8f0f
   languageName: node
   linkType: hard
 
