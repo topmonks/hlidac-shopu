@@ -1,154 +1,245 @@
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, Dataset } from "apify";
-import { parseHTML } from "linkedom";
-import { useState } from "@crawlee/core";
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { Actor, LogLevel, log } from "apify";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { FingerprintGenerator } from 'fingerprint-generator'
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
-/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
-/** @enum {string} */
+const ROOT_URL = 'https://allegro.cz';
+
 const Label = {
   Start: "Start",
   Product: "Product",
-  Category: "Category"
+  Category: "Category",
+  Subcategory: "Subcategory"
 };
 
-function extractProduct({ document, request }) {
-  const prices = document.querySelectorAll("meta[itemprop=price]");
-  console.assert(
-    prices.length === 1,
-    `multiple prices found on ${request.url}`
-  );
-  const currentPrice = cleanPrice(prices[0].content);
-  const originalPrice = cleanPrice(
-    document.querySelector(
-      '[data-role="app-container"] [style="text-decoration:line-through"]'
-    )?.textContent
-  );
-  return {
-    itemId: document.querySelector("meta[itemprop=sku]").content,
-    itemName: document.querySelector("meta[itemprop=name]").content,
-    itemUrl: document.querySelector("meta[itemprop=url]").content,
-    img: document.querySelector("meta[itemprop=image]").content,
-    currentPrice,
-    inStock: !!currentPrice,
-    originalPrice,
-    discounted: !!originalPrice,
-    currency: document.querySelector("meta[itemprop=priceCurrency]").content,
-    breadcrumbs: Array.from(
-      document.querySelectorAll(
-        '[itemtype="http://schema.org/BreadcrumbList"] li'
-      )
-    )
-      .slice(1)
-      .map(li => li.textContent.trim())
-      .join(" > ")
-  };
-}
-
 async function main() {
+  // fungerprint generator to generate headers to help with the blocking
+  const fingerprintGenerator = new FingerprintGenerator({
+    // chrome is getting blocked a lot for some reason
+    browsers: ['firefox', 'safari'],
+    operatingSystems: ['windows', 'macos', 'linux']
+  })
   const rollbar = Rollbar.init();
 
-  const { development, proxyGroups } = await getInput();
+  const input = await Actor.getInput();
+  const {
+    development = true,
+    debug = false,
+    proxyGroups = [],
+    type = ActorType.Full,
+  } = input || {};
+  const inputtedCategories = input?.categories ?? [];
+  const categoriesToScrape = inputtedCategories.length > 0
+    ? inputtedCategories.map(cat => cat.toLowerCase())
+    : [];
+
+  if (debug) {
+    log.setLevel(LogLevel.DEBUG);
+  }
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
-    useApifyProxy: !development
   });
+
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
     products: 0,
-    errors: 0,
-    failed: 0
+    duplicates: 0,
   });
 
-  const requestedProducts = useState("requestedProducts", {});
+  const processedIds = (await Actor.getValue("processedIds")) || {};
+  Actor.on("persistState", async () => {
+    await Actor.setValue("processedIds", processedIds);
+  });
 
-  const crawler = new PlaywrightCrawler({
+  // manually open the default request queue as it is not always done
+  // automatically by the platform for some reason (needed when migrating)
+  const requestQueue = await Actor.openRequestQueue();
+
+  const crawler = new HttpCrawler({
+    requestQueue,
     useSessionPool: true,
     persistCookiesPerSession: true,
     proxyConfiguration,
-    maxConcurrency: 3,
-    maxRequestsPerMinute: 200,
-    browserPoolOptions: {
-      useFingerprints: true,
-      fingerprintOptions: {
-        fingerprintGeneratorOptions: { locales: ["cs-CZ"] }
-      }
+    maxRequestRetries: 50,
+    navigationTimeoutSecs: 60,
+    maxRequestsPerMinute: 300,
+    sessionPoolOptions: {
+      // limit the pool size so we have stable proxies
+      maxPoolSize: 50,
     },
-    async requestHandler({ request, page, log, crawler }) {
-      const { label } = request.userData;
-      log.info(`Processing ${request.url} (${label})`);
+    preNavigationHooks: [
+      async ({ request }) => {
+        const generatedHeaders = fingerprintGenerator.getFingerprint().headers;
+        request.headers = {
+          'user-agent': generatedHeaders['user-agent'],
+          'accept': generatedHeaders['accept'],
+          'accept-encoding': generatedHeaders['accept-encoding'],
+          'accept-language': generatedHeaders['accept-language'],
+        };
+      }
+    ],
+    async requestHandler({ request, body, log }) {
+      const { label } = request;
+      log.debug(`${label} - handling ${request.url}`);
 
       switch (label) {
         case Label.Start:
           {
-            await page.click('[data-role="accept-consent"]');
-            await page.click(
-              '[data-role="header-secondary-bar"] [data-dropdown-id="categories_dropdown"] button'
-            );
-            await page.waitForSelector(
-              ".js-navigation-links a[href*=kategorie]"
-            );
-            const requests = (
-              await page
-                .locator(".js-navigation-links a[href*=kategorie]")
-                .evaluateAll(categories => categories.map(a => a.href))
-            ).map(url => ({
-              url,
-              userData: {
-                label: Label.Category
-              }
-            }));
-            await crawler.requestQueue.addRequests(requests);
+            const { document } = parseHTML(body.toString());
+            const topLevelCategoriesRequests = document
+              .querySelectorAll('a[data-description="navigation-layers category link"]')
+              .map(cat => ({
+                url: new URL(cat.href, ROOT_URL).href,
+                label: Label.Category,
+                userData: {
+                  categories: [cat.querySelector('div').textContent.trim()],
+                }
+              }));
+
+            const requestsToAdd = categoriesToScrape.length === 0
+              ? topLevelCategoriesRequests
+              : topLevelCategoriesRequests.filter(req => {
+                for (const toScrape of categoriesToScrape) {
+                  if (toScrape.includes(req.userData.categories[0].toLowerCase())) {
+                    return true;
+                  }
+                }
+                return false;
+              });
+
+            if (type === ActorType.Test) {
+              await crawler.addRequests(requestsToAdd.slice(0, 2));
+            } else {
+              await crawler.addRequests(requestsToAdd);
+            }
+            stats.add("categories", requestsToAdd.length);
+            const filteredCategoriesLog = requestsToAdd.length === topLevelCategoriesRequests.length
+              ? 'added all (no filtering inputted)'
+              : `${requestsToAdd.length} added after filtering (${requestsToAdd.map(cat => cat.userData.categories[0]).join(', ')})`;
+            log.info(`${request.url} - Found ${topLevelCategoriesRequests.length} top level categories, ${filteredCategoriesLog}`);
           }
           break;
         case Label.Category:
           {
-            const content = await page.content();
-            const { document } = parseHTML(content);
-            stats.inc("categories");
-            const next = document.querySelector("[rel=next]");
-            if (next) {
-              await crawler.requestQueue.addRequest(
-                {
-                  url: next.href,
+            const { document } = parseHTML(body.toString());
+            const categoryRequests = document
+              .querySelectorAll('a.carousel-item')
+              .map(cat => {
+                const prevCategories = request.userData.categories ?? [];
+                return {
+                  url: new URL(cat.href, ROOT_URL).href,
+                  label: Label.Subcategory,
                   userData: {
-                    label: Label.Category
+                    categories: [
+                      ...prevCategories,
+                      cat.getAttribute('data-analytics-view-custom-title').trim(),
+                    ]
                   }
-                },
-                { forefront: true }
-              );
-            }
-
-            const urls = Array.from(
-              document.querySelectorAll("article h2 a"),
-              a => a.href
-            );
-            const requests = [];
-            for (const url of urls) {
-              if (requestedProducts[url]) continue;
-              requestedProducts[url] = true;
-              requests.push({
-                url,
-                userData: {
-                  label: Label.Product
                 }
-              });
+              })
+            if (type === ActorType.Test) {
+              await crawler.addRequests(categoryRequests.slice(0, 1));
+            } else {
+              await crawler.addRequests(categoryRequests);
             }
-            await crawler.requestQueue.addRequests(requests);
+            stats.add("categories", categoryRequests.length);
+            log.info(`${request.url} - Found ${categoryRequests.length} categories`)
+          }
+          break;
+        case Label.Subcategory:
+          {
+            const { document } = parseHTML(body.toString());
+            const categoryRequests = document
+              .querySelectorAll('a[data-role="LinkItemAnchor"]')
+              .map(cat => {
+                const prevCategories = request.userData.categories ?? [];
+                return {
+                  url: new URL(cat.href, ROOT_URL).href,
+                  label: Label.Product,
+                  userData: {
+                    categories: [
+                      ...prevCategories,
+                      cat.textContent.trim(),
+                    ]
+                  }
+                }
+              })
+            if (type === ActorType.Test) {
+              await crawler.addRequests(categoryRequests.slice(0, 1));
+            } else {
+              await crawler.addRequests(categoryRequests);
+            }
+            stats.add("categories", categoryRequests.length);
+            log.info(`${request.url} - Found ${categoryRequests.length} subcategories`)
           }
           break;
         case Label.Product:
-          const content = await page.content();
-          const { document } = parseHTML(content);
-          const product = extractProduct({ document, request });
-          stats.inc("products");
-          await Dataset.pushData(product);
+          {
+            const { document } = parseHTML(body.toString());
+            const { categories = [], pagination = false } = request.userData;
+
+            const products = [];
+            const productElements = document.querySelectorAll('article');
+            for (const prod of productElements) {
+              const id = prod.getAttribute('data-analytics-view-custom-representative-offer-id') ?? prod.getAttribute('data-analytics-view-value');
+              const itemId = Number.parseInt(id.trim(), 10);
+              if (processedIds[itemId]) {
+                stats.inc("duplicates");
+                continue;
+              }
+              processedIds[itemId] = true;
+
+              const originalPrice = cleanPrice(prod.querySelector('span[style="font-weight:normal;text-decoration:line-through;"]')?.textContent) ?? null;
+              const currentPrice = cleanPrice(prod.querySelector('span[aria-label] > span')?.textContent) ?? null;
+              const imageElement = prod.querySelector('img');
+              products.push({
+                itemId,
+                itemName: prod.querySelector('h2 > a[href]').textContent.trim(),
+                itemUrl: prod.getAttribute('data-analytics-view-custom-product-offer-url').trim(),
+                img: imageElement.getAttribute('data-src') ?? imageElement.getAttribute('src'),
+                currentPrice,
+                inStock: !!currentPrice,
+                originalPrice,
+                discounted: !!originalPrice,
+                currency: 'CZK',
+                category: categories,
+              });
+            }
+            await Actor.pushData(products);
+            stats.add("products", products.length);
+            log.info(`${request.url} - found ${productElements.length} products, saved ${products.length}`);
+
+            if (pagination) {
+              return;
+            }
+
+            const pageCount = Number.parseInt(document.querySelector('div > div[role="navigation"] > span').textContent);
+            const paginationRequests = [];
+            for (let i = 2; i < pageCount + 1; i++) {
+              paginationRequests.push({
+                url: `${request.url}?p=${i}`,
+                label: Label.Product,
+                userData: {
+                  categories,
+                  pagination: true,
+                }
+              })
+            }
+            if (type === ActorType.Test) {
+              await crawler.addRequests(paginationRequests.slice(0, 2));
+            } else {
+              await crawler.addRequests(paginationRequests);
+            }
+            log.debug(`${request.url} - added ${paginationRequests.length} pagination requests`);
+          }
           break;
       }
     },
@@ -162,16 +253,14 @@ async function main() {
 
   await crawler.run([
     {
-      url: "https://allegro.cz",
-      userData: {
-        label: Label.Start
-      }
+      url: ROOT_URL,
+      label: Label.Start,
     }
   ]);
   await stats.save(true);
 
   if (!development) {
-    // await uploadToKeboola("allegro-daily-cz");
+    await uploadToKeboola("allegro-daily-cz");
   }
 }
 
