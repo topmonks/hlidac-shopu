@@ -5486,7 +5486,7 @@ __metadata:
     "@crawlee/utils": 3.5.8
     "@hlidac-shopu/actors-common": 2.2.1
     "@thi.ng/atom": 5.2.9
-    "@thi.ng/transducers": 8.8.1
+    "@thi.ng/transducers": 8.8.2
     "@types/node": 18.18.5
     apify: 3.1.12
     apify-cli: 0.18.1
@@ -7811,9 +7811,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/arrays@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "@thi.ng/arrays@npm:2.6.2"
+"@thi.ng/arrays@npm:^2.6.3":
+  version: 2.6.3
+  resolution: "@thi.ng/arrays@npm:2.6.3"
   dependencies:
     "@thi.ng/api": ^8.9.5
     "@thi.ng/checks": ^3.4.5
@@ -7821,7 +7821,7 @@ __metadata:
     "@thi.ng/equiv": ^2.1.30
     "@thi.ng/errors": ^2.3.5
     "@thi.ng/random": ^3.6.8
-  checksum: 4452342d27601c1e1c74fdd8c65173eabff996e0faea9414da47bcedef536a9ea6223711b60fdfa9215864ac0cf0cd69cb005ba5826bbf26a79056538106274f
+  checksum: 234a2c6a31390e8e4e534a04a82bc34678560dd64bc09be97e77c31dfbf7114fac5e6122a6e696db2532a8bc5122815feb08d98ef08514eb48bc87fa48a70af2
   languageName: node
   linkType: hard
 
@@ -7919,19 +7919,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:8.8.1":
-  version: 8.8.1
-  resolution: "@thi.ng/transducers@npm:8.8.1"
+"@thi.ng/transducers@npm:8.8.2":
+  version: 8.8.2
+  resolution: "@thi.ng/transducers@npm:8.8.2"
   dependencies:
     "@thi.ng/api": ^8.9.5
-    "@thi.ng/arrays": ^2.6.2
+    "@thi.ng/arrays": ^2.6.3
     "@thi.ng/checks": ^3.4.5
     "@thi.ng/compare": ^2.2.0
     "@thi.ng/compose": ^2.1.42
     "@thi.ng/errors": ^2.3.5
     "@thi.ng/math": ^5.6.2
     "@thi.ng/random": ^3.6.8
-  checksum: 9a33fc9a01d2bc1e3047f49d75c7d179e2f579841364c0998be4936040708cb26fa2bb03873ae540fe4374a0d67061917e2af35c32aa7a315c6904b2b3285b8d
+  checksum: ae7926f0b5c698ff468bc6103d466c6174944c1f760b882d8f065de8bb4f6018e39d15c13d9d3e830385714c2523c888a5f555dd0317bb06a367b73b39232189
   languageName: node
   linkType: hard
 
