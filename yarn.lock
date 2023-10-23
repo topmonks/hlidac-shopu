@@ -8477,12 +8477,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.29.6":
-  version: 0.29.6
-  resolution: "@types/ramda@npm:0.29.6"
+"@types/ramda@npm:0.29.7":
+  version: 0.29.7
+  resolution: "@types/ramda@npm:0.29.7"
   dependencies:
     types-ramda: ^0.29.5
-  checksum: b8198f90295e40b0f2aa6dc18c60535a88ecd6e2afdb421e0616398b9cbed03f2a760e9d712258ab8fdebe7da9e21ecf31d2bc9cae6d31406b0095ce8c4c8591
+  checksum: 0f714c9ecedf53a67eb41d7a206aa2db0e696e612be19f9723e8f83f33ab8a0457ec3d1da83db02bdbbed1f00df1e0fc49adc088abf4b2f677ccf43c13a03afb
   languageName: node
   linkType: hard
 
@@ -16344,7 +16344,7 @@ __metadata:
     "@types/firefox-webext-browser": 111.0.3
     "@types/node": 18.18.6
     "@types/nunjucks": 3.2.5
-    "@types/ramda": 0.29.6
+    "@types/ramda": 0.29.7
     "@types/whatwg-url": 11.0.2
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
