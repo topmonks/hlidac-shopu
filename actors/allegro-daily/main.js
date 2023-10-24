@@ -69,7 +69,6 @@ async function main() {
     proxyConfiguration,
     maxRequestRetries: 50,
     navigationTimeoutSecs: 60,
-    maxRequestsPerMinute: 350,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
       maxPoolSize: 50
@@ -245,12 +244,12 @@ async function main() {
               });
             }
             await Actor.pushData(products);
-            stats.add("products", products.length);
-            log.info(
-              `${request.url} - found ${productElements.length} products, saved ${products.length}`
-            );
+            stats.add("products", productElements.length);
 
             if (pagination) {
+              log.info(
+                `${request.url} - found ${productElements.length} products, saved ${products.length}`
+              );
               return;
             }
 
@@ -274,8 +273,8 @@ async function main() {
             } else {
               await crawler.addRequests(paginationRequests);
             }
-            log.debug(
-              `${request.url} - added ${paginationRequests.length} pagination requests`
+            log.info(
+              `${request.url} - found ${productElements.length} products, saved ${products.length}, added ${paginationRequests.length} pagination requests`
             );
           }
           break;
