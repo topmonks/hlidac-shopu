@@ -6,9 +6,7 @@
 {
     "development": true,
     "debug": false,
-    "proxyGroups": [
-        "RESIDENTIAL"
-    ],
+    "proxyGroups": [],
     "type": "FULL",
     "categories": [
         "elektronika"
@@ -40,3 +38,8 @@ Currently available top-level categories: Elektronika, Móda, Dům a zahrada, Su
     ]
 }
 ```
+
+# notes
+
+- the Actor currently scrapes sub-categories to level 3 (will be probably changed later, level will be obtained from the input)
+- currently we can scrape max ~7200 items per category (max 72 items per page, max 100 pages per category), to get more we would need to use filters but there's no need for that now
