@@ -153,6 +153,7 @@ async function main() {
     await page.keyboard.down("End");
 
     await page.evaluate(() => {
+      /* global window, document */
       if (!document.body) return;
       document.body.scrollIntoView(false);
       const height = document.body.scrollHeight;

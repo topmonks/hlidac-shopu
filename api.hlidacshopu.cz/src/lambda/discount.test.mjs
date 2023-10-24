@@ -14,6 +14,6 @@ const historicalData = {
 };
 
 test("prepareData should return ", t => {
-  const result = prepareData(historicalData);
+  prepareData(historicalData);
   t.pass();
 });

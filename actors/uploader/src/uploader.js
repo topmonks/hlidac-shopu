@@ -1,3 +1,4 @@
+import { Blob } from "node:buffer";
 import { sleep } from "@crawlee/utils";
 import { Actor, log } from "apify";
 import byteSize from "byte-size";

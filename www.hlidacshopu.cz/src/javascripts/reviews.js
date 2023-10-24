@@ -17,20 +17,19 @@ addEventListener("DOMContentLoaded", async e => {
 function avatarTemplate({ name, image }) {
   return when(
     image,
-    () =>
-      html`
-        <img
-          class="avatar"
-          alt="${name}"
-          loading="lazy"
-          src="${image}"
-          srcset="
-            ${image.replace("s40", "s70")} 1x,
-            ${image.replace("s40", "s105")} 1.5x,
-            ${image.replace("s40", "s140")} 2x
-          "
-        />
-      `
+    () => html`
+      <img
+        class="avatar"
+        alt="${name}"
+        loading="lazy"
+        src="${image}"
+        srcset="
+          ${image.replace("s40", "s70")} 1x,
+          ${image.replace("s40", "s105")} 1.5x,
+          ${image.replace("s40", "s140")} 2x
+        "
+      />
+    `
   );
 }
 
