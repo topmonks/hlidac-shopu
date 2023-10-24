@@ -204,11 +204,10 @@ async function main() {
             const products = [];
             const productElements = document.querySelectorAll("article");
             for (const prod of productElements) {
-              const id =
+              const itemId =
                 prod.getAttribute(
                   "data-analytics-view-custom-representative-offer-id"
-                ) ?? prod.getAttribute("data-analytics-view-value");
-              const itemId = Number.parseInt(id.trim(), 10);
+                )?.trim() ?? prod.getAttribute("data-analytics-view-value")?.trim();
               if (processedIds[itemId]) {
                 stats.inc("duplicates");
                 continue;
