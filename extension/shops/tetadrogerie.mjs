@@ -1,25 +1,23 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
-export class Tetadrogerie extends Shop {
-  inject(renderMarkup) {
-    let elem = document.querySelector(".sx-detail-footer");
-    if (!elem) throw new Error("Element to add chart not found");
-
-    const styles = {
-      margin: "0px, 0px",
-      padding: "16px 0px"
-    };
-    const markup = renderMarkup(styles);
-    elem.insertAdjacentElement("beforebegin", markup);
-    return elem;
+export class TetaDrogerie extends Shop {
+  get injectionPoint() {
+    return [
+      "beforeend",
+      ".sx-detail-overview",
+      {
+        margin: 0,
+        padding: "16px 0px"
+      }
+    ];
   }
 
   async scrape() {
     const elem = document.querySelector("#product-overview");
     if (!elem) return;
     const product = elem.querySelector(".j-product");
-    const itemId = product.attributes["data-skuid"].textContent;
+    const itemId = product.dataset.skuid;
     const title = product.querySelector(".sx-detail-product-name").innerText;
     const actionPrice = cleanPrice(".sx-detail-price-action");
     const initialPrice = cleanPrice(".sx-detail-price-initial");
@@ -37,4 +35,4 @@ export class Tetadrogerie extends Shop {
   }
 }
 
-registerShop(new Tetadrogerie(), "tetadrogerie_cz");
+registerShop(new TetaDrogerie(), "tetadrogerie_cz");
