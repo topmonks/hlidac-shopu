@@ -8,7 +8,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { FingerprintGenerator } from "fingerprint-generator";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
-const ROOT_URL = "https://allegro.cz";
+const ROOT_URL = "https://allegro.cz/";
 
 const Label = {
   Start: "Start",
@@ -17,27 +17,96 @@ const Label = {
   Subcategory: "Subcategory"
 };
 
+async function handleProducts(document, processedIds) {
+  const categories = document
+    .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
+    .map(cat => cat?.textContent?.trim() ?? "");
+
+  categories.shift();
+
+  const products = [];
+  const productElements = document.querySelectorAll("article");
+  let duplicates = 0;
+  for (const prod of productElements) {
+    const itemId =
+      prod
+        .getAttribute("data-analytics-view-custom-representative-offer-id")
+        ?.trim() ?? prod.getAttribute("data-analytics-view-value")?.trim();
+    if (processedIds[itemId]) {
+      duplicates += 1;
+      continue;
+    }
+    processedIds[itemId] = true;
+
+    const originalPrice =
+      cleanPrice(
+        prod.querySelector(
+          'span[style="font-weight:normal;text-decoration:line-through;"]'
+        )?.textContent
+      ) ?? null;
+    const currentPrice =
+      cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent) ??
+      null;
+    const imageElement = prod.querySelector("img");
+    products.push({
+      itemId,
+      itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
+      itemUrl: prod
+        .getAttribute("data-analytics-view-custom-product-offer-url")
+        .trim(),
+      img:
+        imageElement.getAttribute("data-src") ??
+        imageElement.getAttribute("src"),
+      currentPrice,
+      inStock: !!currentPrice,
+      originalPrice,
+      discounted: !!originalPrice,
+      currency: "CZK",
+      category: categories
+    });
+  }
+  await Actor.pushData(products);
+  return {
+    totalProducts: productElements.length,
+    savedProducts: products.length,
+    duplicates
+  };
+}
+
+function createPaginationRequests(document, url) {
+  const pageCount = Number.parseInt(
+    document.querySelector('div > div[role="navigation"] > span').textContent
+  );
+  const paginationRequests = [];
+  for (let i = 2; i < pageCount + 1; i++) {
+    paginationRequests.push({
+      url: `${url}?p=${i}`,
+      label: Label.Product,
+      userData: {
+        pagination: true
+      }
+    });
+  }
+  return paginationRequests;
+}
+
 async function main() {
-  // fungerprint generator to generate headers to help with the blocking
+  // fingerprint generator to generate headers to help with the blocking
   const fingerprintGenerator = new FingerprintGenerator({
     // chrome is getting blocked a lot for some reason
     browsers: ["firefox", "safari"],
-    operatingSystems: ["windows", "macos", "linux"]
+    operatingSystems: ["windows", "macos"]
   });
   const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
   const {
-    development = true,
+    development = false,
     debug = false,
     proxyGroups = [],
     type = ActorType.Full
   } = input || {};
-  const inputtedCategories = input?.categories ?? [];
-  const categoriesToScrape =
-    inputtedCategories.length > 0
-      ? inputtedCategories.map(cat => cat.toLowerCase())
-      : [];
+  const inputtedUrls = input?.urls ?? [];
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -67,7 +136,7 @@ async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     proxyConfiguration,
-    maxRequestRetries: 50,
+    maxRequestRetries: 60,
     navigationTimeoutSecs: 60,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
@@ -92,33 +161,14 @@ async function main() {
         case Label.Start:
           {
             const { document } = parseHTML(body.toString());
-            const topLevelCategoriesRequests = document
+            const requestsToAdd = document
               .querySelectorAll(
                 'a[data-description="navigation-layers category link"]'
               )
               .map(cat => ({
                 url: new URL(cat.href, ROOT_URL).href,
-                label: Label.Category,
-                userData: {
-                  categories: [cat.querySelector("div").textContent.trim()]
-                }
+                label: Label.Category
               }));
-
-            const requestsToAdd =
-              categoriesToScrape.length === 0
-                ? topLevelCategoriesRequests
-                : topLevelCategoriesRequests.filter(req => {
-                    for (const toScrape of categoriesToScrape) {
-                      if (
-                        toScrape.includes(
-                          req.userData.categories[0].toLowerCase()
-                        )
-                      ) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  });
 
             if (type === ActorType.Test) {
               await crawler.addRequests(requestsToAdd.slice(0, 2));
@@ -126,16 +176,8 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            const filteredCategoriesLog =
-              requestsToAdd.length === topLevelCategoriesRequests.length
-                ? "added all (no filtering inputted)"
-                : `${
-                    requestsToAdd.length
-                  } added after filtering (${requestsToAdd
-                    .map(cat => cat.userData.categories[0])
-                    .join(", ")})`;
             log.info(
-              `${request.url} - Found ${topLevelCategoriesRequests.length} top level categories, ${filteredCategoriesLog}`
+              `${request.url} - Added ${requestsToAdd.length} top level categories`
             );
           }
           break;
@@ -145,18 +187,9 @@ async function main() {
             const categoryRequests = document
               .querySelectorAll("a.carousel-item")
               .map(cat => {
-                const prevCategories = request.userData.categories ?? [];
                 return {
                   url: new URL(cat.href, ROOT_URL).href,
-                  label: Label.Subcategory,
-                  userData: {
-                    categories: [
-                      ...prevCategories,
-                      cat
-                        .getAttribute("data-analytics-view-custom-title")
-                        .trim()
-                    ]
-                  }
+                  label: Label.Subcategory
                 };
               });
             if (type === ActorType.Test) {
@@ -166,25 +199,51 @@ async function main() {
             }
             stats.add("categories", categoryRequests.length);
             log.info(
-              `${request.url} - Found ${categoryRequests.length} categories`
+              `${request.url} - Added ${categoryRequests.length} subcategories`
             );
           }
           break;
         case Label.Subcategory:
           {
             const { document } = parseHTML(body.toString());
-            const categoryRequests = document
-              .querySelectorAll('a[data-role="LinkItemAnchor"]')
-              .map(cat => {
-                const prevCategories = request.userData.categories ?? [];
-                return {
-                  url: new URL(cat.href, ROOT_URL).href,
-                  label: Label.Product,
-                  userData: {
-                    categories: [...prevCategories, cat.textContent.trim()]
-                  }
-                };
-              });
+
+            const subcategoryLinks = document.querySelectorAll(
+              '[data-role="LinkItemAnchor"]'
+            );
+            const subcategoryItems = document.querySelectorAll(
+              '[data-role="LinkItem"]'
+            );
+
+            // we reached the lowest subcategory - one of the navigation items is not clickable
+            if (subcategoryLinks.length !== subcategoryItems.length) {
+              const { totalProducts, savedProducts, duplicates } =
+                await handleProducts(document, processedIds);
+              stats.add("products", totalProducts);
+              stats.add("duplicates", duplicates);
+
+              const paginationRequests = createPaginationRequests(
+                document,
+                request.url
+              );
+              if (type === ActorType.Test) {
+                await crawler.addRequests(paginationRequests.slice(0, 2));
+              } else {
+                await crawler.addRequests(paginationRequests);
+              }
+
+              log.info(
+                `${request.url} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`
+              );
+              return;
+            }
+
+            const categoryRequests = subcategoryLinks.map(cat => {
+              return {
+                url: new URL(cat.href, ROOT_URL).href,
+                label: Label.Subcategory
+              };
+            });
+
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
@@ -199,84 +258,12 @@ async function main() {
         case Label.Product:
           {
             const { document } = parseHTML(body.toString());
-            const { categories = [], pagination = false } = request.userData;
-
-            const products = [];
-            const productElements = document.querySelectorAll("article");
-            for (const prod of productElements) {
-              const itemId =
-                prod
-                  .getAttribute(
-                    "data-analytics-view-custom-representative-offer-id"
-                  )
-                  ?.trim() ??
-                prod.getAttribute("data-analytics-view-value")?.trim();
-              if (processedIds[itemId]) {
-                stats.inc("duplicates");
-                continue;
-              }
-              processedIds[itemId] = true;
-
-              const originalPrice =
-                cleanPrice(
-                  prod.querySelector(
-                    'span[style="font-weight:normal;text-decoration:line-through;"]'
-                  )?.textContent
-                ) ?? null;
-              const currentPrice =
-                cleanPrice(
-                  prod.querySelector("span[aria-label] > span")?.textContent
-                ) ?? null;
-              const imageElement = prod.querySelector("img");
-              products.push({
-                itemId,
-                itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
-                itemUrl: prod
-                  .getAttribute("data-analytics-view-custom-product-offer-url")
-                  .trim(),
-                img:
-                  imageElement.getAttribute("data-src") ??
-                  imageElement.getAttribute("src"),
-                currentPrice,
-                inStock: !!currentPrice,
-                originalPrice,
-                discounted: !!originalPrice,
-                currency: "CZK",
-                category: categories
-              });
-            }
-            await Actor.pushData(products);
-            stats.add("products", productElements.length);
-
-            if (pagination) {
-              log.info(
-                `${request.url} - found ${productElements.length} products, saved ${products.length}`
-              );
-              return;
-            }
-
-            const pageCount = Number.parseInt(
-              document.querySelector('div > div[role="navigation"] > span')
-                .textContent
-            );
-            const paginationRequests = [];
-            for (let i = 2; i < pageCount + 1; i++) {
-              paginationRequests.push({
-                url: `${request.url}?p=${i}`,
-                label: Label.Product,
-                userData: {
-                  categories,
-                  pagination: true
-                }
-              });
-            }
-            if (type === ActorType.Test) {
-              await crawler.addRequests(paginationRequests.slice(0, 2));
-            } else {
-              await crawler.addRequests(paginationRequests);
-            }
+            const { totalProducts, savedProducts, duplicates } =
+              await handleProducts(document, processedIds);
+            stats.add("products", totalProducts);
+            stats.add("duplicates", duplicates);
             log.info(
-              `${request.url} - found ${productElements.length} products, saved ${products.length}, added ${paginationRequests.length} pagination requests`
+              `${request.url} - Found ${totalProducts} products, saved ${savedProducts}`
             );
           }
           break;
@@ -290,12 +277,53 @@ async function main() {
     }
   });
 
-  await crawler.run([
-    {
+  const requests = [];
+  for (const inputtedUrl of inputtedUrls) {
+    const url = new URL(inputtedUrl);
+
+    if (url.host !== "allegro.cz") {
+      log.warning(`Skipping ${inputtedUrl}, not an url from allegro.cz`);
+    }
+
+    if (url.origin === ROOT_URL) {
+      requests.push({
+        url: ROOT_URL,
+        label: Label.Start
+      });
+      continue;
+    }
+
+    const firstPathSegment = url.pathname.split("/")[1] ?? "";
+    if (firstPathSegment === "doporucujeme") {
+      requests.push({
+        url: inputtedUrl,
+        label: Label.Category
+      });
+      continue;
+    }
+
+    if (firstPathSegment === "kategorie") {
+      requests.push({
+        url: inputtedUrl,
+        label: Label.Subcategory
+      });
+      continue;
+    }
+
+    log.warning(
+      `Skipping ${inputtedUrl}, only home-page/category/recommended urls are supported`
+    );
+  }
+
+  if (requests.length === 0) {
+    log.info("Got no urls on the input, will start from the home page");
+    requests.push({
       url: ROOT_URL,
       label: Label.Start
-    }
-  ]);
+    });
+  }
+
+  await crawler.run(requests);
   await stats.save(true);
 
   if (!development) {

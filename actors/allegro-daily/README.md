@@ -8,15 +8,23 @@
     "debug": false,
     "proxyGroups": [],
     "type": "FULL",
-    "categories": [
-        "elektronika"
+    "urls": [
+        "https://allegro.cz/kategorie/telefony-a-prislusenstvi-4"
     ]
 }
 ```
 
-The scraper will filter found top-level categories based on the input (will scrape only "Elektronika" category in example above) to limit the number of results. If none are inputted or `categories` is null, it will scrape all categories.
+The scraper will go through the inputted URLs in the `urls` array field, enqueue all found subcategories and scrape products when reaching the lowest possible subcategory. If `field` is empty or omitted, the scraper will start on the homepage.
 
-Currently available top-level categories: Elektronika, Móda, Dům a zahrada, Supermarket, Děti, Krása, Zdraví, Kultura a zábava, Sport a cestování, Auto-moto, Sbírky a umění, Obchod a služby
+Supported URLs in the input are 
+
+ - homepage `https://allegro.cz/`
+ - pages with recommendations (top-level categories), such as `https://allegro.cz/doporucujeme/elektronika`
+ - category/subcategory pages, like `https://allegro.cz/kategorie/telefony-a-prislusenstvi-4`
+
+ Fields `development` and `debug` can also be omitted. Default values are `false` for both.
+
+ Field `type` can be either `FULL` or `TEST`.
 
 # Example output
 
@@ -41,5 +49,4 @@ Currently available top-level categories: Elektronika, Móda, Dům a zahrada, Su
 
 # notes
 
-- the Actor currently scrapes sub-categories to level 3 (will be probably changed later, level will be obtained from the input)
-- currently we can scrape max ~7200 items per category (max 72 items per page, max 100 pages per category), to get more we would need to use filters but there's no need for that now
+- Currently we can scrape max ~7200 items per category (max 72 items per page, max 100 pages per category), to get more we would need to use filters but there's no need for that now
