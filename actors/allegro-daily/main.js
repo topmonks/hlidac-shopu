@@ -106,7 +106,7 @@ async function main() {
 
   const input = await Actor.getInput();
   const {
-    development = true,
+    development = false,
     debug = false,
     proxyGroups = [],
     type = ActorType.Full
