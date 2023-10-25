@@ -20,7 +20,7 @@ const Label = {
 async function handleProducts(document, processedIds) {
   const categories = document
     .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
-    .map(cat => cat?.textContent?.trim() ?? "")
+    .map(cat => cat?.textContent?.trim() ?? "");
 
   categories.shift();
 
