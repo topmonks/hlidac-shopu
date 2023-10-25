@@ -15,12 +15,33 @@ export class Okay extends Shop {
       elem.querySelector("[data-product]").dataset.product
     );
     const itemId = product.id;
-    const comparePrice = product.compare_at_price / 100;
-    const currentPrice = product.price / 100;
-    const originalPrice =
-      product.compare_at_price !== product.price ? comparePrice : null;
     const title = product.title;
     const imageUrl = product.featured_image;
+
+    const manufacturersRecommendedPriceSel = ".modal_price .was-price .money";
+    const manufacturersRecommendedPriceVisible = isElementVisible(
+      document.querySelector(manufacturersRecommendedPriceSel)
+    );
+    const manufacturersRecommendedPrice = manufacturersRecommendedPriceVisible
+      ? cleanPrice(manufacturersRecommendedPriceSel)
+      : null;
+    const priceSel = ".modal_price .current_price .money";
+    const priceVisible = isElementVisible(document.querySelector(priceSel));
+    const price = priceVisible ? cleanPrice(priceSel) : null;
+    const priceAfterDiscountSel = ".modal_price .current_price_mz .money.sale";
+    const priceAfterDiscountVisible = isElementVisible(
+      document.querySelector(priceAfterDiscountSel)
+    );
+    const priceAfterDiscount = priceAfterDiscountVisible
+      ? cleanPrice(priceAfterDiscountSel)
+      : null;
+    const originalPrice = manufacturersRecommendedPrice
+      ? manufacturersRecommendedPrice
+      : priceAfterDiscount
+      ? price
+      : null;
+    const currentPrice = priceAfterDiscount ? priceAfterDiscount : price;
+
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
