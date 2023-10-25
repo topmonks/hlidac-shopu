@@ -2,10 +2,10 @@ import { registerShop, cleanPriceText } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Dm extends AsyncShop {
-  selector = "#dm-view [data-dmid='detail-availability-container']";
+  selector = `script[type='application/ld+json'][data-source=composing-ui]`;
 
   get injectionPoint() {
-    return ["beforeend", this.selector];
+    return ["afterend", `[data-dmid=add-to-cart-with-quantity-form]`];
   }
 
   get waitForSelector() {
@@ -13,9 +13,7 @@ export class Dm extends AsyncShop {
   }
 
   async scrape() {
-    const data = JSON.parse(
-      document.querySelector("[type='application/ld+json']").textContent
-    );
+    const data = JSON.parse(document.querySelector(this.selector).textContent);
     if (!data) return;
     const itemId = data.gtin ?? data.sku;
     const title = data.name;
