@@ -24,6 +24,8 @@ Supported URLs in the input are
 
  Fields `development` and `debug` can also be omitted. Default values are `false` for both.
 
+ Field `type` can be either `FULL` or `TEST`.
+
 # Example output
 
 ```json
