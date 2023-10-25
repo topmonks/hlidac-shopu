@@ -8,7 +8,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { FingerprintGenerator } from "fingerprint-generator";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
-const ROOT_URL = "https://allegro.cz";
+const ROOT_URL = "https://allegro.cz/";
 
 const Label = {
   Start: "Start",
@@ -18,11 +18,11 @@ const Label = {
 };
 
 async function main() {
-  // fungerprint generator to generate headers to help with the blocking
+  // fingerprint generator to generate headers to help with the blocking
   const fingerprintGenerator = new FingerprintGenerator({
     // chrome is getting blocked a lot for some reason
     browsers: ["firefox", "safari"],
-    operatingSystems: ["windows", "macos", "linux"]
+    operatingSystems: ["windows", "macos"]
   });
   const rollbar = Rollbar.init();
 
@@ -33,11 +33,8 @@ async function main() {
     proxyGroups = [],
     type = ActorType.Full
   } = input || {};
-  const inputtedCategories = input?.categories ?? [];
-  const categoriesToScrape =
-    inputtedCategories.length > 0
-      ? inputtedCategories.map(cat => cat.toLowerCase())
-      : [];
+  console.log(input);
+  const inputtedUrls = input?.urls ?? [];
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -92,33 +89,14 @@ async function main() {
         case Label.Start:
           {
             const { document } = parseHTML(body.toString());
-            const topLevelCategoriesRequests = document
+            const requestsToAdd = document
               .querySelectorAll(
                 'a[data-description="navigation-layers category link"]'
               )
               .map(cat => ({
                 url: new URL(cat.href, ROOT_URL).href,
                 label: Label.Category,
-                userData: {
-                  categories: [cat.querySelector("div").textContent.trim()]
-                }
               }));
-
-            const requestsToAdd =
-              categoriesToScrape.length === 0
-                ? topLevelCategoriesRequests
-                : topLevelCategoriesRequests.filter(req => {
-                    for (const toScrape of categoriesToScrape) {
-                      if (
-                        toScrape.includes(
-                          req.userData.categories[0].toLowerCase()
-                        )
-                      ) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  });
 
             if (type === ActorType.Test) {
               await crawler.addRequests(requestsToAdd.slice(0, 2));
@@ -126,16 +104,8 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            const filteredCategoriesLog =
-              requestsToAdd.length === topLevelCategoriesRequests.length
-                ? "added all (no filtering inputted)"
-                : `${
-                    requestsToAdd.length
-                  } added after filtering (${requestsToAdd
-                    .map(cat => cat.userData.categories[0])
-                    .join(", ")})`;
             log.info(
-              `${request.url} - Found ${topLevelCategoriesRequests.length} top level categories, ${filteredCategoriesLog}`
+              `${request.url} - Added ${requestsToAdd.length} top level categories`
             );
           }
           break;
@@ -149,14 +119,6 @@ async function main() {
                 return {
                   url: new URL(cat.href, ROOT_URL).href,
                   label: Label.Subcategory,
-                  userData: {
-                    categories: [
-                      ...prevCategories,
-                      cat
-                        .getAttribute("data-analytics-view-custom-title")
-                        .trim()
-                    ]
-                  }
                 };
               });
             if (type === ActorType.Test) {
@@ -173,18 +135,29 @@ async function main() {
         case Label.Subcategory:
           {
             const { document } = parseHTML(body.toString());
-            const categoryRequests = document
-              .querySelectorAll('a[data-role="LinkItemAnchor"]')
+
+            const subcategoryLinks = document.querySelectorAll('[data-role="LinkItemAnchor"]');
+            const subcategoryItems = document.querySelectorAll('[data-role="LinkItem"]');
+
+            // we reached the lowest subcategory - one of the navigation items is not clickable
+            if (subcategoryLinks.length !== subcategoryItems.length) {
+              log.info(`${request.url} - Reached lowest subcategory, will begin to scrape products`);
+              crawler.addRequests([{
+                url: request.url,
+                label: Label.Product,
+                uniqueKey: `${request.url}-products`,
+              }]);
+              return;
+            }
+
+            const categoryRequests = subcategoryLinks
               .map(cat => {
-                const prevCategories = request.userData.categories ?? [];
                 return {
                   url: new URL(cat.href, ROOT_URL).href,
-                  label: Label.Product,
-                  userData: {
-                    categories: [...prevCategories, cat.textContent.trim()]
-                  }
+                  label: Label.Subcategory,
                 };
               });
+            
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
@@ -199,7 +172,10 @@ async function main() {
         case Label.Product:
           {
             const { document } = parseHTML(body.toString());
-            const { categories = [], pagination = false } = request.userData;
+            const { pagination = false } = request.userData;
+            const categories = document
+              .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
+              .map(cat => cat?.textContent?.trim() ?? '');
 
             const products = [];
             const productElements = document.querySelectorAll("article");
@@ -265,7 +241,6 @@ async function main() {
                 url: `${request.url}?p=${i}`,
                 label: Label.Product,
                 userData: {
-                  categories,
                   pagination: true
                 }
               });
@@ -290,12 +265,51 @@ async function main() {
     }
   });
 
-  await crawler.run([
-    {
+  const requests = [];
+  for (const inputtedUrl of inputtedUrls) {
+    const url = new URL(inputtedUrl);
+
+    if (url.host !== 'allegro.cz') {
+      log.warning(`Skipping ${inputtedUrl}, not an url from allegro.cz`)
+    }
+
+    if (url.origin === ROOT_URL) {
+      requests.push({
+        url: ROOT_URL,
+        label: Label.Start
+      });
+      continue;
+    }
+
+    const firstPathSegment = url.pathname.split('/')[1] ?? '';
+    if (firstPathSegment === 'doporucujeme') {
+      requests.push({
+        url: inputtedUrl,
+        label: Label.Category,
+      })
+      continue;
+    }
+
+    if (firstPathSegment === 'kategorie') {
+      requests.push({
+        url: inputtedUrl,
+        label: Label.Subcategory,
+      })
+      continue;
+    }
+
+    log.warning(`Skipping ${inputtedUrl}, only home-page/category/recommended urls are supported`);
+  }
+
+  if (requests.length === 0) {
+    log.info('Got no urls on the input, will start from the home page')
+    requests.push({
       url: ROOT_URL,
       label: Label.Start
-    }
-  ]);
+    })
+  }
+
+  await crawler.run(requests);
   await stats.save(true);
 
   if (!development) {
