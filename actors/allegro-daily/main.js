@@ -17,6 +17,83 @@ const Label = {
   Subcategory: "Subcategory"
 };
 
+
+async function handleProducts(document, processedIds) {
+  const categories = document
+    .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
+    .map(cat => cat?.textContent?.trim() ?? '');
+
+  const products = [];
+  const productElements = document.querySelectorAll("article");
+  let duplicates = 0;
+  for (const prod of productElements) {
+    const itemId =
+      prod
+        .getAttribute(
+          "data-analytics-view-custom-representative-offer-id"
+        )
+        ?.trim() ??
+      prod.getAttribute("data-analytics-view-value")?.trim();
+    if (processedIds[itemId]) {
+      duplicates += 1;
+      continue;
+    }
+    processedIds[itemId] = true;
+
+    const originalPrice =
+      cleanPrice(
+        prod.querySelector(
+          'span[style="font-weight:normal;text-decoration:line-through;"]'
+        )?.textContent
+      ) ?? null;
+    const currentPrice =
+      cleanPrice(
+        prod.querySelector("span[aria-label] > span")?.textContent
+      ) ?? null;
+    const imageElement = prod.querySelector("img");
+    products.push({
+      itemId,
+      itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
+      itemUrl: prod
+        .getAttribute("data-analytics-view-custom-product-offer-url")
+        .trim(),
+      img:
+        imageElement.getAttribute("data-src") ??
+        imageElement.getAttribute("src"),
+      currentPrice,
+      inStock: !!currentPrice,
+      originalPrice,
+      discounted: !!originalPrice,
+      currency: "CZK",
+      category: categories
+    });
+  }
+  await Actor.pushData(products);
+  return {
+    totalProducts: productElements.length,
+    savedProducts: products.length,
+    duplicates
+  };
+}
+
+function createPaginationRequests(document, url) {
+  const pageCount = Number.parseInt(
+    document.querySelector('div > div[role="navigation"] > span')
+      .textContent
+  );
+  const paginationRequests = [];
+  for (let i = 2; i < pageCount + 1; i++) {
+    paginationRequests.push({
+      url: `${url}?p=${i}`,
+      label: Label.Product,
+      userData: {
+        pagination: true
+      }
+    });
+  }
+  return paginationRequests;
+}
+
 async function main() {
   // fingerprint generator to generate headers to help with the blocking
   const fingerprintGenerator = new FingerprintGenerator({
@@ -128,7 +205,7 @@ async function main() {
             }
             stats.add("categories", categoryRequests.length);
             log.info(
-              `${request.url} - Found ${categoryRequests.length} categories`
+              `${request.url} - Added ${categoryRequests.length} subcategories`
             );
           }
           break;
@@ -141,12 +218,18 @@ async function main() {
 
             // we reached the lowest subcategory - one of the navigation items is not clickable
             if (subcategoryLinks.length !== subcategoryItems.length) {
-              log.info(`${request.url} - Reached lowest subcategory, will begin to scrape products`);
-              crawler.addRequests([{
-                url: request.url,
-                label: Label.Product,
-                uniqueKey: `${request.url}-products`,
-              }]);
+              const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
+              stats.add("products", totalProducts);
+              stats.add("duplicates", duplicates);
+
+              const paginationRequests = createPaginationRequests(document, request.url);
+              if (type === ActorType.Test) {
+                await crawler.addRequests(paginationRequests.slice(0, 2));
+              } else {
+                await crawler.addRequests(paginationRequests);
+              }
+
+              log.info(`${request.url} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`);
               return;
             }
 
@@ -157,7 +240,7 @@ async function main() {
                   label: Label.Subcategory,
                 };
               });
-            
+
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
@@ -172,86 +255,11 @@ async function main() {
         case Label.Product:
           {
             const { document } = parseHTML(body.toString());
-            const { pagination = false } = request.userData;
-            const categories = document
-              .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
-              .map(cat => cat?.textContent?.trim() ?? '');
-
-            const products = [];
-            const productElements = document.querySelectorAll("article");
-            for (const prod of productElements) {
-              const itemId =
-                prod
-                  .getAttribute(
-                    "data-analytics-view-custom-representative-offer-id"
-                  )
-                  ?.trim() ??
-                prod.getAttribute("data-analytics-view-value")?.trim();
-              if (processedIds[itemId]) {
-                stats.inc("duplicates");
-                continue;
-              }
-              processedIds[itemId] = true;
-
-              const originalPrice =
-                cleanPrice(
-                  prod.querySelector(
-                    'span[style="font-weight:normal;text-decoration:line-through;"]'
-                  )?.textContent
-                ) ?? null;
-              const currentPrice =
-                cleanPrice(
-                  prod.querySelector("span[aria-label] > span")?.textContent
-                ) ?? null;
-              const imageElement = prod.querySelector("img");
-              products.push({
-                itemId,
-                itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
-                itemUrl: prod
-                  .getAttribute("data-analytics-view-custom-product-offer-url")
-                  .trim(),
-                img:
-                  imageElement.getAttribute("data-src") ??
-                  imageElement.getAttribute("src"),
-                currentPrice,
-                inStock: !!currentPrice,
-                originalPrice,
-                discounted: !!originalPrice,
-                currency: "CZK",
-                category: categories
-              });
-            }
-            await Actor.pushData(products);
-            stats.add("products", productElements.length);
-
-            if (pagination) {
-              log.info(
-                `${request.url} - found ${productElements.length} products, saved ${products.length}`
-              );
-              return;
-            }
-
-            const pageCount = Number.parseInt(
-              document.querySelector('div > div[role="navigation"] > span')
-                .textContent
-            );
-            const paginationRequests = [];
-            for (let i = 2; i < pageCount + 1; i++) {
-              paginationRequests.push({
-                url: `${request.url}?p=${i}`,
-                label: Label.Product,
-                userData: {
-                  pagination: true
-                }
-              });
-            }
-            if (type === ActorType.Test) {
-              await crawler.addRequests(paginationRequests.slice(0, 2));
-            } else {
-              await crawler.addRequests(paginationRequests);
-            }
+            const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
+            stats.add("products", totalProducts);
+            stats.add("duplicates", duplicates);
             log.info(
-              `${request.url} - found ${productElements.length} products, saved ${products.length}, added ${paginationRequests.length} pagination requests`
+              `${request.url} - Found ${totalProducts} products, saved ${savedProducts}`
             );
           }
           break;
