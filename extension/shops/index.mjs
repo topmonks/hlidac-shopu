@@ -1,4 +1,5 @@
 export * from "./aaaauto.mjs";
+export * from "./allegro.mjs";
 export * from "./alza.mjs";
 export * from "./benu.mjs";
 export * from "./czc.mjs";
