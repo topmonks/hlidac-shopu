@@ -21,7 +21,8 @@ const Label = {
 async function handleProducts(document, processedIds) {
   const categories = document
     .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
-    .map(cat => cat?.textContent?.trim() ?? '');
+    .map(cat => cat?.textContent?.trim() ?? '')
+    .shift();
 
   const products = [];
   const productElements = document.querySelectorAll("article");
@@ -110,7 +111,6 @@ async function main() {
     proxyGroups = [],
     type = ActorType.Full
   } = input || {};
-  console.log(input);
   const inputtedUrls = input?.urls ?? [];
 
   if (debug) {
@@ -141,7 +141,7 @@ async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     proxyConfiguration,
-    maxRequestRetries: 50,
+    maxRequestRetries: 60,
     navigationTimeoutSecs: 60,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
@@ -192,7 +192,6 @@ async function main() {
             const categoryRequests = document
               .querySelectorAll("a.carousel-item")
               .map(cat => {
-                const prevCategories = request.userData.categories ?? [];
                 return {
                   url: new URL(cat.href, ROOT_URL).href,
                   label: Label.Subcategory,
