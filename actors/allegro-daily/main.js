@@ -21,7 +21,8 @@ async function handleProducts(document, processedIds) {
   const categories = document
     .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
     .map(cat => cat?.textContent?.trim() ?? "")
-    .shift();
+
+  categories.shift();
 
   const products = [];
   const productElements = document.querySelectorAll("article");
