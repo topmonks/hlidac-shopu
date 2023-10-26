@@ -327,7 +327,7 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    await uploadToKeboola("allegro-daily-cz");
+    await uploadToKeboola("allegro_cz");
   }
 }
 
