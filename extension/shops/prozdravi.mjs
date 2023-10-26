@@ -11,24 +11,21 @@ export class Prozdravi extends AsyncShop {
   }
 
   async scrape() {
-    const jsonld = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    )[0];
-    if (!jsonld) return null;
-    try {
-      const data = JSON.parse(jsonld.innerText)[0];
-      if (data["@type"] !== "Product") return null;
-      const originalPrice = cleanPrice(".old-price span");
-      return {
-        itemId: null,
-        title: data.name,
-        currentPrice: parseFloat(data.offers.price),
-        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
-        imageUrl: data.image
-      };
-    } catch (e11) {
-      console.error("Could not find product info", e11);
-    }
+    // This page contains JSON-LD with product info, but it is loaded only
+    // on direct navigation/reload.
+    // We have to scrape data from DOM, that is actually mutated.
+    const currentPrice = cleanPrice(".price span");
+    if (!currentPrice) return null;
+    const title = document.querySelector("h1").textContent.trim();
+    const originalPrice = cleanPrice(".old-price span");
+    const imageUrl = document.querySelector("img.product-image").src;
+    return {
+      itemId: null, // ID is nowhere on the page
+      title,
+      currentPrice: parseFloat(currentPrice),
+      originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+      imageUrl
+    };
   }
 }
 
