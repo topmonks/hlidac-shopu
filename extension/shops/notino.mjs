@@ -1,77 +1,35 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Notino extends Shop {
-  constructor() {
-    super();
-    this.masterId = null;
-    this.lastHref = location.href;
-  }
+function getVariantUrl(itemId) {
+  if (location.href.includes(itemId)) return location.href;
+  // inject product variant into URL when missing
+  return `${location.href}p-${itemId}`;
+}
+
+export class Notino extends AsyncShop {
+  #selector = "#pdAddToCart"
 
   get injectionPoint() {
-    return ["afterbegin", "#pdAddToCart"];
+    return ["beforeend", this.#selector];
   }
 
-  async scheduleRendering({ render, cleanup, fetchData }) {
-    const elem = document.getElementById("pd-price");
-    if (!elem) return false;
-
-    const info = await this.scrape();
-    if (!info) return;
-    const data = await fetchData(info);
-    if (!data) return;
-    render(false, data);
-
-    new MutationObserver(async () => {
-      if (location.href === this.lastHref) return;
-      this.lastHref = location.href;
-
-      const info = await this.scrape();
-      if (!info) return;
-      const data = await fetchData(info);
-      if (!data) return;
-      render(true, data);
-    }).observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  getMasterId() {
-    const apolloState = JSON.parse(
-      document.getElementById("__APOLLO_STATE__").textContent
-    );
-    const [key] = Object.entries(apolloState.ROOT_QUERY).find(([k]) =>
-      k.startsWith("productDetailByMasterId")
-    );
-    // const masterId = masterRes.id.replace("Product:", "");
-    const masterId = key.match(/masterId":"(\d+)/)?.[1];
-    console.log(`Found master id ${masterId}`); // eslint-disable-line no-console
-    return masterId;
+  get waitForSelector() {
+    return this.#selector;
   }
 
   async scrape() {
-    const elem = document.getElementById("pdHeader");
+    const elem = document.querySelector(this.#selector);
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
     const currentPrice = cleanPrice("#pd-price");
     const originalPrice = cleanPrice(
       ":not(#pd-price) > span[content]:first-of-type"
     );
-    const imageUrl = document.getElementById(
-      "pd-image-main"
-    )?.src;
-    let itemId = (() => {
-      const match = window.location.pathname.match(/\/p-(\d+)\//);
-      return match ? match[1] : null;
-    })();
-
-    if (!itemId) {
-      itemId = this.masterId || this.getMasterId();
-      this.masterId = itemId;
-    }
-
-    return { itemId, title, currentPrice, originalPrice, imageUrl };
+    const imageUrl = document.getElementById("pd-image-main")?.src;
+    const itemId = document.querySelector("input[name=productId]").value;
+    const url = getVariantUrl(itemId);
+    return { itemId, title, currentPrice, originalPrice, imageUrl, url };
   }
 }
 
