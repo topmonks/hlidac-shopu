@@ -11,6 +11,7 @@ export * from "./globus.mjs";
 export * from "./ikea.mjs";
 export * from "./itesco.mjs";
 export * from "./kasa.mjs";
+export * from "./kaufland.mjs";
 export * from "./knihydobrovsky.mjs";
 export * from "./kosik.mjs";
 export * from "./lekarna.mjs";
