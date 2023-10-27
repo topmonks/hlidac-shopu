@@ -3,7 +3,7 @@ import { Shop } from "./shop.mjs";
 
 export class Benu extends Shop {
   get injectionPoint() {
-    return ["afterend", ".buy-box"];
+    return ["afterend", ".buy"];
   }
 
   async scrape() {
