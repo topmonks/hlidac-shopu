@@ -9,7 +9,7 @@ import { FingerprintGenerator } from "fingerprint-generator";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
 const ROOT_URL = "https://allegro.cz/";
-const PROCESSED_IDS_KEY = 'processedIds';
+const PROCESSED_IDS_KEY = "processedIds";
 
 const Label = {
   Start: "Start",
