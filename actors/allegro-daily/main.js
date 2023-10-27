@@ -9,6 +9,7 @@ import { FingerprintGenerator } from "fingerprint-generator";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
 const ROOT_URL = "https://allegro.cz/";
+const PROCESSED_IDS_KEY = 'processedIds';
 
 const Label = {
   Start: "Start",
@@ -122,9 +123,9 @@ async function main() {
     duplicates: 0
   });
 
-  const processedIds = (await Actor.getValue("processedIds")) || {};
+  const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) || []);
   Actor.on("persistState", async () => {
-    await Actor.setValue("processedIds", processedIds);
+    await Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds));
   });
 
   // manually open the default request queue as it is not always done
