@@ -16,7 +16,7 @@ export class Kaufland extends AsyncShop {
     const elem = document.querySelector(this.#selector);
     if (!elem) return null;
 
-    const itemId = location.pathname.split("/").pop();
+    const itemId = location.pathname.split("/").at(-2);
     const title = document.querySelector(`h1.rd-title`).textContent.trim();
     const currentPrice = cleanPrice(`.rd-price-information__price`);
     if (!currentPrice) return null;
