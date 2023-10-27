@@ -22131,20 +22131,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:21.4.0":
-  version: 21.4.0
-  resolution: "puppeteer-core@npm:21.4.0"
-  dependencies:
-    "@puppeteer/browsers": 1.8.0
-    chromium-bidi: 0.4.32
-    cross-fetch: 4.0.0
-    debug: 4.3.4
-    devtools-protocol: 0.0.1191157
-    ws: 8.14.2
-  checksum: f170eee19256933c9f072a80eea282a902a507f3cbac3a630dcca910ba7321b46af5128adc26b89d8efb2728f5c71282ec70dde99458de1a0af8e903e9d7dc35
-  languageName: node
-  linkType: hard
-
 "puppeteer-core@npm:21.4.1":
   version: 21.4.1
   resolution: "puppeteer-core@npm:21.4.1"
@@ -22178,18 +22164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:*":
-  version: 21.4.0
-  resolution: "puppeteer@npm:21.4.0"
-  dependencies:
-    "@puppeteer/browsers": 1.8.0
-    cosmiconfig: 8.3.6
-    puppeteer-core: 21.4.0
-  checksum: 42a2d99147d5a94d827e417a16d519ccf5f9e0baf64efabbae7158136b443c166ac5eb36877d1d849f196de270910eb7391825edfc9eb782da04238e9e087e70
-  languageName: node
-  linkType: hard
-
-"puppeteer@npm:21.4.1":
+"puppeteer@npm:*, puppeteer@npm:21.4.1":
   version: 21.4.1
   resolution: "puppeteer@npm:21.4.1"
   dependencies:
