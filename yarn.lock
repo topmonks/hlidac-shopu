@@ -3897,7 +3897,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.5.8, @crawlee/http@npm:^3.5.8":
+"@crawlee/http@npm:3.5.8":
   version: 3.5.8
   resolution: "@crawlee/http@npm:3.5.8"
   dependencies:
@@ -5117,12 +5117,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
   dependencies:
-    "@crawlee/http": ^3.5.8
+    "@crawlee/http": 3.5.8
     "@hlidac-shopu/actors-common": 2.2.1
     "@types/node": 20.8.8
     apify: 3.1.12
     apify-cli: 0.18.1
-    fingerprint-generator: ^2.1.42
+    fingerprint-generator: 2.1.42
   languageName: unknown
   linkType: soft
 
@@ -14742,6 +14742,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fingerprint-generator@npm:2.1.42":
+  version: 2.1.42
+  resolution: "fingerprint-generator@npm:2.1.42"
+  dependencies:
+    generative-bayesian-network: ^2.1.42
+    header-generator: ^2.1.42
+    tslib: ^2.4.0
+  checksum: 0ff809684d43fe9793744a8fb8c5d6fdc4e194311b4d89152aebe8d2e52d4ef5767d87980af2f86f033a37e840921ef637de20a8462a16229a439f1ff1cd45f0
+  languageName: node
+  linkType: hard
+
 "fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.22":
   version: 2.1.22
   resolution: "fingerprint-generator@npm:2.1.22"
@@ -14750,17 +14761,6 @@ __metadata:
     header-generator: ^2.1.22
     tslib: ^2.4.0
   checksum: c837581ad640ebfdbae916542e7acc436087837825bf0fe633f83ddf8eb6d278a95599d24603a583867535a26b3dcc7ef704ec734212167c46f1b8ef2f7d955c
-  languageName: node
-  linkType: hard
-
-"fingerprint-generator@npm:^2.1.42":
-  version: 2.1.42
-  resolution: "fingerprint-generator@npm:2.1.42"
-  dependencies:
-    generative-bayesian-network: ^2.1.42
-    header-generator: ^2.1.42
-    tslib: ^2.4.0
-  checksum: 0ff809684d43fe9793744a8fb8c5d6fdc4e194311b4d89152aebe8d2e52d4ef5767d87980af2f86f033a37e840921ef637de20a8462a16229a439f1ff1cd45f0
   languageName: node
   linkType: hard
 
