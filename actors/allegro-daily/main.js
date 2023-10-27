@@ -140,7 +140,7 @@ async function main() {
     proxyConfiguration,
     maxRequestRetries: 60,
     navigationTimeoutSecs: 45,
-    maxConcurrency: 150,
+    maxConcurrency: 100,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
       maxPoolSize: 50
