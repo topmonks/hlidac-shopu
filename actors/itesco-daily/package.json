@@ -9,10 +9,10 @@
     "@crawlee/puppeteer": "3.5.8",
     "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.12",
-    "puppeteer": "*"
+    "puppeteer": "21.4.1"
   },
   "devDependencies": {
-    "@types/node": "20.8.8",
+    "@types/node": "20.8.9",
     "apify-cli": "0.18.1"
   },
   "scripts": {

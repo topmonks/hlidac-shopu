@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-import path from "path";
-import fs from "fs";
-import url from "url";
-import { FormData } from "formdata-node";
+import path from "node:path";
+import fs from "node:fs";
+import url from "node:url";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const rootPath = path.resolve(__dirname, "..", "public", "www.hlidacshopu.cz");

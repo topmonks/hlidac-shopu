@@ -7,8 +7,8 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.433.0",
-    "@aws-sdk/client-s3": "3.433.0",
+    "@aws-sdk/client-cloudfront": "3.437.0",
+    "@aws-sdk/client-s3": "3.437.0",
     "@crawlee/http": "3.5.8",
     "@hlidac-shopu/actors-common": "2.2.1",
     "apify": "3.1.12",
@@ -16,7 +16,7 @@
     "jsonwebtoken": "9.0.2"
   },
   "devDependencies": {
-    "@types/node": "20.8.8",
+    "@types/node": "20.8.9",
     "apify-cli": "0.18.1"
   },
   "scripts": {

@@ -2,7 +2,7 @@
 
 import gulp_mode from "gulp-mode";
 import cssvariables from "postcss-css-variables";
-import projectPath from "@topmonks/blendid/gulpfile.js/lib/projectPath.mjs";
+import projectPath from "@topmonks/blendid/lib/projectPath.mjs";
 import pathConfig from "./path-config.json" assert { type: "json" };
 
 const mode = gulp_mode();
