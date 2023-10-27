@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "description": "Extension",
   "dependencies": {
-    "@hlidac-shopu/lib": "1.3.13",
+    "@hlidac-shopu/lib": "workspace:*",
     "lit-html": "3.0.0"
   }
 }
