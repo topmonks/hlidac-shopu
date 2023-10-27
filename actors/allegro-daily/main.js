@@ -33,11 +33,12 @@ async function handleProducts(document, processedIds) {
       prod
         .getAttribute("data-analytics-view-custom-representative-offer-id")
         ?.trim() ?? prod.getAttribute("data-analytics-view-value")?.trim();
-    if (processedIds[itemId]) {
+    
+    if (processedIds.has(itemId)) {
       duplicates += 1;
       continue;
     }
-    processedIds[itemId] = true;
+    processedIds.add(itemId);
 
     const originalPrice =
       cleanPrice(
@@ -138,7 +139,7 @@ async function main() {
     persistCookiesPerSession: true,
     proxyConfiguration,
     maxRequestRetries: 60,
-    navigationTimeoutSecs: 30,
+    navigationTimeoutSecs: 45,
     maxConcurrency: 150,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
