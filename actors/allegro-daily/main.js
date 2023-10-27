@@ -33,7 +33,7 @@ async function handleProducts(document, processedIds) {
       prod
         .getAttribute("data-analytics-view-custom-representative-offer-id")
         ?.trim() ?? prod.getAttribute("data-analytics-view-value")?.trim();
-    
+
     if (processedIds.has(itemId)) {
       duplicates += 1;
       continue;
