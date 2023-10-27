@@ -8,6 +8,7 @@ import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 
 const ROOT_URL = "https://www.kaufland.cz/";
+const PROCESSED_IDS_KEY = "processedIds";
 
 const LABELS = {
   START: "START",
@@ -150,10 +151,10 @@ function extractProducts(document, categories) {
 async function saveProducts(products, stats, processedIds) {
   const productsToSave = [];
   for (const product of products) {
-    if (processedIds[product.itemId]) {
+    if (processedIds.has(product.itemId)) {
       stats.inc("duplicates");
     } else {
-      processedIds[product.itemId] = true;
+      processedIds.add(product.itemId);
       productsToSave.push(product);
     }
   }
@@ -206,9 +207,9 @@ function createPaginationRequests(
 async function main() {
   rollbar.init();
 
-  const processedIds = (await Actor.getValue("processedIds")) || {};
+  const processedIds = new Set(await Actor.getValue(PROCESSED_IDS_KEY) || []);
   Actor.on("persistState", async () => {
-    await Actor.setValue("processedIds", processedIds);
+    await Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds));
   });
 
   const stats = await withPersistedStats(x => x, {
