@@ -2,19 +2,12 @@ import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Allegro extends AsyncShop {
-  selector = `[data-box-name=summaryOneColumn] [data-role=app-container]`;
-  constructor() {
-    super();
-    this.loaded = false;
-    this.lastHref = null;
-    this.firstLoad = true;
-    this.state = null;
-  }
+  #selector = `[data-box-name=summaryOneColumn] [data-role=app-container]`;
 
   get injectionPoint() {
     return [
       "afterend",
-      this.selector,
+      this.#selector,
       {
         margin: 0,
         padding: "16px",
@@ -24,11 +17,11 @@ export class Allegro extends AsyncShop {
   }
 
   get waitForSelector() {
-    return this.selector;
+    return this.#selector;
   }
 
   async scrape() {
-    const elem = document.querySelector(this.selector);
+    const elem = document.querySelector(this.#selector);
     if (!elem) return null;
 
     const itemId = elem.querySelector(`meta[itemprop=sku]`).content.trim();
@@ -38,11 +31,12 @@ export class Allegro extends AsyncShop {
     );
     if (!currentPrice) return null;
 
-    const originalPrice = cleanPriceText(
-      elem
-        .querySelector(`[style="text-decoration:line-through"]`)
-        .textContent.trim()
+    let originalPriceEl = elem.querySelector(
+      `[style="text-decoration:line-through"]`
     );
+    const originalPrice = originalPriceEl
+      ? cleanPriceText(originalPriceEl?.textContent?.trim())
+      : null;
     const imageUrl = elem.querySelector(`meta[itemprop=image]`).content.trim();
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
