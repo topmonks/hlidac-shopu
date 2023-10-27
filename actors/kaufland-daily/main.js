@@ -106,7 +106,7 @@ function extractProducts(document, categories) {
       Array.isArray(product.image) ? product.image[0] : product.image
     );
     productsInfoFromScript[key] = {
-      itemId: product.sku,
+      itemId: product.sku.toString(),
       itemUrl: product.offers.url,
       inStock: product.offers.availability === "https://schema.org/InStock",
       currentPrice: Number.parseFloat(product.offers.price),
