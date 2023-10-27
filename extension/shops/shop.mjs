@@ -44,6 +44,7 @@ export class AsyncShop extends Shop {
         this.lastHref = location.href;
       }
       if (this.loaded) return;
+      if (this.loading) return;
 
       const elem = document.querySelector(this.waitForSelector);
       if (!elem) {
@@ -52,9 +53,11 @@ export class AsyncShop extends Shop {
       }
       const info = await this.scrape();
       if (!info) return;
+      this.loading = true;
       const data = await fetchData(info);
       if (!data) return;
       this.loaded = true;
+      this.loading = false;
       this.loaded = render(!this.firstLoad, data);
       this.firstLoad = false;
     });
