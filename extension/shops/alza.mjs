@@ -113,7 +113,7 @@ export class Alza extends Shop {
 
   injectOnDetailPage(renderMarkup) {
     this.element.insertAdjacentElement(
-      "beforebegin",
+      "beforestart",
       renderMarkup({
         "order": "0",
         "margin": "0",
@@ -158,7 +158,7 @@ export class Alza extends Shop {
   }
 
   isDetailItemPage() {
-    this.element = document.querySelector(".detail-page .price-detail__row");
+    this.element = document.querySelector(".detail-page .price-detail__buy-actions");
     return Boolean(this.element);
   }
 
