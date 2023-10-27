@@ -207,7 +207,7 @@ function createPaginationRequests(
 async function main() {
   rollbar.init();
 
-  const processedIds = new Set(await Actor.getValue(PROCESSED_IDS_KEY) || []);
+  const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) || []);
   Actor.on("persistState", async () => {
     await Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds));
   });
