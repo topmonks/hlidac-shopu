@@ -138,7 +138,8 @@ async function main() {
     persistCookiesPerSession: true,
     proxyConfiguration,
     maxRequestRetries: 60,
-    navigationTimeoutSecs: 60,
+    navigationTimeoutSecs: 30,
+    maxConcurrency: 150,
     sessionPoolOptions: {
       // limit the pool size so we have stable proxies
       maxPoolSize: 50
