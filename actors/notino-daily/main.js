@@ -111,8 +111,8 @@ function handleProductUsingWindowObject(document, country) {
     if (key.includes("Brand:")) {
       itemBrand = productData[key].name;
     }
-    if (productData.hasOwnProperty(key) && /^Variant:\d+$/.test(key)) {
-      variants.push(parseInt(key.replace("Variant:", ""), 10));
+    if (productData.hasOwnProperty(key) && /^CatalogVariant:\d+$/.test(key)) {
+      variants.push(parseInt(key.replace("CatalogVariant:", ""), 10));
     }
   }
   const category = ["category", "subCategory", "type"]
@@ -124,8 +124,8 @@ function handleProductUsingWindowObject(document, country) {
 
   return variants
     .map(variant => {
-      const variantGeneralData = productData[`Variant:${variant}`];
-      if (!variantGeneralData.canBuy) return;
+      const variantGeneralData = productData[`CatalogVariant:${variant}`];
+      if (variantGeneralData.availability.state !== "CanBeBought") return;
       const productName = `${itemBrand} ${
         variantGeneralData.name ? variantGeneralData.name : ""
       } ${
@@ -136,7 +136,7 @@ function handleProductUsingWindowObject(document, country) {
           : ""
       }`;
       const product = {
-        itemId: `${variantGeneralData.id}`,
+        itemId: `${variantGeneralData.webId}`,
         itemUrl: `${rootUrl}${variantGeneralData.url}`,
         itemName: productName.trim(),
         discounted: false,
@@ -412,7 +412,6 @@ async function main() {
     await uploadToKeboola(tableName);
   }
 
-  log.info("invalidated Data CDN");
   log.info("Finished.");
 }
 
