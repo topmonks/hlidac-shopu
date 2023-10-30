@@ -197,10 +197,9 @@ async function handlePagination(json, createUrl, enqueueLinks, stats) {
   const { d } = json;
   const { document } = parseHTML(d.Boxes);
   const links = Array.from(document.querySelectorAll(".browsinglink.name"));
-  console.log({ links: links.length });
   const urls = links.map(x => createUrl(x.href));
-  console.log({ urls });
-  await enqueueLinks({ label: Label.Detail, urls });
+  const result = await enqueueLinks({ label: Label.Detail, urls });
+  console.log({ result });
   stats.inc("pages");
 }
 
