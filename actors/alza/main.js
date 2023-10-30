@@ -193,13 +193,14 @@ async function handleDetail(body, stats) {
   }
 }
 
-async function handlePagination(json, createUrl, enqueueLinks, stats) {
+async function handlePagination(json, createUrl, requestQueue, stats) {
   const { d } = json;
   const { document } = parseHTML(d.Boxes);
   const links = Array.from(document.querySelectorAll(".browsinglink.name"));
   const urls = links.map(x => createUrl(x.href));
-  const result = await enqueueLinks({ label: Label.Detail, urls });
-  console.log({ result });
+  await requestQueue.addRequests(
+    urls.map(url => ({ label: Label.Detail, url }))
+  );
   stats.inc("pages");
 }
 
@@ -306,7 +307,7 @@ async function main() {
       json,
       session,
       log,
-      enqueueLinks
+      crawler
     }) {
       const { label } = request.userData;
 
@@ -330,7 +331,7 @@ async function main() {
             crawler.requestQueue
           );
         case Label.Pagination:
-          return handlePagination(json, createUrl, enqueueLinks, stats);
+          return handlePagination(json, createUrl, crawler.requestQueue, stats);
         case Label.Detail:
           return handleDetail(body, stats);
       }
