@@ -195,10 +195,10 @@ async function handleDetail(body, stats) {
 
 async function handlePagination(json, createUrl, enqueueLinks, stats) {
   const { d } = json;
+  console.dir(d);
   const { document } = parseHTML(d.Boxes);
-  const urls = Array.from(document.querySelectorAll(".browsinglink.name")).map(
-    x => createUrl(x.href)
-  );
+  const links = Array.from(document.querySelectorAll(".browsinglink.name"));
+  const urls = links.map(x => createUrl(x.href));
   await enqueueLinks({ label: Label.Detail, urls });
   stats.inc("pages");
 }
