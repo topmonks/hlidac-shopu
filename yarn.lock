@@ -4268,7 +4268,7 @@ __metadata:
     "@web/test-runner-junit-reporter": "npm:0.6.2"
     chart.js: "npm:4.4.0"
     chartjs-adapter-date-fns: "npm:3.0.0"
-    lit: "npm:3.0.0"
+    lit: "npm:3.0.1"
   languageName: unknown
   linkType: soft
 
@@ -17178,14 +17178,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:3.0.0":
-  version: 3.0.0
-  resolution: "lit@npm:3.0.0"
+"lit@npm:3.0.1":
+  version: 3.0.1
+  resolution: "lit@npm:3.0.1"
   dependencies:
     "@lit/reactive-element": "npm:^2.0.0"
     lit-element: "npm:^4.0.0"
     lit-html: "npm:^3.0.0"
-  checksum: 28368fad872e5b5cfa8a6a77c20e368ca9512f2c5b5afb954261444b8b7905b0962f600c515a3173a56a75bb3971bb92ee3d85249ff5f6fe5e3deaa134063752
+  checksum: 04df16bdccedececc01312450249a15dc183cf65d829ca24bbc7e1004a96a67f78b59d640c4aceda047ecfab369cb0cea3f094653ce0b5a4a015dd39c21cb23b
   languageName: node
   linkType: hard
 
