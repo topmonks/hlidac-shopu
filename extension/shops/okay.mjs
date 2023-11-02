@@ -5,7 +5,20 @@ export class Okay extends Shop {
   selector = ".product-form-container";
 
   get injectionPoint() {
-    return ["afterend", this.selector, { display: "block !important" }];
+    return [
+      "afterend",
+      this.selector,
+      {
+        display: "block !important",
+        visibility: "visible !important",
+        overflow: "visible !important",
+        width: "100% !important",
+        height: "auto !important",
+        opacity: "1.0 !important",
+        position: "static !important",
+        transform: "none !important"
+      }
+    ];
   }
 
   async scrape() {
