@@ -244,7 +244,7 @@ jobs:
       image: ubuntu-2204:2022.10.2
     steps:
       - run:
-          name: Reffer to xcode cloud
+          name: Refer to xcode cloud
           command: echo "Go to Xcode Cloud"
   provision:
     machine:
