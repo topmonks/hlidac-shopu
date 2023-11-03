@@ -5484,16 +5484,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.6.1":
-  version: 6.6.1
-  resolution: "@pulumi/aws@npm:6.6.1"
+"@pulumi/aws@npm:6.7.0":
+  version: 6.7.0
+  resolution: "@pulumi/aws@npm:6.7.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     read-package-tree: "npm:^5.2.1"
     resolve: "npm:^1.7.1"
-  checksum: cd52824551c836cd623a141a3efbfb8220d8b2bbb8752d4cc627d9f4733e5b984466bc3beb9afbe246296faf98828515230a0fad2cd88881c595f84e6428fd73
+  checksum: 4a14e2a6976e612271940602b69cfe9ef57ccc422f38d95b131a28dbb311423bfcb4f329651f9d0b47e628cce513515db94edb689885dd4ace4850f5f8e0ceef
   languageName: node
   linkType: hard
 
@@ -15041,7 +15041,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.438.0"
-    "@pulumi/aws": "npm:6.6.1"
+    "@pulumi/aws": "npm:6.7.0"
     "@pulumi/awsx": "npm:2.0.3"
     "@pulumi/pulumi": "npm:3.91.1"
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=eb192efc4fcca10a215b786e572146e884bc7af3"
