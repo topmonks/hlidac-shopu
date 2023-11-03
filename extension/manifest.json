@@ -40,6 +40,8 @@
       }
     ]
   },
+  "permissions": ["scripting", "webRequest"],
+  "host_permissions": ["https://api.hlidacshopu.cz/*"],
   "content_scripts": [
     {
       "matches": [
@@ -94,12 +96,13 @@
         "https://www.allegro.cz/*",
         "https://www.kaufland.cz/*"
       ],
-      "js": [
-        "content.js"
-      ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'"
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "{d6f0f975-91a3-4d78-96f7-5f1859ad18b6}",
