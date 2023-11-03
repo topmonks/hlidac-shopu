@@ -4265,7 +4265,7 @@ __metadata:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
     "@open-wc/testing": "npm:3.2.0"
     "@web/test-runner": "npm:0.17.3"
-    "@web/test-runner-junit-reporter": "npm:0.6.2"
+    "@web/test-runner-junit-reporter": "npm:0.6.3"
     chart.js: "npm:4.4.0"
     chartjs-adapter-date-fns: "npm:3.0.0"
     lit: "npm:3.0.1"
@@ -7622,19 +7622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-chrome@npm:^0.14.3":
-  version: 0.14.3
-  resolution: "@web/test-runner-chrome@npm:0.14.3"
-  dependencies:
-    "@web/test-runner-core": "npm:^0.11.6"
-    "@web/test-runner-coverage-v8": "npm:^0.7.2"
-    async-mutex: "npm:0.4.0"
-    chrome-launcher: "npm:^0.15.0"
-    puppeteer-core: "npm:^20.0.0"
-  checksum: 5fecce54e2908a8712310d884ea1a53f73ec52f1c992855585e24c84911fe2b76fc4adb48f6ee20d71faec1eb16f0eca90e407d61db0f1efdb298fa98db7c4c4
-  languageName: node
-  linkType: hard
-
 "@web/test-runner-chrome@npm:^0.14.4":
   version: 0.14.4
   resolution: "@web/test-runner-chrome@npm:0.14.4"
@@ -7702,40 +7689,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-core@npm:^0.11.6":
-  version: 0.11.6
-  resolution: "@web/test-runner-core@npm:0.11.6"
-  dependencies:
-    "@babel/code-frame": "npm:^7.12.11"
-    "@types/babel__code-frame": "npm:^7.0.2"
-    "@types/co-body": "npm:^6.1.0"
-    "@types/convert-source-map": "npm:^2.0.0"
-    "@types/debounce": "npm:^1.2.0"
-    "@types/istanbul-lib-coverage": "npm:^2.0.3"
-    "@types/istanbul-reports": "npm:^3.0.0"
-    "@web/browser-logs": "npm:^0.3.4"
-    "@web/dev-server-core": "npm:^0.6.2"
-    chokidar: "npm:^3.4.3"
-    cli-cursor: "npm:^3.1.0"
-    co-body: "npm:^6.1.0"
-    convert-source-map: "npm:^2.0.0"
-    debounce: "npm:^1.2.0"
-    dependency-graph: "npm:^0.11.0"
-    globby: "npm:^11.0.1"
-    ip: "npm:^1.1.5"
-    istanbul-lib-coverage: "npm:^3.0.0"
-    istanbul-lib-report: "npm:^3.0.1"
-    istanbul-reports: "npm:^3.0.2"
-    log-update: "npm:^4.0.0"
-    nanocolors: "npm:^0.2.1"
-    nanoid: "npm:^3.1.25"
-    open: "npm:^8.0.2"
-    picomatch: "npm:^2.2.2"
-    source-map: "npm:^0.7.3"
-  checksum: 4a303692a7d05be93acb9d69a8358708c5cec99a9452b5efe8062fc832af49cf0304ca1a8975e993594ddafff96e72334f5b5b4b4ab29c103218b582eaf95897
-  languageName: node
-  linkType: hard
-
 "@web/test-runner-core@npm:^0.12.0":
   version: 0.12.0
   resolution: "@web/test-runner-core@npm:0.12.0"
@@ -7770,19 +7723,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-coverage-v8@npm:^0.7.2":
-  version: 0.7.2
-  resolution: "@web/test-runner-coverage-v8@npm:0.7.2"
-  dependencies:
-    "@web/test-runner-core": "npm:^0.11.6"
-    istanbul-lib-coverage: "npm:^3.0.0"
-    lru-cache: "npm:^8.0.4"
-    picomatch: "npm:^2.2.2"
-    v8-to-istanbul: "npm:^9.0.1"
-  checksum: b6e86b054176410ce75e712106c9a78d597587db8f74b41901d28422ab2594e8338c1c301fda9471fef4bde8b25ca5dee13be7d45174141ea62ff40b8d8b6efd
-  languageName: node
-  linkType: hard
-
 "@web/test-runner-coverage-v8@npm:^0.7.3":
   version: 0.7.3
   resolution: "@web/test-runner-coverage-v8@npm:0.7.3"
@@ -7796,15 +7736,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:0.6.2":
-  version: 0.6.2
-  resolution: "@web/test-runner-junit-reporter@npm:0.6.2"
+"@web/test-runner-junit-reporter@npm:0.6.3":
+  version: 0.6.3
+  resolution: "@web/test-runner-junit-reporter@npm:0.6.3"
   dependencies:
-    "@web/test-runner-chrome": "npm:^0.14.3"
-    "@web/test-runner-core": "npm:^0.11.6"
+    "@web/test-runner-chrome": "npm:^0.14.4"
+    "@web/test-runner-core": "npm:^0.12.0"
     array-flat-polyfill: "npm:^1.0.1"
     xml: "npm:^1.0.1"
-  checksum: ece6b66daebf49755e7a3d41bc02483df53a72dffe5ddc4a72e1fd67509da2367ccf040c4b1d03ae44d510358082e4e23fbfec186df267f7e531cf5b827383c8
+  checksum: a5efb542473695c2a4feacd34f2e47a2c69e89af8f331bf66df2d440ef6051010aa94821098c63f378de732aa83e6007a93d1842933061e91b345177184204f1
   languageName: node
   linkType: hard
 
