@@ -1,4 +1,4 @@
-import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Mironet extends Shop {
@@ -12,7 +12,7 @@ export class Mironet extends Shop {
     if (!elem) return;
     const itemId = elem.querySelector("input[name=Code]").value;
     const title = elem.querySelector("input[name=NameItem]").value;
-    const currentPrice = cleanPriceText(elem.querySelector("input[name=Price]").value);
+    const currentPrice = cleanPrice(".product_cena_box .product_dph");
     const originalPrice = cleanPrice(".fakcbox23 .product_dph span");
     const imageUrl = document.getElementById("DetailImg").src;
 
