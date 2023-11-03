@@ -1,5 +1,13 @@
 # Extension
 
+## 2.1.2
+* Fixed scrape of VAT price on Mironet.cz
+* Changed Chart.js usage tyo be able to publish Firefox extension with Manifest v3
+* Added permissions to manifest
+
+## 2.1.1
+* Fixed Okay.cz hiding our widget
+
 ## 2.1.0
 * Added Allegro.cz
 * Added Kaufland.cz
