@@ -41,7 +41,7 @@ async function renderResults(detailUrl) {
   try {
     const res = await fetchDataSet(detailUrl);
     render(
-      widgetTemplate(res.data, res.metadata, {
+      widgetTemplate(res.metadata, {
         showFooter: false,
         showClaimedDiscount: true,
         showImage: true

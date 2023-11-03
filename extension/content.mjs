@@ -49,7 +49,7 @@ function renderHTML(repaint, shop, data, metadata) {
     });
   }
   if (repaint && chart) chart.destroy();
-  render(widgetTemplate(data, metadata), shadow);
+  render(widgetTemplate(metadata), shadow);
   const ctx = getCanvasContext(shadow);
   chart = createChart(
     ctx,
