@@ -4127,7 +4127,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": "workspace:*"
-    lit-html: "npm:3.0.1"
+    lit-html: "npm:3.0.2"
   languageName: unknown
   linkType: soft
 
@@ -4493,7 +4493,7 @@ __metadata:
     eslint-plugin-lit: "npm:1.10.1"
     eslint-plugin-prettier: "npm:5.0.1"
     eslint-plugin-promise: "npm:6.1.1"
-    lit-html: "npm:3.0.1"
+    lit-html: "npm:3.0.2"
     workbox-window: "npm:7.0.0"
   languageName: unknown
   linkType: soft
@@ -17053,16 +17053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.0.1":
-  version: 3.0.1
-  resolution: "lit-html@npm:3.0.1"
-  dependencies:
-    "@types/trusted-types": "npm:^2.0.2"
-  checksum: a7e545eee4d0f8fa9a6ff4c084a563f6123d412b19acf651edbe0a9e41aaece6c8accc5c0cfa150d30ff44d9053dbd3656e182b023e18dbf30206722c4cb89e2
-  languageName: node
-  linkType: hard
-
-"lit-html@npm:^2.0.0 || ^3.0.0":
+"lit-html@npm:3.0.2, lit-html@npm:^2.0.0 || ^3.0.0":
   version: 3.0.2
   resolution: "lit-html@npm:3.0.2"
   dependencies:
