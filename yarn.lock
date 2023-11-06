@@ -3916,6 +3916,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:1.9.6":
+  version: 1.9.6
+  resolution: "@grpc/grpc-js@npm:1.9.6"
+  dependencies:
+    "@grpc/proto-loader": "npm:^0.7.8"
+    "@types/node": "npm:>=12.12.47"
+  checksum: 798396ba84f324efec9b9efbae681aa735766fccc1b4cf2d5fd502a590c02789fe7aa3f0be31b73ac703da4105763c88e7b5c534159ff33ea8b620f531aa3e13
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:^1.3.8":
   version: 1.8.14
   resolution: "@grpc/grpc-js@npm:1.8.14"
@@ -3923,16 +3933,6 @@ __metadata:
     "@grpc/proto-loader": "npm:^0.7.0"
     "@types/node": "npm:>=12.12.47"
   checksum: ce465a0bfb006cea9a059c1083fea33ed8a52f73cd06248bdd951e602c68038aacff09b257ff963f8b4de6077f4164663f79cd790f6738b7c00a09cbcaf1fc4a
-  languageName: node
-  linkType: hard
-
-"@grpc/grpc-js@npm:^1.8.16":
-  version: 1.8.17
-  resolution: "@grpc/grpc-js@npm:1.8.17"
-  dependencies:
-    "@grpc/proto-loader": "npm:^0.7.0"
-    "@types/node": "npm:>=12.12.47"
-  checksum: 08e15d8795310dc45facf6af17708d92623380866cc0586cca766b3692abf6816a0cf7b9a9b4c3e6f1188c697df996244f64fd102c039271db5c63ff2d5981a8
   languageName: node
   linkType: hard
 
@@ -3948,6 +3948,20 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 810d1116ecbb43f017f4f22890a1205642d9b633d79429f659fb870f3e7fdaba890b56f26b517334798d761b6ac873454c9c07c36493258bb71f0006b64e5125
+  languageName: node
+  linkType: hard
+
+"@grpc/proto-loader@npm:^0.7.8":
+  version: 0.7.10
+  resolution: "@grpc/proto-loader@npm:0.7.10"
+  dependencies:
+    lodash.camelcase: "npm:^4.3.0"
+    long: "npm:^5.0.0"
+    protobufjs: "npm:^7.2.4"
+    yargs: "npm:^17.7.2"
+  bin:
+    proto-loader-gen-types: build/bin/proto-loader-gen-types.js
+  checksum: efd9a094afd90a271019adb7213dbbf6ae8788b7ad5b9b98e2b15848f0dcdd645ab8701b7feb981e3692846d4f81f71468be61bb10e85ced53dfd9a5aa2df7dd
   languageName: node
   linkType: hard
 
@@ -5497,11 +5511,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.91.1":
-  version: 3.91.1
-  resolution: "@pulumi/pulumi@npm:3.91.1"
+"@pulumi/pulumi@npm:3.92.0":
+  version: 3.92.0
+  resolution: "@pulumi/pulumi@npm:3.92.0"
   dependencies:
-    "@grpc/grpc-js": "npm:^1.8.16"
+    "@grpc/grpc-js": "npm:1.9.6"
     "@logdna/tail-file": "npm:^2.0.6"
     "@opentelemetry/api": "npm:^1.2.0"
     "@opentelemetry/exporter-zipkin": "npm:^1.6.0"
@@ -5526,7 +5540,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: f9a3de5fa72f12c557462edb08e9cc5bb4b9354413c5de2bf4c860848c5f324bd555904ffb5a3c8bcdc8c3c3662fde1a02b5a7c8b38b6c3eb78255c600fa2eb8
+  checksum: 25931c77d42d90813a573b0625079e8baf2f283354bdec1f9b2336b69134529e64bd796e562b16e8cf1a3521c6198ead6f185064e9e37a732a6eca07aa98604f
   languageName: node
   linkType: hard
 
@@ -14927,7 +14941,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": "npm:3.441.0"
     "@pulumi/aws": "npm:6.7.0"
     "@pulumi/awsx": "npm:2.1.1"
-    "@pulumi/pulumi": "npm:3.91.1"
+    "@pulumi/pulumi": "npm:3.92.0"
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=eb192efc4fcca10a215b786e572146e884bc7af3"
     "@topmonks/pulumi-aws": "npm:3.1.1"
     "@types/firefox-webext-browser": "npm:111.0.3"
@@ -20579,6 +20593,26 @@ __metadata:
     "@types/node": "npm:>=13.7.0"
     long: "npm:^5.0.0"
   checksum: 8092a67a31d961622322887a2374a63a3509f22d45ed7ada39be5987d590bf3ec46eb17aa64ba08f79b42be44adfce63c2fdedc389aea1423013417b6af2c61f
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:^7.2.4":
+  version: 7.2.5
+  resolution: "protobufjs@npm:7.2.5"
+  dependencies:
+    "@protobufjs/aspromise": "npm:^1.1.2"
+    "@protobufjs/base64": "npm:^1.1.2"
+    "@protobufjs/codegen": "npm:^2.0.4"
+    "@protobufjs/eventemitter": "npm:^1.1.0"
+    "@protobufjs/fetch": "npm:^1.1.0"
+    "@protobufjs/float": "npm:^1.0.2"
+    "@protobufjs/inquire": "npm:^1.1.0"
+    "@protobufjs/path": "npm:^1.1.2"
+    "@protobufjs/pool": "npm:^1.1.0"
+    "@protobufjs/utf8": "npm:^1.1.0"
+    "@types/node": "npm:>=13.7.0"
+    long: "npm:^5.0.0"
+  checksum: 12bb88965a2291ec717daddb1b7153c0e567586076da7d138c8f04558d3d0a9cad6445a3558f16c1a61f5cd9dec1a107712590daccb71763429d9b1e10d164d3
   languageName: node
   linkType: hard
 
