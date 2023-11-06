@@ -1,5 +1,10 @@
 # Extension
 
+## 2.1.3
+* Removed unnecessary permissions from manifest
+* `system-ui` fallback font
+* Minor styling of Okay widget
+
 ## 2.1.2
 * Fixed scrape of VAT price on Mironet.cz
 * Changed Chart.js usage tyo be able to publish Firefox extension with Manifest v3
