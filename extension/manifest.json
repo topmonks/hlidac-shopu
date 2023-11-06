@@ -40,13 +40,7 @@
       }
     ]
   },
-  "permissions": [
-    "scripting",
-    "webRequest"
-  ],
-  "host_permissions": [
-    "https://api.hlidacshopu.cz/*"
-  ],
+  "host_permissions": ["https://api.hlidacshopu.cz/*"],
   "content_scripts": [
     {
       "matches": [
@@ -101,9 +95,7 @@
         "https://www.allegro.cz/*",
         "https://www.kaufland.cz/*"
       ],
-      "js": [
-        "content.js"
-      ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
