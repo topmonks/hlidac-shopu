@@ -4263,7 +4263,7 @@ __metadata:
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
-    "@open-wc/testing": "npm:3.2.1"
+    "@open-wc/testing": "npm:3.2.2"
     "@web/test-runner": "npm:0.18.0"
     "@web/test-runner-junit-reporter": "npm:0.7.0"
     chart.js: "npm:4.4.0"
@@ -5131,16 +5131,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/chai-dom-equals@npm:^0.12.36":
-  version: 0.12.36
-  resolution: "@open-wc/chai-dom-equals@npm:0.12.36"
-  dependencies:
-    "@open-wc/semantic-dom-diff": "npm:^0.13.16"
-    "@types/chai": "npm:^4.1.7"
-  checksum: 28c9b9e8ce656ee2dc388c0badbc4ed2b9530ea0cbb6e81f6fd6b01a8d4c3788d14b7cd9f0629ed85b1a5bb453a7df13a3908693ddf836a40080a94ea874c4bc
-  languageName: node
-  linkType: hard
-
 "@open-wc/dedupe-mixin@npm:^1.4.0":
   version: 1.4.0
   resolution: "@open-wc/dedupe-mixin@npm:1.4.0"
@@ -5155,13 +5145,6 @@ __metadata:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
     "@open-wc/dedupe-mixin": "npm:^1.4.0"
   checksum: 67c596f15cc59a04140bde77bfd852f49637113757be96c08e8a6bdf6c8df92737584e319cf25cda5d9ec8a51b1d959747391f44a10c6648df309bf0a57f82bb
-  languageName: node
-  linkType: hard
-
-"@open-wc/semantic-dom-diff@npm:^0.13.16":
-  version: 0.13.21
-  resolution: "@open-wc/semantic-dom-diff@npm:0.13.21"
-  checksum: bededfaa8728372d67d5f3f936490a94b2bc45a01d950c4d316b4a9fdeb19d422377f7613d980daee7df9a98104007f6872a780abb1b4c18bfc60aa0a6fc1e81
   languageName: node
   linkType: hard
 
@@ -5186,19 +5169,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/testing@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@open-wc/testing@npm:3.2.1"
+"@open-wc/testing@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@open-wc/testing@npm:3.2.2"
   dependencies:
     "@esm-bundle/chai": "npm:^4.3.4-fix.0"
-    "@open-wc/chai-dom-equals": "npm:^0.12.36"
     "@open-wc/semantic-dom-diff": "npm:^0.20.0"
     "@open-wc/testing-helpers": "npm:^2.3.1"
-    "@types/chai": "npm:^4.2.11"
     "@types/chai-dom": "npm:^1.11.0"
     "@types/sinon-chai": "npm:^3.2.3"
     chai-a11y-axe: "npm:^1.5.0"
-  checksum: 3db049cd67081d4d0e274e78b68ad699bc76e6f17a5bef1722a2a311a59b661bd75f9dc4c0782042fb8e908db1cf1d93cbde4ba92144a66da8a6ac00e9bf4f1b
+  checksum: f1741d83c79aecfad9df7b628cb8f432e8a6f7ae6ae112698eb8bc18d9b6254af33ff35cce6ca48ca577180afdec3f642fdb34f22fcb9b36a3127969515ce93c
   languageName: node
   linkType: hard
 
@@ -6809,7 +6790,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.1.7, @types/chai@npm:^4.2.11, @types/chai@npm:^4.2.12, @types/chai@npm:^4.3.1":
+"@types/chai@npm:*, @types/chai@npm:^4.2.12, @types/chai@npm:^4.3.1":
   version: 4.3.4
   resolution: "@types/chai@npm:4.3.4"
   checksum: 6e1b44629831f845b760d2f8b44c751c2cab1397c2a810730e6b1786ff0af83dfbc489b9403a3eb772f0573f8ed96e533e7500af20cafe41ef79c695fea9d9ed
