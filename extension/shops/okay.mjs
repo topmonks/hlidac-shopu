@@ -9,6 +9,7 @@ export class Okay extends Shop {
       "afterend",
       this.selector,
       {
+        margin: "16px 0 0 !important",
         display: "block !important",
         visibility: "visible !important",
         overflow: "visible !important",
