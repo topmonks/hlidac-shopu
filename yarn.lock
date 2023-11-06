@@ -5477,7 +5477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.7.0":
+"@pulumi/aws@npm:6.7.0, @pulumi/aws@npm:^6.7.0":
   version: 6.7.0
   resolution: "@pulumi/aws@npm:6.7.0"
   dependencies:
@@ -5490,36 +5490,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^6.5.0":
-  version: 6.6.0
-  resolution: "@pulumi/aws@npm:6.6.0"
-  dependencies:
-    "@pulumi/pulumi": "npm:^3.0.0"
-    builtin-modules: "npm:3.0.0"
-    mime: "npm:^2.0.0"
-    read-package-tree: "npm:^5.2.1"
-    resolve: "npm:^1.7.1"
-  checksum: 047ca8ae1143990b228786f4ac5c1dcc22885c0ea4ef7db91a48c8bb83f581baf80cf74da2e5ea4d0a76386d4068fe3303e22d2be36d535d0962148561366a50
-  languageName: node
-  linkType: hard
-
-"@pulumi/awsx@npm:2.0.3":
-  version: 2.0.3
-  resolution: "@pulumi/awsx@npm:2.0.3"
+"@pulumi/awsx@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@pulumi/awsx@npm:2.1.1"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
-    "@pulumi/aws": "npm:^6.5.0"
-    "@pulumi/docker": "npm:^4.4.3"
+    "@pulumi/aws": "npm:^6.7.0"
+    "@pulumi/docker": "npm:^4.4.4"
     "@pulumi/pulumi": "npm:^3.0.0"
     "@types/aws-lambda": "npm:^8.10.23"
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: cebbfd62d63ea186bfb960c22872f494961fa71c29d7571c8bb11873964f47bbe387548db4e006742d8c04515cc3049647e99549a933337ab0e05a07ff688fb6
+  checksum: 7ef68d1cc9a109b2aafbe1f52cfe89d8d041b07f6c7e00f0705d1f40c5ebcb41c97aa1566a12f6a5604e45a9c8585ede7869cec286dbf67a2b3c1f17da4d109b
   languageName: node
   linkType: hard
 
-"@pulumi/docker@npm:^4.4.3":
+"@pulumi/docker@npm:^4.4.4":
   version: 4.4.4
   resolution: "@pulumi/docker@npm:4.4.4"
   dependencies:
@@ -14967,7 +14954,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.438.0"
     "@pulumi/aws": "npm:6.7.0"
-    "@pulumi/awsx": "npm:2.0.3"
+    "@pulumi/awsx": "npm:2.1.1"
     "@pulumi/pulumi": "npm:3.91.1"
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=eb192efc4fcca10a215b786e572146e884bc7af3"
     "@topmonks/pulumi-aws": "npm:3.1.1"
