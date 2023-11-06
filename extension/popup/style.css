@@ -25,7 +25,7 @@
 
 body {
   width: 410px;
-  font: 16px "IBM Plex Sans Var", "SF Pro", sans-serif;
+  font: 16px "IBM Plex Sans Var", system-ui, sans-serif;
   margin: 0;
   padding: 0;
   background-image: url("background.png");
