@@ -260,30 +260,30 @@ function extractBlackFridayProducts(
 ) {
   stats.inc("categories");
   const items = [];
-  const products = document.querySelectorAll("[data-selector='PRODUCT']");
+  const products = document.querySelectorAll(".s-grid__item");
   for (const el of products) {
     stats.inc("items");
-    const detailEl = el.querySelector(".detail__grids");
+    const detailEl = el.querySelector("[data-grid-data]");
     const [data] = JSON.parse(detailEl.dataset.gridData);
-    if (!processedIds.has(data.productId)) {
-      processedIds.add(data.productId);
-      stats.inc("itemsUnique");
-      items.push({
-        itemId: data.productId,
-        itemUrl: new URL(data.canonicalUrl, url).href,
-        itemName: data.fullTitle,
-        currency: "CZK",
-        currentPrice: parseFloat(data.price.price),
-        img: data.image,
-        originalPrice: parseFloat(data.price.oldPrice),
-        discounted: Boolean(data.price.discount),
-        inStock: data.stockAvailability.onlineAvailable,
-        category: data.category.split("/").slice(1).join(" > "),
-        slug: data.productId
-      });
-    } else {
+    if (processedIds.has(data.productId)) {
       stats.inc("itemsDuplicity");
+      continue;
     }
+    processedIds.add(data.productId);
+    stats.inc("itemsUnique");
+    items.push({
+      itemId: data.productId,
+      itemUrl: new URL(data.canonicalUrl, url).href,
+      itemName: data.fullTitle,
+      currency: "CZK",
+      currentPrice: parseFloat(data.price.price),
+      img: data.image,
+      originalPrice: parseFloat(data.price.oldPrice),
+      discounted: Boolean(data.price.discount),
+      inStock: data.stockAvailability.onlineAvailable,
+      category: data.category.split("/").slice(1).join(" > "),
+      slug: data.productId
+    });
   }
   return items;
 }
