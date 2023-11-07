@@ -29,6 +29,7 @@ export class AsyncShop extends Shop {
   constructor() {
     super();
     this.loaded = false;
+    this.loading = false;
     this.lastHref = null;
     this.firstLoad = true;
   }

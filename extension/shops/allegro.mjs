@@ -42,4 +42,4 @@ export class Allegro extends AsyncShop {
   }
 }
 
-registerShop(new Allegro(), "allegro_cz");
+//registerShop(new Allegro(), "allegro_cz");
