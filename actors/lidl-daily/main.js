@@ -289,14 +289,13 @@ function extractBlackFridayProducts(
 
 function extractProducts({ document, stats, processedIds, log, url }) {
   const products = document.querySelectorAll(
-    "#s-results .s-grid__item:not(.s-grid__item--hidden)"
+    "#s-results .s-grid__item:not(.s-grid__item--hidden) [data-grid-data]"
   );
   log.info("Extract products", { url, products: products.length });
   const items = [];
   for (const el of products) {
     stats.inc("items");
-    const detailEl = el.querySelector("[data-grid-data]");
-    const data = JSON.parse(detailEl.dataset.gridData);
+    const data = JSON.parse(el.dataset.gridData);
     if (processedIds.has(data.productId)) {
       stats.inc("itemsDuplicity");
       continue;
