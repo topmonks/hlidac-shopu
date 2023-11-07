@@ -253,14 +253,13 @@ function slug(str) {
     .replace(/-+/g, "-"); // collapse dashes
 }
 
-// TODO: reimplement BF as HttpCrawler, there is no need to run full browser for it
 function extractBlackFridayProducts(
   { document, url },
   { stats, processedIds }
 ) {
   stats.inc("categories");
   const items = [];
-  const products = document.querySelectorAll(".s-grid__item");
+  const products = document.querySelectorAll("#s-results .s-grid__item");
   for (const el of products) {
     stats.inc("items");
     const detailEl = el.querySelector("[data-grid-data]");
@@ -288,64 +287,35 @@ function extractBlackFridayProducts(
   return items;
 }
 
-function extractProducts({ document, stats, processedIds }) {
+function extractProducts({ document, stats, processedIds, log, url }) {
   const products = document.querySelectorAll(
     "#s-results .s-grid__item:not(.s-grid__item--hidden) > div"
   );
-  let breadcrumbs = document.querySelectorAll(
-    ".s-breadcrumb a.s-breadcrumb__link"
-  );
-  breadcrumbs = breadcrumbs.slice(1, breadcrumbs.length);
-  const heading = document
-    .querySelector(".s-page-heading h1")
-    ?.innerText?.trim();
+  log.info({ url, products: products.length });
   const items = [];
-  for (const product of products) {
-    const dataQaLabel = product.dataset.qaLabel;
-    if (!dataQaLabel) continue;
-    const itemId = dataQaLabel.split("-").pop();
+  for (const el of products) {
     stats.inc("items");
-    if (!processedIds.has(itemId)) {
-      processedIds.add(itemId);
-      const title = product.querySelector("h2").innerText.trim();
-      const itemUrl = `https://www.lidl.cz/p/${slug(title)}/p${itemId}`;
-      const imageSource = product.querySelector("img.product-grid-box__image");
-      const price = product.querySelector(
-        ".product-grid-box__price .m-price__bottom .m-price__price"
-      );
-      const stock = product.querySelector(
-        ".product-grid-box__availabilities > .badge"
-      );
-      const result = {
-        itemId,
-        itemUrl,
-        itemName: title,
-        currency: "CZK",
-        currentPrice: parseFloat(price.innerText.trim()),
-        img: imageSource.getAttribute("src"),
-        originalPrice: null,
-        discounted: false,
-        inStock: !!stock.classList.contains("badge--available-online"),
-        category:
-          breadcrumbs.length === 0
-            ? heading
-            : breadcrumbs.map(b => b.innerText.trim()).join(" > "),
-        slug: itemId
-      };
-      const strikePrice = product.querySelector(
-        ".product-grid-box__price .m-price__top"
-      );
-      if (strikePrice) {
-        let price = strikePrice.innerText.trim();
-        price = price.match(/(\d+)/)[1];
-        result.discounted = true;
-        result.originalPrice = parseFloat(price);
-      }
-      stats.inc("itemsUnique");
-      items.push(result);
-    } else {
+    const detailEl = el.querySelector("[data-grid-data]");
+    const [data] = JSON.parse(detailEl.dataset.gridData);
+    if (processedIds.has(data.productId)) {
       stats.inc("itemsDuplicity");
+      continue;
     }
+    processedIds.add(data.productId);
+    stats.inc("itemsUnique");
+    items.push({
+      itemId: data.productId,
+      itemUrl: new URL(data.canonicalUrl, url).href,
+      itemName: data.fullTitle,
+      currency: "CZK",
+      currentPrice: parseFloat(data.price.price),
+      img: data.image,
+      originalPrice: parseFloat(data.price.oldPrice),
+      discounted: Boolean(data.price.discount),
+      inStock: data.stockAvailability.onlineAvailable,
+      category: data.category.split("/").slice(1).join(" > "),
+      slug: data.productId
+    });
   }
   return items;
 }
@@ -423,7 +393,13 @@ async function main() {
               { forefront: true }
             );
           }
-          const products = extractProducts({ document, stats, processedIds });
+          const products = extractProducts({
+            document,
+            stats,
+            processedIds,
+            log,
+            url: request.url
+          });
           await Dataset.pushData(products);
           break;
         case Labels.LIDL_SHOP_MAIN_CAT:
