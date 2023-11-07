@@ -1,5 +1,8 @@
 # Extension
 
+## 2.1.4
+* Disabled Allegro extension
+
 ## 2.1.3
 * Removed unnecessary permissions from manifest
 * `system-ui` fallback font
