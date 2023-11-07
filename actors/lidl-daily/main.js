@@ -263,7 +263,7 @@ function extractBlackFridayProducts(
   for (const el of products) {
     stats.inc("items");
     const detailEl = el.querySelector("[data-grid-data]");
-    const [data] = JSON.parse(detailEl.dataset.gridData);
+    const data = JSON.parse(detailEl.dataset.gridData);
     if (processedIds.has(data.productId)) {
       stats.inc("itemsDuplicity");
       continue;
@@ -291,12 +291,12 @@ function extractProducts({ document, stats, processedIds, log, url }) {
   const products = document.querySelectorAll(
     "#s-results .s-grid__item:not(.s-grid__item--hidden)"
   );
-  log.info({ url, products: products.length });
+  log.info("Extract products", { url, products: products.length });
   const items = [];
   for (const el of products) {
     stats.inc("items");
     const detailEl = el.querySelector("[data-grid-data]");
-    const [data] = JSON.parse(detailEl.dataset.gridData);
+    const data = JSON.parse(detailEl.dataset.gridData);
     if (processedIds.has(data.productId)) {
       stats.inc("itemsDuplicity");
       continue;
