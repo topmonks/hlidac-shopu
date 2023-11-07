@@ -289,7 +289,7 @@ function extractBlackFridayProducts(
 
 function extractProducts({ document, stats, processedIds, log, url }) {
   const products = document.querySelectorAll(
-    "#s-results .s-grid__item:not(.s-grid__item--hidden) > div"
+    "#s-results .s-grid__item:not(.s-grid__item--hidden)"
   );
   log.info({ url, products: products.length });
   const items = [];
