@@ -4294,7 +4294,7 @@ __metadata:
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
-    "@open-wc/testing": "npm:3.2.2"
+    "@open-wc/testing": "npm:4.0.0"
     "@web/test-runner": "npm:0.18.0"
     "@web/test-runner-junit-reporter": "npm:0.7.0"
     chart.js: "npm:4.4.0"
@@ -4683,19 +4683,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.1.2, @lit-labs/ssr-dom-shim@npm:^1.1.2-pre.0":
+"@lit-labs/ssr-dom-shim@npm:^1.1.2-pre.0":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
   checksum: e51c7c156317ac95cac8d534d8608ac2a9dda7441f14f73e9e66a995d277851a90315324fe74690d1169a66dce645ed9674a8f5a9a467d183156de1c87549b23
-  languageName: node
-  linkType: hard
-
-"@lit/reactive-element@npm:^1.0.0 || ^2.0.0":
-  version: 2.0.1
-  resolution: "@lit/reactive-element@npm:2.0.1"
-  dependencies:
-    "@lit-labs/ssr-dom-shim": "npm:^1.1.2"
-  checksum: a5a7c953f174747906fab0c18fbf06120f9aafb866c48637616579912d2d34e0a214211f34aa31fdf3d88025f17cbee01261813db476636508605d3d4fb3a199
   languageName: node
   linkType: hard
 
@@ -5169,13 +5160,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/scoped-elements@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "@open-wc/scoped-elements@npm:2.2.4"
+"@open-wc/scoped-elements@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@open-wc/scoped-elements@npm:3.0.2"
   dependencies:
-    "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
     "@open-wc/dedupe-mixin": "npm:^1.4.0"
-  checksum: 67c596f15cc59a04140bde77bfd852f49637113757be96c08e8a6bdf6c8df92737584e319cf25cda5d9ec8a51b1d959747391f44a10c6648df309bf0a57f82bb
+    lit: "npm:^3.0.0"
+  checksum: 622e5556cea653f4ee7d4835e9465daf14f3ec42ac3ffadaabe415be3146fb3803fec9b3dd0549e6b4c12ae520f31fd269bfd2f65e7be6c05948237eba8b2a9e
   languageName: node
   linkType: hard
 
@@ -5189,28 +5180,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/testing-helpers@npm:^2.3.1":
-  version: 2.3.2
-  resolution: "@open-wc/testing-helpers@npm:2.3.2"
+"@open-wc/testing-helpers@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@open-wc/testing-helpers@npm:3.0.0"
   dependencies:
-    "@open-wc/scoped-elements": "npm:^2.2.4"
+    "@open-wc/scoped-elements": "npm:^3.0.2"
     lit: "npm:^2.0.0 || ^3.0.0"
     lit-html: "npm:^2.0.0 || ^3.0.0"
-  checksum: 4af324eb7dc2851470d791af155765ebfce3d0d076264445403824553066237076f1eac6d9daffd3972bddbee52d88dbcd5ae37e5072dcaa383c005122c3aa87
+  checksum: 351866397d7917228f1cc78337d55eade19a3b169194f94dd06c47adb0b0712a4c14ca67c2df55bb7303a8e02058bd8d8234fbde57b3980154597412f95cf1c3
   languageName: node
   linkType: hard
 
-"@open-wc/testing@npm:3.2.2":
-  version: 3.2.2
-  resolution: "@open-wc/testing@npm:3.2.2"
+"@open-wc/testing@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@open-wc/testing@npm:4.0.0"
   dependencies:
     "@esm-bundle/chai": "npm:^4.3.4-fix.0"
     "@open-wc/semantic-dom-diff": "npm:^0.20.0"
-    "@open-wc/testing-helpers": "npm:^2.3.1"
+    "@open-wc/testing-helpers": "npm:^3.0.0"
     "@types/chai-dom": "npm:^1.11.0"
     "@types/sinon-chai": "npm:^3.2.3"
     chai-a11y-axe: "npm:^1.5.0"
-  checksum: f1741d83c79aecfad9df7b628cb8f432e8a6f7ae6ae112698eb8bc18d9b6254af33ff35cce6ca48ca577180afdec3f642fdb34f22fcb9b36a3127969515ce93c
+  checksum: b0933f268fb411a3d7b2df2bc2bed8707b50a22e065827a5ad68dffabfc505cccbb617a26f9063f6759fe4de67ff5a28984e12dccea408d26725fcd72a6ca12a
   languageName: node
   linkType: hard
 
@@ -17061,7 +17052,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:3.0.2, lit@npm:^2.0.0 || ^3.0.0":
+"lit@npm:3.0.2, lit@npm:^2.0.0 || ^3.0.0, lit@npm:^3.0.0":
   version: 3.0.2
   resolution: "lit@npm:3.0.2"
   dependencies:
