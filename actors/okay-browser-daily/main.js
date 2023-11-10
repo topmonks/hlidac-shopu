@@ -273,7 +273,9 @@ async function main() {
             stats.add("items", products.length);
             await Dataset.pushData(products);
 
-            const nextPage = document.querySelector(`.pagination-next`)?.href;
+            const nextPage = document.querySelector(
+              `.paginate:not(.non-boost-pagination) .pagination-next`
+            )?.href;
             if (nextPage) {
               await enqueueLinks({ urls: [nextPage], label: Labels.List });
             }
