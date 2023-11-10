@@ -7,6 +7,9 @@ import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+
+/** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 
 /** @enum {string} */
 const Country = {
@@ -120,6 +123,27 @@ function extractProducts({ document, page, rootUrl, currency, url }) {
   );
 }
 
+/**
+ * @param {Country|string} country
+ * @param {ActorType|string} type
+ * @param {RequestOptions[]} urls
+ * @return {RequestOptions[]}
+ */
+function startRequests(country, type, urls) {
+  if (urls) return urls;
+  if (type === ActorType.BlackFriday) {
+    return [
+      { url: `${getBaseUrl(country)}/pages/blackfriday`, label: Labels.List }
+    ];
+  }
+  return [
+    {
+      url: `${getBaseUrl(country)}/sitemap.xml`,
+      userData: { label: Labels.MainSitemap }
+    }
+  ];
+}
+
 async function main() {
   const rollbar = Rollbar.init();
 
@@ -134,7 +158,9 @@ async function main() {
     proxyGroups,
     maxRequestRetries,
     country = Country.CZ,
-    customTableName = null
+    customTableName = null,
+    type = ActorType.Full,
+    urls
   } = await getInput();
 
   if (development) {
@@ -245,12 +271,7 @@ async function main() {
     }
   });
 
-  await crawler.run([
-    {
-      url: `${getBaseUrl(country)}/sitemap.xml`,
-      userData: { label: Labels.MainSitemap }
-    }
-  ]);
+  await crawler.run(startRequests(country, type, urls));
   await stats.save(true);
 
   if (!development) {
