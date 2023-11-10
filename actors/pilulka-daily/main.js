@@ -197,7 +197,7 @@ function handleCategory() {
  * @return {RequestOptions[]}
  */
 function initialRequests(country, type, urls) {
-  if (urls.length) {
+  if (urls?.length) {
     return urls.map(url => {
       if (typeof url === "string" && type === ActorType.BlackFriday) {
         return { url, label: Labels.CATEGORY };
