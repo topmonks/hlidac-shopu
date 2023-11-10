@@ -132,8 +132,15 @@ function extractProducts({ document, page, rootUrl, currency, url }) {
 function startRequests(country, type, urls) {
   if (urls) return urls;
   if (type === ActorType.BlackFriday) {
+    const collection =
+      country === Country.CZ
+        ? "to-nejlepsi-z-black-friday"
+        : "to-najlepsie-z-black-friday";
     return [
-      { url: `${getBaseUrl(country)}/pages/blackfriday`, label: Labels.List }
+      {
+        url: `${getBaseUrl(country)}/collections/${collection}`,
+        label: Labels.List
+      }
     ];
   }
   return [
