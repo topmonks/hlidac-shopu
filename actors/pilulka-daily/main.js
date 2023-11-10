@@ -173,7 +173,7 @@ function handleCategory() {
     const { document } = parseHTML(body.toString());
 
     const detailLinks = document.querySelectorAll(
-      `.product-list .product-list__item .product__detail-btn`
+      `.product-list .product__name`
     );
     const urls = Array.from(detailLinks).map(x =>
       buildUrl(categoryUrl, x.href)
