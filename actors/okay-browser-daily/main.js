@@ -96,8 +96,10 @@ function extractProducts({ document, page, rootUrl, currency, url, type }) {
         const originalPrice = cleanPrice(
           await getTextFromLocator(
             type === ActorType.BlackFriday
-              ? page.locator(`[data-id="${itemId}"] .was-price .money`)
-              : page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
+              ? // For Black Friday we need original price even if it is hidden in the listing
+                page.locator(`[data-id="${itemId}"] .was-price .money`)
+              : // In normal mode we don't care about original prices and just compute real discount
+                page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
           )
         );
         const currentPrice = cleanPrice(
