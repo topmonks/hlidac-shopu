@@ -267,6 +267,11 @@ async function main() {
             });
             stats.add("items", products.length);
             await Dataset.pushData(products);
+
+            const nextPage = document.querySelector(`.pagination-next`)?.href;
+            if (nextPage) {
+              await enqueueLinks({ urls: [nextPage], label: Labels.List });
+            }
           }
           break;
       }
