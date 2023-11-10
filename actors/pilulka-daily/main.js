@@ -1,5 +1,5 @@
 import { Actor, log, LogLevel } from "apify";
-import { HttpCrawler, useState, createHttpRouter } from "@crawlee/http";
+import { createHttpRouter, HttpCrawler, useState } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
@@ -13,14 +13,12 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 
+/** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
 
 /** @enum {string} */
 export const Labels = {
-  START: "START",
-  SUB_CATEGORY: "SUB_CATEGORY",
   CATEGORY: "CATEGORY",
-  CATEGORY_PAGE: "CATEGORY_PAGE",
   SITEMAP: "SITEMAP",
   PRODUCTS_SITEMAP: "PRODUCTS_SITEMAP",
   PRODUCT_DETAIL: "PRODUCT_DETAIL"
@@ -50,6 +48,14 @@ function sitemapUrl(country) {
     }
   ];
 }
+function blackFridayUrl(country) {
+  return [
+    {
+      url: buildUrl(rootWebUrl(country), "/black-friday"),
+      label: Labels.CATEGORY
+    }
+  ];
+}
 
 /**
  * Pilulka has one root sitemap with linked sub-sitemaps in it.
@@ -57,7 +63,7 @@ function sitemapUrl(country) {
  */
 function handleSitemap() {
   /** @param {HttpCrawlingContext} context */
-  return async function ({ body, enqueueLinks, log, response }) {
+  async function handler({ body, enqueueLinks, log, response }) {
     log.info("Reading Sitemap", { url: response.url });
     const { document } = parseXML(body.toString());
     const urls = Array.from(document.querySelectorAll("loc"))
@@ -65,12 +71,14 @@ function handleSitemap() {
       .filter(url => url.includes("/sitemaps/products-"));
     log.info(`Found ${urls.length} products sitemaps`);
     await enqueueLinks({ urls, label: Labels.PRODUCTS_SITEMAP });
-  };
+  }
+
+  return handler;
 }
 
 function handleProductsSitemap() {
   /** @param {HttpCrawlingContext} context */
-  return async function ({ body, enqueueLinks, log, response }) {
+  async function handler({ body, enqueueLinks, log, response }) {
     log.info("Reading Sitemap", { url: response.url });
     const { document } = parseXML(body.toString());
     const urls = Array.from(document.querySelectorAll("loc")).map(
@@ -78,7 +86,9 @@ function handleProductsSitemap() {
     );
     log.info(`Found ${urls.length} products`, { url: response.url });
     await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
-  };
+  }
+
+  return handler;
 }
 
 function toArray(o) {
@@ -88,7 +98,7 @@ function toArray(o) {
 
 function handleProductDetail({ processedIds, stats }) {
   /** @param {HttpCrawlingContext} context */
-  return async function ({ body, log, response }) {
+  async function handler({ body, log, response }) {
     stats.inc("items");
     const itemUrl = response.url;
     log.debug("Extracting product data", { url: itemUrl });
@@ -153,7 +163,53 @@ function handleProductDetail({ processedIds, stats }) {
       stats,
       processedIds
     });
-  };
+  }
+
+  return handler;
+}
+
+function handleCategory() {
+  /** @param {HttpCrawlingContext} context */
+  async function handler({ body, enqueueLinks, log, response }) {
+    const categoryUrl = response.url;
+    log.debug("Extracting category", { url: categoryUrl });
+    const { document } = parseHTML(body.toString());
+
+    const detailLinks = document.querySelectorAll(
+      `.product-list .product-list__item .product__detail-btn`
+    );
+    const urls = Array.from(detailLinks).map(x =>
+      buildUrl(categoryUrl, x.href)
+    );
+    if (urls.length) await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
+
+    const nextPageUrl = document.querySelector(`.page-item--next a`)?.href;
+    if (!nextPageUrl) return;
+    await enqueueLinks({
+      urls: [buildUrl(categoryUrl, nextPageUrl)],
+      label: Labels.CATEGORY
+    });
+  }
+
+  return handler;
+}
+
+/** @return {RequestOptions[]} */
+function initialRequests(country, type, urls) {
+  if (urls.length) {
+    return urls.map(url => {
+      if (typeof url === "string" && type === ActorType.BlackFriday) {
+        return { url, label: Labels.CATEGORY };
+      } else if (typeof url === "string") {
+        return { url, label: Labels.PRODUCT_DETAIL };
+      }
+      return url;
+    });
+  }
+  if (type === ActorType.BlackFriday) {
+    return blackFridayUrl(country);
+  }
+  return sitemapUrl(country);
 }
 
 async function main() {
@@ -194,31 +250,15 @@ async function main() {
     requestHandler: createHttpRouter({
       [Labels.SITEMAP]: handleSitemap(),
       [Labels.PRODUCTS_SITEMAP]: handleProductsSitemap(),
-      [Labels.PRODUCT_DETAIL]: handleProductDetail({ processedIds, stats })
-      // TODO: [Labels.CATEGORY] for BlackFriday scraping
+      [Labels.PRODUCT_DETAIL]: handleProductDetail({ processedIds, stats }),
+      [Labels.CATEGORY]: handleCategory()
     }),
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
       stats.inc("failed");
     }
   });
-
-  const requests =
-    urls?.map(url => {
-      if (typeof url === "string" && type === ActorType.BlackFriday) {
-        return {
-          url,
-          label: Labels.CATEGORY
-        };
-      } else if (typeof url === "string") {
-        return {
-          url,
-          userData: { label: Labels.START }
-        };
-      }
-      return url;
-    }) ?? sitemapUrl(country);
-  await crawler.run(requests);
+  await crawler.run(initialRequests(country, type, urls));
 
   if (!development) {
     let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
