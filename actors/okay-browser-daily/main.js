@@ -76,7 +76,7 @@ export async function getTextFromLocator(locator) {
   }
 }
 
-function extractProducts({ document, page, rootUrl, currency, url }) {
+function extractProducts({ document, page, rootUrl, currency, url, type }) {
   const category = document
     .querySelectorAll(".breadcrumb li")
     .map(x => x.textContent.trim())
@@ -95,7 +95,9 @@ function extractProducts({ document, page, rootUrl, currency, url }) {
 
         const originalPrice = cleanPrice(
           await getTextFromLocator(
-            page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
+            type === ActorType.BlackFriday
+              ? page.locator(`[data-id="${itemId}"] .was-price .money`)
+              : page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
           )
         );
         const currentPrice = cleanPrice(
@@ -268,7 +270,8 @@ async function main() {
               page,
               rootUrl,
               currency,
-              url: request.url
+              url: request.url,
+              type
             });
             stats.add("items", products.length);
             await Dataset.pushData(products);
