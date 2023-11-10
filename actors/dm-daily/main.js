@@ -215,7 +215,7 @@ function startRequests(type, navigation, stats, country) {
     requests.push({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
         country
-      )}${category.link}/?json`,
+      )}${category.link}/`,
       userData: {
         country,
         category: category.breadcrumbs.toString(),
@@ -232,7 +232,7 @@ function startingRequests(type, country) {
     requests.push({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
         country
-      )}/?view=navigation&json`,
+      )}/?view=navigation`,
       userData: {
         country,
         productQuery: "",
@@ -334,7 +334,7 @@ async function main() {
 
   if (Actor.isAtHome()) {
     log.info("uploading data to Keboola");
-    uploadToKeboola(shopName(detailUrl.deref()));
+    await uploadToKeboola(shopName(detailUrl.deref()));
   }
 }
 
