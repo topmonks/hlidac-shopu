@@ -46,15 +46,27 @@ const INTERESTED_TAGS = {
   },
   [ActorType.BlackFriday]: {
     [Country.CZ]: [
-      "BDT:Black Friday#1{2655}",
-      "BDT:Black Friday#1{2657}",
-      "BDT:Black Friday#1{2581}",
-      "BDT:Black Friday#3{2425}"
+      "BDT:Black Friday#1{4921}",
+      "BDT:Black Friday#1{4916}",
+      "BDT:Black Friday#1{4923}",
+      "BDT:Black Friday#1{5181}",
+      "BDT:Black Friday#1{4912}",
+      "BDT:Black Friday#1{5184}",
+      "BDT:Black Friday#1{4909}",
+      "BDT:Black Friday#1{5182}",
+      "BDT:Black Friday#1{5185}"
     ],
     [Country.SK]: [
-      "BDT:Black Friday#1{2663}",
-      "BDT:Black Friday#1{2665}",
-      "BDT:Black Friday#1{2589}"
+      "BDT:Black Friday#1{4947}",
+      "BDT:Black Friday#1{4960}",
+      "BDT:Black Friday#1{5191}",
+      "BDT:Black Friday#1{5120}",
+      "BDT:Black Friday#1{4949}",
+      "BDT:Black Friday#1{5192}",
+      "BDT:Black Friday#1{5066}",
+      "BDT:Black Friday#1{5194}",
+      "BDT:Black Friday#1{5119}",
+      "BDT:Black Friday#1{5195}"
     ]
   },
   [ActorType.Full]: {
