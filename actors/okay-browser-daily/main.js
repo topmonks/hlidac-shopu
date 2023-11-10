@@ -123,6 +123,28 @@ function extractProducts({ document, page, rootUrl, currency, url }) {
   );
 }
 
+function blackFridayUrl(country) {
+  const collection =
+    country === Country.CZ
+      ? "to-nejlepsi-z-black-friday"
+      : "to-najlepsie-z-black-friday";
+  return [
+    {
+      url: `${getBaseUrl(country)}/collections/${collection}`,
+      label: Labels.List
+    }
+  ];
+}
+
+function sitemapUrl(country) {
+  return [
+    {
+      url: `${getBaseUrl(country)}/sitemap.xml`,
+      userData: { label: Labels.MainSitemap }
+    }
+  ];
+}
+
 /**
  * @param {Country|string} country
  * @param {ActorType|string} type
@@ -130,25 +152,11 @@ function extractProducts({ document, page, rootUrl, currency, url }) {
  * @return {RequestOptions[]}
  */
 function startRequests(country, type, urls) {
-  if (urls) return urls;
+  if (urls?.length) return urls;
   if (type === ActorType.BlackFriday) {
-    const collection =
-      country === Country.CZ
-        ? "to-nejlepsi-z-black-friday"
-        : "to-najlepsie-z-black-friday";
-    return [
-      {
-        url: `${getBaseUrl(country)}/collections/${collection}`,
-        label: Labels.List
-      }
-    ];
+    return blackFridayUrl(country);
   }
-  return [
-    {
-      url: `${getBaseUrl(country)}/sitemap.xml`,
-      userData: { label: Labels.MainSitemap }
-    }
-  ];
+  return sitemapUrl(country);
 }
 
 async function main() {
@@ -231,9 +239,7 @@ async function main() {
             log.info(`Found ${urls.length} collection sitemaps`);
             await enqueueLinks({
               urls,
-              userData: {
-                label: Labels.CollectionSitemap
-              }
+              userData: { label: Labels.CollectionSitemap }
             });
           }
           break;
@@ -243,9 +249,7 @@ async function main() {
             log.info(`Found ${urls.length} collection urls`);
             await enqueueLinks({
               urls,
-              userData: {
-                label: Labels.List
-              }
+              userData: { label: Labels.List }
             });
           }
           break;
