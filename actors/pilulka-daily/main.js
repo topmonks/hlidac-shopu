@@ -72,7 +72,6 @@ function handleSitemap() {
     log.info(`Found ${urls.length} products sitemaps`);
     await enqueueLinks({ urls, label: Labels.PRODUCTS_SITEMAP });
   }
-
   return handler;
 }
 
@@ -87,7 +86,6 @@ function handleProductsSitemap() {
     log.info(`Found ${urls.length} products`, { url: response.url });
     await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
   }
-
   return handler;
 }
 
@@ -164,7 +162,6 @@ function handleProductDetail({ processedIds, stats }) {
       processedIds
     });
   }
-
   return handler;
 }
 
@@ -190,11 +187,15 @@ function handleCategory() {
       label: Labels.CATEGORY
     });
   }
-
   return handler;
 }
 
-/** @return {RequestOptions[]} */
+/**
+ * @param {Country} country
+ * @param {ActorType} type
+ * @param {Array<RequestOptions|string>} urls
+ * @return {RequestOptions[]}
+ */
 function initialRequests(country, type, urls) {
   if (urls.length) {
     return urls.map(url => {
