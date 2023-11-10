@@ -162,6 +162,7 @@ async function main() {
 
   const {
     development,
+    debug,
     proxyGroups,
     maxRequestRetries,
     country = Country.CZ,
@@ -170,7 +171,7 @@ async function main() {
     urls
   } = await getInput();
 
-  if (development) {
+  if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
