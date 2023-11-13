@@ -5532,9 +5532,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.92.0":
-  version: 3.92.0
-  resolution: "@pulumi/pulumi@npm:3.92.0"
+"@pulumi/pulumi@npm:3.93.0":
+  version: 3.93.0
+  resolution: "@pulumi/pulumi@npm:3.93.0"
   dependencies:
     "@grpc/grpc-js": "npm:1.9.6"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -5561,7 +5561,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: 25931c77d42d90813a573b0625079e8baf2f283354bdec1f9b2336b69134529e64bd796e562b16e8cf1a3521c6198ead6f185064e9e37a732a6eca07aa98604f
+  checksum: 0dbb9ad486593bf04b7f4aacc72b9ca1c091d4b0a831ba5a3937f17827ce50f4709296f8712315480822d822b658b8f42089b6a337f17a7b2d841f87aeaa8bfe
   languageName: node
   linkType: hard
 
@@ -15012,7 +15012,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": "npm:3.445.0"
     "@pulumi/aws": "npm:6.8.0"
     "@pulumi/awsx": "npm:2.1.1"
-    "@pulumi/pulumi": "npm:3.92.0"
+    "@pulumi/pulumi": "npm:3.93.0"
     "@topmonks/blendid": "https://github.com/topmonks/blendid.git#commit=eb192efc4fcca10a215b786e572146e884bc7af3"
     "@topmonks/pulumi-aws": "npm:3.1.1"
     "@types/firefox-webext-browser": "npm:111.0.4"
