@@ -1,5 +1,8 @@
 # Extension
 
+## 2.1.5
+* Fix Extension on Mironet - changed CSS classes
+
 ## 2.1.4
 * Disabled Allegro extension
 
