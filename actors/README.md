@@ -32,13 +32,12 @@ Podrobnější informace o kategorii produktu získáváme tak, že procházíme
 ```
 
 #### Stránkování
-Nezřídka ve výpisu kategorie narazíme na stránkování. Chceme projít všechny jednotlivé stránky  
-a proto si nejdříve zjistíme:
+Nezřídka ve výpisu kategorie narazíme na stránkování. Chceme projít všechny jednotlivé stránky a proto si nejdříve zjistíme:
 
 * Kolik je celkem stránek?
 * Jaký je maximální možný počet produktů na stránku?
 
-A poté sestavíme URL adresy pro každou z nich.
+Poté sestavíme URL adresy pro každou z nich.
 
 ```js
 const categoryUrl = "https://eshop.example.com/some-categoty/";
@@ -53,7 +52,7 @@ for (let i = 1; i <= pagesTotal; i++) {
 
 ### Produkty
 Ve většině případů není nutné procházet jednotlivé detaily produktů. 
-Potřebná data bývá možné získat z položek ve výpisy kategorie. Protože se ale produkt 
+Potřebná data bývá možné získat z položek ve výpisu kategorie. Protože se ale produkt 
 může nacházet ve více než jedné kategorii, je potřeba ukládat pouze jeho první výskyt.
 
 ```js

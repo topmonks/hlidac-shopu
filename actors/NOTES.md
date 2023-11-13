@@ -4,29 +4,29 @@
 Please don't start a new actor via "Apify create". It is a way to create an actor for Apify,
 not for HlidacShopu. Better way is to copy the already functional actor and edit.
 Some modules then do not match and are not configured correctly for the HlidacShopu
-at the beginning of the code that the input data is filled in correctly
-In otherwise case is possible to create actor via "Apify create", but it will needed
-to add missing data - see in another actors
+at the beginning of the code that the input data is filled in correctly.
+In otherwise case is possible to create actor via "Apify create", but it will be needed
+to add missing data - see in another actors.
 
 ## Beware of product sorting
 If sorting is not defined, there can some recommended products exists in the product list.
 Therefore, it is better to sort the list of products, for ex. from the cheapest alphabetically.
 
 ## API processing via RequestAsBrowser / gotScraping
-Apify.utils.requestAsBrowser je deprecated, místo něj používat gotScraping.
+`Apify.utils.requestAsBrowser` is deprecated. Use `HttpCrawler` for all requests, it is sufficient for most use cases.
 
 ## How to see CI log of pushed actor
 https://docs.apify.com/crawling-basics/scraping-the-data#review-code
 
 Here you can monitor CI errors to avoid blocking other people's code testing.
-The notification is sent by e-mail or in the #ntf-hlidac-shop channel on Slack too.
+The notification is sent by e-mail or in the `#ntf-hlidac-shop` channel on Slack too.
 
 ## Number of products on page
 It is usually safe to keep the original number of products per page,
 which is normally loaded in the e-shop.
 
 ## Register eshop in shop.mjs
-Do not forget to add actor to lib/shops.mjs file.
+Do not forget to add actor to `lib/shops.mjs` file.
 You can let inspire in DM or Alza actors, which are presentable.
 
 ```
