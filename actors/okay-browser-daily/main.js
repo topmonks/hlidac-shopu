@@ -203,8 +203,12 @@ function extractProductDetail({
     .querySelector("meta[property='og:title']")
     ?.getAttribute("content");
   const product = document.querySelector(".product__information");
-  const originalPrice = cleanPrice(".compare_price>.money");
-  const currentPrice = cleanPrice(".current_price_mz>.money");
+  const originalPrice = cleanPrice(
+    product.querySelector(".compare_price>.money")?.textContent
+  );
+  const currentPrice = cleanPrice(
+    product.querySelector(".current_price_mz>.money")?.textContent
+  );
   const category = parseBreadcrumbs(document);
   return {
     itemId,
