@@ -203,13 +203,24 @@ function extractProductDetail({
     .querySelector("meta[property='og:title']")
     ?.getAttribute("content");
   const product = document.querySelector(".product__information");
-  const originalPrice = cleanPrice(
+  const wasPrice = cleanPrice(
+    product.querySelector(".was_price>.money")?.textContent
+  );
+  const comparePrice = cleanPrice(
     product.querySelector(".compare_price>.money")?.textContent
   );
-  const currentPrice = cleanPrice(
+  const currentPriceSale = cleanPrice(
+    product.querySelector(".current_price.tags-sale")?.textContent
+  );
+  const currentPriceMz = cleanPrice(
     product.querySelector(".current_price_mz>.money")?.textContent
   );
+  const currentPriceNotSale = cleanPrice(
+    product.querySelector(".current_price:not(.tags-sale)")?.textContent
+  );
   const category = parseBreadcrumbs(document);
+  const originalPrice = comparePrice ?? currentPriceSale ?? wasPrice;
+  const currentPrice = currentPriceMz ?? currentPriceNotSale;
   return {
     itemId,
     itemUrl: url,
