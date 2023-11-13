@@ -10,6 +10,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
+/** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
 /** @enum {string} */
 const Country = {
@@ -27,7 +28,8 @@ const Currency = {
 const Labels = {
   MainSitemap: "MainSitemap",
   CollectionSitemap: "CollectionSitemap",
-  List: "List"
+  List: "List",
+  Detail: "Detail"
 };
 
 /**
@@ -70,7 +72,7 @@ function productUrlsFromSitemap(body) {
 
 export async function getTextFromLocator(locator) {
   try {
-    return await (await locator).textContent({ timeout: 1000 });
+    return (await locator).textContent({ timeout: 1000 });
   } catch (e) {
     return;
   }
@@ -81,7 +83,7 @@ function extractProducts({ document, page, rootUrl, currency, url, type }) {
     .querySelectorAll(".breadcrumb li")
     .map(x => x.textContent.trim())
     .slice(1, -1)
-    .join("/");
+    .join(" > ");
 
   return Promise.all(
     document
@@ -163,12 +165,91 @@ function startRequests(country, type, urls) {
   return sitemapUrl(country);
 }
 
+function parseBreadcrumbs(document) {
+  const ld = document.querySelectorAll("script[type='application/ld+json']");
+  const bl = Array.from(ld, x => {
+    try {
+      return JSON.parse(x.innerHTML);
+    } catch (err) {}
+  }).filter(x => x?.["@type"] === "BreadcrumbList")?.[0];
+  return bl.itemListElement
+    .slice(1, -1) // First is shop name, last is product name, so skip them
+    .map(x => x.item.name)
+    .join(" > ");
+}
+
+/**
+ * @param params
+ * @param {HTMLDocument} params.document
+ * @param {string} params.url
+ * @param {Set} params.processedIds
+ * @param {Stats} params.stats
+ */
+function extractProductDetail({
+  document,
+  url,
+  processedIds,
+  stats,
+  currency
+}) {
+  const itemId = document.querySelector("input[name=product-id]")?.value;
+  if (!itemId) return stats.inc("failed");
+  if (processedIds.has(itemId)) return stats.inc("itemsDuplicity");
+  stats.inc("items");
+  const img = document
+    .querySelector("meta[property='og:image']")
+    ?.getAttribute("content");
+  const itemName = document
+    .querySelector("meta[property='og:title']")
+    ?.getAttribute("content");
+  const product = document.querySelector(".product__information");
+  const originalPrice = cleanPrice(".compare_price>.money");
+  const currentPrice = cleanPrice(".current_price_mz>.money");
+  const category = parseBreadcrumbs(document);
+  return {
+    itemId,
+    itemUrl: url,
+    img,
+    itemName,
+    originalPrice,
+    currentPrice,
+    discounted: Boolean(originalPrice),
+    currency,
+    category,
+    inStock: Boolean(product.querySelector(".in_stock"))
+  };
+}
+
+async function loadLazyImages({ page }) {
+  await page.keyboard.down("End");
+
+  await page.evaluate(() => {
+    /* global window, document */
+    if (!document.body) return;
+    document.body.scrollIntoView(false);
+    const height = document.body.scrollHeight;
+    window.scrollTo(0, height);
+  });
+
+  await page.waitForLoadState("networkidle");
+}
+
+function navigationBehavior(timeoutSec) {
+  return async (context, gotoOptions) => {
+    log.info(`Navigation to ${context.request.url}`);
+    gotoOptions.waitUntil = "networkidle";
+    gotoOptions.timeout = 1000 * timeoutSec;
+  };
+}
+
 async function main() {
   const rollbar = Rollbar.init();
 
+  const processedIds = new Set();
   const stats = await withPersistedStats(x => x, {
     urls: 0,
     items: 0,
+    itemsDuplicity: 0,
     failed: 0
   });
 
@@ -194,28 +275,6 @@ async function main() {
     groups: proxyGroups,
     useApifyProxy: !development
   });
-
-  async function loadLazyImages({ page }) {
-    await page.keyboard.down("End");
-
-    await page.evaluate(() => {
-      /* global window, document */
-      if (!document.body) return;
-      document.body.scrollIntoView(false);
-      const height = document.body.scrollHeight;
-      window.scrollTo(0, height);
-    });
-
-    await page.waitForLoadState("networkidle");
-  }
-
-  function navigationBehavior(timeoutSec) {
-    return async (context, gotoOptions) => {
-      log.info(`Navigation to ${context.request.url}`);
-      gotoOptions.waitUntil = "networkidle";
-      gotoOptions.timeout = 1000 * timeoutSec;
-    };
-  }
 
   const crawler = new PlaywrightCrawler({
     maxRequestRetries,
@@ -267,16 +326,23 @@ async function main() {
                 ?.replace(/[^a-zA-Z0-9!\-_\.\'\(\)]/g, "!")
             });
             const { document } = parseHTML(body.toString());
-            const products = await extractProducts({
-              document,
-              page,
-              rootUrl,
-              currency,
-              url: request.url,
-              type
-            });
-            stats.add("items", products.length);
-            await Dataset.pushData(products);
+            if (type === ActorType.BlackFriday) {
+              const detailLinks = document.querySelectorAll(
+                ".collection-matrix > [data-id] a[href]"
+              );
+              const details = Array.from(detailLinks, x => x.href);
+              await enqueueLinks({ urls: details, label: Labels.Detail });
+            } else {
+              const products = await extractProducts({
+                document,
+                page,
+                rootUrl,
+                currency,
+                url: request.url,
+                type
+              });
+              stats.add("items", products.length);
+            }
 
             const nextPage = document.querySelector(
               `.paginate:not(.non-boost-pagination) .pagination-next`
@@ -284,6 +350,19 @@ async function main() {
             if (nextPage) {
               await enqueueLinks({ urls: [nextPage], label: Labels.List });
             }
+          }
+          break;
+        case Labels.Detail:
+          {
+            const { document } = parseHTML(body.toString());
+            const product = extractProductDetail({
+              document,
+              url: request.url,
+              currency,
+              processedIds,
+              stats
+            });
+            if (product) await Dataset.pushData(product);
           }
           break;
       }
