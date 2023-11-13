@@ -477,9 +477,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sqs@npm:3.445.0":
-  version: 3.445.0
-  resolution: "@aws-sdk/client-sqs@npm:3.445.0"
+"@aws-sdk/client-sqs@npm:3.447.0":
+  version: 3.447.0
+  resolution: "@aws-sdk/client-sqs@npm:3.447.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
@@ -521,9 +521,8 @@ __metadata:
     "@smithy/util-endpoints": "npm:^1.0.2"
     "@smithy/util-retry": "npm:^2.0.5"
     "@smithy/util-utf8": "npm:^2.0.0"
-    fast-xml-parser: "npm:4.2.5"
     tslib: "npm:^2.5.0"
-  checksum: 4b01b82fca04484b2d8b2a0347c10ec48bc7cf2221495d6704e589f7ac9a94f88a7dd514a04c5b022771966a326580e1288df8ac95a5b906f6fadbccf3e7ab09
+  checksum: a9621c51175d856975571a02824d7b2c1c49dede2c838c808c78f828db5a1c313629b4af94c4c95e1e52111855d48326fe9169ce20bd778aff71584e27d058d7
   languageName: node
   linkType: hard
 
@@ -4041,7 +4040,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.445.0"
     "@aws-sdk/client-s3": "npm:3.445.0"
-    "@aws-sdk/client-sqs": "npm:3.445.0"
+    "@aws-sdk/client-sqs": "npm:3.447.0"
     "@aws-sdk/util-dynamodb": "npm:3.445.0"
     "@hlidac-shopu/lib": "workspace:*"
     ava: "npm:5.3.1"
