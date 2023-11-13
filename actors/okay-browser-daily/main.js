@@ -203,9 +203,7 @@ function extractProductDetail({
     .querySelector("meta[property='og:title']")
     ?.getAttribute("content");
   const product = document.querySelector(".product__information");
-  const wasPrice = cleanPrice(
-    product.querySelector(".was_price>.money")?.textContent
-  );
+
   const comparePrice = cleanPrice(
     product.querySelector(".compare_price>.money")?.textContent
   );
@@ -219,7 +217,7 @@ function extractProductDetail({
     product.querySelector(".current_price:not(.tags-sale)")?.textContent
   );
   const category = parseBreadcrumbs(document);
-  const originalPrice = comparePrice ?? currentPriceSale ?? wasPrice;
+  const originalPrice = comparePrice ?? currentPriceSale;
   const currentPrice = currentPriceMz ?? currentPriceNotSale;
   return {
     itemId,
