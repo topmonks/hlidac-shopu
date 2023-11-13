@@ -2,7 +2,7 @@ import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Mironet extends Shop {
-  selector = ".product_btn_kosik";
+  selector = ".product_nakupni_udaje";
   get injectionPoint() {
     return ["afterend", this.selector];
   }
@@ -12,8 +12,8 @@ export class Mironet extends Shop {
     if (!elem) return;
     const itemId = elem.querySelector("input[name=Code]").value;
     const title = elem.querySelector("input[name=NameItem]").value;
-    const currentPrice = cleanPrice(".product_cena_box .product_dph");
-    const originalPrice = cleanPrice(".fakcbox23 .product_dph span");
+    const currentPrice = cleanPrice(".product_nakupni_udaje .product_dph");
+    const originalPrice = cleanPrice(".product_nakupni_udaje .product_oldprice");
     const imageUrl = document.getElementById("DetailImg").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
