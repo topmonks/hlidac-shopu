@@ -1,5 +1,9 @@
 # Extension
 
+## 2.1.6
+* Fix teta drogerie original price parsing
+* Fix Knihy Dobrovsky original price parsing
+
 ## 2.1.5
 * Fix Extension on Mironet - changed CSS classes
 

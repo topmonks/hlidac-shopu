@@ -14,9 +14,14 @@ export class Knihydobrovsky extends Shop {
     const elem = document.querySelector(".box-product");
     if (!elem) return;
 
-    const originalPrice = parseFloat(
-      cleanPrice(elem.querySelector(".price .discount"))
+    const priceBefore = cleanPrice(
+      elem
+        .querySelector(".box-std .price-before")
+        .textContent.split(":")
+        .at(-1)
+        .trim()
     );
+
     const jsonld = document.querySelectorAll(
       'script[type="application/ld+json"]'
     )[1];
@@ -31,9 +36,7 @@ export class Knihydobrovsky extends Shop {
           itemId: data.sku,
           title: data.name,
           currentPrice: currentPrice === "zdarma" ? 0 : data.offers.price, // data always have previous price even if it's free now
-          originalPrice: isNaN(originalPrice)
-            ? null
-            : originalPrice + data.offers.price,
+          originalPrice: priceBefore ? parseInt(priceBefore) : null,
           imageUrl: data.image[0]
         };
       } catch (e) {
