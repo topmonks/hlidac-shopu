@@ -1,4 +1,4 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Knihydobrovsky extends Shop {
@@ -14,7 +14,7 @@ export class Knihydobrovsky extends Shop {
     const elem = document.querySelector(".box-product");
     if (!elem) return;
 
-    const priceBefore = cleanPrice(
+    const priceBefore = cleanPriceText(
       elem
         .querySelector(".box-std .price-before")
         .textContent.split(":")

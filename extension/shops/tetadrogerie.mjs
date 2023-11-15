@@ -19,7 +19,7 @@ export class TetaDrogerie extends Shop {
     const product = elem.querySelector(".j-product");
     const itemId = product.dataset.skuid;
     const title = product.querySelector(".sx-detail-product-name").innerText;
-    const offerPrice = cleanPrice(".sx-detail-offer-valid-to");
+    const offerPrice = cleanPrice(".sx-detail-offer-valid-to .sx-sale-w-arrow-container");
     const actionPrice = cleanPrice(".sx-detail-price-action");
     const initialPrice = cleanPrice(".sx-detail-price-initial");
     const originalPrice = offerPrice ?? (actionPrice ? initialPrice / 100 : null);
