@@ -28,8 +28,8 @@ function radialProgress({ ratio, isMonochrome }) {
     ratio <= 0.1 && !isMonochrome
       ? "#27AE60"
       : ratio >= 0.7 && !isMonochrome
-      ? "#C62828"
-      : "#5C62CD";
+        ? "#C62828"
+        : "#5C62CD";
   return svg`
     <svg class="radial-progress" viewBox="0 0 80 80">
       <circle class="incomplete" cx="40" cy="40" r="35"></circle>

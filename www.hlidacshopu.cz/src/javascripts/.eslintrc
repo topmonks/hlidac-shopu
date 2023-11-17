@@ -1,10 +1,5 @@
 {
-  "plugins": [
-    "es",
-    "lit",
-    "prettier",
-    "promise"
-  ],
+  "plugins": ["es", "lit", "prettier", "promise"],
   "extends": [
     "prettier",
     "plugin:lit/recommended",
