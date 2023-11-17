@@ -6,13 +6,13 @@
   "description": "This is the eva.cz actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.5.8",
+    "@crawlee/http": "3.6.1",
     "@hlidac-shopu/actors-common": "2.3.0",
-    "apify": "3.1.12"
+    "apify": "3.1.13"
   },
   "devDependencies": {
-    "@types/node": "20.9.0",
-    "apify-cli": "0.18.1"
+    "@types/node": "20.9.1",
+    "apify-cli": "0.19.0"
   },
   "scripts": {
     "start": "node main.js",

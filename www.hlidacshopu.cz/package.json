@@ -10,7 +10,7 @@
     "@material/snackbar": "14.0.0",
     "@material/top-app-bar": "14.0.0",
     "@thi.ng/atom": "5.2.14",
-    "lit-html": "3.0.2",
+    "lit-html": "3.1.0",
     "workbox-window": "7.0.0"
   },
   "devDependencies": {
@@ -20,7 +20,8 @@
     "eslint-plugin-es": "4.1.0",
     "eslint-plugin-lit": "1.10.1",
     "eslint-plugin-prettier": "5.0.1",
-    "eslint-plugin-promise": "6.1.1"
+    "eslint-plugin-promise": "6.1.1",
+    "prettier": "3.1.0"
   },
   "scripts": {
     "lint": "eslint ."
