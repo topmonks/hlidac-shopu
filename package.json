@@ -24,7 +24,6 @@
     "ramda": "0.29.1"
   },
   "devDependencies": {
-    "@topmonks/blendid": "https://github.com/xmonks/blendid.git#commit=0f186712aaba4446c10092fbab2ceb48037aee5a",
     "@types/firefox-webext-browser": "111.0.4",
     "@types/node": "20.9.1",
     "@types/nunjucks": "3.2.6",
@@ -32,6 +31,7 @@
     "@types/whatwg-url": "11.0.3",
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",
+    "@xmonks/blendid": "https://github.com/xmonks/blendid.git#commit=1cbc978505fe320459e84281977503e684e35e82",
     "ava": "5.3.1",
     "chokidar": "3.5.3",
     "chrome-webstore-upload-cli": "2.2.2",
