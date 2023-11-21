@@ -79,7 +79,6 @@ function extractBfItems(products) {
   return Array.from(products)
     .map(item => {
       const itemHeader = item.querySelector("h2 a");
-      if (!itemHeader.data?.datalayer) return;
       const itemOriginalPrice = item.querySelector(
         "p.items-center span.line-through"
       );
@@ -92,7 +91,7 @@ function extractBfItems(products) {
           )
         : null;
 
-      const itemJsonObject = JSON.parse(itemHeader.data.datalayer);
+      const itemJsonObject = JSON.parse(itemHeader.dataset.datalayer);
       const [product] = itemJsonObject.ecommerce.products;
       const currentPrice = parseFloat(product.price);
       const itemUrl = itemHeader.getAttribute("href");
