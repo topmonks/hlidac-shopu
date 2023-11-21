@@ -78,7 +78,6 @@ function extractItems({ products, breadCrumbs }) {
 function extractBfItems(products) {
   return products
     .map(item => {
-      const result = {};
       const itemHeader = item.querySelector("h2 a");
       const itemOriginalPrice = item.querySelector(
         "p.items-center span.line-through"
@@ -91,30 +90,29 @@ function extractBfItems(products) {
               .trim()
           )
         : null;
-      const itemJsonObject = JSON.parse(
-        itemHeader.getAttribute("data-datalayer")
-      );
-      const itemJson = itemJsonObject.ecommerce.products[0];
-      const currentPrice = parseFloat(itemJson.price);
-      const itemUrl = itemHeader.getAttribute("href");
+      const itemJsonObject = JSON.parse(itemHeader.data.datalayer);
+      if (!itemJsonObject) return;
 
+      const [product] = itemJsonObject.ecommerce.products;
+      const currentPrice = parseFloat(product.price);
+      const itemUrl = itemHeader.getAttribute("href");
       const itemImgUrl = item.querySelector("picture img").getAttribute("src");
 
-      if (parseFloat(itemJson.price) > 0) {
-        result.itemId = itemJson.id;
-        result.itemName = itemJson.name;
-        result.itemUrl = `https://lekarna.cz/${itemUrl}`;
-        result.img = itemImgUrl;
-        result.category = itemJson.categories;
-        result.currentPrice = currentPrice;
-        result.originalPrice = originalPrice;
-        result.discounted = originalPrice > currentPrice;
-        result.currency = "CZK";
-        result.inStock = itemJson.availability === "InStock";
-        return result;
-      } else {
-        log.info(`Skipp non price product [${itemJson.name}]`);
+      if (parseFloat(product.price) <= 0) {
+        return log.debug(`Skip product without price [${product.name}]`);
       }
+      return {
+        itemId: product.id,
+        itemName: product.name,
+        itemUrl: `https://lekarna.cz/${itemUrl}`,
+        img: itemImgUrl,
+        category: product.categories,
+        currentPrice: currentPrice,
+        originalPrice: originalPrice,
+        discounted: originalPrice > currentPrice,
+        currency: "CZK",
+        inStock: product.availability === "InStock"
+      };
     })
     .filter(Boolean);
 }
@@ -124,9 +122,7 @@ function handleStart(document) {
     .querySelectorAll("nav.items-center > ul > li > span > a")
     .map(cat => ({
       url: cat.href,
-      userData: {
-        label: "PAGE"
-      }
+      userData: { label: "PAGE" }
     }));
 }
 
@@ -140,9 +136,7 @@ function handleSubCategory(document) {
     if (!url.includes("?")) {
       requests.push({
         url: url.startsWith("https") ? url : `${web}${url}`,
-        userData: {
-          label: "PAGE"
-        }
+        userData: { label: "PAGE" }
       });
     }
   }
@@ -172,12 +166,10 @@ function handlePagination({ document, request, type }) {
 
 function handleProducts({ document, type }) {
   const itemListElements =
-    type === ActorType.Full
-      ? document.querySelectorAll(
-          '[itemprop="itemListElement"]:has(h2):has([itemprop=url])'
-        )
+    type === ActorType.BlackFriday
+      ? document.querySelectorAll("#snippet--productListItems div:has(> h2)")
       : document.querySelectorAll(
-          "#snippet--itemListing div.flex.flex-col.flex-wrap.items-stretch.w-full"
+          '[itemprop="itemListElement"]:has(h2):has([itemprop=url])'
         );
   const breadCrumbs = document
     .querySelectorAll(
@@ -214,9 +206,7 @@ export function getInitialUrls({ url, type }) {
       {
         url: bfUrl,
         label: "PAGE",
-        userData: {
-          category: bfUrl
-        }
+        userData: { category: bfUrl }
       }
     ];
   } else if (type === ActorType.Test) {
