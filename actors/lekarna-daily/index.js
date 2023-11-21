@@ -76,7 +76,7 @@ function extractItems({ products, breadCrumbs }) {
 }
 
 function extractBfItems(products) {
-  return products
+  return Array.from(products)
     .map(item => {
       const itemHeader = item.querySelector("h2 a");
       if (!itemHeader.data?.datalayer) return;
@@ -167,7 +167,9 @@ function handlePagination({ document, request, type }) {
 function handleProducts({ document, type }) {
   const itemListElements =
     type === ActorType.BlackFriday
-      ? document.querySelectorAll("#snippet--productListItems div:has(> h2)")
+      ? document.querySelectorAll(
+          "#snippet--productListItems div:has(>h2>a[data-datalayer])"
+        )
       : document.querySelectorAll(
           '[itemprop="itemListElement"]:has(h2):has([itemprop=url])'
         );
