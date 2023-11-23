@@ -78,7 +78,7 @@ function extractItems({ products, breadCrumbs }) {
 function extractBfItems(products) {
   return Array.from(products)
     .map(item => {
-      const itemHeader = item.querySelector("h2 a");
+      const itemHeader = item.querySelector("a[data-datalayer]");
       const itemOriginalPrice = item.querySelector(
         "p.items-center span.line-through"
       );
@@ -163,11 +163,20 @@ function handlePagination({ document, request, type }) {
   }));
 }
 
-function handleProducts({ document, type }) {
+async function handleProducts({ crawler, document, type }) {
+  if (type === ActorType.BlackFriday) {
+    const requests = Array.from(
+      document.querySelectorAll("a.btn-primary"),
+      a => ({ url: `${web}${a.href}`, userData: { label: "PAGE" } })
+    );
+    await crawler.requestQueue.addRequests(requests);
+  }
+
   const itemListElements =
     type === ActorType.BlackFriday
       ? document.querySelectorAll(
-          "#snippet--productListItems div:has(>h2>a[data-datalayer])"
+          "#snippet--productListItems div:has(>h2>a[data-datalayer]), " +
+            "#snippet--productListItems > .items-stretch:has(a[data-datalayer])" // subcategories have different layout
         )
       : document.querySelectorAll(
           '[itemprop="itemListElement"]:has(h2):has([itemprop=url])'
@@ -283,7 +292,7 @@ export async function main() {
             await crawler.requestQueue.addRequests(paginationReqs, {
               forefront: true
             });
-            const products = handleProducts({ document, type });
+            const products = await handleProducts({ crawler, document, type });
             const newProductsCount = await saveUniqProducts({
               products,
               stats,
@@ -295,7 +304,7 @@ export async function main() {
           break;
         case "PAGI_PAGE":
           {
-            const products = handleProducts({ document, type });
+            const products = await handleProducts({ crawler, document, type });
             const newProductsCount = await saveUniqProducts({
               products,
               stats,
