@@ -227,7 +227,7 @@ async function main() {
     proxyGroups = [],
     type = ActorType.Full,
     bfUrl = "https://www.kaufland.cz/campaigns/blackweek-cz/",
-    pagesCount = 19
+    bfPagesCount = 19
   } = input || {};
 
   if (debug) {
@@ -303,7 +303,7 @@ async function main() {
         // doesn't work because it's client side rendered
         // document.querySelectorAll(".rd-pagination .rd-page--page");
         // .at(-1).textContent;
-        const pageRequests = restPageUrls(pagesCount, pageNr => ({
+        const pageRequests = restPageUrls(bfPagesCount, pageNr => ({
           url: `${bfUrl}?page=${pageNr}`,
           userData: {
             label: LABELS.CATEGORY
