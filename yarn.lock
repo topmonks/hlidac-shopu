@@ -5132,9 +5132,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.1.1":
-  version: 2.1.1
-  resolution: "@pulumi/awsx@npm:2.1.1"
+"@pulumi/awsx@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@pulumi/awsx@npm:2.2.0"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
     "@pulumi/aws": "npm:^6.7.0"
@@ -5144,7 +5144,7 @@ __metadata:
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 7ef68d1cc9a109b2aafbe1f52cfe89d8d041b07f6c7e00f0705d1f40c5ebcb41c97aa1566a12f6a5604e45a9c8585ede7869cec286dbf67a2b3c1f17da4d109b
+  checksum: b418ae33b6fee7781e428375d25b649b5f37a51fed02cba41d9dba8c3d5b2b6d6ac868f4c46f9c356dfc7a7f76ed52f30d38bcee9c1a7ae11d530cfe2ddecac2
   languageName: node
   linkType: hard
 
@@ -14387,7 +14387,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.454.0"
     "@pulumi/aws": "npm:6.9.0"
-    "@pulumi/awsx": "npm:2.1.1"
+    "@pulumi/awsx": "npm:2.2.0"
     "@pulumi/pulumi": "npm:3.94.2"
     "@topmonks/pulumi-aws": "npm:3.1.1"
     "@types/firefox-webext-browser": "npm:111.0.4"
