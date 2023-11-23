@@ -127,10 +127,9 @@ function extractProducts(document, categories) {
       const { itemId, itemUrl, inStock, currentPrice } =
         productsInfoFromScript[keyFromImg(img)];
 
-      const discounted =
-        product.querySelectorAll(".price__note--rrp").length > 0;
-      const originalPrice = discounted
-        ? cleanPrice(product.querySelector(".price__note--rrp").textContent)
+      const discountedEl = product.querySelector(".price-note--rrp");
+      const originalPrice = discountedEl
+        ? cleanPrice(discountedEl.textContent)
         : null;
 
       return {
@@ -138,7 +137,7 @@ function extractProducts(document, categories) {
         itemUrl,
         itemName,
         img,
-        discounted,
+        discounted: !!originalPrice,
         originalPrice,
         currency: "CZK",
         currentPrice,
