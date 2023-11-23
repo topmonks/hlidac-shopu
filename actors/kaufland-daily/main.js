@@ -6,6 +6,7 @@ import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 const ROOT_URL = "https://www.kaufland.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
@@ -98,9 +99,10 @@ function extractProducts(document, categories) {
   };
 
   const productsInfoFromScript = {};
-  const scriptWithProducts = document.querySelectorAll("script[data-n-head]")[1]
-    .textContent;
-  const productsFromScript = JSON.parse(scriptWithProducts);
+  const scriptWithProducts = document
+    .querySelectorAll("script[data-n-head]")
+    .find(s => s.textContent.includes(`"@type":"Product"`));
+  const productsFromScript = JSON.parse(scriptWithProducts.textContent);
   for (const product of productsFromScript) {
     const key = keyFromImg(
       Array.isArray(product.image) ? product.image[0] : product.image
@@ -223,7 +225,9 @@ async function main() {
     development = true,
     debug = false,
     proxyGroups = [],
-    type = ActorType.Full
+    type = ActorType.Full,
+    bfUrl = "https://www.kaufland.cz/campaigns/blackweek-cz/",
+    pagesCount = 19
   } = input || {};
 
   if (debug) {
@@ -295,28 +299,41 @@ async function main() {
         return;
       }
 
-      const totalProductCount = Number.parseInt(
-        document
-          .querySelector(".product-count")
-          .textContent.replace(/\s+/g, ""),
-        10
-      );
-
-      // check if there actually are more pages
-      if (totalProductCount > products.length) {
-        const categoryId = extractCategoryId(request.url, document);
-        log.debug(`${request.url} - Found category ID: ${categoryId}`);
-        const pageRequests = createPaginationRequests(
-          products.length,
-          totalProductCount,
-          categoryId,
-          categories
+      if (type === ActorType.BlackFriday) {
+        // doesn't work because it's client side rendered
+        // document.querySelectorAll(".rd-pagination .rd-page--page");
+        // .at(-1).textContent;
+        const pageRequests = restPageUrls(pagesCount, pageNr => ({
+          url: `${bfUrl}?page=${pageNr}`,
+          userData: {
+            label: LABELS.CATEGORY
+          }
+        }));
+        await crawler.addRequests(pageRequests);
+      } else {
+        const totalProductCount = Number.parseInt(
+          document
+            .querySelector(".product-count")
+            .textContent.replace(/\s+/g, ""),
+          10
         );
 
-        if (type === ActorType.Test) {
-          await crawler.addRequests(pageRequests.slice(0, 3));
-        } else {
-          await crawler.addRequests(pageRequests);
+        // check if there actually are more pages
+        if (totalProductCount > products.length) {
+          const categoryId = extractCategoryId(request.url, document);
+          log.debug(`${request.url} - Found category ID: ${categoryId}`);
+          const pageRequests = createPaginationRequests(
+            products.length,
+            totalProductCount,
+            categoryId,
+            categories
+          );
+
+          if (type === ActorType.Test) {
+            await crawler.addRequests(pageRequests.slice(0, 3));
+          } else {
+            await crawler.addRequests(pageRequests);
+          }
         }
       }
     },
@@ -325,17 +342,24 @@ async function main() {
     }
   });
 
-  const startingRequest = {
-    url: ROOT_URL,
-    label: LABELS.START
-  };
+  const startingRequest =
+    type === ActorType.BlackFriday
+      ? {
+          url: bfUrl,
+          label: LABELS.CATEGORY
+        }
+      : {
+          url: ROOT_URL,
+          label: LABELS.START
+        };
   await crawler.run([startingRequest]);
   log.info("Crawler finished");
 
   await stats.save(true);
 
   if (!development) {
-    const tableName = "kaufland_cz";
+    const tableName =
+      type === ActorType.BlackFriday ? "kaufland_cz_bf" : "kaufland_cz";
     await uploadToKeboola(tableName);
   }
   log.info("Finished.");
