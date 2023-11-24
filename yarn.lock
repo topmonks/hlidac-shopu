@@ -3977,10 +3977,12 @@ __metadata:
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
     "@crawlee/http": "npm:3.6.1"
+    "@crawlee/playwright": "npm:3.6.1"
     "@hlidac-shopu/actors-common": "npm:2.3.0"
     "@types/node": "npm:20.9.3"
     apify: "npm:3.1.13"
     apify-cli: "npm:0.19.1"
+    playwright: "npm:1.40.0"
   languageName: unknown
   linkType: soft
 

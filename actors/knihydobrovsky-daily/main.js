@@ -193,8 +193,7 @@ async function main() {
               products.map(x => ({
                 url: x.itemUrl,
                 userData: { label: "DETAIL" }
-              })),
-              { forefront: true }
+              }))
             );
           }
           log.info(`${request.url} Found ${products.length} products`);

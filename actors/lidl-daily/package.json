@@ -7,8 +7,10 @@
   "type": "module",
   "dependencies": {
     "@crawlee/http": "3.6.1",
+    "@crawlee/playwright": "3.6.1",
     "@hlidac-shopu/actors-common": "2.3.0",
-    "apify": "3.1.13"
+    "apify": "3.1.13",
+    "playwright": "1.40.0"
   },
   "devDependencies": {
     "@types/node": "20.9.3",
