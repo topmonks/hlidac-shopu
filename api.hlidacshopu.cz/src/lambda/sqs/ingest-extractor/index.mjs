@@ -67,7 +67,7 @@ async function handleEvents(event, _context) {
         msgSize += size;
         if (size > maxMessageSize) maxMessageSize = size;
         // max message msgSize is 256KB, but leave some reserve
-        if (msgSize + maxMessageSize >= 225 * 1024 || items.length >= 1000) {
+        if (msgSize + maxMessageSize >= 225 * 1024 || items.length >= 200) {
           enqueueMessage(buffer, items);
           items = [];
           msgSize = 0;

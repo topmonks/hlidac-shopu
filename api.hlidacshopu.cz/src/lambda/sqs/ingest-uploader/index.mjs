@@ -36,7 +36,9 @@ function uploadFile(key, body, hash) {
 async function handleEvents(event, _context) {
   const uploads = [];
   for (const record of event.Records) {
-    for (const item of JSON.parse(record.body).items) {
+    const items = JSON.parse(record.body).items;
+    console.log(`Processing ${items.length} records (${items[0].path})`);
+    for (const item of items) {
       const { content, path } = item;
       const storedHash = readStoredHash(path);
       const computedHash = createHash("md5").update(content).digest("base64");
