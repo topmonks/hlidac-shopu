@@ -382,7 +382,6 @@ async function main() {
           proxyConfiguration,
           maxRequestRetries,
           launchContext: {
-            useChrome: true,
             launchOptions: {
               headless: true
             }
