@@ -361,7 +361,7 @@ export function createSQSIngest(options = {}) {
 
   const uploaderTimeout = 120;
   const ingestQueue = new aws.sqs.Queue("ingest", {
-    messageRetentionSeconds: 60 * 60 * 20, // 20 hours
+    messageRetentionSeconds: 60 * 60, // 1 hour
     visibilityTimeoutSeconds: uploaderTimeout
   });
   const uploaderLambda = new aws.lambda.Function(
