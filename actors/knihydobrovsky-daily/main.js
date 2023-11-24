@@ -37,21 +37,17 @@ function handleStart(document) {
     }));
 }
 
-function extractOriginalPrice({ item, type }) {
-  if (type === ActorType.BlackFriday)
-    return cleanPrice(item.querySelector(".price-common")?.innerText);
-  return cleanPrice(item.querySelector(".price-wrap .price-strike")?.innerText);
-}
-
 /**
  * @param {Document} document
- * @param {ActorType} type
  */
-function extractProducts({ document, type }) {
+function extractProducts({ document }) {
   return document
     .querySelectorAll("li[data-productinfo]")
     .map(item => {
-      const originalPrice = extractOriginalPrice({ item, type }) ?? null;
+      const originalPrice =
+        cleanPrice(
+          item.querySelector(".price-wrap .price-strike")?.innerText
+        ) ?? null;
       const currentPrice = item
         .querySelector("p.price strong")
         ?.innerText?.trim()
@@ -92,6 +88,44 @@ function extractProducts({ document, type }) {
       };
     })
     .filter(x => x?.itemId);
+}
+
+// TODO: extract common selectors
+function extractProductFromDetail({ document, url }) {
+  const productEl = document.querySelector(".row-main:has(.box-product)");
+  const originalPrice =
+    cleanPrice(productEl.querySelector(".price-before")?.innerText) ?? null;
+  const currentPrice = productEl
+    .querySelector("p.price strong")
+    ?.innerText?.trim()
+    ?.toLowerCase();
+  const itemId = url.match(/-(\d+)$/)?.[1];
+  if (!itemId) {
+    log.warning("Could not find item id");
+    return;
+  }
+  return {
+    itemId,
+    itemUrl: url,
+    itemName: productEl.querySelector("span.name").innerText,
+    img: productEl.querySelector("picture img").getAttribute("src"),
+    currentPrice:
+      currentPrice === "zdarma" ? 0 : cleanPrice(currentPrice) ?? null,
+    originalPrice,
+    discounted: Boolean(originalPrice),
+    rating: parseFloat(
+      productEl
+        .querySelector(".stars span[style]")
+        ?.getAttribute("style")
+        ?.split("width: ")[1] ?? null
+    ),
+    currency: "CZK",
+    inStock:
+      productEl.querySelector("a.buy-now")?.innerText?.includes("Do košíku") ??
+      false,
+    category: "",
+    breadCrumbs: ""
+  };
 }
 
 async function main() {
@@ -153,7 +187,16 @@ async function main() {
           } else {
             log.info("category finish", { url: request.url });
           }
-          const products = extractProducts({ document, type });
+          const products = extractProducts({ document });
+          if (type === ActorType.BlackFriday) {
+            return crawler.requestQueue.addRequests(
+              products.map(x => ({
+                url: x.itemUrl,
+                userData: { label: "DETAIL" }
+              })),
+              { forefront: true }
+            );
+          }
           log.info(`${request.url} Found ${products.length} products`);
           await saveUniqProducts({ stats, products, processedIds });
           break;
@@ -169,6 +212,10 @@ async function main() {
             },
             { forefront: true }
           );
+          break;
+        case "DETAIL":
+          const product = extractProductFromDetail({ document, url });
+          await saveUniqProducts({ stats, products: [product], processedIds });
           break;
         default: {
           const requests = handleStart(document);
