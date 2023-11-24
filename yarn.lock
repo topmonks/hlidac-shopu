@@ -231,9 +231,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.454.0":
-  version: 3.454.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.454.0"
+"@aws-sdk/client-cloudfront@npm:3.456.0":
+  version: 3.456.0
+  resolution: "@aws-sdk/client-cloudfront@npm:3.456.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
@@ -278,7 +278,7 @@ __metadata:
     "@smithy/util-waiter": "npm:^2.0.13"
     fast-xml-parser: "npm:4.2.5"
     tslib: "npm:^2.5.0"
-  checksum: 619e6af20d2082c3cc3a8df1dc877d13eed4ed025e0973d9ce208b605742bdf7d2cf3d2242e64f094db0c640b3a873f1445c23336f574a66758fc0450497f661
+  checksum: 6a2fd70917c9e7e5406716b3a518cda88f4e9010a3ba71eee921d3c826fdfe9767202f11792dad3de2db418b569520704fceed560ab751a78c45ed01e94bb2bd
   languageName: node
   linkType: hard
 
@@ -381,9 +381,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.454.0":
-  version: 3.454.0
-  resolution: "@aws-sdk/client-s3@npm:3.454.0"
+"@aws-sdk/client-s3@npm:3.456.0":
+  version: 3.456.0
+  resolution: "@aws-sdk/client-s3@npm:3.456.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:3.0.0"
     "@aws-crypto/sha256-browser": "npm:3.0.0"
@@ -442,7 +442,7 @@ __metadata:
     "@smithy/util-waiter": "npm:^2.0.13"
     fast-xml-parser: "npm:4.2.5"
     tslib: "npm:^2.5.0"
-  checksum: bf676c25371ad8600acd6446f07d3fcdfcd3adea9057839c57ed8c2df1558c4e8a6533f6ad06ff397b0ed62f9a96bc98a09c993446cfef435bb4c7de3104e438
+  checksum: 8d6451b8be568f8ac00b24a02f69c3cb1da015a5b67e4bd521156bfc2812193284ef2adc556f7b45af37ffc1c458e7bb4329f77a91bd23d931c81a558dd0649f
   languageName: node
   linkType: hard
 
@@ -3707,7 +3707,7 @@ __metadata:
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.454.0"
-    "@aws-sdk/client-s3": "npm:3.454.0"
+    "@aws-sdk/client-s3": "npm:3.456.0"
     "@aws-sdk/client-sqs": "npm:3.454.0"
     "@aws-sdk/util-dynamodb": "npm:3.454.0"
     "@hlidac-shopu/lib": "workspace:*"
@@ -3725,7 +3725,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
-    "@aws-sdk/client-s3": "npm:3.454.0"
+    "@aws-sdk/client-s3": "npm:3.456.0"
     "@hlidac-shopu/lib": "npm:1.3.14"
   languageName: unknown
   linkType: soft
@@ -3846,8 +3846,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": "npm:3.454.0"
-    "@aws-sdk/client-s3": "npm:3.454.0"
+    "@aws-sdk/client-cloudfront": "npm:3.456.0"
+    "@aws-sdk/client-s3": "npm:3.456.0"
     "@crawlee/http": "npm:3.6.1"
     "@hlidac-shopu/actors-common": "npm:2.3.0"
     "@types/node": "npm:20.9.3"
