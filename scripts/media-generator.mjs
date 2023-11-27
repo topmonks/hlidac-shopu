@@ -7,7 +7,9 @@ import { URL } from "url";
 
 const test = false;
 const urls = [
-  "https://www.reflex.cz/clanek/zajimavosti/121840/cesi-miluji-black-friday-loni-behem-nej-utratili-7-miliard-korun-letos-opravdove-slevy-pohlida-novela-zakona.html"
+  "https://www.edizone.cz/zpravy/black-friday-uz-se-blizi-letos-bude-ferovejsi-a-prilaka-vice-spotrebitelu/",
+  "https://www.megapixel.cz/nase-slevy-jsou-fer",
+  "https://www.e15.cz/byznys/black-friday-je-v-plnem-proudu-e-shopy-se-museji-vyporadat-s-novymi-pravidly-pro-slevy-1411577"
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
