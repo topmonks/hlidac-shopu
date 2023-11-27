@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import formatISO from "date-fns/formatISO/index.js";
 import { parseHTML } from "linkedom/cached";
-import fs from "fs";
-import path from "path";
-import { URL } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { URL } from "node:url";
 
 const test = false;
 const urls = [

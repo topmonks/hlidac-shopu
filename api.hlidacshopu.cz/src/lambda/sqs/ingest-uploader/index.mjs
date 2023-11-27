@@ -1,5 +1,5 @@
 import { S3 } from "@aws-sdk/client-s3";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import Rollbar from "../../../rollbar.mjs";
 
 const rollbar = Rollbar.init({ lambdaName: "ingest-uploader" });
@@ -15,7 +15,9 @@ async function readStoredHash(key) {
       Key: key
     });
     return resp.Metadata.hash;
-  } catch (e) {}
+  } catch (err) {
+    rollbar.error(err)
+  }
 }
 
 function uploadFile(key, body, hash) {
@@ -28,8 +30,8 @@ function uploadFile(key, body, hash) {
       ContentType: "application/json",
       Metadata: { hash }
     });
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    rollbar.error(err);
   }
 }
 
