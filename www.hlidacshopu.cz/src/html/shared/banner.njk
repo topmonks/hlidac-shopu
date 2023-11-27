@@ -1,9 +1,9 @@
 <a
-  href="https://blog.apify.com/black-friday-2022-naposledy-bez-pravidel-deklarovane-slevy-jsou-uz-polovicni/"
-  title="Přečtě si výsledky Analýzy Black Friday 2022">
+  href="https://blog.apify.com/black-friday-2023-poprve-s-novymi-pravidly/"
+  title="Přečtě si výsledky Analýzy Black Friday 2023">
   <picture>
-    {% set mobileBanner = images["mobile-banner-2022.png"]["public_id"] %}
-    {% set desktopBanner = images["desktop-banner-2022.png"]["public_id"] %}
+    {% set mobileBanner = images["mobile-banner-2023.png"]["public_id"] %}
+    {% set desktopBanner = images["desktop-banner-2023.png"]["public_id"] %}
     <source
       media="screen and (max-width: 360px)"
       srcset="{{ mobileBanner | cloudinaryUrl(width=328) }} 1x,
@@ -24,7 +24,7 @@
       srcset="{{ desktopBanner | cloudinaryUrl(width=1008) }} 1x,
               {{ desktopBanner | cloudinaryUrl(width=1008,dpr=1.5) }} 1.5x,
               {{ desktopBanner | cloudinaryUrl(width=1008,dpr=2) }} 2x">
-    <img alt="Analýza Black Friday 2022" class="responsive"
+    <img alt="Analýza Black Friday 2023" class="responsive"
          src="{{ mobileBanner | cloudinaryUrl(width=480,dpr="auto") }} ">
   </picture>
 </a>
