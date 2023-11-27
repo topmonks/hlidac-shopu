@@ -6194,14 +6194,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@topmonks/pulumi-aws@npm:3.1.2":
-  version: 3.1.2
-  resolution: "@topmonks/pulumi-aws@npm:3.1.2"
+"@topmonks/pulumi-aws@npm:3.1.3":
+  version: 3.1.3
+  resolution: "@topmonks/pulumi-aws@npm:3.1.3"
   peerDependencies:
     "@pulumi/aws": ">=5.30.0"
     "@pulumi/awsx": ">=1.0.0"
     "@pulumi/pulumi": ">=3.55.0"
-  checksum: 6d1c04cdefb0c34fdeb0a5660188b9140e71f44f496bae2796212cdb761a503bbb3d90e2d6775d487c15f8bec2aa94cd649c5b3e2880c0720ce79c66dcbb071d
+  checksum: 7c8bb4d15348d3bf61d10bd1f632f49267ca99fc8806d3883d6e7ee1526738287cbeb1b071330ef2bf8452dc80e96d6c313130352b461685722896fe7729492d
   languageName: node
   linkType: hard
 
@@ -14404,7 +14404,7 @@ __metadata:
     "@pulumi/aws": "npm:6.10.0"
     "@pulumi/awsx": "npm:2.2.0"
     "@pulumi/pulumi": "npm:3.94.2"
-    "@topmonks/pulumi-aws": "npm:3.1.2"
+    "@topmonks/pulumi-aws": "npm:3.1.3"
     "@types/firefox-webext-browser": "npm:111.0.4"
     "@types/node": "npm:20.9.3"
     "@types/nunjucks": "npm:3.2.6"
