@@ -2790,16 +2790,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/puppeteer@npm:3.6.1":
-  version: 3.6.1
-  resolution: "@crawlee/puppeteer@npm:3.6.1"
+"@crawlee/puppeteer@npm:3.6.2":
+  version: 3.6.2
+  resolution: "@crawlee/puppeteer@npm:3.6.2"
   dependencies:
     "@apify/datastructures": "npm:^2.0.0"
     "@apify/log": "npm:^2.4.0"
-    "@crawlee/browser": "npm:3.6.1"
-    "@crawlee/browser-pool": "npm:3.6.1"
-    "@crawlee/types": "npm:3.6.1"
-    "@crawlee/utils": "npm:3.6.1"
+    "@crawlee/browser": "npm:3.6.2"
+    "@crawlee/browser-pool": "npm:3.6.2"
+    "@crawlee/types": "npm:3.6.2"
+    "@crawlee/utils": "npm:3.6.2"
     cheerio: "npm:^1.0.0-rc.12"
     devtools-protocol: "npm:*"
     idcac-playwright: "npm:^0.1.2"
@@ -2811,7 +2811,7 @@ __metadata:
   peerDependenciesMeta:
     puppeteer:
       optional: true
-  checksum: e29f9caebf0822352cb88d0ec8ed05611a7cd47d9dfe7fc4e77ab37d8ed76f568032bf2ad84536c0c80fc1ecffabf5b5428770f684605f032c67a1ff8ab5116b
+  checksum: 0eab9feae1699ab41456c22d7738240ee7d34c29e219e78a2b563ed4476ef87cb99c65a8d99ef1e5ddc6f69f7d81716de9d692b5336a0c9bbf0a10bf0f0c1598
   languageName: node
   linkType: hard
 
@@ -4121,7 +4121,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@crawlee/puppeteer": "npm:3.6.1"
+    "@crawlee/puppeteer": "npm:3.6.2"
     "@hlidac-shopu/actors-common": "npm:2.3.0"
     "@types/node": "npm:20.10.0"
     apify: "npm:3.1.14"
