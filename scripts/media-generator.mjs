@@ -7,9 +7,11 @@ import { URL } from "node:url";
 
 const test = false;
 const urls = [
-  "https://www.edizone.cz/zpravy/black-friday-uz-se-blizi-letos-bude-ferovejsi-a-prilaka-vice-spotrebitelu/",
-  "https://www.megapixel.cz/nase-slevy-jsou-fer",
-  "https://www.e15.cz/byznys/black-friday-je-v-plnem-proudu-e-shopy-se-museji-vyporadat-s-novymi-pravidly-pro-slevy-1411577"
+  "https://www.lupa.cz/aktuality/e-shopy-black-friday/",
+  "https://cc.cz/pochybne-slevy-e-shopu-sleduje-sest-let-letos-behem-black-friday-dopadly-nejhur-kaufland-a-pilulka/",
+  "https://zpravy.aktualne.cz/finance/nakupovani/analyza-prumerna-realna-sleva-na-black-friday-je-letos-v-e-s/r~c66a3eba8d3a11eea873ac1f6b220ee8/",
+  "https://www.penize.cz/slevy/448839-kdo-pocita-slevy-ferove-a-kdo-ne-black-friday-poprve-s-novymi-pravidly",
+  "https://feedit.cz/2023/11/27/hlidac-shopu-ani-letosni-black-friday-se-neobeslo-bez-potizi-a-v-mezich-noveho-zakona/"
 ];
 
 const template = ({ url, title, date, perex, filename }) => `---
