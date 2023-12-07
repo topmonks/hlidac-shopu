@@ -4339,7 +4339,7 @@ __metadata:
     "@open-wc/testing": "npm:4.0.0"
     "@web/test-runner": "npm:0.18.0"
     "@web/test-runner-junit-reporter": "npm:0.7.0"
-    chart.js: "npm:4.4.0"
+    chart.js: "npm:4.4.1"
     chartjs-adapter-date-fns: "npm:3.0.0"
     date-fns: "npm:2.30.0"
     lit: "npm:3.1.0"
@@ -9744,12 +9744,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.4.0":
-  version: 4.4.0
-  resolution: "chart.js@npm:4.4.0"
+"chart.js@npm:4.4.1":
+  version: 4.4.1
+  resolution: "chart.js@npm:4.4.1"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: a81a65ef4767c79b4645703a08947811966d231824868c2483172a6a2dffcb269fae32a3ffd692cb0dee6ff982d4b15e2cfb1d56373f0f0d3ea51d7e9b7b96cd
+  checksum: ef0cd10118bfa66695b109cbb331be99193b19f1ac2bb7f35f8c71aa45a355f17d1c87d5fa6727a2b026ace4c7fa8ab557e9f61a9f13f1f39f58500bbd0c26d1
   languageName: node
   linkType: hard
 
