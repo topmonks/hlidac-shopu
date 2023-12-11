@@ -5573,9 +5573,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.96.1":
-  version: 3.96.1
-  resolution: "@pulumi/pulumi@npm:3.96.1"
+"@pulumi/pulumi@npm:3.96.2":
+  version: 3.96.2
+  resolution: "@pulumi/pulumi@npm:3.96.2"
   dependencies:
     "@grpc/grpc-js": "npm:1.9.6"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -5603,7 +5603,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: f67fe4c7cb8a49cd6e0f549d9235471e719446c363a36ee259d4da340fd48c587ef9566100c51c0390488d676f10cc3d7020754dce71f6f36a5786dd2ae30c42
+  checksum: 22f27ba36b7fc6f781583fb6313f15d4c1b5a84f52d40fd462f5c20de8e41d3618aaaf4bd1ad96cfed988412f4f6549d83235ac833976e3a428d977db5ced26d
   languageName: node
   linkType: hard
 
@@ -15401,7 +15401,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": "npm:3.468.0"
     "@pulumi/aws": "npm:6.13.2"
     "@pulumi/awsx": "npm:2.3.0"
-    "@pulumi/pulumi": "npm:3.96.1"
+    "@pulumi/pulumi": "npm:3.96.2"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.0"
     "@types/node": "npm:20.10.4"
