@@ -5,7 +5,7 @@ orbs:
   aws-s3: circleci/aws-s3@4.0.0
   codecov: codecov/codecov@3.3.0
   github: topmonks/github@1.4.0
-  node: circleci/node@5.1.0
+  node: circleci/node@5.1.1
   pulumi: pulumi/pulumi@2.1.0
   rollbar: rollbar/deploy@1.0.1
   slack: circleci/slack@4.12.5
