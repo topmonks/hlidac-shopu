@@ -16,7 +16,7 @@ async function readStoredHash(key) {
     });
     return resp.Metadata.hash;
   } catch (err) {
-    rollbar.error(err)
+    rollbar.error(err);
   }
 }
 
