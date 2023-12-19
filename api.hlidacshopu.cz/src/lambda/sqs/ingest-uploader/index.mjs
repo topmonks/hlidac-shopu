@@ -34,10 +34,7 @@ function uploadFile(key, body, hash) {
       Metadata: { hash }
     });
   } catch (err) {
-    console.warn({ key, err });
-    if (err.$metadata?.httpStatusCode !== 404) {
-      rollbar.error(err);
-    }
+    rollbar.error(err);
   }
 }
 
@@ -59,5 +56,3 @@ async function handleEvents(event, _context) {
 }
 
 export const handler = rollbar.lambdaHandler(handleEvents);
-
-await readStoredHash("foo");
