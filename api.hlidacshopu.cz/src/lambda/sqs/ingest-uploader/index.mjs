@@ -16,7 +16,10 @@ async function readStoredHash(key) {
     });
     return resp.Metadata.hash;
   } catch (err) {
-    rollbar.error(err);
+    console.warn(key, err);
+    if (err.code !== "NotFound") {
+      rollbar.error(err);
+    }
   }
 }
 
@@ -31,7 +34,10 @@ function uploadFile(key, body, hash) {
       Metadata: { hash }
     });
   } catch (err) {
-    rollbar.error(err);
+    console.warn(key, err);
+    if (err.code !== "NotFound") {
+      rollbar.error(err);
+    }
   }
 }
 
