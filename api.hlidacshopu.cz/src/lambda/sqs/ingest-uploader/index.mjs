@@ -17,7 +17,7 @@ async function readStoredHash(key) {
     return resp.Metadata.hash;
   } catch (err) {
     console.warn({ key, err });
-    if (err.$metadata?.httpStatusCode !== 404) {
+    if ([404, 503].includes(err.$metadata.httpStatusCode)) {
       rollbar.error(err);
     }
   }
