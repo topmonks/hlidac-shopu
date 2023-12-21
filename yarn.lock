@@ -4053,7 +4053,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-compat: "npm:4.2.0"
     eslint-plugin-es: "npm:4.1.0"
-    eslint-plugin-lit: "npm:1.10.1"
+    eslint-plugin-lit: "npm:1.11.0"
     eslint-plugin-prettier: "npm:5.0.1"
     eslint-plugin-promise: "npm:6.1.1"
     lit-html: "npm:3.1.0"
@@ -11641,16 +11641,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.10.1":
-  version: 1.10.1
-  resolution: "eslint-plugin-lit@npm:1.10.1"
+"eslint-plugin-lit@npm:1.11.0":
+  version: 1.11.0
+  resolution: "eslint-plugin-lit@npm:1.11.0"
   dependencies:
     parse5: "npm:^6.0.1"
     parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
     requireindex: "npm:^1.2.0"
   peerDependencies:
     eslint: ">= 5"
-  checksum: a026a052cef0a72678e615b84e00d4538856bed920007509cfd7a6cb4854169e87be261b13be4e9721210fbfa09018d2b9bbc79a7d7db0e88589e40fe63d8f51
+  checksum: 1b808de93c1097369a44d2704708520038fd47e3f94c485bbb8d831a83c8019eb45ef94bd9f01bc7659669f5287c7aa3b5e8e3eaeae930bb54e33bc63f221bab
   languageName: node
   linkType: hard
 
@@ -14120,7 +14120,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-compat: "npm:4.2.0"
     eslint-plugin-es: "npm:4.1.0"
-    eslint-plugin-lit: "npm:1.10.1"
+    eslint-plugin-lit: "npm:1.11.0"
     eslint-plugin-prettier: "npm:5.0.1"
     eslint-plugin-promise: "npm:6.1.1"
     gulp-mode: "npm:1.1.0"
