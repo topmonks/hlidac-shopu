@@ -3446,9 +3446,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:7.0.2":
-  version: 7.0.2
-  resolution: "@hckr_/blendid@npm:7.0.2"
+"@hckr_/blendid@npm:7.0.3":
+  version: 7.0.3
+  resolution: "@hckr_/blendid@npm:7.0.3"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.0.2"
     browser-sync: "npm:2.29.3"
@@ -3507,7 +3507,7 @@ __metadata:
     workbox-build: "npm:7.0.0"
   bin:
     blendid: bin/blendid.js
-  checksum: 40edc411eb5632d8d62b418642cde3a83b2cba366b4070f57290ee45196c8be3d783af3cdf146d28955ed199e3c777e1643f3e68d0992cd5bbb41aa013779413
+  checksum: bb3b9fa39813560904581d7c57c2cd5177ba7c646bece065a9012e9a22dcd2b54d525b69ee3491a9d356238292d6e9fea21661faff4a9c81e0c60417caf25a68
   languageName: node
   linkType: hard
 
@@ -14107,7 +14107,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.474.0"
-    "@hckr_/blendid": "npm:7.0.2"
+    "@hckr_/blendid": "npm:7.0.3"
     "@pulumi/aws": "npm:6.14.0"
     "@pulumi/awsx": "npm:2.3.0"
     "@pulumi/pulumi": "npm:3.97.0"
