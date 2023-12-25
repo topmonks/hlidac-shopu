@@ -5534,7 +5534,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.14.0, @pulumi/aws@npm:^6.9.0":
+"@pulumi/aws@npm:6.15.0":
+  version: 6.15.0
+  resolution: "@pulumi/aws@npm:6.15.0"
+  dependencies:
+    "@pulumi/pulumi": "npm:^3.0.0"
+    builtin-modules: "npm:3.0.0"
+    mime: "npm:^2.0.0"
+    read-package-tree: "npm:^5.2.1"
+    resolve: "npm:^1.7.1"
+  checksum: 85ba37ece9a8e79d3c0a79dc1cf8cf70c5973e5901c25f59d8cac8b8287009f8b73421438209c7d236810a604e05fd5f405b6194b35d1a9d563960711a033a77
+  languageName: node
+  linkType: hard
+
+"@pulumi/aws@npm:^6.9.0":
   version: 6.14.0
   resolution: "@pulumi/aws@npm:6.14.0"
   dependencies:
@@ -5547,9 +5560,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@pulumi/awsx@npm:2.3.0"
+"@pulumi/awsx@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@pulumi/awsx@npm:2.4.0"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
     "@pulumi/aws": "npm:^6.9.0"
@@ -5559,7 +5572,7 @@ __metadata:
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 6a7e018ad994e86d69edc7a231f5211e96c4f35492cc9691ad837b8a3792fefb55edd90c171769c6b67449c2f6fbe0bb2cba370097ccda2348102ac01da475b9
+  checksum: 9fba7734e8a5c543fbb16a1368ab6eb815e9ed4b2dcfd6a512ce6bd54049f6c36c66b37f14f8e27b7bec74123fe29cccc6c3f18a402a7b52c58348bb27e7963d
   languageName: node
   linkType: hard
 
@@ -5573,9 +5586,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.98.0":
-  version: 3.98.0
-  resolution: "@pulumi/pulumi@npm:3.98.0"
+"@pulumi/pulumi@npm:3.99.0":
+  version: 3.99.0
+  resolution: "@pulumi/pulumi@npm:3.99.0"
   dependencies:
     "@grpc/grpc-js": "npm:1.9.6"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -5603,7 +5616,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: de6cdacdd40480f7b9487d0bee8785c411e729379afe997dbfa2a6a4aa5c0b79d73b6b9ace2bdd6b67ad0447f58ec1d32464f147eef97566434f2a76450664d9
+  checksum: ccbc6d40dfbc3c71c70136dc995198a09a893c2326a637ba359841ed6b6b4ff48a52eb8e55c83fb9681dfcc028080658c0490329d92bde0d605ddc4895a1017a
   languageName: node
   linkType: hard
 
@@ -14803,9 +14816,9 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.478.0"
     "@hckr_/blendid": "npm:7.0.3"
-    "@pulumi/aws": "npm:6.14.0"
-    "@pulumi/awsx": "npm:2.3.0"
-    "@pulumi/pulumi": "npm:3.98.0"
+    "@pulumi/aws": "npm:6.15.0"
+    "@pulumi/awsx": "npm:2.4.0"
+    "@pulumi/pulumi": "npm:3.99.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.0"
     "@types/node": "npm:20.10.5"
