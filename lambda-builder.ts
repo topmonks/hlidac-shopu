@@ -7,7 +7,7 @@ function build(entrypoint: string, minify: boolean, external: string[] = []) {
     minify,
     charset: "utf8",
     platform: "node",
-    target: "node18.12",
+    target: "node20.10",
     mainFields: ["module", "main"],
     external,
     entryPoints: [entrypoint],

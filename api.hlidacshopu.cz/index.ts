@@ -102,7 +102,7 @@ export function createDatabase() {
     "notify-about-missing-items",
     new aws.lambda.Function("notify-about-missing-items", {
       publish: true,
-      runtime: aws.lambda.Runtime.NodeJS18dX,
+      runtime: "nodejs20.x",
       architectures: ["arm64"],
       role: defaultLambdaRole.arn,
       handler: "index.handler",

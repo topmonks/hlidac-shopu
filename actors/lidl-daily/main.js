@@ -398,7 +398,6 @@ async function main() {
               { document, url: request.url },
               { stats, processedIds }
             );
-            console.log({ products });
             await Dataset.pushData(products);
           }
         })
