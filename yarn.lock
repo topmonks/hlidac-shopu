@@ -5925,13 +5925,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/is@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "@sindresorhus/is@npm:6.1.0"
-  checksum: ad112bc026e45663ff7bf2ddf00627da5ac223b5d8fc95bfbf323b460ff06af762ab722e5ce79ec42b6eb075975a3b13e71e7c09bcb7b5554e0279bcdd569d29
-  languageName: node
-  linkType: hard
-
 "@sindresorhus/merge-streams@npm:^1.0.0":
   version: 1.0.0
   resolution: "@sindresorhus/merge-streams@npm:1.0.0"
@@ -9505,7 +9498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cacheable-request@npm:^10.2.14, cacheable-request@npm:^10.2.8":
+"cacheable-request@npm:^10.2.8":
   version: 10.2.14
   resolution: "cacheable-request@npm:10.2.14"
   dependencies:
@@ -9844,11 +9837,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrome-webstore-upload-cli@npm:3.0.0":
-  version: 3.0.0
-  resolution: "chrome-webstore-upload-cli@npm:3.0.0"
+"chrome-webstore-upload-cli@npm:3.1.0":
+  version: 3.1.0
+  resolution: "chrome-webstore-upload-cli@npm:3.1.0"
   dependencies:
-    chrome-webstore-upload: "npm:^2.0.0"
+    chrome-webstore-upload: "npm:^3.0.0"
     junk: "npm:^4.0.1"
     meow: "npm:^12.1.1"
     ora: "npm:^7.0.1"
@@ -9856,16 +9849,14 @@ __metadata:
     yazl: "npm:^2.5.1"
   bin:
     chrome-webstore-upload: cli.js
-  checksum: 8712b917d6602a55a89fdfe289d2b327e3a68ffb8843457044f9893d19a763e350fdb15ed51e9b2e40ff186170064437b95a503b2e08b702548cc28d4a965d60
+  checksum: 4af3590948021c0d0c10c638fd3d6429bdb58e143c91aeb8b0faef955dc3ff71ec725a18ac60fc70c89b8c104c735a553eaccefa7e663cc3016a116d6e10763c
   languageName: node
   linkType: hard
 
-"chrome-webstore-upload@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "chrome-webstore-upload@npm:2.0.0"
-  dependencies:
-    got: "npm:^14.0.0"
-  checksum: 29b802a6c734204b6026b303a45131c396cb697a891e7f42666b69d0698c60a863ddef531e0876804ce1d5f897f82a8db35f2f92690447c6a1de7e9a8b1e4684
+"chrome-webstore-upload@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "chrome-webstore-upload@npm:3.0.2"
+  checksum: 50addc6387ad372b02dbd8dc0312dc8abdc59cbbe575c3b474e7788a6ab1dd942dfbf0cb786e37602c946732cfff605699d182aaf2c65f8160c7fed94e18df94
   languageName: node
   linkType: hard
 
@@ -13435,13 +13426,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data-encoder@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "form-data-encoder@npm:4.0.2"
-  checksum: 559d3130e265316452434eaf68d68560fb36392ff4d04614683419de4fb43c3dbe152dc303599fae382ce24d3451a6d3d289d3bcc182ae3d8ad32e7ce8e35e53
-  languageName: node
-  linkType: hard
-
 "form-data@npm:^4.0.0":
   version: 4.0.0
   resolution: "form-data@npm:4.0.0"
@@ -13871,13 +13855,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-stream@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "get-stream@npm:8.0.1"
-  checksum: 5c2181e98202b9dae0bb4a849979291043e5892eb40312b47f0c22b9414fc9b28a3b6063d2375705eb24abc41ecf97894d9a51f64ff021511b504477b27b4290
-  languageName: node
-  linkType: hard
-
 "get-symbol-description@npm:^1.0.0":
   version: 1.0.0
   resolution: "get-symbol-description@npm:1.0.0"
@@ -14257,25 +14234,6 @@ __metadata:
     p-cancelable: "npm:^3.0.0"
     responselike: "npm:^3.0.0"
   checksum: d6a4648dc46f1f9df2637b8730d4e664349a93cb6df62c66dfbb48f7887ba79742a1cc90739a4eb1c15f790ca838ff641c5cdecdc877993627274aeb0f02b92d
-  languageName: node
-  linkType: hard
-
-"got@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "got@npm:14.0.0"
-  dependencies:
-    "@sindresorhus/is": "npm:^6.1.0"
-    "@szmarczak/http-timer": "npm:^5.0.1"
-    cacheable-lookup: "npm:^7.0.0"
-    cacheable-request: "npm:^10.2.14"
-    decompress-response: "npm:^6.0.0"
-    form-data-encoder: "npm:^4.0.2"
-    get-stream: "npm:^8.0.1"
-    http2-wrapper: "npm:^2.2.1"
-    lowercase-keys: "npm:^3.0.0"
-    p-cancelable: "npm:^4.0.1"
-    responselike: "npm:^3.0.0"
-  checksum: fb7456b41ea7b9a551259d7f70e1f6b4240a96e250332141ebef705a0c77b0e1b2c4dfa4fd2c4acb67b4628dbb102cc62718fc2a65590ab01ce811a1f2c14911
   languageName: node
   linkType: hard
 
@@ -14878,7 +14836,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:6.16.0"
     ava: "npm:6.0.1"
     chokidar: "npm:3.5.3"
-    chrome-webstore-upload-cli: "npm:3.0.0"
+    chrome-webstore-upload-cli: "npm:3.1.0"
     commander: "npm:11.1.0"
     dotenv-cli: "npm:7.3.0"
     esbuild: "npm:0.19.10"
@@ -15080,7 +15038,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http2-wrapper@npm:^2.1.10, http2-wrapper@npm:^2.2.0, http2-wrapper@npm:^2.2.1":
+"http2-wrapper@npm:^2.1.10, http2-wrapper@npm:^2.2.0":
   version: 2.2.1
   resolution: "http2-wrapper@npm:2.2.1"
   dependencies:
@@ -18735,13 +18693,6 @@ __metadata:
   version: 3.0.0
   resolution: "p-cancelable@npm:3.0.0"
   checksum: 948fd4f8e87b956d9afc2c6c7392de9113dac817cb1cecf4143f7a3d4c57ab5673614a80be3aba91ceec5e4b69fd8c869852d7e8048bc3d9273c4c36ce14b9aa
-  languageName: node
-  linkType: hard
-
-"p-cancelable@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "p-cancelable@npm:4.0.1"
-  checksum: 12636623f46784ba962b6fe7a1f34d021f1d9a2cc12c43e270baa715ea872d5c8c7d9f086ed420b8b9817e91d9bbe92c14c90e5dddd4a9968c81a2a7aef7089d
   languageName: node
   linkType: hard
 
