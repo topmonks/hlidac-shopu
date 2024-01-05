@@ -4474,7 +4474,7 @@ __metadata:
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.1"
-    "@crawlee/utils": "npm:3.7.0"
+    "@crawlee/utils": "npm:3.7.1"
     "@hlidac-shopu/actors-common": "npm:2.3.0"
     "@thi.ng/atom": "npm:5.2.22"
     "@thi.ng/transducers": "npm:8.8.20"
@@ -4536,7 +4536,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.484.0"
-    "@crawlee/utils": "npm:3.7.0"
+    "@crawlee/utils": "npm:3.7.1"
     "@fast-csv/format": "npm:4.3.5"
     "@hlidac-shopu/actors-common": "npm:2.3.0"
     "@hlidac-shopu/lib": "npm:1.3.14"
