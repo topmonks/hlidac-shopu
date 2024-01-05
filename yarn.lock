@@ -2859,15 +2859,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:3.7.0":
-  version: 3.7.0
-  resolution: "@crawlee/types@npm:3.7.0"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 56b8ee17caad43510f1ad6d68357ca1707e084e482e2681b0a7f48a0583946dcafb66ffe0759e3f9af6bf916d6d4148a010c09585ed7c6c695303de7d95f145c
-  languageName: node
-  linkType: hard
-
 "@crawlee/types@npm:3.7.1":
   version: 3.7.1
   resolution: "@crawlee/types@npm:3.7.1"
@@ -2889,23 +2880,6 @@ __metadata:
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
   checksum: 7b20d5994848b75931a835f99cd2836cfe782e87b94867050f2de279335886516c403a75995d969a60084f144a59d15aa21fbb1e21423e1ca5a01bc32f7c814f
-  languageName: node
-  linkType: hard
-
-"@crawlee/utils@npm:3.7.0":
-  version: 3.7.0
-  resolution: "@crawlee/utils@npm:3.7.0"
-  dependencies:
-    "@apify/log": "npm:^2.4.0"
-    "@apify/ps-tree": "npm:^1.2.0"
-    "@crawlee/types": "npm:3.7.0"
-    cheerio: "npm:^1.0.0-rc.12"
-    got-scraping: "npm:^4.0.3"
-    ow: "npm:^0.28.1"
-    robots-parser: "npm:^3.0.1"
-    sax: "npm:^1.3.0"
-    tslib: "npm:^2.4.0"
-  checksum: 2ae73a219d3e3fe5fc446aea3aaf8c74bb8d3b4ea1bca03270681bc8faf3029268ae10cc89dfaa887b1306dd1e7b324f7f53948937fcaa11f8546d28dfe5a5b6
   languageName: node
   linkType: hard
 
@@ -4040,7 +4014,7 @@ __metadata:
     "@thi.ng/atom": "npm:5.2.22"
     "@types/node": "npm:20.10.6"
     apify: "npm:3.1.14"
-    linkedom: "npm:0.16.5"
+    linkedom: "npm:0.16.6"
     rollbar: "npm:2.26.2"
   languageName: unknown
   linkType: soft
@@ -14866,7 +14840,7 @@ __metadata:
     eslint-plugin-prettier: "npm:5.1.2"
     eslint-plugin-promise: "npm:6.1.1"
     gulp-mode: "npm:1.1.0"
-    linkedom: "npm:0.16.5"
+    linkedom: "npm:0.16.6"
     npm-run-all: "npm:4.1.5"
     postcss: "npm:^8.4.31"
     postcss-css-variables: "npm:0.19.0"
@@ -16793,16 +16767,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.16.5":
-  version: 0.16.5
-  resolution: "linkedom@npm:0.16.5"
+"linkedom@npm:0.16.6":
+  version: 0.16.6
+  resolution: "linkedom@npm:0.16.6"
   dependencies:
     css-select: "npm:^5.1.0"
     cssom: "npm:^0.5.0"
     html-escaper: "npm:^3.0.3"
     htmlparser2: "npm:^9.0.0"
     uhyphen: "npm:^0.2.0"
-  checksum: b931548f1bbddf6995856600d182bedd6a3db53d423664182cdd6c6336b2888b7992b8548a7d085644e31aa6d68578d044ed79c271a1539ee057707ca89e6868
+  checksum: 5bb2e9665e41190033a03b8cb951113c4e2f7a69c8ad69a7ec4b32eaddbb6d86374c5eb13a606d4baaa46229183174bdeb381f9473d060a5f9e710c16ba3afd3
   languageName: node
   linkType: hard
 
