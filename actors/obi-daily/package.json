@@ -6,7 +6,7 @@
   "description": "This is an actor to get data from obi eshop",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.7.1",
+    "@crawlee/http": "3.7.2",
     "@hlidac-shopu/actors-common": "2.3.0",
     "apify": "3.1.15"
   },
