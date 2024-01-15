@@ -4438,7 +4438,7 @@ __metadata:
     chart.js: "npm:4.4.1"
     chartjs-adapter-date-fns: "npm:3.0.0"
     date-fns: "npm:2.30.0"
-    lit: "npm:3.1.0"
+    lit: "npm:3.1.1"
   languageName: unknown
   linkType: soft
 
@@ -17316,7 +17316,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:3.1.0, lit@npm:^2.0.0 || ^3.0.0, lit@npm:^3.0.0":
+"lit@npm:3.1.1":
+  version: 3.1.1
+  resolution: "lit@npm:3.1.1"
+  dependencies:
+    "@lit/reactive-element": "npm:^2.0.0"
+    lit-element: "npm:^4.0.0"
+    lit-html: "npm:^3.1.0"
+  checksum: fea579d9e7e27bf984a9dfe2b617e4c21d3bd428a38de63719797b266b1548cc3a89155bbb630f46edf337641d9d02106f749b6ca4a439daba47a1e1045937b7
+  languageName: node
+  linkType: hard
+
+"lit@npm:^2.0.0 || ^3.0.0, lit@npm:^3.0.0":
   version: 3.1.0
   resolution: "lit@npm:3.1.0"
   dependencies:
