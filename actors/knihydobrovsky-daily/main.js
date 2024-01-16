@@ -44,10 +44,8 @@ function extractProducts({ document }) {
   return document
     .querySelectorAll("li[data-productinfo]")
     .map(item => {
-      const originalPrice =
-        cleanPrice(
-          item.querySelector(".price-wrap .price-strike")?.innerText
-        ) ?? null;
+      // new original price (lowest oprice before discount) can be scraped only from the details page
+      const originalPrice = null;
       const currentPrice = item
         .querySelector("p.price strong")
         ?.innerText?.trim()
@@ -64,6 +62,10 @@ function extractProducts({ document }) {
         log.warning("Could not find item id");
         return;
       }
+      const discounted =
+        item
+          .querySelectorAll("span.flag-red")
+          .filter(x => x.innerText?.trim() === "AKCE").length > 0;
       return {
         itemId,
         itemUrl: canonical(item.querySelector("h3 a").getAttribute("href")),
@@ -72,7 +74,7 @@ function extractProducts({ document }) {
         currentPrice:
           currentPrice === "zdarma" ? 0 : cleanPrice(currentPrice) ?? null,
         originalPrice,
-        discounted: Boolean(originalPrice),
+        discounted,
         rating: parseFloat(
           item
             .querySelector("span.stars.small span")
@@ -197,7 +199,18 @@ async function main() {
             );
           }
           log.info(`${request.url} Found ${products.length} products`);
-          await saveUniqProducts({ stats, products, processedIds });
+          await saveUniqProducts({
+            stats,
+            products: products.filter(x => !x.discounted),
+            processedIds
+          });
+          const discounted = products.filter(x => x.discounted);
+          await crawler.addRequests(
+            discounted.map(x => ({
+              url: x.itemUrl,
+              userData: { label: "DETAIL" }
+            }))
+          );
           break;
         case "SUBLIST":
           stats.inc("pages");
