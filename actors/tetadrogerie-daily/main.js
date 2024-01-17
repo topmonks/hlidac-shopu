@@ -169,9 +169,36 @@ async function main() {
         fingerprintGeneratorOptions: { locales: ["cs-CZ"] }
       }
     },
-    async requestHandler({ request, page }) {
+    async requestHandler({ request, page, sendRequest }) {
       const { step, category, currentPage } = request.userData;
       log.info("Processing page", { url: request.url, step });
+
+      if (step === "DETAIL") {
+        const { product } = request.userData;
+        log.info("Scraping product", { url: product.itemUrl });
+        // navigation is skipped in this request - there is no need to load product
+        // pages in the browser as the original price is scrapable from response that
+        // we can get by plain HTTP request, it is also much faster/cheaper this way
+        const resp = await sendRequest({
+          url: request.url,
+          throwHttpErrors: true
+        });
+        const { document } = parseHTML(resp.body);
+        const originalPrice = parseFloat(
+          document
+            .querySelector(".sx-sale-w-arrow-container > span")
+            .innerText?.replace(/\s+/g, "")
+            ?.replace(",", ".")
+        );
+        product.originalPrice = originalPrice;
+        await saveUniqProducts({
+          products: [product],
+          stats,
+          processedIds
+        });
+        return;
+      }
+
       await page.waitForSelector(".sx-item-price-group");
       const text = await page.content();
       const { document } = parseHTML(text);
@@ -241,7 +268,24 @@ async function main() {
             }
 
             const products = parseItems(document);
-            await saveUniqProducts({ products, stats, processedIds });
+            await saveUniqProducts({
+              products: products.filter(x => !x.discounted),
+              stats,
+              processedIds
+            });
+            await crawler.addRequests(
+              products
+                .filter(x => x.discounted)
+                .map(x => ({
+                  url: x.itemUrl,
+                  skipNavigation: true, // no need to load it in browser
+                  userData: {
+                    step: "DETAIL",
+                    product: x
+                  }
+                })),
+              { forefront: true }
+            );
             log.info(`Found ${products.length} items, ${request.url}`);
           }
           break;
