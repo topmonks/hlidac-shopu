@@ -59,6 +59,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apify/consts@npm:^2.25.1":
+  version: 2.25.1
+  resolution: "@apify/consts@npm:2.25.1"
+  checksum: fddbe51d0f7bc9ea0401f903af4b442df8fd5d6e6f8b99c29c5ae1b34b3ff7f80c190b0fbcc84bc06ce57650a34dde5e9fc86aa7451b71ff962c5d6482ce35b7
+  languageName: node
+  linkType: hard
+
 "@apify/datastructures@npm:^2.0.0":
   version: 2.0.0
   resolution: "@apify/datastructures@npm:2.0.0"
@@ -76,6 +83,17 @@ __metadata:
   peerDependencies:
     ajv: ^8.0.0
   checksum: 1a8f49c558200c156c19798fbe4a8c50a1f99224738add79ab7e7deec741bdd7768a1d38a1111c6b7ad406534a4cb1f75890b9caf2aec0b342bda9c377677468
+  languageName: node
+  linkType: hard
+
+"@apify/input_secrets@npm:^1.1.32":
+  version: 1.1.45
+  resolution: "@apify/input_secrets@npm:1.1.45"
+  dependencies:
+    "@apify/log": "npm:^2.4.8"
+    "@apify/utilities": "npm:^2.9.8"
+    ow: "npm:^0.28.2"
+  checksum: 366c793864817e8b079708b488afe1bad0a20106b7131568a272b9f76ac694470c3506bd7db6623c81f770d2987bc2656599d46e086e1dc7b99131b6ff107459
   languageName: node
   linkType: hard
 
@@ -97,6 +115,16 @@ __metadata:
     "@apify/consts": "npm:^2.24.0"
     ansi-colors: "npm:^4.1.1"
   checksum: 19710515d03867a0288aa73b7f9b6598ddcf715c68dd74c0bc9c993b8e1d6907dd57453ac62b28c42980d485aa39e1173462c8b289a2f6eed1b80226efdd8499
+  languageName: node
+  linkType: hard
+
+"@apify/log@npm:^2.4.8":
+  version: 2.4.8
+  resolution: "@apify/log@npm:2.4.8"
+  dependencies:
+    "@apify/consts": "npm:^2.25.1"
+    ansi-colors: "npm:^4.1.1"
+  checksum: 0f211d9f71cf91d00465fc04f308b0c834ce3f811219e8bac63122eba034011e8f1aedd23777d24c94f7ffc1feb874df7174b5e4a946e813d852c8d98f38db7e
   languageName: node
   linkType: hard
 
@@ -135,6 +163,16 @@ __metadata:
     "@apify/consts": "npm:^2.24.0"
     "@apify/log": "npm:^2.4.4"
   checksum: a789de9c06d6b030769c8168f202638a0bc6cc1b42b18a32cab05af9ee6c2c389c7d18aa616de244a17a09d10931310c9d5e58b8fb343e85900938e9f2b6808d
+  languageName: node
+  linkType: hard
+
+"@apify/utilities@npm:^2.7.9, @apify/utilities@npm:^2.9.8":
+  version: 2.9.8
+  resolution: "@apify/utilities@npm:2.9.8"
+  dependencies:
+    "@apify/consts": "npm:^2.25.1"
+    "@apify/log": "npm:^2.4.8"
+  checksum: 7623d91f2d1569d882616bf13a773262231ae6222f7ed6e527769c585b192ac41f3c322c4d249d8f0509f00983f9288237144a67b03c00f85dd5a38af855eefe
   languageName: node
   linkType: hard
 
@@ -2807,7 +2845,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.7.2":
+"@crawlee/core@npm:3.7.2, @crawlee/core@npm:^3.5.6":
   version: 3.7.2
   resolution: "@crawlee/core@npm:3.7.2"
   dependencies:
@@ -2987,7 +3025,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:3.7.2":
+"@crawlee/types@npm:3.7.2, @crawlee/types@npm:^3.5.6":
   version: 3.7.2
   resolution: "@crawlee/types@npm:3.7.2"
   dependencies:
@@ -3011,7 +3049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.7.2":
+"@crawlee/utils@npm:3.7.2, @crawlee/utils@npm:^3.5.6":
   version: 3.7.2
   resolution: "@crawlee/utils@npm:3.7.2"
   dependencies:
@@ -4133,7 +4171,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/actors-common@npm:2.3.0, @hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@hlidac-shopu/actors-common@npm:2.3.0"
+  dependencies:
+    "@hlidac-shopu/lib": "npm:1.3.13"
+    "@thi.ng/atom": "npm:5.2.11"
+    apify: "npm:3.1.12"
+    linkedom: "npm:0.16.1"
+    rollbar: "npm:2.26.2"
+  checksum: 3ec07926c93789c10879e8a4133a7e0bb097c8fdae1d33326e59be01950ed1aba0de2e1e00f67c99b716027eb9ffd332bfd83e1ae652c5b13ec658daf2105b56
+  languageName: node
+  linkType: hard
+
+"@hlidac-shopu/actors-common@npm:2.3.1, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -4396,7 +4447,7 @@ __metadata:
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.2"
-    "@hlidac-shopu/actors-common": "npm:2.3.0"
+    "@hlidac-shopu/actors-common": "npm:2.3.1"
     "@types/node": "npm:20.11.0"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4427,6 +4478,17 @@ __metadata:
     apify-cli: "npm:0.19.1"
   languageName: unknown
   linkType: soft
+
+"@hlidac-shopu/lib@npm:1.3.13":
+  version: 1.3.13
+  resolution: "@hlidac-shopu/lib@npm:1.3.13"
+  dependencies:
+    chart.js: "npm:4.4.0"
+    chartjs-adapter-date-fns: "npm:3.0.0"
+    lit: "npm:3.0.0"
+  checksum: 5fec0c21e69dfb8aeadaf4ad2590c4412c0c51e922c6635f0c7f2a803bba9a216094ec6960834b334a92167dd1c20a78e1c238b9664334a9bed59191a1a0cea9
+  languageName: node
+  linkType: hard
 
 "@hlidac-shopu/lib@npm:1.3.14, @hlidac-shopu/lib@workspace:*, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
@@ -6982,7 +7044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/api@npm:^8.9.16":
+"@thi.ng/api@npm:^8.9.16, @thi.ng/api@npm:^8.9.6":
   version: 8.9.16
   resolution: "@thi.ng/api@npm:8.9.16"
   checksum: e070671851cbe1f42fe1ee06b5fb8232091225eb37be63d01dca7e849185ef8bd6cdc483bf5214fee744d1fb9879d11d4570b093623cf76744fa199e1e793fb9
@@ -7000,6 +7062,19 @@ __metadata:
     "@thi.ng/errors": "npm:^2.4.10"
     "@thi.ng/random": "npm:^3.6.23"
   checksum: ebb423b65b6140c9d38c4f3a6d4c802924e0b88afbaec6cf6768a4645c85a81f701b0d0280959ac0a001c6aecde4f955be0f8c9013a0a31b6d0d00220f225acc
+  languageName: node
+  linkType: hard
+
+"@thi.ng/atom@npm:5.2.11":
+  version: 5.2.11
+  resolution: "@thi.ng/atom@npm:5.2.11"
+  dependencies:
+    "@thi.ng/api": "npm:^8.9.6"
+    "@thi.ng/equiv": "npm:^2.1.31"
+    "@thi.ng/errors": "npm:^2.4.0"
+    "@thi.ng/paths": "npm:^5.1.46"
+    tslib: "npm:^2.6.2"
+  checksum: bf1e68d284a98c63aef063e4a3d6be43262760b2c4dc108d2b873da19705def766e05bd2b44ce8108a635183159250c86fa7a677fa0806e5d53fb65a386b8f85
   languageName: node
   linkType: hard
 
@@ -7044,14 +7119,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.41":
+"@thi.ng/equiv@npm:^2.1.31, @thi.ng/equiv@npm:^2.1.41":
   version: 2.1.41
   resolution: "@thi.ng/equiv@npm:2.1.41"
   checksum: 3afcf530c09aec4c69ef4312ae4d07f5324bea0fcd905063211ac3e20f3d11dba7dfabb3e8619a6559256acea464a4a96944f5025cac869bdfab3bd082c95bc0
   languageName: node
   linkType: hard
 
-"@thi.ng/errors@npm:^2.4.10":
+"@thi.ng/errors@npm:^2.4.0, @thi.ng/errors@npm:^2.4.10":
   version: 2.4.10
   resolution: "@thi.ng/errors@npm:2.4.10"
   checksum: 17cea6d4b6bdb2ba78115a0750a5a1216a5a40071021428bd0df8172e0c70bfa945da40aa4ab7cd90136c8259ac6ad33beec46ef203fd8852bc855431cc02f5a
@@ -7074,7 +7149,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.57":
+"@thi.ng/paths@npm:^5.1.46, @thi.ng/paths@npm:^5.1.57":
   version: 5.1.57
   resolution: "@thi.ng/paths@npm:5.1.57"
   dependencies:
@@ -8571,7 +8646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-client@npm:^2.8.2, apify-client@npm:^2.8.4":
+"apify-client@npm:^2.8.0, apify-client@npm:^2.8.2, apify-client@npm:^2.8.4":
   version: 2.8.4
   resolution: "apify-client@npm:2.8.4"
   dependencies:
@@ -8586,6 +8661,27 @@ __metadata:
     tslib: "npm:^2.5.0"
     type-fest: "npm:^4.0.0"
   checksum: aac2317e515ffa6181f79430962ad56fb821f6af4d362f6db8bab41fddcfe8fa665e0df2f0b34729269ccb6c9ef448c4c94a4ad574346cf22cbdc0ef66913fe3
+  languageName: node
+  linkType: hard
+
+"apify@npm:3.1.12":
+  version: 3.1.12
+  resolution: "apify@npm:3.1.12"
+  dependencies:
+    "@apify/consts": "npm:^2.20.0"
+    "@apify/input_secrets": "npm:^1.1.32"
+    "@apify/log": "npm:^2.4.0"
+    "@apify/timeout": "npm:^0.3.0"
+    "@apify/utilities": "npm:^2.7.9"
+    "@crawlee/core": "npm:^3.5.6"
+    "@crawlee/types": "npm:^3.5.6"
+    "@crawlee/utils": "npm:^3.5.6"
+    apify-client: "npm:^2.8.0"
+    ow: "npm:^0.28.2"
+    semver: "npm:^7.5.4"
+    tslib: "npm:^2.6.0"
+    ws: "npm:^7.5.9"
+  checksum: a237e6659e6e9fa7c0fdf41dfa5f4c8c6520f0167ac41768721ae2903e18598c9c1fd73a4247f41531c77ba20c006355ff8122bf428352b0a62ba54173fb6147
   languageName: node
   linkType: hard
 
@@ -10137,6 +10233,15 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 96e4731b9ec8050cbb56ab684e8c48d6c33f7826b755802d14e3ebfdc51c57afeece3ea39bc6b09acc359e4363525388b915e16640c1378053820f5e70d0f27d
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:4.4.0":
+  version: 4.4.0
+  resolution: "chart.js@npm:4.4.0"
+  dependencies:
+    "@kurkle/color": "npm:^0.3.0"
+  checksum: a81a65ef4767c79b4645703a08947811966d231824868c2483172a6a2dffcb269fae32a3ffd692cb0dee6ff982d4b15e2cfb1d56373f0f0d3ea51d7e9b7b96cd
   languageName: node
   linkType: hard
 
@@ -17260,6 +17365,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linkedom@npm:0.16.1":
+  version: 0.16.1
+  resolution: "linkedom@npm:0.16.1"
+  dependencies:
+    css-select: "npm:^5.1.0"
+    cssom: "npm:^0.5.0"
+    html-escaper: "npm:^3.0.3"
+    htmlparser2: "npm:^9.0.0"
+    uhyphen: "npm:^0.2.0"
+  checksum: 39159aebfa1f40355c759abaca311af9e27166cb0f3c1652d319433243f429373b018bdae6f3b307cb180b332fbebb3d80057f83b90b93df875bf9150f0f5570
+  languageName: node
+  linkType: hard
+
 "linkedom@npm:0.16.6":
   version: 0.16.6
   resolution: "linkedom@npm:0.16.6"
@@ -17301,7 +17419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.1.1":
+"lit-html@npm:3.1.1, lit-html@npm:^3.0.0":
   version: 3.1.1
   resolution: "lit-html@npm:3.1.1"
   dependencies:
@@ -17316,6 +17434,17 @@ __metadata:
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
   checksum: ecd6d0c97715cc92092d14f329acd04eea37886a947a07f32bd96dd89d44253689a9e4e9c787412e184657c2af5547332ba07f2cfcabda8d4c0db36863a93cc0
+  languageName: node
+  linkType: hard
+
+"lit@npm:3.0.0":
+  version: 3.0.0
+  resolution: "lit@npm:3.0.0"
+  dependencies:
+    "@lit/reactive-element": "npm:^2.0.0"
+    lit-element: "npm:^4.0.0"
+    lit-html: "npm:^3.0.0"
+  checksum: 28368fad872e5b5cfa8a6a77c20e368ca9512f2c5b5afb954261444b8b7905b0962f600c515a3173a56a75bb3971bb92ee3d85249ff5f6fe5e3deaa134063752
   languageName: node
   linkType: hard
 
