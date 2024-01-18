@@ -84,14 +84,18 @@ function parseItem(el, category) {
   console.assert(currentPrice, "missing price");
   const itemUrl = new URL(el.querySelector(".sx-item-title").href, RootUrl)
     .href;
+  const multiItemDiscount =
+    el
+      .querySelector(".sx-item-condition")
+      .innerText?.startsWith("Cena za kus při koupi") ?? false;
   return {
     itemId: el.querySelector(".j-product").getAttribute("data-skuid"),
     itemName: el.querySelector(".sx-item-title").innerText,
     img: el.querySelector("img").getAttribute("src"),
     itemUrl,
-    currentPrice,
-    originalPrice: originalPrice > currentPrice ? originalPrice : null,
-    discounted: originalPrice > currentPrice,
+    currentPrice: multiItemDiscount ? originalPrice : currentPrice,
+    originalPrice: null, // real original price is located on the detail page, there it will be scraped
+    discounted: !multiItemDiscount && originalPrice > currentPrice,
     inStock: true,
     category
   };
