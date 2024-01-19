@@ -7,12 +7,12 @@
   "type": "module",
   "dependencies": {
     "@crawlee/puppeteer": "3.7.2",
-    "@hlidac-shopu/actors-common": "2.3.0",
+    "@hlidac-shopu/actors-common": "2.3.1",
     "apify": "3.1.15",
     "puppeteer": "21.7.0"
   },
   "devDependencies": {
-    "@types/node": "20.11.4",
+    "@types/node": "20.11.5",
     "apify-cli": "0.19.1"
   },
   "scripts": {
