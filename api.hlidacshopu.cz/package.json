@@ -17,7 +17,7 @@
   "devDependencies": {
     "ava": "6.1.0",
     "c8": "9.1.0",
-    "chai": "5.0.0"
+    "chai": "5.0.3"
   },
   "scripts": {
     "test": "c8 ava *.test.mjs"
