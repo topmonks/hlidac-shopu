@@ -4171,7 +4171,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": "npm:1.3.14"
-    "@thi.ng/atom": "npm:5.2.23"
+    "@thi.ng/atom": "npm:5.2.24"
     "@types/node": "npm:20.11.7"
     apify: "npm:3.1.15"
     linkedom: "npm:0.16.8"
@@ -4610,7 +4610,7 @@ __metadata:
     "@crawlee/http": "npm:3.7.2"
     "@crawlee/utils": "npm:3.7.2"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
-    "@thi.ng/atom": "npm:5.2.23"
+    "@thi.ng/atom": "npm:5.2.24"
     "@thi.ng/transducers": "npm:8.8.21"
     "@types/node": "npm:20.11.7"
     apify: "npm:3.1.15"
@@ -4691,7 +4691,7 @@ __metadata:
     "@material/layout-grid": "npm:14.0.0"
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
-    "@thi.ng/atom": "npm:5.2.23"
+    "@thi.ng/atom": "npm:5.2.24"
     eslint: "npm:8.56.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-compat: "npm:4.2.0"
@@ -7126,16 +7126,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.2.23":
-  version: 5.2.23
-  resolution: "@thi.ng/atom@npm:5.2.23"
+"@thi.ng/atom@npm:5.2.24":
+  version: 5.2.24
+  resolution: "@thi.ng/atom@npm:5.2.24"
   dependencies:
-    "@thi.ng/api": "npm:^8.9.17"
+    "@thi.ng/api": "npm:^8.9.18"
     "@thi.ng/equiv": "npm:^2.1.42"
     "@thi.ng/errors": "npm:^2.4.11"
-    "@thi.ng/paths": "npm:^5.1.58"
+    "@thi.ng/paths": "npm:^5.1.59"
     tslib: "npm:^2.6.2"
-  checksum: 01e875e29a5188b8884913c22fedeffdd82b541682faa7dc570ef23e31f38f985ea87ae9de0222147f188dfbd22b68b7e47e60596ffd73ffc99bf921af8067d2
+  checksum: a468d824b9f97bf81ea44b1f7ee3276053df183a2e0582d91fd016f9f85a43dd4ce3ce1a33862e50b83bfd190be528bd6b7e0822bc448ef3f6e852b1c04ceaab
   languageName: node
   linkType: hard
 
@@ -7197,7 +7197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.58":
+"@thi.ng/paths@npm:^5.1.59":
   version: 5.1.59
   resolution: "@thi.ng/paths@npm:5.1.59"
   dependencies:
