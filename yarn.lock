@@ -4217,7 +4217,7 @@ __metadata:
     "@hlidac-shopu/lib": "workspace:*"
     ava: "npm:6.1.0"
     c8: "npm:9.1.0"
-    chai: "npm:5.0.0"
+    chai: "npm:5.0.3"
     date-fns: "npm:2.30.0"
     ramda: "npm:0.29.1"
     rollbar: "npm:2.26.2"
@@ -10173,16 +10173,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:5.0.0":
-  version: 5.0.0
-  resolution: "chai@npm:5.0.0"
+"chai@npm:5.0.3":
+  version: 5.0.3
+  resolution: "chai@npm:5.0.3"
   dependencies:
     assertion-error: "npm:^2.0.1"
     check-error: "npm:^2.0.0"
     deep-eql: "npm:^5.0.1"
-    loupe: "npm:^3.0.0"
+    loupe: "npm:^3.1.0"
     pathval: "npm:^2.0.0"
-  checksum: 6d6335c3c3a237d458f50efee6da99b8ed932b91fd18e85cc98c4e1cdc1f5319f550e5c08b89ca812873e9b874186701064c31d23392e47ef8a1055e2c86c0c1
+  checksum: 9e5ee04b4ba16d4a3c8804d085ae27eef9d0b76fce46bd949212bc11553094258835e488abd699b866220509ea1958085f0aeae063798ee6c78d8991e11adb7f
   languageName: node
   linkType: hard
 
@@ -17671,12 +17671,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loupe@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "loupe@npm:3.0.2"
+"loupe@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "loupe@npm:3.1.0"
   dependencies:
     get-func-name: "npm:^2.0.1"
-  checksum: cb1792652caf3be73a6040a47078549b3760ebe6cf6ce14860b606f9474208cac656ce48dca28b43e93078d0692246964ee92f6816cd02719c84d4c83a03521a
+  checksum: 8c2aebbabb732945092de4c2193a319f79c7a28aa70a20c1e1cd50568116c9a3b1a0a132277a1706d8742cd582be91119a85b5cdb443f1f97f1a375381fa22c7
   languageName: node
   linkType: hard
 
