@@ -5113,10 +5113,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdn/browser-compat-data@npm:5.5.4":
-  version: 5.5.4
-  resolution: "@mdn/browser-compat-data@npm:5.5.4"
-  checksum: bdef5c85cc6e90bbf6e873033bfcf92dba2df699fb9fdd7390f5d1dc0e6d14fba9b8b3585370248a82913585eb1792c1afd20900efb6604c9e59122ba98060d7
+"@mdn/browser-compat-data@npm:5.5.7":
+  version: 5.5.7
+  resolution: "@mdn/browser-compat-data@npm:5.5.7"
+  checksum: 2bd75162a9e52318c985bba18332c65ad3997919ac2775f905e6ab13d5fe8f1b3760917a264036c55dd69000848478f8ab4a226221f00c5a1ac9ab4e1e07ab90
   languageName: node
   linkType: hard
 
@@ -8428,12 +8428,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"addons-linter@npm:6.20.0":
-  version: 6.20.0
-  resolution: "addons-linter@npm:6.20.0"
+"addons-linter@npm:6.21.0":
+  version: 6.21.0
+  resolution: "addons-linter@npm:6.21.0"
   dependencies:
     "@fluent/syntax": "npm:0.19.0"
-    "@mdn/browser-compat-data": "npm:5.5.4"
+    "@mdn/browser-compat-data": "npm:5.5.7"
     addons-moz-compare: "npm:1.3.0"
     addons-scanner-utils: "npm:9.9.0"
     ajv: "npm:8.12.0"
@@ -8466,7 +8466,7 @@ __metadata:
     yauzl: "npm:2.10.0"
   bin:
     addons-linter: bin/addons-linter
-  checksum: 03282162e687b8e311f94475bf302d7f7fec0c9ab168bc21a6b7bfa5d98e6ef2e68c53e08869b569120231843a94480cc558821465d7741891aaf4cab51fb76c
+  checksum: 2001a85aa334ec860e68dd8ff9b4fdd3a9ccbfe0a8efc0aa23fb14216f00c88941e219e4fbc70ff1d8f5971d55289290c98a48a321ac8ae177e375656a7de111
   languageName: node
   linkType: hard
 
@@ -15560,7 +15560,7 @@ __metadata:
     source-map-explorer: "npm:2.5.3"
     stylelint: "npm:16.2.0"
     stylelint-config-prettier: "npm:9.0.5"
-    web-ext: "npm:7.10.0"
+    web-ext: "npm:7.11.0"
     web-ext-submit: "npm:7.8.0"
   languageName: unknown
   linkType: soft
@@ -25343,13 +25343,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:7.10.0":
-  version: 7.10.0
-  resolution: "web-ext@npm:7.10.0"
+"web-ext@npm:7.11.0":
+  version: 7.11.0
+  resolution: "web-ext@npm:7.11.0"
   dependencies:
     "@babel/runtime": "npm:7.21.0"
     "@devicefarmer/adbkit": "npm:3.2.3"
-    addons-linter: "npm:6.20.0"
+    addons-linter: "npm:6.21.0"
     bunyan: "npm:1.8.15"
     camelcase: "npm:7.0.1"
     chrome-launcher: "npm:0.15.1"
@@ -25381,7 +25381,7 @@ __metadata:
     zip-dir: "npm:2.0.0"
   bin:
     web-ext: bin/web-ext.js
-  checksum: 6d0dd3a8c56afdc348d1d7a8de7dd9d95f3d4bfeb60c3fbd50632349645644bb9649805354b8643b8d490a6edc97aaa06427f5f64022d435f51be042159ae97f
+  checksum: 237cef478c601ba006f9fe1bdbccde519aa38c6cda4f65c9d0c66b739e28405ad768a7e70eb01814770a8fbfb02fcc740a129079a91a9df272af938dd1d7c960
   languageName: node
   linkType: hard
 
