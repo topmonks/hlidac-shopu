@@ -2811,6 +2811,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/browser-pool@npm:3.7.3":
+  version: 3.7.3
+  resolution: "@crawlee/browser-pool@npm:3.7.3"
+  dependencies:
+    "@apify/log": "npm:^2.4.0"
+    "@apify/timeout": "npm:^0.3.0"
+    "@crawlee/core": "npm:3.7.3"
+    "@crawlee/types": "npm:3.7.3"
+    fingerprint-generator: "npm:^2.0.6"
+    fingerprint-injector: "npm:^2.0.5"
+    lodash.merge: "npm:^4.6.2"
+    nanoid: "npm:^3.3.4"
+    ow: "npm:^0.28.1"
+    p-limit: "npm:^3.1.0"
+    proxy-chain: "npm:^2.0.1"
+    quick-lru: "npm:^5.1.1"
+    tiny-typed-emitter: "npm:^2.1.0"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    playwright: "*"
+    puppeteer: "*"
+  peerDependenciesMeta:
+    playwright:
+      optional: true
+    puppeteer:
+      optional: true
+  checksum: 2ff88ec14e891f3db4f588a55fd5039c91794c3b3a19098a80433e14301c96f6d6c64a9da9bdbb25e2d4d21e83a8d399d9cdb19de9ce88d8ba1dd9e7b1d7b362
+  languageName: node
+  linkType: hard
+
 "@crawlee/browser@npm:3.7.2":
   version: 3.7.2
   resolution: "@crawlee/browser@npm:3.7.2"
@@ -2823,6 +2853,21 @@ __metadata:
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
   checksum: 3f89933188f736225a0b0c850e0021a7f96f46a1868bb39c912471b9e545d6999658b4a05bbd8ef503006311e4414db24b4097ae703772b6740fe2b17d5c2e95
+  languageName: node
+  linkType: hard
+
+"@crawlee/browser@npm:3.7.3":
+  version: 3.7.3
+  resolution: "@crawlee/browser@npm:3.7.3"
+  dependencies:
+    "@apify/timeout": "npm:^0.3.0"
+    "@crawlee/basic": "npm:3.7.3"
+    "@crawlee/browser-pool": "npm:3.7.3"
+    "@crawlee/types": "npm:3.7.3"
+    "@crawlee/utils": "npm:3.7.3"
+    ow: "npm:^0.28.1"
+    tslib: "npm:^2.4.0"
+  checksum: 5183ac107aeb0d28420cb06e9b645b2d7a1b4d8ab117e37135d6a4af5debc4b979b8a50547b7c6f1d3a4517c059b1b2cb96a722d633a2fbe4920b79ee8157d1e
   languageName: node
   linkType: hard
 
@@ -2998,16 +3043,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/playwright@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/playwright@npm:3.7.2"
+"@crawlee/playwright@npm:3.7.3":
+  version: 3.7.3
+  resolution: "@crawlee/playwright@npm:3.7.3"
   dependencies:
     "@apify/datastructures": "npm:^2.0.0"
     "@apify/log": "npm:^2.4.0"
-    "@crawlee/browser": "npm:3.7.2"
-    "@crawlee/browser-pool": "npm:3.7.2"
-    "@crawlee/types": "npm:3.7.2"
-    "@crawlee/utils": "npm:3.7.2"
+    "@crawlee/browser": "npm:3.7.3"
+    "@crawlee/browser-pool": "npm:3.7.3"
+    "@crawlee/types": "npm:3.7.3"
+    "@crawlee/utils": "npm:3.7.3"
     cheerio: "npm:^1.0.0-rc.12"
     idcac-playwright: "npm:^0.1.2"
     jquery: "npm:^3.6.0"
@@ -3018,7 +3063,7 @@ __metadata:
   peerDependenciesMeta:
     playwright:
       optional: true
-  checksum: cdbd68158f6685116f58044879be95b8c7ff68c7e400a1b5e33ace7d7e4c317aad2290122ef53945497763a70ad1e84d75afdebebaf5a30f6831c5ad89285190
+  checksum: 2b343c90ee314c257bfe77764f75800ccddb1730daba54a83c0953275d38735716e0f153781e628fa8fe3c5dc4f0aca2f993b3a72e611e8693d6c18f32cec2f7
   languageName: node
   linkType: hard
 
@@ -4387,7 +4432,7 @@ __metadata:
   resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@crawlee/playwright": "npm:3.7.2"
+    "@crawlee/playwright": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
     "@types/node": "npm:20.11.10"
     apify: "npm:3.1.15"
@@ -4577,7 +4622,7 @@ __metadata:
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@crawlee/playwright": "npm:3.7.2"
+    "@crawlee/playwright": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
     "@types/node": "npm:20.11.10"
     apify: "npm:3.1.15"
@@ -4651,7 +4696,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
-    "@crawlee/playwright": "npm:3.7.2"
+    "@crawlee/playwright": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
     "@hlidac-shopu/lib": "npm:1.3.14"
     "@types/node": "npm:20.11.10"
@@ -4740,7 +4785,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@crawlee/playwright": "npm:3.7.2"
+    "@crawlee/playwright": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
     "@types/node": "npm:20.11.10"
     apify: "npm:3.1.15"
