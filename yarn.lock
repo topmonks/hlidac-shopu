@@ -2743,25 +2743,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/basic@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/basic@npm:3.7.2"
-  dependencies:
-    "@apify/log": "npm:^2.4.0"
-    "@apify/timeout": "npm:^0.3.0"
-    "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/core": "npm:3.7.2"
-    "@crawlee/types": "npm:3.7.2"
-    "@crawlee/utils": "npm:3.7.2"
-    got-scraping: "npm:^4.0.0"
-    ow: "npm:^0.28.1"
-    tldts: "npm:^6.0.0"
-    tslib: "npm:^2.4.0"
-    type-fest: "npm:^4.0.0"
-  checksum: 845e5501e62a5611cdeacd8c54815b96a9377a9edd513ad12bb9bb99a606493d6764a7e807ea08dc202f6ae6f5cb47b3a2eac50ef51b9048d53dd73998c2b7ce
-  languageName: node
-  linkType: hard
-
 "@crawlee/basic@npm:3.7.3":
   version: 3.7.3
   resolution: "@crawlee/basic@npm:3.7.3"
@@ -2778,36 +2759,6 @@ __metadata:
     tslib: "npm:^2.4.0"
     type-fest: "npm:^4.0.0"
   checksum: cd5ee18679ac026d725af9a269c1048b486290d0a71d7b81552f22c06ac958d5915d88693c3ee8480c822fd18bb6a7566efae9a8feba8898921994330226558a
-  languageName: node
-  linkType: hard
-
-"@crawlee/browser-pool@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/browser-pool@npm:3.7.2"
-  dependencies:
-    "@apify/log": "npm:^2.4.0"
-    "@apify/timeout": "npm:^0.3.0"
-    "@crawlee/core": "npm:3.7.2"
-    "@crawlee/types": "npm:3.7.2"
-    fingerprint-generator: "npm:^2.0.6"
-    fingerprint-injector: "npm:^2.0.5"
-    lodash.merge: "npm:^4.6.2"
-    nanoid: "npm:^3.3.4"
-    ow: "npm:^0.28.1"
-    p-limit: "npm:^3.1.0"
-    proxy-chain: "npm:^2.0.1"
-    quick-lru: "npm:^5.1.1"
-    tiny-typed-emitter: "npm:^2.1.0"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    playwright: "*"
-    puppeteer: "*"
-  peerDependenciesMeta:
-    playwright:
-      optional: true
-    puppeteer:
-      optional: true
-  checksum: b4f0ecb0cd2fce26d31ac015dc901469a22f2ee003b7848f3a0395242a38907677cf2c8235b7a59e9faf4c2404e4772fa7fa517ddbe762017122e63e259c046d
   languageName: node
   linkType: hard
 
@@ -2841,21 +2792,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/browser@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/browser@npm:3.7.2"
-  dependencies:
-    "@apify/timeout": "npm:^0.3.0"
-    "@crawlee/basic": "npm:3.7.2"
-    "@crawlee/browser-pool": "npm:3.7.2"
-    "@crawlee/types": "npm:3.7.2"
-    "@crawlee/utils": "npm:3.7.2"
-    ow: "npm:^0.28.1"
-    tslib: "npm:^2.4.0"
-  checksum: 3f89933188f736225a0b0c850e0021a7f96f46a1868bb39c912471b9e545d6999658b4a05bbd8ef503006311e4414db24b4097ae703772b6740fe2b17d5c2e95
-  languageName: node
-  linkType: hard
-
 "@crawlee/browser@npm:3.7.3":
   version: 3.7.3
   resolution: "@crawlee/browser@npm:3.7.3"
@@ -2868,38 +2804,6 @@ __metadata:
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
   checksum: 5183ac107aeb0d28420cb06e9b645b2d7a1b4d8ab117e37135d6a4af5debc4b979b8a50547b7c6f1d3a4517c059b1b2cb96a722d633a2fbe4920b79ee8157d1e
-  languageName: node
-  linkType: hard
-
-"@crawlee/core@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/core@npm:3.7.2"
-  dependencies:
-    "@apify/consts": "npm:^2.20.0"
-    "@apify/datastructures": "npm:^2.0.0"
-    "@apify/log": "npm:^2.4.0"
-    "@apify/pseudo_url": "npm:^2.0.30"
-    "@apify/timeout": "npm:^0.3.0"
-    "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/memory-storage": "npm:3.7.2"
-    "@crawlee/types": "npm:3.7.2"
-    "@crawlee/utils": "npm:3.7.2"
-    "@sapphire/async-queue": "npm:^1.5.1"
-    "@types/tough-cookie": "npm:^4.0.2"
-    "@vladfrangu/async_event_emitter": "npm:^2.2.2"
-    csv-stringify: "npm:^6.2.0"
-    fs-extra: "npm:^11.0.0"
-    got-scraping: "npm:^4.0.0"
-    json5: "npm:^2.2.3"
-    minimatch: "npm:^9.0.0"
-    ow: "npm:^0.28.1"
-    stream-chain: "npm:^2.2.5"
-    stream-json: "npm:^1.7.4"
-    tldts: "npm:^6.0.0"
-    tough-cookie: "npm:^4.0.0"
-    tslib: "npm:^2.4.0"
-    type-fest: "npm:^4.0.0"
-  checksum: e6b05c9c6ca992b810e3bc19816613b7dc6a556f0ae23ea1a0724b268e1b2fa82d1490dfcc52752e875d35499fa8d017f240f1d40e0562fd59dae464aa3c19cf
   languageName: node
   linkType: hard
 
@@ -3004,24 +2908,6 @@ __metadata:
     proper-lockfile: "npm:^4.1.2"
     tslib: "npm:^2.4.0"
   checksum: 7a62316e7d306675c9310c7ff528275bec9120477025fd7bcc21366e3d859a7ac843365b113a0708aca9073a044d01d49d388c9ab57b4b1eea2518adbe926b6b
-  languageName: node
-  linkType: hard
-
-"@crawlee/memory-storage@npm:3.7.2":
-  version: 3.7.2
-  resolution: "@crawlee/memory-storage@npm:3.7.2"
-  dependencies:
-    "@apify/log": "npm:^2.4.0"
-    "@crawlee/types": "npm:3.7.2"
-    "@sapphire/async-queue": "npm:^1.5.0"
-    "@sapphire/shapeshift": "npm:^3.0.0"
-    content-type: "npm:^1.0.4"
-    fs-extra: "npm:^11.0.0"
-    json5: "npm:^2.2.3"
-    mime-types: "npm:^2.1.35"
-    proper-lockfile: "npm:^4.1.2"
-    tslib: "npm:^2.4.0"
-  checksum: bd8d84ee6405b26dabd522a5662759eee86fb9237c8f58cfe21d2def883e36f0e3d62f121a98d815755f503bf992f392bb26291edbfe02554a599ab8f5b9f23b
   languageName: node
   linkType: hard
 
@@ -4312,7 +4198,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": "npm:1.3.14"
-    "@thi.ng/atom": "npm:5.2.24"
+    "@thi.ng/atom": "npm:5.2.28"
     "@types/node": "npm:20.11.10"
     apify: "npm:3.1.15"
     linkedom: "npm:0.16.8"
@@ -4751,7 +4637,7 @@ __metadata:
     "@crawlee/http": "npm:3.7.3"
     "@crawlee/utils": "npm:3.7.2"
     "@hlidac-shopu/actors-common": "npm:2.3.1"
-    "@thi.ng/atom": "npm:5.2.24"
+    "@thi.ng/atom": "npm:5.2.28"
     "@thi.ng/transducers": "npm:8.8.22"
     "@types/node": "npm:20.11.10"
     apify: "npm:3.1.15"
@@ -4832,7 +4718,7 @@ __metadata:
     "@material/layout-grid": "npm:14.0.0"
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
-    "@thi.ng/atom": "npm:5.2.24"
+    "@thi.ng/atom": "npm:5.2.28"
     eslint: "npm:8.56.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-compat: "npm:4.2.0"
@@ -7273,6 +7159,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thi.ng/api@npm:^8.9.22":
+  version: 8.9.22
+  resolution: "@thi.ng/api@npm:8.9.22"
+  checksum: d58c7e0c87e808606c93dfc49bbe1d3987990504828134333e7fd629a94f078fac4e311c0e7abfabd772ae5e9ea6078332c3258017e1660d91a70be58aaff9de
+  languageName: node
+  linkType: hard
+
 "@thi.ng/arrays@npm:^2.7.15":
   version: 2.7.17
   resolution: "@thi.ng/arrays@npm:2.7.17"
@@ -7287,16 +7180,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.2.24":
-  version: 5.2.24
-  resolution: "@thi.ng/atom@npm:5.2.24"
+"@thi.ng/atom@npm:5.2.28":
+  version: 5.2.28
+  resolution: "@thi.ng/atom@npm:5.2.28"
   dependencies:
-    "@thi.ng/api": "npm:^8.9.18"
-    "@thi.ng/equiv": "npm:^2.1.42"
-    "@thi.ng/errors": "npm:^2.4.11"
-    "@thi.ng/paths": "npm:^5.1.59"
+    "@thi.ng/api": "npm:^8.9.22"
+    "@thi.ng/equiv": "npm:^2.1.46"
+    "@thi.ng/errors": "npm:^2.4.15"
+    "@thi.ng/paths": "npm:^5.1.63"
     tslib: "npm:^2.6.2"
-  checksum: a468d824b9f97bf81ea44b1f7ee3276053df183a2e0582d91fd016f9f85a43dd4ce3ce1a33862e50b83bfd190be528bd6b7e0822bc448ef3f6e852b1c04ceaab
+  checksum: 28e7dae594ca5cde462f9dea53140a1ae0999f906507e116fae5106d68b6b8528c3425cd020d3dd49b2dbd72499bc8ab103aaf16b941c9efbc9a01869c2ecefd
   languageName: node
   linkType: hard
 
@@ -7315,6 +7208,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.6.2"
   checksum: 4fd3ab6c1011afdf055c10f0c42cd91264e9f4ba168cd843ed6b9caac0c7a21f8a8da14bc0df1c9a3649b18ba66645084eb8e903eefa678b34a0bd315fb758ff
+  languageName: node
+  linkType: hard
+
+"@thi.ng/checks@npm:^3.4.22":
+  version: 3.4.22
+  resolution: "@thi.ng/checks@npm:3.4.22"
+  dependencies:
+    tslib: "npm:^2.6.2"
+  checksum: 6fe86c75ba8ad54cc14929b3ba4105f0c4bc941979db3e91f7693f9ff578d709aad0d931ec457fe4c55798a925f45b52e1596f8c9a67826edaee6f8ef12310d9
   languageName: node
   linkType: hard
 
@@ -7346,17 +7248,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.42":
-  version: 2.1.42
-  resolution: "@thi.ng/equiv@npm:2.1.42"
-  checksum: ccd21e3e82f7a598e960b863c976c25d03eba05758c8673232b80e6f98c0e5fcbb1f5cf11ac2b6686a96734b320c5736d98ab62923f051051fd2295cb601f6f1
-  languageName: node
-  linkType: hard
-
 "@thi.ng/equiv@npm:^2.1.44":
   version: 2.1.44
   resolution: "@thi.ng/equiv@npm:2.1.44"
   checksum: cc8f43ddee357b78f51bf34714794381cab5a15266d90852bd4828707d0bc31458849b71f0c670e94221ba793333ccd87f47d61e8b98da12c70839eab3bfaf55
+  languageName: node
+  linkType: hard
+
+"@thi.ng/equiv@npm:^2.1.46":
+  version: 2.1.46
+  resolution: "@thi.ng/equiv@npm:2.1.46"
+  checksum: d5bf35fe55bce247e7a765ea5686b243ff97a2c67bc3915f229b142daabb211ec1fc94bef4b182310a2a2a53e1a8e17a61999e3f95c83ca37e3ab4121fbc07a0
   languageName: node
   linkType: hard
 
@@ -7371,6 +7273,13 @@ __metadata:
   version: 2.4.13
   resolution: "@thi.ng/errors@npm:2.4.13"
   checksum: 1134062e851486850ec60fa8649d0b00fcc81dc1cfd065b2ec0b38fb041f18371a223edfe0550dcc2e4ecaa27b2daf4c012df4ca75db025a5858f7aad59e8989
+  languageName: node
+  linkType: hard
+
+"@thi.ng/errors@npm:^2.4.15":
+  version: 2.4.15
+  resolution: "@thi.ng/errors@npm:2.4.15"
+  checksum: bce1e8a6e738d2501a4065a918d163a20ee8298e2cd05af3feae513c89054c55b950322d61b6aae3e9e919ed15fc688a836f311898be9d8186b6c0b4c1dee780
   languageName: node
   linkType: hard
 
@@ -7397,14 +7306,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.59":
-  version: 5.1.59
-  resolution: "@thi.ng/paths@npm:5.1.59"
+"@thi.ng/paths@npm:^5.1.63":
+  version: 5.1.63
+  resolution: "@thi.ng/paths@npm:5.1.63"
   dependencies:
-    "@thi.ng/api": "npm:^8.9.18"
-    "@thi.ng/checks": "npm:^3.4.18"
-    "@thi.ng/errors": "npm:^2.4.11"
-  checksum: 76851653cc93feb217b0392c263d4bb8cfb66d59b521d7d00c94f644f48ba0c142a742ecf9d4ef84e275549b51067b48194692f1827e8bf2d16b63f135f0b77f
+    "@thi.ng/api": "npm:^8.9.22"
+    "@thi.ng/checks": "npm:^3.4.22"
+    "@thi.ng/errors": "npm:^2.4.15"
+  checksum: 2ccbd291e5170d46075dce25b80d2d06c29ee46f5f783ad844bacc216f9f55b720fa1292d93409ce6191b518557948105b488244e60c009edde387a9bfc75bd2
   languageName: node
   linkType: hard
 
