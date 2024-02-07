@@ -4114,6 +4114,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:^1.9.14":
+  version: 1.10.0
+  resolution: "@grpc/grpc-js@npm:1.10.0"
+  dependencies:
+    "@grpc/proto-loader": "npm:^0.7.8"
+    "@types/node": "npm:>=12.12.47"
+  checksum: 10c0/7132a0b262416a71e0ff45760c593cf0ad9f59eda624cd5f3b14970ba667bad2b9029ccd180d2339cfeecef0e6e78f77904e8ebcd642a929a3e72366e3d66b3e
+  languageName: node
+  linkType: hard
+
 "@grpc/proto-loader@npm:^0.7.8":
   version: 0.7.10
   resolution: "@grpc/proto-loader@npm:0.7.10"
@@ -5699,15 +5709,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.18.2":
-  version: 6.18.2
-  resolution: "@pulumi/aws@npm:6.18.2"
+"@pulumi/aws@npm:6.20.1":
+  version: 6.20.1
+  resolution: "@pulumi/aws@npm:6.20.1"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/4fbc33e9af407907d16efe86a32b26e0e42cd2b78208f9c944322a24496986ac712b33529e00293527241466c795e3fe12424ec820dd5ca8c7659f92ccf59832
+  checksum: 10c0/6439ed4f3fd333db57c362918058963c91e9c229561a1afd38fb4f708b37023672711746e590afef51daf22b347f6f1c73c2fad1d2f91e7aa4da943c3e653157
   languageName: node
   linkType: hard
 
@@ -5724,9 +5734,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@pulumi/awsx@npm:2.4.0"
+"@pulumi/awsx@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@pulumi/awsx@npm:2.5.0"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
     "@pulumi/aws": "npm:^6.9.0"
@@ -5736,7 +5746,7 @@ __metadata:
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 10c0/9fba7734e8a5c543fbb16a1368ab6eb815e9ed4b2dcfd6a512ce6bd54049f6c36c66b37f14f8e27b7bec74123fe29cccc6c3f18a402a7b52c58348bb27e7963d
+  checksum: 10c0/77d4b62a7fb9337a4ea1a37c7c2406a49e71a6bf6841e025080799ab7e6c4f39795ec36ef2e94f7012d19f915a267e527acc45ee9a487fad57681e1394871695
   languageName: node
   linkType: hard
 
@@ -5750,11 +5760,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.103.1":
-  version: 3.103.1
-  resolution: "@pulumi/pulumi@npm:3.103.1"
+"@pulumi/pulumi@npm:3.104.2":
+  version: 3.104.2
+  resolution: "@pulumi/pulumi@npm:3.104.2"
   dependencies:
-    "@grpc/grpc-js": "npm:1.9.6"
+    "@grpc/grpc-js": "npm:^1.9.14"
     "@logdna/tail-file": "npm:^2.0.6"
     "@opentelemetry/api": "npm:^1.2.0"
     "@opentelemetry/exporter-zipkin": "npm:^1.6.0"
@@ -5784,7 +5794,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: 10c0/c2e4371e1bfde5ddf1cfd033a3b99720ee29e5ced271ecd1285061c17830bccc283009e2e152d3505bb1f19c0cfeb32bd298f1c19b6fab12da0c7de08a9d696d
+  checksum: 10c0/d1b9b3b12a33b229abade944c3c1f25565648ba64c432e4a3e649ad07edec947bac1eca14c26a6fe1f9d903eae5e42aafe8bda08ab8863666919b2a9851edf72
   languageName: node
   linkType: hard
 
@@ -15516,9 +15526,9 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.506.0"
     "@hckr_/blendid": "npm:7.0.4"
-    "@pulumi/aws": "npm:6.18.2"
-    "@pulumi/awsx": "npm:2.4.0"
-    "@pulumi/pulumi": "npm:3.103.1"
+    "@pulumi/aws": "npm:6.20.1"
+    "@pulumi/awsx": "npm:2.5.0"
+    "@pulumi/pulumi": "npm:3.104.2"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.0"
     "@types/node": "npm:20.11.16"
