@@ -17,9 +17,9 @@
   "packageManager": "yarn@4.1.0",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.511.0",
-    "@pulumi/aws": "6.20.1",
+    "@pulumi/aws": "6.21.0",
     "@pulumi/awsx": "2.5.0",
-    "@pulumi/pulumi": "3.104.2",
+    "@pulumi/pulumi": "3.105.0",
     "@topmonks/pulumi-aws": "3.1.4",
     "ramda": "0.29.1"
   },
