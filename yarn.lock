@@ -4297,6 +4297,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/billa@workspace:actors/billa":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/billa@workspace:actors/billa"
+  dependencies:
+    "@crawlee/http": "npm:3.7.3"
+    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@types/node": "npm:20.11.16"
+    apify: "npm:3.1.15"
+    apify-cli: "npm:0.19.1"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/czc-daily@workspace:actors/czc-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/czc-daily@workspace:actors/czc-daily"

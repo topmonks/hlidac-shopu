@@ -1,0 +1,21 @@
+{
+  "name": "@hlidac-shopu/billa",
+  "version": "1.0.0",
+  "author": "Apify",
+  "license": "EPL-2.0",
+  "description": "This is the shop.billa.cz actor.",
+  "type": "module",
+  "dependencies": {
+    "@crawlee/http": "3.7.3",
+    "@hlidac-shopu/actors-common": "2.3.1",
+    "apify": "3.1.15"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.16",
+    "apify-cli": "0.19.1"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "../../scripts/test-actor.sh"
+  }
+}
