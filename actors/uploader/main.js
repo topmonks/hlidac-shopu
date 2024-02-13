@@ -74,7 +74,7 @@ async function processItems(
   // update the objects to be properly flatten and remove failed items
   const start = Date.now();
   for (let item of items.reverse()) {
-    // we can do some transformation here
+    // TODO: move this shit to actors
     let priceFeedOnly = false;
     switch (tableName) {
       case "mironet":

@@ -41,7 +41,7 @@ function toProduct(result) {
   const itemId = result.sku.replace(/-/g, "");
   const itemUrl = `https://shop.billa.cz/produkt/${result.slug}`;
   const itemName = result.name;
-  const category = result.parentCategories[0].map(x => x.name).join(" > ");
+  const breadCrumbs = result.parentCategories[0].map(x => x.name).join(" > ");
   const img = result.images[0];
   const currentPrice = result.price.regular.value;
   const originalPrice = result.price.regular.promotionValue;
@@ -51,6 +51,7 @@ function toProduct(result) {
   const originalUnitPrice = result.price.regular.promotionValuePerStandardizedQuantity;
   const unit = result.price.baseUnitShort;
   return {
+    slug: itemId,
     itemId,
     itemUrl,
     itemName,
@@ -63,7 +64,7 @@ function toProduct(result) {
     currentUnitPrice,
     originalUnitPrice,
     unit,
-    category,
+    breadCrumbs,
     inStock: true
   };
 }
@@ -124,7 +125,7 @@ async function main() {
     debug = false,
     proxyGroups = [],
     type = ActorType.Full,
-    urls
+    urls =  [{ url: "https://shop.billa.cz/", label: "start" }],
   } = input || {};
 
   if (debug) {
@@ -147,8 +148,7 @@ async function main() {
     }
   });
 
-  const startUrls = urls ?? [{ url: "https://shop.billa.cz/", label: "start" }];
-  await crawler.run(startUrls);
+  await crawler.run(urls);
   log.info("Crawler finished");
 
   await stats.save(true);

@@ -17,7 +17,9 @@ function getName(result) {
 
 function toProduct(result, category, url) {
   const itemId = result.dataset.microProductId;
-  const itemUrl = new URL(result.querySelector("a").href, url).href;
+  const href = result.querySelector("a").href;
+  const slug = href.split("/")[1];
+  const itemUrl = new URL(href, url).href;
   const itemName = getName(result);
   const img = result.querySelector("img").dataset.microImage;
   const offer = result.querySelector("[data-micro=offer]");
@@ -30,6 +32,7 @@ function toProduct(result, category, url) {
   );
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   return {
+    slug,
     itemId,
     itemUrl,
     itemName,
@@ -38,7 +41,7 @@ function toProduct(result, category, url) {
     originalPrice,
     currency,
     discounted,
-    category,
+    breadCrumbs: category,
     inStock
   };
 }
