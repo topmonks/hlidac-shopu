@@ -44,11 +44,11 @@ function toProduct(result) {
   const breadCrumbs = result.parentCategories[0].map(x => x.name).join(" > ");
   const img = result.images[0];
   const currentPrice = toCZK(result.price.regular.value);
-  const originalPrice = toCZK(result.price.regular.promotionValue);
+  const originalPrice = null; // it is in data but not visible on the web; toCZK(result.price.regular.promotionValue);
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const useUnitPrice = result.weightPieceArticle ?? false;
   const currentUnitPrice = toCZK(result.price.regular.perStandardizedQuantity);
-  const originalUnitPrice = toCZK(result.price.regular.promotionValuePerStandardizedQuantity);
+  const originalUnitPrice = null; // it is in data but not visible on the web; toCZK(result.price.regular.promotionValuePerStandardizedQuantity);
   const unit = result.price.baseUnitShort ?? null;
   return {
     slug: itemId,
