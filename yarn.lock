@@ -4229,6 +4229,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/albert@workspace:actors/albert":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/albert@workspace:actors/albert"
+  dependencies:
+    "@crawlee/http": "npm:3.7.3"
+    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@types/node": "npm:20.11.17"
+    apify: "npm:3.1.15"
+    apify-cli: "npm:0.19.1"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
@@ -4523,7 +4535,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/lib@npm:1.3.14, @hlidac-shopu/lib@workspace:*, @hlidac-shopu/lib@workspace:lib":
+"@hlidac-shopu/lib@npm:1.3.14":
+  version: 1.3.14
+  resolution: "@hlidac-shopu/lib@npm:1.3.14"
+  dependencies:
+    chart.js: "npm:4.4.0"
+    chartjs-adapter-date-fns: "npm:3.0.0"
+    lit: "npm:3.0.0"
+  checksum: 10c0/8595f545ae025bdeb18c01357749dfc73039e964b2a15065648590a2e0e09a9fbd2ba4365f9a4381043829d83b8232595d36a3613c5bc5f6d85f3e8e4a7efce2
+  languageName: node
+  linkType: hard
+
+"@hlidac-shopu/lib@workspace:*, @hlidac-shopu/lib@workspace:lib":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lib@workspace:lib"
   dependencies:
@@ -10454,6 +10477,15 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 10c0/96e4731b9ec8050cbb56ab684e8c48d6c33f7826b755802d14e3ebfdc51c57afeece3ea39bc6b09acc359e4363525388b915e16640c1378053820f5e70d0f27d
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:4.4.0":
+  version: 4.4.0
+  resolution: "chart.js@npm:4.4.0"
+  dependencies:
+    "@kurkle/color": "npm:^0.3.0"
+  checksum: 10c0/a81a65ef4767c79b4645703a08947811966d231824868c2483172a6a2dffcb269fae32a3ffd692cb0dee6ff982d4b15e2cfb1d56373f0f0d3ea51d7e9b7b96cd
   languageName: node
   linkType: hard
 
@@ -17620,7 +17652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.1.2, lit-html@npm:^3.1.2":
+"lit-html@npm:3.1.2, lit-html@npm:^3.0.0, lit-html@npm:^3.1.2":
   version: 3.1.2
   resolution: "lit-html@npm:3.1.2"
   dependencies:
@@ -17635,6 +17667,17 @@ __metadata:
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
   checksum: 10c0/ecd6d0c97715cc92092d14f329acd04eea37886a947a07f32bd96dd89d44253689a9e4e9c787412e184657c2af5547332ba07f2cfcabda8d4c0db36863a93cc0
+  languageName: node
+  linkType: hard
+
+"lit@npm:3.0.0":
+  version: 3.0.0
+  resolution: "lit@npm:3.0.0"
+  dependencies:
+    "@lit/reactive-element": "npm:^2.0.0"
+    lit-element: "npm:^4.0.0"
+    lit-html: "npm:^3.0.0"
+  checksum: 10c0/28368fad872e5b5cfa8a6a77c20e368ca9512f2c5b5afb954261444b8b7905b0962f600c515a3173a56a75bb3971bb92ee3d85249ff5f6fe5e3deaa134063752
   languageName: node
   linkType: hard
 
