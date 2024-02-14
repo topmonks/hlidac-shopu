@@ -33,8 +33,8 @@ function categoryRequest(url, { page, pageSize } = { page: 0, pageSize: 500 }) {
 }
 
 function toCZK(price) {
-  if (!price) return price;
-  return price / 100;
+  if (!price) return null;
+  return parseFloat((price / 100).toFixed(2));
 }
 
 function toProduct(result) {
@@ -43,13 +43,13 @@ function toProduct(result) {
   const itemName = result.name;
   const breadCrumbs = result.parentCategories[0].map(x => x.name).join(" > ");
   const img = result.images[0];
-  const currentPrice = result.price.regular.value;
-  const originalPrice = result.price.regular.promotionValue;
+  const currentPrice = toCZK(result.price.regular.value);
+  const originalPrice = toCZK(result.price.regular.promotionValue);
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
-  const useUnitPrice = result.weightPieceArticle;
-  const currentUnitPrice = result.price.regular.perStandardizedQuantity;
-  const originalUnitPrice = result.price.regular.promotionValuePerStandardizedQuantity;
-  const unit = result.price.baseUnitShort;
+  const useUnitPrice = result.weightPieceArticle ?? false;
+  const currentUnitPrice = toCZK(result.price.regular.perStandardizedQuantity);
+  const originalUnitPrice = toCZK(result.price.regular.promotionValuePerStandardizedQuantity);
+  const unit = result.price.baseUnitShort ?? null;
   return {
     slug: itemId,
     itemId,
