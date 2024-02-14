@@ -15,7 +15,7 @@ function getName(result) {
   return name.textContent.trim();
 }
 
-function toProduct(result, category, url) {
+function toProduct(result, { category, url }) {
   const itemId = result.dataset.microProductId;
   const href = result.querySelector("a").href;
   const slug = href.split("/")[1];
@@ -27,10 +27,6 @@ function toProduct(result, category, url) {
   const inStock =
     offer.dataset.microAvailability === "https://schema.org/InStock";
   const currentPrice = cleanPrice(offer.dataset.microPrice);
-  const originalPrice = cleanPrice(
-    offer.querySelector(".product-item-price>strong, .prices>span")?.textContent
-  );
-  const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   return {
     slug,
     itemId,
@@ -38,9 +34,7 @@ function toProduct(result, category, url) {
     itemName,
     img,
     currentPrice,
-    originalPrice,
     currency,
-    discounted,
     breadCrumbs: category,
     inStock
   };
@@ -79,8 +73,8 @@ function defRouter({ stats, processedIds }) {
 
       const paginationLinks = Array.from(
         document.querySelectorAll(".pagination a")
-        ).map(a => new URL(a.href, request.url).href);
-      if (paginationLinks.length){
+      ).map(a => new URL(a.href, request.url).href);
+      if (paginationLinks.length) {
         await enqueueLinks({
           urls: paginationLinks,
           label: "category",
@@ -93,16 +87,61 @@ function defRouter({ stats, processedIds }) {
           ".container>[itemtype='https://schema.org/BreadcrumbList']"
         )
       );
-      const products = document.querySelectorAll(
-        "#products [data-micro=product]"
+      const products = Array.from(
+        document.querySelectorAll("#products [data-micro=product]")
       );
-      for (const item of products) {
-        if (processedIds.has(item.dataset.microProductId)) {
+
+      const shoptetGuids = products
+        .map(x => x.dataset.microIdentifier)
+        .join(",");
+
+      const productsById = products.map(item => [
+        item.dataset.microIdentifier,
+        toProduct(item, {
+          category,
+          url: request.url
+        })
+      ]);
+
+      await crawler.requestQueue.addRequest({
+        method: "POST",
+        url: "https://penny-datamgr-prod.mirandamedia.cz/api/shoptet/product/action",
+        headers: {
+          "Accept": "application/json", // they ignore it, but let's be future proof
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        payload: new URLSearchParams({ shoptetGuids }).toString(),
+        label: "products",
+        userData: { productsById },
+        useExtendedUniqueKey: true
+      });
+    },
+    async products({ request, json, body }) {
+      const { productsById } = request.userData;
+      const originalPrices = new Map(
+        // diletants at miranda media sends JSON as text/html, but meybe they will fix it sometimes in the future
+        Object.entries(json ?? JSON.parse(body)).map(([key, value]) => [
+          key,
+          cleanPrice(value)
+        ])
+      );
+      for (const [productId, item] of productsById) {
+        if (processedIds.has(productId)) {
           stats.inc("duplicates");
           continue;
         }
-        await Actor.pushData(toProduct(item, category, request.url));
-        processedIds.add(item.dataset.microProductId);
+        await Actor.pushData(
+          Object.assign(item, {
+            originalPrice: originalPrices.get(productId),
+            get discounted() {
+              return (
+                Boolean(this.originalPrice) &&
+                this.currentPrice !== this.originalPrice
+              );
+            }
+          })
+        );
+        processedIds.add(productId);
         stats.inc("products");
       }
     }
@@ -144,6 +183,7 @@ async function main() {
     maxRequestRetries: 5,
     persistCookiesPerSession: true,
     proxyConfiguration,
+    additionalMimeTypes: ["application/json"],
     requestHandler: defRouter({ stats, processedIds }),
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
