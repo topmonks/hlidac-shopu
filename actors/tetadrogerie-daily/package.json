@@ -2,12 +2,12 @@
   "name": "@hlidac-shopu/tetadrogerie-daily",
   "version": "1.0.0",
   "description": "This is the Teta Drogerie actor.",
-  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+  "author": "Aleš Roubíček <ales.roubicek@hckr.studio>",
   "license": "EPL-2.0",
   "type": "module",
   "dependencies": {
     "@crawlee/playwright": "3.7.3",
-    "@hlidac-shopu/actors-common": "2.3.1",
+    "@hlidac-shopu/actors-common": "2.3.2",
     "apify": "3.1.15",
     "playwright": "1.41.2"
   },

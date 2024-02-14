@@ -2,7 +2,7 @@
   "name": "@hlidac-shopu/hs-reviews",
   "version": "0.1.0",
   "description": "This is actor for downloading stats and reviews from stores.",
-  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+  "author": "Aleš Roubíček <ales.roubicek@hckr.studio>",
   "license": "EPL-2.0",
   "type": "module",
   "main": "main.js",
@@ -10,7 +10,7 @@
     "@aws-sdk/client-cloudfront": "3.513.0",
     "@aws-sdk/client-s3": "3.513.0",
     "@crawlee/http": "3.7.3",
-    "@hlidac-shopu/actors-common": "2.3.1",
+    "@hlidac-shopu/actors-common": "2.3.2",
     "apify": "3.1.15",
     "csv-parse": "5.5.3",
     "jsonwebtoken": "9.0.2"

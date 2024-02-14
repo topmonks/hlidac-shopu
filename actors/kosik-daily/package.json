@@ -1,12 +1,12 @@
 {
   "name": "@hlidac-shopu/kosik-daily",
   "version": "1.1.1",
-  "author": "Aleš Roubíček <ales.roubicek@topmonks.com>",
+  "author": "Aleš Roubíček <ales.roubicek@hckr.studio>",
   "license": "EPL-2.0",
   "type": "module",
   "dependencies": {
     "@crawlee/http": "3.7.3",
-    "@hlidac-shopu/actors-common": "2.3.1",
+    "@hlidac-shopu/actors-common": "2.3.2",
     "@hlidac-shopu/lib": "1.4.0",
     "apify": "3.1.15"
   },

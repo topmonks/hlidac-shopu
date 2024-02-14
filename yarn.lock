@@ -4210,14 +4210,14 @@ __metadata:
   resolution: "@hlidac-shopu/aaaauto-daily@workspace:actors/aaaauto-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/actors-common@npm:2.3.1, @hlidac-shopu/actors-common@workspace:actors/common":
+"@hlidac-shopu/actors-common@npm:2.3.2, @hlidac-shopu/actors-common@workspace:actors/common":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
@@ -4235,7 +4235,7 @@ __metadata:
   resolution: "@hlidac-shopu/albert@workspace:actors/albert"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4247,7 +4247,7 @@ __metadata:
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4260,7 +4260,7 @@ __metadata:
   resolution: "@hlidac-shopu/alza@workspace:actors/alza"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
     "@types/node": "npm:20.11.17"
@@ -4302,7 +4302,7 @@ __metadata:
   resolution: "@hlidac-shopu/benu-daily@workspace:actors/benu-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4315,7 +4315,7 @@ __metadata:
   resolution: "@hlidac-shopu/billa@workspace:actors/billa"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4327,7 +4327,7 @@ __metadata:
   resolution: "@hlidac-shopu/czc-daily@workspace:actors/czc-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
     "@types/node": "npm:20.11.17"
@@ -4341,7 +4341,7 @@ __metadata:
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4354,7 +4354,7 @@ __metadata:
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4367,7 +4367,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.7.3"
     "@crawlee/playwright": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4381,7 +4381,7 @@ __metadata:
   resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4393,7 +4393,7 @@ __metadata:
   resolution: "@hlidac-shopu/eva-daily@workspace:actors/eva-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4414,7 +4414,7 @@ __metadata:
   resolution: "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4428,7 +4428,7 @@ __metadata:
     "@aws-sdk/client-cloudfront": "npm:3.513.0"
     "@aws-sdk/client-s3": "npm:3.513.0"
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4442,7 +4442,7 @@ __metadata:
   resolution: "@hlidac-shopu/iglobus-daily@workspace:actors/iglobus-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4454,7 +4454,7 @@ __metadata:
   resolution: "@hlidac-shopu/ikea-scraper@workspace:actors/ikea-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4467,7 +4467,7 @@ __metadata:
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
     "@crawlee/puppeteer": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4480,7 +4480,7 @@ __metadata:
   resolution: "@hlidac-shopu/kasa-daily@workspace:actors/kasa-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4492,7 +4492,7 @@ __metadata:
   resolution: "@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4504,7 +4504,7 @@ __metadata:
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4516,7 +4516,7 @@ __metadata:
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4529,7 +4529,7 @@ __metadata:
   resolution: "@hlidac-shopu/lekarna-daily@workspace:actors/lekarna-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4557,7 +4557,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.7.3"
     "@crawlee/playwright": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4570,7 +4570,7 @@ __metadata:
   resolution: "@hlidac-shopu/mall-daily@workspace:actors/mall-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4586,7 +4586,7 @@ __metadata:
   resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4598,7 +4598,7 @@ __metadata:
   resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4610,7 +4610,7 @@ __metadata:
   resolution: "@hlidac-shopu/notino-daily@workspace:actors/notino-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     apify: "npm:3.1.15"
   languageName: unknown
@@ -4621,7 +4621,7 @@ __metadata:
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     apify: "npm:3.1.15"
   languageName: unknown
   linkType: soft
@@ -4631,7 +4631,7 @@ __metadata:
   resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
   dependencies:
     "@crawlee/playwright": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4645,7 +4645,7 @@ __metadata:
   resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4658,7 +4658,7 @@ __metadata:
   resolution: "@hlidac-shopu/penny@workspace:actors/penny"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4670,7 +4670,7 @@ __metadata:
   resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4682,7 +4682,7 @@ __metadata:
   resolution: "@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
@@ -4696,7 +4696,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.7.3"
     "@crawlee/utils": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@thi.ng/atom": "npm:5.2.30"
     "@thi.ng/transducers": "npm:8.9.1"
     "@types/node": "npm:20.11.17"
@@ -4720,7 +4720,7 @@ __metadata:
   resolution: "@hlidac-shopu/tchibo-daily@workspace:actors/tchibo-daily"
   dependencies:
     "@crawlee/http": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4732,7 +4732,7 @@ __metadata:
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
     "@crawlee/playwright": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4745,7 +4745,7 @@ __metadata:
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
     "@crawlee/core": "npm:3.7.3"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@types/node": "npm:20.11.17"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4759,7 +4759,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": "npm:3.513.0"
     "@crawlee/utils": "npm:3.7.3"
     "@fast-csv/format": "npm:5.0.0"
-    "@hlidac-shopu/actors-common": "npm:2.3.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.2"
     "@hlidac-shopu/lib": "npm:1.4.0"
     apify: "npm:3.1.15"
     byte-size: "npm:8.1.1"
