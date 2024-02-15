@@ -14,11 +14,11 @@ export class Knihydobrovsky extends Shop {
     const elem = document.querySelector(".box-product");
     if (!elem) return;
 
-    const priceBefore = cleanPriceText(
-      elem
-        .querySelector(".box-std .price-before")
-        .textContent.split(":")
-        .at(-1)
+    const priceBeforeEl = elem.querySelector(".box-std .price-before");
+    const priceBefore = priceBeforeEl && cleanPriceText(
+      priceBeforeEl
+        .textContent.split(":") // Nejnižší cena před akcí: 319 Kč
+        .at(-1) // 319 Kč
         .trim()
     );
 
