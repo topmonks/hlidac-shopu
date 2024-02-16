@@ -5,16 +5,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler, createHttpRouter } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import {
-  comp,
-  map,
-  mapcat,
-  push,
-  partition,
-  range,
-  transduce
-} from "@thi.ng/transducers";
+import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
