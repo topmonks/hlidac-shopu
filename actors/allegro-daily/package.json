@@ -7,12 +7,12 @@
   "type": "module",
   "dependencies": {
     "@crawlee/http": "3.7.3",
-    "@hlidac-shopu/actors-common": "2.3.2",
+    "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.1.15",
     "fingerprint-generator": "2.1.48"
   },
   "devDependencies": {
-    "@types/node": "20.11.17",
+    "@types/node": "20.11.19",
     "apify-cli": "0.19.1"
   },
   "scripts": {

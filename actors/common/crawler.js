@@ -29,7 +29,9 @@ export function checkResponseStatus(session, response, stats) {
 export function restPageUrls(totalCount, urlFn) {
   const urls = [];
   for (let pageNr = 2; pageNr <= Number(totalCount); pageNr++) {
-    urls.push(urlFn(pageNr));
+    const result = urlFn(pageNr);
+    if (Array.isArray(result)) urls.push(...result);
+    else urls.push(result);
   }
   return urls;
 }

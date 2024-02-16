@@ -7,16 +7,16 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.513.0",
-    "@aws-sdk/client-s3": "3.513.0",
+    "@aws-sdk/client-cloudfront": "3.515.0",
+    "@aws-sdk/client-s3": "3.515.0",
     "@crawlee/http": "3.7.3",
-    "@hlidac-shopu/actors-common": "2.3.2",
+    "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.1.15",
     "csv-parse": "5.5.3",
     "jsonwebtoken": "9.0.2"
   },
   "devDependencies": {
-    "@types/node": "20.11.17",
+    "@types/node": "20.11.19",
     "apify-cli": "0.19.1"
   },
   "scripts": {
