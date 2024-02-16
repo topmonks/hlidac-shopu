@@ -146,7 +146,7 @@ function defRouter({ stats, processedIds }) {
         json.data.categoryProductSearch;
 
       if (pageNumber === 0) {
-        stats.inc("category");
+        stats.inc("categories");
         await crawler.addRequests(getPaginationUrls(categoryCode, pagination));
       }
 
