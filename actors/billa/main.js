@@ -92,7 +92,7 @@ function defRouter({ stats, processedIds }) {
       }
 
       if (!results) return;
-      
+
       const unprocessedProducts = results.filter(
         x => !processedIds.has(x.productId)
       );
@@ -125,7 +125,7 @@ async function main() {
     debug = false,
     proxyGroups = [],
     type = ActorType.Full,
-    urls =  [{ url: "https://shop.billa.cz/", label: "start" }],
+    urls = [{ url: "https://shop.billa.cz/", label: "start" }]
   } = input || {};
 
   if (debug) {
@@ -142,7 +142,7 @@ async function main() {
     persistCookiesPerSession: true,
     proxyConfiguration,
     additionalMimeTypes: ["application/json"],
-    requestHandler: defRouter({stats, processedIds}),
+    requestHandler: defRouter({ stats, processedIds }),
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
     }
