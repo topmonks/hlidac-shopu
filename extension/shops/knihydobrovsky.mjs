@@ -17,25 +17,26 @@ export class Knihydobrovsky extends Shop {
     const priceBefore = cleanPriceText(
       elem
         .querySelector(".box-std .price-before")
-        .textContent.split(":")
-        .at(-1)
-        .trim()
+        ?.textContent?.split(":")
+        ?.at(-1)
+        ?.trim()
+      ?? ""
     );
 
     const jsonld = document.querySelectorAll(
       'script[type="application/ld+json"]'
     )[1];
-    const currentPrice = document
+    const isFree = document
       .querySelector("p.price strong")
       ?.innerText?.trim()
-      ?.toLowerCase();
+      ?.toLowerCase() === "zdarma";
     if (jsonld) {
       try {
         const data = JSON.parse(jsonld.innerText);
         return {
           itemId: data.sku,
           title: data.name,
-          currentPrice: currentPrice === "zdarma" ? 0 : data.offers.price, // data always have previous price even if it's free now
+          currentPrice: isFree ? 0 : data.offers.price, // data always have previous price even if it's free now
           originalPrice: priceBefore ? parseInt(priceBefore) : null,
           imageUrl: data.image[0]
         };
