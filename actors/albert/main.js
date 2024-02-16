@@ -26,12 +26,16 @@ function toProduct(result, { url, category }) {
   const currentPrice = result.price.showStrikethroughPrice
     ? cleanPrice(result.price.discountedPriceFormatted)
     : result.price.value;
-  const originalPrice = result.price.value;
+  const originalPrice = result.price.showStrikethroughPrice
+    ? result.price.value
+    : null;
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const currentUnitPrice = result.price.showStrikethroughPrice
     ? cleanPrice(result.price.discountedUnitPriceFormatted.split("=").at(-1))
     : result.price.unitPrice;
-  const originalUnitPrice = result.price.unitPrice;
+  const originalUnitPrice = result.price.showStrikethroughPrice
+    ? result.price.unitPrice
+    : null;
   const unit = result.price.unit;
   const useUnitPrice = unit !== "piece";
   const inStock = result.stock.inStock;
