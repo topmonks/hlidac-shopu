@@ -188,7 +188,7 @@ async function enqueueMoreRequests({
 
   log.info(`Adding ${paginationCount - 1}x pagination pages `);
   const paginationRequests = restPageUrls(paginationCount, page =>
-    requests(country, Object.assign({}, params, { page }))
+    requests(country, Object.assign({}, params, { page }))[0]
   );
   await requestQueue.addRequests(paginationRequests);
 }
