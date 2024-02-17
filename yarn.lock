@@ -4236,7 +4236,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@thi.ng/transducers": "npm:8.9.1"
+    "@thi.ng/transducers": "npm:8.9.2"
     "@types/node": "npm:20.11.19"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -4699,7 +4699,7 @@ __metadata:
     "@crawlee/utils": "npm:3.7.3"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@thi.ng/atom": "npm:5.2.30"
-    "@thi.ng/transducers": "npm:8.9.1"
+    "@thi.ng/transducers": "npm:8.9.2"
     "@types/node": "npm:20.11.19"
     apify: "npm:3.1.15"
     apify-cli: "npm:0.19.1"
@@ -7305,12 +7305,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/math@npm:^5.9.1":
-  version: 5.9.1
-  resolution: "@thi.ng/math@npm:5.9.1"
+"@thi.ng/math@npm:^5.10.0":
+  version: 5.10.0
+  resolution: "@thi.ng/math@npm:5.10.0"
   dependencies:
     "@thi.ng/api": "npm:^8.9.23"
-  checksum: 10c0/2d0b50f58df2ea96cb51b4a01560e3b2c5cbf7ee25f861ac18fd76238c5c528cedda6b35275f628498493436a974e3c1819e4516b709d241cdfec0cbb0985d6c
+  checksum: 10c0/fdf2ec5caf0eff9a9f83c8f98e3267be0fc2c99c678c11044fe2f851c237b9ffef771ed74e29b285eadfce8a80bf44b33334a73da2cef495fdb572a537990308
   languageName: node
   linkType: hard
 
@@ -7337,9 +7337,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:8.9.1":
-  version: 8.9.1
-  resolution: "@thi.ng/transducers@npm:8.9.1"
+"@thi.ng/transducers@npm:8.9.2":
+  version: 8.9.2
+  resolution: "@thi.ng/transducers@npm:8.9.2"
   dependencies:
     "@thi.ng/api": "npm:^8.9.23"
     "@thi.ng/arrays": "npm:^2.7.20"
@@ -7347,9 +7347,9 @@ __metadata:
     "@thi.ng/compare": "npm:^2.2.19"
     "@thi.ng/compose": "npm:^2.1.62"
     "@thi.ng/errors": "npm:^2.4.16"
-    "@thi.ng/math": "npm:^5.9.1"
+    "@thi.ng/math": "npm:^5.10.0"
     "@thi.ng/random": "npm:^3.6.30"
-  checksum: 10c0/0f91c31cd0d657226d248c6fc430233228cbadb9247de78c5670d1f733501857131a69d0071f46c87b8f414488d446f1eb234fd7ce23e136aa690d59dad1b7a4
+  checksum: 10c0/30a2d9417e809ab9b3eca01cb16a03e2026921d09b5b8b3b6099e3df7b98de6910b50805590f8939397627b0b07f85795acb11ecfde4ac828746d84da5127203
   languageName: node
   linkType: hard
 
