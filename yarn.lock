@@ -59,6 +59,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apify/consts@npm:^2.25.0":
+  version: 2.26.0
+  resolution: "@apify/consts@npm:2.26.0"
+  checksum: 10c0/34fea5e981432b98192f52e2d03b3322966ea0e6b136513079cad8dbbbea85b1a80ed07f3cacc7386dd17ef971dd1772758983087a58643d4d2a69ff26e4a6db
+  languageName: node
+  linkType: hard
+
 "@apify/datastructures@npm:^2.0.0":
   version: 2.0.0
   resolution: "@apify/datastructures@npm:2.0.0"
@@ -4213,7 +4220,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4239,7 +4246,7 @@ __metadata:
     "@thi.ng/transducers": "npm:8.9.6"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4251,7 +4258,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     fingerprint-generator: "npm:2.1.48"
   languageName: unknown
   linkType: soft
@@ -4266,7 +4273,7 @@ __metadata:
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4307,7 +4314,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4319,7 +4326,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4333,7 +4340,7 @@ __metadata:
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4345,7 +4352,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     got-scraping: "npm:4.0.4"
   languageName: unknown
   linkType: soft
@@ -4358,7 +4365,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4371,7 +4378,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     got-scraping: "npm:4.0.4"
     playwright: "npm:1.41.2"
   languageName: unknown
@@ -4385,7 +4392,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4397,7 +4404,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4418,7 +4425,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4432,7 +4439,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     csv-parse: "npm:5.5.3"
     jsonwebtoken: "npm:9.0.2"
   languageName: unknown
@@ -4446,7 +4453,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4459,7 +4466,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4471,7 +4478,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     puppeteer: "npm:22.2.0"
   languageName: unknown
   linkType: soft
@@ -4484,7 +4491,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4496,7 +4503,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4508,7 +4515,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4521,7 +4528,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4533,7 +4540,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4561,7 +4568,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     playwright: "npm:1.41.2"
   languageName: unknown
   linkType: soft
@@ -4575,7 +4582,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     got-scraping: "npm:4.0.4"
     graphql: "npm:16.8.1"
     graphql-tag: "npm:2.12.6"
@@ -4590,7 +4597,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4602,7 +4609,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4636,7 +4643,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     playwright: "npm:1.41.2"
   languageName: unknown
   linkType: soft
@@ -4650,7 +4657,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4662,7 +4669,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4674,7 +4681,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4687,7 +4694,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4702,7 +4709,7 @@ __metadata:
     "@thi.ng/transducers": "npm:8.9.6"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     core-async: "npm:2.0.6"
     eslint: "npm:8.56.0"
   languageName: unknown
@@ -4724,7 +4731,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -4736,7 +4743,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
     playwright: "npm:1.41.2"
   languageName: unknown
   linkType: soft
@@ -4749,7 +4756,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.11.20"
     apify: "npm:3.1.15"
-    apify-cli: "npm:0.19.1"
+    apify-cli: "npm:0.19.2"
   languageName: unknown
   linkType: soft
 
@@ -8825,9 +8832,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-cli@npm:0.19.1":
-  version: 0.19.1
-  resolution: "apify-cli@npm:0.19.1"
+"apify-cli@npm:0.19.2":
+  version: 0.19.2
+  resolution: "apify-cli@npm:0.19.2"
   dependencies:
     "@apify/actor-templates": "npm:^0.1.4"
     "@apify/consts": "npm:^2.23.0"
@@ -8842,9 +8849,9 @@ __metadata:
     "@root/walk": "npm:^1.1.0"
     adm-zip: "npm:^0.5.10"
     ajv: "npm:^8.12.0"
-    apify-client: "npm:^2.8.2"
+    apify-client: "npm:^2.9.0"
     archiver-promise: "npm:^1.0.0"
-    axios: "npm:^1.6.1"
+    axios: "npm:^1.6.7"
     chalk: "npm:^4.1.2"
     computer-name: "npm:^0.1.0"
     configparser: "npm:^0.3.10"
@@ -8871,11 +8878,11 @@ __metadata:
     write-json-file: "npm:^4.3.0"
   bin:
     apify: src/bin/run
-  checksum: 10c0/633444c988b2a2ad8f3ced8a44ecf7c03fb7025ae014c3cedfbce888faf04eec1d74ab44ec02e94eb4d963ba3a7c0137fd838cd4f3e3a16a1bf0eb0ca49bca32
+  checksum: 10c0/d0d76388fb317db94d573c3690b6789888010304c4fd14178166d67a6c9000ab4088628db32c3db5266f34609aae3582cbaa0e812a5639a5a7b34884306511f9
   languageName: node
   linkType: hard
 
-"apify-client@npm:^2.8.2, apify-client@npm:^2.8.4":
+"apify-client@npm:^2.8.4":
   version: 2.8.4
   resolution: "apify-client@npm:2.8.4"
   dependencies:
@@ -8890,6 +8897,24 @@ __metadata:
     tslib: "npm:^2.5.0"
     type-fest: "npm:^4.0.0"
   checksum: 10c0/aac2317e515ffa6181f79430962ad56fb821f6af4d362f6db8bab41fddcfe8fa665e0df2f0b34729269ccb6c9ef448c4c94a4ad574346cf22cbdc0ef66913fe3
+  languageName: node
+  linkType: hard
+
+"apify-client@npm:^2.9.0":
+  version: 2.9.2
+  resolution: "apify-client@npm:2.9.2"
+  dependencies:
+    "@apify/consts": "npm:^2.25.0"
+    "@apify/log": "npm:^2.2.6"
+    "@crawlee/types": "npm:^3.3.0"
+    agentkeepalive: "npm:^4.2.1"
+    async-retry: "npm:^1.3.3"
+    axios: "npm:^1.6.7"
+    content-type: "npm:^1.0.5"
+    ow: "npm:^0.28.2"
+    tslib: "npm:^2.5.0"
+    type-fest: "npm:^4.0.0"
+  checksum: 10c0/13f71957d90928095b349020b6a269587f6e3d0d4994e3085219980411fd68eb495e5b44814c041e57a6b864a4aa1121fedfea12f32bf06f12a43c278a595b1f
   languageName: node
   linkType: hard
 
@@ -9542,14 +9567,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.1":
-  version: 1.6.2
-  resolution: "axios@npm:1.6.2"
+"axios@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "axios@npm:1.6.7"
   dependencies:
-    follow-redirects: "npm:^1.15.0"
+    follow-redirects: "npm:^1.15.4"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/9b77e030e85e4f9cbcba7bb52fbff67d6ce906c92d213e0bd932346a50140faf83733bf786f55bd58301bd92f9973885c7b87d6348023e10f7eaf286d0791a1d
+  checksum: 10c0/131bf8e62eee48ca4bd84e6101f211961bf6a21a33b95e5dfb3983d5a2fe50d9fffde0b57668d7ce6f65063d3dc10f2212cbcb554f75cfca99da1c73b210358d
   languageName: node
   linkType: hard
 
@@ -14100,13 +14125,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0":
   version: 1.15.3
   resolution: "follow-redirects@npm:1.15.3"
   peerDependenciesMeta:
     debug:
       optional: true
   checksum: 10c0/915a2cf22e667bdf47b1a43cc6b7dce14d95039e9bbf9a24d0e739abfbdfa00077dd43c86d4a7a19efefcc7a99af144920a175eedc3888d268af5df67c272ee5
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.15.4":
+  version: 1.15.5
+  resolution: "follow-redirects@npm:1.15.5"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: 10c0/418d71688ceaf109dfd6f85f747a0c75de30afe43a294caa211def77f02ef19865b547dfb73fde82b751e1cc507c06c754120b848fe5a7400b0a669766df7615
   languageName: node
   linkType: hard
 
