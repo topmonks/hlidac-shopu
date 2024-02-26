@@ -19,16 +19,24 @@ export class Smarty extends AsyncShop {
     // e.g.:
     // https://www.smarty.cz/PlayStation-5-verze-slim--p160486
     // <meta itemprop="sku" content="160486">
-    const itemId = location.pathname.match(/-p(\d+)$/)?.[1] ?? document.querySelector(`meta[itemprop="sku"]`)?.content;
+    const itemId =
+      location.pathname.match(/-p(\d+)$/)?.[1] ??
+      document.querySelector(`meta[itemprop="sku"]`)?.content;
     const title = document.querySelector(`h1`).textContent.trim();
-    const currentPrice = document.querySelector(`[itemtype="http://schema.org/Product"] [itemprop="price"]`).getAttribute(`content`)
+    const currentPrice = document
+      .querySelector(
+        `[itemtype="http://schema.org/Product"] [itemprop="price"]`
+      )
+      .getAttribute(`content`);
     if (!currentPrice) return null; //
 
     // eg.:
     // <p class="priceOld">Sleva 12 % <span>z 13 590 Kč</span></p>
     const originalPrice = cleanPrice(`.priceOld span`);
     const imageUrl = document
-      .querySelector(`meta[property='og:image:secure_url'] meta[property='og:image']`) // prefer https, fallback to http
+      .querySelector(
+        `meta[property='og:image:secure_url'] meta[property='og:image']`
+      ) // prefer https, fallback to http
       .content.trim();
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
