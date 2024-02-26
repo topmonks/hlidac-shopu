@@ -133,7 +133,7 @@ async function main() {
     await crawler.run([
       {
         url: `${baseUrl}/Vyrobce/samsung#us=1&s=n&pg=all`,
-        label: LABEL.LISTING
+        label: LABEL_CUSTOM.LISTING_PREFLIGHT
       }
     ]);
   } else {

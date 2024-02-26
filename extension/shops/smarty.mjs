@@ -19,9 +19,11 @@ export class Smarty extends AsyncShop {
     // e.g.:
     // https://www.smarty.cz/PlayStation-5-verze-slim--p160486
     // <meta itemprop="sku" content="160486">
+    let locationItemIdMatch = location.pathname.match(/-p(\d+)$/);
     const itemId =
-      location.pathname.match(/-p(\d+)$/)?.[1] ??
-      document.querySelector(`meta[itemprop="sku"]`)?.content;
+      locationItemIdMatch && locationItemIdMatch[1]
+        ? locationItemIdMatch[1]
+        : document.querySelector(`meta[itemprop="sku"]`).content;
     const title = document.querySelector(`h1`).textContent.trim();
     const currentPrice = document
       .querySelector(
