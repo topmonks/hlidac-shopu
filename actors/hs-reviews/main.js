@@ -158,14 +158,14 @@ function appleReviews(document) {
 function googleStats(document) {
   const downloads = parseInt(
     document
-      .querySelector(".left-panel > div+div > .value")
+      .querySelector(".left-panel > div:nth-of-type(3) > a")
       .textContent.replace(",", "")
   );
   const reviews = parseInt(
     document
-      .querySelector(".left-panel > div+div+div > div:first-child > .value")
+      .querySelector(".left-panel > div:nth-of-type(4)")
       .textContent.match(/\d+/g)
-      .pop()
+      .at(-1)
   );
   return [
     {
