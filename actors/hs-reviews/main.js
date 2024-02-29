@@ -538,8 +538,8 @@ function createAppleJWT(applePK) {
 async function main() {
   rollbar.init();
 
-  const input = (await KeyValueStore.getInput()) ?? {};
-  const { applePK } = input;
+  const input = await Actor.getInput();
+  const { applePK } = input ?? {};
   const token = createAppleJWT(applePK);
 
   const { reviews, stats, requestHandler } = createRequestHandler(token);
