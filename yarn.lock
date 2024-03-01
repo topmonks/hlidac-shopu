@@ -5795,15 +5795,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.23.0":
-  version: 6.23.0
-  resolution: "@pulumi/aws@npm:6.23.0"
+"@pulumi/aws@npm:6.24.0":
+  version: 6.24.0
+  resolution: "@pulumi/aws@npm:6.24.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/4df42d957fd761c6d12ac429efb8a39098f88934a8d45ad7ddbbd06438e997c1164cc360b0d967936fb65b9bf70417024f11cf36c855956043094015a31b870b
+  checksum: 10c0/0c241b98899e14df9ad407156e84e805b3b13bf955a204b5898d44ffd878bf58ac5e8f9c98f181c9f827716bd4f1d9a26ccd7b404db746557294bf37089a1678
   languageName: node
   linkType: hard
 
@@ -15731,7 +15731,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.523.0"
     "@hckr_/blendid": "npm:7.0.4"
-    "@pulumi/aws": "npm:6.23.0"
+    "@pulumi/aws": "npm:6.24.0"
     "@pulumi/awsx": "npm:2.5.0"
     "@pulumi/pulumi": "npm:3.107.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
