@@ -4462,7 +4462,7 @@ __metadata:
     "@types/node": "npm:20.11.24"
     apify: "npm:3.1.16"
     apify-cli: "npm:0.19.2"
-    csv-parse: "npm:5.5.4"
+    csv-parse: "npm:5.5.5"
     jsonwebtoken: "npm:9.0.2"
   languageName: unknown
   linkType: soft
@@ -11740,10 +11740,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:5.5.4":
-  version: 5.5.4
-  resolution: "csv-parse@npm:5.5.4"
-  checksum: 10c0/657249f297043bd46b2352a41dd199a696d9aad592a7c50d63c159f8eae61f60093dd0e199a061f57beec9637e1a1d51d8d0ba6709cef285249ac8f026e7bd63
+"csv-parse@npm:5.5.5":
+  version: 5.5.5
+  resolution: "csv-parse@npm:5.5.5"
+  checksum: 10c0/717d8e66386cbeed9baea93f231efd3aff967a9b70c27f0c8bb19fa5a723d01b2d426b6728e8f1e5e26731ec4371a5f513e1a524344411735fc8d3848770409e
   languageName: node
   linkType: hard
 
