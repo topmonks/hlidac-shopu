@@ -1,0 +1,19 @@
+{
+  "name": "@hlidac-shopu/smarty-daily",
+  "version": "1.0.0",
+  "license": "EPL-2.0",
+  "type": "module",
+  "dependencies": {
+    "@crawlee/linkedom": "3.8.1",
+    "@hlidac-shopu/actors-common": "2.3.3",
+    "apify": "3.1.15",
+    "linkedom": "0.16.8"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.20",
+    "apify-cli": "0.19.2"
+  },
+  "scripts": {
+    "start": "node main.js"
+  }
+}
