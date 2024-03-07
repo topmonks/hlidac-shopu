@@ -2951,6 +2951,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/linkedom@npm:3.8.1":
+  version: 3.8.1
+  resolution: "@crawlee/linkedom@npm:3.8.1"
+  dependencies:
+    "@apify/timeout": "npm:^0.3.0"
+    "@apify/utilities": "npm:^2.7.10"
+    "@crawlee/http": "npm:3.8.1"
+    "@crawlee/types": "npm:3.8.1"
+    linkedom: "npm:^0.16.0"
+    ow: "npm:^0.28.2"
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/fb827243717b3f164c02061f00e4470001c4e1395d1cb70a1458cf916324eca883c667a7464da52521bf18e95b9f199961bbf6784934277228b8d0fb37374815
+  languageName: node
+  linkType: hard
+
 "@crawlee/memory-storage@npm:3.6.2, @crawlee/memory-storage@npm:^3.5.8":
   version: 3.6.2
   resolution: "@crawlee/memory-storage@npm:3.6.2"
@@ -4742,6 +4757,19 @@ __metadata:
   resolution: "@hlidac-shopu/root-edge-lambda@workspace:www.hlidacshopu.cz/root-edge-lambda"
   dependencies:
     "@hlidac-shopu/lib": "npm:1.4.0"
+  languageName: unknown
+  linkType: soft
+
+"@hlidac-shopu/smarty-daily@workspace:actors/smarty-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/smarty-daily@workspace:actors/smarty-daily"
+  dependencies:
+    "@crawlee/linkedom": "npm:3.8.1"
+    "@hlidac-shopu/actors-common": "npm:2.3.3"
+    "@types/node": "npm:20.11.20"
+    apify: "npm:3.1.16"
+    apify-cli: "npm:0.19.2"
+    linkedom: "npm:0.16.8"
   languageName: unknown
   linkType: soft
 
@@ -8050,6 +8078,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c0/2c8b70cba731eb2ae3ae046daa74903bfcbb0e7b9196da767e5895054f6d252296ae7a04fb1dbbcb53bb004c4c658c05eaea2731bc9e2dd9e08f7e88d672f563
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:20.11.20":
+  version: 20.11.20
+  resolution: "@types/node@npm:20.11.20"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/8e8de211e6d54425c603388a9b5cc9c434101985d0a1c88aabbf65d10df2b1fccd71855c20e61ae8a75c7aea56cb0f64e722cf7914cff1247d0b62ce21996ac4
   languageName: node
   linkType: hard
 
@@ -18079,7 +18116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.16.8":
+"linkedom@npm:0.16.8, linkedom@npm:^0.16.0":
   version: 0.16.8
   resolution: "linkedom@npm:0.16.8"
   dependencies:
