@@ -4766,7 +4766,7 @@ __metadata:
   dependencies:
     "@crawlee/linkedom": "npm:3.8.1"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@types/node": "npm:20.11.20"
+    "@types/node": "npm:20.11.24"
     apify: "npm:3.1.16"
     apify-cli: "npm:0.19.2"
     linkedom: "npm:0.16.8"
@@ -8078,15 +8078,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c0/2c8b70cba731eb2ae3ae046daa74903bfcbb0e7b9196da767e5895054f6d252296ae7a04fb1dbbcb53bb004c4c658c05eaea2731bc9e2dd9e08f7e88d672f563
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:20.11.20":
-  version: 20.11.20
-  resolution: "@types/node@npm:20.11.20"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10c0/8e8de211e6d54425c603388a9b5cc9c434101985d0a1c88aabbf65d10df2b1fccd71855c20e61ae8a75c7aea56cb0f64e722cf7914cff1247d0b62ce21996ac4
   languageName: node
   linkType: hard
 
