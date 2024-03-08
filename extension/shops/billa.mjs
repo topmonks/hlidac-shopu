@@ -1,4 +1,4 @@
-import { registerShop, cleanPriceText, cleanPrice } from "../helpers.mjs";
+import { registerShop, cleanPriceText } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Billa extends AsyncShop {
@@ -19,21 +19,35 @@ export class Billa extends AsyncShop {
       if (!data) return;
       const itemId = data.sku.replace("-", "");
       const title = data.name;
-      const [,priceType, price] = document.querySelector(".ws-product-price-type>.caption")?.textContent.trim().split(" ");
-      const currentPrice = priceType === "ks" ? data.offers.price : cleanPriceText(price);
+      const [, priceType, price] = document
+        .querySelector(".ws-product-price-type>.caption")
+        ?.textContent.trim()
+        .split(" ");
+      const currentPrice =
+        priceType === "ks" ? data.offers.price : cleanPriceText(price);
       const imageUrl = data.image[0];
       return { itemId, title, currentPrice, imageUrl };
     }
     const dialog = document.querySelector(".ws-dialog__content");
     if (!dialog) return;
     const params = new URLSearchParams(location.search);
-    const itemId= params.get("slug").split("-").at(-1);
+    const itemId = params.get("slug").split("-").at(-1);
     const url = new URL(`/produkt/${params.get("slug")}`, location.href).href;
-    const title = dialog.querySelector(".ws-dialog-product-quick-view__title").textContent.trim();
-    const [,priceType, price] = dialog.querySelector(".ws-product-price-type>.caption")?.textContent.trim().split(" ");
-    const currentPrice = priceType === "ks" ? cleanPriceText(dialog.querySelector(".ws-product-price-type__value").textContent) : cleanPriceText(price);
+    const title = dialog
+      .querySelector(".ws-dialog-product-quick-view__title")
+      .textContent.trim();
+    const [, priceType, price] = dialog
+      .querySelector(".ws-product-price-type>.caption")
+      ?.textContent.trim()
+      .split(" ");
+    const currentPrice =
+      priceType === "ks"
+        ? cleanPriceText(
+            dialog.querySelector(".ws-product-price-type__value").textContent
+          )
+        : cleanPriceText(price);
     return { itemId, title, currentPrice, url };
-   }
+  }
 }
 
 registerShop(new Billa(), "billa_cz");

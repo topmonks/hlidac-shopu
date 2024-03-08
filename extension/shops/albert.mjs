@@ -1,4 +1,4 @@
-import { registerShop, cleanPriceText } from "../helpers.mjs";
+import { registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Albert extends AsyncShop {
