@@ -341,9 +341,9 @@ workflows:
   ci:
     jobs:
       - test-actors:
-          context: org-global
+         # context: org-global
       - test-lib:
-          context: org-global
+         # context: org-global
           filters:
             branches:
               only: /.*/
@@ -351,14 +351,14 @@ workflows:
               only: /^extension-.*/
       - preview-provision:
           context:
-            - org-global
+            #- org-global
             - app-hlidac-shopu
           filters:
             branches:
               ignore: trunk
       - provision:
           context:
-            - org-global
+            #- org-global
             - app-hlidac-shopu
           requires:
             - test-lib
@@ -366,7 +366,7 @@ workflows:
             branches:
               only: trunk
       - build-web-extension:
-          context: org-global
+          # context: org-global
           requires:
             - test-lib
           filters:
@@ -377,22 +377,22 @@ workflows:
       #      - test-web-extension:
       #          requires:
       #            - build-web-extension
-      - github_release:
-          context:
-            - org-github
-            - org-global
-          requires:
-            - build-web-extension
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^extension-.*/
+      #- github_release:
+#          context:
+#            - org-github
+#            - org-global
+#          requires:
+#            - build-web-extension
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^extension-.*/
       - publish-web-extensions:
           name: publish-chrome-web-extension
           browser: chrome
           context:
-            - org-global
+            # - org-global
             - app-hlidac-shopu
           requires:
             - build-web-extension
@@ -416,7 +416,7 @@ workflows:
       #              only: /^extension-.*/
       - publish-apple-apps:
           context:
-            - org-global
+           # - org-global
           requires:
             - test-lib
             - build-web-extension
@@ -426,13 +426,13 @@ workflows:
             tags:
               only: /^extension-.*/
       - build-website:
-          context: org-global
+          # context: org-global
           requires:
             - test-lib
       - deploy-site:
           site_name: www.hlidacshopu.cz
           context:
-            - org-global
+           # - org-global
             - app-hlidac-shopu
           requires:
             - provision
@@ -440,16 +440,16 @@ workflows:
           filters:
             branches:
               only: trunk
-      - merge_pr:
-          context:
-            - org-github
-            - org-global
-          requires:
-            - build-web-extension
-            - build-website
-            - preview-provision
-          filters:
-            branches:
-              only:
-                - trunk-cf-autofix
-                - /renovate\/.*/
+#      - merge_pr:
+#          context:
+#            - org-github
+#            #- org-global
+#          requires:
+#            - build-web-extension
+#            - build-website
+#            - preview-provision
+#          filters:
+#            branches:
+#              only:
+#                - trunk-cf-autofix
+#                - /renovate\/.*/
