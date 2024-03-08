@@ -331,7 +331,7 @@ jobs:
           at: .
       - github/install
       - github/set_repo:
-          repo: topmonks/hlidac-shopu
+          repo: "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
       - github/release:
           tag: "$CIRCLE_TAG"
           files: dist/*.zip
@@ -365,20 +365,17 @@ workflows:
               only: /.*/
             tags:
               only: /^extension-.*/
-      #      - test-web-extension:
-      #          requires:
-      #            - build-web-extension
-      #- github_release:
-#          context:
-#            - org-github
-#            - org-global
-#          requires:
-#            - build-web-extension
-#          filters:
-#            branches:
-#              ignore: /.*/
-#            tags:
-#              only: /^extension-.*/
+      - test-web-extension:
+          requires:
+            - build-web-extension
+      - github_release:
+          requires:
+            - build-web-extension
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^extension-.*/
       - publish-web-extensions:
           name: publish-chrome-web-extension
           browser: chrome
@@ -389,19 +386,16 @@ workflows:
               ignore: /.*/
             tags:
               only: /^extension-.*/
-      #      - publish-web-extensions:
-      #          name: publish-firefox-web-extension
-      #          browser: firefox
-      #          context:
-      #            - org-global
-      #            - app-hlidac-shopu
-      #          requires:
-      #            - build-web-extension
-      #          filters:
-      #            branches:
-      #              ignore: /.*/
-      #            tags:
-      #              only: /^extension-.*/
+      - publish-web-extensions:
+          name: publish-firefox-web-extension
+          browser: firefox
+          requires:
+            - build-web-extension
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^extension-.*/
       - publish-apple-apps:
           requires:
             - test-lib
@@ -422,16 +416,3 @@ workflows:
           filters:
             branches:
               only: trunk
-#      - merge_pr:
-#          context:
-#            - org-github
-#            #- org-global
-#          requires:
-#            - build-web-extension
-#            - build-website
-#            - preview-provision
-#          filters:
-#            branches:
-#              only:
-#                - trunk-cf-autofix
-#                - /renovate\/.*/
