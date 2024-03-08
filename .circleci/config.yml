@@ -348,14 +348,10 @@ workflows:
             tags:
               only: /^extension-.*/
       - preview-provision:
-          context:
-            - app-hlidac-shopu
           filters:
             branches:
               ignore: trunk
       - provision:
-          context:
-            - app-hlidac-shopu
           requires:
             - test-lib
           filters:
@@ -386,8 +382,6 @@ workflows:
       - publish-web-extensions:
           name: publish-chrome-web-extension
           browser: chrome
-          context:
-            - app-hlidac-shopu
           requires:
             - build-web-extension
           filters:
@@ -422,8 +416,6 @@ workflows:
             - test-lib
       - deploy-site:
           site_name: www.hlidacshopu.cz
-          context:
-            - app-hlidac-shopu
           requires:
             - provision
             - build-website
