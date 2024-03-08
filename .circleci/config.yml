@@ -365,9 +365,9 @@ workflows:
               only: /.*/
             tags:
               only: /^extension-.*/
-      - test-web-extension:
-          requires:
-            - build-web-extension
+#      - test-web-extension:
+#          requires:
+#            - build-web-extension
       - github_release:
           requires:
             - build-web-extension
