@@ -340,10 +340,8 @@ jobs:
 workflows:
   ci:
     jobs:
-      - test-actors:
-         # context: org-global
+      - test-actors
       - test-lib:
-         # context: org-global
           filters:
             branches:
               only: /.*/
@@ -351,14 +349,12 @@ workflows:
               only: /^extension-.*/
       - preview-provision:
           context:
-            #- org-global
             - app-hlidac-shopu
           filters:
             branches:
               ignore: trunk
       - provision:
           context:
-            #- org-global
             - app-hlidac-shopu
           requires:
             - test-lib
@@ -366,7 +362,6 @@ workflows:
             branches:
               only: trunk
       - build-web-extension:
-          # context: org-global
           requires:
             - test-lib
           filters:
@@ -392,7 +387,6 @@ workflows:
           name: publish-chrome-web-extension
           browser: chrome
           context:
-            # - org-global
             - app-hlidac-shopu
           requires:
             - build-web-extension
@@ -415,8 +409,6 @@ workflows:
       #            tags:
       #              only: /^extension-.*/
       - publish-apple-apps:
-          context:
-           # - org-global
           requires:
             - test-lib
             - build-web-extension
@@ -426,13 +418,11 @@ workflows:
             tags:
               only: /^extension-.*/
       - build-website:
-          # context: org-global
           requires:
             - test-lib
       - deploy-site:
           site_name: www.hlidacshopu.cz
           context:
-           # - org-global
             - app-hlidac-shopu
           requires:
             - provision
