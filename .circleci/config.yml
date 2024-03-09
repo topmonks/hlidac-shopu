@@ -85,9 +85,9 @@ commands:
 
 jobs:
   test-actors:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:20
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -105,9 +105,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   test-lib:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -128,9 +128,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   build-website:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -161,9 +161,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   build-web-extension:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -196,6 +196,10 @@ jobs:
           channel: ntf-hlidac-shopu
 
   test-web-extension:
+    # TODO: Move this into Playwright actor with installed extension
+    # - Push new actor with current extension
+    # - Download sample set of URLs from shops
+    # - Run script that will start actor with given URLs and collect screenshots
     machine:
       image: ubuntu-2204:2022.10.2
     # resource_class: arm.medium
@@ -216,9 +220,9 @@ jobs:
     parameters:
       browser:
         type: string
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -246,10 +250,11 @@ jobs:
       - run:
           name: Refer to xcode cloud
           command: echo "Go to Xcode Cloud"
+
   provision:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -270,9 +275,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   preview-provision:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
     steps:
       - checkout
       - pulumi/login:
