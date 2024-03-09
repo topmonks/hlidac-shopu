@@ -106,8 +106,8 @@ jobs:
 
   test-lib:
     docker:
-      - image: cimg/node:lts
-    # resource_class: arm.medium
+      - image: cimg/node:lts-browsers
+    resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
