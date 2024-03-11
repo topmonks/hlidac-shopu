@@ -4632,7 +4632,7 @@ __metadata:
   dependencies:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
     "@open-wc/testing": "npm:4.0.0"
-    "@web/test-runner": "npm:0.18.0"
+    "@web/test-runner": "npm:0.18.1"
     "@web/test-runner-junit-reporter": "npm:0.7.0"
     chart.js: "npm:4.4.2"
     chartjs-adapter-date-fns: "npm:3.0.0"
@@ -8613,6 +8613,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-chrome@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@web/test-runner-chrome@npm:0.16.0"
+  dependencies:
+    "@web/test-runner-core": "npm:^0.13.0"
+    "@web/test-runner-coverage-v8": "npm:^0.8.0"
+    async-mutex: "npm:0.4.0"
+    chrome-launcher: "npm:^0.15.0"
+    puppeteer-core: "npm:^22.0.0"
+  checksum: 10c0/3f3fd75ef28fb021c0392c5ce4b2d8815c0e6ebb6fb0d02db00f237224c1a0f16d8a91c0b9d4c5066ffa75447a8068e412c48c428482256bb28e45a4b815cf16
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-commands@npm:^0.9.0":
   version: 0.9.0
   resolution: "@web/test-runner-commands@npm:0.9.0"
@@ -8691,14 +8704,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.18.0":
-  version: 0.18.0
-  resolution: "@web/test-runner@npm:0.18.0"
+"@web/test-runner@npm:0.18.1":
+  version: 0.18.1
+  resolution: "@web/test-runner@npm:0.18.1"
   dependencies:
     "@web/browser-logs": "npm:^0.4.0"
     "@web/config-loader": "npm:^0.3.0"
     "@web/dev-server": "npm:^0.4.0"
-    "@web/test-runner-chrome": "npm:^0.15.0"
+    "@web/test-runner-chrome": "npm:^0.16.0"
     "@web/test-runner-commands": "npm:^0.9.0"
     "@web/test-runner-core": "npm:^0.13.0"
     "@web/test-runner-mocha": "npm:^0.9.0"
@@ -8714,7 +8727,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: 10c0/6396db80831d64e055354fecef95c70087097e37c351e1abb42863567f6c638b3f5b21c9c80156e4601ce41456f0fc8d7acba22122da72af1d197d9cb20e744a
+  checksum: 10c0/618794a160c857e0cb2f4ee0e322399b4e5f84d8e283e8ef25d200285685095c4c91cb236f5c07eba53b24e976b4e0de726e26e918742628d343916703df9a1f
   languageName: node
   linkType: hard
 
@@ -11060,6 +11073,18 @@ __metadata:
   peerDependencies:
     devtools-protocol: "*"
   checksum: 10c0/a0987e3899a664ff62506950c6b109ca1d6aab72083ccbd728a6fc83e79ef250221ccfa9a015cc137887edc1a6c49931818c1ae7ba39444355a0aded690056ee
+  languageName: node
+  linkType: hard
+
+"chromium-bidi@npm:0.5.12":
+  version: 0.5.12
+  resolution: "chromium-bidi@npm:0.5.12"
+  dependencies:
+    mitt: "npm:3.0.1"
+    urlpattern-polyfill: "npm:10.0.0"
+  peerDependencies:
+    devtools-protocol: "*"
+  checksum: 10c0/aaebee14d97c80af82bb370a52004d19e48584506ba90d5e5d6818fca121ef98ab043ca52bd9e85e45a8161401e8e894e308d77f1970e0745292ec0c601a1f52
   languageName: node
   linkType: hard
 
@@ -22041,6 +22066,20 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/1c6b0a2c648af2b3d011ac4bfa52cd22ac8e68f794664cf0e7a49c2f9bd88ab2ecc40c07bfe745e5e4b90fccc98c2204ad2168b484a1a9d55062a444b488a395
+  languageName: node
+  linkType: hard
+
+"puppeteer-core@npm:^22.0.0":
+  version: 22.4.1
+  resolution: "puppeteer-core@npm:22.4.1"
+  dependencies:
+    "@puppeteer/browsers": "npm:2.1.0"
+    chromium-bidi: "npm:0.5.12"
+    cross-fetch: "npm:4.0.0"
+    debug: "npm:4.3.4"
+    devtools-protocol: "npm:0.0.1249869"
+    ws: "npm:8.16.0"
+  checksum: 10c0/128249f179d00fd50be97a21df872d202d5b23838e4f0194e908791098f345a64a184d1c49ea158c075c732dded6fe13cd6b322b1c5f9d422a27705198fce863
   languageName: node
   linkType: hard
 
