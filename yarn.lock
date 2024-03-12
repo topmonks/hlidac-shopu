@@ -12693,9 +12693,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:7.3.0":
-  version: 7.3.0
-  resolution: "dotenv-cli@npm:7.3.0"
+"dotenv-cli@npm:7.4.1":
+  version: 7.4.1
+  resolution: "dotenv-cli@npm:7.4.1"
   dependencies:
     cross-spawn: "npm:^7.0.3"
     dotenv: "npm:^16.3.0"
@@ -12703,7 +12703,7 @@ __metadata:
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/1fbad462078fe75c105ff47345671c0a38e8b5416db93a8c669e4e62dd26e3c1db6157aec0926ad6159bb176393395a493f0a23fd6a3e182191cf6d8380c6f16
+  checksum: 10c0/d317c83b7783b123933bea7e0faee51b72adddc6ac0d588e4f2fdad6ab1b6da4f1d3d6b13843cb50ff2d4650850ed3a42dd09448e9cb842aa984875208d58caf
   languageName: node
   linkType: hard
 
@@ -16131,7 +16131,7 @@ __metadata:
     chokidar: "npm:3.6.0"
     chrome-webstore-upload-cli: "npm:3.1.0"
     commander: "npm:12.0.0"
-    dotenv-cli: "npm:7.3.0"
+    dotenv-cli: "npm:7.4.1"
     esbuild: "npm:0.20.1"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
