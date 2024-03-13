@@ -25,6 +25,7 @@ export * from "./notino.mjs";
 export * from "./obi.mjs";
 export * from "./okay.mjs";
 export * from "./pilulka.mjs";
+export * from "./penny.mjs";
 export * from "./prozdravi.mjs";
 export * from "./rohlik.mjs";
 export * from "./siko.mjs";
