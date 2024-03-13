@@ -97,6 +97,9 @@ function readGlobalNavigation(document) {
 }
 
 function toProduct({ product }) {
+  const isIkeaFamily = product.salesPrice.tag === "FAMILY_PRICE";
+  const currentPrice = cleanPrice(product.salesPrice.current?.wholeNumber);
+  const originalPrice = cleanPrice(product.salesPrice?.previous?.wholeNumber);
   return {
     get slug() {
       return this.itemId;
@@ -105,8 +108,8 @@ function toProduct({ product }) {
     itemUrl: product.pipUrl,
     itemName: product.mainImageAlt ?? product.imageAlt,
     img: product.imageUrl,
-    currentPrice: cleanPrice(product.salesPrice.current?.wholeNumber),
-    originalPrice: cleanPrice(product.salesPrice?.previous?.wholeNumber),
+    currentPrice: isIkeaFamily ? originalPrice : currentPrice,
+    originalPrice: isIkeaFamily ? null : originalPrice,
     currency: product.salesPrice.currencyCode,
     category:
       product.categoryPath?.map(x => x.name)?.join(" > ") ?? "Nezařazeno",

@@ -1,47 +1,41 @@
 ## Ikea scraper
 
-Cheerio crawler, that uses datacenter proxies and [sitemap](https://www.ikea.com/sitemaps/sitemap.xml) for scraping all
-the products from [ikea](https://www.ikea.com/) website.
+HTTP crawler, that uses Search API to scrape products from root categories.
+List of categories is scraped from IKEA HP of given region.
 
 It supports countries: CZ, SK, HU, DE, AT, PL. Countries are changed on input by user. Example input:
 
 ```json
 {
-  "development": false,
   "maxRequestRetries": 3,
-  "maxConcurrency": 35,
-  "type": "DAILY",
+  "type": "FULL",
   "country": "cz"
 }
 ```
 
 ```text
-"type": "DAILY" || "COUNT"
+"type": "FULL"
 "country": "cz" || "sk" || "pl"|| "at"|| "de"|| "hu"
+"urls": RequestLike[]
 ```
 
 Example output:
 
 ```json
 {
+  "slug": "60348875",
+  "itemId": "60348875",
+  "itemImg": "https://www.ikea.com/cz/cs/images/products/kivik-potah-3mist-pohovky-hillared-tm-modra__0515786_pe640041_s5.jpg",
   "itemName": "KIVIK: Potah 3míst. pohovky - Hillared tm.modrá",
   "itemUrl": "https://www.ikea.com/cz/cs/p/kivik-potah-3mist-pohovky-hillared-tm-modra-60348875/",
   "currentPrice": 4490,
   "originalPrice": 4990,
   "discounted": true,
   "inStock": true,
-  "itemId": "60348875",
-  "itemImg": "https://www.ikea.com/cz/cs/images/products/kivik-potah-3mist-pohovky-hillared-tm-modra__0515786_pe640041_s5.jpg",
-  "sale": 10,
+  "sale": null,
   "currency": "CZK",
-  "rating": "4.4",
-  "numberOfReviews": "16",
-  "category": [
-    "Produkty",
-    "Nábytek",
-    "Pohovky",
-    "Náhradní potahy pro pohovky a křesla",
-    "KIVIK"
-  ]
+  "rating": 4.4,
+  "numberOfReviews": 16,
+  "category": "Nábytek > Pohovky > Náhradní potahy pro pohovky a křesla"
 }
 ```
