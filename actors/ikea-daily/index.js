@@ -44,7 +44,7 @@ const locales = new Map([
  */
 function startUrl(country) {
   const locale = locales.get(country);
-  return `https://sik.search.blue.cdtapps.com/${locale}/special?special=all&size=24&subcategories-style=tree-navigation&c=lf&v=20220826&sort=RELEVANCE`;
+  return `https://sik.search.blue.cdtapps.com/${locale}/special?special=all&size=24&subcategories-style=tree-navigation&c=lf&v=20240110&sort=RELEVANCE`;
 }
 
 /**
