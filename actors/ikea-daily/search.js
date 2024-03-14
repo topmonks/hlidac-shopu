@@ -107,7 +107,7 @@ function toProduct({ product }) {
     itemId: product.itemNoGlobal,
     itemUrl: product.pipUrl,
     itemName: product.mainImageAlt ?? product.imageAlt,
-    img: product.imageUrl,
+    img: product.imageUrl ?? null,
     currentPrice: isIkeaFamily ? originalPrice : currentPrice,
     originalPrice: isIkeaFamily ? null : originalPrice,
     currency: product.salesPrice.currencyCode,
