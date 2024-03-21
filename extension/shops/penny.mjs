@@ -1,7 +1,7 @@
-import { registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
+import { Shop } from "./shop.mjs";
 
-export class Penny extends AsyncShop {
+export class Penny extends Shop {
   selector = `.p-final-price-wrapper`;
 
   get injectionPoint() {
@@ -17,14 +17,9 @@ export class Penny extends AsyncShop {
     const title = document.querySelector("meta[itemprop='name']").content;
     const imageUrl = document.querySelector("meta[itemprop='image']").content;
     const currentPrice = document.querySelector("meta[property='product:price:amount']").content;
-    //const originalPrice = document.querySelector(".price-standard").textContent;
-    return { itemId, title, currentPrice, imageUrl };
+    const originalPrice = cleanPrice(".price-standard");
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
-}
-
-function toCZK(price) {
-  if (!price) return null;
-  return parseFloat((price / 100).toFixed(2));
 }
 
 registerShop(new Penny(), "pennydomu_cz");
