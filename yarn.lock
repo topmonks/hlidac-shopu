@@ -6030,15 +6030,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.24.1":
-  version: 6.24.1
-  resolution: "@pulumi/aws@npm:6.24.1"
+"@pulumi/aws@npm:6.27.0":
+  version: 6.27.0
+  resolution: "@pulumi/aws@npm:6.27.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/1a218469e8a855ab3fe521077a26a3618550d38de09532758d4809cdbf23ada0a3d9c5d7bcd20e0bc03950287879c2cfa2d2f4e224778260cbe7ad9f284e0cff
+  checksum: 10c0/5b303c40a16b628b64499567b45fc0eb16f5d93cab21d37fcce147f028cde8eca8c9faee6681e33f0c5227487ebe495f0a1d462c7ea1d7ec5a97ca672cd644f6
   languageName: node
   linkType: hard
 
@@ -6055,35 +6055,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.5.0":
-  version: 2.5.0
-  resolution: "@pulumi/awsx@npm:2.5.0"
+"@pulumi/awsx@npm:2.6.0":
+  version: 2.6.0
+  resolution: "@pulumi/awsx@npm:2.6.0"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
     "@pulumi/aws": "npm:^6.9.0"
-    "@pulumi/docker": "npm:^4.5.0"
+    "@pulumi/docker": "npm:^4.5.1"
     "@pulumi/pulumi": "npm:^3.0.0"
     "@types/aws-lambda": "npm:^8.10.23"
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 10c0/77d4b62a7fb9337a4ea1a37c7c2406a49e71a6bf6841e025080799ab7e6c4f39795ec36ef2e94f7012d19f915a267e527acc45ee9a487fad57681e1394871695
+  checksum: 10c0/4f48bb5b006b2f427e8b120a81aa293ecf66b57233ca4c4d7554e1be4929ffefe09aa35849235be84d8e9a7564769ddc01c66727dec22ee52ca89cb9f9e0e3a0
   languageName: node
   linkType: hard
 
-"@pulumi/docker@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "@pulumi/docker@npm:4.5.0"
+"@pulumi/docker@npm:^4.5.1":
+  version: 4.5.2
+  resolution: "@pulumi/docker@npm:4.5.2"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     semver: "npm:^5.4.0"
-  checksum: 10c0/47969f17e3e8bb13a5e7e62824aa6faf5dcac48d3f876261245e9da02a596c9248fe5faa5aad9b4b85416c741705aa9c80a5bf40afe038fd12435f7af7ed1855
+  checksum: 10c0/446f24b55600f04bc69621db52cd8f8b2f1b10a1b82561095a2f45a1aa08e375b7a9dece1544fceae667b32b6f425a77fcaf27e356eef1790337409d3bbd74ef
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.108.1":
-  version: 3.108.1
-  resolution: "@pulumi/pulumi@npm:3.108.1"
+"@pulumi/pulumi@npm:3.111.1":
+  version: 3.111.1
+  resolution: "@pulumi/pulumi@npm:3.111.1"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6101,13 +6101,14 @@ __metadata:
     "@types/semver": "npm:^7.5.6"
     "@types/tmp": "npm:^0.2.6"
     execa: "npm:^5.1.0"
-    glob: "npm:^8.1.0"
+    fdir: "npm:^6.1.1"
     google-protobuf: "npm:^3.5.0"
     got: "npm:^11.8.6"
     ini: "npm:^2.0.0"
     js-yaml: "npm:^3.14.0"
     minimist: "npm:^1.2.6"
     normalize-package-data: "npm:^6.0.0"
+    picomatch: "npm:^3.0.1"
     pkg-dir: "npm:^7.0.0"
     require-from-string: "npm:^2.0.1"
     semver: "npm:^7.5.2"
@@ -6116,7 +6117,7 @@ __metadata:
     ts-node: "npm:^7.0.1"
     typescript: "npm:~3.8.3"
     upath: "npm:^1.1.0"
-  checksum: 10c0/07aec7284ad1642103a5a1e44efd3e2c074e3dbbbd98ae0f6499b87e075529579cfca775d72d87a6737a4b08511db8b08e021f1c43fbd33922b9c39504b41439
+  checksum: 10c0/fa4cea15aa13f7b9b5fa4335f67c0244325efb7cab928f4ab86b9d983f586d77db81772384d3a3e00a310faedb761af572079e01f6dd6d7c2cf613276951a6cf
   languageName: node
   linkType: hard
 
@@ -14221,6 +14222,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fdir@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "fdir@npm:6.1.1"
+  peerDependencies:
+    picomatch: 3.x
+  peerDependenciesMeta:
+    picomatch:
+      optional: true
+  checksum: 10c0/547db0a2624a3ca6d11e4d2950cba6d0e71a53af58785c43ad678c3cba3ae1e7c38c522718e977d9387570cc7504181aa2a08f3e7df9a0920ae9a59552c2b8af
+  languageName: node
+  linkType: hard
+
 "fetch-blob@npm:^3.1.2, fetch-blob@npm:^3.1.4":
   version: 3.2.0
   resolution: "fetch-blob@npm:3.2.0"
@@ -15252,19 +15265,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
-  dependencies:
-    fs.realpath: "npm:^1.0.0"
-    inflight: "npm:^1.0.4"
-    inherits: "npm:2"
-    minimatch: "npm:^5.0.1"
-    once: "npm:^1.3.0"
-  checksum: 10c0/cb0b5cab17a59c57299376abe5646c7070f8acb89df5595b492dba3bfb43d301a46c01e5695f01154e6553168207cb60d4eaf07d3be4bc3eb9b0457c5c561d0f
-  languageName: node
-  linkType: hard
-
 "global-dirs@npm:^3.0.0":
   version: 3.0.1
   resolution: "global-dirs@npm:3.0.1"
@@ -16116,9 +16116,9 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.525.0"
     "@hckr_/blendid": "npm:7.1.0"
-    "@pulumi/aws": "npm:6.24.1"
-    "@pulumi/awsx": "npm:2.5.0"
-    "@pulumi/pulumi": "npm:3.108.1"
+    "@pulumi/aws": "npm:6.27.0"
+    "@pulumi/awsx": "npm:2.6.0"
+    "@pulumi/pulumi": "npm:3.111.1"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.1"
     "@types/node": "npm:20.11.24"
