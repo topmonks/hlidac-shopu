@@ -100,6 +100,7 @@ export class StatefulShop extends Shop {
 
   async scheduleRendering({ render, cleanup, fetchData }) {
     new MutationObserver(async mutations => {
+      if (this.shouldCleanup(mutations)) cleanup();
       if (this.shouldRender(mutations)) {
         const info = await this.scrape();
         if (!info) return;
@@ -107,7 +108,6 @@ export class StatefulShop extends Shop {
         if (!data) return;
         render(false, data);
       }
-      if (this.shouldCleanup(mutations)) cleanup();
     }).observe(this.observerTarget, {
       subtree: true,
       childList: true
