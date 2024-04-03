@@ -73,7 +73,7 @@ const opHash = new Map([
   ],
   [
     "GetCategoryProductSearch",
-    "8b68b8590c7d24f3ed8e338aa42e94e7d741766744bb9b9c87e15e18f332e4e5"
+    "1862c4b03120a34472286387664a48cafaa2dd3a931d2b75d5648b715e0871b8"
   ]
 ]);
 
@@ -92,7 +92,11 @@ function getStartUrl() {
   };
 }
 
-function getCategoryProductsUrl(category, pageNumber = 0, pageSize = 50) {
+function getCategoryProductsUrl(
+  category,
+  pageNumber = 0,
+  pageSize = 20 // previously 50, but Albert client code changed it to 20 so let's do the same
+) {
   return {
     url: gql("GetCategoryProductSearch", {
       lang: "cs",
@@ -101,7 +105,9 @@ function getCategoryProductsUrl(category, pageNumber = 0, pageSize = 50) {
       pageNumber,
       pageSize,
       filterFlag: true,
-      plainChildCategories: true
+      plainChildCategories: true,
+      includeSponsoredProducts: false,
+      keyword: `chips` // not sure what it means, it's hardcoded in the client code
     }),
     label: "category",
     userData: { pageNumber, pageSize, categoryCode: category }
