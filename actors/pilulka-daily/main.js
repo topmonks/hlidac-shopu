@@ -80,9 +80,21 @@ function handleProductsSitemap() {
   async function handler({ body, enqueueLinks, log, response }) {
     log.info("Reading Sitemap", { url: response.url });
     const { document } = parseXML(body.toString());
-    const urls = Array.from(document.querySelectorAll("loc")).map(
-      el => el.textContent
-    );
+    const urls = Array.from(document.querySelectorAll("loc"))
+      .map(el => el.textContent)
+      // Each product has 3 URLs in sitemap, let's take only the main one
+      // 0 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black"
+      // 1 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black/recenze-zkusenosti"
+      // 2 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black/pribalovy-letak"
+      // 0 = "https://www.pilulka.sk/product/1000016056"
+      // 1 = "https://www.pilulka.sk/product/1000016056/recenzie-zkusenosti"
+      // 2 = "https://www.pilulka.sk/product/1000016056/pribalovy-letak"
+      .filter(url => {
+        const numOfSlashesForMainProductUrl = url.includes(`/product/`)
+          ? 4 // https://www.pilulka.cz/product/1000016056
+          : 3; // https://www.pilulka.cz/niceboy-r-hive
+        return url.split(`/`).length === numOfSlashesForMainProductUrl + 1;
+      });
     log.info(`Found ${urls.length} products`, { url: response.url });
     await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
   }
@@ -136,10 +148,8 @@ function handleProductDetail({ processedIds, stats }) {
       )
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
-    const breadcrumbs = data
-      .find(x => x["@type"] === "BreadcrumbList")
-      .itemListElement.map(x => x.item.name)
-      .join(" > ");
+
+    const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
 
     await saveUniqProducts({
       products: [
