@@ -313,10 +313,20 @@ async function main() {
     sessionPoolOptions: {
       maxPoolSize: 100
     },
-    async requestHandler({ request, json, crawler }) {
+    async requestHandler({ request, json, body, crawler }) {
       const { userData } = request;
       const { categoryId } = userData;
       log.info(`Processing ${request.url} (${userData.label})`);
+
+      // Rohlik sometimes responds with json body but `content-type: text/html` header, so crawlee fails to parse JSON automatically
+      if (!json && body) {
+        try {
+          json = JSON.parse(body.toString())
+        } catch (err) {
+          log.error(`Failed to parse JSON from body, aborting requestHandler`, err)
+          return
+        }
+      }
       switch (userData.label) {
         case Label.Main:
           Object.assign(categoriesById, json.navigation);
