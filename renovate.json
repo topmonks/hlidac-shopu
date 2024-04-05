@@ -9,6 +9,9 @@
     "group:linters",
     ":dependencyDashboard"
   ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "rebase",
   "packageRules": [
     {
       "groupName": "pulumi",
