@@ -21,7 +21,6 @@ const urlSet = [
   "https://shop.iglobus.cz/cz/globus-houska-raen-hladk-bez-posypu-60-g/1030390000006",
   "https://www.ikea.com/cz/cs/p/pokal-sklenice-cire-sklo-10270478/",
   "https://nakup.itesco.cz/groceries/cs-CZ/products/2001018827069",
-  "https://www.kasa.cz/papiry-do-tiskarny-hp-office-a4-papir-80g-a4-500-listu/",
   "https://www.knihydobrovsky.cz/kniha/cesky-etymologicky-slovnik-653003",
   "https://www.kosik.cz/produkt/pekarna-brod-houska#productDescription",
   "https://www.lekarna.cz/indulona-original-85ml/",

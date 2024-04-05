@@ -28,8 +28,6 @@ import { mallValidator } from "./src/validators/mallValidator.js";
 import { mountfieldValidator } from "./src/validators/mountfieldValidator.js";
 import { lekarnaValidator } from "./src/validators/lekarnaValidator.js";
 import { luxorValidator } from "./src/validators/luxoeValidator.js";
-import { kasaczValidator } from "./src/validators/kasaczValidator.js";
-import { kasaczValidatorBf } from "./src/validators/kasaczValidatorBf.js";
 import { datartValidatorBf } from "./src/validators/datartValidatorBf.js";
 import { pilulkaczValidator } from "./src/validators/pilulkaczValidator.js";
 import { benuczValidator } from "./src/validators/benuczValidator.js";
@@ -174,12 +172,6 @@ async function processItems(
         break;
       case "mall_sk":
         item = mallValidator(item);
-        break;
-      case "kasacz":
-        item = kasaczValidator(item);
-        break;
-      case "kasa_bf":
-        item = kasaczValidatorBf(item);
         break;
       case "kosik_bf":
         item = kosikValidator(item);

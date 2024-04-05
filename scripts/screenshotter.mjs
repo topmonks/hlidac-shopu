@@ -18,7 +18,6 @@ const urlSet = [
   "https://www.czc.cz/max-vysuvny-polohovatelny-drzak-mtm9335t-pro-tv-37-70-cerna/309098/produkt",
   "https://www.datart.cz/iphone-11-64gb-white-mwlu2cn-a.html",
   "https://www.datart.sk/iphone-11-64gb-black-mwlt2cn-a.html",
-  "https://www.kasa.cz/televize-samsung-qe65q77ta-stribrna/",
   "https://www.kosik.cz/produkt/vitalbite-polomekke-krouzky-pro-dospele-psy-bohate-na-hovezi",
   "https://www.lekarna.cz/vibovit-imunity-jelly-50/",
   "https://www.mall.cz/reproduktory-tablety/lamax-sentinel2",

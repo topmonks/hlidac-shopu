@@ -4565,18 +4565,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/kasa-daily@workspace:actors/kasa-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/kasa-daily@workspace:actors/kasa-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.8.1"
-    "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@types/node": "npm:20.11.24"
-    apify: "npm:3.1.16"
-    apify-cli: "npm:0.19.2"
-  languageName: unknown
-  linkType: soft
-
 "@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily"
