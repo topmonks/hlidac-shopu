@@ -3940,7 +3940,7 @@ __metadata:
     "@types/node": "npm:20.12.4"
     apify: "npm:3.1.16"
     apify-cli: "npm:0.19.3"
-    puppeteer: "npm:22.6.2"
+    puppeteer: "npm:22.6.3"
   languageName: unknown
   linkType: soft
 
@@ -5473,6 +5473,24 @@ __metadata:
   bin:
     browsers: lib/cjs/main-cli.js
   checksum: 10c0/a1eb2cc3fecbb781d002acaebbcb767a565f525c89ec0d0125313b4d9e81425051fbe3e11ef5a02ccb4dc53fe61415750d23e3999559e571e98083f82a9c5533
+  languageName: node
+  linkType: hard
+
+"@puppeteer/browsers@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@puppeteer/browsers@npm:2.2.1"
+  dependencies:
+    debug: "npm:4.3.4"
+    extract-zip: "npm:2.0.1"
+    progress: "npm:2.0.3"
+    proxy-agent: "npm:6.4.0"
+    semver: "npm:7.6.0"
+    tar-fs: "npm:3.0.5"
+    unbzip2-stream: "npm:1.4.3"
+    yargs: "npm:17.7.2"
+  bin:
+    browsers: lib/cjs/main-cli.js
+  checksum: 10c0/1b33ab53676ba7853892f8da18390beb37b0dd0577166751420a57c575e92fe75e8077ab0b6082771b9a457f9a118bfaba50a8b7a6acaad0958ebc08e10b2f9e
   languageName: node
   linkType: hard
 
@@ -14053,7 +14071,7 @@ __metadata:
     postcss: "npm:8.4.38"
     postcss-css-variables: "npm:0.19.0"
     prettier: "npm:3.2.5"
-    puppeteer: "npm:22.6.2"
+    puppeteer: "npm:22.6.3"
     ramda: "npm:0.29.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
@@ -19327,7 +19345,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:22.6.2, puppeteer-core@npm:^22.0.0":
+"puppeteer-core@npm:22.6.3":
+  version: 22.6.3
+  resolution: "puppeteer-core@npm:22.6.3"
+  dependencies:
+    "@puppeteer/browsers": "npm:2.2.1"
+    chromium-bidi: "npm:0.5.16"
+    debug: "npm:4.3.4"
+    devtools-protocol: "npm:0.0.1262051"
+    ws: "npm:8.16.0"
+  checksum: 10c0/427200cedd53e8e07e663976bdae72fba49d94221834add3d36903ac3d0c4ec52f5e56317fbf8e9d38e15a475dfc503c7eecf47b32173e291eb8bbc23a3a0a6c
+  languageName: node
+  linkType: hard
+
+"puppeteer-core@npm:^22.0.0":
   version: 22.6.2
   resolution: "puppeteer-core@npm:22.6.2"
   dependencies:
@@ -19340,17 +19371,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:22.6.2":
-  version: 22.6.2
-  resolution: "puppeteer@npm:22.6.2"
+"puppeteer@npm:22.6.3":
+  version: 22.6.3
+  resolution: "puppeteer@npm:22.6.3"
   dependencies:
-    "@puppeteer/browsers": "npm:2.2.0"
+    "@puppeteer/browsers": "npm:2.2.1"
     cosmiconfig: "npm:9.0.0"
     devtools-protocol: "npm:0.0.1262051"
-    puppeteer-core: "npm:22.6.2"
+    puppeteer-core: "npm:22.6.3"
   bin:
     puppeteer: lib/esm/puppeteer/node/cli.js
-  checksum: 10c0/ba6c86dc5f12e544fc9e09ea15b7dc3ffd3a0050c052da03b100e087b614bbbdd8345f3339e2aabbdcd4131b5efa32f87f4125fd75fefe1432575b7ce8dd70c1
+  checksum: 10c0/84f7f6e2562cc5493ab1961995e4c63db5e89c7a6b44cc444ee68aaba27d84dc0cc30217f84d61fa2e8319fb0725fff0eae2095c247c657936f1d3f94fe76137
   languageName: node
   linkType: hard
 
