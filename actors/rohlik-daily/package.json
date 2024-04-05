@@ -6,17 +6,17 @@
   "description": "This is the rohlik.cz actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.8.1",
-    "@crawlee/utils": "3.8.1",
+    "@crawlee/http": "3.8.2",
+    "@crawlee/utils": "3.8.2",
     "@hlidac-shopu/actors-common": "2.3.3",
-    "@thi.ng/atom": "5.2.35",
-    "@thi.ng/transducers": "8.9.9",
+    "@thi.ng/atom": "5.2.41",
+    "@thi.ng/transducers": "8.9.18",
     "apify": "3.1.16",
     "core-async": "2.0.6"
   },
   "devDependencies": {
-    "@types/node": "20.11.24",
-    "apify-cli": "0.19.2",
+    "@types/node": "20.12.4",
+    "apify-cli": "0.19.3",
     "eslint": "8.57.0"
   },
   "scripts": {

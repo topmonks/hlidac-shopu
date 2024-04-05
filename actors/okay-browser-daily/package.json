@@ -6,15 +6,15 @@
   "license": "EPL-2.0",
   "type": "module",
   "dependencies": {
-    "@crawlee/playwright": "3.8.1",
+    "@crawlee/playwright": "3.8.2",
     "@hlidac-shopu/actors-common": "2.3.3",
     "@hlidac-shopu/lib": "1.4.0",
     "apify": "3.1.16",
-    "playwright": "1.42.1"
+    "playwright": "1.43.0"
   },
   "devDependencies": {
-    "@types/node": "20.11.24",
-    "apify-cli": "0.19.2"
+    "@types/node": "20.12.4",
+    "apify-cli": "0.19.3"
   },
   "scripts": {
     "start": "node main.js",

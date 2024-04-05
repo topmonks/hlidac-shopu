@@ -6,14 +6,14 @@
   "description": "This is the itesco actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/puppeteer": "3.8.1",
+    "@crawlee/puppeteer": "3.8.2",
     "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.1.16",
-    "puppeteer": "22.3.0"
+    "puppeteer": "22.6.2"
   },
   "devDependencies": {
-    "@types/node": "20.11.24",
-    "apify-cli": "0.19.2"
+    "@types/node": "20.12.4",
+    "apify-cli": "0.19.3"
   },
   "scripts": {
     "start": "node main.js",

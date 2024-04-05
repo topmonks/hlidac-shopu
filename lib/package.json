@@ -13,8 +13,8 @@
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@open-wc/testing": "4.0.0",
-    "@web/test-runner": "0.18.0",
-    "@web/test-runner-junit-reporter": "0.7.0"
+    "@web/test-runner": "0.18.1",
+    "@web/test-runner-junit-reporter": "0.7.1"
   },
   "scripts": {
     "test": "wtr **/*.test.mjs --coverage --node-resolve"
