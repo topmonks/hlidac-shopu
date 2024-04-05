@@ -321,10 +321,13 @@ async function main() {
       // Rohlik sometimes responds with json body but `content-type: text/html` header, so crawlee fails to parse JSON automatically
       if (!json && body) {
         try {
-          json = JSON.parse(body.toString())
+          json = JSON.parse(body.toString());
         } catch (err) {
-          log.error(`Failed to parse JSON from body, aborting requestHandler`, err)
-          return
+          log.error(
+            `Failed to parse JSON from body, aborting requestHandler`,
+            err
+          );
+          return;
         }
       }
       switch (userData.label) {
