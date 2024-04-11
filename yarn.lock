@@ -3610,14 +3610,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:8.0.6":
-  version: 8.0.6
-  resolution: "@hckr_/blendid@npm:8.0.6"
+"@hckr_/blendid@npm:8.0.7":
+  version: 8.0.7
+  resolution: "@hckr_/blendid@npm:8.0.7"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.1.0"
     browser-sync: "npm:3.0.2"
     browserslist: "npm:4.23.0"
-    caniuse-lite: "npm:1.0.30001605"
+    caniuse-lite: "npm:1.0.30001606"
     cloudinary: "npm:2.1.0"
     cssnano: "npm:6.1.2"
     del: "npm:7.1.0"
@@ -3669,7 +3669,7 @@ __metadata:
     workbox-build: "npm:7.0.0"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/3b9b2af93d263cbe1796ee912b38bc5b0c2cac3f4886426701b29d950817f3fea23c9ec85a5ccb25a40e9f7f28ef60ae451f3eb4f666a17cc6edfb49218a7361
+  checksum: 10c0/cbdd72e402b062f9174009a9d6d94df3ccc6e2f27da99ea803554b1cab06fce3af7ed04cfffff0714d6ed85808a635ea62fc599393f407a7a43a05a918cac0c1
   languageName: node
   linkType: hard
 
@@ -4242,7 +4242,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:8.0.6"
+    "@hckr_/blendid": "npm:8.0.7"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -9286,7 +9286,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:1.0.30001605, caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001524, caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599":
+"caniuse-lite@npm:1.0.30001606":
+  version: 1.0.30001606
+  resolution: "caniuse-lite@npm:1.0.30001606"
+  checksum: 10c0/fc9816f7d073e4f655c00acf9d6625f923e722430545b0aabefb9dc01347f3093608eb18841cf981acbd464fcac918a708908549738a8cd9517a14ac005bf8fc
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001524, caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599":
   version: 1.0.30001605
   resolution: "caniuse-lite@npm:1.0.30001605"
   checksum: 10c0/ceb96a0ecfdaee6510c00aebaaa63db20aaeafab03450d4e3b214e009cb632f87385a70c299cdd1ca4c17e1473883d8fa2051c5b2d083a454338c0c779b25cbc
@@ -14049,7 +14056,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.549.0"
-    "@hckr_/blendid": "npm:8.0.6"
+    "@hckr_/blendid": "npm:8.0.7"
     "@pulumi/aws": "npm:6.29.0"
     "@pulumi/awsx": "npm:2.6.0"
     "@pulumi/pulumi": "npm:3.112.0"
