@@ -5706,15 +5706,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.29.1":
-  version: 6.29.1
-  resolution: "@pulumi/aws@npm:6.29.1"
+"@pulumi/aws@npm:6.30.0":
+  version: 6.30.0
+  resolution: "@pulumi/aws@npm:6.30.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/0bceea3d2321faa31e2b1f5f88f7b05e51d537bcef999bec74e80a977e2f9015f25f39d26fd729a24f51dd0e3542c257ab79479d5b5d604daf5a516f74682725
+  checksum: 10c0/75e42f7b9289e2c938f1ee5a6aece1d526d012bdf503e2ea1888ede0ad7d9dd7b7629b445b85de42ec73221369c2a7c665fd6497d620b34753562760caa226ae
   languageName: node
   linkType: hard
 
@@ -5730,9 +5730,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.6.0":
-  version: 2.6.0
-  resolution: "@pulumi/awsx@npm:2.6.0"
+"@pulumi/awsx@npm:2.7.0":
+  version: 2.7.0
+  resolution: "@pulumi/awsx@npm:2.7.0"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
     "@pulumi/aws": "npm:^6.9.0"
@@ -5742,7 +5742,7 @@ __metadata:
     aws-sdk: "npm:^2.1450.0"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 10c0/4f48bb5b006b2f427e8b120a81aa293ecf66b57233ca4c4d7554e1be4929ffefe09aa35849235be84d8e9a7564769ddc01c66727dec22ee52ca89cb9f9e0e3a0
+  checksum: 10c0/6f082a8ae8695d4b820db2d79a8736e85e436e869c251549064b12ca69dce76ab1dd9b7392deb7cd1d6d3c772493c3e750654d55f0b5138fa87806f77ff2a3ad
   languageName: node
   linkType: hard
 
@@ -14430,8 +14430,8 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.554.0"
     "@hckr_/blendid": "npm:8.0.7"
-    "@pulumi/aws": "npm:6.29.1"
-    "@pulumi/awsx": "npm:2.6.0"
+    "@pulumi/aws": "npm:6.30.0"
+    "@pulumi/awsx": "npm:2.7.0"
     "@pulumi/pulumi": "npm:3.112.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.3"
