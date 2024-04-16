@@ -32,7 +32,9 @@ function allCategoriesRequests(buffer) {
     .getElementsByTagNameNS("", "url")
     .flatMap(x => x.getElementsByTagNameNS("", "loc"))
     .map(x => {
-      const url = x.textContent.trim();
+      // e.g. <loc><![CDATA[https://www.mironet.cz]]></loc>
+      // x.textContent would return empty string, we need to use innerHTML and remove CDATA manually
+      const url = x.innerHTML.replace("<![CDATA[", "").replace("]]>", "");
       return {
         url,
         userData: {
@@ -225,15 +227,16 @@ async function main() {
       } else if (isCategoryPage) {
         if (label === Labels.Page) {
           const urls = pageUrls({ document, request });
-          if (!urls.length) return;
           stats.add("pages", urls.length);
-          await enqueueLinks({
-            urls,
-            userData: {
-              label: Labels.Pages,
-              baseUrl: request.userData.baseUrl
-            }
-          });
+          if (urls.length) {
+            await enqueueLinks({
+              urls,
+              userData: {
+                label: Labels.Pages,
+                baseUrl: request.userData.baseUrl
+              }
+            });
+          }
         }
         const breadCrumbs = document
           .querySelectorAll("div#displaypath > a.CatParent")
@@ -242,7 +245,7 @@ async function main() {
           const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
           const idElem = item.querySelector(".item_kod");
           const linkElem = item.querySelector(".nazev a");
-          const priceElem = item.querySelector(".item_cena");
+          const priceElem = item.querySelector(".item_cena .item_b_cena");
           const imgElem = item.querySelector(".item_obr img");
           const oPriceElem = item.querySelector(".item_s_cena span");
           const img = imgElem ? `https:${imgElem.getAttribute("src")}` : null;
