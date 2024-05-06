@@ -14623,7 +14623,7 @@ __metadata:
     ramda: "npm:0.30.0"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
-    stylelint: "npm:16.4.0"
+    stylelint: "npm:16.5.0"
     stylelint-config-prettier: "npm:9.0.5"
     web-ext: "npm:7.11.0"
     web-ext-submit: "npm:7.8.0"
@@ -22223,9 +22223,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint@npm:16.4.0":
-  version: 16.4.0
-  resolution: "stylelint@npm:16.4.0"
+"stylelint@npm:16.5.0":
+  version: 16.5.0
+  resolution: "stylelint@npm:16.5.0"
   dependencies:
     "@csstools/css-parser-algorithms": "npm:^2.6.1"
     "@csstools/css-tokenizer": "npm:^2.2.4"
@@ -22268,7 +22268,7 @@ __metadata:
     write-file-atomic: "npm:^5.0.1"
   bin:
     stylelint: bin/stylelint.mjs
-  checksum: 10c0/7e603a0d88732180b60528c9f2edfca7fdf8c966f42c260af16131854c3acb5acfa30403b1f4fd72cd1470eb9ba625ca4de84e8cb379942df54127c55afc1288
+  checksum: 10c0/9281693ff6c1918e07fdcf7a950531f79678a28261a0d5bd36ca2fcf524e53d7305158d20ba890f5dd01c0ff90c09a13453dce2fe6887f4c157d8c2c0acf3666
   languageName: node
   linkType: hard
 
