@@ -4042,7 +4042,7 @@ __metadata:
     "@types/node": "npm:20.12.8"
     apify: "npm:3.2.0"
     apify-cli: "npm:0.19.5"
-    fingerprint-generator: "npm:2.1.50"
+    fingerprint-generator: "npm:2.1.51"
   languageName: unknown
   linkType: soft
 
@@ -12914,7 +12914,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fingerprint-generator@npm:2.1.50, fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.50":
+"fingerprint-generator@npm:2.1.51":
+  version: 2.1.51
+  resolution: "fingerprint-generator@npm:2.1.51"
+  dependencies:
+    generative-bayesian-network: "npm:^2.1.51"
+    header-generator: "npm:^2.1.51"
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/04036af3c958c006a5a6e20573df645983155143574a279cd59cecaf63446a5db4fd602b044317c05d2533fc9b1f404415ae27dd16e70ef578152a67f257cfdc
+  languageName: node
+  linkType: hard
+
+"fingerprint-generator@npm:^2.0.6, fingerprint-generator@npm:^2.1.50":
   version: 2.1.50
   resolution: "fingerprint-generator@npm:2.1.50"
   dependencies:
@@ -13401,6 +13412,16 @@ __metadata:
     adm-zip: "npm:^0.5.9"
     tslib: "npm:^2.4.0"
   checksum: 10c0/b1fc587e91edca33cc525f9ca1f3f3bd041725ca999476f10e1292e89f6e76f1d854b0e3e606ed016015bc14226046215e153d19bc9025b554fce0e4227fee09
+  languageName: node
+  linkType: hard
+
+"generative-bayesian-network@npm:^2.1.51":
+  version: 2.1.51
+  resolution: "generative-bayesian-network@npm:2.1.51"
+  dependencies:
+    adm-zip: "npm:^0.5.9"
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/d656066ca9c7ee52d80b3524c569c8642676a1ee84f35e63e2a3c099cc8cbb9abb895b6f94d4ee8976ed9c6f63dd6eeb4dd22fb2f2b3b6ed639bd268955073a8
   languageName: node
   linkType: hard
 
@@ -14409,6 +14430,18 @@ __metadata:
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
   checksum: 10c0/681cda69a5c8f9fe8151b224df9c373b748d5ca067c3bf7d3ce6a7e7aefc5db02b325169c01606285dd8867d6374841cbf2ebedbdade0a3a52b7c8a4a43b5d59
+  languageName: node
+  linkType: hard
+
+"header-generator@npm:^2.1.51":
+  version: 2.1.51
+  resolution: "header-generator@npm:2.1.51"
+  dependencies:
+    browserslist: "npm:^4.21.1"
+    generative-bayesian-network: "npm:^2.1.51"
+    ow: "npm:^0.28.1"
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/2d109e4bd8343bce49f71525264c8ff8ef80cfab90d7ba828c019e01644b165173ee8d7f9e7c16b21bdd7ffa3837e9bf1e2d118bd4225b517f162ee211306d5b
   languageName: node
   linkType: hard
 
