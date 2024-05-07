@@ -1,4 +1,4 @@
-FROM apify/actor-node-playwright:20
+FROM apify/actor-node-playwright:22
 
 COPY package.json ./
 
