@@ -4504,7 +4504,7 @@ __metadata:
     "@types/node": "npm:20.12.8"
     apify: "npm:3.2.0"
     apify-cli: "npm:0.19.5"
-    puppeteer: "npm:22.7.1"
+    puppeteer: "npm:22.8.0"
   languageName: unknown
   linkType: soft
 
@@ -14735,7 +14735,7 @@ __metadata:
     postcss: "npm:8.4.38"
     postcss-css-variables: "npm:0.19.0"
     prettier: "npm:3.2.5"
-    puppeteer: "npm:22.7.1"
+    puppeteer: "npm:22.8.0"
     ramda: "npm:0.30.0"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
@@ -20002,16 +20002,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:22.7.1":
-  version: 22.7.1
-  resolution: "puppeteer-core@npm:22.7.1"
+"puppeteer-core@npm:22.8.0":
+  version: 22.8.0
+  resolution: "puppeteer-core@npm:22.8.0"
   dependencies:
     "@puppeteer/browsers": "npm:2.2.3"
     chromium-bidi: "npm:0.5.19"
     debug: "npm:4.3.4"
     devtools-protocol: "npm:0.0.1273771"
-    ws: "npm:8.16.0"
-  checksum: 10c0/3e7b7f2acff17f4501edd721abbfbaa826c229a25fab280f907d5812bb8d2409fdbd4d9e4846f260579f41790170daa15cfa1ec67ff365ea9bf655ace2bbda4c
+    ws: "npm:8.17.0"
+  checksum: 10c0/84bc9428cb2eb2138ddc9d2ae462ed08f5e7d6c1e882a5ead3f0c43426fa96a4abfc532e712a9767063a4c1336fafe0938bd9419c4431a6972e3e91692511a66
   languageName: node
   linkType: hard
 
@@ -20028,17 +20028,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:22.7.1":
-  version: 22.7.1
-  resolution: "puppeteer@npm:22.7.1"
+"puppeteer@npm:22.8.0":
+  version: 22.8.0
+  resolution: "puppeteer@npm:22.8.0"
   dependencies:
     "@puppeteer/browsers": "npm:2.2.3"
     cosmiconfig: "npm:9.0.0"
     devtools-protocol: "npm:0.0.1273771"
-    puppeteer-core: "npm:22.7.1"
+    puppeteer-core: "npm:22.8.0"
   bin:
     puppeteer: lib/esm/puppeteer/node/cli.js
-  checksum: 10c0/6f7e1e171b519fd0c57c3f668f76ce12b096ee419e6e2e1627fe3ebb55b8884fa4bd41789e66fbb9b2e2c33a2dd06cd87133d77d20d9e63cd36719d182a4e123
+  checksum: 10c0/a5385bb85ddae35815181f7a373dcb72b71079c6910fafd09ffcfe5a663c6a31f83793d9517795809f0f9801939eb5189d5cd360ff24bb0fba4a5fc5aa7cf074
   languageName: node
   linkType: hard
 
@@ -24502,6 +24502,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/a7783bb421c648b1e622b423409cb2a58ac5839521d2f689e84bc9dc41d59379c692dd405b15a997ea1d4c0c2e5314ad707332d0c558f15232d2bc07c0b4618a
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.17.0":
+  version: 8.17.0
+  resolution: "ws@npm:8.17.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/55241ec93a66fdfc4bf4f8bc66c8eb038fda2c7a4ee8f6f157f2ca7dc7aa76aea0c0da0bf3adb2af390074a70a0e45456a2eaf80e581e630b75df10a64b0a990
   languageName: node
   linkType: hard
 
