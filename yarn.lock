@@ -4975,7 +4975,7 @@ __metadata:
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.2.45"
-    dotenv-cli: "npm:7.4.1"
+    dotenv-cli: "npm:7.4.2"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-compat: "npm:4.2.0"
@@ -11828,9 +11828,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:7.4.1":
-  version: 7.4.1
-  resolution: "dotenv-cli@npm:7.4.1"
+"dotenv-cli@npm:7.4.2":
+  version: 7.4.2
+  resolution: "dotenv-cli@npm:7.4.2"
   dependencies:
     cross-spawn: "npm:^7.0.3"
     dotenv: "npm:^16.3.0"
@@ -11838,7 +11838,7 @@ __metadata:
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/d317c83b7783b123933bea7e0faee51b72adddc6ac0d588e4f2fdad6ab1b6da4f1d3d6b13843cb50ff2d4650850ed3a42dd09448e9cb842aa984875208d58caf
+  checksum: 10c0/7841bfaa78975aa6b51e529bf5795e062bc6e595021d1931427bb55a6f75e1775d944f4dd91bef8accbbd539c466bfee48fa804e0f6b3a1bcf18ae7de0d64bed
   languageName: node
   linkType: hard
 
@@ -14961,7 +14961,7 @@ __metadata:
     chokidar: "npm:3.6.0"
     chrome-webstore-upload-cli: "npm:3.1.0"
     commander: "npm:12.0.0"
-    dotenv-cli: "npm:7.4.1"
+    dotenv-cli: "npm:7.4.2"
     esbuild: "npm:0.21.0"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
