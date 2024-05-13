@@ -231,14 +231,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.572.0"
+"@aws-sdk/client-cloudfront@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-cloudfront@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.572.0"
-    "@aws-sdk/client-sts": "npm:3.572.0"
+    "@aws-sdk/client-sso-oidc": "npm:3.574.0"
+    "@aws-sdk/client-sts": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-host-header": "npm:3.567.0"
@@ -279,18 +279,18 @@ __metadata:
     "@smithy/util-utf8": "npm:^2.3.0"
     "@smithy/util-waiter": "npm:^2.2.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/2de23b4ae98f91be15841e633f2c9552ae6b3920d808fded2f50bbd5d7fa78cbf5f141d4bbd97254b0a5d6e48f773861ed9ed1b76d12ef45e59a59baa9632940
+  checksum: 10c0/63382fb1ec9e869dfe958327b8b8eaeb01ed5fe72473393d7bbfba13ef798df5f220f1031a4db70a1b4a582a287ecf9fb2b611ca4602be7a36d6e7c771b3d436
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.572.0"
+"@aws-sdk/client-dynamodb@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.572.0"
-    "@aws-sdk/client-sts": "npm:3.572.0"
+    "@aws-sdk/client-sso-oidc": "npm:3.574.0"
+    "@aws-sdk/client-sts": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-endpoint-discovery": "npm:3.572.0"
@@ -331,7 +331,7 @@ __metadata:
     "@smithy/util-waiter": "npm:^2.2.0"
     tslib: "npm:^2.6.2"
     uuid: "npm:^9.0.1"
-  checksum: 10c0/ae989384c34be07b6c9dcafcb999bcd77bb08c2bbc2bb6c1ba6d5ebfd91e96572377f3c3279d15d41bd20b39b44bc1b13d7fc32e7525d8e17ce95c9463b0e098
+  checksum: 10c0/4ec747965fa82c80b82fd9ead22cd63665925e93e9ec294e2785b84c7b9fd826a3a4bebb9fa2a12b835390aa713e5e026760b2fe9925d6c7ca107eb63835c74d
   languageName: node
   linkType: hard
 
@@ -385,15 +385,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-s3@npm:3.572.0"
+"@aws-sdk/client-s3@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-s3@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:3.0.0"
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.572.0"
-    "@aws-sdk/client-sts": "npm:3.572.0"
+    "@aws-sdk/client-sso-oidc": "npm:3.574.0"
+    "@aws-sdk/client-sts": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-bucket-endpoint": "npm:3.568.0"
@@ -447,18 +447,18 @@ __metadata:
     "@smithy/util-utf8": "npm:^2.3.0"
     "@smithy/util-waiter": "npm:^2.2.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/36584e887796d2c233cd248c85fbf083efd21e15365e44abf14f00f703a0a8405cfdf30f82d349872c154081a79b940b146a576b0bb88b6fe9950cdd86d1c865
+  checksum: 10c0/d472aa5d9790d5951dd05fab84abad8d3508d9991e30b80e014c1c87fb6095332eef4ecb8217c36ac4ad2fe081af2bb9ab0571b35d2007d61078d493d082c572
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sqs@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-sqs@npm:3.572.0"
+"@aws-sdk/client-sqs@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-sqs@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.572.0"
-    "@aws-sdk/client-sts": "npm:3.572.0"
+    "@aws-sdk/client-sso-oidc": "npm:3.574.0"
+    "@aws-sdk/client-sts": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-host-header": "npm:3.567.0"
@@ -498,7 +498,7 @@ __metadata:
     "@smithy/util-retry": "npm:^2.2.0"
     "@smithy/util-utf8": "npm:^2.3.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/206848f5dc8544578a50c671ac78aab14d8c0b31245e3b3e5277e9eb1a6567dfbb577bf0dec92ddd0a3767e8dc3936f7d50964da60afa50463a45e6bb425fe67
+  checksum: 10c0/a8199dde98236ca82bb5c1052dbcad8eeb59e48ee6621ebf48b27c5b26bec08e0eff4fd2739815a30c8e416da3dd30d58af0fee16f9c3ebe250c10ae526cdd82
   languageName: node
   linkType: hard
 
@@ -551,13 +551,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso-oidc@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-sso-oidc@npm:3.572.0"
+"@aws-sdk/client-sso-oidc@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-sso-oidc@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sts": "npm:3.572.0"
+    "@aws-sdk/client-sts": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-host-header": "npm:3.567.0"
@@ -595,7 +595,7 @@ __metadata:
     "@smithy/util-retry": "npm:^2.2.0"
     "@smithy/util-utf8": "npm:^2.3.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/267968ee169a1e7f9e07ed0c20d0f638559dcb67c330d1e3b1b06807136e59cd0f07bc06d526e8246364792b535fc58a189a1de77aa7bc4dc94915a3da75b6c2
+  checksum: 10c0/b3f3bd0f7e953d4ddc0d59adaf9bb43db2a3ea3773503701cdf30a7c76e142ed528dd35d8d35f08ca64c3666c4d80f9f2ebd0effdcee94c59e8ec08341bb8935
   languageName: node
   linkType: hard
 
@@ -739,13 +739,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/client-sts@npm:3.572.0"
+"@aws-sdk/client-sts@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/client-sts@npm:3.574.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
-    "@aws-sdk/client-sso-oidc": "npm:3.572.0"
+    "@aws-sdk/client-sso-oidc": "npm:3.574.0"
     "@aws-sdk/core": "npm:3.572.0"
     "@aws-sdk/credential-provider-node": "npm:3.572.0"
     "@aws-sdk/middleware-host-header": "npm:3.567.0"
@@ -783,7 +783,7 @@ __metadata:
     "@smithy/util-retry": "npm:^2.2.0"
     "@smithy/util-utf8": "npm:^2.3.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/4de5a9a1a76ffe86c3904a160058a99952b20f374481e3c4ae6bb0c7d9e9f286e3d4e3a4c228a4e1dc68ebe60051c0458b941f42dff1faddcbcac2a0035c63e7
+  checksum: 10c0/1c51a5e1f48dee4b5aa94b8228ac6e523d0ca717e036d9b6cdbe0329d68dcb19ac616677958408e72a77206c49ec8a656a39c555bf3009126f21b5fecb988b95
   languageName: node
   linkType: hard
 
@@ -1368,14 +1368,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.572.0":
-  version: 3.572.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.572.0"
+"@aws-sdk/util-dynamodb@npm:3.574.0":
+  version: 3.574.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.574.0"
   dependencies:
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.572.0
-  checksum: 10c0/894d4264b16c53c363ef8cd788803bdbdaa07d38db55242a7b3a6a0c2673e3d103b6a39f604f2a484b0660d9cbc8be9da70228966e8b57dbe7fce55ae6280583
+    "@aws-sdk/client-dynamodb": ^3.574.0
+  checksum: 10c0/7b9a5b04a181a71427ad2373bc55d043ecda79b3e4b1ed5b9492d971dc3516a08504bde20e3bd62060000379470841f31132539805f85343bf0d366c76cb5151
   languageName: node
   linkType: hard
 
@@ -4467,10 +4467,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.572.0"
-    "@aws-sdk/client-s3": "npm:3.572.0"
-    "@aws-sdk/client-sqs": "npm:3.572.0"
-    "@aws-sdk/util-dynamodb": "npm:3.572.0"
+    "@aws-sdk/client-dynamodb": "npm:3.574.0"
+    "@aws-sdk/client-s3": "npm:3.574.0"
+    "@aws-sdk/client-sqs": "npm:3.574.0"
+    "@aws-sdk/util-dynamodb": "npm:3.574.0"
     "@hlidac-shopu/lib": "workspace:*"
     ava: "npm:6.1.3"
     c8: "npm:9.1.0"
@@ -4486,7 +4486,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/app-edge-lambda@workspace:www.hlidacshopu.cz/app-edge-lambda"
   dependencies:
-    "@aws-sdk/client-s3": "npm:3.572.0"
+    "@aws-sdk/client-s3": "npm:3.574.0"
     "@hlidac-shopu/lib": "npm:1.4.0"
   languageName: unknown
   linkType: soft
@@ -4619,8 +4619,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": "npm:3.572.0"
-    "@aws-sdk/client-s3": "npm:3.572.0"
+    "@aws-sdk/client-cloudfront": "npm:3.574.0"
+    "@aws-sdk/client-s3": "npm:3.574.0"
     "@crawlee/http": "npm:3.9.2"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.12.11"
@@ -4951,7 +4951,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.572.0"
+    "@aws-sdk/client-dynamodb": "npm:3.574.0"
     "@crawlee/utils": "npm:3.9.2"
     "@fast-csv/format": "npm:5.0.0"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
@@ -14944,7 +14944,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.572.0"
+    "@aws-sdk/client-dynamodb": "npm:3.574.0"
     "@hckr_/blendid": "npm:8.0.8"
     "@pulumi/aws": "npm:6.33.1"
     "@pulumi/awsx": "npm:2.9.0"
