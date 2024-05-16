@@ -6148,9 +6148,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.115.2":
-  version: 3.115.2
-  resolution: "@pulumi/pulumi@npm:3.115.2"
+"@pulumi/pulumi@npm:3.116.0":
+  version: 3.116.0
+  resolution: "@pulumi/pulumi@npm:3.116.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6190,7 +6190,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/3a820a3bd075dd9a331892cb8a3f63331dd0286a03fe6980cb2112c82c34c56a408d7ac1912bb44b7468dc0ef8886f19a5bc49c51d7119eb0e5d720d4506d025
+  checksum: 10c0/1c97815638ce1259488edfb92dbad124a8fc1e02159e955aedc3ee670c56ec7406bf9a5d9396cc4dc9c5c23ea1f341bae016c67d89de8167e5aac9c6087db100
   languageName: node
   linkType: hard
 
@@ -14948,7 +14948,7 @@ __metadata:
     "@hckr_/blendid": "npm:8.0.8"
     "@pulumi/aws": "npm:6.34.1"
     "@pulumi/awsx": "npm:2.9.0"
-    "@pulumi/pulumi": "npm:3.115.2"
+    "@pulumi/pulumi": "npm:3.116.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.3"
     "@types/node": "npm:20.12.11"
