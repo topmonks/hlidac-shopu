@@ -4665,7 +4665,7 @@ __metadata:
     "@types/node": "npm:20.12.11"
     apify: "npm:3.2.0"
     apify-cli: "npm:0.19.5"
-    puppeteer: "npm:22.8.0"
+    puppeteer: "npm:22.8.1"
   languageName: unknown
   linkType: soft
 
@@ -14976,7 +14976,7 @@ __metadata:
     postcss: "npm:8.4.38"
     postcss-css-variables: "npm:0.19.0"
     prettier: "npm:3.2.5"
-    puppeteer: "npm:22.8.0"
+    puppeteer: "npm:22.8.1"
     ramda: "npm:0.30.0"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
@@ -20256,16 +20256,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:22.8.0":
-  version: 22.8.0
-  resolution: "puppeteer-core@npm:22.8.0"
+"puppeteer-core@npm:22.8.1":
+  version: 22.8.1
+  resolution: "puppeteer-core@npm:22.8.1"
   dependencies:
     "@puppeteer/browsers": "npm:2.2.3"
     chromium-bidi: "npm:0.5.19"
     debug: "npm:4.3.4"
     devtools-protocol: "npm:0.0.1273771"
     ws: "npm:8.17.0"
-  checksum: 10c0/84bc9428cb2eb2138ddc9d2ae462ed08f5e7d6c1e882a5ead3f0c43426fa96a4abfc532e712a9767063a4c1336fafe0938bd9419c4431a6972e3e91692511a66
+  checksum: 10c0/b28306b4b6474eee7b65c45d100fc84dced4c7570f70ff2f23e670c3d4cb49b679b700d8116ec0fd283c07b39382621223eff553a0364b931a9f4a4883bd35eb
   languageName: node
   linkType: hard
 
@@ -20282,17 +20282,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:22.8.0":
-  version: 22.8.0
-  resolution: "puppeteer@npm:22.8.0"
+"puppeteer@npm:22.8.1":
+  version: 22.8.1
+  resolution: "puppeteer@npm:22.8.1"
   dependencies:
     "@puppeteer/browsers": "npm:2.2.3"
     cosmiconfig: "npm:9.0.0"
     devtools-protocol: "npm:0.0.1273771"
-    puppeteer-core: "npm:22.8.0"
+    puppeteer-core: "npm:22.8.1"
   bin:
     puppeteer: lib/esm/puppeteer/node/cli.js
-  checksum: 10c0/a5385bb85ddae35815181f7a373dcb72b71079c6910fafd09ffcfe5a663c6a31f83793d9517795809f0f9801939eb5189d5cd360ff24bb0fba4a5fc5aa7cf074
+  checksum: 10c0/8d82daf52835df960da0478d44be8c7af78661f5305e016d0b4679a0b9984d3ec46990f12c6879efabe1ac802bbcf08ab0c4d3915223b8050734fb39bad0bf30
   languageName: node
   linkType: hard
 
