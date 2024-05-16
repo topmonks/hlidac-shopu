@@ -4418,7 +4418,7 @@ __metadata:
     "@thi.ng/atom": "npm:5.3.0"
     "@types/node": "npm:20.12.11"
     apify: "npm:3.2.0"
-    linkedom: "npm:0.16.11"
+    linkedom: "npm:0.18.0"
     rollbar: "npm:2.26.4"
   languageName: unknown
   linkType: soft
@@ -4906,7 +4906,7 @@ __metadata:
     "@types/node": "npm:20.12.11"
     apify: "npm:3.2.0"
     apify-cli: "npm:0.19.5"
-    linkedom: "npm:0.16.11"
+    linkedom: "npm:0.18.0"
   languageName: unknown
   linkType: soft
 
@@ -14971,7 +14971,7 @@ __metadata:
     eslint-plugin-prettier: "npm:5.1.3"
     eslint-plugin-promise: "npm:6.1.1"
     gulp-mode: "npm:1.1.0"
-    linkedom: "npm:0.16.11"
+    linkedom: "npm:0.18.0"
     npm-run-all2: "npm:6.1.2"
     postcss: "npm:8.4.38"
     postcss-css-variables: "npm:0.19.0"
@@ -16789,7 +16789,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.16.11, linkedom@npm:^0.16.0":
+"linkedom@npm:0.18.0":
+  version: 0.18.0
+  resolution: "linkedom@npm:0.18.0"
+  dependencies:
+    css-select: "npm:^5.1.0"
+    cssom: "npm:^0.5.0"
+    html-escaper: "npm:^3.0.3"
+    htmlparser2: "npm:^9.1.0"
+    uhyphen: "npm:^0.2.0"
+  checksum: 10c0/bbc89ea131ec4b21af668421912679df6842750ee402600dac956d56a0eae69e97f4fd5d8b0c68b1dadd29f050d425595fe894d6d738da5146776412fc33f27a
+  languageName: node
+  linkType: hard
+
+"linkedom@npm:^0.16.0":
   version: 0.16.11
   resolution: "linkedom@npm:0.16.11"
   dependencies:
