@@ -2956,6 +2956,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/core@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@crawlee/core@npm:3.10.0"
+  dependencies:
+    "@apify/consts": "npm:^2.20.0"
+    "@apify/datastructures": "npm:^2.0.0"
+    "@apify/log": "npm:^2.4.0"
+    "@apify/pseudo_url": "npm:^2.0.30"
+    "@apify/timeout": "npm:^0.3.0"
+    "@apify/utilities": "npm:^2.7.10"
+    "@crawlee/memory-storage": "npm:3.10.0"
+    "@crawlee/types": "npm:3.10.0"
+    "@crawlee/utils": "npm:3.10.0"
+    "@sapphire/async-queue": "npm:^1.5.1"
+    "@types/tough-cookie": "npm:^4.0.2"
+    "@vladfrangu/async_event_emitter": "npm:^2.2.2"
+    csv-stringify: "npm:^6.2.0"
+    fs-extra: "npm:^11.0.0"
+    got-scraping: "npm:^4.0.0"
+    json5: "npm:^2.2.3"
+    minimatch: "npm:^9.0.0"
+    ow: "npm:^0.28.1"
+    stream-chain: "npm:^2.2.5"
+    stream-json: "npm:^1.7.4"
+    tldts: "npm:^6.0.0"
+    tough-cookie: "npm:^4.0.0"
+    tslib: "npm:^2.4.0"
+    type-fest: "npm:^4.0.0"
+  checksum: 10c0/4f786b31f0cce907d7e1afb9337c3d902cf4464c74f000978ef8ab4e92642840c157814e84cce0700fa2a16dd17bca97a577de814aacce27fb5d2746a856751e
+  languageName: node
+  linkType: hard
+
 "@crawlee/core@npm:3.9.2":
   version: 3.9.2
   resolution: "@crawlee/core@npm:3.9.2"
@@ -3054,6 +3086,24 @@ __metadata:
     ow: "npm:^0.28.2"
     tslib: "npm:^2.4.0"
   checksum: 10c0/0134de2ba36bcf8d233b30690295e83ef362ca1eef8d05c6dbc411a3378133f09214496859d3014e746d42d38a50bf17497f8244ad65934b06be9aa6702c1cf6
+  languageName: node
+  linkType: hard
+
+"@crawlee/memory-storage@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@crawlee/memory-storage@npm:3.10.0"
+  dependencies:
+    "@apify/log": "npm:^2.4.0"
+    "@crawlee/types": "npm:3.10.0"
+    "@sapphire/async-queue": "npm:^1.5.0"
+    "@sapphire/shapeshift": "npm:^3.0.0"
+    content-type: "npm:^1.0.4"
+    fs-extra: "npm:^11.0.0"
+    json5: "npm:^2.2.3"
+    mime-types: "npm:^2.1.35"
+    proper-lockfile: "npm:^4.1.2"
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/752b728d2e897e6cb82787e3779b83a79eb2169a0681bb867265391734ca55f7031f828fa3937451a1995e4e49434ec6dee599c990d477b65e12726f2e7e4b54
   languageName: node
   linkType: hard
 
@@ -3165,6 +3215,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@crawlee/types@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@crawlee/types@npm:3.10.0"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/86e81751da9d982df389bd467e4a4669f5955d0a96feabd475aa30abd03a69bcd57e15a5af988f6ae67589139058f892b35dfe747de1f840c2b02d39faef7bf5
+  languageName: node
+  linkType: hard
+
 "@crawlee/types@npm:3.8.2, @crawlee/types@npm:^3.3.0":
   version: 3.8.2
   resolution: "@crawlee/types@npm:3.8.2"
@@ -3189,6 +3248,25 @@ __metadata:
   dependencies:
     tslib: "npm:^2.4.0"
   checksum: 10c0/c46de7eaff544f0fbd4aa99152d5ea8b30f45dc052e1720bc33b16a3e3144c773278f30b23daac232bc38df354cf975277b40e5694100756534b32ba26877d53
+  languageName: node
+  linkType: hard
+
+"@crawlee/utils@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@crawlee/utils@npm:3.10.0"
+  dependencies:
+    "@apify/log": "npm:^2.4.0"
+    "@apify/ps-tree": "npm:^1.2.0"
+    "@crawlee/types": "npm:3.10.0"
+    "@types/sax": "npm:^1.2.7"
+    cheerio: "npm:^1.0.0-rc.12"
+    got-scraping: "npm:^4.0.3"
+    ow: "npm:^0.28.1"
+    robots-parser: "npm:^3.0.1"
+    sax: "npm:^1.3.0"
+    tslib: "npm:^2.4.0"
+    whatwg-mimetype: "npm:^4.0.0"
+  checksum: 10c0/bfedd51af4b8b07edfd0a0ff7878b9b7eb974462f2f2acad562580daf004920f3129136ecab8b704c88babe92ce0db31bac0c961d805191b95796434a3fc26eb
   languageName: node
   linkType: hard
 
@@ -4939,7 +5017,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
-    "@crawlee/core": "npm:3.9.2"
+    "@crawlee/core": "npm:3.10.0"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.12.12"
     apify: "npm:3.2.0"
@@ -24732,6 +24810,13 @@ __metadata:
   version: 2.0.0
   resolution: "well-known-symbols@npm:2.0.0"
   checksum: 10c0/cb6c12e98877e8952ec28d13ae6f4fdb54ae1cb49b16a728720276dadd76c930e6cb0e174af3a4620054dd2752546f842540122920c6e31410208abd4958ee6b
+  languageName: node
+  linkType: hard
+
+"whatwg-mimetype@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "whatwg-mimetype@npm:4.0.0"
+  checksum: 10c0/a773cdc8126b514d790bdae7052e8bf242970cebd84af62fb2f35a33411e78e981f6c0ab9ed1fe6ec5071b09d5340ac9178e05b52d35a9c4bcf558ba1b1551df
   languageName: node
   linkType: hard
 
