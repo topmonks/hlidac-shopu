@@ -1,5 +1,11 @@
 # Extension
 
+## 2.1.8
+* Added shop.billa.cz
+* Added albert.cz
+* Added pennydomu.cz
+* Removed kasa.cz
+
 ## 2.1.7
 * Fix Teta original price parsing
 * Fix Knihy Dobrovsky original price parsing
