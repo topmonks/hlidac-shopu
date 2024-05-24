@@ -231,9 +231,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:3.577.0":
-  version: 3.577.0
-  resolution: "@aws-sdk/client-cloudfront@npm:3.577.0"
+"@aws-sdk/client-cloudfront@npm:3.581.0":
+  version: 3.581.0
+  resolution: "@aws-sdk/client-cloudfront@npm:3.581.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
@@ -279,7 +279,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^3.0.0"
     "@smithy/util-waiter": "npm:^3.0.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/e2e7e113bdb1731df1f44741d5b3a7a3d3011825007f5167ab796195749f9c18393f90f1b45ee8be65ddc98add2d7f9cb0b7fe0336b4480ef3326e1ea9d0ada8
+  checksum: 10c0/78fda4d15ecd3f8921b84960803650b90388afdb9b472a269b1a78b8b8854d8c703239436312f317c281311c959ed40b8c0165427cea2b0cc861187ccc236de7
   languageName: node
   linkType: hard
 
@@ -4620,7 +4620,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hs-reviews@workspace:actors/hs-reviews"
   dependencies:
-    "@aws-sdk/client-cloudfront": "npm:3.577.0"
+    "@aws-sdk/client-cloudfront": "npm:3.581.0"
     "@aws-sdk/client-s3": "npm:3.577.0"
     "@crawlee/http": "npm:3.10.0"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
