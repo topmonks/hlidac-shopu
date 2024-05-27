@@ -3073,28 +3073,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.10.0":
-  version: 3.10.0
-  resolution: "@crawlee/http@npm:3.10.0"
-  dependencies:
-    "@apify/timeout": "npm:^0.3.0"
-    "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/basic": "npm:3.10.0"
-    "@crawlee/types": "npm:3.10.0"
-    "@crawlee/utils": "npm:3.10.0"
-    "@types/content-type": "npm:^1.1.5"
-    cheerio: "npm:^1.0.0-rc.12"
-    content-type: "npm:^1.0.4"
-    got-scraping: "npm:^4.0.0"
-    iconv-lite: "npm:^0.6.3"
-    mime-types: "npm:^2.1.35"
-    ow: "npm:^0.28.1"
-    tslib: "npm:^2.4.0"
-    type-fest: "npm:^4.0.0"
-  checksum: 10c0/c5f52cb0f2a967b1d2d8fd98471d8f805cf615cab487a15fd01a22c55ba9ee8aa6b3662b631b9f033407d4f191d1496528ceda8785c4006e3b64fb291c55a20f
-  languageName: node
-  linkType: hard
-
 "@crawlee/http@npm:3.10.1":
   version: 3.10.1
   resolution: "@crawlee/http@npm:3.10.1"
@@ -3117,18 +3095,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/linkedom@npm:3.10.0":
-  version: 3.10.0
-  resolution: "@crawlee/linkedom@npm:3.10.0"
+"@crawlee/linkedom@npm:3.10.1":
+  version: 3.10.1
+  resolution: "@crawlee/linkedom@npm:3.10.1"
   dependencies:
     "@apify/timeout": "npm:^0.3.0"
     "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/http": "npm:3.10.0"
-    "@crawlee/types": "npm:3.10.0"
+    "@crawlee/http": "npm:3.10.1"
+    "@crawlee/types": "npm:3.10.1"
     linkedom: "npm:^0.18.0"
     ow: "npm:^0.28.2"
     tslib: "npm:^2.4.0"
-  checksum: 10c0/55675a7944a5296f71577ba889e2d7bc6ae6575c3fa1bc3c6e32b96d7baa31046468df11ccad759e1196eef8c75e8b92393c1812093c2dee59d9604fcb909a37
+  checksum: 10c0/ac98641b2a19d6ba8121c3c0ab400212f6a1cbd30e05352f3589d5b89a9a2fdefa65df84dabf61dbe3ddc3e0b8f8917db42035048b8618e72f93c4749eae316e
   languageName: node
   linkType: hard
 
@@ -5023,7 +5001,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/smarty-daily@workspace:actors/smarty-daily"
   dependencies:
-    "@crawlee/linkedom": "npm:3.10.0"
+    "@crawlee/linkedom": "npm:3.10.1"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@types/node": "npm:20.12.12"
     apify: "npm:3.2.0"
