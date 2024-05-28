@@ -6134,15 +6134,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.37.0":
-  version: 6.37.0
-  resolution: "@pulumi/aws@npm:6.37.0"
+"@pulumi/aws@npm:6.37.1":
+  version: 6.37.1
+  resolution: "@pulumi/aws@npm:6.37.1"
   dependencies:
     "@pulumi/pulumi": "npm:^3.0.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/ae96cdc722067d992f2efeefbc6c406ad7198e736c5f6823cb4cfce17cd107c96f8602ec8956a05fee5c32663cce27d799f89b7f8d5df2804596ebc022de98b2
+  checksum: 10c0/1f8f1b6b8c3686d4db2881c9360deeb05d735667e9617aa076b04e7eec3044e3f8ac38252ca6ac337d81de16f381500582e55c88069eb177a7cf1c7c4d171c43
   languageName: node
   linkType: hard
 
@@ -6184,9 +6184,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.116.1":
-  version: 3.116.1
-  resolution: "@pulumi/pulumi@npm:3.116.1"
+"@pulumi/pulumi@npm:3.117.0":
+  version: 3.117.0
+  resolution: "@pulumi/pulumi@npm:3.117.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6226,7 +6226,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/e996ab0be09bb605efe332f31fc9c13492f88435d99ace1ef7eb1c9a7313743d7e86157cd69623cd5f9e7c92d89e04ea7050877e467065915beedb151d746772
+  checksum: 10c0/d84fee7e4edc8c2c1c51b9b564a7622e3649911a48617c4b344038612ad530a769a5300b8ce81c46f74b1d19893d2c3413d08e8210d74035b908a2f4cf1596d7
   languageName: node
   linkType: hard
 
@@ -15499,9 +15499,9 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.584.0"
     "@hckr_/blendid": "npm:8.0.8"
-    "@pulumi/aws": "npm:6.37.0"
+    "@pulumi/aws": "npm:6.37.1"
     "@pulumi/awsx": "npm:2.10.0"
-    "@pulumi/pulumi": "npm:3.116.1"
+    "@pulumi/pulumi": "npm:3.117.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.3"
     "@types/node": "npm:20.12.12"
