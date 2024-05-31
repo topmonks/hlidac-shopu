@@ -73,7 +73,7 @@ const opHash = new Map([
   ],
   [
     "GetCategoryProductSearch",
-    "1862c4b03120a34472286387664a48cafaa2dd3a931d2b75d5648b715e0871b8"
+    "b0a1a757f560b70c3a8340768bd4e4adfb9c648b2c5bdb7ba952df034d3d6bb7"
   ]
 ]);
 
