@@ -283,9 +283,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.584.0":
-  version: 3.584.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.584.0"
+"@aws-sdk/client-dynamodb@npm:3.585.0":
+  version: 3.585.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.585.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:3.0.0"
     "@aws-crypto/sha256-js": "npm:3.0.0"
@@ -331,7 +331,7 @@ __metadata:
     "@smithy/util-waiter": "npm:^3.0.0"
     tslib: "npm:^2.6.2"
     uuid: "npm:^9.0.1"
-  checksum: 10c0/05a371b78919863019eeba05bd4fba766aa322c32d71250ecf6aa582b50eeb1f944dd7db8ef9d367fc68862c2ef3311c694b87bb92624e66152c8df76e27950c
+  checksum: 10c0/e610e368e06dc0a0d6b6a367573bba830fc366ad9484c15f839218dfc05c243589363c7944c1781db01bdc603f19eec344608644691fed1075e110d6a04537ae
   languageName: node
   linkType: hard
 
@@ -1368,14 +1368,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.584.0":
-  version: 3.584.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.584.0"
+"@aws-sdk/util-dynamodb@npm:3.585.0":
+  version: 3.585.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.585.0"
   dependencies:
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.584.0
-  checksum: 10c0/e3b7673786a4eeb21d526168a9ec2e33a2648b78075539acb7c38bdfcdde14a0e8fa4c63725b8de69bc0b8eb610d85d2d84073f65caa86debb9219154af60520
+    "@aws-sdk/client-dynamodb": ^3.585.0
+  checksum: 10c0/85d476ef0a109adef6f6d616fee469e191a385c1adb1cb0751c3af99a6174411bc823cb75530a86842a678939e63dd8a3432eb08febcfbedbd76ad217e02321a
   languageName: node
   linkType: hard
 
@@ -4503,10 +4503,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/api-lambdas@workspace:api.hlidacshopu.cz"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.584.0"
+    "@aws-sdk/client-dynamodb": "npm:3.585.0"
     "@aws-sdk/client-s3": "npm:3.583.0"
     "@aws-sdk/client-sqs": "npm:3.583.0"
-    "@aws-sdk/util-dynamodb": "npm:3.584.0"
+    "@aws-sdk/util-dynamodb": "npm:3.585.0"
     "@hlidac-shopu/lib": "workspace:*"
     ava: "npm:6.1.3"
     c8: "npm:9.1.0"
@@ -4987,7 +4987,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.584.0"
+    "@aws-sdk/client-dynamodb": "npm:3.585.0"
     "@crawlee/utils": "npm:3.10.1"
     "@fast-csv/format": "npm:5.0.0"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
@@ -15636,7 +15636,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidac-shopu@workspace:."
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:3.584.0"
+    "@aws-sdk/client-dynamodb": "npm:3.585.0"
     "@hckr_/blendid": "npm:8.0.8"
     "@pulumi/aws": "npm:6.37.1"
     "@pulumi/awsx": "npm:2.10.0"
