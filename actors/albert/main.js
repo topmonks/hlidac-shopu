@@ -66,6 +66,7 @@ function apiQuery(persistedQueryHash, params) {
 
 // This is map of persisted queriy hashes for given operation.
 // When something breaks, it is likely you just have to update the hash here.
+// TODO: try to read those from page and store theme for use in the run
 const opHash = new Map([
   [
     "LeftHandNavigationBar",
