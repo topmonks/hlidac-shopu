@@ -16,6 +16,10 @@
     {
       "groupName": "pulumi",
       "matchPackagePrefixes": ["@pulumi/"]
+    },
+    {
+      "groupName": "crawlee",
+      "matchPackagePrefixes": ["@crawlee/"]
     }
   ]
 }
