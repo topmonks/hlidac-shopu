@@ -10922,9 +10922,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrome-webstore-upload-cli@npm:3.1.0":
-  version: 3.1.0
-  resolution: "chrome-webstore-upload-cli@npm:3.1.0"
+"chrome-webstore-upload-cli@npm:3.2.0":
+  version: 3.2.0
+  resolution: "chrome-webstore-upload-cli@npm:3.2.0"
   dependencies:
     chrome-webstore-upload: "npm:^3.0.0"
     junk: "npm:^4.0.1"
@@ -10934,7 +10934,7 @@ __metadata:
     yazl: "npm:^2.5.1"
   bin:
     chrome-webstore-upload: cli.js
-  checksum: 10c0/4af3590948021c0d0c10c638fd3d6429bdb58e143c91aeb8b0faef955dc3ff71ec725a18ac60fc70c89b8c104c735a553eaccefa7e663cc3016a116d6e10763c
+  checksum: 10c0/f0788db7c8849bb312039e57797fcdd79df83d59465414523f397ac2edd411e14e6aaa06b5d7ae13943f56ea7e15221b6a8fb9f6086701bbe72a9e1f0583669b
   languageName: node
   linkType: hard
 
@@ -15771,7 +15771,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:7.12.0"
     ava: "npm:6.1.3"
     chokidar: "npm:3.6.0"
-    chrome-webstore-upload-cli: "npm:3.1.0"
+    chrome-webstore-upload-cli: "npm:3.2.0"
     commander: "npm:12.1.0"
     dotenv-cli: "npm:7.4.2"
     esbuild: "npm:0.21.4"
