@@ -5044,7 +5044,7 @@ __metadata:
     eslint-plugin-promise: "npm:6.2.0"
     lit-html: "npm:3.1.4"
     postcss-css-variables: "npm:0.19.0"
-    prettier: "npm:3.3.0"
+    prettier: "npm:3.3.1"
     workbox-window: "npm:7.1.0"
   languageName: unknown
   linkType: soft
@@ -15775,7 +15775,7 @@ __metadata:
     npm-run-all2: "npm:6.2.0"
     postcss: "npm:8.4.38"
     postcss-css-variables: "npm:0.19.0"
-    prettier: "npm:3.3.0"
+    prettier: "npm:3.3.1"
     puppeteer: "npm:22.10.0"
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
@@ -21007,12 +21007,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.3.0":
-  version: 3.3.0
-  resolution: "prettier@npm:3.3.0"
+"prettier@npm:3.3.1":
+  version: 3.3.1
+  resolution: "prettier@npm:3.3.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/d033c356320aa2e468bf29c931b094ac730d2f4defd5eb2989d8589313dec901d2fc866e3788f3d161e420b142ea4ec3dda535dbe0169ef4d0026397a68ba9cf
+  checksum: 10c0/c25a709c9f0be670dc6bcb190b622347e1dbeb6c3e7df8b0711724cb64d8647c60b839937a4df4df18e9cfb556c2b08ca9d24d9645eb5488a7fc032a2c4d5cb3
   languageName: node
   linkType: hard
 
