@@ -2845,12 +2845,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.24.6":
-  version: 7.24.6
-  resolution: "@babel/runtime@npm:7.24.6"
+"@babel/runtime@npm:7.24.7":
+  version: 7.24.7
+  resolution: "@babel/runtime@npm:7.24.7"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
-  checksum: 10c0/224ad205de33ea28979baaec89eea4c4d4e9482000dd87d15b97859365511cdd4d06517712504024f5d33a5fb9412f9b91c96f1d923974adf9359e1575cde049
+  checksum: 10c0/b6fa3ec61a53402f3c1d75f4d808f48b35e0dfae0ec8e2bb5c6fc79fb95935da75766e0ca534d0f1c84871f6ae0d2ebdd950727cfadb745a2cdbef13faef5513
   languageName: node
   linkType: hard
 
@@ -5464,10 +5464,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdn/browser-compat-data@npm:5.5.29":
-  version: 5.5.29
-  resolution: "@mdn/browser-compat-data@npm:5.5.29"
-  checksum: 10c0/9371f1c6bae1db630bb730cbf879848b9b5c304efff52b6f4cd4581e902511232e6d1a4ff982a969137ae551c6e81c43a86feb15847d0878c5490a6e3967e66f
+"@mdn/browser-compat-data@npm:5.5.32":
+  version: 5.5.32
+  resolution: "@mdn/browser-compat-data@npm:5.5.32"
+  checksum: 10c0/67dc74591511fc4b7b61b2df4203235173fa080bbd543da23bd3097878e004e82475894835c83e1cb51ea2672b4e835e77ca1e4f55c4a28bb6c2213f06712f91
   languageName: node
   linkType: hard
 
@@ -8974,15 +8974,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"addons-linter@npm:6.28.0":
-  version: 6.28.0
-  resolution: "addons-linter@npm:6.28.0"
+"addons-linter@npm:6.29.0":
+  version: 6.29.0
+  resolution: "addons-linter@npm:6.29.0"
   dependencies:
     "@fluent/syntax": "npm:0.19.0"
-    "@mdn/browser-compat-data": "npm:5.5.29"
+    "@mdn/browser-compat-data": "npm:5.5.32"
     addons-moz-compare: "npm:1.3.0"
     addons-scanner-utils: "npm:9.10.1"
-    ajv: "npm:8.13.0"
+    ajv: "npm:8.16.0"
     chalk: "npm:4.1.2"
     cheerio: "npm:1.0.0-rc.12"
     columnify: "npm:1.6.0"
@@ -9011,7 +9011,7 @@ __metadata:
     yauzl: "npm:2.10.0"
   bin:
     addons-linter: bin/addons-linter
-  checksum: 10c0/7ac1c5b466d1918343e27040f71f51d8599c08fb76342baa894098cf4f19235a6275e4796c5159eab562649fb07eeabb905b4af12beaca5c55d16e726bf1f962
+  checksum: 10c0/07d96ac3d71855f21e9acd4e802b0c2ed974db75d6b6aea861a3c92644b3aa5c26b6b00de05994565edea8b80430a745e58def2da7da0467bb5924856842bb2e
   languageName: node
   linkType: hard
 
@@ -9144,15 +9144,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:8.13.0":
-  version: 8.13.0
-  resolution: "ajv@npm:8.13.0"
+"ajv@npm:8.16.0":
+  version: 8.16.0
+  resolution: "ajv@npm:8.16.0"
   dependencies:
     fast-deep-equal: "npm:^3.1.3"
     json-schema-traverse: "npm:^1.0.0"
     require-from-string: "npm:^2.0.2"
     uri-js: "npm:^4.4.1"
-  checksum: 10c0/14c6497b6f72843986d7344175a1aa0e2c35b1e7f7475e55bc582cddb765fca7e6bf950f465dc7846f817776d9541b706f4b5b3fbedd8dfdeb5fce6f22864264
+  checksum: 10c0/6fc38aa8fd4fbfaa7096ac049e48c0cb440db36b76fef2d7d5b7d92b102735670d055d412d19176c08c9d48eaa9d06661b67e59f04943dc71ab1551e0484f88c
   languageName: node
   linkType: hard
 
@@ -15782,7 +15782,7 @@ __metadata:
     source-map-explorer: "npm:2.5.3"
     stylelint: "npm:16.6.1"
     stylelint-config-prettier: "npm:9.0.5"
-    web-ext: "npm:8.0.0"
+    web-ext: "npm:8.1.0"
     web-ext-submit: "npm:7.8.0"
   languageName: unknown
   linkType: soft
@@ -17082,10 +17082,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:4.15.5":
-  version: 4.15.5
-  resolution: "jose@npm:4.15.5"
-  checksum: 10c0/9f208492f55ae9c547fd407c36f67ec3385051b5ca390e24f5449740f17359640b3f96fabfd38bc132cc4292b964c31b921bf356253373b1bd3eb6df799b7433
+"jose@npm:5.4.0":
+  version: 5.4.0
+  resolution: "jose@npm:5.4.0"
+  checksum: 10c0/ef880ee7d93d2758f9b9b0883eef2bb10319778142fad8cdea9d4f4322ca4dfae3c1ee87960c7f29c55b9d78460ea3de8dc462987ea23d821596fb5916425bc0
   languageName: node
   linkType: hard
 
@@ -25326,13 +25326,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:8.0.0":
-  version: 8.0.0
-  resolution: "web-ext@npm:8.0.0"
+"web-ext@npm:8.1.0":
+  version: 8.1.0
+  resolution: "web-ext@npm:8.1.0"
   dependencies:
-    "@babel/runtime": "npm:7.24.6"
+    "@babel/runtime": "npm:7.24.7"
     "@devicefarmer/adbkit": "npm:3.2.6"
-    addons-linter: "npm:6.28.0"
+    addons-linter: "npm:6.29.0"
     bunyan: "npm:1.8.15"
     camelcase: "npm:8.0.0"
     chrome-launcher: "npm:0.15.1"
@@ -25343,7 +25343,7 @@ __metadata:
     fs-extra: "npm:11.2.0"
     fx-runner: "npm:1.4.0"
     https-proxy-agent: "npm:^7.0.0"
-    jose: "npm:4.15.5"
+    jose: "npm:5.4.0"
     jszip: "npm:3.10.1"
     mkdirp: "npm:1.0.4"
     multimatch: "npm:6.0.0"
@@ -25364,7 +25364,7 @@ __metadata:
     zip-dir: "npm:2.0.0"
   bin:
     web-ext: bin/web-ext.js
-  checksum: 10c0/da6118abac829c3acf25c55fad4d703233841ea2601f266cf04947a49c9784c7ca65b726472181fc620272e565ec634476f8e922e0b5653295c562a5e8f37011
+  checksum: 10c0/f2f0bd7927b582e07c520b8f3a32e69ef1cd19e2af021914be409724cd9c0179b36ab022a77db9178fd9565394a8028b205d8704b0e1c5f8c74dd9fe9dbbf995
   languageName: node
   linkType: hard
 
