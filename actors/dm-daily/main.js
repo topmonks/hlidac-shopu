@@ -7,8 +7,8 @@ import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
 import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { URL, URLSearchParams } from "url";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { URL, URLSearchParams } from "node:url";
 
 /** @enum {string} */
 const Country = {
@@ -73,6 +73,7 @@ function createProductUrl(country, url) {
 
 function* traverseCategories(categories, names = []) {
   for (const category of categories) {
+    if (category.hidden || category.externalLink) continue;
     if (category.children) {
       yield* traverseCategories(category.children, [...names, category.title]);
     } else {
@@ -176,33 +177,31 @@ async function saveProducts({
   return responses.length / 2;
 }
 
-function categoryRequest(json, country, category) {
+function productDetails(json, country, category) {
   const { mainData } = json;
   const result = mainData
-    .map(x => x.query?.query)
+    .map(x => x?.query?.filters)
     .filter(Boolean)
     .shift();
   if (!result) return;
 
-  let tempProductQuery = {};
-  const resultValue = result.split(":")[3];
-  if (result.includes(":allCategories") && resultValue) {
-    tempProductQuery = { "allCategories.id": resultValue };
-  } else if (result.includes(":brand") && resultValue) {
-    const brand = resultValue.split("|")[0];
-    tempProductQuery = { "brandName": brand };
+  const productQuery = {};
+  const filters = result.split(" ");
+  for (const filter of filters) {
+    const [key, val] = filter.split(":");
+    productQuery[key] = val;
   }
   return {
-    url: makeListingUrl(country, tempProductQuery, 0),
+    url: makeListingUrl(country, productQuery, 0),
     userData: {
       country,
       category,
-      productQuery: tempProductQuery
+      productQuery
     }
   };
 }
 
-function startRequests(type, navigation, stats, country) {
+function categoriesListing({ type, navigation }, stats, country) {
   log.info(`Pagination info ${type}`);
   const requests = [];
   const { children } = navigation;
@@ -293,17 +292,16 @@ async function main() {
       } = request;
 
       if (!json) return;
-      const { type, navigation } = json;
       switch (label) {
         case Lables.START:
           {
-            const requests = startRequests(type, navigation, stats, country);
+            const requests = categoriesListing(json, stats, country);
             await crawler.requestQueue.addRequests(requests);
           }
           break;
         case Lables.CATEGORY:
           {
-            const request = categoryRequest(json, country, category);
+            const request = productDetails(json, country, category);
             if (!request) return;
             await crawler.requestQueue.addRequest(request);
           }
