@@ -3,9 +3,9 @@ import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { createHash } from "crypto";
-import addDays from "date-fns/esm/addDays/index.js";
-import getUnixTime from "date-fns/esm/getUnixTime/index.js";
-import startOfDay from "date-fns/esm/startOfDay/index.js";
+import { addDays } from "date-fns/addDays";
+import { getUnixTime } from "date-fns/getUnixTime";
+import { startOfDay } from "date-fns/startOfDay";
 import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */

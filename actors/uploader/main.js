@@ -5,7 +5,8 @@ import { retry } from "@hlidac-shopu/lib/remoting.mjs";
 import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, log } from "apify";
 import byteSize from "byte-size";
-import { addMinutes, format } from "date-fns";
+import { addMinutes } from "date-fns/addMinutes";
+import { format } from "date-fns/format";
 import gzip from "node-gzip";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 

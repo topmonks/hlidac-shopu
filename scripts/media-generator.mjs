@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import formatISO from "date-fns/formatISO/index.js";
+import { formatISO } from "date-fns/formatISO";
 import { parseHTML } from "linkedom/cached";
 import fs from "node:fs";
 import path from "node:path";

@@ -59,11 +59,6 @@
     "web-ext": "7.11.0",
     "web-ext-submit": "7.8.0"
   },
-  "resolutions": {
-    "lodash": "4.17.21",
-    "object-path": "0.11.8",
-    "tslib": "2.6.3"
-  },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
     "build": "npm-run-all build:extension -p build:firefox build:chrome",

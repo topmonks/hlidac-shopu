@@ -1,10 +1,8 @@
-import {
-  eachDayOfInterval,
-  endOfToday,
-  isAfter,
-  isWithinInterval,
-  subDays
-} from "date-fns";
+import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
+import { endOfToday } from "date-fns/endOfToday";
+import { isAfter } from "date-fns/isAfter";
+import { isWithinInterval } from "date-fns/isWithinInterval";
+import { subDays } from "date-fns/subDays";
 import { drop, groupBy, head, last, zipWith } from "ramda";
 
 /**
