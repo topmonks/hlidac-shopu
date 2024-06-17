@@ -87,23 +87,28 @@ function extractProducts({ document, page, rootUrl, currency, url, type }) {
 
   return Promise.all(
     document
-      .querySelectorAll(".collection-matrix > [data-id]")
-      ?.map(async product => {
+      .querySelectorAll(".collection-matrix > .product__grid-item[data-id]")
+      .map(async product => {
         const itemId = product.getAttribute("data-id");
         if (!itemId) {
           log.error("Missing itemId", { url });
           return;
         }
 
-        const originalPrice = cleanPrice(
-          await getTextFromLocator(
-            type === ActorType.BlackFriday
-              ? // For Black Friday we need original price even if it is hidden in the listing
-                page.locator(`[data-id="${itemId}"] .was-price .money`)
-              : // In normal mode we don't care about original prices and just compute real discount
-                page.locator(`[data-id="${itemId}"] .was-price .money:visible`)
-          )
-        );
+        // const originalPrice = cleanPrice(
+        //   await getTextFromLocator(
+        //     type === ActorType.BlackFriday
+        //       ? // For Black Friday we need original price even if it is hidden in the listing
+        //         page.locator(
+        //           `.product__grid-item[data-id="${itemId}"] .was-price .money`
+        //         )
+        //       : // In normal mode we don't care about original prices and just compute real discount
+        //         page.locator(
+        //           `.product__grid-item[data-id="${itemId}"] .was-price .money:visible`
+        //         )
+        //   )
+        // );
+        const originalPrice = null;
         const currentPrice = cleanPrice(
           product.querySelector(".money.final")?.innerText
         );
@@ -125,7 +130,7 @@ function extractProducts({ document, page, rootUrl, currency, url, type }) {
           category,
           inStock: Boolean(product.querySelector(".in_stock"))
         };
-      }) ?? []
+      })
   );
 }
 
@@ -250,7 +255,7 @@ async function loadLazyImages({ page }) {
 function navigationBehavior(timeoutSec) {
   return async (context, gotoOptions) => {
     log.info(`Navigation to ${context.request.url}`);
-    gotoOptions.waitUntil = "networkidle";
+    gotoOptions.waitUntil = "load";
     gotoOptions.timeout = 1000 * timeoutSec;
   };
 }
@@ -294,6 +299,7 @@ async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     proxyConfiguration,
+    //headless: false,
     browserPoolOptions: {
       useFingerprints: true,
       fingerprintOptions: {
@@ -301,16 +307,23 @@ async function main() {
       }
     },
     preNavigationHooks: [navigationBehavior(60)],
-    postNavigationHooks: [loadLazyImages],
-    async requestHandler({ request, page, enqueueLinks, log, saveSnapshot }) {
+    //postNavigationHooks: [loadLazyImages],
+    async requestHandler({
+      request,
+      page,
+      enqueueLinks,
+      log,
+      saveSnapshot,
+      infiniteScroll
+    }) {
       log.info(`Processing ${request.url}`);
       stats.inc("urls");
       const { label } = request.userData;
-      const body = await page.content();
 
       switch (label) {
         case Labels.MainSitemap:
           {
+            const body = await page.content();
             const urls = productsSitemapsUrls(body);
             log.info(`Found ${urls.length} collection sitemaps`);
             await enqueueLinks({
@@ -321,6 +334,7 @@ async function main() {
           break;
         case Labels.CollectionSitemap:
           {
+            const body = await page.content();
             const urls = productUrlsFromSitemap(body);
             log.info(`Found ${urls.length} collection urls`);
             await enqueueLinks({
@@ -331,13 +345,15 @@ async function main() {
           break;
         case Labels.List:
           {
-            await saveSnapshot({
-              key: new URL(request.url).pathname
-                .split("/")
-                .filter(Boolean)
-                .at(-1)
-                ?.replace(/[^a-zA-Z0-9!\-_\.\'\(\)]/g, "!")
-            });
+            //infiniteScroll({ scrollDownAndUp: true });
+            // await saveSnapshot({
+            //   key: new URL(request.url).pathname
+            //     .split("/")
+            //     .filter(Boolean)
+            //     .at(-1)
+            //     ?.replace(/[^a-zA-Z0-9!\-_\.\'\(\)]/g, "!")
+            // });
+            const body = await page.content();
             const { document } = parseHTML(body.toString());
             if (type === ActorType.BlackFriday) {
               const detailLinks = document.querySelectorAll(
@@ -354,6 +370,7 @@ async function main() {
                 url: request.url,
                 type
               });
+              await Dataset.pushData(products);
               stats.add("items", products.length);
             }
 
@@ -367,6 +384,7 @@ async function main() {
           break;
         case Labels.Detail:
           {
+            const body = await page.content();
             const { document } = parseHTML(body.toString());
             const product = extractProductDetail({
               document,
