@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   sourceDir: "./extension",
   artifactsDir: "./dist",
   ignoreFiles: ["README.md", "**/*.mjs"],
