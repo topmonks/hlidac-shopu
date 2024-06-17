@@ -205,7 +205,7 @@ function shopSectionRequests({ document, request }, { stats }) {
   const requests = [];
   const { level } = request.userData;
   const sections = document.querySelectorAll(
-    "div.APageRoot__Sections li.ATheContentPageCardList__Item a.ATheContentPageCardList__Item--Linked"
+    ".APageRoot__Sections .ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked"
   );
   for (const section of sections) {
     const a = section.getAttribute("href");
