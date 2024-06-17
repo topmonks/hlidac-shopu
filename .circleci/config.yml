@@ -91,8 +91,6 @@ jobs:
     docker:
       - image: cimg/node:lts
     resource_class: arm.medium
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - install_packages
@@ -133,8 +131,6 @@ jobs:
   test-lib:
     docker:
       - image: cimg/node:lts-browsers
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - browser-tools/install-chrome
@@ -162,8 +158,6 @@ jobs:
     docker:
       - image: cimg/node:lts
     resource_class: arm.medium
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - node/install
@@ -200,11 +194,14 @@ jobs:
     docker:
       - image: cimg/node:lts
     resource_class: arm.medium
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-ext
+          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/extension
       - run:
           name: Build extension bundle
           command: yarn build:extension
@@ -259,13 +256,16 @@ jobs:
     docker:
       - image: cimg/node:lts
     resource_class: arm.medium
-    environment:
-      AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-tools
+          override-ci-command: yarn workspaces focus hlidac-shopu
       - run:
           name: Publish extension
           command: yarn publish:<< parameters.browser >>
