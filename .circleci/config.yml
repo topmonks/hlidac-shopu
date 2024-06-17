@@ -36,11 +36,13 @@ commands:
         default: websiteCloudFrontId
       working_directory:
         type: string
-        default: .
+        default: infrastructure
     steps:
       - pulumi/login:
           cloud-url: << parameters.pulumi_backend_uri >>
-      - run: pulumi stack select << parameters.stack >>
+      - run:
+          working_directory: << parameters.working_directory >>
+          command: pulumi stack select << parameters.stack >>
       - pulumi/stack_output:
           stack: << parameters.stack >>
           property_name: << parameters.s3_bucket_uri_property >>
