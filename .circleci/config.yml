@@ -113,8 +113,11 @@ jobs:
       - checkout
       - install_packages
       - run:
-          name: Lint actors
+          name: Lint API
           command: yarn lint:api
+      - run:
+          name: API unit tests
+          command: yarn test:api
       - slack/notify:
           event: fail
           template: basic_fail_1
