@@ -1,0 +1,12 @@
+{
+  "name": "@hlidac-shopu/infrastructure",
+  "version": "1.0.0",
+  "description": "Infrastructure as Code",
+  "dependencies": {
+    "@pulumi/aws": "6.40.0",
+    "@pulumi/awsx": "2.12.1",
+    "@pulumi/pulumi": "3.120.0",
+    "@topmonks/pulumi-aws": "3.1.4",
+    "esbuild": "0.21.5"
+  }
+}

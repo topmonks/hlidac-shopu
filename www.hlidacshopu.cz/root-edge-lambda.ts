@@ -1,8 +1,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { createRole } from "@topmonks/pulumi-aws/lambdas/edge-role";
-import * as path from "path";
-import * as lambdaBuilder from "../lambda-builder";
+import * as path from "node:path";
+import * as lambdaBuilder from "../infrastructure/lambda-builder";
 
 export class RootEdgeLambda extends pulumi.ComponentResource {
   private lambda: aws.lambda.Function;

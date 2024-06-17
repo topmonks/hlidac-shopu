@@ -4,13 +4,13 @@ import {
   registerAutoTags,
   Website
 } from "@topmonks/pulumi-aws";
-import { createWebsite } from "./www.hlidacshopu.cz";
+import { createWebsite } from "../www.hlidacshopu.cz";
 import {
   createApi,
   createDatabase,
   createDatastore,
   createSQSIngest
-} from "./api.hlidacshopu.cz";
+} from "../api.hlidacshopu.cz";
 
 registerAutoTags({
   "user:Project": pulumi.getProject(),

@@ -4108,6 +4108,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/infrastructure@workspace:infrastructure":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
+  dependencies:
+    "@pulumi/aws": "npm:6.40.0"
+    "@pulumi/awsx": "npm:2.12.1"
+    "@pulumi/pulumi": "npm:3.120.0"
+    "@topmonks/pulumi-aws": "npm:3.1.4"
+    esbuild: "npm:0.21.5"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
@@ -14431,10 +14443,6 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.598.0"
     "@hckr_/blendid": "npm:8.1.0"
-    "@pulumi/aws": "npm:6.40.0"
-    "@pulumi/awsx": "npm:2.12.1"
-    "@pulumi/pulumi": "npm:3.120.0"
-    "@topmonks/pulumi-aws": "npm:3.1.4"
     "@types/firefox-webext-browser": "npm:120.0.3"
     "@types/node": "npm:20.14.2"
     "@types/nunjucks": "npm:3.2.6"

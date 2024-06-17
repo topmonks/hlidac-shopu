@@ -11,7 +11,7 @@ import {
   CustomDomainDistribution,
   Website
 } from "@topmonks/pulumi-aws";
-import * as lambdaBuilder from "../lambda-builder";
+import * as lambdaBuilder from "../infrastructure/lambda-builder";
 
 const config = new pulumi.Config("hlidacshopu");
 

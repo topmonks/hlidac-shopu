@@ -267,12 +267,18 @@ jobs:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-infra
+          override-ci-command: workspaces focus @hlidac-shopu/infrastructure
       - run:
           name: Lint API
           command: yarn lint:api
       - run: pulumi stack select hlidac-shopu-prod
       - pulumi/update:
+          working_directory: infrastructure
           stack: hlidac-shopu-prod
           skip-preview: true
       - slack/notify:
@@ -288,9 +294,15 @@ jobs:
       - checkout
       - pulumi/login:
           cloud-url: s3://pulumi.hlidacshopu.cz
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-infra
+          override-ci-command: workspaces focus @hlidac-shopu/infrastructure
       - run: pulumi stack select hlidac-shopu-prod
       - pulumi/preview:
+          working_directory: infrastructure
           stack: hlidac-shopu-prod
       - slack/notify:
           event: fail

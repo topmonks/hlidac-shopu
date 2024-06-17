@@ -17,10 +17,6 @@
   "packageManager": "yarn@4.3.0",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.598.0",
-    "@pulumi/aws": "6.40.0",
-    "@pulumi/awsx": "2.12.1",
-    "@pulumi/pulumi": "3.120.0",
-    "@topmonks/pulumi-aws": "3.1.4",
     "ramda": "0.30.1"
   },
   "devDependencies": {
@@ -99,6 +95,7 @@
   "workspaces": [
     "actors/*",
     "extension",
+    "infrastructure",
     "lib",
     "api.hlidacshopu.cz",
     "www.hlidacshopu.cz/app-edge-lambda",
