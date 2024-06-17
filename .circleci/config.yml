@@ -291,7 +291,9 @@ jobs:
           pkg-manager: yarn-berry
           cache-version: v1-infra
           override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
-      - run: pulumi stack select hlidac-shopu-prod
+      - run:
+          working_directory: infrastructure
+          command: pulumi stack select hlidac-shopu-prod
       - pulumi/update:
           working_directory: infrastructure
           stack: hlidac-shopu-prod
@@ -315,7 +317,9 @@ jobs:
           pkg-manager: yarn-berry
           cache-version: v1-infra
           override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
-      - run: pulumi stack select hlidac-shopu-prod
+      - run:
+          working_directory: infrastructure
+          command: pulumi stack select hlidac-shopu-prod
       - pulumi/preview:
           working_directory: infrastructure
           stack: hlidac-shopu-prod
