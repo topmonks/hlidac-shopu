@@ -111,7 +111,12 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-api
+          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/api
       - run:
           name: Lint API
           command: yarn lint:api
@@ -131,7 +136,12 @@ jobs:
     steps:
       - checkout
       - browser-tools/install-chrome
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v1-lib
+          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib
       - run:
           name: Run tests
           command: yarn test:lib
