@@ -136,7 +136,12 @@ jobs:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
       - checkout
-      - install_packages
+      - node/install
+      - node/install-yarn
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          cache-version: v2-build
+          override-ci-command: yarn workspaces focus @hlidac-shopu/lib @hlidac-shopu/web
       - run:
           name: Lint website
           command: yarn lint:website

@@ -48,16 +48,18 @@ const config = {
         collection: "media",
         mergeOptions: {
           concatArrays: true,
-          fileName: "media.json",
-          edit: json => ({ [json.published.split("-").shift()]: [json] })
+          edit(json) {
+            return { [json.published.split("-").shift()]: [json] };
+          }
         }
       },
       {
         collection: "dashboard",
         mergeOptions: {
           concatArrays: true,
-          fileName: "dashboard.json",
-          edit: json => ({ [json.shop]: json })
+          edit(json) {
+            return { [json.shop]: json };
+          }
         }
       }
     ]
