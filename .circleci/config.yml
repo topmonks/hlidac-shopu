@@ -105,6 +105,21 @@ jobs:
           template: basic_fail_1
           channel: ntf-hlidac-shopu
 
+  test-api:
+    docker:
+      - image: cimg/node:lts
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - install_packages
+      - run:
+          name: Lint actors
+          command: yarn lint:api
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: ntf-hlidac-shopu
+
   test-lib:
     docker:
       - image: cimg/node:lts-browsers
@@ -273,9 +288,6 @@ jobs:
           pkg-manager: yarn-berry
           cache-version: v1-infra
           override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
-      - run:
-          name: Lint API
-          command: yarn lint:api
       - run: pulumi stack select hlidac-shopu-prod
       - pulumi/update:
           working_directory: infrastructure
@@ -364,6 +376,7 @@ workflows:
   ci:
     jobs:
       - test-actors
+      - test-api
       - test-lib:
           filters:
             branches:
@@ -376,6 +389,7 @@ workflows:
               ignore: trunk
       - provision:
           requires:
+            - test-api
             - test-lib
           filters:
             branches:
