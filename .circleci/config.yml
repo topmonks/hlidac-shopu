@@ -290,7 +290,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v1-infra
-          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
+          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
       - run:
           working_directory: infrastructure
           command: pulumi stack select hlidac-shopu-prod
@@ -316,7 +316,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v1-infra
-          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
+          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
       - run:
           working_directory: infrastructure
           command: pulumi stack select hlidac-shopu-prod
