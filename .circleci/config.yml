@@ -272,7 +272,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v1-infra
-          override-ci-command: workspaces focus @hlidac-shopu/infrastructure
+          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
       - run:
           name: Lint API
           command: yarn lint:api
@@ -299,7 +299,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v1-infra
-          override-ci-command: workspaces focus @hlidac-shopu/infrastructure
+          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure
       - run: pulumi stack select hlidac-shopu-prod
       - pulumi/preview:
           working_directory: infrastructure
