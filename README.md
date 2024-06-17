@@ -121,7 +121,7 @@ The Release process of the extension is fully automated. To start the release pr
 
 ## Web www.hlidacshopu.cz development
 
-Website has it's own [Blendid](https://github.com/topmonks/blendid) configuration.
+Website has its own [Blendid](https://github.com/topmonks/blendid) configuration.
 Start `www.hlidacshopu.cz` development with the following command:
 
 ```bash
