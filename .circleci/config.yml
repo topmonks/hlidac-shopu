@@ -141,7 +141,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v2-build
-          override-ci-command: yarn workspaces focus @hlidac-shopu/lib @hlidac-shopu/web
+          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/web
       - run:
           name: Lint website
           command: yarn lint:website
