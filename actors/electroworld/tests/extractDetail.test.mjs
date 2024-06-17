@@ -1,6 +1,6 @@
 import test from "ava";
 import { extractDetail } from "../index.js";
-import payload from "./payload/productBoxes.json" assert { type: "json" };
+import payload from "./payload/productBoxes.json" with { type: "json" };
 
 test("should extract data", t => {
   for (const productBox of payload.productBoxes) {
