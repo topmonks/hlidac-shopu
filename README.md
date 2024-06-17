@@ -125,7 +125,7 @@ Website has its own [Blendid](https://github.com/topmonks/blendid) configuration
 Start `www.hlidacshopu.cz` development with the following command:
 
 ```bash
-yarn start:www.hlidacshopu.cz
+op run --env-file=.env --no-masking -- yarn start:www.hlidacshopu.cz
 ```
 
 ### Cloudinary
