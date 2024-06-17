@@ -89,7 +89,7 @@ commands:
 jobs:
   test-actors:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
@@ -107,7 +107,7 @@ jobs:
 
   test-api:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
@@ -130,7 +130,7 @@ jobs:
 
   test-lib:
     docker:
-      - image: cimg/node:lts-browsers
+      - image: cimg/node:current-browsers
     steps:
       - checkout
       - browser-tools/install-chrome
@@ -156,7 +156,7 @@ jobs:
 
   build-website:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
@@ -192,7 +192,7 @@ jobs:
 
   build-web-extension:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
@@ -254,7 +254,7 @@ jobs:
       browser:
         type: string
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
@@ -289,7 +289,7 @@ jobs:
 
   provision:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
@@ -317,7 +317,7 @@ jobs:
 
   preview-provision:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:current
     resource_class: arm.medium
     steps:
       - checkout
