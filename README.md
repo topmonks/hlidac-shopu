@@ -39,7 +39,7 @@ You will need:
 * Pulumi (for Infrastructure and backend development)
 * `jq` (for Extension distribution)
 
-We have install scripts for Debian and macOS. See `scripts` folder for install scripts for your system.
+We have installation scripts for Debian and macOS. See `scripts` folder for installation scripts for your system.
 
 On debian run `bash ./scripts/install-debian-tools.sh` - this will use apt-get to install `jq`.
 On macOS run `bash ./scripts/install-macos-tools.sh` - this will use homebrew to install `jq`, `nvm` and `pulumi`.
@@ -58,10 +58,10 @@ Execution of this command might take a while. Built extension will be placed in 
 
 All extensions (except Safari version) will be built to `./dist` folder by calling the `npm build` script.
 
-Firefox supports Dark and Light themes for action icons, and we are optimising action icons for these.
+Firefox supports Dark and Light themes for action icons, and we are optimizing action icons for these.
 Chrome doesn't support action icons theming via `manifest.json` so we use `background.js` script to
 add support for themes programmatically. We are removing `background.js` script, and
-it's entry in manifest, in build step with other unnecessary files.
+its entry in manifest, in the build step with other unnecessary files.
 
 Content script `content.js` is written in ESM, but ESM is not widely supported in content scripts.
 So we use simple bundle script `yarn build:extension` to convert ESM to IIFE bundle.
@@ -87,7 +87,7 @@ from TopMonks 1Password.
 
 ## Updating extension version
 
-To check current version in `package.json`, `manifest.json` and `about.html` run
+To check the current version in `package.json`, `manifest.json` and `about.html` run
 
 ```bash
 ./version.sh
@@ -105,24 +105,24 @@ For seamless development experience we have `yarn watch:extension` script with i
 on source files changes.
 
 We also have convenient script `yarn start:chrome` and `yarn start:firefox` to start browsers with
-already registered extension and automatic reloading on changes.
+an already registered extension and automatic reloading on changes.
 
-For visual testing at scale, there is `./scripts/screenshotter.mjs`. This will run Chrome with installed extension
+For visual testing at scale, there is `./scripts/screenshotter.mjs`. This will run Chrome with an installed extension
 and take a screenshot of embedded widget on every supported e-shop. You can find resulting pictures in `./screenshots`
 folder.
 
 ## Extension release
 
-Release process of extension is fully automated. To start the release process, you have to:
-1. run `./version.sh` to see current version and then bump it with `./version.sh x.y.z`
-2. Commit & create tag in github repository in following format: `extension-x.y.z`, 
-   where `x.y.z` is the version you set in previous step. 
+The Release process of the extension is fully automated. To start the release process, you have to:
+1. run `./version.sh` to see the current version and then bump it with `./version.sh x.y.z`
+2. Commit & create tag in GitHub repository in the following format: `extension-x.y.z`, 
+   where `x.y.z` is the version you set in the previous step. 
 
 
 ## Web www.hlidacshopu.cz development
 
 Website has it's own [Blendid](https://github.com/topmonks/blendid) configuration.
-Start `www.hlidacshopu.cz` development with following command:
+Start `www.hlidacshopu.cz` development with the following command:
 
 ```bash
 yarn start:www.hlidacshopu.cz
@@ -130,7 +130,7 @@ yarn start:www.hlidacshopu.cz
 
 ### Cloudinary
 
-Sites have ability to automatically upload images to Cloudinary and generate Cloudinary URLs.
+Sites can automatically upload images to Cloudinary and generate Cloudinary URLs.
 Cloudinary needs to be properly configured. Our Cloudinary credentials are stored in 1password team vault `Hlidac shopu`.
 Use [1password CLI](https://1password.com/downloads/command-line/) to get credentials 
 and set them as environment variables:
@@ -139,7 +139,7 @@ and set them as environment variables:
 op run --env-file=.env --no-masking -- yarn build:www.hlidacshopu.cz
 ```
 
-If this step is skipped you will get following error:
+If this step is skipped, you will get the following error:
 
 ```
 cloudinaryUrl Unknown cloud_name
@@ -169,7 +169,7 @@ You can use all supported transformations in JS SDK, for more details see [Cloud
 
 ## Update @hlidac-shopu/lib version for actors
 1. Update version @hlidac-shopu/lib in ./lib/package.json
-2. Publish package to npm. Login credential are in TopMonks 1password. 
+2. Publish package to npm. Login credentials are in TopMonks 1password. 
     ```bash
     cd lib
     npm login
@@ -180,4 +180,4 @@ You can use all supported transformations in JS SDK, for more details see [Cloud
     yarn up @hlidac-shopu/lib -i
     ```
 
-© 2018-2022 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
+© 2018-2024 TopMonks s.r.o.; Licensed under [EPL-2.0](LICENSE.txt)
