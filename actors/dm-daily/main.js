@@ -89,7 +89,7 @@ function parseItem(p, country, category) {
     itemId: p.gtin,
     itemName: `${p.brandName} ${p.name}`,
     itemUrl: createProductUrl(country, p.relativeProductUrl),
-    img: p.imageUrlTemplates[0]?.replace(
+    img: p.imageUrlTemplates?.[0]?.replace(
       "{transformations}",
       "f_auto,q_auto,c_fit,w_260,h_270"
     ),
@@ -284,7 +284,7 @@ async function main() {
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
-    maxRequestsPerMinute: 400,
+    maxRequestsPerMinute: 100,
     async requestHandler({ request, json, crawler }) {
       log.info(`Processing ${request.url}...`);
       const {
