@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { lambda } from "@pulumi/aws/types/input";
@@ -11,8 +12,6 @@ import {
   Website
 } from "@topmonks/pulumi-aws";
 import * as lambdaBuilder from "../lambda-builder";
-
-const path = require("path");
 
 const config = new pulumi.Config("hlidacshopu");
 
