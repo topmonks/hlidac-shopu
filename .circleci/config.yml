@@ -116,7 +116,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn-berry
           cache-version: v1-api
-          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/api
+          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/api-lambdas
       - run:
           name: Lint API
           command: yarn lint:api
