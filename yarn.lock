@@ -7066,10 +7066,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/firefox-webext-browser@npm:120.0.3":
-  version: 120.0.3
-  resolution: "@types/firefox-webext-browser@npm:120.0.3"
-  checksum: 10c0/a1865fb1b0066940f62953bb5e75bdbf947c1f24cb0a847adce76594b7a626075d7f5679563c71cc2e95b10662be56fe197277a3aa1d1540d2e60528c8eeb79c
+"@types/firefox-webext-browser@npm:120.0.4":
+  version: 120.0.4
+  resolution: "@types/firefox-webext-browser@npm:120.0.4"
+  checksum: 10c0/75982a9c2dfdec8808a5a2356ff11e221d7891aebdb8e5c74cfcf6ac2ccd260dfd4b6b79ec99c214e17d1e6b1a6ff391a8dd0b569ba822c22246b4e6b5aaea34
   languageName: node
   linkType: hard
 
@@ -14443,7 +14443,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.598.0"
     "@hckr_/blendid": "npm:8.1.0"
-    "@types/firefox-webext-browser": "npm:120.0.3"
+    "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:20.14.2"
     "@types/nunjucks": "npm:3.2.6"
     "@types/ramda": "npm:0.30.0"
