@@ -106,9 +106,7 @@ function getCategoryProductsUrl(
       pageNumber,
       pageSize,
       filterFlag: true,
-      plainChildCategories: true,
-      includeSponsoredProducts: false,
-      keyword: `chips` // not sure what it means, it's hardcoded in the client code
+      plainChildCategories: true
     }),
     label: "category",
     userData: { pageNumber, pageSize, categoryCode: category }
