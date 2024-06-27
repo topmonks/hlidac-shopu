@@ -3574,16 +3574,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:8.2.0":
-  version: 8.2.0
-  resolution: "@hckr_/blendid@npm:8.2.0"
+"@hckr_/blendid@npm:8.3.0":
+  version: 8.3.0
+  resolution: "@hckr_/blendid@npm:8.3.0"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.1.0"
     browser-sync: "npm:3.0.2"
     browserslist: "npm:4.23.1"
     caniuse-lite: "npm:1.0.30001636"
     cloudinary: "npm:2.2.0"
-    cssnano: "npm:7.0.2"
+    cssnano: "npm:7.0.3"
     del: "npm:7.1.0"
     gulp: "npm:5.0.0"
     gulp-changed: "npm:5.0.2"
@@ -3608,7 +3608,7 @@ __metadata:
     lodash-es: "npm:4.17.21"
     marked: "npm:13.0.0"
     marked-gfm-heading-id: "npm:4.0.0"
-    marked-highlight: "npm:2.1.2"
+    marked-highlight: "npm:2.1.3"
     marked-mangle: "npm:1.1.8"
     minify-html-literals: "npm:1.3.5"
     modify-filename: "npm:2.0.0"
@@ -3621,7 +3621,7 @@ __metadata:
     replace-ext: "npm:2.0.0"
     rev-hash: "npm:4.1.0"
     rev-path: "npm:3.0.0"
-    sass: "npm:1.77.5"
+    sass: "npm:1.77.6"
     sort-keys: "npm:5.0.0"
     strip-ansi: "npm:7.1.0"
     undertaker-registry: "npm:2.0.0"
@@ -3632,7 +3632,7 @@ __metadata:
     workbox-build: "npm:7.1.1"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/bd2ff778ee76866d05ee929515d35f4d2e39abb2c68170e1d24b346d0ae9eaa6cc14b6d0711635bb5a71ba58040bf38aebe081ea0625d9c3ddc344f45b6dede7
+  checksum: 10c0/28cb7681a4329b92233b39e809e6fe49c744de496facce8b1ff09ec41160ed0a5db8890bee04c4fac122cf2bb14b4fb38b6cde16acabd9321897e744bcfa2b63
   languageName: node
   linkType: hard
 
@@ -4217,7 +4217,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:8.2.0"
+    "@hckr_/blendid": "npm:8.3.0"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -10571,7 +10571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cssnano-preset-default@npm:^7.0.2":
+"cssnano-preset-default@npm:^7.0.3":
   version: 7.0.3
   resolution: "cssnano-preset-default@npm:7.0.3"
   dependencies:
@@ -10620,15 +10620,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cssnano@npm:7.0.2":
-  version: 7.0.2
-  resolution: "cssnano@npm:7.0.2"
+"cssnano@npm:7.0.3":
+  version: 7.0.3
+  resolution: "cssnano@npm:7.0.3"
   dependencies:
-    cssnano-preset-default: "npm:^7.0.2"
-    lilconfig: "npm:^3.1.1"
+    cssnano-preset-default: "npm:^7.0.3"
+    lilconfig: "npm:^3.1.2"
   peerDependencies:
     postcss: ^8.4.31
-  checksum: 10c0/ad43d8c2e96fa1022fc5103064e4f08da3fdc5501a946d455edf0b81981b58cd06ad2d3f0c68d666e2b687c10c02ffbb383252aa34da0ddc3bd4d075f4a922c7
+  checksum: 10c0/4cbcd1e0ebe0bd83196cc5b16b3a60d3ebc98326c79b2f71df597bb73c8e3ee1f42b89159d7a038acc398251184d648d9dd516f4194e46746f3af6fa74b4aec7
   languageName: node
   linkType: hard
 
@@ -14157,7 +14157,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.602.0"
-    "@hckr_/blendid": "npm:8.2.0"
+    "@hckr_/blendid": "npm:8.3.0"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:20.14.8"
     "@types/nunjucks": "npm:3.2.6"
@@ -15997,7 +15997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lilconfig@npm:^3.1.1":
+"lilconfig@npm:^3.1.1, lilconfig@npm:^3.1.2":
   version: 3.1.2
   resolution: "lilconfig@npm:3.1.2"
   checksum: 10c0/f059630b1a9bddaeba83059db00c672b64dc14074e9f232adce32b38ca1b5686ab737eb665c5ba3c32f147f0002b4bee7311ad0386a9b98547b5623e87071fbe
@@ -16510,12 +16510,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked-highlight@npm:2.1.2":
-  version: 2.1.2
-  resolution: "marked-highlight@npm:2.1.2"
+"marked-highlight@npm:2.1.3":
+  version: 2.1.3
+  resolution: "marked-highlight@npm:2.1.3"
   peerDependencies:
     marked: ">=4 <14"
-  checksum: 10c0/365ea3fe731904306496e82c2988fef21938b7f1cefe0b1677a465b9343f8d7193eeb6a2d40f7f25b89ca0aa592785bdfc4ff97dd196d63200d9ff942664d0c3
+  checksum: 10c0/beaa9da8a505ba0371df495df9c47df1b06644809b43cec1eac9f426268360261a8f690de340e205cc3816d0287a41a010b29feb6fc716d6b21a9cd7feeaa75d
   languageName: node
   linkType: hard
 
@@ -20498,16 +20498,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.77.5":
-  version: 1.77.5
-  resolution: "sass@npm:1.77.5"
+"sass@npm:1.77.6":
+  version: 1.77.6
+  resolution: "sass@npm:1.77.6"
   dependencies:
     chokidar: "npm:>=3.0.0 <4.0.0"
     immutable: "npm:^4.0.0"
     source-map-js: "npm:>=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 10c0/9da049b0a3fadab419084d6becdf471e107cf6e3c8ac87cabea2feb845afac75e86c99e06ee721a5aa4f6a2d833ec5380137c4e540ab2f760edf1e4eb6139e69
+  checksum: 10c0/fe5a393c0aa29eda9f83c06be9b94788b61fe8bad0616ee6e3a25d21ab504f430d40c0064fdca89b02b8e426411ae6dcd906c91f2e48c263575c3d392b6daeb1
   languageName: node
   linkType: hard
 
