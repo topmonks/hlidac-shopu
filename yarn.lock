@@ -3574,9 +3574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:8.4.1":
-  version: 8.4.1
-  resolution: "@hckr_/blendid@npm:8.4.1"
+"@hckr_/blendid@npm:8.4.2":
+  version: 8.4.2
+  resolution: "@hckr_/blendid@npm:8.4.2"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.1.0"
     browser-sync: "npm:3.0.2"
@@ -3624,6 +3624,7 @@ __metadata:
     sass: "npm:1.77.6"
     sort-keys: "npm:5.0.0"
     strip-ansi: "npm:7.1.0"
+    through2: "npm:^4.0.2"
     undertaker-registry: "npm:2.0.0"
     vinyl: "npm:3.0.0"
     vinyl-file: "npm:5.0.0"
@@ -3632,7 +3633,7 @@ __metadata:
     workbox-build: "npm:7.1.1"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/769b8a9436f967ab7502e60c86b1ec1d262c429503d233b886f97773d764eb5ed75ca02b02485011d029a67983adf57776bd8e57c9d9e478f173cc2ef1a7855d
+  checksum: 10c0/9ecd81cf8f8315ff472099aaa5225d151047aa5fda5e858e1cfefc7cca6952a8d37b6aac5d370091e840ec1ef14dd70080d20797075b8ca8ff44093e9ce36f34
   languageName: node
   linkType: hard
 
@@ -4217,7 +4218,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:8.4.1"
+    "@hckr_/blendid": "npm:8.4.2"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -14157,7 +14158,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.602.0"
-    "@hckr_/blendid": "npm:8.4.1"
+    "@hckr_/blendid": "npm:8.4.2"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:20.14.8"
     "@types/nunjucks": "npm:3.2.6"
