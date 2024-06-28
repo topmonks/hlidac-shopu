@@ -3574,9 +3574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:8.3.0":
-  version: 8.3.0
-  resolution: "@hckr_/blendid@npm:8.3.0"
+"@hckr_/blendid@npm:8.4.1":
+  version: 8.4.1
+  resolution: "@hckr_/blendid@npm:8.4.1"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.1.0"
     browser-sync: "npm:3.0.2"
@@ -3606,7 +3606,7 @@ __metadata:
     gulp-svgstore: "npm:9.0.0"
     gulplog: "npm:2.2.0"
     lodash-es: "npm:4.17.21"
-    marked: "npm:13.0.0"
+    marked: "npm:13.0.1"
     marked-gfm-heading-id: "npm:4.0.0"
     marked-highlight: "npm:2.1.3"
     marked-mangle: "npm:1.1.8"
@@ -3632,7 +3632,7 @@ __metadata:
     workbox-build: "npm:7.1.1"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/28cb7681a4329b92233b39e809e6fe49c744de496facce8b1ff09ec41160ed0a5db8890bee04c4fac122cf2bb14b4fb38b6cde16acabd9321897e744bcfa2b63
+  checksum: 10c0/769b8a9436f967ab7502e60c86b1ec1d262c429503d233b886f97773d764eb5ed75ca02b02485011d029a67983adf57776bd8e57c9d9e478f173cc2ef1a7855d
   languageName: node
   linkType: hard
 
@@ -4217,7 +4217,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:8.3.0"
+    "@hckr_/blendid": "npm:8.4.1"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -14157,7 +14157,7 @@ __metadata:
   resolution: "hlidac-shopu@workspace:."
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.602.0"
-    "@hckr_/blendid": "npm:8.3.0"
+    "@hckr_/blendid": "npm:8.4.1"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:20.14.8"
     "@types/nunjucks": "npm:3.2.6"
@@ -16528,12 +16528,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:13.0.0":
-  version: 13.0.0
-  resolution: "marked@npm:13.0.0"
+"marked@npm:13.0.1":
+  version: 13.0.1
+  resolution: "marked@npm:13.0.1"
   bin:
     marked: bin/marked.js
-  checksum: 10c0/ddae525b0f4ad3805b6bce5e12a65d6286ca557e4357006aedd92494e9613113b4773a8821894d63947818686853e40177d654e53a85cb4999de4003adf1472d
+  checksum: 10c0/f14b83b65397ce5c5c4703b2808db6ca0e580d89a52e0f61e204b2451774cd87a7d79a40127d3f7e867e6e03486d1b3f508eb9af7d74623dc7f57adb6a7f8890
   languageName: node
   linkType: hard
 
