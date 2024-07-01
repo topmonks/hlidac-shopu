@@ -8,6 +8,7 @@ function build(entrypoint: string, minify: boolean, external: string[] = []) {
     charset: "utf8",
     platform: "node",
     target: "node20.10",
+    packages: "bundle",
     mainFields: ["module", "main"],
     external,
     entryPoints: [entrypoint],

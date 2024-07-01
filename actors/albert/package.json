@@ -8,12 +8,12 @@
   "dependencies": {
     "@crawlee/http": "3.10.5",
     "@hlidac-shopu/actors-common": "2.3.3",
-    "@thi.ng/transducers": "9.0.6",
+    "@thi.ng/transducers": "9.0.7",
     "apify": "3.2.3"
   },
   "devDependencies": {
     "@types/node": "20.14.9",
-    "apify-cli": "0.19.5"
+    "apify-cli": "0.20.0"
   },
   "scripts": {
     "start": "node main.js",
