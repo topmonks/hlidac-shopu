@@ -4088,7 +4088,7 @@ __metadata:
   dependencies:
     "@pulumi/aws": "npm:6.42.1"
     "@pulumi/awsx": "npm:2.12.3"
-    "@pulumi/pulumi": "npm:3.121.0"
+    "@pulumi/pulumi": "npm:3.122.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.23.0"
   languageName: unknown
@@ -5489,9 +5489,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.121.0":
-  version: 3.121.0
-  resolution: "@pulumi/pulumi@npm:3.121.0"
+"@pulumi/pulumi@npm:3.122.0":
+  version: 3.122.0
+  resolution: "@pulumi/pulumi@npm:3.122.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -5531,7 +5531,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/3976714d4c1e9a6390466c070d1a419cbcc0e7982157bcb911715b7f6d1fe4b9e94a95d61fe6184ead0145ff061cc85e4e532020d19065364a318a300e9c4d11
+  checksum: 10c0/ac186df16ba612ee07b91a8a522824f91f8e64182b511d9b44331bb2579a35226e948a277d8aa7ad323512c9cd37080f8b87349f7ef7b26469c508e874480bc0
   languageName: node
   linkType: hard
 
