@@ -1,11 +1,11 @@
+import { HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, createHttpRouter } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
@@ -24,8 +24,7 @@ function toProduct(result, { category, url }) {
   const img = result.querySelector("img").dataset.microImage;
   const offer = result.querySelector("[data-micro=offer]");
   const currency = offer.dataset.microPriceCurrence;
-  const inStock =
-    offer.dataset.microAvailability === "https://schema.org/InStock";
+  const inStock = offer.dataset.microAvailability === "https://schema.org/InStock";
   const currentPrice = cleanPrice(offer.dataset.microPrice);
   return {
     slug,
@@ -41,9 +40,9 @@ function toProduct(result, { category, url }) {
 }
 
 function getCategory(breadcrumbs) {
-  const items = Array.from(
-    breadcrumbs.querySelectorAll("[itemprop=itemListElement] [itemprop=name]")
-  ).map(el => el.textContent);
+  const items = Array.from(breadcrumbs.querySelectorAll("[itemprop=itemListElement] [itemprop=name]")).map(
+    el => el.textContent
+  );
   items.shift();
   return items.join(" > ");
 }
@@ -71,9 +70,9 @@ function defRouter({ stats, processedIds }) {
       if (!pagination) stats.inc("categories");
       const { document } = parseHTML(body.toString("utf8"));
 
-      const paginationLinks = Array.from(
-        document.querySelectorAll(".pagination a")
-      ).map(a => new URL(a.href, request.url).href);
+      const paginationLinks = Array.from(document.querySelectorAll(".pagination a")).map(
+        a => new URL(a.href, request.url).href
+      );
       if (paginationLinks.length) {
         await enqueueLinks({
           urls: paginationLinks,
@@ -82,18 +81,10 @@ function defRouter({ stats, processedIds }) {
         });
       }
 
-      const category = getCategory(
-        document.querySelector(
-          ".container>[itemtype='https://schema.org/BreadcrumbList']"
-        )
-      );
-      const products = Array.from(
-        document.querySelectorAll("#products [data-micro=product]")
-      );
+      const category = getCategory(document.querySelector(".container>[itemtype='https://schema.org/BreadcrumbList']"));
+      const products = Array.from(document.querySelectorAll("#products [data-micro=product]"));
 
-      const shoptetGuids = products
-        .map(x => x.dataset.microIdentifier)
-        .join(",");
+      const shoptetGuids = products.map(x => x.dataset.microIdentifier).join(",");
 
       const productsById = products.map(item => [
         item.dataset.microIdentifier,
@@ -120,10 +111,7 @@ function defRouter({ stats, processedIds }) {
       const { productsById } = request.userData;
       const originalPrices = new Map(
         // diletants at miranda media sends JSON as text/html, but meybe they will fix it sometimes in the future
-        Object.entries(json ?? JSON.parse(body)).map(([key, value]) => [
-          key,
-          cleanPrice(value)
-        ])
+        Object.entries(json ?? JSON.parse(body)).map(([key, value]) => [key, cleanPrice(value)])
       );
       for (const [productId, item] of productsById) {
         if (processedIds.has(productId)) {
@@ -134,10 +122,7 @@ function defRouter({ stats, processedIds }) {
           Object.assign(item, {
             originalPrice: originalPrices.get(productId),
             get discounted() {
-              return (
-                Boolean(this.originalPrice) &&
-                this.currentPrice !== this.originalPrice
-              );
+              return Boolean(this.originalPrice) && this.currentPrice !== this.originalPrice;
             }
           })
         );
@@ -152,9 +137,7 @@ async function main() {
   Rollbar.init();
 
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
-  Actor.on("persistState", () =>
-    Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds))
-  );
+  Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,

@@ -5,12 +5,8 @@ const didRenderDetail = mutations =>
   mutations.find(x =>
     Array.from(x.addedNodes).find(
       y =>
-        (y.localName === "div" &&
-          y.className === "row" &&
-          y.nextElementSibling.id === "product-detail-actions") ||
-        (y.localName === "li" &&
-          typeof y.classList !== "undefined" &&
-          y.classList.contains("breadcrumb__item"))
+        (y.localName === "div" && y.className === "row" && y.nextElementSibling.id === "product-detail-actions") ||
+        (y.localName === "li" && typeof y.classList !== "undefined" && y.classList.contains("breadcrumb__item"))
     )
   );
 
@@ -32,9 +28,7 @@ export class Electroworld extends StatefulShop {
   }
 
   async scrape() {
-    const jsonld = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    )[0];
+    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[0];
     if (!jsonld) return null;
     try {
       const data = JSON.parse(jsonld.innerText);

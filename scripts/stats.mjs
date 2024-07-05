@@ -1,8 +1,8 @@
+import fs from "fs";
+import https from "https";
+import path from "path";
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
-import https from "https";
-import fs from "fs";
-import path from "path";
 
 //Parse arguments from command line
 function getArgs() {
@@ -40,11 +40,7 @@ const getPaginatedResults = async fn => {
     let NextMarker = EMPTY;
     let count = 0;
     while (NextMarker || NextMarker === EMPTY) {
-      const {
-        marker,
-        results,
-        count: ct
-      } = await fn(NextMarker !== EMPTY ? NextMarker : undefined, count);
+      const { marker, results, count: ct } = await fn(NextMarker !== EMPTY ? NextMarker : undefined, count);
 
       yield* results;
 
@@ -75,14 +71,9 @@ const db = new DynamoDBClient({ region: "eu-central-1", maxAttempts: 3 });
 
 // use argument "from" from commandline or set current month
 const now = new Date();
-const currentDate = `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(
-  -2
-)}`;
+const currentDate = `${now.getFullYear()}-${("0" + (now.getMonth() + 1)).slice(-2)}`;
 const fromDate = args.from ?? null;
-console.log(
-  "Start counting extension hits for shops from",
-  fromDate ? `date: ${fromDate}` : "beginning"
-);
+console.log("Start counting extension hits for shops from", fromDate ? `date: ${fromDate}` : "beginning");
 
 const dbQueryParams = {
   TableName: "api_hit_counter",
@@ -103,9 +94,7 @@ const shopHits = {};
 
 async function queryDatabase() {
   return await getPaginatedResults(async ExclusiveStartKey => {
-    const queryResponse = await db.send(
-      new QueryCommand({ ExclusiveStartKey, ...dbQueryParams })
-    );
+    const queryResponse = await db.send(new QueryCommand({ ExclusiveStartKey, ...dbQueryParams }));
     return {
       marker: queryResponse.LastEvaluatedKey,
       results: queryResponse.Items

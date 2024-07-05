@@ -1,14 +1,14 @@
+import { URL, URLSearchParams } from "node:url";
+import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { currencyToISO4217 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { defAtom } from "@thi.ng/atom";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import { HttpCrawler } from "@crawlee/http";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { URL, URLSearchParams } from "node:url";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
 const Country = {
@@ -44,21 +44,14 @@ function getCountrySlug(country) {
   }
 }
 
-function makeListingUrl(
-  countryCode,
-  productQuery,
-  currentPage,
-  pageSize = 100
-) {
-  return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams(
-    {
-      ...productQuery,
-      pageSize,
-      currentPage,
-      sort: "price_asc",
-      type: "search-static"
-    }
-  )}`;
+function makeListingUrl(countryCode, productQuery, currentPage, pageSize = 100) {
+  return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams({
+    ...productQuery,
+    pageSize,
+    currentPage,
+    sort: "price_asc",
+    type: "search-static"
+  })}`;
 }
 
 /**
@@ -89,10 +82,7 @@ function parseItem(p, country, category) {
     itemId: p.gtin,
     itemName: `${p.brandName} ${p.name}`,
     itemUrl: createProductUrl(country, p.relativeProductUrl),
-    img: p.imageUrlTemplates?.[0]?.replace(
-      "{transformations}",
-      "f_auto,q_auto,c_fit,w_260,h_270"
-    ),
+    img: p.imageUrlTemplates?.[0]?.replace("{transformations}", "f_auto,q_auto,c_fit,w_260,h_270"),
     inStock: p.purchasable,
     currentPrice: p.price.value,
     originalPrice: p.isSellout
@@ -147,20 +137,11 @@ async function handleProducts(
       country,
       category
     });
-    log.debug(
-      `Found ${products.length} products (${uniqueCount} unique) at ${request.url}`
-    );
+    log.debug(`Found ${products.length} products (${uniqueCount} unique) at ${request.url}`);
   }
 }
 
-async function saveProducts({
-  products,
-  stats,
-  processedIds,
-  detailUrl,
-  country,
-  category
-}) {
+async function saveProducts({ products, stats, processedIds, detailUrl, country, category }) {
   const requests = [];
   for (const product of products) {
     if (!processedIds.has(product.gtin)) {
@@ -212,9 +193,7 @@ function categoriesListing({ type, navigation }, stats, country) {
     // we need to await here to prevent higher categories
     // to be enqueued sooner than sub-categories
     requests.push({
-      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-        country
-      )}${category.link}/`,
+      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}${category.link}/`,
       userData: {
         country,
         category: category.breadcrumbs.toString(),
@@ -229,9 +208,7 @@ function startingRequests(type, country) {
   const requests = [];
   if (type === ActorType.Full) {
     requests.push({
-      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(
-        country
-      )}/?view=navigation`,
+      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}/?view=navigation`,
       userData: {
         country,
         productQuery: "",

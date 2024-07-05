@@ -1,11 +1,7 @@
-import { html, svg, render } from "lit-html";
-import {
-  formatNumber,
-  formatPercents,
-  formatShortDate
-} from "@hlidac-shopu/lib/format.mjs";
+import { formatNumber, formatPercents, formatShortDate } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardData } from "@hlidac-shopu/lib/remoting.mjs";
 import { rating } from "@hlidac-shopu/lib/templates.mjs";
+import { html, render, svg } from "lit-html";
 import * as Rollbar from "./rollbar.js";
 
 const extraData = new Map([

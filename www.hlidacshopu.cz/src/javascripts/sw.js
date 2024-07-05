@@ -1,6 +1,4 @@
-importScripts(
-  "https://storage.googleapis.com/workbox-cdn/releases/6.1.2/workbox-sw.js"
-);
+importScripts("https://storage.googleapis.com/workbox-cdn/releases/6.1.2/workbox-sw.js");
 
 addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") {

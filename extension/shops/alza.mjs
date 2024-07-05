@@ -13,9 +13,7 @@ function getDetailInfo() {
   const elem = document.querySelector("#prices");
   if (!elem) return;
 
-  const itemId = document
-    .querySelector(".shoppingListsAdd")
-    .getAttribute("data-id");
+  const itemId = document.querySelector(".shoppingListsAdd").getAttribute("data-id");
   const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
   const currentPrice =
     cleanPrice(".pricenormal .price_withVat") ||
@@ -32,9 +30,7 @@ function getDetailInfo() {
         .pricecatalog1 .c2
       `);
 
-  const imageUrl = document.querySelector(
-    "#detailPicture swiper-slide img"
-  )?.src;
+  const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
 }
@@ -55,9 +51,7 @@ function getMobileDetailInfo() {
   const elem = document.querySelector("#detailPage");
   if (!elem) return;
 
-  const itemId =
-    location.href.match(/d(\d+)\.htm$/)?.at(-1) ??
-    new URLSearchParams(location.search).get("dq");
+  const itemId = location.href.match(/d(\d+)\.htm$/)?.at(-1) ?? new URLSearchParams(location.search).get("dq");
   const title = elem.querySelector("h1").innerText.trim();
   const currentPrice = cleanPrice("#detailPage .js-price-withVat");
   const originalPrice = cleanPrice("#detailPage .js-price-compare");
@@ -68,9 +62,7 @@ function getArchiveInfo() {
   const elem = document.querySelector("#detailItem.archive");
   if (!elem) return;
 
-  const itemId = document
-    .querySelector(".surveyInfoForm")
-    .getAttribute("data-id");
+  const itemId = document.querySelector(".surveyInfoForm").getAttribute("data-id");
   const title = document.querySelector(".breadcrumbs a.last").innerText.trim();
   const currentPrice = null;
   const originalPrice = null;
@@ -86,28 +78,18 @@ function getDetailItemInfo() {
   const title = document.querySelector('h1[itemprop="name"]').innerText.trim();
   const currentPrice = cleanPrice(".price-box__price");
   const originalPrice = cleanPrice(".price-box__compare-price");
-  const imageUrl = document.querySelector(
-    "#detailPicture swiper-slide img"
-  )?.src;
+  const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
 }
 
 export class Alza extends Shop {
   async scrape() {
-    return (
-      getDetailItemInfo() ||
-      getDetailInfo() ||
-      getMobileDetailInfo() ||
-      getDailySlasherInfo() ||
-      getArchiveInfo()
-    );
+    return getDetailItemInfo() || getDetailInfo() || getMobileDetailInfo() || getDailySlasherInfo() || getArchiveInfo();
   }
 
   isDetailPage() {
-    this.element = document.querySelector(
-      "#detailText .buy-buttons, .price-info-row"
-    );
+    this.element = document.querySelector("#detailText .buy-buttons, .price-info-row");
     return Boolean(this.element);
   }
 
@@ -142,10 +124,7 @@ export class Alza extends Shop {
 
   injectOnDailySlasherPage(renderMarkup) {
     const c1w = document.querySelector("#dailySlasher .c1").offsetWidth;
-    this.element.insertAdjacentElement(
-      "afterend",
-      renderMarkup({ width: `${c1w - 80}px` })
-    );
+    this.element.insertAdjacentElement("afterend", renderMarkup({ width: `${c1w - 80}px` }));
   }
 
   isArchive() {
@@ -163,10 +142,7 @@ export class Alza extends Shop {
   }
 
   injectOnDetailItemPage(renderMarkup) {
-    this.element.insertAdjacentElement(
-      "afterend",
-      renderMarkup({ "margin": "0 0 20px" })
-    );
+    this.element.insertAdjacentElement("afterend", renderMarkup({ "margin": "0 0 20px" }));
   }
 
   inject(renderMarkup) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import path from "path";
-import puppeteer from "puppeteer";
 import url from "url";
+import puppeteer from "puppeteer";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const pathToExtension = path.resolve(__dirname, "../extension");
@@ -43,11 +43,7 @@ const urlSet = [
 async function main(puppeteer) {
   const browser = await puppeteer.launch({
     headless: false,
-    args: [
-      `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`,
-      "--lang=cs-CZ,cs"
-    ],
+    args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`, "--lang=cs-CZ,cs"],
     defaultViewport: {
       width: 1920,
       height: 1200

@@ -14,13 +14,7 @@ const { KEBOOLA_URI, KEBOOLA_KEY } = process.env;
  * @param {boolean} isGzipped
  * @returns {Promise<void>}
  */
-export async function keboolaUploader(
-  bucket,
-  table,
-  data,
-  fileName,
-  isGzipped
-) {
+export async function keboolaUploader(bucket, table, data, fileName, isGzipped) {
   let lastError;
   for (let i = 0; i < 4; i++) {
     try {
@@ -52,18 +46,12 @@ export async function keboolaUploader(
       return;
     } catch (err) {
       lastError = err;
-      log.exception(
-        err,
-        `Upload to Keboola failed on ${i + 1} try, will wait awhile...`
-      );
+      log.exception(err, `Upload to Keboola failed on ${i + 1} try, will wait awhile...`);
       await sleep((i + 1) * 10 * 1000);
       await Actor.setValue(`debugFile.csv${isGzipped ? ".gz" : ""}`, data, {
         contentType: "text/csv"
       }).catch(error => {
-        log.exception(
-          error,
-          `There was a problem with storing issued data to the KV store!`
-        );
+        log.exception(error, `There was a problem with storing issued data to the KV store!`);
       });
     }
   }

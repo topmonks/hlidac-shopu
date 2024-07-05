@@ -1,12 +1,8 @@
-import { html, svg, render } from "lit";
-import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
-import {
-  formatNumber,
-  formatPercents,
-  formatShortDate
-} from "@hlidac-shopu/lib/format.mjs";
+import { formatNumber, formatPercents, formatShortDate } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDashboardV2Data } from "@hlidac-shopu/lib/remoting.mjs";
 import { rating, ratingStyles } from "@hlidac-shopu/lib/templates.mjs";
+import { html, render, svg } from "lit";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import * as rollbar from "./rollbar.js";
 
 function logoTemplate({ logo, name, url, viewBox }) {
@@ -24,12 +20,7 @@ function logoTemplate({ logo, name, url, viewBox }) {
 function radialProgress({ ratio, isMonochrome }) {
   const circumference = 2 * Math.PI * 35;
   const strokeDashOffset = circumference - ratio * circumference;
-  const color =
-    ratio <= 0.1 && !isMonochrome
-      ? "#27AE60"
-      : ratio >= 0.7 && !isMonochrome
-        ? "#C62828"
-        : "#5C62CD";
+  const color = ratio <= 0.1 && !isMonochrome ? "#27AE60" : ratio >= 0.7 && !isMonochrome ? "#C62828" : "#5C62CD";
   return svg`
     <svg class="radial-progress" viewBox="0 0 80 80">
       <circle class="incomplete" cx="40" cy="40" r="35"></circle>
@@ -41,14 +32,7 @@ function radialProgress({ ratio, isMonochrome }) {
   `;
 }
 
-function cardTemplate({
-  name,
-  shop,
-  inSale,
-  weDontAgree,
-  rating: ratingValue,
-  body
-}) {
+function cardTemplate({ name, shop, inSale, weDontAgree, rating: ratingValue, body }) {
   return html`
     <div
       class="hs-card hs-card--with-metrics mdc-layout-grid__cell mdc-layout-grid__cell--span-6"

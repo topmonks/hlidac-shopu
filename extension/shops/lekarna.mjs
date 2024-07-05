@@ -7,16 +7,12 @@ export class Lekarna extends Shop {
   }
 
   async scrape() {
-    const elem = document.querySelector(
-      "[itemtype='https://schema.org/Product']"
-    );
+    const elem = document.querySelector("[itemtype='https://schema.org/Product']");
     if (!elem) return null;
 
     const itemId = elem.querySelector("[itemprop=sku]")?.textContent.trim();
     const title = elem.querySelector("[itemprop=name]")?.textContent.trim();
-    const currentPrice = elem
-      .querySelector("[itemprop=price]")
-      ?.getAttribute("content");
+    const currentPrice = elem.querySelector("[itemprop=price]")?.getAttribute("content");
     const originalPrice = cleanPrice("[itemprop=offers] .line-through");
     const imageUrl = document.querySelector("[property='og:image']")?.content;
 

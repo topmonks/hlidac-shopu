@@ -1,13 +1,13 @@
+import { URL, URLSearchParams } from "url";
+import { PlaywrightCrawler, useState } from "@crawlee/playwright";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
-import { PlaywrightCrawler, useState } from "@crawlee/playwright";
-import { URL, URLSearchParams } from "url";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -44,11 +44,7 @@ function listingUrl(baseUrl, currentPage = 1, pageSize = 60) {
   ).href;
 }
 
-const categoryLinkSelectors = [
-  "ul.j-cat-3>li>a",
-  "ul.j-cat-2>li>a",
-  "ul.j-shop-categories-menu>li>a"
-];
+const categoryLinkSelectors = ["ul.j-cat-3>li>a", "ul.j-cat-2>li>a", "ul.j-shop-categories-menu>li>a"];
 
 /**
  * @param {Document} document
@@ -56,9 +52,7 @@ const categoryLinkSelectors = [
 function categoryRequests(document) {
   const requests = [];
   for (const selector of categoryLinkSelectors) {
-    for (const category of document.querySelectorAll(
-      `.j-eshop-menu ${selector}`
-    )) {
+    for (const category of document.querySelectorAll(`.j-eshop-menu ${selector}`)) {
       requests.push(category.href);
     }
   }
@@ -70,24 +64,14 @@ function categoryRequests(document) {
  * @param {string} category
  */
 function parseItem(el, category) {
-  const actionPrice = parseFloat(
-    el
-      .querySelectorAll(".sx-item-price-action")
-      ?.at(-1)
-      ?.innerText?.replace(/\s+/g, "")
-  );
-  const initialPrice = parseFloat(
-    el.querySelector(".sx-item-price-initial")?.innerText?.replace(/\s+/g, "")
-  );
+  const actionPrice = parseFloat(el.querySelectorAll(".sx-item-price-action")?.at(-1)?.innerText?.replace(/\s+/g, ""));
+  const initialPrice = parseFloat(el.querySelector(".sx-item-price-initial")?.innerText?.replace(/\s+/g, ""));
   const originalPrice = actionPrice ? initialPrice / 100 : null;
   const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
   console.assert(currentPrice, "missing price");
-  const itemUrl = new URL(el.querySelector(".sx-item-title").href, RootUrl)
-    .href;
+  const itemUrl = new URL(el.querySelector(".sx-item-title").href, RootUrl).href;
   const multiItemDiscount =
-    el
-      .querySelector(".sx-item-condition")
-      .innerText?.startsWith("Cena za kus při koupi") ?? false;
+    el.querySelector(".sx-item-condition").innerText?.startsWith("Cena za kus při koupi") ?? false;
   return {
     itemId: el.querySelector(".j-product").getAttribute("data-skuid"),
     itemName: el.querySelector(".sx-item-title").innerText,
@@ -105,17 +89,11 @@ function parseItem(el, category) {
  * @param {Document} document
  */
 function parseItems(document) {
-  const category = document
-    .querySelectorAll(".CMSBreadCrumbsLink")
-    .map(x => x.innerText);
-  const currentCategory = document
-    .querySelectorAll(".CMSBreadCrumbsCurrentItem")
-    .map(x => x.innerText);
+  const category = document.querySelectorAll(".CMSBreadCrumbsLink").map(x => x.innerText);
+  const currentCategory = document.querySelectorAll(".CMSBreadCrumbsCurrentItem").map(x => x.innerText);
   category.push(currentCategory);
   const categories = category.join(" > ");
-  return document
-    .querySelectorAll(".j-products .j-item")
-    .map(el => parseItem(el, categories));
+  return document.querySelectorAll(".j-products .j-item").map(el => parseItem(el, categories));
 }
 
 const itemsPerPage = 60;
@@ -189,10 +167,7 @@ async function main() {
         });
         const { document } = parseHTML(resp.body);
         const originalPrice = parseFloat(
-          document
-            .querySelector(".sx-sale-w-arrow-container > span")
-            .innerText?.replace(/\s+/g, "")
-            ?.replace(",", ".")
+          document.querySelector(".sx-sale-w-arrow-container > span").innerText?.replace(/\s+/g, "")?.replace(",", ".")
         );
         product.originalPrice = originalPrice;
         await saveUniqProducts({
@@ -207,12 +182,7 @@ async function main() {
       const text = await page.content();
       const { document } = parseHTML(text);
 
-      const itemsCount = parseInt(
-        document
-          .querySelector(".j-product-count-main")
-          .innerText.match(/(\d+)/)[1],
-        10
-      );
+      const itemsCount = parseInt(document.querySelector(".j-product-count-main").innerText.match(/(\d+)/)[1], 10);
 
       switch (step) {
         case "START":
@@ -249,11 +219,7 @@ async function main() {
         default:
           {
             log.info("Pagination info", { category, itemsCount, currentPage });
-            if (
-              currentPage === 1 &&
-              itemsCount > itemsPerPage &&
-              category !== "BF"
-            ) {
+            if (currentPage === 1 && itemsCount > itemsPerPage && category !== "BF") {
               const lastPage = lastPageNumber(itemsCount);
               if (lastPage) {
                 const url = listingUrl(category, lastPage);

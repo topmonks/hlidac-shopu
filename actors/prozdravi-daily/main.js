@@ -1,12 +1,12 @@
+import { HttpCrawler, useState } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
-import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -55,10 +55,7 @@ function getProductJSON(document) {
   if (!correctScript) return;
   let resultJson = correctScript.replace(SCRIPT_WITH_JSON.PREFIX, "");
   resultJson = resultJson.replace(SCRIPT_WITH_JSON.POSTFIX, "");
-  resultJson = resultJson.replaceAll(
-    SCRIPT_WITH_JSON.UNDEFINED,
-    `"${SCRIPT_WITH_JSON.UNDEFINED}"`
-  );
+  resultJson = resultJson.replaceAll(SCRIPT_WITH_JSON.UNDEFINED, `"${SCRIPT_WITH_JSON.UNDEFINED}"`);
   return resultJson;
 }
 
@@ -131,13 +128,7 @@ async function main() {
   rollbar.init();
   const processedIds = await useState("processedIds", {});
 
-  const {
-    development,
-    debug,
-    maxRequestRetries,
-    proxyGroups,
-    type = ActorType.Full
-  } = await getInput();
+  const { development, debug, maxRequestRetries, proxyGroups, type = ActorType.Full } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);

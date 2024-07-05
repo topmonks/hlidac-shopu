@@ -1,12 +1,8 @@
 export function calculateTagSalePrice(productObject) {
   const productTags = productObject.tags;
-  let mkt_tags_srdce = productTags.filter(
-    tag => tag.indexOf("MKT:") !== -1 && tag.indexOf("❤") !== -1
-  );
+  let mkt_tags_srdce = productTags.filter(tag => tag.indexOf("MKT:") !== -1 && tag.indexOf("❤") !== -1);
   let mkt_tags_hvezda = productTags.filter(
-    tag =>
-      (tag.indexOf(`BAD:sleva-`) !== -1 || tag.indexOf(`BAD:bez-dph`) !== -1) &&
-      tag.indexOf("★") !== -1
+    tag => (tag.indexOf(`BAD:sleva-`) !== -1 || tag.indexOf(`BAD:bez-dph`) !== -1) && tag.indexOf("★") !== -1
   );
 
   let price, classNames, percent;
@@ -14,9 +10,7 @@ export function calculateTagSalePrice(productObject) {
     cashbackPriceText = "";
 
   if (productTags !== undefined) {
-    mkt_tags_srdce = mkt_tags_srdce.map(srdce =>
-      srdce.substring(srdce.indexOf("MKT:") + 4, srdce.lastIndexOf("❤"))
-    );
+    mkt_tags_srdce = mkt_tags_srdce.map(srdce => srdce.substring(srdce.indexOf("MKT:") + 4, srdce.lastIndexOf("❤")));
 
     for (let srdce of mkt_tags_srdce) {
       if (srdce.indexOf(`Kč sleva s cashbackem`) !== -1) {
@@ -93,9 +87,7 @@ export function calculateTagSalePrice(productObject) {
     const tagBadSalePrefix = "BAD:sleva-";
     productTags.find(tag => {
       if (tag.includes(tagBadSalePrefix)) {
-        badSaleTags.push(
-          parseInt(tag.replace(tagBadSalePrefix, "").replace(" ", ""))
-        );
+        badSaleTags.push(parseInt(tag.replace(tagBadSalePrefix, "").replace(" ", "")));
       }
     });
     if (badSaleTags.length) {

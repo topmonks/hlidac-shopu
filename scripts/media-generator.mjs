@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { formatISO } from "date-fns/formatISO";
-import { parseHTML } from "linkedom/cached";
 import fs from "node:fs";
 import path from "node:path";
 import { URL } from "node:url";
+import { formatISO } from "date-fns/formatISO";
+import { parseHTML } from "linkedom/cached";
 
 const test = false;
 const urls = [
@@ -25,13 +25,7 @@ ${perex}
 `;
 
 function writeMdFile(filename, url, title, date, perex, imageExt) {
-  const filePath = path.join(
-    "www.hlidacshopu.cz",
-    "src",
-    "data",
-    "media",
-    `${filename}.md`
-  );
+  const filePath = path.join("www.hlidacshopu.cz", "src", "data", "media", `${filename}.md`);
   const data = template({
     url,
     title,
@@ -43,22 +37,13 @@ function writeMdFile(filename, url, title, date, perex, imageExt) {
 }
 
 function writeImgFile(filename, imageExt, imageData) {
-  const imgPath = path.join(
-    "www.hlidacshopu.cz",
-    "src",
-    "cloudinary",
-    "media",
-    `${filename}.${imageExt}`
-  );
+  const imgPath = path.join("www.hlidacshopu.cz", "src", "cloudinary", "media", `${filename}.${imageExt}`);
   return fs.promises.writeFile(imgPath, new Uint8Array(imageData));
 }
 
 function readLinkedData(document) {
   try {
-    return JSON.parse(
-      document.querySelector("script[type='application/ld+json']")?.innerHTML ??
-        "{}"
-    );
+    return JSON.parse(document.querySelector("script[type='application/ld+json']")?.innerHTML ?? "{}");
   } catch (o_0) {
     return {};
   }
@@ -86,9 +71,7 @@ async function main() {
     const ld = readLinkedData(document);
     const title = (
       ld.headline ??
-      document
-        .querySelector("[property='og:title']")
-        ?.getAttribute("content") ??
+      document.querySelector("[property='og:title']")?.getAttribute("content") ??
       document.querySelector("h1, .post-title, [itemprop=name]")?.textContent
     )?.trim();
     const imageUrl = document
@@ -101,25 +84,15 @@ async function main() {
       : console.error("Image not found");
     const time = new Date(
       ld.datePublished ??
-        document
-          .querySelector("meta[property='og:updated_time']")
-          ?.getAttribute("content") ??
-        document
-          .querySelector("meta[property='article:published_time']")
-          ?.getAttribute("content") ??
+        document.querySelector("meta[property='og:updated_time']")?.getAttribute("content") ??
+        document.querySelector("meta[property='article:published_time']")?.getAttribute("content") ??
         document.querySelector("time")?.getAttribute("datetime") ??
-        document
-          .querySelector("[itemprop=datePublished]")
-          ?.getAttribute("content") ??
+        document.querySelector("[itemprop=datePublished]")?.getAttribute("content") ??
         Date.now()
     );
     const perex = (
-      document
-        .querySelector("meta[property='og:description']")
-        ?.getAttribute("content") ??
-      document
-        .querySelector("meta[name='description']")
-        ?.getAttribute("content")
+      document.querySelector("meta[property='og:description']")?.getAttribute("content") ??
+      document.querySelector("meta[name='description']")?.getAttribute("content")
     )?.trim();
     const parts = new URL(url).host.split(".");
     parts.pop();
@@ -135,9 +108,7 @@ async function main() {
     } else {
       await Promise.all([
         writeMdFile(filename, url, title, date, perex, imageExt),
-        imageResp
-          ?.arrayBuffer()
-          ?.then(imageData => writeImgFile(filename, imageExt, imageData))
+        imageResp?.arrayBuffer()?.then(imageData => writeImgFile(filename, imageExt, imageData))
       ]);
     }
   }

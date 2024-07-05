@@ -1,17 +1,14 @@
+import { URL } from "url";
+import { HttpCrawler, useState } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
+import { cleanPriceText, cleanUnitPriceText } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { Actor, KeyValueStore, log, LogLevel } from "apify";
-import { HttpCrawler, useState } from "@crawlee/http";
-import {
-  cleanPriceText,
-  cleanUnitPriceText
-} from "@hlidac-shopu/actors-common/product.js";
-import { URL } from "url";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, KeyValueStore, LogLevel, log } from "apify";
 
 const rootUrl = "https://shop.iglobus.cz";
 
@@ -29,49 +26,27 @@ const Stores = {
 };
 
 function extractItems(document, category) {
-  return document
-    .querySelectorAll(".product-list product-item")
-    .map(product => {
-      const result = { inStock: true };
-      result.itemId = product
-        .querySelector(".add-to-cart-btn a")
-        .getAttribute("data-product-id");
-      result.itemName = product
-        .querySelector("div.product-item__info > a")
-        .innerText.trim();
-      result.itemUrl = extractProductUrl(
-        product
-          .querySelector("div.product-item__info > a")
-          .getAttribute("onclick")
-      );
-      result.img = product.querySelector(".image-link img").getAttribute("src");
+  return document.querySelectorAll(".product-list product-item").map(product => {
+    const result = { inStock: true };
+    result.itemId = product.querySelector(".add-to-cart-btn a").getAttribute("data-product-id");
+    result.itemName = product.querySelector("div.product-item__info > a").innerText.trim();
+    result.itemUrl = extractProductUrl(product.querySelector("div.product-item__info > a").getAttribute("onclick"));
+    result.img = product.querySelector(".image-link img").getAttribute("src");
 
-      result.currentPrice = parseFloat(
-        cleanPriceText(
-          product
-            .querySelector(".money-price > span:last-child")
-            .innerText.trim()
-        )
-      );
-      const originalPrice = product
-        .querySelector(".money-price__amount--original")
-        ?.innerText?.trim();
-      result.originalPrice = originalPrice
-        ? parseFloat(cleanPriceText(originalPrice))
-        : null;
-      result.currentUnitPrice = parseFloat(
-        cleanUnitPriceText(
-          product.querySelector(".product-item__sale-volume").innerText.trim()
-        )
-      );
-      result.useUnitPrice = product
-        .querySelector(".product-item__info")
-        .innerText.includes("cca");
-      result.discounted = result.currentPrice < result.originalPrice;
-      result.currency = "CZK";
-      result.category = category;
-      return result;
-    });
+    result.currentPrice = parseFloat(
+      cleanPriceText(product.querySelector(".money-price > span:last-child").innerText.trim())
+    );
+    const originalPrice = product.querySelector(".money-price__amount--original")?.innerText?.trim();
+    result.originalPrice = originalPrice ? parseFloat(cleanPriceText(originalPrice)) : null;
+    result.currentUnitPrice = parseFloat(
+      cleanUnitPriceText(product.querySelector(".product-item__sale-volume").innerText.trim())
+    );
+    result.useUnitPrice = product.querySelector(".product-item__info").innerText.includes("cca");
+    result.discounted = result.currentPrice < result.originalPrice;
+    result.currency = "CZK";
+    result.category = category;
+    return result;
+  });
 }
 
 function extractProductUrl(onclickAttr) {
@@ -83,13 +58,7 @@ function extractProductUrl(onclickAttr) {
 
 async function main() {
   rollbar.init();
-  const {
-    development,
-    maxRequestRetries,
-    proxyGroups,
-    store = Stores.ZLI,
-    type = ActorType.Full
-  } = await getInput();
+  const { development, maxRequestRetries, proxyGroups, store = Stores.ZLI, type = ActorType.Full } = await getInput();
 
   const processedIds = await useState("processedIds", {});
   const stats = await withPersistedStats(
@@ -125,9 +94,7 @@ async function main() {
         case Labels.START:
           if (type === ActorType.Count) {
             const requests = document
-              .querySelectorAll(
-                "a.navigation-multilevel-node__link-inner--lvl-2"
-              )
+              .querySelectorAll("a.navigation-multilevel-node__link-inner--lvl-2")
               .map(countLink => {
                 const url = new URL(countLink.getAttribute("href"), rootUrl);
                 if (!url.toString().includes("novinky")) {
@@ -170,9 +137,7 @@ async function main() {
           if (userData.page === 0) {
             const lastPageLink =
               document
-                .querySelectorAll(
-                  ".pagination .pagination__step-cz:not(.pagination__step--next-cz)"
-                )
+                .querySelectorAll(".pagination .pagination__step-cz:not(.pagination__step--next-cz)")
                 .at(-1)
                 ?.getAttribute("href") ?? "";
 
@@ -196,13 +161,9 @@ async function main() {
           await saveUniqProducts({ products, stats, processedIds });
           break;
         case Labels.COUNT:
-          const count = document("span.category-number-of-products")
-            .innerText.trim()
-            .match(/\d+/)[0];
+          const count = document("span.category-number-of-products").innerText.trim().match(/\d+/)[0];
           stats.add("countItems", Number(count));
-          log.info(
-            `Found ${count} items in category ${request.userData.category}`
-          );
+          log.info(`Found ${count} items in category ${request.userData.category}`);
           break;
         default:
           log.error(`Unknown label ${label}`);

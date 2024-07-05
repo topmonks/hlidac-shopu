@@ -1,11 +1,8 @@
-import { html, render } from "lit-html";
 import { formatMoney, formatPercents } from "@hlidac-shopu/lib/format.mjs";
-import {
-  fetchDiscountDataPercent,
-  fetchDiscountDataCZK
-} from "@hlidac-shopu/lib/remoting.mjs";
-import { logoTemplate } from "@hlidac-shopu/lib/templates.mjs";
+import { fetchDiscountDataCZK, fetchDiscountDataPercent } from "@hlidac-shopu/lib/remoting.mjs";
 import { shops } from "@hlidac-shopu/lib/shops.mjs";
+import { logoTemplate } from "@hlidac-shopu/lib/templates.mjs";
+import { html, render } from "lit-html";
 import * as rollbar from "./rollbar.js";
 import { resultsEmbed } from "./templates";
 
@@ -21,33 +18,25 @@ if (tableRootPercent) {
       for (let i = 0; i < a.length; i++) {
         let obj = a[i];
         obj.sequenceId = i + 1;
-        obj.formatedDate = new Intl.DateTimeFormat("cs").format(
-          Date.parse(obj.date)
-        );
+        obj.formatedDate = new Intl.DateTimeFormat("cs").format(Date.parse(obj.date));
       }
       data = a;
       tableRootPercent.innerHTML = null;
       render(tableTemplatePercent(data), tableRootPercent);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplatePercent(data), buttonsSection);
-      document
-        .getElementById("show-more-perc")
-        .addEventListener("click", showMorePerc);
-      document
-        .getElementById("subscribe-perc")
-        .addEventListener("click", subscribe);
+      document.getElementById("show-more-perc").addEventListener("click", showMorePerc);
+      document.getElementById("subscribe-perc").addEventListener("click", subscribe);
 
-      document
-        .querySelector("#table-root-percent")
-        .addEventListener("click", e => {
-          let t = e.target;
-          if (t.href) {
-            console.log("in href");
-            console.log(`href=${t.href}`);
-            renderResultsModal(t.href);
-          }
-          e.preventDefault(); // Don't follow the links
-        });
+      document.querySelector("#table-root-percent").addEventListener("click", e => {
+        let t = e.target;
+        if (t.href) {
+          console.log("in href");
+          console.log(`href=${t.href}`);
+          renderResultsModal(t.href);
+        }
+        e.preventDefault(); // Don't follow the links
+      });
     } catch (ex) {
       console.error(ex);
     }
@@ -63,21 +52,15 @@ if (tableRootKc) {
       for (let i = 0; i < a.length; i++) {
         let obj = a[i];
         obj.sequenceId = i + 1;
-        obj.formatedDate = new Intl.DateTimeFormat("cs").format(
-          Date.parse(obj.date)
-        );
+        obj.formatedDate = new Intl.DateTimeFormat("cs").format(Date.parse(obj.date));
       }
       data = a;
       tableRootKc.innerHTML = null;
       render(tableTemplateKc(data), tableRootKc);
       const buttonsSection = document.getElementById("below-buttons");
       render(buttonsTemplateCZK(data), buttonsSection);
-      document
-        .getElementById("show-more-czk")
-        .addEventListener("click", showMoreCZK);
-      document
-        .getElementById("subscribe-czk")
-        .addEventListener("click", subscribe);
+      document.getElementById("show-more-czk").addEventListener("click", showMoreCZK);
+      document.getElementById("subscribe-czk").addEventListener("click", subscribe);
 
       document.querySelector("#table-root-kc").addEventListener("click", e => {
         let t = e.target;
@@ -129,16 +112,12 @@ function subscribeSubmit() {
 }
 
 function subscribe() {
-  const modalRenderRoot = document.getElementById(
-    "hlidac-shopu-modal__placeholder"
-  );
+  const modalRenderRoot = document.getElementById("hlidac-shopu-modal__placeholder");
   render(subscribeModalTemplate(), modalRenderRoot);
   const modal = document.getElementById("hlidac-shopu-modal");
   modal.classList.remove("modal--hidden");
   document.body.classList.add("no-scroll");
-  document
-    .getElementById("mc-embedded-subscribe")
-    .addEventListener("click", subscribeSubmit);
+  document.getElementById("mc-embedded-subscribe").addEventListener("click", subscribeSubmit);
 }
 
 function subscribeModalTemplate() {
@@ -392,9 +371,7 @@ function productLinkTemplate(itemName, itemUrl) {
 }
 
 async function renderResultsModal(detailUrl) {
-  const modalRenderRoot = document.getElementById(
-    "hlidac-shopu-modal__placeholder"
-  );
+  const modalRenderRoot = document.getElementById("hlidac-shopu-modal__placeholder");
   render(resultsEmbed(detailUrl), modalRenderRoot);
   showResultsModal();
 }

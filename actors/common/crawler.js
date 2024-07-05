@@ -1,4 +1,4 @@
-import { KeyValueStore, log, LogLevel } from "apify";
+import { KeyValueStore, LogLevel, log } from "apify";
 
 /** @typedef {import("./stats.js").Stats} Stats */
 /** @typedef {import("node:http").IncomingMessage} IncomingMessage */

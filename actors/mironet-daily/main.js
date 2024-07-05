@@ -1,13 +1,13 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
 import zlib from "zlib";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -109,9 +109,7 @@ function saleUrls({ document, rootUrl }) {
  * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
  */
 function categoryRequests({ document, requestUrl, rootUrl }) {
-  const browseSubCategories = document
-    .querySelectorAll("div#BrowseSubCategories > a")
-    .map(a => a.getAttribute("href"));
+  const browseSubCategories = document.querySelectorAll("div#BrowseSubCategories > a").map(a => a.getAttribute("href"));
   if (browseSubCategories.length) {
     return browseSubCategories.map(categoryUrl => {
       const url = new URL(categoryUrl, rootUrl).href;
@@ -238,9 +236,7 @@ async function main() {
             });
           }
         }
-        const breadCrumbs = document
-          .querySelectorAll("div#displaypath > a.CatParent")
-          .map(cat => cat.innerText.trim());
+        const breadCrumbs = document.querySelectorAll("div#displaypath > a.CatParent").map(cat => cat.innerText.trim());
         const requests = document.querySelectorAll(".item_b").flatMap(item => {
           const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
           const idElem = item.querySelector(".item_kod");
@@ -250,9 +246,7 @@ async function main() {
           const oPriceElem = item.querySelector(".item_s_cena span");
           const img = imgElem ? `https:${imgElem.getAttribute("src")}` : null;
           const link = linkElem ? linkElem.getAttribute("href") : null;
-          const id = idElem
-            ? idElem.innerText.trim().replace("Kód: ", "")
-            : null;
+          const id = idElem ? idElem.innerText.trim().replace("Kód: ", "") : null;
           const name = linkElem ? linkElem.innerText.trim() : null;
           const price = priceElem ? priceElem.innerText.trim() : false;
           const dataItem = {
@@ -284,17 +278,12 @@ async function main() {
           }
         });
         stats.add("items", requests.length);
-        log.debug(
-          `Found ${requests.length} items, storing them. ${request.url}`
-        );
+        log.debug(`Found ${requests.length} items, storing them. ${request.url}`);
         await Promise.all(requests);
       }
     },
     async failedRequestHandler({ request }, error) {
-      log.error(
-        `Request ${request.url} failed ${request.retryCount} times`,
-        error
-      );
+      log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
       stats.inc("failed");
     }
   });

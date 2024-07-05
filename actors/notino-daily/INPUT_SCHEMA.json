@@ -10,18 +10,8 @@
       "description": "Specify the type of the actor — daily or count",
       "editor": "select",
       "default": "BF",
-      "enum": [
-        "FULL",
-        "COUNT",
-        "TEST",
-        "CZECHITAS"
-      ],
-      "enumTitles": [
-        "DAILY",
-        "COUNT",
-        "TEST",
-        "CZECHITAS"
-      ]
+      "enum": ["FULL", "COUNT", "TEST", "CZECHITAS"],
+      "enumTitles": ["DAILY", "COUNT", "TEST", "CZECHITAS"]
     },
     "country": {
       "title": "type",
@@ -29,14 +19,8 @@
       "description": "Specify the target country — CZ or SK",
       "editor": "select",
       "default": "CZ",
-      "enum": [
-        "CZ",
-        "SK"
-      ],
-      "enumTitles": [
-        "CZ",
-        "SK"
-      ]
+      "enum": ["CZ", "SK"],
+      "enumTitles": ["CZ", "SK"]
     },
     "development": {
       "title": "development",
@@ -59,7 +43,5 @@
       "unit": "x"
     }
   },
-  "required": [
-    "type"
-  ]
+  "required": ["type"]
 }

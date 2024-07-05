@@ -1,5 +1,5 @@
 import test from "ava";
-import { categoryPaginationRequest, Label } from "../index.js";
+import { Label, categoryPaginationRequest } from "../index.js";
 
 test("should be POST request", t => {
   const { method } = categoryPaginationRequest(null, null);

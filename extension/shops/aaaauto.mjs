@@ -15,13 +15,9 @@ export class AAAAuto extends Shop {
       const priceRows = engTabCard.querySelectorAll("#priceTable .priceRow");
       let currentPrice;
       if (priceRows.length === 2) {
-        currentPrice = cleanPrice(
-          engTabCard.querySelector("#priceTable .carPrice span")
-        );
+        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .carPrice span"));
       } else {
-        currentPrice = cleanPrice(
-          engTabCard.querySelector("#priceTable .priceRow:last-child span")
-        );
+        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .priceRow:last-child span"));
       }
 
       const originalPrice = null;

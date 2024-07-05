@@ -1,11 +1,11 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -41,22 +41,16 @@ function findSUKL(document) {
  * @returns {Product | null}
  */
 function extractProduct(document) {
-  const script = document
-    .querySelector("#snippet-productRichSnippet-richSnippet")
-    .textContent.trim();
+  const script = document.querySelector("#snippet-productRichSnippet-richSnippet").textContent.trim();
   const jsonData = JSON.parse(script);
   const itemId = jsonData.identifier; // can have several identical IDs and differ only in the URL
   const itemUrl = jsonData.url;
   if (!itemId || !itemUrl) return null;
   const { offers } = jsonData;
   const currentPrice = offers.price;
-  const originalPriceEl = document.querySelector(
-    "#product-detail .buy-box__price-head del"
-  );
+  const originalPriceEl = document.querySelector("#product-detail .buy-box__price-head del");
   const originalPrice = originalPriceEl
-    ? parseFloat(
-        originalPriceEl.innerText.replace("Kč", "").replace(/\s/g, "").trim()
-      )
+    ? parseFloat(originalPriceEl.innerText.replace("Kč", "").replace(/\s/g, "").trim())
     : null;
   return {
     itemId,
@@ -67,9 +61,7 @@ function extractProduct(document) {
     identifierSUKL: findSUKL(document),
     originalPrice: originalPrice ? originalPrice : null,
     url: jsonData.url,
-    category: document
-      .querySelectorAll("ol#breadcrumb > li > a")
-      .map(a => a.innerText),
+    category: document.querySelectorAll("ol#breadcrumb > li > a").map(a => a.innerText),
     discounted: originalPrice ? currentPrice < originalPrice : false
   };
 }
@@ -79,18 +71,16 @@ function extractProduct(document) {
  * @returns {{ url: string, userData: { label: Labels } }[]}
  */
 function productListingRequests(document) {
-  const productsOnPage = document
-    .querySelectorAll(".product-list a.product-box__link")
-    .map(product => {
-      const spc = product.getAttribute("href");
-      const url = `${web}${spc}`;
-      return {
-        url,
-        userData: {
-          label: Labels.DETAIL
-        }
-      };
-    });
+  const productsOnPage = document.querySelectorAll(".product-list a.product-box__link").map(product => {
+    const spc = product.getAttribute("href");
+    const url = `${web}${spc}`;
+    return {
+      url,
+      userData: {
+        label: Labels.DETAIL
+      }
+    };
+  });
   log.info(`Found ${productsOnPage.length} products`);
   return productsOnPage;
 }
@@ -134,12 +124,7 @@ function startingRequests(type, stats) {
 async function main() {
   rollbar.init();
 
-  const {
-    development,
-    maxRequestRetries,
-    proxyGroups,
-    type = ActorType.Full
-  } = await getInput();
+  const { development, maxRequestRetries, proxyGroups, type = ActorType.Full } = await getInput();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -164,9 +149,7 @@ async function main() {
         case Labels.START:
           {
             log.info("START scraping benu.cz");
-            let categories = document.querySelectorAll(
-              "div.main-menu__submenu li > a"
-            );
+            let categories = document.querySelectorAll("div.main-menu__submenu li > a");
             if (type === ActorType.Test) {
               log.info("type === TEST");
               categories = categories.slice(0, 1);
@@ -197,10 +180,7 @@ async function main() {
           {
             log.info(`START with page ${request.url}`);
             const maxPage =
-              document
-                .querySelectorAll("p.paging a:not(.next):not(.ico-arr-right)")
-                .at(-1)
-                ?.innerText?.trim() ?? 0;
+              document.querySelectorAll("p.paging a:not(.next):not(.ico-arr-right)").at(-1)?.innerText?.trim() ?? 0;
             const requests = productListingRequests(document);
             await crawler.requestQueue.addRequests(requests);
             if (maxPage !== 0) {
@@ -245,10 +225,7 @@ async function main() {
       stats.inc("urls");
     },
     failedRequestHandler({ request, log }, error) {
-      log.error(
-        `Request ${request.url} failed ${request.retryCount} times`,
-        error
-      );
+      log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
       stats.inc("failed");
     }
   });
@@ -256,10 +233,7 @@ async function main() {
   await crawler.run(startingRequests(type, stats));
   log.info("crawler finished");
 
-  await Promise.all([
-    stats.save(true),
-    uploadToKeboola(type === ActorType.BlackFriday ? "benu_cz_bf" : "benu_cz")
-  ]);
+  await Promise.all([stats.save(true), uploadToKeboola(type === ActorType.BlackFriday ? "benu_cz_bf" : "benu_cz")]);
 }
 
 await Actor.main(main, { statusMessage: "DONE" });

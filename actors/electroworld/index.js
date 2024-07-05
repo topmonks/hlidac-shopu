@@ -1,11 +1,11 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { Actor, Dataset, log } from "apify";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 
@@ -152,10 +152,7 @@ function checkResponseStatus(session, response, stats) {
   session.setCookiesFromResponse(response);
 }
 
-export function extractDetail(
-  url,
-  { product, priceBundle, averageReview, productAvailability }
-) {
+export function extractDetail(url, { product, priceBundle, averageReview, productAvailability }) {
   return {
     itemId: product.id,
     itemName: product.name,
@@ -176,13 +173,7 @@ export function extractDetail(
 export async function main() {
   const rollbar = Rollbar.init();
 
-  const {
-    development,
-    country = "CZ",
-    proxyGroups,
-    type = ActorType.BlackFriday,
-    urls
-  } = await getInput();
+  const { development, country = "CZ", proxyGroups, type = ActorType.BlackFriday, urls } = await getInput();
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -217,20 +208,14 @@ export async function main() {
         case Label.Category: {
           stats.inc("categories");
           const { totalCount, products } = json;
-          const requests = restPageUrls(totalCount, page =>
-            categoryPaginationRequest(categoryId, page)
-          );
+          const requests = restPageUrls(totalCount, page => categoryPaginationRequest(categoryId, page));
           await crawler.requestQueue.addRequests(requests, { forefront: true });
-          return crawler.requestQueue.addRequest(
-            categoryItemsRequest(products.map(x => x.id))
-          );
+          return crawler.requestQueue.addRequest(categoryItemsRequest(products.map(x => x.id)));
         }
         case Label.Pagination: {
           stats.inc("pages");
           const { products } = json;
-          return crawler.requestQueue.addRequest(
-            categoryItemsRequest(products.map(x => x.id))
-          );
+          return crawler.requestQueue.addRequest(categoryItemsRequest(products.map(x => x.id)));
         }
         case Label.Detail: {
           const { productBoxes } = json;

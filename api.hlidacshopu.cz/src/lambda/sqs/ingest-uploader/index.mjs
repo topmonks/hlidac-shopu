@@ -1,5 +1,5 @@
-import { S3 } from "@aws-sdk/client-s3";
 import { createHash } from "node:crypto";
+import { S3 } from "@aws-sdk/client-s3";
 import Rollbar from "../../../rollbar.mjs";
 
 const rollbar = Rollbar.init({ lambdaName: "ingest-uploader" });

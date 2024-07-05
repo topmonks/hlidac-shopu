@@ -1,4 +1,4 @@
-import { cleanPrice, registerShop, isElementVisible } from "../helpers.mjs";
+import { cleanPrice, isElementVisible, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Okay extends Shop {
@@ -25,9 +25,7 @@ export class Okay extends Shop {
   async scrape() {
     const elem = document.querySelector(this.selector);
     if (!elem) return;
-    const product = JSON.parse(
-      elem.querySelector("[data-product]").dataset.product
-    );
+    const product = JSON.parse(elem.querySelector("[data-product]").dataset.product);
     const itemId = product.id;
     const title = product.title;
     const imageUrl = product.featured_image;
@@ -43,17 +41,13 @@ export class Okay extends Shop {
     const priceVisible = isElementVisible(document.querySelector(priceSel));
     const price = priceVisible ? cleanPrice(priceSel) : null;
     const priceAfterDiscountSel = ".modal_price .current_price_mz .money.sale";
-    const priceAfterDiscountVisible = isElementVisible(
-      document.querySelector(priceAfterDiscountSel)
-    );
-    const priceAfterDiscount = priceAfterDiscountVisible
-      ? cleanPrice(priceAfterDiscountSel)
-      : null;
+    const priceAfterDiscountVisible = isElementVisible(document.querySelector(priceAfterDiscountSel));
+    const priceAfterDiscount = priceAfterDiscountVisible ? cleanPrice(priceAfterDiscountSel) : null;
     const originalPrice = manufacturersRecommendedPrice
       ? manufacturersRecommendedPrice
       : priceAfterDiscount
-      ? price
-      : null;
+        ? price
+        : null;
     const currentPrice = priceAfterDiscount ? priceAfterDiscount : price;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };

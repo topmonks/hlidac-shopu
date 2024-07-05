@@ -17,14 +17,8 @@ function build(entrypoint: string, minify: boolean, external: string[] = []) {
   return result?.outputFiles?.[0].text ?? "";
 }
 
-export function buildCodeAsset(
-  entrypoint: string,
-  minify = false,
-  external: string[] = []
-): pulumi.asset.AssetArchive {
+export function buildCodeAsset(entrypoint: string, minify = false, external: string[] = []): pulumi.asset.AssetArchive {
   return new pulumi.asset.AssetArchive({
-    "index.js": new pulumi.asset.StringAsset(
-      build(entrypoint, minify, external)
-    )
+    "index.js": new pulumi.asset.StringAsset(build(entrypoint, minify, external))
   });
 }

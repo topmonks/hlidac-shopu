@@ -1,13 +1,13 @@
+import { PuppeteerCrawler } from "@crawlee/puppeteer";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import { PuppeteerCrawler } from "@crawlee/puppeteer";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -78,10 +78,7 @@ function getProductFromRedux(productId, reduxResults) {
 }
 
 function extractItems({ document, country, uniqueItems, stats }) {
-  const rootUrl =
-    country === Country.CZ
-      ? "https://nakup.itesco.cz"
-      : "https://potravinydomov.itesco.sk";
+  const rootUrl = country === Country.CZ ? "https://nakup.itesco.cz" : "https://potravinydomov.itesco.sk";
   const category = document
     .querySelectorAll(".breadcrumbs ol li")
     .map(li => li.innerText)
@@ -117,29 +114,19 @@ function extractItems({ document, country, uniqueItems, stats }) {
         itemId,
         category,
         currency: country === Country.CZ ? "CZK" : "EUR",
-        currentPrice: cleanPrice(
-          item.querySelector(".beans-price__text")?.innerText
-        ),
-        currentUnitPrice: cleanPrice(
-          item.querySelector(".beans-price__subtext")?.innerText
-        ),
+        currentPrice: cleanPrice(item.querySelector(".beans-price__text")?.innerText),
+        currentUnitPrice: cleanPrice(item.querySelector(".beans-price__subtext")?.innerText),
         discounted: false,
-        itemUrl: `${rootUrl}${item
-          .querySelector(".product-image-wrapper")
-          ?.getAttribute("href")}`
+        itemUrl: `${rootUrl}${item.querySelector(".product-image-wrapper")?.getAttribute("href")}`
       };
 
-      const offer = item.querySelector(
-        ".product-details--wrapper .offer-text"
-      )?.innerText;
+      const offer = item.querySelector(".product-details--wrapper .offer-text")?.innerText;
       if (offer && !offer.includes("Clubcard")) {
         result.discounted = true;
 
         if (country === Country.CZ) {
           result.currentPrice = cleanPrice(offer.split("nyní")[1]);
-          result.originalPrice = cleanPrice(
-            offer.replace(/^.+cena|nyní.+/g, "")
-          );
+          result.originalPrice = cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""));
         } else {
           result.currentPrice = cleanPrice(offer.split("teraz")[1]);
           const match = offer.match(/(predtým) ([\d+|,]+)/);
@@ -192,9 +179,7 @@ function getTableName(country, type) {
  * @param {Country} country
  */
 function startUrls(document, country) {
-  const script = document
-    .querySelector("body")
-    .getAttribute("data-redux-state");
+  const script = document.querySelector("body").getAttribute("data-redux-state");
   const urlsCatHtml = JSON.parse(script);
   return findArraysUrl(urlsCatHtml, country);
 }
@@ -246,46 +231,29 @@ async function startCrawler(crawler, { type, country, bfUrl, testUrl }) {
  * @param {Country} country
  */
 function extractBFItems(document, country) {
-  return document
-    .querySelectorAll(".a-productListing__productsGrid__element")
-    .map(el => {
-      const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
-      if (!itemUrl) {
-        return;
-      }
-      const originalPrice =
-        parseFloat(
-          el
-            .querySelector(".product__old-price")
-            .innerText.trim()
-            .replace(",", "")
-            .replace(/\s+/g, "")
-        ) / 100;
-      const currentPrice =
-        parseFloat(
-          el
-            .querySelector(".product__price ")
-            .innerText.trim()
-            .replace(/\s+/g, "")
-        ) / 100;
-      log.info(`Found  ${itemUrl}`);
-      return {
-        itemId: itemSlug(itemUrl),
-        itemUrl,
-        itemName: el.querySelector(".product__name").innerText,
-        img: `https://itesco.${country.toLowerCase()}${el
-          .querySelector(".product__img-wrapper img")
-          .getAttribute("data-src")}`,
-        originalPrice,
-        currentPrice,
-        discounted: originalPrice ? originalPrice > currentPrice : false,
-        category:
-          country.toLowerCase() === "cz"
-            ? ["Akční nabídky"]
-            : ["Špeciálne ponuky"],
-        currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
-      };
-    });
+  return document.querySelectorAll(".a-productListing__productsGrid__element").map(el => {
+    const itemUrl = el.querySelector("a.ghs-link").getAttribute("href");
+    if (!itemUrl) {
+      return;
+    }
+    const originalPrice =
+      parseFloat(el.querySelector(".product__old-price").innerText.trim().replace(",", "").replace(/\s+/g, "")) / 100;
+    const currentPrice = parseFloat(el.querySelector(".product__price ").innerText.trim().replace(/\s+/g, "")) / 100;
+    log.info(`Found  ${itemUrl}`);
+    return {
+      itemId: itemSlug(itemUrl),
+      itemUrl,
+      itemName: el.querySelector(".product__name").innerText,
+      img: `https://itesco.${country.toLowerCase()}${el
+        .querySelector(".product__img-wrapper img")
+        .getAttribute("data-src")}`,
+      originalPrice,
+      currentPrice,
+      discounted: originalPrice ? originalPrice > currentPrice : false,
+      category: country.toLowerCase() === "cz" ? ["Akční nabídky"] : ["Špeciálne ponuky"],
+      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+    };
+  });
 }
 
 async function main() {
@@ -351,9 +319,7 @@ async function main() {
     async requestHandler({ request, response, enqueueLinks, crawler }) {
       const { document } = parseHTML(await response.text());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
-      const redirectUrl = document
-        .querySelector('[http-equiv="refresh"]')
-        ?.content?.match(/URL='(.+)'/)?.[1];
+      const redirectUrl = document.querySelector('[http-equiv="refresh"]')?.content?.match(/URL='(.+)'/)?.[1];
       if (redirectUrl) {
         const url = `${new URL(request.url).origin}${redirectUrl}`;
         log.info(`Redirecting to ${url}`);
@@ -371,9 +337,7 @@ async function main() {
         case Labels.Start:
           {
             const urls = startUrls(document, country);
-            log.debug(
-              `Found ${startUrls.length} on ${request.url} ${request.userData.label}`
-            );
+            log.debug(`Found ${startUrls.length} on ${request.url} ${request.userData.label}`);
             await enqueueLinks({
               urls,
               userData: {
@@ -389,9 +353,7 @@ async function main() {
               .slice(-2, -1)?.[0]?.innerText;
             const urls = pagesUrls(request.url, lastPage);
             if (urls) {
-              log.debug(
-                `Found ${urls.length} on ${request.url} ${request.userData.label}`
-              );
+              log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
               await enqueueLinks({
                 urls,
                 userData: {
@@ -410,9 +372,7 @@ async function main() {
           break;
         case Labels.PageBF:
           {
-            const lastPage = document
-              .querySelector(".ddl_plp_pagination .page a:last-child")
-              ?.innerText?.trim();
+            const lastPage = document.querySelector(".ddl_plp_pagination .page a:last-child")?.innerText?.trim();
             const urls = pagesUrls(request.url, lastPage);
             await enqueueLinks({
               urls,

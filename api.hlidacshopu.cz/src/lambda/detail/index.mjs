@@ -1,6 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
-import { shopHost, parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
+import { parseItemDetails, shopHost } from "@hlidac-shopu/lib/shops.mjs";
+import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalDataFromS3,
@@ -9,7 +10,6 @@ import {
   incHitCounter,
   putParsedData
 } from "../product-detail.mjs";
-import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 
 /** @typedef { import("@pulumi/awsx/apigateway").Request } APIGatewayProxyEvent */
 /** @typedef { import("@pulumi/awsx/apigateway").Response } APIGatewayProxyResult */
@@ -44,9 +44,7 @@ function scrapedData(params) {
   return params.currentPrice
     ? {
         currentPrice: parseFloat(params.currentPrice),
-        originalPrice: params.originalPrice
-          ? parseFloat(params.originalPrice)
-          : null,
+        originalPrice: params.originalPrice ? parseFloat(params.originalPrice) : null,
         imageUrl: params.imageUrl
       }
     : {};
@@ -68,9 +66,7 @@ export async function handler(event) {
 
   const shop = parseItemDetails(params.url);
   if (!shop) {
-    return withCORS(["GET", "OPTIONS"])(
-      notFound({ error: "Unsupported shop", shop: shopHost(params) })
-    );
+    return withCORS(["GET", "OPTIONS"])(notFound({ error: "Unsupported shop", shop: shopHost(params) }));
   }
 
   const slug = shop.itemId ?? shop.itemUrl;
@@ -86,9 +82,7 @@ export async function handler(event) {
 
   if (params.currentPrice && params.currentPrice !== "null") {
     // store parsed data by extension
-    putParsedData(db, shop, params).catch(err =>
-      console.error("ERROR: " + err)
-    );
+    putParsedData(db, shop, params).catch(err => console.error("ERROR: " + err));
   }
 
   try {
@@ -124,21 +118,14 @@ export async function handler(event) {
 
     console.time("data preparation");
     const rows = prepareData(priceHistory);
-    const { currentPrice, originalPrice, imageUrl } = Object.assign(
-      {},
-      extraData,
-      scrapedData(params)
-    );
+    const { currentPrice, originalPrice, imageUrl } = Object.assign({}, extraData, scrapedData(params));
     if (currentPrice) {
       rows.push({ currentPrice, originalPrice, date: new Date() });
     }
     console.timeEnd("data preparation");
 
     console.time("discount computation");
-    const discount = realDiscount(
-      priceHistory?.commonPrice ? priceHistory : meta,
-      rows
-    );
+    const discount = realDiscount(priceHistory?.commonPrice ? priceHistory : meta, rows);
     const claimedDiscount = getClaimedDiscount(rows);
     const transformMetadata = ({ itemImage, itemName, ...rest }) => ({
       name: itemName,

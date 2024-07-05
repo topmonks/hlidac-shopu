@@ -1,11 +1,11 @@
+import { HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, createHttpRouter } from "@crawlee/http";
 import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
+import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
@@ -17,16 +17,12 @@ function toProduct(result, { url, category }) {
   const currentPrice = result.price.showStrikethroughPrice
     ? cleanPrice(result.price.discountedPriceFormatted)
     : result.price.value;
-  const originalPrice = result.price.showStrikethroughPrice
-    ? result.price.value
-    : null;
+  const originalPrice = result.price.showStrikethroughPrice ? result.price.value : null;
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const currentUnitPrice = result.price.showStrikethroughPrice
     ? cleanPrice(result.price.discountedUnitPriceFormatted.split("=").at(-1))
     : result.price.unitPrice;
-  const originalUnitPrice = result.price.showStrikethroughPrice
-    ? result.price.unitPrice
-    : null;
+  const originalUnitPrice = result.price.showStrikethroughPrice ? result.price.unitPrice : null;
   const unit = result.price.unit;
   const useUnitPrice = unit !== "piece";
   const inStock = result.stock.inStock;
@@ -68,14 +64,8 @@ function apiQuery(persistedQueryHash, params) {
 // When something breaks, it is likely you just have to update the hash here.
 // TODO: try to read those from page and store theme for use in the run
 const opHash = new Map([
-  [
-    "LeftHandNavigationBar",
-    "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"
-  ],
-  [
-    "GetCategoryProductSearch",
-    "161b8b6137d82243a0dbfeed8477edec6469b84e16b0d00490c1133c57e3f234"
-  ]
+  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
+  ["GetCategoryProductSearch", "161b8b6137d82243a0dbfeed8477edec6469b84e16b0d00490c1133c57e3f234"]
 ]);
 
 function gql(operationName, variables) {
@@ -142,8 +132,7 @@ function defRouter({ stats, processedIds }) {
       if (json.errors) return console.error(json.errors);
 
       const { pageNumber, categoryCode } = request.userData;
-      const { products, categoryBreadcrumbs, pagination } =
-        json.data.categoryProductSearch;
+      const { products, categoryBreadcrumbs, pagination } = json.data.categoryProductSearch;
 
       if (pageNumber === 0) {
         stats.inc("categories");
@@ -157,9 +146,7 @@ function defRouter({ stats, processedIds }) {
           stats.inc("duplicates");
           continue;
         }
-        await Actor.pushData(
-          toProduct(product, { url: request.url, category })
-        );
+        await Actor.pushData(toProduct(product, { url: request.url, category }));
         processedIds.add(product.code);
         stats.inc("products");
       }
@@ -171,9 +158,7 @@ async function main() {
   Rollbar.init();
 
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
-  Actor.on("persistState", () =>
-    Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds))
-  );
+  Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -182,12 +167,7 @@ async function main() {
   });
 
   const input = await Actor.getInput();
-  const {
-    debug = false,
-    proxyGroups = [],
-    type = ActorType.Full,
-    urls = [getStartUrl()]
-  } = input || {};
+  const { debug = false, proxyGroups = [], type = ActorType.Full, urls = [getStartUrl()] } = input || {};
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);

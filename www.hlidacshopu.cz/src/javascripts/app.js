@@ -1,9 +1,6 @@
 import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import {
-  loaderTemplate,
-  notFoundTemplate
-} from "@hlidac-shopu/lib/templates.mjs";
+import { loaderTemplate, notFoundTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { MDCSnackbar } from "@material/snackbar/component.js";
 import { MDCTopAppBar } from "@material/top-app-bar/component.js";
 import { defAtom } from "@thi.ng/atom";
@@ -13,10 +10,7 @@ import * as rollbar from "./rollbar.js";
 
 rollbar.init();
 
-registerStylesheets([
-  "/assets/css/app.css",
-  "https://fonts.googleapis.com/icon?family=Material+Icons"
-]);
+registerStylesheets(["/assets/css/app.css", "https://fonts.googleapis.com/icon?family=Material+Icons"]);
 
 const topAppBarElement = document.querySelector(".mdc-top-app-bar");
 MDCTopAppBar.attachTo(topAppBarElement);
@@ -35,8 +29,7 @@ const textField = document.querySelector(".hs-textfield");
 
 const state = defAtom({});
 const view = template => state.resetIn(["view"], template);
-const isProduction = () =>
-  ["localhost", "127"].indexOf(location.hostname) === -1;
+const isProduction = () => ["localhost", "127"].indexOf(location.hostname) === -1;
 
 if ("serviceWorker" in navigator && isProduction()) {
   const wb = new Workbox("/sw.js");
@@ -111,9 +104,7 @@ addEventListener("appinstalled", e => {
 
 shareButton.addEventListener("click", () => {
   if (!navigator.share) return false;
-  navigator
-    .share({ url: "", title: "Podívejte se na vývoj ceny na Hlídači shopů" })
-    .catch(() => {});
+  navigator.share({ url: "", title: "Podívejte se na vývoj ceny na Hlídači shopů" }).catch(() => {});
 });
 
 searchButton.addEventListener("click", () => {

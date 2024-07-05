@@ -1,17 +1,15 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, Dataset, KeyValueStore, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
 
 const HOST = "https://www.eva.cz";
 
 function handlePagination(document, request) {
-  const nextPagination = document.querySelectorAll(
-    "ul.pagination i.fa-angle-right"
-  );
+  const nextPagination = document.querySelectorAll("ul.pagination i.fa-angle-right");
   if (nextPagination.length > 0) {
     const nextFirst = request.userData.first + 36;
     const url = new URL(request.url);
@@ -37,22 +35,13 @@ function parseItem(el, category) {
       itemName: itemUrl.innerText,
       itemUrl: new URL(itemUrl.getAttribute("href"), HOST).href,
       img: `https:${el.querySelector("img").getAttribute("data-src")}`,
-      currentPrice: el
-        .querySelector("span.price")
-        .innerText.replace(/\s/g, "")
-        .trim(),
+      currentPrice: el.querySelector("span.price").innerText.replace(/\s/g, "").trim(),
       originalPrice: null,
       discounted: category.includes("akční nabídka"),
       currency: "CZK",
       inStock: Boolean(
-        el
-          .querySelector("div.st_onstore")
-          ?.innerText?.toLowerCase()
-          ?.includes("skladem") ||
-          el
-            .querySelector("div.st_onstore2")
-            ?.innerText?.toLowerCase()
-            ?.includes("skladem u dodavatele")
+        el.querySelector("div.st_onstore")?.innerText?.toLowerCase()?.includes("skladem") ||
+          el.querySelector("div.st_onstore2")?.innerText?.toLowerCase()?.includes("skladem u dodavatele")
       ),
       category
     };
@@ -116,9 +105,7 @@ async function main() {
       const { document } = parseHTML(body.toString());
       if (request.userData.label === "PAGE") {
         //Check if there is next pagination
-        await crawler.requestQueue.addRequest(
-          handlePagination(document, request)
-        );
+        await crawler.requestQueue.addRequest(handlePagination(document, request));
         const products = extractProducts(document);
         log.info(`${request.url} Found ${products.length} products`);
         if (!products.length) session.markBad();
@@ -126,20 +113,16 @@ async function main() {
         await saveProducts(products, stats, processedIds);
       } else if (request.userData.label === "CATEGORY") {
         // Add subcategories if this category has also products
-        const subcategories = document
-          .querySelectorAll("div#mele div.lmsubmenu div.mlevel a")
-          .map(a => ({
-            url: `${HOST}${a.getAttribute("href")}`,
-            userData: {
-              label: "CATEGORY",
-              first: 0
-            }
-          }));
+        const subcategories = document.querySelectorAll("div#mele div.lmsubmenu div.mlevel a").map(a => ({
+          url: `${HOST}${a.getAttribute("href")}`,
+          userData: {
+            label: "CATEGORY",
+            first: 0
+          }
+        }));
         if (subcategories.length > 0) {
           stats.add("categories", subcategories.length);
-          log.info(
-            `${request.url} Found ${subcategories.length} subcategories`
-          );
+          log.info(`${request.url} Found ${subcategories.length} subcategories`);
           await crawler.requestQueue.addRequests(subcategories, {
             forefront: true
           });
@@ -164,21 +147,14 @@ async function main() {
               first: 0
             }
           }))
-          .filter(
-            ({ url }) =>
-              !url.includes("novinky") &&
-              !url.includes("rozbalene") &&
-              !url.includes("vyprodej")
-          );
+          .filter(({ url }) => !url.includes("novinky") && !url.includes("rozbalene") && !url.includes("vyprodej"));
         //If type is COUNT, use category urls for count all products
         stats.add("categories", links.length);
         log.info(`${request.url} Found ${links.length} categories`);
         await crawler.requestQueue.addRequests(links, { forefront: true });
       } else if (request.userData.label === "COUNT") {
         //Not unique items. Can include hidden items,unpacked, used, duplicity listing
-        const countElement = document.querySelector(
-          "div#content_filter div.fpanel_inside div.float-right"
-        );
+        const countElement = document.querySelector("div#content_filter div.fpanel_inside div.float-right");
         if (countElement) {
           const countItems = Number(countElement.innerText);
           stats.add("items", countItems);

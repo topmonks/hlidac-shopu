@@ -22,9 +22,7 @@ export class Kaufland extends AsyncShop {
     if (!currentPrice) return null;
 
     const originalPrice = cleanPrice(`.rd-buybox-comparison__price`);
-    const imageUrl = document
-      .querySelector(`meta[property='og:image']`)
-      .content.trim();
+    const imageUrl = document.querySelector(`meta[property='og:image']`).content.trim();
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }

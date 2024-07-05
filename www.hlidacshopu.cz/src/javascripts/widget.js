@@ -1,7 +1,7 @@
-import { html, render } from "lit-html";
+import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
 import { fetchDataSet } from "@hlidac-shopu/lib/remoting.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
-import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
+import { html, render } from "lit-html";
 
 const root = document.getElementById("app-root");
 
@@ -49,14 +49,7 @@ async function renderResults(detailUrl) {
       root
     );
     const ctx = getCanvasContext(root);
-    createChart(
-      ctx,
-      res.data.currentPrice,
-      res.data.originalPrice,
-      "Uváděná původní cena",
-      "Prodejní cena",
-      false
-    );
+    createChart(ctx, res.data.currentPrice, res.data.originalPrice, "Uváděná původní cena", "Prodejní cena", false);
   } catch (ex) {
     console.error(ex);
     render(notFoundTemplate(), root);

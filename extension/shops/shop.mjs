@@ -10,8 +10,7 @@ export class Shop {
   inject(renderMarkup) {
     const [position, selector, extraStyles] = this.injectionPoint;
     const elem = document.querySelector(selector);
-    if (!elem)
-      throw new Error(`Element to add chart not found; selector: ${selector}`);
+    if (!elem) throw new Error(`Element to add chart not found; selector: ${selector}`);
     elem.insertAdjacentElement(position, renderMarkup(extraStyles));
     return elem;
   }
@@ -93,9 +92,7 @@ export class StatefulShop extends Shop {
   }
 
   didMutate(mutations, prop, token) {
-    return mutations.find(x =>
-      Array.from(x[prop]).find(y => y.classList?.contains(token))
-    );
+    return mutations.find(x => Array.from(x[prop]).find(y => y.classList?.contains(token)));
   }
 
   async scheduleRendering({ render, cleanup, fetchData }) {

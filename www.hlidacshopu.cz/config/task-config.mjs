@@ -1,6 +1,6 @@
+import projectPath from "@hckr_/blendid/lib/projectPath.mjs";
 import gulp_mode from "gulp-mode";
 import cssvariables from "postcss-css-variables";
-import projectPath from "@hckr_/blendid/lib/projectPath.mjs";
 import pathConfig from "./path-config.json" with { type: "json" };
 
 /** @typedef {import("@types/nunjucks").Environment} Environment */

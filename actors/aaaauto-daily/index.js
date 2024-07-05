@@ -1,11 +1,11 @@
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -55,11 +55,7 @@ export function getRootUrl(type = ActorType.Full, country = Country.CZ) {
  * @param {number} page
  * @returns {string}
  */
-export function getBaseUrl(
-  type = ActorType.Full,
-  country = Country.CZ,
-  page = 1
-) {
+export function getBaseUrl(type = ActorType.Full, country = Country.CZ, page = 1) {
   const tld = country.toLocaleLowerCase();
   const origin = `https://www.aaaauto.${tld}`;
   const category = categoryByCountry.get(country);
@@ -85,11 +81,7 @@ export function extractPrice(string) {
   const match = string.match(/[\d*\s]*\s[Kč|€]/g);
   if (!match) return;
 
-  const value = match[0]
-    .replace(/\s/g, "")
-    .replace("Kč", "")
-    .replace("€", "")
-    .replace("Cena", "");
+  const value = match[0].replace(/\s/g, "").replace("Kč", "").replace("€", "").replace("Cena", "");
   return parseInt(value);
 }
 
@@ -107,19 +99,11 @@ function parseProducts(document, country) {
     const itemName = item.querySelector("h2 a").innerText.trim();
     const arr = itemName.split(",");
 
-    const currentPrice = item
-      .querySelector("span[id*=garageHeart]")
-      .getAttribute("data-price");
-    const actionPrice = extractPrice(
-      item.querySelector(".carPrice h3.error:not(.hide)")?.innerText
-    );
-    const originalPrice = extractPrice(
-      item.querySelector(".carPrice .darkGreyAlt")?.innerText
-    );
+    const currentPrice = item.querySelector("span[id*=garageHeart]").getAttribute("data-price");
+    const actionPrice = extractPrice(item.querySelector(".carPrice h3.error:not(.hide)")?.innerText);
+    const originalPrice = extractPrice(item.querySelector(".carPrice .darkGreyAlt")?.innerText);
     const description = item.querySelector(".carFeatures p").innerText.trim();
-    const carFeatures = item
-      .querySelectorAll(".carFeaturesList li")
-      .map(feature => feature.innerText);
+    const carFeatures = item.querySelectorAll(".carFeaturesList li").map(feature => feature.innerText);
 
     const [km, transmission, fuelType, engine] = carFeatures;
     return {
@@ -189,9 +173,7 @@ export async function main() {
         case Label.START:
           {
             const pages = document.querySelectorAll("nav.pagenav li");
-            const lastPage = parseInt(
-              pages[pages.length - 2].querySelector("a").innerText.trim()
-            );
+            const lastPage = parseInt(pages[pages.length - 2].querySelector("a").innerText.trim());
 
             const requests = [];
             for (let i = 0; i < lastPage; i++) {
@@ -202,10 +184,7 @@ export async function main() {
               });
             }
             const products = parseProducts(document, country);
-            await Promise.allSettled([
-              crawler.requestQueue.addRequests(requests),
-              Dataset.pushData(products)
-            ]);
+            await Promise.allSettled([crawler.requestQueue.addRequests(requests), Dataset.pushData(products)]);
           }
           break;
         case Label.PAGE:

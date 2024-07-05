@@ -1,12 +1,12 @@
 import { HttpCrawler, createHttpRouter } from "@crawlee/http";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { Dataset, log, LogLevel } from "apify";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -41,11 +41,7 @@ function startUrl(country) {
  * @param {number} pagination.pageSize Default 500
  * @returns {RequestOptions}
  */
-function getCategoryProducts(
-  country,
-  category,
-  { pageIndex, pageSize } = { pageIndex: 0, pageSize: 500 }
-) {
+function getCategoryProducts(country, category, { pageIndex, pageSize } = { pageIndex: 0, pageSize: 500 }) {
   const locale = locales.get(country);
   const payload = {
     "searchParameters": { "input": category, "type": "CATEGORY" },
@@ -89,11 +85,7 @@ function* categoryPagination(country, category, { max, pageSize }) {
 }
 
 function readGlobalNavigation(document) {
-  return JSON.parse(
-    document.querySelector(
-      `.hnf-tabs-navigation > script[type='text/hydration']`
-    ).textContent
-  );
+  return JSON.parse(document.querySelector(`.hnf-tabs-navigation > script[type='text/hydration']`).textContent);
 }
 
 function toProduct({ product }) {
@@ -111,8 +103,7 @@ function toProduct({ product }) {
     currentPrice: isIkeaFamily ? originalPrice : currentPrice,
     originalPrice: isIkeaFamily ? null : originalPrice,
     currency: product.salesPrice.currencyCode,
-    category:
-      product.categoryPath?.map(x => x.name)?.join(" > ") ?? "Nezařazeno",
+    category: product.categoryPath?.map(x => x.name)?.join(" > ") ?? "Nezařazeno",
     discounted: Boolean(product.salesPrice?.previous),
     sale: null, // legacy column
     inStock: product.onlineSellable,
@@ -134,9 +125,7 @@ function defRouter({ country, stats, rawData }) {
       const { document } = parseHTML(body.toString("utf8"));
       const nav = readGlobalNavigation(document);
       const categories = nav.topCategories.map(x => x.id);
-      await crawler.addRequests(
-        categories.map(x => getCategoryProducts(country, x))
-      );
+      await crawler.addRequests(categories.map(x => getCategoryProducts(country, x)));
     },
     /** @param {HttpCrawlingContext} ctx */
     async category({ json, request, crawler, log }) {
@@ -146,9 +135,7 @@ function defRouter({ country, stats, rawData }) {
 
       if (pageIndex === 0 && end < max) {
         // We have more products to process
-        await crawler.addRequests(
-          Array.from(categoryPagination(country, category, { max, pageSize }))
-        );
+        await crawler.addRequests(Array.from(categoryPagination(country, category, { max, pageSize })));
       }
 
       for (const item of json.results[0].items) {
@@ -163,12 +150,7 @@ function defRouter({ country, stats, rawData }) {
 export async function main() {
   rollbar.init();
 
-  const {
-    maxRequestRetries,
-    country = "cz",
-    type = ActorType.Full,
-    urls
-  } = await getInput();
+  const { maxRequestRetries, country = "cz", type = ActorType.Full, urls } = await getInput();
 
   if (process.env.DEBUG) {
     log.setLevel(LogLevel.DEBUG);
@@ -193,9 +175,7 @@ export async function main() {
     }
   });
 
-  const requests = urls?.length
-    ? urls
-    : [{ url: startUrl(country), label: "start" }];
+  const requests = urls?.length ? urls : [{ url: startUrl(country), label: "start" }];
 
   log.debug("Starting IKEA crawler", { country, type, urls: requests });
   await crawler.run(requests);

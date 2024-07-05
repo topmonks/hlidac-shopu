@@ -1,16 +1,13 @@
-import { Actor, Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import {
-  cleanPriceText,
-  cleanUnitPriceText
-} from "@hlidac-shopu/actors-common/product.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPriceText, cleanUnitPriceText } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
 const Country = {
@@ -40,9 +37,7 @@ function completeUrl(country, path) {
 }
 
 function topCategoriesRequests({ document, input }) {
-  const links = document.querySelectorAll(
-    `[data-testid="product-category"] h2 a`
-  );
+  const links = document.querySelectorAll(`[data-testid="product-category"] h2 a`);
   return links.map(link => {
     log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
     const href = link.getAttribute("href");
@@ -57,9 +52,7 @@ function topCategoriesRequests({ document, input }) {
 }
 
 function subCategoriesRequests({ document, input, request, stats }) {
-  const links = document.querySelectorAll(
-    `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
-  );
+  const links = document.querySelectorAll(`[data-testid="categories-rondell"] [data-testid="rondell-card"] a`);
   return links.map(link => {
     const crumb = {
       link: completeUrl(input.country, link.getAttribute("href")),
@@ -104,16 +97,12 @@ function parseCategoryProductsCount(str) {
 }
 
 function catProductsRequests({ document, request }) {
-  const categoryProductsCountNode = document.querySelector(
-    `[data-testid="result-count"]`
-  );
+  const categoryProductsCountNode = document.querySelector(`[data-testid="result-count"]`);
   if (!categoryProductsCountNode) {
     log.error(`No products count node found in ${request.url}`);
     return;
   }
-  const categoryProductsCount = parseCategoryProductsCount(
-    categoryProductsCountNode?.textContent
-  );
+  const categoryProductsCount = parseCategoryProductsCount(categoryProductsCountNode?.textContent);
 
   const { category } = request.userData;
 
@@ -139,9 +128,7 @@ function catProductsRequests({ document, request }) {
 function extractProducts({ document, input, request, stats }) {
   const { category } = request.userData;
   const currency = Currency[input.country.toUpperCase()];
-  const productNodes = document.querySelectorAll(
-    `[data-testid="article-card"]`
-  );
+  const productNodes = document.querySelectorAll(`[data-testid="article-card"]`);
   return productNodes
     .map(itemNode => {
       const href = itemNode.querySelector("a").getAttribute("href");
@@ -151,15 +138,10 @@ function extractProducts({ document, input, request, stats }) {
       const detail = {
         itemId,
         itemUrl: completeUrl(input.country, href),
-        itemName: itemNode.querySelector(`[data-testid="article-title"]`)
-          ?.textContent,
+        itemName: itemNode.querySelector(`[data-testid="article-title"]`)?.textContent,
         img: itemNode.querySelector(`picture img`).getAttribute("src"),
-        currentPrice: cleanPriceText(
-          itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""
-        ),
-        currentUnitPrice: cleanUnitPriceText(
-          itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""
-        ),
+        currentPrice: cleanPriceText(itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""),
+        currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""),
         category: {
           link: category.link,
           title: category.title
@@ -214,12 +196,9 @@ async function main() {
         case Labels.TOP_CATEGORIES:
           {
             const requests = topCategoriesRequests({ document, input });
-            await crawler.requestQueue.addRequests(
-              filterTestRequests({ requests, input }),
-              {
-                forefront: true
-              }
-            );
+            await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }), {
+              forefront: true
+            });
           }
           break;
         case Labels.SUB_CATEGORIES:
@@ -234,26 +213,19 @@ async function main() {
                 request,
                 stats
               });
-              await crawler.requestQueue.addRequests(
-                filterTestRequests({ requests, input }),
-                { forefront: true }
-              );
+              await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }), { forefront: true });
             } else {
               const requests = catProductsFromSubCategoriesRequests({
                 request
               });
-              await crawler.requestQueue.addRequests(
-                filterTestRequests({ requests, input })
-              );
+              await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }));
             }
           }
           break;
         case Labels.CAT_PRODUCTS:
           {
             const requests = catProductsRequests({ document, request });
-            await crawler.requestQueue.addRequests(
-              filterTestRequests({ requests, input })
-            );
+            await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }));
             const products = extractProducts({
               document,
               input,

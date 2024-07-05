@@ -38,11 +38,7 @@ function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
   const startDate = subDays(lastDiscountDate, 30);
   // find lowest price in 30 days interval before sale action
   const minPrice = series
-    .filter(
-      ([date, price]) =>
-        Boolean(price) &&
-        isWithinInterval(date, { start: startDate, end: lastDiscountDate })
-    )
+    .filter(([date, price]) => Boolean(price) && isWithinInterval(date, { start: startDate, end: lastDiscountDate }))
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
   const [, currentPrice] = last(series);
@@ -64,18 +60,11 @@ function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
  * @param {Predicate.<Date>} isInInterval
  * @returns {CommonPriceDifference}
  */
-function commonPriceDifference(
-  lastDiscountDate,
-  lastIncreaseDate,
-  series,
-  isInInterval
-) {
+function commonPriceDifference(lastDiscountDate, lastIncreaseDate, series, isInInterval) {
   // find most frequent price in 30 days interval before sale action
   const byPrice = groupBy(([, price]) => price);
   const frequencies = Object.entries(
-    byPrice(
-      series.filter(([date, price]) => Boolean(price) && isInInterval(date))
-    )
+    byPrice(series.filter(([date, price]) => Boolean(price) && isInInterval(date)))
   ).map(([price, xs]) => [parseFloat(price), xs.length]);
   const moreFrequent = (a, b) => (a[1] > b[1] ? a : b);
   const [commonPrice] = frequencies.reduce(moreFrequent, [0, 0]);
@@ -97,11 +86,7 @@ function commonPriceDifference(
  * @param {Predicate.<Date>} isInInterval
  * @returns {Boolean}
  */
-function isEuDiscountApplicable(
-  lastIncreaseDate,
-  lastDiscountDate,
-  isInInterval
-) {
+function isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInInterval) {
   if (lastDiscountDate && isInInterval(lastDiscountDate)) {
     return !lastIncreaseDate || isAfter(lastDiscountDate, lastIncreaseDate);
   }
@@ -128,9 +113,7 @@ const isInLastDays = days => date =>
  * @returns {{lastDiscountDate: Date | undefined, lastIncreaseDate: Date | undefined, series: [Date, number][]}}
  */
 function getLastChangesInData(data) {
-  const series = data
-    .filter(({ currentPrice }) => currentPrice)
-    .map(({ currentPrice, date }) => [date, currentPrice]);
+  const series = data.filter(({ currentPrice }) => currentPrice).map(({ currentPrice, date }) => [date, currentPrice]);
   // walk thru price series and find changes
   const changes = zipWith(
     ([, a], [date, b]) => [a - b, date],
@@ -138,12 +121,8 @@ function getLastChangesInData(data) {
     series
     // filter out invalid products
   ).filter(([δ]) => Boolean(δ));
-  const lastDiscountDate = last(
-    changes.filter(([δ]) => δ < 0).map(([, date]) => date)
-  );
-  const lastIncreaseDate = last(
-    changes.filter(([δ]) => δ > 0).map(([, date]) => date)
-  );
+  const lastDiscountDate = last(changes.filter(([δ]) => δ < 0).map(([, date]) => date));
+  const lastIncreaseDate = last(changes.filter(([δ]) => δ > 0).map(([, date]) => date));
   return { series, lastDiscountDate, lastIncreaseDate };
 }
 
@@ -161,14 +140,7 @@ export function realDiscount(meta, data) {
   const { commonPrice, minPrice } = meta;
   const { currentPrice } = last(data);
   const { lastDiscountDate, lastIncreaseDate } = getLastChangesInData(data);
-  if (
-    minPrice &&
-    isEuDiscountApplicable(
-      lastIncreaseDate,
-      lastDiscountDate,
-      isInLastDays(saleActionInterval)
-    )
-  ) {
+  if (minPrice && isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLastDays(saleActionInterval))) {
     return {
       minPrice,
       currentPrice,
@@ -199,24 +171,12 @@ export function realDiscount(meta, data) {
  * @deprecated
  */
 export function getRealDiscount(data) {
-  const { series, lastDiscountDate, lastIncreaseDate } =
-    getLastChangesInData(data);
+  const { series, lastDiscountDate, lastIncreaseDate } = getLastChangesInData(data);
 
-  if (
-    isEuDiscountApplicable(
-      lastIncreaseDate,
-      lastDiscountDate,
-      isInLastDays(saleActionInterval)
-    )
-  ) {
+  if (isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLastDays(saleActionInterval))) {
     return euDiscount(lastDiscountDate, lastIncreaseDate, series);
   }
-  return commonPriceDifference(
-    lastDiscountDate,
-    lastIncreaseDate,
-    series,
-    isInLastDays(commonPriceInterval)
-  );
+  return commonPriceDifference(lastDiscountDate, lastIncreaseDate, series, isInLastDays(commonPriceInterval));
 }
 
 /**
@@ -238,9 +198,7 @@ export function getClaimedDiscount(data) {
  * @returns {DataRow[]}
  */
 export function prepareData(priceHistory) {
-  const rows = Array.isArray(priceHistory)
-    ? priceHistory
-    : priceHistory.entries;
+  const rows = Array.isArray(priceHistory) ? priceHistory : priceHistory.entries;
 
   // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({

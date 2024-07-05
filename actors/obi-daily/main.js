@@ -1,12 +1,12 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -20,19 +20,15 @@ const Labels = {
 
 function startRequests({ document, homePageUrl }) {
   let categoryLinkList = document
-    .querySelectorAll(
-      ".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link"
-    )
+    .querySelectorAll(".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link")
     .map(a => ({
       href: a.href,
       dataWebtrekk: a.getAttribute("data-webtrekk")
     }));
   if (!categoryLinkList.length) {
-    categoryLinkList = document
-      .querySelectorAll("ul.first-level > li > a")
-      .map(a => ({
-        href: a.href
-      }));
+    categoryLinkList = document.querySelectorAll("ul.first-level > li > a").map(a => ({
+      href: a.href
+    }));
   }
   return categoryLinkList
     .filter(categoryObject => !categoryObject.dataWebtrekk)
@@ -43,9 +39,7 @@ function startRequests({ document, homePageUrl }) {
 }
 
 function pagesRequests({ document, url }) {
-  const productCount = Number(
-    document.querySelector(".variants")?.getAttribute("data-productcount")
-  );
+  const productCount = Number(document.querySelector(".variants")?.getAttribute("data-productcount"));
   const productPerPageCount = document
     .querySelectorAll("li.product > a")
     .filter(a => a.getAttribute("data-ui-name")).length;
@@ -74,13 +68,8 @@ function listUrls({ request, document, processedIds }) {
 }
 
 function extractProduct({ url, document }) {
-  const itemId = document
-    .querySelector('input[name="code"]')
-    .getAttribute("value")
-    .trim();
-  let currency = document
-    .querySelector('meta[itemprop="priceCurrency"]')
-    ?.getAttribute("content");
+  const itemId = document.querySelector('input[name="code"]').getAttribute("value").trim();
+  let currency = document.querySelector('meta[itemprop="priceCurrency"]')?.getAttribute("content");
   if (!currency) return;
   if (currency === "SKK") {
     currency = "EUR";
@@ -93,19 +82,13 @@ function extractProduct({ url, document }) {
   }
   return {
     itemUrl: url,
-    itemName: document
-      .querySelector(".overview__description >.overview__heading")
-      .innerText.trim(),
+    itemName: document.querySelector(".overview__description >.overview__heading").innerText.trim(),
     itemId,
     currency,
-    currentPrice: cleanPrice(
-      document.querySelector('[data-ui-name="ads.price.strong"]').innerText
-    ),
+    currentPrice: cleanPrice(document.querySelector('[data-ui-name="ads.price.strong"]').innerText),
     discounted: Boolean(discountedPrice),
     originalPrice,
-    inStock: Boolean(
-      document.querySelector("div.marg_b5").innerText.match(/(\d+)/)
-    ),
+    inStock: Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
     img: `https:${img}`,
     category: document
       .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
@@ -143,10 +126,7 @@ function variantsUrls({ url, document, processedIds }) {
     .filter(Boolean);
 }
 
-async function enqueueVariants(
-  { enqueueLinks, request },
-  { document, processedIds, stats }
-) {
+async function enqueueVariants({ enqueueLinks, request }, { document, processedIds, stats }) {
   const productLinkList = variantsUrls({
     url: request.url,
     document,
@@ -172,20 +152,13 @@ async function main() {
     failed: 0
   });
 
-  const {
-    development,
-    proxyGroups,
-    maxRequestRetries,
-    country = "cz"
-  } = await getInput();
+  const { development, proxyGroups, maxRequestRetries, country = "cz" } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const homePageUrl = `https://www.obi${
-    country === "it" ? "-italia" : ""
-  }.${country}`;
+  const homePageUrl = `https://www.obi${country === "it" ? "-italia" : ""}.${country}`;
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -224,10 +197,7 @@ async function main() {
         case Labels.SubCat:
           {
             const productCount = parseInt(
-              document
-                .querySelector(".variants")
-                ?.getAttribute("data-productcount")
-                ?.replace(/\s+/g, ""),
+              document.querySelector(".variants")?.getAttribute("data-productcount")?.replace(/\s+/g, ""),
               10
             );
 
@@ -247,9 +217,7 @@ async function main() {
               return;
             }
 
-            const subCategoryList = document
-              .querySelectorAll('a[wt_name="assortment_menu.level2"]')
-              .map(a => a.href);
+            const subCategoryList = document.querySelectorAll('a[wt_name="assortment_menu.level2"]').map(a => a.href);
             const subCatRequests = subCategoryList.map(subcategoryLink => ({
               url: new URL(subcategoryLink, homePageUrl).href,
               userData: { label: request.userData.label }

@@ -24,9 +24,7 @@ export class TetaDrogerie extends Shop {
     const initialPrice = cleanPrice(".sx-detail-price-initial");
     const originalPrice = offerPrice ?? (actionPrice ? initialPrice / 100 : null);
     const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
-    const cssDesktopImageUrl = document.querySelector(
-      ".zoomWindowContainer .zoomWindow"
-    );
+    const cssDesktopImageUrl = document.querySelector(".zoomWindowContainer .zoomWindow");
     const cssMobileImageUrl = document.querySelector(".j-gallery-image");
     const finalImageUrl = cssDesktopImageUrl
       ? cssDesktopImageUrl.style.backgroundImage

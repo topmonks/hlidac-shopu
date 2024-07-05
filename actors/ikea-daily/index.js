@@ -1,11 +1,11 @@
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Dataset, log, LogLevel } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -108,9 +108,7 @@ function processIndex(json) {
             itemName: variant.mainImageAlt ?? variant.imageAlt ?? data.itemName,
             img: variant.imageUrl ?? data.imageUrl,
             currentPrice: cleanPrice(variant.salesPrice.current?.wholeNumber),
-            originalPrice: cleanPrice(
-              variant.salesPrice?.previous?.wholeNumber
-            ),
+            originalPrice: cleanPrice(variant.salesPrice?.previous?.wholeNumber),
             currency: variant.salesPrice.currencyCode,
             discounted: Boolean(variant.salesPrice?.previous),
             inStock: variant.onlineSellable
@@ -166,12 +164,9 @@ async function handleResponse({ request, body, json, requestQueue, country }) {
   switch (request.userData.label) {
     case Label.Start: {
       const requests = processTotalCount(json, country);
-      const { processedRequests, ...rest } = await requestQueue.addRequests(
-        requests,
-        {
-          forefront: true
-        }
-      );
+      const { processedRequests, ...rest } = await requestQueue.addRequests(requests, {
+        forefront: true
+      });
       return processedRequests.length;
     }
     case Label.Index: {
@@ -220,12 +215,7 @@ function processResult(type, stats, country) {
 export async function main() {
   rollbar.init();
 
-  const {
-    maxRequestRetries,
-    country = "cz",
-    type = Type.Daily,
-    testUrls = [testCategory]
-  } = await getInput();
+  const { maxRequestRetries, country = "cz", type = Type.Daily, testUrls = [testCategory] } = await getInput();
 
   if (process.env.DEBUG) {
     log.setLevel(LogLevel.DEBUG);
@@ -260,10 +250,7 @@ export async function main() {
     }
   });
 
-  const sources =
-    type === Type.Test
-      ? testUrls
-      : [{ url: startUrl(country), userData: { label: Label.Start } }];
+  const sources = type === Type.Test ? testUrls : [{ url: startUrl(country), userData: { label: Label.Start } }];
   await crawler.run(sources);
 
   await Promise.all([stats.save(true), uploadToKeboola(`ikea_${country}`)]);

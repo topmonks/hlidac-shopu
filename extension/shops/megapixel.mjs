@@ -9,9 +9,7 @@ export class Megapixel extends Shop {
   async scrape() {
     const elem = document.querySelector("div#snippet--price");
     if (!elem) return;
-    const itemId = document
-      .querySelector("[data-product-item-id]")
-      .getAttribute("data-product-item-id");
+    const itemId = document.querySelector("[data-product-item-id]").getAttribute("data-product-item-id");
     const title = document.querySelector("h1").innerText.trim();
     const currentPrice = cleanPrice(".product-detail__price-vat");
     const originalPrice = cleanPrice(".product-detail__price del");

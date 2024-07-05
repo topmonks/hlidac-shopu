@@ -1,12 +1,12 @@
-import { GetItemCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
-import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { createHash } from "crypto";
+import { GetItemCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import * as metadata from "@hlidac-shopu/lib/metadata.mjs";
 import { addDays } from "date-fns/addDays";
 import { getUnixTime } from "date-fns/getUnixTime";
 import { startOfDay } from "date-fns/startOfDay";
-import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 /** @typedef { import("@aws-sdk/client-dynamodb/DynamoDBClient").DynamoDBClient } DynamoDBClient */
 /** @typedef { import("@aws-sdk/client-dynamodb/commands/GetItemCommand").GetItemCommandOutput } GetItemCommandOutput */
@@ -107,9 +107,7 @@ function getPutParsedDataCommand(shop, today, params) {
         data: {
           currentPrice: parseFloat(params.currentPrice ?? 0),
           title: params.title ?? "",
-          originalPrice: params.originalPrice
-            ? parseFloat(params.originalPrice)
-            : "",
+          originalPrice: params.originalPrice ? parseFloat(params.originalPrice) : "",
           imageUrl: params.imageUrl ?? ""
         }
       },

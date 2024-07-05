@@ -1,11 +1,11 @@
+import { HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, createHttpRouter } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
@@ -17,10 +17,7 @@ function getCategoryUrls(document) {
   // transform categories URLs to API call of products listing
   return Array.from(section.querySelectorAll(`ul>li>a`) ?? [])
     .map(a => new URL(a.href, "https://shop.billa.cz/").pathname.substring(10))
-    .map(
-      slug =>
-        `https://shop.billa.cz/api/categories/${slug}/products?pageSize=500&page=0`
-    );
+    .map(slug => `https://shop.billa.cz/api/categories/${slug}/products?pageSize=500&page=0`);
 }
 
 function categoryRequest(url, { page, pageSize } = { page: 0, pageSize: 500 }) {
@@ -86,16 +83,12 @@ function defRouter({ stats, processedIds }) {
       if (total > pageSize && count === pageSize) {
         const url = new URL(request.url);
         url.searchParams.set("page", page + 1);
-        await crawler.requestQueue.addRequest(
-          categoryRequest(url, { page: page + 1, pageSize })
-        );
+        await crawler.requestQueue.addRequest(categoryRequest(url, { page: page + 1, pageSize }));
       }
 
       if (!results) return;
 
-      const unprocessedProducts = results.filter(
-        x => !processedIds.has(x.productId)
-      );
+      const unprocessedProducts = results.filter(x => !processedIds.has(x.productId));
       await Actor.pushData(unprocessedProducts.map(x => toProduct(x)));
 
       stats.add("products", unprocessedProducts.length);
@@ -110,9 +103,7 @@ async function main() {
   Rollbar.init();
 
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
-  Actor.on("persistState", () =>
-    Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds))
-  );
+  Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,

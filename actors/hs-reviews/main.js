@@ -1,17 +1,14 @@
-import { Actor, Dataset, KeyValueStore, log } from "apify";
-import { HttpCrawler } from "@crawlee/http";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import {
-  CloudFrontClient,
-  CreateInvalidationCommand
-} from "@aws-sdk/client-cloudfront";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import * as csv from "csv-parse/sync";
-import jwt from "jsonwebtoken";
 import { URLSearchParams } from "url";
 import { promisify } from "util";
 import zlib from "zlib";
+import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { HttpCrawler } from "@crawlee/http";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { Actor, Dataset, KeyValueStore, log } from "apify";
+import * as csv from "csv-parse/sync";
+import jwt from "jsonwebtoken";
 
 /** @typedef { import("@crawlee/http").RequestHandler } HandleRequest */
 /** @typedef { import("schema-dts").UserReview } UserReview */
@@ -24,12 +21,7 @@ const gunzip = promisify(zlib.gunzip);
  * @returns {InteractionCounter[]}
  */
 function appleStats(document) {
-  const reviews = parseInt(
-    document
-      .querySelector(".we-customer-ratings__count")
-      .textContent.match(/\d+/g)
-      .pop()
-  );
+  const reviews = parseInt(document.querySelector(".we-customer-ratings__count").textContent.match(/\d+/g).pop());
   return [
     {
       "@context": "https://schema.org",
@@ -38,8 +30,7 @@ function appleStats(document) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Mac App Store",
-        "url":
-          "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac"
+        "url": "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac"
       },
       "userInteractionCount": reviews,
       "subjectOf": {
@@ -94,8 +85,7 @@ async function appleDownloads(request, resp, requestQueue) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Apple App Store",
-        "url":
-          "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac"
+        "url": "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac"
       },
       "disambiguatingDescription": request.userData.year.toString(),
       "userInteractionCount": downloads,
@@ -117,25 +107,17 @@ function appleReview(review) {
     "@type": "UserReview",
     "author": {
       "@type": "Person",
-      "name": review
-        .querySelector(".we-customer-review__user")
-        .textContent.trim()
+      "name": review.querySelector(".we-customer-review__user").textContent.trim()
     },
     "datePublished": review.querySelector("time").getAttribute("datetime"),
     "reviewBody": review.querySelector("blockquote").textContent.trim(),
     "reviewRating": {
       "@type": "Rating",
       "bestRating": 5,
-      "ratingValue": parseInt(
-        review
-          .querySelector(".we-customer-review__rating")
-          .getAttribute("aria-label")[0],
-        10
-      ),
+      "ratingValue": parseInt(review.querySelector(".we-customer-review__rating").getAttribute("aria-label")[0], 10),
       "worstRating": 1
     },
-    "url":
-      "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac",
+    "url": "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs#?platform=mac",
     "itemReviewed": {
       "@type": "WebApplication",
       "url": "https://www.hlidacshopu.cz/"
@@ -157,16 +139,9 @@ function appleReviews(document) {
  */
 function googleStats(document) {
   const downloads = parseInt(
-    document
-      .querySelector(".left-panel > div:nth-of-type(3) > a")
-      .textContent.replace(",", "")
+    document.querySelector(".left-panel > div:nth-of-type(3) > a").textContent.replace(",", "")
   );
-  const reviews = parseInt(
-    document
-      .querySelector(".left-panel > div:nth-of-type(4)")
-      .textContent.match(/\d+/g)
-      .at(-1)
-  );
+  const reviews = parseInt(document.querySelector(".left-panel > div:nth-of-type(4)").textContent.match(/\d+/g).at(-1));
   return [
     {
       "@context": "https://schema.org",
@@ -175,8 +150,7 @@ function googleStats(document) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Chrome Web Store",
-        "url":
-          "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+        "url": "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
       },
       "userInteractionCount": downloads,
       "subjectOf": {
@@ -191,8 +165,7 @@ function googleStats(document) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Chrome Web Store",
-        "url":
-          "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
+        "url": "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
       },
       "userInteractionCount": reviews,
       "subjectOf": {
@@ -221,14 +194,10 @@ function googleReview(review) {
     "reviewRating": {
       "@type": "Rating",
       "bestRating": 5,
-      "ratingValue": parseInt(
-        review.querySelector("meta").getAttribute("content"),
-        10
-      ),
+      "ratingValue": parseInt(review.querySelector("meta").getAttribute("content"), 10),
       "worstRating": 1
     },
-    "url":
-      "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk",
+    "url": "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk",
     "itemReviewed": {
       "@type": "WebApplication",
       "url": "https://www.hlidacshopu.cz/"
@@ -251,14 +220,8 @@ function googleReviews(document) {
 function firefoxStats(document) {
   const meta = document.querySelectorAll(".MetadataCard > dl");
   if (!meta.length) return [];
-  const downloads = parseInt(
-    meta[0].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""),
-    10
-  );
-  const reviews = parseInt(
-    meta[1].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""),
-    10
-  );
+  const downloads = parseInt(meta[0].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""), 10);
+  const reviews = parseInt(meta[1].querySelector("dd").textContent.replace(/\s/g, "").replace(",", ""), 10);
   return [
     {
       "@context": "https://schema.org",
@@ -267,8 +230,7 @@ function firefoxStats(document) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Firefox Browser Add-ons",
-        "url":
-          "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+        "url": "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
       },
       "userInteractionCount": downloads,
       "subjectOf": {
@@ -283,8 +245,7 @@ function firefoxStats(document) {
       "interactionService": {
         "@type": "WebSite",
         "name": "Firefox Browser Add-ons",
-        "url":
-          "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
+        "url": "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
       },
       "userInteractionCount": reviews,
       "subjectOf": {
@@ -318,8 +279,7 @@ function firefoxReview(result) {
       "ratingValue": result.score,
       "worstRating": 1
     },
-    "url":
-      "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/reviews/",
+    "url": "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/reviews/",
     "itemReviewed": {
       "@type": "WebApplication",
       "url": "https://www.hlidacshopu.cz/"
@@ -375,10 +335,7 @@ async function saveData({ reviews, stats }) {
 
   log.info("S3: starting upload of data");
   const s3 = new S3Client(configuration);
-  await Promise.all([
-    uploadToS3(s3, "reviews", "jsonld", reviews),
-    uploadToS3(s3, "stats", "jsonld", stats)
-  ]);
+  await Promise.all([uploadToS3(s3, "reviews", "jsonld", reviews), uploadToS3(s3, "stats", "jsonld", stats)]);
   log.info("S3: done");
 
   log.info("CloudFront: invalidating data in CDN");
@@ -396,40 +353,23 @@ const GOOGLE = "Google";
 const GOOGLE_REVIEWS = "Google Reviews";
 
 function appleDownloadsUrl(date, freq = "YEARLY") {
-  return `https://api.appstoreconnect.apple.com/v1/salesReports?${new URLSearchParams(
-    {
-      "filter[frequency]": freq,
-      "filter[reportDate]": date.toString(),
-      "filter[reportSubType]": "SUMMARY",
-      "filter[reportType]": "SALES",
-      "filter[vendorNumber]": "85389739"
-    }
-  )}`;
+  return `https://api.appstoreconnect.apple.com/v1/salesReports?${new URLSearchParams({
+    "filter[frequency]": freq,
+    "filter[reportDate]": date.toString(),
+    "filter[reportSubType]": "SUMMARY",
+    "filter[reportType]": "SALES",
+    "filter[vendorNumber]": "85389739"
+  })}`;
 }
 
 const requests = new Map([
-  [
-    APPLE,
-    "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs"
-  ],
-  [
-    APPLE_REVIEWS,
-    "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs"
-  ],
+  [APPLE, "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs"],
+  [APPLE_REVIEWS, "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734?l=cs"],
   [APPLE_DOWNLOADS, appleDownloadsUrl(2019)],
   [GOOGLE, "https://chrome-stats.com/d/plmlonggbfebcjelncogcnclagkmkikk"],
-  [
-    GOOGLE_REVIEWS,
-    "https://chrome-stats.com/d/plmlonggbfebcjelncogcnclagkmkikk/reviews"
-  ],
-  [
-    FIREFOX,
-    "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
-  ],
-  [
-    FIREFOX_REVIEWS,
-    "https://addons.mozilla.org/api/v4/ratings/rating/?addon=1013407"
-  ]
+  [GOOGLE_REVIEWS, "https://chrome-stats.com/d/plmlonggbfebcjelncogcnclagkmkikk/reviews"],
+  [FIREFOX, "https://addons.mozilla.org/en-US/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"],
+  [FIREFOX_REVIEWS, "https://addons.mozilla.org/api/v4/ratings/rating/?addon=1013407"]
 ]);
 
 /**

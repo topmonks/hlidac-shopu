@@ -1,11 +1,11 @@
-import { Actor, Dataset, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, Dataset, log } from "apify";
 
 const baseUrl = "https://www.kosik.cz/";
 
@@ -53,11 +53,9 @@ function parseItem(item, breadcrumbs) {
     itemUrl,
     itemName: item.name,
     discounted: item.percentageDiscount > 0,
-    discountedName:
-      item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
+    discountedName: item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
     currentPrice: item.price,
-    originalPrice:
-      item.price == item.recommendedPrice ? null : item.recommendedPrice,
+    originalPrice: item.price == item.recommendedPrice ? null : item.recommendedPrice,
     inStock: !item.firstOrderDay,
     category: breadcrumbs,
     img: item.image,
@@ -119,8 +117,7 @@ async function main() {
               });
             }
 
-            const breadcrumbs =
-              json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
+            const breadcrumbs = json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
             const items = json.products?.items || [];
             stats.add("items", items.length);
             for (const item of items) {

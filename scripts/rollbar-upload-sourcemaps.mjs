@@ -1,14 +1,12 @@
 #!/usr/bin/env node
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
 import url from "node:url";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const rootPath = path.resolve(__dirname, "..", "public", "www.hlidacshopu.cz");
 const revManifestPath = path.resolve(rootPath, "rev-manifest.json");
-const revManifest = JSON.parse(
-  fs.readFileSync(revManifestPath).toString("utf-8")
-);
+const revManifest = JSON.parse(fs.readFileSync(revManifestPath).toString("utf-8"));
 
 Promise.all(
   Object.entries(revManifest)

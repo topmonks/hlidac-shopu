@@ -1,16 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
-import {
-  createCertificate,
-  registerAutoTags,
-  Website
-} from "@topmonks/pulumi-aws";
+import { Website, createCertificate, registerAutoTags } from "@topmonks/pulumi-aws";
+import { createApi, createDatabase, createDatastore, createSQSIngest } from "../api.hlidacshopu.cz";
 import { createWebsite } from "../www.hlidacshopu.cz";
-import {
-  createApi,
-  createDatabase,
-  createDatastore,
-  createSQSIngest
-} from "../api.hlidacshopu.cz";
 
 registerAutoTags({
   "user:Project": pulumi.getProject(),
@@ -38,8 +29,7 @@ export const websiteS3BucketUri = web.website?.s3BucketUri;
 export const websiteS3WebsiteUrl = web.website?.s3WebsiteUrl;
 export const websiteCloudFrontId = web.website?.cloudFrontId;
 export const nakedDomainRedirectUrl = web.nakedDomainRedirect.url;
-export const nakedDomainRedirectCloudFrontId =
-  web.nakedDomainRedirect.cloudFrontId;
+export const nakedDomainRedirectCloudFrontId = web.nakedDomainRedirect.cloudFrontId;
 export const dataBucketName = store?.dataBucket?.bucket;
 export const dataDistributionID = store?.dataDistributionID;
 export const blackFridayDataTable = db.blackFridayDataTable;

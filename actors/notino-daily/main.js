@@ -1,12 +1,12 @@
+import { HttpCrawler, useState } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
-import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -46,9 +46,7 @@ function getRootUrl(country) {
  */
 function homepageRequests(document, country) {
   log.debug("Home page");
-  const jsonMainMenu = document.querySelector(
-    'script[id="main-menu-state"]'
-  ).innerHTML;
+  const jsonMainMenu = document.querySelector('script[id="main-menu-state"]').innerHTML;
   const mainMenu = JSON.parse(jsonMainMenu);
   const rootUrl = getRootUrl(country);
   const links = [];
@@ -98,12 +96,9 @@ function homepageRequests(document, country) {
  */
 function handleProductUsingWindowObject(document, country) {
   log.debug("Handled by windowObject");
-  const dataStringFromScriptTag =
-    document.querySelector("#__APOLLO_STATE__")?.innerHTML;
+  const dataStringFromScriptTag = document.querySelector("#__APOLLO_STATE__")?.innerHTML;
   const productData = JSON.parse(dataStringFromScriptTag.replace(/;/g, ""));
-  let productGeneralData = Object.entries(productData).find(
-    ([_key, value]) => value?.category
-  );
+  let productGeneralData = Object.entries(productData).find(([_key, value]) => value?.category);
   productGeneralData = (productGeneralData || ["", {}])[1];
   const variants = [];
   let itemBrand = "";
@@ -126,15 +121,9 @@ function handleProductUsingWindowObject(document, country) {
     .map(variant => {
       const variantGeneralData = productData[`CatalogVariant:${variant}`];
       if (variantGeneralData.availability.state !== "CanBeBought") return;
-      const productName = `${itemBrand} ${
-        variantGeneralData.name ? variantGeneralData.name : ""
-      } ${
+      const productName = `${itemBrand} ${variantGeneralData.name ? variantGeneralData.name : ""} ${
         variantGeneralData.variantName ? variantGeneralData.variantName : ""
-      } ${
-        variantGeneralData.additionalInfo
-          ? variantGeneralData.additionalInfo
-          : ""
-      }`;
+      } ${variantGeneralData.additionalInfo ? variantGeneralData.additionalInfo : ""}`;
       const product = {
         itemId: `${variantGeneralData.webId}`,
         itemUrl: `${rootUrl}${variantGeneralData.url}`,
@@ -145,21 +134,14 @@ function handleProductUsingWindowObject(document, country) {
         currency: null,
         img: null
       };
-      product.img = document
-        .querySelector("#pd-image-main")
-        ?.getAttribute("src");
+      product.img = document.querySelector("#pd-image-main")?.getAttribute("src");
       product.category = category;
       const currentPrice = variantGeneralData.price.value;
-      const originalPrice =
-        variantGeneralData.originalPrice !== null
-          ? variantGeneralData.originalPrice.value
-          : null;
-      product.discounted =
-        originalPrice !== null ? currentPrice < originalPrice : false;
+      const originalPrice = variantGeneralData.originalPrice !== null ? variantGeneralData.originalPrice.value : null;
+      product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
       product.currentPrice = currentPrice;
       product.originalPrice = product.discounted ? originalPrice : null;
-      product.currency =
-        variantGeneralData.price && variantGeneralData.price.currency;
+      product.currency = variantGeneralData.price && variantGeneralData.price.currency;
       product.inStock = true;
       return product;
     })
@@ -174,29 +156,19 @@ function handleProductUsingHTML(document, request) {
   log.debug("Handled by HTML");
   return document.querySelector("#variants li").map(variant => {
     const product = {
-      itemId: `${variant
-        .querySelector('input[name="nComID"]')
-        .getAttribute("value")}`,
+      itemId: `${variant.querySelector('input[name="nComID"]').getAttribute("value")}`,
       itemUrl: `${request.url}`,
-      itemName: `${variant
-        .querySelector('input[name="NameItem"]')
-        .getAttribute("value")}`,
+      itemName: `${variant.querySelector('input[name="NameItem"]').getAttribute("value")}`,
       discounted: false,
       currentPrice: 0,
       originalPrice: null
     };
 
     product.img = document.querySelector("#pd-image-main")?.getAttribute("src");
-    const currentPrice = parseInt(
-      variant.querySelector('input[name="price"]').getAttribute("value"),
-      10
-    );
+    const currentPrice = parseInt(variant.querySelector('input[name="price"]').getAttribute("value"), 10);
     const originalPriceEl = variant.querySelector(".price span span strong");
-    const originalPrice = originalPriceEl
-      ? parseInt(originalPriceEl.innerText, 10)
-      : null;
-    product.discounted =
-      originalPrice !== null ? currentPrice < originalPrice : false;
+    const originalPrice = originalPriceEl ? parseInt(originalPriceEl.innerText, 10) : null;
+    product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
     product.currentPrice = currentPrice ?? null;
     product.originalPrice = product.discounted ? originalPrice : null;
     product.inStock = true;
@@ -269,9 +241,7 @@ async function main() {
         case Labels.BF:
         case Labels.CATEGORY_PAGE:
           {
-            const paginationNext = document
-              .querySelector('[rel="next"]')
-              ?.getAttribute("href");
+            const paginationNext = document.querySelector('[rel="next"]')?.getAttribute("href");
             if (paginationNext) {
               await crawler.requestQueue.addRequest(
                 {
@@ -286,15 +256,13 @@ async function main() {
               stats.inc("pages");
             }
 
-            const requests = document
-              .querySelectorAll("div[data-product] a")
-              .map(a => {
-                const url = new URL(request.url);
-                return {
-                  url: `${url.origin}${a.href}`,
-                  userData: { label: Labels.DETAIL_PAGE }
-                };
-              });
+            const requests = document.querySelectorAll("div[data-product] a").map(a => {
+              const url = new URL(request.url);
+              return {
+                url: `${url.origin}${a.href}`,
+                userData: { label: Labels.DETAIL_PAGE }
+              };
+            });
             await crawler.requestQueue.addRequests(requests);
             log.debug(`Queued ${requests.length}x products detail`);
             stats.add("pages", requests.length);
@@ -303,19 +271,15 @@ async function main() {
         case Labels.DETAIL_PAGE: {
           {
             if (document.querySelector("div#pdVariantsTile")) {
-              const productVariants = document
-                .querySelectorAll("div#pdVariantsTile li a")
-                .map(a => {
-                  const url = new URL(request.url);
-                  return {
-                    url: `${url.origin}${a.href}`,
-                    userData: { label: Labels.DETAIL_PAGE }
-                  };
-                });
+              const productVariants = document.querySelectorAll("div#pdVariantsTile li a").map(a => {
+                const url = new URL(request.url);
+                return {
+                  url: `${url.origin}${a.href}`,
+                  userData: { label: Labels.DETAIL_PAGE }
+                };
+              });
               await crawler.requestQueue.addRequests(productVariants);
-              log.debug(
-                `Queued ${productVariants.length}x products detail variants`
-              );
+              log.debug(`Queued ${productVariants.length}x products detail variants`);
               stats.add("pages", productVariants.length);
             }
 
@@ -353,9 +317,7 @@ async function main() {
           await crawler.requestQueue.addRequests(requests);
           break;
         case Labels.COUNT_PRODUCT:
-          const urls = document
-            .querySelectorAll("url loc")
-            .map(loc => loc.innerHTML);
+          const urls = document.querySelectorAll("url loc").map(loc => loc.innerHTML);
           const uniqueUrls = new Set(urls);
           stats.add("items", uniqueUrls.size);
           stats.add("itemsDuplicity", urls.length - uniqueUrls.size);

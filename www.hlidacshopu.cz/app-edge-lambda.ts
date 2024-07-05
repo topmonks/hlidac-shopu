@@ -1,7 +1,7 @@
+import * as path from "node:path";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { createRole } from "@topmonks/pulumi-aws/lambdas/edge-role";
-import * as path from "node:path";
 import * as lambdaBuilder from "../infrastructure/lambda-builder";
 
 export class AppEdgeLambda extends pulumi.ComponentResource {
@@ -29,10 +29,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
     });
 
     const buildAssets = (fileName: string) =>
-      lambdaBuilder.buildCodeAsset(
-        path.join(__dirname, "app-edge-lambda", fileName),
-        true
-      );
+      lambdaBuilder.buildCodeAsset(path.join(__dirname, "app-edge-lambda", fileName), true);
 
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider(`${name}-us-east-1`, {

@@ -54,8 +54,7 @@ export function withCORS(methods, origin = "*") {
       ...x.headers,
       "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Methods": allowMethods,
-      "Access-Control-Allow-Headers":
-        "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token"
+      "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token"
     }
   });
 }

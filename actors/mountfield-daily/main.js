@@ -1,12 +1,12 @@
+import { HttpCrawler, useState } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -35,14 +35,7 @@ const rootUrlByCountry = new Map([
  */
 function parsePrice(text) {
   if (!text) return null;
-  return parseFloat(
-    text
-      .replace(/\s/g, "")
-      .replace("Kč", "")
-      .replace("€", "")
-      .replace(",", ".")
-      .trim()
-  );
+  return parseFloat(text.replace(/\s/g, "").replace("Kč", "").replace("€", "").replace(",", ".").trim());
 }
 
 /**
@@ -54,29 +47,19 @@ function extractItems(document, country, stats) {
   const products = document.querySelectorAll(".list-products__item__in");
   if (!products.length) return [];
 
-  const category = document
-    .querySelectorAll(".box-breadcrumb__item")
-    .map(item => item.innerText.trim());
+  const category = document.querySelectorAll(".box-breadcrumb__item").map(item => item.innerText.trim());
   log.debug(`*********** FOUND ${products.length} items *****************`);
   return products.map(item => {
     const result = {};
-    const itemUrl = item
-      .querySelector("a.list-products__item__block")
-      .getAttribute("href");
+    const itemUrl = item.querySelector("a.list-products__item__block").getAttribute("href");
     const itemCode = itemUrl.split("-").at(-1);
     const name = item.querySelector("h2").innerText?.trim();
 
-    const regularPriceSpan = item.querySelector(
-      ".list-products__item__info__price__item--main"
-    );
+    const regularPriceSpan = item.querySelector(".list-products__item__info__price__item--main");
     regularPriceSpan.querySelector("span")?.remove();
     const regularPrice = regularPriceSpan.innerText;
-    const retailPriceSpan = item.querySelector(
-      ".list-products__item__info__price__item--old"
-    );
-    const recommendedRetailPriceSpan = item.querySelector(
-      ".box__future-price__list strong"
-    );
+    const retailPriceSpan = item.querySelector(".list-products__item__info__price__item--old");
+    const recommendedRetailPriceSpan = item.querySelector(".box__future-price__list strong");
     retailPriceSpan?.querySelector("span")?.remove();
     const retailPrice = retailPriceSpan?.innerText;
 
@@ -85,16 +68,11 @@ function extractItems(document, country, stats) {
     result.originalPrice ??= parsePrice(recommendedRetailPriceSpan?.innerText);
     result.discounted = false;
 
-    if (
-      (result.originalPrice !== -1 || result.originalPrice !== null) &&
-      result.originalPrice > result.currentPrice
-    ) {
+    if ((result.originalPrice !== -1 || result.originalPrice !== null) && result.originalPrice > result.currentPrice) {
       result.discounted = true;
     }
 
-    const loyaltyPrice = item.querySelector(
-      ".list-products__item__loyalty__link .in-loyalty__highlight"
-    )?.innerText;
+    const loyaltyPrice = item.querySelector(".list-products__item__loyalty__link .in-loyalty__highlight")?.innerText;
 
     result.loyalty = false;
     if (!result.originalPrice && loyaltyPrice) {
@@ -133,15 +111,13 @@ function getTableName({ type, country }) {
  * @param {Document} document
  */
 function categoryItemsRequests(document) {
-  return document
-    .querySelectorAll(".list-categories__item__block")
-    .map(cat => ({
-      url: cat.href,
-      userData: {
-        label: Labels.CATEGORY,
-        mainCategory: cat.querySelector("h3").innerText?.trim()
-      }
-    }));
+  return document.querySelectorAll(".list-categories__item__block").map(cat => ({
+    url: cat.href,
+    userData: {
+      label: Labels.CATEGORY,
+      mainCategory: cat.querySelector("h3").innerText?.trim()
+    }
+  }));
 }
 
 async function main() {
@@ -224,9 +200,7 @@ async function main() {
               processedIds
             });
 
-            const href = document
-              .querySelector("a.in-paging__control__item--arrow-next")
-              ?.getAttribute("href");
+            const href = document.querySelector("a.in-paging__control__item--arrow-next")?.getAttribute("href");
             if (!href) return;
             const paginationUrl = new URL(href, request.url).href;
             log.debug(`Found pagination page ${paginationUrl}`);

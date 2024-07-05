@@ -1,13 +1,13 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
 import { Actor, Dataset, log } from "apify";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -45,9 +45,7 @@ function extractStructuredData(structuredData) {
     extractItem(metaTags.get("product:price:amount")) ??
     extractItem(offer.get("lowPrice")) ??
     extractItem(offer.get("price"));
-  const currency =
-    extractItem(metaTags.get("product:price:currency")) ??
-    extractItem(offer.get("priceCurrency"));
+  const currency = extractItem(metaTags.get("product:price:currency")) ?? extractItem(offer.get("priceCurrency"));
   const referralPrice =
     extractItem(offer.get("lowPrice")) != extractItem(offer.get("highPrice"))
       ? extractItem(offer.get("highPrice"))
@@ -63,8 +61,7 @@ function extractStructuredData(structuredData) {
     itemCode: extractItem(jsonLd.get("Product"))?.sku,
     rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
     inStock: offer.get("availability") === "http://schema.org/InStock",
-    discontinued:
-      offer.get("availability") === "http://schema.org/Discontinued",
+    discontinued: offer.get("availability") === "http://schema.org/Discontinued",
     currentPrice: cleanPrice(currentPrice),
     originalPrice: cleanPrice(referralPrice),
     currency
@@ -86,9 +83,7 @@ function decodeEntities(encodedString) {
   ]);
   return encodedString
     .replace(translate_re, (match, entity) => translate.get(entity))
-    .replace(/&#(\d+);/gi, (match, numStr) =>
-      String.fromCharCode(parseInt(numStr, 10))
-    );
+    .replace(/&#(\d+);/gi, (match, numStr) => String.fromCharCode(parseInt(numStr, 10)));
 }
 
 /**
@@ -99,10 +94,7 @@ function extractDOM(document) {
   if (!detailPage) return;
   return {
     itemId: detailPage.dataset.id,
-    originalPrice: cleanPrice(
-      document.querySelector("#detailText .price-box__compare-price")
-        ?.textContent
-    )
+    originalPrice: cleanPrice(document.querySelector("#detailText .price-box__compare-price")?.textContent)
   };
 }
 
@@ -118,9 +110,7 @@ function extractDetail(document, structuredData) {
   return Object.assign(
     {
       get discounted() {
-        return this.originalPrice
-          ? this.currentPrice < this.originalPrice
-          : false;
+        return this.originalPrice ? this.currentPrice < this.originalPrice : false;
       }
     },
     structuredParts,
@@ -138,9 +128,7 @@ function extractPaginationInfo(document) {
   if (!surveyInfoForm) return;
 
   const categoryId = cleanPrice(surveyInfoForm?.dataset?.id);
-  const itemsCount = cleanPrice(
-    document.getElementById("lblNumberItem")?.textContent
-  );
+  const itemsCount = cleanPrice(document.getElementById("lblNumberItem")?.textContent);
   const pages = Math.ceil(itemsCount / 24);
   return { categoryId, pages };
 }
@@ -198,20 +186,11 @@ async function handlePagination(json, createUrl, requestQueue, stats) {
   const { document } = parseHTML(d.Boxes);
   const links = Array.from(document.querySelectorAll(".browsinglink.name"));
   const urls = links.map(x => createUrl(x.href));
-  await requestQueue.addRequests(
-    urls.map(url => ({ label: Label.Detail, url }))
-  );
+  await requestQueue.addRequests(urls.map(url => ({ label: Label.Detail, url })));
   stats.inc("pages");
 }
 
-async function handleCategory(
-  body,
-  log,
-  session,
-  stats,
-  createUrl,
-  requestQueue
-) {
+async function handleCategory(body, log, session, stats, createUrl, requestQueue) {
   const html = body.toString();
   const { document } = parseHTML(html);
   const pagination = extractPaginationInfo(document);
@@ -267,13 +246,7 @@ function getTableName(country, type) {
 async function main() {
   const rollbar = Rollbar.init();
 
-  const {
-    development,
-    proxyGroups,
-    country = "CZ",
-    type = ActorType.BlackFriday,
-    urls = []
-  } = await getInput();
+  const { development, proxyGroups, country = "CZ", type = ActorType.BlackFriday, urls = [] } = await getInput();
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -300,15 +273,7 @@ async function main() {
     },
     proxyConfiguration,
     maxRequestsPerMinute: 600,
-    async requestHandler({
-      request,
-      response,
-      body,
-      json,
-      session,
-      log,
-      crawler
-    }) {
+    async requestHandler({ request, response, body, json, session, log, crawler }) {
       const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
@@ -322,14 +287,7 @@ async function main() {
       const createUrl = s => new URL(s, request.url).href;
       switch (label) {
         case Label.Category:
-          return handleCategory(
-            body,
-            log,
-            session,
-            stats,
-            createUrl,
-            crawler.requestQueue
-          );
+          return handleCategory(body, log, session, stats, createUrl, crawler.requestQueue);
         case Label.Pagination:
           return handlePagination(json, createUrl, crawler.requestQueue, stats);
         case Label.Detail:
@@ -337,9 +295,7 @@ async function main() {
       }
     },
     async failedRequestHandler({ request, log }, error) {
-      log.error(
-        `Request ${request.url} ${error.message} failed multiple times`
-      );
+      log.error(`Request ${request.url} ${error.message} failed multiple times`);
       rollbar.error(error, request);
       stats.inc("failed");
     }
@@ -352,9 +308,7 @@ async function main() {
       log.info("No URLs provided");
     }
   }
-  await crawler.run(
-    urls.map(url => ({ url, userData: { label: Label.Category } }))
-  );
+  await crawler.run(urls.map(url => ({ url, userData: { label: Label.Category } })));
   await stats.save(true);
 
   try {

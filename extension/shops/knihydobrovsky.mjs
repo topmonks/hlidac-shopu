@@ -15,21 +15,11 @@ export class Knihydobrovsky extends Shop {
     if (!elem) return;
 
     const priceBefore = cleanPriceText(
-      elem
-        .querySelector(".box-std .price-before")
-        ?.textContent?.split(":")
-        ?.at(-1)
-        ?.trim()
-      ?? ""
+      elem.querySelector(".box-std .price-before")?.textContent?.split(":")?.at(-1)?.trim() ?? ""
     );
 
-    const jsonld = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    )[1];
-    const isFree = document
-      .querySelector("p.price strong")
-      ?.innerText?.trim()
-      ?.toLowerCase() === "zdarma";
+    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[1];
+    const isFree = document.querySelector("p.price strong")?.innerText?.trim()?.toLowerCase() === "zdarma";
     if (jsonld) {
       try {
         const data = JSON.parse(jsonld.innerText);

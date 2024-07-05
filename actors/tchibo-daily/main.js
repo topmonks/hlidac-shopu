@@ -1,11 +1,11 @@
-import { Actor, Dataset, log } from "apify";
+import { HttpCrawler, useState } from "@crawlee/http";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
-import { HttpCrawler, useState } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, Dataset, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -32,11 +32,7 @@ const coffeeCategories = new Set([
   "kaffee-aus-100-arabica-bohnen-vollkommener-kaffeegenuss-bei-t-c15.html"
 ]);
 
-const ignoredCategories = new Set([
-  "https://foto.tchibo.de/",
-  "https://reisen.tchibo.de/",
-  "aktionen-c400070426.html"
-]);
+const ignoredCategories = new Set(["https://foto.tchibo.de/", "https://reisen.tchibo.de/", "aktionen-c400070426.html"]);
 
 /**
  * @param {string} country
@@ -129,9 +125,7 @@ function navigationRequests({ json, country }) {
  * @param {Document} document
  */
 function categoryRequests(document) {
-  const menu = document.querySelectorAll(
-    ".c-tp-sidebarnavigation > ul > li > ul > li > a"
-  );
+  const menu = document.querySelectorAll(".c-tp-sidebarnavigation > ul > li > ul > li > a");
   return menu.map(m => ({
     url: m.getAttribute("href"),
     userData: {
@@ -158,10 +152,7 @@ function paginationRequests({ document, pageNumber, url }) {
   if (pageNumber !== 0) return [];
 
   const searchResults = document.querySelector(".searchResults");
-  const finalCount = parseInt(
-    searchResults.getAttribute("data-result-count"),
-    10
-  );
+  const finalCount = parseInt(searchResults.getAttribute("data-result-count"), 10);
   if (finalCount <= 30) return [];
 
   let page = 2;
@@ -183,31 +174,21 @@ function paginationRequests({ document, pageNumber, url }) {
 }
 
 function productsFromListing({ document, handledIdsSet, currency, country }) {
-  const breadcrumbItems = document.querySelectorAll(
-    ".c-tp-breadcrumb-item > a"
-  );
-  const productList = document.querySelectorAll(
-    "div[data-search-result-list-entry]"
-  );
+  const breadcrumbItems = document.querySelectorAll(".c-tp-breadcrumb-item > a");
+  const productList = document.querySelectorAll("div[data-search-result-list-entry]");
   const items = [];
   for (const product of productList) {
     const itemId = product.getAttribute("data-product-id");
     if (handledIdsSet[itemId]) continue;
     handledIdsSet[itemId] = true;
-    const image = product.querySelector(
-      ".m-tp-productbox002-image, .m-tp-productbox-imageitem"
-    );
+    const image = product.querySelector(".m-tp-productbox002-image, .m-tp-productbox-imageitem");
     const url = image.parentNode.getAttribute("href");
     const itemName = image.getAttribute("alt");
     const img = image.getAttribute("src");
     const currentPrice = product
-      .querySelector(
-        ".c-tp-price-currentprice, .m-tp-productbox-info-currentprice"
-      )
+      .querySelector(".c-tp-price-currentprice, .m-tp-productbox-info-currentprice")
       .innerText.trim();
-    const oldPrice = product
-      .querySelector(".c-tp-price-oldprice, .m-tp-productbox-info-oldprice")
-      ?.innerText?.trim();
+    const oldPrice = product.querySelector(".c-tp-price-oldprice, .m-tp-productbox-info-oldprice")?.innerText?.trim();
     const result = {
       itemId,
       itemUrl: url,
@@ -229,19 +210,12 @@ function productsFromListing({ document, handledIdsSet, currency, country }) {
   return items;
 }
 
-function productsFromCoffeeCategory({
-  document,
-  handledIdsSet,
-  currency,
-  country
-}) {
+function productsFromCoffeeCategory({ document, handledIdsSet, currency, country }) {
   const products = document.querySelectorAll(".m-tp-productbox002");
   const items = [];
   for (const p of products) {
     const titleObject = p.querySelector(".m-tp-productbox002-title");
-    const itemId = titleObject
-      .querySelector("a[data-pds-link]")
-      ?.getAttribute("data-pds-link");
+    const itemId = titleObject.querySelector("a[data-pds-link]")?.getAttribute("data-pds-link");
     if (!itemId) {
       log.warning(`No itemId found for title: ${titleObject.innerText}`);
       continue;
@@ -251,19 +225,11 @@ function productsFromCoffeeCategory({
     const title = titleObject.querySelector("a").getAttribute("title");
     const itemUrl = titleObject.querySelector("a").getAttribute("href");
     if (itemUrl === undefined) break;
-    const topLineText = p
-      .querySelector(".m-tp-productbox002-topline-text")
-      .innerText.trim();
+    const topLineText = p.querySelector(".m-tp-productbox002-topline-text").innerText.trim();
     const name = titleObject.querySelector("a > span").innerText.trim();
-    const subName = p
-      .querySelector(".m-tp-productbox002-flavor")
-      .innerText.trim();
-    const img = p
-      .querySelector(".m-tp-productbox002-image")
-      .getAttribute("data-src");
-    const currentPrice = p
-      .querySelector(".c-tp-price-currentprice")
-      .innerText.trim();
+    const subName = p.querySelector(".m-tp-productbox002-flavor").innerText.trim();
+    const img = p.querySelector(".m-tp-productbox002-image").getAttribute("data-src");
+    const currentPrice = p.querySelector(".c-tp-price-currentprice").innerText.trim();
     const oldPrice = p.querySelector(".c-tp-price-oldprice")?.innerText?.trim();
     const result = {
       itemId,
@@ -297,11 +263,7 @@ async function main() {
     failed: 0
   });
 
-  const {
-    country = "cz",
-    type,
-    development = process.env.TEST
-  } = await getInput();
+  const { country = "cz", type, development = process.env.TEST } = await getInput();
   const currency = getCurrencyISO(country);
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -354,19 +316,14 @@ async function main() {
               country
             });
             const subCategoriesRequests = document
-              .querySelectorAll(
-                ".m-coffee-categoryTeaser--tileWrapper > a, .m-coffee-teaser-slider > a"
-              )
+              .querySelectorAll(".m-coffee-categoryTeaser--tileWrapper > a, .m-coffee-teaser-slider > a")
               .map(sc => ({
                 url: sc.getAttribute("href"),
                 userData: {
                   label: Labels.COFFEE_CATEGORY
                 }
               }));
-            await Promise.allSettled([
-              crawler.addRequests(subCategoriesRequests),
-              Dataset.pushData(products)
-            ]);
+            await Promise.allSettled([crawler.addRequests(subCategoriesRequests), Dataset.pushData(products)]);
           }
           break;
         case Labels.CATEGORY_CAT:

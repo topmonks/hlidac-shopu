@@ -1,5 +1,5 @@
 import test from "ava";
-import { categoryItemsRequest, Label } from "../index.js";
+import { Label, categoryItemsRequest } from "../index.js";
 
 test("should be GET request", t => {
   const { method } = categoryItemsRequest([]);

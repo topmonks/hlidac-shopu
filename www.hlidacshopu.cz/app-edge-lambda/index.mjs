@@ -1,6 +1,6 @@
+import { S3 } from "@aws-sdk/client-s3";
 import { parseItemDetails } from "@hlidac-shopu/lib/shops.mjs";
 import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
-import { S3 } from "@aws-sdk/client-s3";
 
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestEvent } CloudFrontRequestEvent */
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */

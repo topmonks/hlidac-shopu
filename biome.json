@@ -1,0 +1,38 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120,
+    "attributePosition": "auto"
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "style": {
+        "useBlockStatements": "off"
+      }
+    },
+    "ignore": ["**/apple/", "**/public/", "extension/content.js", "**/extension-dist/", "**/node_modules/"]
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "preserve",
+      "trailingCommas": "none",
+      "semicolons": "always",
+      "arrowParentheses": "asNeeded",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto"
+    }
+  }
+}

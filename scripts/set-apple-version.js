@@ -16,10 +16,7 @@ try {
 }
 
 function changeProductVersion(version) {
-  const filePath = path.resolve(
-    appleProjectPath,
-    "App.xcodeproj/project.pbxproj"
-  );
+  const filePath = path.resolve(appleProjectPath, "App.xcodeproj/project.pbxproj");
 
   const prev = execSync(`cat "${filePath}"`).toString();
   const next = prev
@@ -27,10 +24,7 @@ function changeProductVersion(version) {
     .map(line =>
       !line.trim().startsWith("MARKETING_VERSION")
         ? line
-        : line.replace(
-            /MARKETING_VERSION = \d+\.\d+(\.\d+)?/,
-            `MARKETING_VERSION = ${version}`
-          )
+        : line.replace(/MARKETING_VERSION = \d+\.\d+(\.\d+)?/, `MARKETING_VERSION = ${version}`)
     )
     .join("\n");
 

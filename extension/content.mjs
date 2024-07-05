@@ -1,6 +1,6 @@
-import { render, html } from "lit-html";
 import { createChart, getCanvasContext } from "@hlidac-shopu/lib/chart.mjs";
 import { widgetTemplate } from "@hlidac-shopu/lib/templates.mjs";
+import { html, render } from "lit-html";
 import { getShop } from "./helpers.mjs";
 import "./shops/index.mjs";
 
@@ -16,22 +16,18 @@ function getVersion() {
 }
 
 function fetchData(url, info) {
-  const searchString = new URLSearchParams(
-    Object.entries(info).filter(([, val]) => Boolean(val))
-  );
+  const searchString = new URLSearchParams(Object.entries(info).filter(([, val]) => Boolean(val)));
   searchString.append("url", url);
   searchString.append("ext", getVersion());
-  return fetch(`https://api.hlidacshopu.cz/v2/detail?${searchString}`).then(
-    resp => {
-      if (resp.status === 404) {
-        return resp.json();
-      }
-      if (!resp.ok) {
-        throw new Error("HTTP error, status = " + resp.status);
-      }
+  return fetch(`https://api.hlidacshopu.cz/v2/detail?${searchString}`).then(resp => {
+    if (resp.status === 404) {
       return resp.json();
     }
-  );
+    if (!resp.ok) {
+      throw new Error("HTTP error, status = " + resp.status);
+    }
+    return resp.json();
+  });
 }
 
 const renderRoot = document.createElement("div");
@@ -41,23 +37,14 @@ let chart;
 function renderHTML(repaint, shop, data, metadata) {
   if (!shop.loaded || !repaint) {
     shop.inject(styles => {
-      renderRoot.setAttribute(
-        "style",
-        toCssString(Object.assign({ "margin": "16px 0" }, styles))
-      );
+      renderRoot.setAttribute("style", toCssString(Object.assign({ "margin": "16px 0" }, styles)));
       return renderRoot;
     });
   }
   if (repaint && chart) chart.destroy();
   render(widgetTemplate(metadata), shadow);
   const ctx = getCanvasContext(shadow);
-  chart = createChart(
-    ctx,
-    data.currentPrice,
-    data.originalPrice,
-    "Uváděná původní cena",
-    "Prodejní cena"
-  );
+  chart = createChart(ctx, data.currentPrice, data.originalPrice, "Uváděná původní cena", "Prodejní cena");
 }
 
 function injectFont() {
@@ -100,10 +87,7 @@ function handleDetail(shop) {
       const url = info.url ?? location.href;
       const res = await fetchData(url, info);
       if (res.error || res.metadata?.error) {
-        console.error(
-          "Hlídačshopů.cz - Error fetching data: ",
-          res.error || res.metadata.error
-        );
+        console.error("Hlídačshopů.cz - Error fetching data: ", res.error || res.metadata.error);
         return null;
       }
       if (!res.data || res.data.length === 0) {
@@ -119,9 +103,7 @@ function handleDetail(shop) {
         console.log("Hlídačshopů.cz - Render:", { info, metadata, dataset });
         renderHTML(repaint, shop, dataset, metadata);
         const params = new URLSearchParams({ url, itemId, debug: 1 });
-        console.log(
-          `Hlídačshopů.cz - Debug URL: https://www.hlidacshopu.cz/app/?${params}`
-        );
+        console.log(`Hlídačshopů.cz - Debug URL: https://www.hlidacshopu.cz/app/?${params}`);
         return true;
       } catch (e) {
         console.error(e);
@@ -137,10 +119,7 @@ function handleDetail(shop) {
 }
 
 async function main() {
-  console.log(
-    `Hlídačshopů.cz - Version: %c${getVersion()}`,
-    "font-weight: 700"
-  );
+  console.log(`Hlídačshopů.cz - Version: %c${getVersion()}`, "font-weight: 700");
   const shop = getShop(location.href);
   if (!shop) {
     console.log("Hlídačshopů.cz - No shop found");

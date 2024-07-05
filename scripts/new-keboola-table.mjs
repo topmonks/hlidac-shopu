@@ -18,20 +18,17 @@ const tableTypes = new Map([
 ]);
 
 async function createNewTable(bucket, table, type, token) {
-  const resp = await fetch(
-    `https://connection.keboola.com/v2/storage/buckets/${bucket}/tables`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-StorageApi-Token": token
-      },
-      body: JSON.stringify({
-        name: table,
-        ...tableTypes.get(type)
-      })
-    }
-  );
+  const resp = await fetch(`https://connection.keboola.com/v2/storage/buckets/${bucket}/tables`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-StorageApi-Token": token
+    },
+    body: JSON.stringify({
+      name: table,
+      ...tableTypes.get(type)
+    })
+  });
   if (resp.ok) {
     return resp.json();
   }

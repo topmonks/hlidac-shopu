@@ -1,5 +1,5 @@
 import test from "ava";
-import { categoryPaginationPayload, PageSize } from "../index.js";
+import { PageSize, categoryPaginationPayload } from "../index.js";
 
 test("should set category id", t => {
   const categoryId = 1;

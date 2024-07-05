@@ -1,9 +1,8 @@
 import Rollbar from "rollbar/src/browser/core";
-import telemeter from "rollbar/src/telemetry";
 import instrumenter from "rollbar/src/browser/telemetry";
+import telemeter from "rollbar/src/telemetry";
 
-const getMeta = key =>
-  document.head.querySelector(`meta[name='${key}']`).getAttribute("content");
+const getMeta = key => document.head.querySelector(`meta[name='${key}']`).getAttribute("content");
 
 export function init() {
   Rollbar.setComponents({ telemeter, instrumenter });

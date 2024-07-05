@@ -1,12 +1,12 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, log, Dataset } from "apify";
 import { HttpCrawler, useState } from "@crawlee/http";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { gotScraping } from "got-scraping";
-import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, log } from "apify";
+import { gotScraping } from "got-scraping";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -30,9 +30,7 @@ const rootSK = "https://www.datart.sk";
 
 async function countAllProducts({ body, stats }) {
   const { document } = parseXML(body.toString());
-  const productXmlUrls = document
-    .querySelectorAll("sitemap loc")
-    .map(loc => loc.innerText.trim());
+  const productXmlUrls = document.querySelectorAll("sitemap loc").map(loc => loc.innerText.trim());
   log.info(`Enqueued ${productXmlUrls.length} product xml urls`);
 
   for (const xmlUrl of productXmlUrls) {
@@ -60,20 +58,14 @@ async function countAllProducts({ body, stats }) {
  * @returns {Object[]}
  */
 function extractItems(document, rootUrl, country) {
-  const categories = document
-    .querySelectorAll("ol.breadcrumb > li > a")
-    .map(a => a.innerText.trim());
+  const categories = document.querySelectorAll("ol.breadcrumb > li > a").map(a => a.innerText.trim());
 
   return document
     .querySelectorAll("div.product-box-list div.product-box")
     .filter(productEl => productEl.getAttribute("data-track"))
     .map(productEl => {
-      const productBoxTopSide = productEl.querySelector(
-        "div.product-box-top-side"
-      );
-      const productHeader = productBoxTopSide.querySelector(
-        "div.item-title-holder h3.item-title a"
-      );
+      const productBoxTopSide = productEl.querySelector("div.product-box-top-side");
+      const productHeader = productBoxTopSide.querySelector("div.item-title-holder h3.item-title a");
       const productBoxBuyInfoDelivery = productEl.querySelector(
         "div.product-box-buy-info > div.product-box-buy-info-delivery span.color-text-red"
       );
@@ -85,14 +77,10 @@ function extractItems(document, rootUrl, country) {
         category: categories,
         itemName: productHeader.innerText.trim(),
         itemUrl: `${rootUrl}${productHeader.href}`,
-        img: productBoxTopSide
-          .querySelector("div.item-thumbnail img")
-          .getAttribute("src")
+        img: productBoxTopSide.querySelector("div.item-thumbnail img").getAttribute("src")
       };
 
-      const productBoxBuyInfoCart = productEl.querySelector(
-        "div.product-box-buy-info > div.product-box-buy-info-cart"
-      );
+      const productBoxBuyInfoCart = productEl.querySelector("div.product-box-buy-info > div.product-box-buy-info-cart");
       const itemCartDataTarget = productBoxBuyInfoCart
         .querySelector("div.item-link-compare > button")
         .getAttribute("data-target-add");
@@ -107,9 +95,7 @@ function extractItems(document, rootUrl, country) {
           .replace(/[^\d,]+/g, "")
           .replace(",", ".")
       );
-      const cutPrice = productBoxBuyInfoCart.querySelector(
-        "div.item-price span.cut-price del"
-      );
+      const cutPrice = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price del");
       if (cutPrice) {
         result.originalPrice = parseFloat(
           cutPrice.innerText
@@ -171,13 +157,7 @@ function startingRequest({ rootUrl, country, type }) {
   }
 }
 
-async function enqueueNewUrls({
-  requestQueue,
-  processedUrls,
-  urls,
-  forefront = false,
-  stats
-}) {
+async function enqueueNewUrls({ requestQueue, processedUrls, urls, forefront = false, stats }) {
   const newUrls = [];
   for (const request of urls) {
     if (!processedUrls[request.url]) {
@@ -242,16 +222,12 @@ export async function main() {
       }
       const { document } = parseHTML(body.toString());
       if (request.userData.label === Labels.START) {
-        const urls = document
-          .querySelectorAll(
-            "div.microsite-katalog ul.category-submenu > li > a"
-          )
-          .map(a => ({
-            url: `${rootUrl}${a.href}`,
-            userData: {
-              label: Labels.CATEGORY
-            }
-          }));
+        const urls = document.querySelectorAll("div.microsite-katalog ul.category-submenu > li > a").map(a => ({
+          url: `${rootUrl}${a.href}`,
+          userData: {
+            label: Labels.CATEGORY
+          }
+        }));
         log.info(`${request.url} Found ${urls.length} categories`);
         await enqueueNewUrls({
           requestQueue: crawler.requestQueue,
@@ -263,9 +239,7 @@ export async function main() {
       }
       if (request.userData.label === Labels.CATEGORY) {
         // Add subcategories if this category has also products
-        const subcategories = document.querySelectorAll(
-          "div.subcategory-box-list .subcategoryWrapper a"
-        );
+        const subcategories = document.querySelectorAll("div.subcategory-box-list .subcategoryWrapper a");
         if (subcategories.length > 0) {
           const urls = subcategories.map(a => ({
             url: `${rootUrl}${a.href}`,
@@ -285,9 +259,7 @@ export async function main() {
           return; // Nothing more we can do for this page
         }
         // Add categories if this page has only categories and no products
-        const categoryTree = document.querySelectorAll(
-          "div.category-tree-box-list a"
-        );
+        const categoryTree = document.querySelectorAll("div.category-tree-box-list a");
         if (categoryTree.length > 0) {
           const urls = categoryTree.map(a => ({
             url: `${rootUrl}${a.href}`,
@@ -307,9 +279,7 @@ export async function main() {
           return; // Nothing more we can do for this page
         }
         // No more categories and subcategories continue with find maxPaginationPage
-        const lastPagination = getLastPageNumber(
-          document.querySelectorAll("div.pagination-wrapper ul.pagination a")
-        );
+        const lastPagination = getLastPageNumber(document.querySelectorAll("div.pagination-wrapper ul.pagination a"));
         const urls = restPageUrls(lastPagination, i => ({
           url: `${request.url}?showPage&page=${i}&limit=16`,
           userData: {
@@ -325,10 +295,7 @@ export async function main() {
           stats
         });
       }
-      if (
-        request.userData.label === Labels.CATEGORY ||
-        request.userData.label === Labels.CATEGORY_NEXT
-      ) {
+      if (request.userData.label === Labels.CATEGORY || request.userData.label === Labels.CATEGORY_NEXT) {
         const products = extractItems(document, rootUrl, country);
         for (const product of products) {
           if (processedIds[product.itemId] !== product.currentPrice) {

@@ -1,13 +1,13 @@
 import { URLSearchParams } from "url";
-import { Actor, log, LogLevel, Dataset } from "apify";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { HttpCrawler } from "@crawlee/http";
-import { calculateTagSalePrice } from "./index.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, Dataset, LogLevel, log } from "apify";
+import { calculateTagSalePrice } from "./index.js";
 
 /** @enum {string} */
 const Country = {
@@ -99,9 +99,7 @@ function requests(country, params) {
   const requests = [];
   if (Array.isArray(tags)) {
     for (const tag of tags) {
-      const url = `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(
-        tag
-      )}`;
+      const url = `${endpointUrl}?${searchParams}&tag=${encodeURIComponent(tag)}`;
       log.info(`Requesting ${url}`);
       requests.push({
         uniqueKey: `Products of "${tag}" tag on ${params.page}. page`,
@@ -147,10 +145,8 @@ function extractProducts({ json, country }) {
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
       img: product.images["1"],
       itemName: product.title,
-      originalPrice:
-        country === Country.CZ ? Math.round(originalPrice) : originalPrice,
-      currentPrice:
-        country === Country.CZ ? Math.round(currentPrice) : currentPrice,
+      originalPrice: country === Country.CZ ? Math.round(originalPrice) : originalPrice,
+      currentPrice: country === Country.CZ ? Math.round(currentPrice) : currentPrice,
       get discounted() {
         return this.currentPrice < this.originalPrice;
       },
@@ -176,13 +172,7 @@ async function saveProducts({ stats, products, processedIds }) {
   await Promise.all(requests);
 }
 
-async function enqueueMoreRequests({
-  json,
-  params,
-  log,
-  requestQueue,
-  country
-}) {
+async function enqueueMoreRequests({ json, params, log, requestQueue, country }) {
   const paginationCount = Math.ceil(json.total_product / params.limit);
   if (!(paginationCount > 1 && params.page === 1)) return;
 

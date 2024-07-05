@@ -1,15 +1,14 @@
+import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";
+import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
+import { logoTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import { html, render } from "lit-html";
 import { Workbox } from "workbox-window";
-import { shops, shopsArray } from "@hlidac-shopu/lib/shops.mjs";
-import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";
-import { logoTemplate } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 import { resultsEmbed } from "./templates";
 
 rollbar.init();
 
-const isProduction = () =>
-  ["localhost", "127"].indexOf(location.hostname) === -1;
+const isProduction = () => ["localhost", "127"].indexOf(location.hostname) === -1;
 if ("serviceWorker" in navigator && isProduction()) {
   const wb = new Workbox("/sw.js");
   wb.register().catch(err => console.error(err));
@@ -22,24 +21,16 @@ const productsCount = document.getElementById("products-count");
 const installsCount = document.getElementById("installs-count");
 const reviewsCount = document.getElementById("rating-count");
 const modal = document.getElementById("hlidac-shopu-modal");
-const modalRenderRoot = document.getElementById(
-  "hlidac-shopu-modal__placeholder"
-);
+const modalRenderRoot = document.getElementById("hlidac-shopu-modal__placeholder");
 const installationGuide = document.getElementById("extension-install-guide");
 
 const haveToCloseModal = t =>
-  t === modal ||
-  t.classList.contains("modal__close") ||
-  t.parentElement.classList.contains("modal__close");
+  t === modal || t.classList.contains("modal__close") || t.parentElement.classList.contains("modal__close");
 
 form.addEventListener("submit", e => {
   e.preventDefault();
   const detailUri = e.target["url"].value;
-  history.pushState(
-    { showModal: true, detailUri },
-    null,
-    `?url=${encodeURIComponent(detailUri)}`
-  );
+  history.pushState({ showModal: true, detailUri }, null, `?url=${encodeURIComponent(detailUri)}`);
   renderResultsModal(detailUri);
 });
 
@@ -82,9 +73,7 @@ addEventListener("DOMContentLoaded", async e => {
     const client = await import(installationGuideUrl);
     render(client.installationGuide(), installationGuide);
   }
-  eShopsCount.innerText = Math.round(
-    parseInt(shops.size.toLocaleString("cs"), 10) / 2
-  );
+  eShopsCount.innerText = Math.round(parseInt(shops.size.toLocaleString("cs"), 10) / 2);
   const stats = await fetchStats();
   installsCount.innerText = `${countInstalls(stats).toLocaleString("cs")}+`;
   installsCount.setAttribute("title", "Chrome udává jen přibližné statistiky");
@@ -92,9 +81,7 @@ addEventListener("DOMContentLoaded", async e => {
 
   fetchShopsStats()
     .then(xs => xs.reduce((acc, x) => acc + x.allProducts, 0))
-    .then(x =>
-      !isNaN(x) ? (productsCount.innerText = x.toLocaleString("cs")) : null
-    )
+    .then(x => (!isNaN(x) ? (productsCount.innerText = x.toLocaleString("cs")) : null))
     .catch(ex => console.warn(ex));
 });
 
@@ -145,18 +132,9 @@ tabList.addEventListener("click", e => {
 });
 
 const storeLinks = new Map([
-  [
-    "firefox",
-    "https://addons.mozilla.org/cs-CZ/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"
-  ],
-  [
-    "chrome",
-    "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"
-  ],
-  [
-    "safari",
-    "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"
-  ]
+  ["firefox", "https://addons.mozilla.org/cs-CZ/firefox/addon/hl%C3%ADda%C4%8D-shop%C5%AF/"],
+  ["chrome", "https://chrome.google.com/webstore/detail/hl%C3%ADda%C4%8D-shop%C5%AF/plmlonggbfebcjelncogcnclagkmkikk"],
+  ["safari", "https://apps.apple.com/cz/app/hl%C3%ADda%C4%8D-shop%C5%AF/id1488295734"]
 ]);
 
 function setStoreUrls(searchParams) {

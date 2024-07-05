@@ -1,14 +1,14 @@
+import { HttpCrawler } from "@crawlee/http";
+import { PlaywrightCrawler } from "@crawlee/playwright";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, log } from "apify";
-import { HttpCrawler } from "@crawlee/http";
-import { gotScraping } from "got-scraping";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { Actor, Dataset, log } from "apify";
+import { gotScraping } from "got-scraping";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -28,8 +28,7 @@ const productPriceOriginalToken = ".product-box__price-bundle del";
 const productPriceToken = ".product-box__price-bundle strong";
 const productLinkToken = "a.product-box__link";
 const productImgToken = ".product-box__img-box img";
-const productAvailability =
-  ".product-box__availability a span.complex-link__underline";
+const productAvailability = ".product-box__availability a span.complex-link__underline";
 
 /**
  * @param {Document} document
@@ -37,12 +36,8 @@ const productAvailability =
 async function scrapeProductListPage(document) {
   const requests = [];
   const categories = [];
-  const categoryScriptElement = document.querySelector(
-    'script[type="application/ld+json"]'
-  );
-  const jsonCategoriesData = categoryScriptElement
-    ? JSON.parse(categoryScriptElement.textContent)
-    : null;
+  const categoryScriptElement = document.querySelector('script[type="application/ld+json"]');
+  const jsonCategoriesData = categoryScriptElement ? JSON.parse(categoryScriptElement.textContent) : null;
   if (jsonCategoriesData) {
     jsonCategoriesData.itemListElement.forEach(obj => {
       if (obj.position > 1) {
@@ -60,17 +55,11 @@ async function scrapeProductListPage(document) {
       .querySelector(productNameToken)
       .innerText.trim()
       .replace(new RegExp(String.fromCharCode(160), ""), "");
-    product.itemUrl = `${urlBase}${
-      topElement.querySelector(productLinkToken).href
-    }`;
+    product.itemUrl = `${urlBase}${topElement.querySelector(productLinkToken).href}`;
     product.img = topElement.querySelector(productImgToken).getAttribute("src");
-    product.currentPrice = cleanPrice(
-      topElement.querySelector(productPriceToken)?.innerText
-    );
+    product.currentPrice = cleanPrice(topElement.querySelector(productPriceToken)?.innerText);
 
-    const isCashback = topElement
-      .querySelector(productPricesToken)
-      .innerText.trim();
+    const isCashback = topElement.querySelector(productPricesToken).innerText.trim();
     if (isCashback.includes("Cena s")) {
       // If product use cashback or sale coupon, there is missing possible sale price and need scrap detail of product via api
       const response = await gotScraping({
@@ -85,16 +74,11 @@ async function scrapeProductListPage(document) {
       product.originalPrice = oldPrice ? parseFloat(oldPrice.amount) : null;
     } else if (isCashback.includes("Ušetříte")) {
       const salePrice = cleanPrice(
-        topElement
-          .querySelectorAll(".product-box__price-bundle .typo-complex-16")
-          .at(-1)
-          .innerText.trim()
+        topElement.querySelectorAll(".product-box__price-bundle .typo-complex-16").at(-1).innerText.trim()
       );
       product.originalPrice = product.currentPrice + salePrice;
     } else {
-      const productPriceOriginal = topElement.querySelector(
-        productPriceOriginalToken
-      )?.innerText;
+      const productPriceOriginal = topElement.querySelector(productPriceOriginalToken)?.innerText;
       product.originalPrice = cleanPrice(productPriceOriginal);
     }
 
@@ -107,23 +91,16 @@ async function scrapeProductListPage(document) {
       ?.replace("Hodnocení: ", "")
       ?.replace(", počet hodnocení:", "")
       ?.split(" z ");
-    const rating =
-      ratingStr?.length === 2
-        ? (parseFloat(ratingStr[0]) / parseFloat(ratingStr[1])) * 100
-        : null;
+    const rating = ratingStr?.length === 2 ? (parseFloat(ratingStr[0]) / parseFloat(ratingStr[1])) * 100 : null;
     // String casting is according to the spec o.0
     // https://docs.google.com/document/d/1qIwqARBTDSnkUrFItE1ZJZF1svLIYj3lD8fr82HUMtk/edit#
     product.rating = String(rating);
 
     // In case of this eshop, this could be done during data processing
     product.discounted =
-      (product.originalPrice !== -1 || product.originalPrice !== null) &&
-      product.originalPrice > product.currentPrice;
+      (product.originalPrice !== -1 || product.originalPrice !== null) && product.originalPrice > product.currentPrice;
 
-    product.available =
-      topElement
-        .querySelector(productAvailability)
-        ?.innerText?.includes("Skladem") ?? false;
+    product.available = topElement.querySelector(productAvailability)?.innerText?.includes("Skladem") ?? false;
 
     product.sale = null;
     if (product.currentPrice !== null && product.originalPrice !== null) {
@@ -179,18 +156,9 @@ function productListRequests(document, firstPageURL) {
   });
 }
 
-async function handlePage({
-  document,
-  crawler,
-  request,
-  stats,
-  type,
-  processedIds
-}) {
+async function handlePage({ document, crawler, request, stats, type, processedIds }) {
   if (request.userData.label === "nthPage") {
-    log.info(
-      `Scraping ${request.userData.pageN} product list page: ${request.url}`
-    );
+    log.info(`Scraping ${request.userData.pageN} product list page: ${request.url}`);
     const products = await scrapeProductListPage(document);
     await saveProducts(products, stats, processedIds);
   } else {
@@ -218,9 +186,7 @@ async function handlePage({
  */
 function mkBreadcrumbsList(document) {
   const categories = [];
-  const categoriesArr = document.querySelector(
-    ".breadcrumb__list.l-in-box.u-maw-1310px.ol--reset"
-  ).children;
+  const categoriesArr = document.querySelector(".breadcrumb__list.l-in-box.u-maw-1310px.ol--reset").children;
   for (const i of categoriesArr) {
     if (i > 0) {
       categories.push(
@@ -238,9 +204,7 @@ function mkBreadcrumbsList(document) {
  * @param {Document} document
  */
 function mkImages(document) {
-  const images = document
-    .querySelectorAll("#product-other-imgs a")
-    .map(e => e.href);
+  const images = document.querySelectorAll("#product-other-imgs a").map(e => e.href);
   return images.slice(0, images.length - 1);
 }
 
@@ -258,10 +222,7 @@ function stripVoteCountStr(str, ratingStr) {
  * @param {Document} document
  */
 function mkRating(document) {
-  let ratingStr = document
-    .querySelector(".rating-stars__percents")
-    .innerText.trim()
-    .split("%")[0];
+  let ratingStr = document.querySelector(".rating-stars__percents").innerText.trim().split("%")[0];
   let rating = -1;
   let voteCount = 0;
   if (ratingStr !== "") {
@@ -286,29 +247,17 @@ function mkProperty(name, value) {
  */
 function mkProperties(document) {
   const properties = [];
-  const baseParams = document.querySelectorAll(
-    ".product-params__main-wrap > ul li"
-  );
+  const baseParams = document.querySelectorAll(".product-params__main-wrap > ul li");
   for (const el of baseParams) {
     const p = el.querySelector("div > div");
-    properties.push(
-      mkProperty(
-        p.querySelector("span").innerText,
-        p.querySelector("strong").innerText
-      )
-    );
+    properties.push(mkProperty(p.querySelector("span").innerText, p.querySelector("strong").innerText));
   }
 
   const otherParams = document.querySelectorAll(".ca-box tbody");
   for (const el of otherParams) {
     const trs = el.querySelectorAll("tr");
     trs.each(tr => {
-      properties.push(
-        mkProperty(
-          tr.querySelector("th").innerText,
-          tr.querySelector("td").innerText
-        )
-      );
+      properties.push(mkProperty(tr.querySelector("th").innerText, tr.querySelector("td").innerText));
     });
   }
 
@@ -316,10 +265,7 @@ function mkProperties(document) {
 }
 
 function fetchDetail(document, request) {
-  const json = JSON.parse(
-    document.querySelector("#snippet-productRichSnippet-richSnippet")
-      .textContent
-  );
+  const json = JSON.parse(document.querySelector("#snippet-productRichSnippet-richSnippet").textContent);
 
   const rating = mkRating(document);
   const images = mkImages(document);
@@ -528,9 +474,7 @@ async function main() {
   log.info("crawler finished");
 
   if (!development) {
-    await uploadToKeboola(
-      type === ActorType.BlackFriday ? "electroworld_cz_bf" : "electroworld_cz"
-    );
+    await uploadToKeboola(type === ActorType.BlackFriday ? "electroworld_cz_bf" : "electroworld_cz");
     log.info("upload to Keboola finished");
   }
 }

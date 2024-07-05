@@ -1,12 +1,12 @@
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { Actor, Dataset, log } from "apify";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -30,24 +30,11 @@ function extractPaginationInfo(document) {
       .replaceAll(/\n(\s)\1+/g, "")
       .split("\n") || [];
 
-  const pages =
-    parseInt(
-      document.querySelector(".paging__item.last")?.textContent.trim(),
-      10
-    ) || 1;
+  const pages = parseInt(document.querySelector(".paging__item.last")?.textContent.trim(), 10) || 1;
 
-  const currentPage =
-    parseInt(
-      document.querySelector(".paging__item.active")?.textContent.trim(),
-      10
-    ) || 1;
+  const currentPage = parseInt(document.querySelector(".paging__item.active")?.textContent.trim(), 10) || 1;
 
-  const productsCount =
-    cleanPrice(
-      document
-        .querySelector("[role=navigation] .order-by-sum")
-        ?.textContent.trim()
-    ) || 0;
+  const productsCount = cleanPrice(document.querySelector("[role=navigation] .order-by-sum")?.textContent.trim()) || 0;
 
   return { category, pages, productsCount, currentPage };
 }
@@ -58,26 +45,14 @@ function extractPaginationInfo(document) {
  * @param {(uri: string) => string} createUrl
  * @returns {* | null}
  */
-function extractCategoryProducts(
-  document,
-  { category, paginationUrl },
-  createUrl
-) {
+function extractCategoryProducts(document, { category, paginationUrl }, createUrl) {
   return document.querySelectorAll("#tiles .new-tile").map(el => ({
     itemUrl: createUrl(el.querySelector(".tile-title a").href),
-    itemId: el
-      .querySelector("[data-product-code]")
-      .getAttribute("data-product-code"),
+    itemId: el.querySelector("[data-product-code]").getAttribute("data-product-code"),
     itemName: el.querySelector(".tile-title a")?.textContent?.trim(),
-    inStock:
-      el.querySelector(".btn.btn-buy")?.classList?.has("item-not-on-stock") ==
-      false,
-    currentPrice: cleanPrice(
-      el.querySelector(".total-price .price .price-vatin")?.textContent
-    ),
-    originalPrice: cleanPrice(
-      el.querySelector(".total-price .price-before .price-vatin")?.textContent
-    ),
+    inStock: el.querySelector(".btn.btn-buy")?.classList?.has("item-not-on-stock") == false,
+    currentPrice: cleanPrice(el.querySelector(".total-price .price .price-vatin")?.textContent),
+    originalPrice: cleanPrice(el.querySelector(".total-price .price-before .price-vatin")?.textContent),
     get discounted() {
       return this.currentPrice < this.originalPrice;
     },
@@ -93,9 +68,7 @@ function extractCategoryProducts(
  * @returns {string[]} urls
  */
 function extractCategorySubcategories(document, createUrl) {
-  return Array.from(document.querySelectorAll(".scards a.scard")).map(link =>
-    createUrl(link.href)
-  );
+  return Array.from(document.querySelectorAll(".scards a.scard")).map(link => createUrl(link.href));
 }
 
 async function handleCategory(body, log, stats, createUrl, requestQueue) {
@@ -175,12 +148,7 @@ function getTableName(type) {
 export async function main() {
   const rollbar = Rollbar.init();
 
-  const {
-    development,
-    proxyGroups,
-    type = ActorType.BlackFriday,
-    urls = []
-  } = await getInput();
+  const { development, proxyGroups, type = ActorType.BlackFriday, urls = [] } = await getInput();
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -219,21 +187,13 @@ export async function main() {
       const createUrl = s => new URL(s, request.url).href;
 
       if (label === Label.Category) {
-        return handleCategory(
-          body,
-          log,
-          stats,
-          createUrl,
-          crawler.requestQueue
-        );
+        return handleCategory(body, log, stats, createUrl, crawler.requestQueue);
       }
       throw new Error(`Page type "${label}" not yet implemented`);
     },
     async failedRequestHandler({ request, log }, error) {
       rollbar.error(error, request);
-      log.error(
-        `Request ${request.url} ${error.message} failed multiple times`
-      );
+      log.error(`Request ${request.url} ${error.message} failed multiple times`);
       stats.inc("failed");
     }
   });
@@ -245,9 +205,7 @@ export async function main() {
       log.info("No URLs provided");
     }
   }
-  await crawler.addRequests(
-    urls.map(url => ({ url, userData: { label: Label.Category } }))
-  );
+  await crawler.addRequests(urls.map(url => ({ url, userData: { label: Label.Category } })));
   await crawler.run();
   await stats.save(true);
 

@@ -1,4 +1,4 @@
-import { QueryCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import Rollbar from "../../rollbar.mjs";
 
 /** @typedef {import("aws-lambda").DynamoDBStreamEvent} DynamoDBStreamEvent */
@@ -14,9 +14,7 @@ const db = new DynamoDBClient({});
 async function handleStreamEvent(event) {
   for (const record of event.Records) {
     const { shop, count } = record.dynamodb.NewImage;
-    const yesterday = new Date(new Date() - 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    const yesterday = new Date(new Date() - 24 * 60 * 60 * 1000).toISOString().split("T")[0];
     const lastItem = await db.send(
       new QueryCommand({
         TableName: "daily_shop_items_count",
@@ -36,9 +34,7 @@ async function handleStreamEvent(event) {
       const lastCount = Number(lastItem.Items[0].count.N);
       const newCount = Number(count.N);
       if (newCount < lastCount * 0.85) {
-        rollbar.error(
-          `Shop ${shop.S} has less items than yesterday! (Old: ${lastCount} New: ${newCount})`
-        );
+        rollbar.error(`Shop ${shop.S} has less items than yesterday! (Old: ${lastCount} New: ${newCount})`);
       } else {
         console.log(`Shop ${shop.S}, old: ${lastCount} new: ${newCount})`);
       }

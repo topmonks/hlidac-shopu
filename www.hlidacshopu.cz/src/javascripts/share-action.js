@@ -1,22 +1,16 @@
-import { html, render } from "lit-html";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
 import { fetchDataSet, templateData } from "@hlidac-shopu/lib/remoting.mjs";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { html, render } from "lit-html";
 import "@hlidac-shopu/lib/web-components/chart.mjs";
-import {
-  discountTemplate,
-  notFoundTemplate,
-  originalPriceTemplate,
-  when
-} from "@hlidac-shopu/lib/templates.mjs";
+import { discountTemplate, notFoundTemplate, originalPriceTemplate, when } from "@hlidac-shopu/lib/templates.mjs";
 import * as rollbar from "./rollbar.js";
 
 rollbar.init();
 
 if (typeof ResizeObserver === "undefined") {
   const polyfill = document.createElement("script");
-  polyfill.src =
-    "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.min.js";
+  polyfill.src = "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.min.js";
   document.head.insertAdjacentElement("beforeend", polyfill);
 }
 
@@ -90,9 +84,7 @@ function resultTemplate({
     <div class="hs-result">
       <div class="box box--purple">
         ${crawlDate(date)}
-        ${when(discount !== 0, () =>
-          originalPriceTemplate({ type: discountType, ...prices })
-        )}
+        ${when(discount !== 0, () => originalPriceTemplate({ type: discountType, ...prices }))}
         <div class="hs-actual-price">
           Prodejní cena
           <span id="current-price">${formatMoney(actualPrice)}</span>

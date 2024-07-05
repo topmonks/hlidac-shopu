@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import path from "path";
 import fs from "fs";
+import path from "path";
 import url from "url";
 
 import { Command } from "commander/esm.mjs";
@@ -32,9 +32,7 @@ async function main(actorName, actorApifyName = actorName) {
     const newFilePath = path.join(actorDir, file);
     await fs.promises.writeFile(newFilePath, newFileContent, "utf8");
   }
-  console.log(
-    `New actor "${actorName}" prepared. You can start coding now:\n${actorDir}/main.js`
-  );
+  console.log(`New actor "${actorName}" prepared. You can start coding now:\n${actorDir}/main.js`);
 }
 
 const program = new Command("createActor")

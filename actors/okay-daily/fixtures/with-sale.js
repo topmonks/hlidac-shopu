@@ -769,8 +769,7 @@ export default {
       key: "SHPF_PRD_DATA"
     }
   ],
-  product_type:
-    "ELEKTRO/Notebooky, konzole, PC/Počítačové doplňky/PC kabely/Redukce",
+  product_type: "ELEKTRO/Notebooky, konzole, PC/Počítačové doplňky/PC kabely/Redukce",
   weight_max: 210,
   extra_sort1: "00000000000000102216",
   locations: [],

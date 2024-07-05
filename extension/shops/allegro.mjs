@@ -26,17 +26,11 @@ export class Allegro extends AsyncShop {
 
     const itemId = elem.querySelector(`meta[itemprop=sku]`).content.trim();
     const title = elem.querySelector(`meta[itemprop=name]`).content.trim();
-    const currentPrice = cleanPriceText(
-      elem.querySelector(`[itemprop=price]`).content.trim()
-    );
+    const currentPrice = cleanPriceText(elem.querySelector(`[itemprop=price]`).content.trim());
     if (!currentPrice) return null;
 
-    let originalPriceEl = elem.querySelector(
-      `[style="text-decoration:line-through"]`
-    );
-    const originalPrice = originalPriceEl
-      ? cleanPriceText(originalPriceEl?.textContent?.trim())
-      : null;
+    let originalPriceEl = elem.querySelector(`[style="text-decoration:line-through"]`);
+    const originalPrice = originalPriceEl ? cleanPriceText(originalPriceEl?.textContent?.trim()) : null;
     const imageUrl = elem.querySelector(`meta[itemprop=image]`).content.trim();
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

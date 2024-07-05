@@ -1,12 +1,12 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { HttpCrawler } from "@crawlee/http";
 import { PlaywrightCrawler } from "@crawlee/playwright";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
 const Labels = {
@@ -26,9 +26,7 @@ function createInitRequests({ type, urls }) {
   if (type === ActorType.BlackFriday) {
     return [
       {
-        url: urls?.length
-          ? urls[0]
-          : "https://www.lidl.cz/c/black-friday/a10034046",
+        url: urls?.length ? urls[0] : "https://www.lidl.cz/c/black-friday/a10034046",
         userData: {
           label: Labels.LIDL_SHOP_CAT,
           level: 1
@@ -106,15 +104,11 @@ function getBaseProducts(documnet) {
       itemName: title,
       currency: "CZK",
       img: imageLargeArr[0],
-      currentPrice: parseFloat(
-        article.querySelector(".pricebox__price").innerText.trim()
-      ),
+      currentPrice: parseFloat(article.querySelector(".pricebox__price").innerText.trim()),
       originalPrice: null,
       discounted: false
     };
-    const price = article
-      .querySelector(".pricebox__recommended-retail-price")
-      .innerText.trim();
+    const price = article.querySelector(".pricebox__recommended-retail-price").innerText.trim();
     if (price) {
       result.discounted = true;
       result.originalPrice = parseFloat(price);
@@ -150,9 +144,7 @@ function scrapeDetail({ request, document }) {
   const {
     userData: { product }
   } = request;
-  let breadcrumbs = document.querySelectorAll(
-    ".breadcrumbs__items-container .breadcrumbs__text"
-  );
+  let breadcrumbs = document.querySelectorAll(".breadcrumbs__items-container .breadcrumbs__text");
   if (product) {
     breadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
     product.category = breadcrumbs.map(b => b.innerText.trim()).join(" > ");
@@ -161,9 +153,7 @@ function scrapeDetail({ request, document }) {
 }
 
 function mainNavigationRequests(document) {
-  const mainMenu = document.querySelectorAll(
-    "ol.n-header__main-navigation--sub a.n-header__main-navigation-link"
-  );
+  const mainMenu = document.querySelectorAll("ol.n-header__main-navigation--sub a.n-header__main-navigation-link");
   return mainMenu.map(menu => ({
     url: `https://www.lidl.cz${menu.getAttribute("href")}`,
     userData: {
@@ -185,8 +175,7 @@ function categoryRequests(document, level, cats, catLevel, requests = []) {
       requests.push({
         url: `https://www.lidl.cz${c.querySelector("a").getAttribute("href")}`,
         userData: {
-          label:
-            catLevel < 2 ? Labels.LIDL_SHOP_MAIN_CAT : Labels.LIDL_SHOP_CAT,
+          label: catLevel < 2 ? Labels.LIDL_SHOP_MAIN_CAT : Labels.LIDL_SHOP_CAT,
           level: catLevel
         }
       });
@@ -232,10 +221,8 @@ function shopSectionRequests({ document, request }, { stats }) {
   return requests;
 }
 
-const from =
-  "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
-const to =
-  "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
+const from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
+const to = "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
 
 function slug(str) {
   let str_ = str
@@ -257,10 +244,7 @@ function slug(str) {
 }
 
 // TODO: extract common getters
-function extractBlackFridayProducts(
-  { document, url },
-  { stats, processedIds }
-) {
+function extractBlackFridayProducts({ document, url }, { stats, processedIds }) {
   stats.inc("categories");
   const items = [];
   const products = document.querySelectorAll("[data-grid-data]");
@@ -291,9 +275,7 @@ function extractBlackFridayProducts(
 }
 
 function extractProducts({ document, stats, processedIds, log, url }) {
-  const products = document.querySelectorAll(
-    "#s-results .s-grid__item:not(.s-grid__item--hidden) [data-grid-data]"
-  );
+  const products = document.querySelectorAll("#s-results .s-grid__item:not(.s-grid__item--hidden) [data-grid-data]");
   log.info("Extract products", { url, products: products.length });
   const items = [];
   for (const el of products) {
@@ -394,10 +376,7 @@ async function main() {
 
             const text = await page.content();
             const { document } = parseHTML(text);
-            const products = extractBlackFridayProducts(
-              { document, url: request.url },
-              { stats, processedIds }
-            );
+            const products = extractBlackFridayProducts({ document, url: request.url }, { stats, processedIds });
             await Dataset.pushData(products);
           }
         })
@@ -420,21 +399,14 @@ async function main() {
                 }
                 break;
               case Labels.LIDL_SHOP:
-                await crawler.requestQueue.addRequests(
-                  mainNavigationRequests(document)
-                );
+                await crawler.requestQueue.addRequests(mainNavigationRequests(document));
                 break;
               case Labels.LIDL_SHOP_CAT:
-                const nextButton = document.querySelector(
-                  ".s-load-more__button"
-                );
+                const nextButton = document.querySelector(".s-load-more__button");
                 if (nextButton) {
                   await crawler.requestQueue.addRequest(
                     {
-                      url: new URL(
-                        nextButton.getAttribute("href"),
-                        "https://www.lidl.cz"
-                      ).href,
+                      url: new URL(nextButton.getAttribute("href"), "https://www.lidl.cz").href,
                       userData: { label: Labels.LIDL_SHOP_CAT }
                     },
                     { forefront: true }
@@ -450,27 +422,18 @@ async function main() {
                 await Dataset.pushData(products);
                 break;
               case Labels.LIDL_SHOP_MAIN_CAT:
-                await crawler.requestQueue.addRequests(
-                  scrapeShopMainCategory({ document, request })
-                );
+                await crawler.requestQueue.addRequests(scrapeShopMainCategory({ document, request }));
                 break;
               case Labels.LIDL_SHOP_SECTION:
-                await crawler.requestQueue.addRequests(
-                  shopSectionRequests({ document, request }, { stats })
-                );
+                await crawler.requestQueue.addRequests(shopSectionRequests({ document, request }, { stats }));
                 break;
               case Labels.MAIN_NABIDKA:
-                await crawler.requestQueue.addRequests(
-                  mainMenuRequests(document)
-                );
+                await crawler.requestQueue.addRequests(mainMenuRequests(document));
                 break;
               case Labels.MAIN_NABIDKA_CAT:
-                await crawler.requestQueue.addRequests(
-                  mainMenuCategoryRequests(document),
-                  {
-                    forefront: true
-                  }
-                );
+                await crawler.requestQueue.addRequests(mainMenuCategoryRequests(document), {
+                  forefront: true
+                });
                 break;
             }
           },

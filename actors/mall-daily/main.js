@@ -1,11 +1,11 @@
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { Actor, log, LogLevel } from "apify";
-import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { gql } from "graphql-tag";
 import { Dataset, HttpCrawler } from "@crawlee/http";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, LogLevel, log } from "apify";
+import { gql } from "graphql-tag";
 
 const PAGE_LIMIT = 80;
 const GET_CAMPAIGN = gql`
@@ -207,10 +207,16 @@ async function main() {
       const { page = 1 } = request.userData || {};
       log.debug(`We are on ${page} page`);
 
-      const { data: { getCampaign: data } = {}, errors } = json;
+      const {
+        data: { getCampaign: data } = {},
+        errors
+      } = json;
       if (errors) log.error("GraphQL errors", errors);
 
-      const { productCollection: { items = [] } = {}, ...rest } = data || {};
+      const {
+        productCollection: { items = [] } = {},
+        ...rest
+      } = data || {};
       log.debug(`Got ${items.length} items now`);
 
       if (!items.length) {

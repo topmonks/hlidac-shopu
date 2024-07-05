@@ -1,19 +1,13 @@
-import { html } from "lit-html";
 import { formatDate, formatMoney } from "@hlidac-shopu/lib/format.mjs";
-import {
-  discountTemplate,
-  logoTemplate,
-  originalPriceTemplate,
-  when
-} from "@hlidac-shopu/lib/templates.mjs";
-import { shops } from "@hlidac-shopu/lib/shops.mjs";
 import { templateData } from "@hlidac-shopu/lib/remoting.mjs";
+import { shops } from "@hlidac-shopu/lib/shops.mjs";
+import { discountTemplate, logoTemplate, originalPriceTemplate, when } from "@hlidac-shopu/lib/templates.mjs";
+import { html } from "lit-html";
 import "@hlidac-shopu/lib/web-components/chart.mjs";
 
 if (typeof ResizeObserver === "undefined") {
   const polyfill = document.createElement("script");
-  polyfill.src =
-    "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.global.min.js";
+  polyfill.src = "https://cdn.jsdelivr.net/npm/resize-observer-polyfill@1.5.1/dist/ResizeObserver.global.min.js";
   document.head.insertAdjacentElement("beforeend", polyfill);
 }
 
@@ -69,16 +63,11 @@ function resultTemplate(
           rel="noopener noreferrer"
           >${name || "Vámi vybraný produkt"}</a
         >
-        ${when(
-          imageUrl,
-          () => html`<img property="image" alt="${name}" src="${imageUrl}" />`
-        )}
+        ${when(imageUrl, () => html`<img property="image" alt="${name}" src="${imageUrl}" />`)}
       </h2>
       <div property="offers" typeof="Offer" class="box box--purple">
         ${crawlDate(date)}
-        ${when(discount !== 0, () =>
-          originalPriceTemplate({ type: discountType, ...prices })
-        )}
+        ${when(discount !== 0, () => originalPriceTemplate({ type: discountType, ...prices }))}
         <div class="hs-actual-price">
           Prodejní cena
           <span id="current-price" property="price" content="${actualPrice}"
@@ -103,9 +92,7 @@ function resultTemplate(
           <div class="hs-share-buttons">
             <a
               class="tw-button"
-              href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                location.href
-              )}&hashtags=hlidacshopu`}"
+              href="${`https://twitter.com/intent/tweet?url=${encodeURIComponent(location.href)}&hashtags=hlidacshopu`}"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -114,9 +101,7 @@ function resultTemplate(
             </a>
             <a
               class="fb-button"
-              href="${`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                location.href
-              )}`}"
+              href="${`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}`}"
               target="_blank"
               rel="noopener noreferrer"
             >

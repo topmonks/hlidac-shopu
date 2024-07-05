@@ -1,22 +1,11 @@
-import {
-  cleanPrice,
-  cleanUnitPrice,
-  isUnitPrice,
-  registerShop
-} from "../helpers.mjs";
+import { cleanPrice, cleanUnitPrice, isUnitPrice, registerShop } from "../helpers.mjs";
 import { StatefulShop } from "./shop.mjs";
 
-const didRenderDetail = mutations =>
-  mutations.find(x =>
-    Array.from(x.addedNodes).find(y => y.id === "productDetail")
-  );
+const didRenderDetail = mutations => mutations.find(x => Array.from(x.addedNodes).find(y => y.id === "productDetail"));
 
 export class Rohlik extends StatefulShop {
   get injectionPoint() {
-    return [
-      "beforeend",
-      '#productDetail div[data-test="product-detail-upper-section"] > div:last-child'
-    ];
+    return ["beforeend", '#productDetail div[data-test="product-detail-upper-section"] > div:last-child'];
   }
 
   get detailSelector() {
@@ -40,10 +29,7 @@ export class Rohlik extends StatefulShop {
     if (!elem) return null;
 
     const originalPrice = isUnitPrice("#productDetail del")
-      ? cleanUnitPrice(
-          "#productDetail del",
-          cleanPrice("#productDetail .detailQuantity")
-        )
+      ? cleanUnitPrice("#productDetail del", cleanPrice("#productDetail .detailQuantity"))
       : cleanPrice("#productDetail del");
 
     const jsonld = elem.querySelector('script[type="application/ld+json"]');
@@ -62,18 +48,14 @@ export class Rohlik extends StatefulShop {
       }
     }
 
-    const itemId = document.querySelector(
-      "#productDetail button[data-product-id]"
-    ).dataset.productId;
+    const itemId = document.querySelector("#productDetail button[data-product-id]").dataset.productId;
     const title = document.title.split("-");
     const t = title[0].trim();
     const currentPrice = cleanPrice(
       `#productDetail .actionPrice,
        #productDetail .currentPrice`
     );
-    const imageUrl = document.querySelector(
-      "[data-gtm-item=product-image] img"
-    ).src;
+    const imageUrl = document.querySelector("[data-gtm-item=product-image] img").src;
 
     return { itemId, title: t, currentPrice, originalPrice, imageUrl };
   }

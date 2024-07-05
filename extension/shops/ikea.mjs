@@ -10,9 +10,7 @@ export class Ikea extends Shop {
     const elem = document.querySelector("#content .product-pip");
     if (!elem) return;
 
-    const jsonld = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    )[1];
+    const jsonld = document.querySelectorAll('script[type="application/ld+json"]')[1];
     if (jsonld) {
       try {
         const data = JSON.parse(jsonld.innerText);

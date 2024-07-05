@@ -7,9 +7,7 @@ export class Hornbach extends Shop {
   }
 
   async scrape() {
-    const elems = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    );
+    const elems = document.querySelectorAll('script[type="application/ld+json"]');
     if (!elems) return;
     const scripts = document.querySelectorAll('script[type="application/ld+json"]');
     for (const script of scripts) {

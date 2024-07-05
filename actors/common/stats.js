@@ -1,5 +1,5 @@
-import { Actor, log as parentLog } from "apify";
 import { defAtom } from "@thi.ng/atom";
+import { Actor, log as parentLog } from "apify";
 
 const log = parentLog.child({ prefix: "Stats" });
 

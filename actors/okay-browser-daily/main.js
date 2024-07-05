@@ -1,13 +1,13 @@
-import { Actor, log, LogLevel, Dataset } from "apify";
+import { PlaywrightCrawler } from "@crawlee/playwright";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { PlaywrightCrawler } from "@crawlee/playwright";
-import { parseXML, parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -86,59 +86,48 @@ function extractProducts({ document, page, rootUrl, currency, url, type }) {
     .join(" > ");
 
   return Promise.all(
-    document
-      .querySelectorAll(".collection-matrix > .product__grid-item[data-id]")
-      .map(async product => {
-        const itemId = product.getAttribute("data-id");
-        if (!itemId) {
-          log.error("Missing itemId", { url });
-          return;
-        }
+    document.querySelectorAll(".collection-matrix > .product__grid-item[data-id]").map(async product => {
+      const itemId = product.getAttribute("data-id");
+      if (!itemId) {
+        log.error("Missing itemId", { url });
+        return;
+      }
 
-        // const originalPrice = cleanPrice(
-        //   await getTextFromLocator(
-        //     type === ActorType.BlackFriday
-        //       ? // For Black Friday we need original price even if it is hidden in the listing
-        //         page.locator(
-        //           `.product__grid-item[data-id="${itemId}"] .was-price .money`
-        //         )
-        //       : // In normal mode we don't care about original prices and just compute real discount
-        //         page.locator(
-        //           `.product__grid-item[data-id="${itemId}"] .was-price .money:visible`
-        //         )
-        //   )
-        // );
-        const originalPrice = null;
-        const currentPrice = cleanPrice(
-          product.querySelector(".money.final")?.innerText
-        );
-        console.assert(currentPrice, "Missing currentPrice", { url });
+      // const originalPrice = cleanPrice(
+      //   await getTextFromLocator(
+      //     type === ActorType.BlackFriday
+      //       ? // For Black Friday we need original price even if it is hidden in the listing
+      //         page.locator(
+      //           `.product__grid-item[data-id="${itemId}"] .was-price .money`
+      //         )
+      //       : // In normal mode we don't care about original prices and just compute real discount
+      //         page.locator(
+      //           `.product__grid-item[data-id="${itemId}"] .was-price .money:visible`
+      //         )
+      //   )
+      // );
+      const originalPrice = null;
+      const currentPrice = cleanPrice(product.querySelector(".money.final")?.innerText);
+      console.assert(currentPrice, "Missing currentPrice", { url });
 
-        return {
-          itemId,
-          itemUrl: `${rootUrl}${product
-            .querySelector("a")
-            .getAttribute("href")}`,
-          img: product.querySelector("img[src]")?.getAttribute("src"),
-          itemName: product
-            .querySelector(".product-thumbnail__title")
-            .textContent.trim(),
-          originalPrice,
-          currentPrice,
-          discounted: Boolean(originalPrice),
-          currency,
-          category,
-          inStock: Boolean(product.querySelector(".in_stock"))
-        };
-      })
+      return {
+        itemId,
+        itemUrl: `${rootUrl}${product.querySelector("a").getAttribute("href")}`,
+        img: product.querySelector("img[src]")?.getAttribute("src"),
+        itemName: product.querySelector(".product-thumbnail__title").textContent.trim(),
+        originalPrice,
+        currentPrice,
+        discounted: Boolean(originalPrice),
+        currency,
+        category,
+        inStock: Boolean(product.querySelector(".in_stock"))
+      };
+    })
   );
 }
 
 function blackFridayUrl(country) {
-  const collection =
-    country === Country.CZ
-      ? "to-nejlepsi-z-black-friday"
-      : "to-najlepsie-z-black-friday";
+  const collection = country === Country.CZ ? "to-nejlepsi-z-black-friday" : "to-najlepsie-z-black-friday";
   return [
     {
       url: `${getBaseUrl(country)}/collections/${collection}`,
@@ -190,37 +179,19 @@ function parseBreadcrumbs(document) {
  * @param {Set} params.processedIds
  * @param {Stats} params.stats
  */
-function extractProductDetail({
-  document,
-  url,
-  processedIds,
-  stats,
-  currency
-}) {
+function extractProductDetail({ document, url, processedIds, stats, currency }) {
   const itemId = document.querySelector("input[name=product-id]")?.value;
   if (!itemId) return stats.inc("failed");
   if (processedIds.has(itemId)) return stats.inc("itemsDuplicity");
   stats.inc("items");
-  const img = document
-    .querySelector("meta[property='og:image']")
-    ?.getAttribute("content");
-  const itemName = document
-    .querySelector("meta[property='og:title']")
-    ?.getAttribute("content");
+  const img = document.querySelector("meta[property='og:image']")?.getAttribute("content");
+  const itemName = document.querySelector("meta[property='og:title']")?.getAttribute("content");
   const product = document.querySelector(".product__information");
 
-  const comparePrice = cleanPrice(
-    product.querySelector(".compare_price>.money")?.textContent
-  );
-  const currentPriceSale = cleanPrice(
-    product.querySelector(".current_price.tags-sale")?.textContent
-  );
-  const currentPriceMz = cleanPrice(
-    product.querySelector(".current_price_mz>.money")?.textContent
-  );
-  const currentPriceNotSale = cleanPrice(
-    product.querySelector(".current_price:not(.tags-sale)")?.textContent
-  );
+  const comparePrice = cleanPrice(product.querySelector(".compare_price>.money")?.textContent);
+  const currentPriceSale = cleanPrice(product.querySelector(".current_price.tags-sale")?.textContent);
+  const currentPriceMz = cleanPrice(product.querySelector(".current_price_mz>.money")?.textContent);
+  const currentPriceNotSale = cleanPrice(product.querySelector(".current_price:not(.tags-sale)")?.textContent);
   const category = parseBreadcrumbs(document);
   const originalPrice = comparePrice ?? currentPriceSale;
   const currentPrice = currentPriceMz ?? currentPriceNotSale;
@@ -308,14 +279,7 @@ async function main() {
     },
     preNavigationHooks: [navigationBehavior(60)],
     //postNavigationHooks: [loadLazyImages],
-    async requestHandler({
-      request,
-      page,
-      enqueueLinks,
-      log,
-      saveSnapshot,
-      infiniteScroll
-    }) {
+    async requestHandler({ request, page, enqueueLinks, log, saveSnapshot, infiniteScroll }) {
       log.info(`Processing ${request.url}`);
       stats.inc("urls");
       const { label } = request.userData;
@@ -356,9 +320,7 @@ async function main() {
             const body = await page.content();
             const { document } = parseHTML(body.toString());
             if (type === ActorType.BlackFriday) {
-              const detailLinks = document.querySelectorAll(
-                ".collection-matrix > [data-id] a[href]"
-              );
+              const detailLinks = document.querySelectorAll(".collection-matrix > [data-id] a[href]");
               const details = Array.from(detailLinks, x => x.href);
               await enqueueLinks({ urls: details, label: Labels.Detail });
             } else {
@@ -374,9 +336,7 @@ async function main() {
               stats.add("items", products.length);
             }
 
-            const nextPage = document.querySelector(
-              `.paginate:not(.non-boost-pagination) .pagination-next`
-            )?.href;
+            const nextPage = document.querySelector(`.paginate:not(.non-boost-pagination) .pagination-next`)?.href;
             if (nextPage) {
               await enqueueLinks({ urls: [nextPage], label: Labels.List });
             }

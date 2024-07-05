@@ -1,39 +1,30 @@
 import * as path from "node:path";
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { lambda } from "@pulumi/aws/types/input";
 import { LambdaAuthorizer, Method } from "@pulumi/awsx/classic/apigateway";
 import { Parameter } from "@pulumi/awsx/classic/apigateway/requestValidator";
-import {
-  Api,
-  ApiRoute,
-  CacheSettings,
-  CustomDomainDistribution,
-  Website
-} from "@topmonks/pulumi-aws";
+import * as pulumi from "@pulumi/pulumi";
+import { Api, ApiRoute, CacheSettings, CustomDomainDistribution, Website } from "@topmonks/pulumi-aws";
 import * as lambdaBuilder from "../infrastructure/lambda-builder";
 
 const config = new pulumi.Config("hlidacshopu");
 
 export function createDatabase() {
-  const extensionParsedDataTable = new aws.dynamodb.Table(
-    "extension_parsed_data",
-    {
-      name: "extension_parsed_data",
-      ttl: {
-        attributeName: "expirationDate",
-        enabled: true
-      },
-      hashKey: "pkey",
-      rangeKey: "date",
-      attributes: [
-        { name: "pkey", type: "S" },
-        { name: "date", type: "S" }
-      ],
-      writeCapacity: 1,
-      readCapacity: 1
-    }
-  );
+  const extensionParsedDataTable = new aws.dynamodb.Table("extension_parsed_data", {
+    name: "extension_parsed_data",
+    ttl: {
+      attributeName: "expirationDate",
+      enabled: true
+    },
+    hashKey: "pkey",
+    rangeKey: "date",
+    attributes: [
+      { name: "pkey", type: "S" },
+      { name: "date", type: "S" }
+    ],
+    writeCapacity: 1,
+    readCapacity: 1
+  });
 
   const apiHitCounterDataTable = new aws.dynamodb.Table("api_hit_counter", {
     name: "api_hit_counter",
@@ -56,46 +47,32 @@ export function createDatabase() {
     readCapacity: 1
   });
 
-  const dailyShopItemsCountTable = new aws.dynamodb.Table(
-    "daily_shop_items_count",
-    {
-      name: "daily_shop_items_count",
-      hashKey: "shop",
-      rangeKey: "date",
-      attributes: [
-        { name: "shop", type: "S" },
-        { name: "date", type: "S" }
-      ],
-      billingMode: "PAY_PER_REQUEST",
-      streamEnabled: true,
-      streamViewType: "NEW_IMAGE"
-    }
-  );
+  const dailyShopItemsCountTable = new aws.dynamodb.Table("daily_shop_items_count", {
+    name: "daily_shop_items_count",
+    hashKey: "shop",
+    rangeKey: "date",
+    attributes: [
+      { name: "shop", type: "S" },
+      { name: "date", type: "S" }
+    ],
+    billingMode: "PAY_PER_REQUEST",
+    streamEnabled: true,
+    streamViewType: "NEW_IMAGE"
+  });
 
-  const defaultLambdaRole = new aws.iam.Role(
-    hsName("default-lambda-dynamodb-role"),
-    {
-      assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
-        aws.iam.Principals.LambdaPrincipal
-      )
-    }
-  );
+  const defaultLambdaRole = new aws.iam.Role(hsName("default-lambda-dynamodb-role"), {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.LambdaPrincipal)
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-dynamodb-basic-execution-attachment"),
-    {
-      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-dynamodb-basic-execution-attachment"), {
+    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+    role: defaultLambdaRole
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-dynamodb-read-write-attachment"),
-    {
-      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-dynamodb-read-write-attachment"), {
+    policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
+    role: defaultLambdaRole
+  });
 
   dailyShopItemsCountTable.onEvent(
     "notify-about-missing-items",
@@ -106,13 +83,7 @@ export function createDatabase() {
       role: defaultLambdaRole.arn,
       handler: "index.handler",
       code: lambdaBuilder.buildCodeAsset(
-        path.join(
-          __dirname,
-          "src",
-          "lambda",
-          "dynamodb",
-          "notify-lower-actors-results.mjs"
-        ),
+        path.join(__dirname, "src", "lambda", "dynamodb", "notify-lower-actors-results.mjs"),
         true,
         ["@aws-sdk/client-dynamodb"]
       ),
@@ -147,51 +118,33 @@ function hsName(t: string, options?: any) {
 }
 
 export function createApi(domainName: string, options?: any) {
-  const defaultLambdaRole = new aws.iam.Role(
-    hsName("default-lambda-role", options),
-    {
-      assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
-        aws.iam.Principals.LambdaPrincipal
-      )
-    }
-  );
+  const defaultLambdaRole = new aws.iam.Role(hsName("default-lambda-role", options), {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.LambdaPrincipal)
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-basic-execution-attachment", options),
-    {
-      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-basic-execution-attachment", options), {
+    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+    role: defaultLambdaRole
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-dynamo-read-write-attachment", options),
-    {
-      policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-dynamo-read-write-attachment", options), {
+    policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess,
+    role: defaultLambdaRole
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-s3-read-attachment", options),
-    {
-      policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-s3-read-attachment", options), {
+    policyArn: aws.iam.ManagedPolicy.AmazonS3ReadOnlyAccess,
+    role: defaultLambdaRole
+  });
 
   const buildAssets = (fileName: string) =>
-    lambdaBuilder.buildCodeAsset(
-      path.join(__dirname, "src", "lambda", fileName),
-      true,
-      [
-        "@aws-sdk/client-dynamodb",
-        "@aws-sdk/util-dynamodb",
-        "@aws-sdk/client-sqs",
-        "@aws-sdk/client-s3",
-        "@aws-sdk/client-cloudfront"
-      ]
-    );
+    lambdaBuilder.buildCodeAsset(path.join(__dirname, "src", "lambda", fileName), true, [
+      "@aws-sdk/client-dynamodb",
+      "@aws-sdk/util-dynamodb",
+      "@aws-sdk/client-sqs",
+      "@aws-sdk/client-s3",
+      "@aws-sdk/client-cloudfront"
+    ]);
 
   const getRouteHandler = (
     name: string,
@@ -310,22 +263,14 @@ export function createApi(domainName: string, options?: any) {
 }
 
 export function createSQSIngest(options = {}) {
-  const defaultLambdaRole = new aws.iam.Role(
-    hsName("default-lambda-sqs-role", options),
-    {
-      assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
-        aws.iam.Principals.LambdaPrincipal
-      )
-    }
-  );
+  const defaultLambdaRole = new aws.iam.Role(hsName("default-lambda-sqs-role", options), {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.LambdaPrincipal)
+  });
 
-  new aws.iam.RolePolicyAttachment(
-    hsName("lambda-sqs-basic-execution-attachment", options),
-    {
-      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-      role: defaultLambdaRole
-    }
-  );
+  new aws.iam.RolePolicyAttachment(hsName("lambda-sqs-basic-execution-attachment", options), {
+    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+    role: defaultLambdaRole
+  });
 
   new aws.iam.RolePolicyAttachment(hsName("lambda-s3-access", options), {
     policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
@@ -338,17 +283,13 @@ export function createSQSIngest(options = {}) {
   });
 
   const buildAssets = (fileName: string) =>
-    lambdaBuilder.buildCodeAsset(
-      path.join(__dirname, "src", "lambda", "sqs", fileName),
-      true,
-      [
-        "@aws-sdk/client-dynamodb",
-        "@aws-sdk/util-dynamodb",
-        "@aws-sdk/client-sqs",
-        "@aws-sdk/client-s3",
-        "@aws-sdk/client-cloudfront"
-      ]
-    );
+    lambdaBuilder.buildCodeAsset(path.join(__dirname, "src", "lambda", "sqs", fileName), true, [
+      "@aws-sdk/client-dynamodb",
+      "@aws-sdk/util-dynamodb",
+      "@aws-sdk/client-sqs",
+      "@aws-sdk/client-s3",
+      "@aws-sdk/client-cloudfront"
+    ]);
 
   const defaultLambdaOpts = {
     publish: true,
@@ -363,15 +304,12 @@ export function createSQSIngest(options = {}) {
     messageRetentionSeconds: 60 * 60, // 1 hour
     visibilityTimeoutSeconds: uploaderTimeout
   });
-  const uploaderLambda = new aws.lambda.Function(
-    hsName(`sqs-ingest-uploader-lambda`, options),
-    {
-      ...defaultLambdaOpts,
-      code: buildAssets("ingest-uploader/index.mjs"),
-      memorySize: 128,
-      timeout: uploaderTimeout
-    }
-  );
+  const uploaderLambda = new aws.lambda.Function(hsName(`sqs-ingest-uploader-lambda`, options), {
+    ...defaultLambdaOpts,
+    code: buildAssets("ingest-uploader/index.mjs"),
+    memorySize: 128,
+    timeout: uploaderTimeout
+  });
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
   const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
@@ -386,20 +324,17 @@ export function createSQSIngest(options = {}) {
       }
     ]
   });
-  const extractorLambda = new aws.lambda.Function(
-    hsName(`sqs-ingest-extractor-lambda`, options),
-    {
-      ...defaultLambdaOpts,
-      code: buildAssets("ingest-extractor/index.mjs"),
-      memorySize: 512,
-      timeout: 900,
-      environment: {
-        variables: {
-          SQS_URL: ingestQueue.url
-        }
+  const extractorLambda = new aws.lambda.Function(hsName(`sqs-ingest-extractor-lambda`, options), {
+    ...defaultLambdaOpts,
+    code: buildAssets("ingest-extractor/index.mjs"),
+    memorySize: 512,
+    timeout: 900,
+    environment: {
+      variables: {
+        SQS_URL: ingestQueue.url
       }
     }
-  );
+  });
   ingestBucket.onObjectCreated("ingest", extractorLambda);
 
   return ingestQueue;

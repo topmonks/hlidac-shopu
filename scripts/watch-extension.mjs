@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+import fs from "fs";
+import path from "path";
+import url from "url";
 import chokidar from "chokidar";
 import esbuild from "esbuild";
-import path from "path";
-import fs from "fs";
-import url from "url";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 

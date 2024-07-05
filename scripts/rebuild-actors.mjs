@@ -6,15 +6,13 @@ const alreadyBuilt = new Set([
   // if you want to skip some actors build, add names here
 ]);
 
-const resp = await fetch(
-  `https://api.apify.com/v2/acts?token=${token}&my=true`
-);
+const resp = await fetch(`https://api.apify.com/v2/acts?token=${token}&my=true`);
 const { data } = await resp.json();
 for (const { id, name } of data.items) {
   if (alreadyBuilt.has(name)) continue;
-  const { data: versions } = await fetch(
-    `https://api.apify.com/v2/acts/${id}/versions?token=${token}`
-  ).then(resp => resp.json());
+  const { data: versions } = await fetch(`https://api.apify.com/v2/acts/${id}/versions?token=${token}`).then(resp =>
+    resp.json()
+  );
   const version = versions.items.at(-1).versionNumber;
   console.log("Rebuild", { name, version });
   const params = new URLSearchParams({

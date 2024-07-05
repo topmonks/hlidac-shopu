@@ -10,9 +10,7 @@ export class Obi extends Shop {
     const elem = document.querySelector(".overview__description");
     if (!elem) return;
 
-    const title = document
-      .querySelector("h1.overview__heading")
-      .textContent.trim();
+    const title = document.querySelector("h1.overview__heading").textContent.trim();
     const currentPrice = cleanPrice(".overview__price");
     const originalPrice = cleanPrice(".optional-hidden del");
     const imageUrl = document.querySelector(".ads-slider__link img").src;

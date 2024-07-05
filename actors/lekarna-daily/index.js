@@ -1,12 +1,12 @@
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log } from "apify";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { HttpCrawler, useState } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
+import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, log } from "apify";
 
 const web = "https://www.lekarna.cz";
 
@@ -14,56 +14,36 @@ function extractItems({ products, breadCrumbs }) {
   return products
     .map(item => {
       const result = {};
-      const itemUrl = item
-        .querySelector("meta[itemprop=url]")
-        .getAttribute("content");
+      const itemUrl = item.querySelector("meta[itemprop=url]").getAttribute("content");
       const name = item.querySelector("h2").textContent.trim();
       const cartBut = item.querySelector('input[name="productSkuId"]');
       let id;
       if (cartBut) {
         id = cartBut.getAttribute("value");
       } else if (item.querySelector("a[data-gtm]")) {
-        const itemJsonObject = JSON.parse(
-          item.querySelector("a[data-gtm]").getAttribute("data-gtm")
-        );
+        const itemJsonObject = JSON.parse(item.querySelector("a[data-gtm]").getAttribute("data-gtm"));
         const products =
-          itemJsonObject.ecommerce.click &&
-          itemJsonObject.ecommerce.click.products
+          itemJsonObject.ecommerce.click && itemJsonObject.ecommerce.click.products
             ? itemJsonObject.ecommerce.click.products
             : [];
-        const filteredProducts = products.filter(item =>
-          item.variant.indexOf("Dlouhodobě nedostupný")
-        );
+        const filteredProducts = products.filter(item => item.variant.indexOf("Dlouhodobě nedostupný"));
         id = filteredProducts.length !== 0 ? filteredProducts[0].id : null;
       }
 
       const actualPriceSpan = item.querySelector("span[itemprop=price]");
-      const oldPriceSpan = item.querySelector(
-        "span.text-gray-500.line-through"
-      );
+      const oldPriceSpan = item.querySelector("span.text-gray-500.line-through");
 
       if (actualPriceSpan) {
-        const itemImgUrl = item
-          .querySelectorAll("picture source")
-          .at(-1)
-          .getAttribute("srcset");
+        const itemImgUrl = item.querySelectorAll("picture source").at(-1).getAttribute("srcset");
         result.itemId = id;
         result.itemName = name;
-        result.itemUrl = itemUrl.includes("https")
-          ? itemUrl
-          : `${web}${itemUrl}`;
+        result.itemUrl = itemUrl.includes("https") ? itemUrl : `${web}${itemUrl}`;
         result.img = itemImgUrl;
         result.category = breadCrumbs;
-        result.currentPrice = parseFloat(
-          actualPriceSpan.getAttribute("content")
-        );
-        result.currency = item
-          .querySelector("span[itemprop=priceCurrency]")
-          .getAttribute("content");
+        result.currentPrice = parseFloat(actualPriceSpan.getAttribute("content"));
+        result.currency = item.querySelector("span[itemprop=priceCurrency]").getAttribute("content");
         if (oldPriceSpan) {
-          result.originalPrice = parseFloat(
-            oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim()
-          );
+          result.originalPrice = parseFloat(oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim());
           result.discounted = true;
         } else {
           result.originalPrice = null;
@@ -79,16 +59,9 @@ function extractBfItems(products) {
   return Array.from(products)
     .map(item => {
       const itemHeader = item.querySelector("a[data-datalayer]");
-      const itemOriginalPrice = item.querySelector(
-        "p.items-center span.line-through"
-      );
+      const itemOriginalPrice = item.querySelector("p.items-center span.line-through");
       const originalPrice = itemOriginalPrice
-        ? parseFloat(
-            itemOriginalPrice.textContent
-              .replace("Kč", "")
-              .replace(/\s/g, "")
-              .trim()
-          )
+        ? parseFloat(itemOriginalPrice.textContent.replace("Kč", "").replace(/\s/g, "").trim())
         : null;
 
       const itemJsonObject = JSON.parse(itemHeader.dataset.datalayer);
@@ -117,18 +90,14 @@ function extractBfItems(products) {
 }
 
 function handleStart(document) {
-  return document
-    .querySelectorAll("nav.items-center > ul > li > span > a")
-    .map(cat => ({
-      url: cat.href,
-      userData: { label: "PAGE" }
-    }));
+  return document.querySelectorAll("nav.items-center > ul > li > span > a").map(cat => ({
+    url: cat.href,
+    userData: { label: "PAGE" }
+  }));
 }
 
 function handleSubCategory(document) {
-  const getSubcategories = document.querySelectorAll(
-    "#snippet--subcategories a"
-  );
+  const getSubcategories = document.querySelectorAll("#snippet--subcategories a");
   const requests = [];
   for (const subCat of getSubcategories) {
     const url = subCat.href;
@@ -143,14 +112,9 @@ function handleSubCategory(document) {
 }
 
 function handlePagination({ document, request, type }) {
-  const snippetListingClass =
-    type === ActorType.Full
-      ? "#snippet--productListing"
-      : "#snippet--itemListing";
+  const snippetListingClass = type === ActorType.Full ? "#snippet--productListing" : "#snippet--itemListing";
   const maxPage = document
-    .querySelectorAll(
-      `${snippetListingClass} ul.flex.flex-wrap.items-stretch li`
-    )
+    .querySelectorAll(`${snippetListingClass} ul.flex.flex-wrap.items-stretch li`)
     .at(-2)
     ?.textContent?.trim();
 
@@ -165,10 +129,10 @@ function handlePagination({ document, request, type }) {
 
 async function handleProducts({ crawler, document, type }) {
   if (type === ActorType.BlackFriday) {
-    const requests = Array.from(
-      document.querySelectorAll("a.btn-primary"),
-      a => ({ url: `${web}${a.href}`, userData: { label: "PAGE" } })
-    );
+    const requests = Array.from(document.querySelectorAll("a.btn-primary"), a => ({
+      url: `${web}${a.href}`,
+      userData: { label: "PAGE" }
+    }));
     await crawler.requestQueue.addRequests(requests);
   }
 
@@ -178,13 +142,9 @@ async function handleProducts({ crawler, document, type }) {
           "#snippet--productListItems div:has(>h2>a[data-datalayer]), " +
             "#snippet--productListItems > .items-stretch:has(a[data-datalayer])" // subcategories have different layout
         )
-      : document.querySelectorAll(
-          '[itemprop="itemListElement"]:has(h2):has([itemprop=url])'
-        );
+      : document.querySelectorAll('[itemprop="itemListElement"]:has(h2):has([itemprop=url])');
   const breadCrumbs = document
-    .querySelectorAll(
-      "ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']"
-    )
+    .querySelectorAll("ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']")
     .flatMap(item => {
       const breadCrumbs = [];
       const attrContent = item.getAttribute("content")?.trim();
@@ -335,7 +295,6 @@ export async function main() {
   await crawler.run(getInitialUrls({ url: web, type }));
   await stats.save(true);
 
-  const tableName =
-    type === ActorType.BlackFriday ? "lekarna_bf" : "lekarna_cz";
+  const tableName = type === ActorType.BlackFriday ? "lekarna_bf" : "lekarna_cz";
   await uploadToKeboola(tableName);
 }

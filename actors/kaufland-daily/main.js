@@ -1,12 +1,12 @@
+import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { Actor, log, LogLevel } from "apify";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler } from "@crawlee/http";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { Actor, LogLevel, log } from "apify";
 
 const ROOT_URL = "https://www.kaufland.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
@@ -17,15 +17,13 @@ const LABELS = {
 };
 
 function handleTopLevelCategories(document) {
-  return document
-    .querySelectorAll("li.rd-footer_navigation-link-list-item > a")
-    .map(cat => ({
-      url: new URL(cat.href, ROOT_URL).href,
-      label: LABELS.CATEGORY,
-      userData: {
-        categories: [cat.textContent.trim()]
-      }
-    }));
+  return document.querySelectorAll("li.rd-footer_navigation-link-list-item > a").map(cat => ({
+    url: new URL(cat.href, ROOT_URL).href,
+    label: LABELS.CATEGORY,
+    userData: {
+      categories: [cat.textContent.trim()]
+    }
+  }));
 }
 
 function handleSubcategories(document, prevCategories, previousUrl) {
@@ -49,41 +47,29 @@ function handleSubcategories(document, prevCategories, previousUrl) {
   // the category elements we scraped previously have no links: we need to
   // find the ID of each category to construct its corresponding url, the IDs
   // can be retrieved from this script element
-  const scriptWithCategoryIds = document.querySelectorAll(
-    "script:not([src], [data-n-head], [type])"
-  )[1].textContent;
-  return document
-    .querySelectorAll("li.rd-category-tree__list-item > span")
-    .reduce((results, cat) => {
-      const categoryName = cat.textContent.trim();
-      // there are 2 ways how the ID can be stored in the script so that's why 2 regexes
-      const regex = new RegExp(
-        `\\s*${categoryName}\\s*\\",\\"\\\\u002Fcategory\\\\u002F(\\d+)`
-      );
-      const alternativeRegex = new RegExp(
-        `\\s*${categoryName}\\s*\\",path:\\"\\\\u002Fcategory\\\\u002F(\\d+)`
-      );
-      const regexMatch =
-        scriptWithCategoryIds.match(regex) ??
-        scriptWithCategoryIds.match(alternativeRegex);
-      if (!regexMatch) {
-        // should not happen or very rarely
-        log.warning(
-          `Was unable to find categoryId for ${categoryName}, skipping`
-        );
-        return results;
-      }
-      const categoryId = regexMatch[1];
-      results.push({
-        url: new URL(`/category/${categoryId}/`, ROOT_URL).href,
-        label: LABELS.CATEGORY,
-        userData: {
-          categories: [...prevCategories, cat.textContent.trim()],
-          previousUrl
-        }
-      });
+  const scriptWithCategoryIds = document.querySelectorAll("script:not([src], [data-n-head], [type])")[1].textContent;
+  return document.querySelectorAll("li.rd-category-tree__list-item > span").reduce((results, cat) => {
+    const categoryName = cat.textContent.trim();
+    // there are 2 ways how the ID can be stored in the script so that's why 2 regexes
+    const regex = new RegExp(`\\s*${categoryName}\\s*\\",\\"\\\\u002Fcategory\\\\u002F(\\d+)`);
+    const alternativeRegex = new RegExp(`\\s*${categoryName}\\s*\\",path:\\"\\\\u002Fcategory\\\\u002F(\\d+)`);
+    const regexMatch = scriptWithCategoryIds.match(regex) ?? scriptWithCategoryIds.match(alternativeRegex);
+    if (!regexMatch) {
+      // should not happen or very rarely
+      log.warning(`Was unable to find categoryId for ${categoryName}, skipping`);
       return results;
-    }, []);
+    }
+    const categoryId = regexMatch[1];
+    results.push({
+      url: new URL(`/category/${categoryId}/`, ROOT_URL).href,
+      label: LABELS.CATEGORY,
+      userData: {
+        categories: [...prevCategories, cat.textContent.trim()],
+        previousUrl
+      }
+    });
+    return results;
+  }, []);
 }
 
 function extractProducts(document, categories) {
@@ -104,9 +90,7 @@ function extractProducts(document, categories) {
     .find(s => s.textContent.includes(`"@type":"Product"`));
   const productsFromScript = JSON.parse(scriptWithProducts.textContent);
   for (const product of productsFromScript) {
-    const key = keyFromImg(
-      Array.isArray(product.image) ? product.image[0] : product.image
-    );
+    const key = keyFromImg(Array.isArray(product.image) ? product.image[0] : product.image);
     productsInfoFromScript[key] = {
       itemId: product.sku.toString(),
       itemUrl: product.offers.url,
@@ -116,35 +100,28 @@ function extractProducts(document, categories) {
     };
   }
 
-  const products = document
-    .querySelectorAll("article.product:not(:has(.product__sponsored-ad-label))")
-    .map(product => {
-      const itemName = product
-        .querySelector(".product__title")
-        .textContent.trim();
-      const img = product.querySelector("source").srcset.trim();
+  const products = document.querySelectorAll("article.product:not(:has(.product__sponsored-ad-label))").map(product => {
+    const itemName = product.querySelector(".product__title").textContent.trim();
+    const img = product.querySelector("source").srcset.trim();
 
-      const { itemId, itemUrl, inStock, currentPrice } =
-        productsInfoFromScript[keyFromImg(img)];
+    const { itemId, itemUrl, inStock, currentPrice } = productsInfoFromScript[keyFromImg(img)];
 
-      const discountedEl = product.querySelector(".price-note--rrp");
-      const originalPrice = discountedEl
-        ? cleanPrice(discountedEl.textContent)
-        : null;
+    const discountedEl = product.querySelector(".price-note--rrp");
+    const originalPrice = discountedEl ? cleanPrice(discountedEl.textContent) : null;
 
-      return {
-        itemId,
-        itemUrl,
-        itemName,
-        img,
-        discounted: !!originalPrice,
-        originalPrice,
-        currency: "CZK",
-        currentPrice,
-        category: categories,
-        inStock
-      };
-    });
+    return {
+      itemId,
+      itemUrl,
+      itemName,
+      img,
+      discounted: !!originalPrice,
+      originalPrice,
+      currency: "CZK",
+      currentPrice,
+      category: categories,
+      inStock
+    };
+  });
 
   return products;
 }
@@ -182,12 +159,7 @@ function extractCategoryId(requestUrl, document) {
   return scriptWithCategoryId.match(regex)[1];
 }
 
-function createPaginationRequests(
-  productsCount,
-  totalProductCount,
-  categoryId,
-  categories
-) {
+function createPaginationRequests(productsCount, totalProductCount, categoryId, categories) {
   const reminder = totalProductCount % productsCount > 0 ? 1 : 0;
   const nOfPages = totalProductCount / productsCount + reminder;
 
@@ -251,23 +223,16 @@ async function main() {
       const { document } = parseHTML(body.toString());
       log.debug(`Scraping [${request.label}] - ${request.url}`);
 
-      const {
-        categories = [],
-        pagination = false,
-        previousUrl = ""
-      } = request.userData;
+      const { categories = [], pagination = false, previousUrl = "" } = request.userData;
 
       // some categories are listed but actually don't exist (redirect to higher category),
       // so we need to check for that
       if (request.loadedUrl === previousUrl) {
-        log.info(
-          `Skipping as ${request.url} redirected back to ${previousUrl}`
-        );
+        log.info(`Skipping as ${request.url} redirected back to ${previousUrl}`);
         return;
       }
 
-      const hasSubcategories =
-        document.querySelectorAll("div.rd-category-tree__nav").length > 0;
+      const hasSubcategories = document.querySelectorAll("div.rd-category-tree__nav").length > 0;
       if (request.label === LABELS.START || hasSubcategories) {
         const requests =
           request.label === LABELS.START
@@ -288,9 +253,7 @@ async function main() {
       // we are on a page with products so we scrape them
       const products = extractProducts(document, categories);
       const savedCount = await saveProducts(products, stats, processedIds);
-      log.info(
-        `${request.url} - Found ${products.length} products, saved ${savedCount}`
-      );
+      log.info(`${request.url} - Found ${products.length} products, saved ${savedCount}`);
 
       // we need to create requests for other pages on page 1, so this is a check
       // if we are on a page different than 1
@@ -311,9 +274,7 @@ async function main() {
         await crawler.addRequests(pageRequests);
       } else {
         const totalProductCount = Number.parseInt(
-          document
-            .querySelector(".product-count")
-            .textContent.replace(/\s+/g, ""),
+          document.querySelector(".product-count").textContent.replace(/\s+/g, ""),
           10
         );
 
@@ -321,12 +282,7 @@ async function main() {
         if (totalProductCount > products.length) {
           const categoryId = extractCategoryId(request.url, document);
           log.debug(`${request.url} - Found category ID: ${categoryId}`);
-          const pageRequests = createPaginationRequests(
-            products.length,
-            totalProductCount,
-            categoryId,
-            categories
-          );
+          const pageRequests = createPaginationRequests(products.length, totalProductCount, categoryId, categories);
 
           if (type === ActorType.Test) {
             await crawler.addRequests(pageRequests.slice(0, 3));
@@ -357,8 +313,7 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    const tableName =
-      type === ActorType.BlackFriday ? "kaufland_cz_bf" : "kaufland_cz";
+    const tableName = type === ActorType.BlackFriday ? "kaufland_cz_bf" : "kaufland_cz";
     await uploadToKeboola(tableName);
   }
   log.info("Finished.");

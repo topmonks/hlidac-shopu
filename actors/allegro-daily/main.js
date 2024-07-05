@@ -1,12 +1,12 @@
+import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { Actor, LogLevel, log } from "apify";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { HttpCrawler } from "@crawlee/http";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { FingerprintGenerator } from "fingerprint-generator";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 
 const ROOT_URL = "https://allegro.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
@@ -30,9 +30,8 @@ async function handleProducts(document, processedIds) {
   let duplicates = 0;
   for (const prod of productElements) {
     const itemId =
-      prod
-        .getAttribute("data-analytics-view-custom-representative-offer-id")
-        ?.trim() ?? prod.getAttribute("data-analytics-view-value")?.trim();
+      prod.getAttribute("data-analytics-view-custom-representative-offer-id")?.trim() ??
+      prod.getAttribute("data-analytics-view-value")?.trim();
 
     if (processedIds.has(itemId)) {
       duplicates += 1;
@@ -41,24 +40,15 @@ async function handleProducts(document, processedIds) {
     processedIds.add(itemId);
 
     const originalPrice =
-      cleanPrice(
-        prod.querySelector(
-          'span[style="font-weight:normal;text-decoration:line-through;"]'
-        )?.textContent
-      ) ?? null;
-    const currentPrice =
-      cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent) ??
+      cleanPrice(prod.querySelector('span[style="font-weight:normal;text-decoration:line-through;"]')?.textContent) ??
       null;
+    const currentPrice = cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent) ?? null;
     const imageElement = prod.querySelector("img");
     products.push({
       itemId,
       itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
-      itemUrl: prod
-        .getAttribute("data-analytics-view-custom-product-offer-url")
-        .trim(),
-      img:
-        imageElement.getAttribute("data-src") ??
-        imageElement.getAttribute("src"),
+      itemUrl: prod.getAttribute("data-analytics-view-custom-product-offer-url").trim(),
+      img: imageElement.getAttribute("data-src") ?? imageElement.getAttribute("src"),
       currentPrice,
       inStock: !!currentPrice,
       originalPrice,
@@ -76,9 +66,7 @@ async function handleProducts(document, processedIds) {
 }
 
 function createPaginationRequests(document, url) {
-  const pageCount = Number.parseInt(
-    document.querySelector('div > div[role="navigation"] > span').textContent
-  );
+  const pageCount = Number.parseInt(document.querySelector('div > div[role="navigation"] > span').textContent);
   const paginationRequests = [];
   for (let i = 2; i < pageCount + 1; i++) {
     paginationRequests.push({
@@ -102,12 +90,7 @@ async function main() {
   const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
-  const {
-    development = false,
-    debug = false,
-    proxyGroups = [],
-    type = ActorType.Full
-  } = input || {};
+  const { development = false, debug = false, proxyGroups = [], type = ActorType.Full } = input || {};
   const inputtedUrls = input?.urls ?? [];
 
   if (debug) {
@@ -165,9 +148,7 @@ async function main() {
           {
             const { document } = parseHTML(body.toString());
             const requestsToAdd = document
-              .querySelectorAll(
-                'a[data-description="navigation-layers category link"]'
-              )
+              .querySelectorAll('a[data-description="navigation-layers category link"]')
               .map(cat => ({
                 url: new URL(cat.href, ROOT_URL).href,
                 label: Label.Category
@@ -179,55 +160,41 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            log.info(
-              `${request.url} - Added ${requestsToAdd.length} top level categories`
-            );
+            log.info(`${request.url} - Added ${requestsToAdd.length} top level categories`);
           }
           break;
         case Label.Category:
           {
             const { document } = parseHTML(body.toString());
-            const categoryRequests = document
-              .querySelectorAll("a.carousel-item")
-              .map(cat => {
-                return {
-                  url: new URL(cat.href, ROOT_URL).href,
-                  label: Label.Subcategory
-                };
-              });
+            const categoryRequests = document.querySelectorAll("a.carousel-item").map(cat => {
+              return {
+                url: new URL(cat.href, ROOT_URL).href,
+                label: Label.Subcategory
+              };
+            });
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(
-              `${request.url} - Added ${categoryRequests.length} subcategories`
-            );
+            log.info(`${request.url} - Added ${categoryRequests.length} subcategories`);
           }
           break;
         case Label.Subcategory:
           {
             const { document } = parseHTML(body.toString());
 
-            const subcategoryLinks = document.querySelectorAll(
-              '[data-role="LinkItemAnchor"]'
-            );
-            const subcategoryItems = document.querySelectorAll(
-              '[data-role="LinkItem"]'
-            );
+            const subcategoryLinks = document.querySelectorAll('[data-role="LinkItemAnchor"]');
+            const subcategoryItems = document.querySelectorAll('[data-role="LinkItem"]');
 
             // we reached the lowest subcategory - one of the navigation items is not clickable
             if (subcategoryLinks.length !== subcategoryItems.length) {
-              const { totalProducts, savedProducts, duplicates } =
-                await handleProducts(document, processedIds);
+              const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
               stats.add("products", totalProducts);
               stats.add("duplicates", duplicates);
 
-              const paginationRequests = createPaginationRequests(
-                document,
-                request.url
-              );
+              const paginationRequests = createPaginationRequests(document, request.url);
               if (type === ActorType.Test) {
                 await crawler.addRequests(paginationRequests.slice(0, 2));
               } else {
@@ -253,29 +220,22 @@ async function main() {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(
-              `${request.url} - Found ${categoryRequests.length} subcategories`
-            );
+            log.info(`${request.url} - Found ${categoryRequests.length} subcategories`);
           }
           break;
         case Label.Product:
           {
             const { document } = parseHTML(body.toString());
-            const { totalProducts, savedProducts, duplicates } =
-              await handleProducts(document, processedIds);
+            const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
             stats.add("products", totalProducts);
             stats.add("duplicates", duplicates);
-            log.info(
-              `${request.url} - Found ${totalProducts} products, saved ${savedProducts}`
-            );
+            log.info(`${request.url} - Found ${totalProducts} products, saved ${savedProducts}`);
           }
           break;
       }
     },
     async failedRequestHandler({ request, log }, error) {
-      log.error(
-        `Request ${request.url} ${error.message} failed multiple times`
-      );
+      log.error(`Request ${request.url} ${error.message} failed multiple times`);
       stats.inc("failed");
     }
   });
@@ -313,9 +273,7 @@ async function main() {
       continue;
     }
 
-    log.warning(
-      `Skipping ${inputtedUrl}, only home-page/category/recommended urls are supported`
-    );
+    log.warning(`Skipping ${inputtedUrl}, only home-page/category/recommended urls are supported`);
   }
 
   if (requests.length === 0) {

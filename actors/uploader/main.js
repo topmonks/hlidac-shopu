@@ -1,55 +1,55 @@
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { getMemoryInfo, sleep } from "@crawlee/utils";
 import { writeToBuffer } from "@fast-csv/format";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { retry } from "@hlidac-shopu/lib/remoting.mjs";
-import { itemSlug, shopOrigin, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, log } from "apify";
 import byteSize from "byte-size";
 import { addMinutes } from "date-fns/addMinutes";
 import { format } from "date-fns/format";
 import gzip from "node-gzip";
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 import { keboolaUploader } from "./src/uploader.js";
-import { mironetValidator } from "./src/validators/mironetValidator.js";
-import { rohlikValidator } from "./src/validators/rohlikValidator.js";
-import { rohlikDetailValidator } from "./src/validators/rohlikDetailValidator.js";
-import { tsbohemiaValidator } from "./src/validators/tsbohemiaValidator.js";
-import { tsbohemiaPriceValidator } from "./src/validators/tsbohemiaPriceValidator.js";
-import { notinoValidator } from "./src/validators/notinoValidator.js";
-import { datartValidator } from "./src/validators/datartValidator.js";
-import { itescoValidator } from "./src/validators/itescoValidator.js";
-import { itescoDetailValidator } from "./src/validators/itescoDetailValidator.js";
-import { kosikValidator } from "./src/validators/kosikValidator.js";
-import { kosikDetailValidator } from "./src/validators/kosikDetailValidator.js";
-import { alzaValidator } from "./src/validators/alzaValidator.js";
-import { alzaFeedValidator } from "./src/validators/alzaFeedValidator.js";
-import { czcValidator } from "./src/validators/czcValidator.js";
-import { mallValidator } from "./src/validators/mallValidator.js";
-import { mountfieldValidator } from "./src/validators/mountfieldValidator.js";
-import { lekarnaValidator } from "./src/validators/lekarnaValidator.js";
-import { luxorValidator } from "./src/validators/luxoeValidator.js";
-import { datartValidatorBf } from "./src/validators/datartValidatorBf.js";
-import { pilulkaczValidator } from "./src/validators/pilulkaczValidator.js";
-import { benuczValidator } from "./src/validators/benuczValidator.js";
-import { prozdraviczValidator } from "./src/validators/prozdraviczValidator.js";
 import { aaaautoValidator } from "./src/validators/aaaautoValidator.js";
+import { alzaFeedValidator } from "./src/validators/alzaFeedValidator.js";
+import { alzaValidator } from "./src/validators/alzaValidator.js";
+import { benuczValidator } from "./src/validators/benuczValidator.js";
+import { coopValidator } from "./src/validators/coopValidator.js";
+import { czcValidator } from "./src/validators/czcValidator.js";
+import { datartValidator } from "./src/validators/datartValidator.js";
+import { datartValidatorBf } from "./src/validators/datartValidatorBf.js";
+import { dekValidator } from "./src/validators/dekValidator.js";
+import { dmValidator } from "./src/validators/dmValidator.js";
+import { electroworldValidator } from "./src/validators/electroworldValidator.js";
+import { evaValidator } from "./src/validators/evaValidator.js";
+import { globusValidator } from "./src/validators/globusValidator.js";
+import { hornbachValidator } from "./src/validators/hornbachValidator.js";
+import { ikeaValidator } from "./src/validators/ikeaValidator.js";
+import { itescoDetailValidator } from "./src/validators/itescoDetailValidator.js";
+import { itescoValidator } from "./src/validators/itescoValidator.js";
+import { kosikDetailValidator } from "./src/validators/kosikDetailValidator.js";
+import { kosikValidator } from "./src/validators/kosikValidator.js";
+import { lekarnaValidator } from "./src/validators/lekarnaValidator.js";
+import { lidlValidator } from "./src/validators/lidlValidator.js";
+import { luxorValidator } from "./src/validators/luxoeValidator.js";
+import { makroczValidator } from "./src/validators/makroczValidator.js";
+import { mallValidator } from "./src/validators/mallValidator.js";
+import { megaknihyValidator } from "./src/validators/megaknihyValidator.js";
+import { mironetValidator } from "./src/validators/mironetValidator.js";
+import { mountfieldValidator } from "./src/validators/mountfieldValidator.js";
+import { notinoValidator } from "./src/validators/notinoValidator.js";
 import { obiValidator } from "./src/validators/obiValidator.js";
 import { okayValidator } from "./src/validators/okayValidator.js";
-import { globusValidator } from "./src/validators/globusValidator.js";
-import { coopValidator } from "./src/validators/coopValidator.js";
-import { makroczValidator } from "./src/validators/makroczValidator.js";
-import { dmValidator } from "./src/validators/dmValidator.js";
-import { tetaValidator } from "./src/validators/tetaValidator.js";
+import { pilulkaczValidator } from "./src/validators/pilulkaczValidator.js";
+import { prozdraviczValidator } from "./src/validators/prozdraviczValidator.js";
+import { rohlikDetailValidator } from "./src/validators/rohlikDetailValidator.js";
+import { rohlikValidator } from "./src/validators/rohlikValidator.js";
 import { rozetkaValidator } from "./src/validators/rozetkaValidator.js";
-import { hornbachValidator } from "./src/validators/hornbachValidator.js";
-import { electroworldValidator } from "./src/validators/electroworldValidator.js";
-import { lidlValidator } from "./src/validators/lidlValidator.js";
-import { evaValidator } from "./src/validators/evaValidator.js";
 import { tchiboValidator } from "./src/validators/tchiboValidator.js";
-import { megaknihyValidator } from "./src/validators/megaknihyValidator.js";
-import { ikeaValidator } from "./src/validators/ikeaValidator.js";
-import { dekValidator } from "./src/validators/dekValidator.js";
+import { tetaValidator } from "./src/validators/tetaValidator.js";
+import { tsbohemiaPriceValidator } from "./src/validators/tsbohemiaPriceValidator.js";
+import { tsbohemiaValidator } from "./src/validators/tsbohemiaValidator.js";
 
 const { KEBOOLA_BUCKET } = process.env;
 let stateValues = 0;
@@ -57,16 +57,7 @@ let stateValues = 0;
 const rollbar = Rollbar.init();
 
 async function processItems(
-  {
-    items,
-    upload,
-    offset,
-    datasetId,
-    crawledDate,
-    actRunId,
-    blackFriday,
-    tableName
-  },
+  { items, upload, offset, datasetId, crawledDate, actRunId, blackFriday, tableName },
   stats
 ) {
   const validItems = [];
@@ -285,9 +276,7 @@ async function processItems(
       // original category in data are breadcrumbs
       if (!item.breadCrumbs) {
         if (item.category) {
-          item.breadCrumbs = Array.isArray(item.category)
-            ? item.category.toString()
-            : item.category;
+          item.breadCrumbs = Array.isArray(item.category) ? item.category.toString() : item.category;
         } else if (typeof item.category === "string" && item.category === "") {
           item.breadCrumbs = "";
         }
@@ -326,9 +315,7 @@ async function processItems(
       await keboolaUploader(
         KEBOOLA_BUCKET ?? "in.c-black-friday",
         tableName,
-        await writeToBuffer(validItems, { headers: true }).then(buffer =>
-          gzip.gzip(buffer)
-        ),
+        await writeToBuffer(validItems, { headers: true }).then(buffer => gzip.gzip(buffer)),
         `${tableName}-offset-${offset}-datasetid-${datasetId}.csv`,
         true
       );
@@ -340,10 +327,7 @@ async function processItems(
 
   // save state everytime we process a new chunk of data
   try {
-    await Promise.all([
-      Actor.setValue("STATE", stateValues),
-      Actor.setValue("STATS", stats)
-    ]);
+    await Promise.all([Actor.setValue("STATE", stateValues), Actor.setValue("STATS", stats)]);
   } catch (err) {
     log.error("error with saving state.", err);
   }
@@ -366,17 +350,7 @@ async function loadDatasetItems(datasetId, offset, pageLimit, test) {
 }
 
 async function loadItems(
-  {
-    datasetId,
-    offset,
-    limit,
-    test,
-    upload,
-    actRunId,
-    crawledDate,
-    blackFriday,
-    tableName
-  },
+  { datasetId, offset, limit, test, upload, actRunId, crawledDate, blackFriday, tableName },
   stats
 ) {
   log.info(`Downloading with offset ${offset} and limit ${limit}`);
@@ -418,9 +392,7 @@ async function loadItems(
       rollbar.error(error, { tableName });
       log.error(error);
       tries--;
-      log.info(
-        `Some problem with loading, lets give it a try. Still have ${tries}`
-      );
+      log.info(`Some problem with loading, lets give it a try. Still have ${tries}`);
       await sleep(300);
       if (limit > 5000) {
         limit = Math.floor(limit / 2);
@@ -445,16 +417,7 @@ async function saveItemsCount(shop, downloaded) {
 
 async function main() {
   const input = await Actor.getValue("INPUT");
-  const {
-    datasetId,
-    upload,
-    test,
-    offsetManual,
-    actRunId,
-    manualLimit,
-    blackFriday,
-    tableName
-  } = input;
+  const { datasetId, upload, test, offsetManual, actRunId, manualLimit, blackFriday, tableName } = input;
 
   if (!tableName) {
     throw new Error("tableName is missing in INPUT");

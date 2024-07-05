@@ -1,19 +1,17 @@
 import {
-  createGoogleMxRecords,
-  createTxtRecord,
-  createCacheBoostingPolicy,
-  createSecurityHeadersAndPermissionsPolicy,
   CloudFront,
-  Website
+  Website,
+  createCacheBoostingPolicy,
+  createGoogleMxRecords,
+  createSecurityHeadersAndPermissionsPolicy,
+  createTxtRecord
 } from "@topmonks/pulumi-aws";
 import { AppEdgeLambda } from "./app-edge-lambda";
 import { RootEdgeLambda } from "./root-edge-lambda";
 
 export function createWebsite(domain: string) {
   let { lambda: appLambda } = AppEdgeLambda.create("hlidac-shopu-app-lambda");
-  let { lambda: rootLambda } = RootEdgeLambda.create(
-    "hlidac-shopu-root-lambda"
-  );
+  let { lambda: rootLambda } = RootEdgeLambda.create("hlidac-shopu-root-lambda");
 
   let gmailRecords = createGoogleMxRecords("hlidacshopu.cz");
   let googleVerification = createTxtRecord(
@@ -27,18 +25,13 @@ export function createWebsite(domain: string) {
     headersConfig: { headerBehavior: "none" },
     queryStringsConfig: { queryStringBehavior: "none" }
   });
-  let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(
-    domain,
-    {}
-  );
+  let securityHeadersPolicy = createSecurityHeadersAndPermissionsPolicy(domain, {});
   let nakedDomainRedirect = Website.createRedirect("hlidacshopu.cz", {
     target: `https://${domain}`
   });
   let website = Website.create(domain, {
     assetsCachePolicyId: cacheBoostingPolicy.id,
-    assetResponseHeadersPolicyId:
-      CloudFront.ManagedResponseHeaderPolicy
-        .CORSwithPreflightAndSecurityHeadersPolicy,
+    assetResponseHeadersPolicyId: CloudFront.ManagedResponseHeaderPolicy.CORSwithPreflightAndSecurityHeadersPolicy,
     cachePolicyId: CloudFront.ManagedCachePolicy.CachingOptimized,
     responseHeadersPolicyId: securityHeadersPolicy.id,
     edgeLambdas: [

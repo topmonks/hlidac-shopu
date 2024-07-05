@@ -26,9 +26,7 @@ export class Smarty extends AsyncShop {
         : document.querySelector(`meta[itemprop="sku"]`).content;
     const title = document.querySelector(`h1`).textContent.trim();
     const currentPrice = document
-      .querySelector(
-        `[itemtype="http://schema.org/Product"] [itemprop="price"]`
-      )
+      .querySelector(`[itemtype="http://schema.org/Product"] [itemprop="price"]`)
       .getAttribute(`content`);
     if (!currentPrice) return null; //
 
@@ -36,9 +34,7 @@ export class Smarty extends AsyncShop {
     // <p class="priceOld">Sleva 12 % <span>z 13 590 Kč</span></p>
     const originalPrice = cleanPrice(`.priceOld span`);
     const imageUrl = document
-      .querySelector(
-        `meta[property='og:image:secure_url'] meta[property='og:image']`
-      ) // prefer https, fallback to http
+      .querySelector(`meta[property='og:image:secure_url'] meta[property='og:image']`) // prefer https, fallback to http
       .content.trim();
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }

@@ -45,9 +45,7 @@ function reviewTemplate({ author, datePublished, reviewBody, reviewRating }) {
     >
       <link property="itemReviewed" href="https://www.hlidacshopu.cz/" />
       <div
-        class="review__header ${author.image == null
-          ? "review__header--no-avatar"
-          : ""}"
+        class="review__header ${author.image == null ? "review__header--no-avatar" : ""}"
       >
         ${avatarTemplate(author)}
         <span property="author" typeof="Person" class="review__author"

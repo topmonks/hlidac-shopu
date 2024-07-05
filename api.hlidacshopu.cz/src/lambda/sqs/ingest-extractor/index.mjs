@@ -22,11 +22,7 @@ function enqueueMessage(buffer, items) {
   const byteLength = new TextEncoder().encode(messageBody).byteLength;
   console.log(`Enqueuing ${items.length} items with total size ${byteLength}`);
   if (byteLength > 256 * 1024) {
-    rollbar.error(
-      `SQS message is probably too big ${byteLength} bytes (shop URL example: ${
-        items.at(-1).path
-      })`
-    );
+    rollbar.error(`SQS message is probably too big ${byteLength} bytes (shop URL example: ${items.at(-1).path})`);
   }
   buffer.push(
     sqs
@@ -48,9 +44,7 @@ async function handleEvents(event, _context) {
     const bucket = record.s3.bucket.name;
     const key = record.s3.object.key;
     console.log(`Extracting files from ${key}`);
-    const zip = (await getZip(bucket, key)).pipe(
-      unzipperParse({ forceStream: true })
-    );
+    const zip = (await getZip(bucket, key)).pipe(unzipperParse({ forceStream: true }));
     try {
       for await (const entry of zip) {
         if (entry.type !== "File") {
@@ -61,9 +55,7 @@ async function handleEvents(event, _context) {
         count++;
         const payload = { path: entry.path, content };
         items.push(payload);
-        const size = new TextEncoder().encode(
-          JSON.stringify(payload)
-        ).byteLength;
+        const size = new TextEncoder().encode(JSON.stringify(payload)).byteLength;
         msgSize += size;
         if (size > maxMessageSize) maxMessageSize = size;
         // max message msgSize is 256KB, but leave some reserve

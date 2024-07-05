@@ -5,24 +5,16 @@ export class Datart extends Shop {
   async scrape() {
     const elem = document.querySelector(".product-detail");
     if (!elem) return;
-    const itemIdTarget = elem
-      .getElementsByClassName("btn btn-link btn-compare")[0]
-      .getAttribute("data-target-add");
+    const itemIdTarget = elem.getElementsByClassName("btn btn-link btn-compare")[0].getAttribute("data-target-add");
     if (!itemIdTarget.length > 1) return;
 
     const searchParams = new URLSearchParams(itemIdTarget);
     const itemId = searchParams.get("id");
 
-    const title = elem
-      .querySelector("h1.product-detail-title")
-      .textContent.trim();
-    const currentPrice = elem
-      .getElementsByClassName("product-price")[0]
-      .getAttribute("data-price-value");
+    const title = elem.querySelector("h1.product-detail-title").textContent.trim();
+    const currentPrice = elem.getElementsByClassName("product-price")[0].getAttribute("data-price-value");
     const originalPrice = cleanPrice(".product-price .cut-price del");
-    const imageUrl = elem
-      .querySelector("#lightgallery > .product-gallery-main div.item")
-      .getAttribute("data-src");
+    const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").getAttribute("data-src");
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 

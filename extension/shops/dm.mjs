@@ -1,4 +1,4 @@
-import { registerShop, cleanPriceText } from "../helpers.mjs";
+import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 export class Dm extends AsyncShop {
@@ -19,9 +19,7 @@ export class Dm extends AsyncShop {
     const title = data.name;
     const currentPrice = data.offers.price;
     const originalPrice = cleanPriceText(
-      document
-        .querySelector('[data-dmid="price-sellout"]')
-        ?.textContent?.trim() ?? ""
+      document.querySelector('[data-dmid="price-sellout"]')?.textContent?.trim() ?? ""
     );
     const imageUrl = data.image;
     return { itemId, title, currentPrice, originalPrice, imageUrl };

@@ -1,17 +1,14 @@
-import { Actor, log, LogLevel } from "apify";
-import { createHttpRouter, HttpCrawler, useState } from "@crawlee/http";
+import { HttpCrawler, createHttpRouter, useState } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import {
-  parseFloatText,
-  saveUniqProducts
-} from "@hlidac-shopu/actors-common/product.js";
+import { parseFloatText, saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
+import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
@@ -113,39 +110,24 @@ function handleProductDetail({ processedIds, stats }) {
     const itemUrl = response.url;
     log.debug("Extracting product data", { url: itemUrl });
     const { document } = parseHTML(body.toString());
-    const data = toArray(
-      JSON.parse(
-        document.querySelector("script[type='application/ld+json']")
-          ?.textContent ?? "[]"
-      )
-    );
+    const data = toArray(JSON.parse(document.querySelector("script[type='application/ld+json']")?.textContent ?? "[]"));
     const product = data.find(x => x["@type"] === "Product");
     const title = product?.name;
     const currentPrice = product?.offers?.price;
 
-    if (
-      currentPrice == null ||
-      Number.isNaN(currentPrice) ||
-      currentPrice < 0
-    ) {
+    if (currentPrice == null || Number.isNaN(currentPrice) || currentPrice < 0) {
       stats.inc("itemNoPrice");
       log.warning("Item has no price. Skipping...", { url: itemUrl });
       return;
     }
 
-    const inStock =
-      product?.offers?.availability === "https://schema.org/InStock";
+    const inStock = product?.offers?.availability === "https://schema.org/InStock";
     const imageUrl = product?.image?.[0];
     const shortDesc = product?.description;
 
-    const { id: itemId } = document.querySelector(
-      "[componentname='catalog.product']"
-    );
+    const { id: itemId } = document.querySelector("[componentname='catalog.product']");
     const originalPrice = parseFloatText(
-      cleanPriceText(
-        document.querySelector(`.price-before, .superPrice__old__price`)
-          ?.textContent ?? ""
-      )
+      cleanPriceText(document.querySelector(`.price-before, .superPrice__old__price`)?.textContent ?? "")
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
 
@@ -182,12 +164,8 @@ function handleCategory() {
     log.debug("Extracting category", { url: categoryUrl });
     const { document } = parseHTML(body.toString());
 
-    const detailLinks = document.querySelectorAll(
-      `.product-list .product__name`
-    );
-    const urls = Array.from(detailLinks).map(x =>
-      buildUrl(categoryUrl, x.href)
-    );
+    const detailLinks = document.querySelectorAll(`.product-list .product__name`);
+    const urls = Array.from(detailLinks).map(x => buildUrl(categoryUrl, x.href));
     if (urls.length) await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
 
     const nextPageUrl = document.querySelector(`.page-item--next a`)?.href;

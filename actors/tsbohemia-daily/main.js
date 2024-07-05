@@ -1,10 +1,10 @@
-import { Actor, log, Dataset } from "apify";
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, log } from "apify";
 
 /** @enum {string} */
 export const Labels = {
@@ -98,11 +98,7 @@ async function main() {
             let pushedItemsCount = 0;
 
             const requests = [];
-            for (
-              let i = pushedItemsCount;
-              i < ids.length;
-              i += uploadBatchSize
-            ) {
+            for (let i = pushedItemsCount; i < ids.length; i += uploadBatchSize) {
               const start = i;
               const end = i + uploadBatchSize;
               const itemsToPush = ids.slice(start, end);
@@ -114,8 +110,7 @@ async function main() {
                 headers: {
                   "accept": "*/*",
                   "accept-language": "cs,en-US;q=0.9,en;q=0.8",
-                  "content-type":
-                    "application/x-www-form-urlencoded; charset=UTF-8",
+                  "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                   "sec-fetch-dest": "empty",
                   "sec-fetch-mode": "cors",
                   "sec-fetch-site": "same-origin",
@@ -139,16 +134,14 @@ async function main() {
               const item = {};
               item.itemId = price.StiId;
               item.currentPrice = Math.round(
-                (price.StiPrice + price.PriceRef + price.PriceRef2) *
-                  (1 + price.TaxRate / 100)
+                (price.StiPrice + price.PriceRef + price.PriceRef2) * (1 + price.TaxRate / 100)
               );
               if (price.StiPrice === price.SipPrice0) {
                 item.originalPrice = null;
                 item.discounted = false;
               } else {
                 item.originalPrice = Math.round(
-                  (price.SipPrice0 + price.PriceRef + price.PriceRef2) *
-                    (1 + price.TaxRate / 100)
+                  (price.SipPrice0 + price.PriceRef + price.PriceRef2) * (1 + price.TaxRate / 100)
                 );
                 item.discounted = true;
               }

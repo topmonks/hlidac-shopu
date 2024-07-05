@@ -9,16 +9,10 @@ export class Globus extends Shop {
   async scrape() {
     const elem = document.querySelector(".product-configurator");
     if (!elem) return;
-    const itemId = elem
-      .querySelector("form")
-      .getAttribute("action")
-      .split("/")
-      .slice(-1)[0];
+    const itemId = elem.querySelector("form").getAttribute("action").split("/").slice(-1)[0];
     const title = elem.querySelector(".title--product").textContent.trim();
     const originalPrice = cleanPrice(".money-price__amount--original");
-    const currentPrice =
-      cleanPrice(".money-price__amount-red") ??
-      cleanPrice(".money-price__amount");
+    const currentPrice = cleanPrice(".money-price__amount-red") ?? cleanPrice(".money-price__amount");
     const imageUrl = document.querySelector("lazy-image img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };

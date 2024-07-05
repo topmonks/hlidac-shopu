@@ -1,13 +1,13 @@
+import { HttpCrawler, useState } from "@crawlee/http";
+import { sleep } from "@crawlee/utils";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { HttpCrawler, useState } from "@crawlee/http";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import { choices, partition, take, transduce, push } from "@thi.ng/transducers";
-import { sleep } from "@crawlee/utils";
 import { defAtom } from "@thi.ng/atom";
-import { co, Channel } from "core-async";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { choices, partition, push, take, transduce } from "@thi.ng/transducers";
+import { Actor, Dataset, LogLevel, log } from "apify";
+import { Channel, co } from "core-async";
 
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
@@ -117,9 +117,7 @@ export function normalizeItem({ item, categoriesById }) {
  * @returns {{url: string, userData: {label: string, categoryId: string}}[]}
  */
 function categoriesRequests({ count, categoryId, categoriesById }) {
-  log.info(
-    `${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`
-  );
+  log.info(`${count} products in ${categoriesById?.[categoryId]?.name ?? categoryId}`);
   const limitPerPage = 100;
   const requests = [];
   for (let i = 0; i * limitPerPage < count; i++) {
@@ -179,11 +177,7 @@ const productsPerRequest = 15;
 function detailRequests({ productIds, categoryId, stats, requestedIds }) {
   stats.inc("categoryPagesCount");
   const requests = [];
-  for (const productIdsBatch of partition(
-    productsPerRequest,
-    true,
-    productIds
-  )) {
+  for (const productIdsBatch of partition(productsPerRequest, true, productIds)) {
     const productsParams = new URLSearchParams();
     for (const id of productIdsBatch) {
       if (!requestedIds[id]) {
@@ -323,10 +317,7 @@ async function main() {
         try {
           json = JSON.parse(body.toString());
         } catch (err) {
-          log.error(
-            `Failed to parse JSON from body, aborting requestHandler`,
-            err
-          );
+          log.error(`Failed to parse JSON from body, aborting requestHandler`, err);
           return;
         }
       }
@@ -374,16 +365,12 @@ async function main() {
       }
     },
     async failedRequestHandler({ request }, error) {
-      log.error(
-        `Request ${request.url} failed ${request.retryCount} times`,
-        error
-      );
+      log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
       stats.inc("failed");
     }
   });
 
-  const listCategoriesUrl =
-    "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
+  const listCategoriesUrl = "https://www.rohlik.cz/services/frontend-service/renderer/navigation/flat.json";
   await crawler.run([
     {
       url: listCategoriesUrl,
