@@ -16,11 +16,11 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "packageManager": "yarn@4.3.1",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.606.0",
+    "@aws-sdk/client-dynamodb": "3.609.0",
     "ramda": "0.30.1"
   },
   "devDependencies": {
-    "@hckr_/blendid": "8.4.3",
+    "@hckr_/blendid": "8.5.2",
     "@types/firefox-webext-browser": "120.0.4",
     "@types/node": "20.14.9",
     "@types/nunjucks": "3.2.6",
@@ -43,7 +43,7 @@
     "eslint-plugin-promise": "6.4.0",
     "gulp-mode": "1.1.0",
     "linkedom": "0.18.4",
-    "npm-run-all2": "6.2.0",
+    "npm-run-all2": "6.2.2",
     "postcss": "8.4.39",
     "postcss-css-variables": "0.19.0",
     "prettier": "3.3.2",
