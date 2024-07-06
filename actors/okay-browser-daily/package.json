@@ -2,8 +2,8 @@
   "name": "@hlidac-shopu/okay-browser",
   "version": "1.0.0",
   "description": "This is an Apify actor for okay (full browser version).",
-  "author": "TopMonks s.r.o. & contributors",
-  "license": "EPL-2.0",
+  "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
+  "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
     "@crawlee/playwright": "3.10.5",
