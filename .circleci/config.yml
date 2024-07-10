@@ -210,7 +210,7 @@ jobs:
           command: |
             mkdir -p results
             yarn lint:extension
-            yarn lint:extension -o json > results/lint.json
+            yarn lint:extension --reporter json > results/lint.json
       - store_artifacts:
           path: ./results
       - run:
