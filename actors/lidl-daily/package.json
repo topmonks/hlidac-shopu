@@ -6,20 +6,18 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.10.5",
-    "@crawlee/playwright": "3.10.5",
+    "@crawlee/http": "3.11.0",
+    "@crawlee/playwright": "3.11.0",
     "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.2.4",
     "playwright": "1.45.1"
   },
   "devDependencies": {
-    "@types/node": "20.14.9",
+    "@types/node": "20.14.10",
     "apify-cli": "0.20.2"
   },
   "scripts": {
     "start": "node main.js",
-    "lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
-    "lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
     "test": "../../scripts/test-actor.sh"
   }
 }

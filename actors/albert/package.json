@@ -6,13 +6,13 @@
   "description": "This is the albert.cz actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.10.5",
+    "@crawlee/http": "3.11.0",
     "@hlidac-shopu/actors-common": "2.3.3",
-    "@thi.ng/transducers": "9.0.7",
+    "@thi.ng/transducers": "9.0.8",
     "apify": "3.2.4"
   },
   "devDependencies": {
-    "@types/node": "20.14.9",
+    "@types/node": "20.14.10",
     "apify-cli": "0.20.2"
   },
   "scripts": {

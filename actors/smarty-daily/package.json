@@ -4,13 +4,13 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/linkedom": "3.10.5",
+    "@crawlee/linkedom": "3.11.0",
     "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.2.4",
     "linkedom": "0.18.4"
   },
   "devDependencies": {
-    "@types/node": "20.14.9",
+    "@types/node": "20.14.10",
     "apify-cli": "0.20.2"
   },
   "scripts": {

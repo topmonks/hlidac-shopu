@@ -6,13 +6,12 @@
   "description": "This is an actor to get data from obi eshop",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.10.5",
+    "@crawlee/http": "3.11.0",
     "@hlidac-shopu/actors-common": "2.3.3",
     "apify": "3.2.4"
   },
   "scripts": {
     "start": "node main.js",
-    "eslint:fix": "eslint ./ --ext .js,.jsx --fix",
     "test": "../../scripts/test-actor.sh"
   }
 }
