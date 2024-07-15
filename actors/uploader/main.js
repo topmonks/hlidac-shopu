@@ -1,5 +1,6 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
-import { getMemoryInfo, sleep } from "@crawlee/utils";
+import { getMemoryInfo } from "@crawlee/utils";
 import { writeToBuffer } from "@fast-csv/format";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { retry } from "@hlidac-shopu/lib/remoting.mjs";

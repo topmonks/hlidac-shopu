@@ -1,5 +1,5 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { HttpCrawler, useState } from "@crawlee/http";
-import { sleep } from "@crawlee/utils";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";

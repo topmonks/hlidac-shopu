@@ -1,5 +1,5 @@
 import { Blob } from "node:buffer";
-import { sleep } from "@crawlee/utils";
+import { setTimeout as sleep } from "node:timers/promises";
 import { Actor, log } from "apify";
 import byteSize from "byte-size";
 
@@ -47,7 +47,7 @@ export async function keboolaUploader(bucket, table, data, fileName, isGzipped) 
     } catch (err) {
       lastError = err;
       log.exception(err, `Upload to Keboola failed on ${i + 1} try, will wait awhile...`);
-      await sleep((i + 1) * 10 * 1000);
+      await sleep((i + 1) * 10_000);
       await Actor.setValue(`debugFile.csv${isGzipped ? ".gz" : ""}`, data, {
         contentType: "text/csv"
       }).catch(error => {

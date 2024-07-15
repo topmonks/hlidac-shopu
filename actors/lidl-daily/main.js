@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { HttpCrawler } from "@crawlee/http";
 import { PlaywrightCrawler } from "@crawlee/playwright";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -312,7 +313,6 @@ async function loadLazyContent({ page }) {
   await page.evaluate(async () => {
     /* global window, document */
     if (!document.body) return;
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     const maxScrolls = 100;
     let scrollCount = 0;
     let scrolledBy = 0;
