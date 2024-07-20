@@ -4319,7 +4319,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": "npm:1.4.0"
-    "@thi.ng/atom": "npm:5.3.4"
+    "@thi.ng/atom": "npm:5.3.5"
     "@types/node": "npm:20.14.10"
     apify: "npm:3.2.4"
     linkedom: "npm:0.18.4"
@@ -4795,7 +4795,7 @@ __metadata:
     "@crawlee/http": "npm:3.11.0"
     "@crawlee/utils": "npm:3.11.0"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@thi.ng/atom": "npm:5.3.4"
+    "@thi.ng/atom": "npm:5.3.5"
     "@thi.ng/transducers": "npm:9.0.8"
     "@types/node": "npm:20.14.10"
     apify: "npm:3.2.4"
@@ -4889,7 +4889,7 @@ __metadata:
     "@material/layout-grid": "npm:14.0.0"
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
-    "@thi.ng/atom": "npm:5.3.4"
+    "@thi.ng/atom": "npm:5.3.5"
     dotenv-cli: "npm:7.4.2"
     lit-html: "npm:3.1.4"
     postcss-css-variables: "npm:0.19.0"
@@ -7534,6 +7534,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thi.ng/api@npm:^8.11.6":
+  version: 8.11.6
+  resolution: "@thi.ng/api@npm:8.11.6"
+  checksum: 10c0/92c2686c98780e102aef8c2049f7a1a9bc210b98796e3478fdfe0762cdb4108d521ca2b784d07acb47f06aff4efc8a5f3d9c8e5952e27705536dc4e9ef6aeba0
+  languageName: node
+  linkType: hard
+
 "@thi.ng/arrays@npm:^2.9.9":
   version: 2.9.9
   resolution: "@thi.ng/arrays@npm:2.9.9"
@@ -7548,16 +7555,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.3.4":
-  version: 5.3.4
-  resolution: "@thi.ng/atom@npm:5.3.4"
+"@thi.ng/atom@npm:5.3.5":
+  version: 5.3.5
+  resolution: "@thi.ng/atom@npm:5.3.5"
   dependencies:
     "@thi.ng/api": "npm:^8.11.5"
     "@thi.ng/equiv": "npm:^2.1.61"
-    "@thi.ng/errors": "npm:^2.5.10"
-    "@thi.ng/paths": "npm:^5.1.84"
+    "@thi.ng/errors": "npm:^2.5.11"
+    "@thi.ng/paths": "npm:^5.1.85"
     tslib: "npm:^2.6.3"
-  checksum: 10c0/ec23e664f7db16acf83db22b782e5102cb02e4bbda6406e1808894995e1ce59b719eb02e5984ecff8691b50915758173fe78715cc1fb76a90fb52def7c8bcca8
+  checksum: 10c0/8d3ddffb8a352606a71eee9ad0801e9913d396bf22023df97f15ef132985f1b2f533030edd29e351c7836bcc91c2f1b72e1a0376bfe2264bcf25e154c5317cbe
   languageName: node
   linkType: hard
 
@@ -7567,6 +7574,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.6.3"
   checksum: 10c0/69d7df262d05af86e5da4048dc3ff243184891524c52a04d81990988c9fb2d309dc22fa9a1099c5f256fced36133a280a4fb305be8abd1d120f15c856bb75a98
+  languageName: node
+  linkType: hard
+
+"@thi.ng/checks@npm:^3.6.8":
+  version: 3.6.8
+  resolution: "@thi.ng/checks@npm:3.6.8"
+  dependencies:
+    tslib: "npm:^2.6.3"
+  checksum: 10c0/589483eed9b1d089fa59b1b5eb7b8824934671fb8de19a8f62065a376124c2378f30c160633fe78bcb5b1079bcc7f112c8f3d7a43dea37374a6e0dd243adf7f8
   languageName: node
   linkType: hard
 
@@ -7603,6 +7619,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thi.ng/errors@npm:^2.5.11, @thi.ng/errors@npm:^2.5.12":
+  version: 2.5.12
+  resolution: "@thi.ng/errors@npm:2.5.12"
+  checksum: 10c0/9014ca48e8f966c6cb1b0780b11f884797e24b1e5ec10bc74d178c0bcf2f6faf8bd4837395a8212312d9579202c7963cf821f11f1f47033a07b9a92b96e25a8f
+  languageName: node
+  linkType: hard
+
 "@thi.ng/hex@npm:^2.3.49":
   version: 2.3.49
   resolution: "@thi.ng/hex@npm:2.3.49"
@@ -7619,14 +7642,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.1.84":
-  version: 5.1.84
-  resolution: "@thi.ng/paths@npm:5.1.84"
+"@thi.ng/paths@npm:^5.1.85":
+  version: 5.1.86
+  resolution: "@thi.ng/paths@npm:5.1.86"
   dependencies:
-    "@thi.ng/api": "npm:^8.11.5"
-    "@thi.ng/checks": "npm:^3.6.7"
-    "@thi.ng/errors": "npm:^2.5.10"
-  checksum: 10c0/87f7ca3b005dfa5b8c04b9fae42974647705d04546e65587c233abae8d0f2ffe2344efd77896d4ef86d8d27bb5fc1b2840bb6196fa3e1fe0eb7dc95569d81f98
+    "@thi.ng/api": "npm:^8.11.6"
+    "@thi.ng/checks": "npm:^3.6.8"
+    "@thi.ng/errors": "npm:^2.5.12"
+  checksum: 10c0/d40668b556c3eb56dbe91efaccf3ac8e04448c0937cac5e7476cddc8d5367433e91cd1a2349d9eb004bf71bbdefbac3f93c2933538069e82da1fb91b1c0634aa
   languageName: node
   linkType: hard
 
