@@ -4460,7 +4460,7 @@ __metadata:
     apify: "npm:3.2.4"
     apify-cli: "npm:0.20.2"
     got-scraping: "npm:4.0.6"
-    playwright: "npm:1.45.2"
+    playwright: "npm:1.45.3"
   languageName: unknown
   linkType: soft
 
@@ -4649,7 +4649,7 @@ __metadata:
     "@types/node": "npm:20.14.11"
     apify: "npm:3.2.4"
     apify-cli: "npm:0.20.2"
-    playwright: "npm:1.45.2"
+    playwright: "npm:1.45.3"
   languageName: unknown
   linkType: soft
 
@@ -4724,7 +4724,7 @@ __metadata:
     "@types/node": "npm:20.14.11"
     apify: "npm:3.2.4"
     apify-cli: "npm:0.20.2"
-    playwright: "npm:1.45.2"
+    playwright: "npm:1.45.3"
   languageName: unknown
   linkType: soft
 
@@ -4836,7 +4836,7 @@ __metadata:
     "@types/node": "npm:20.14.11"
     apify: "npm:3.2.4"
     apify-cli: "npm:0.20.2"
-    playwright: "npm:1.45.2"
+    playwright: "npm:1.45.3"
   languageName: unknown
   linkType: soft
 
@@ -19309,27 +19309,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.45.2":
-  version: 1.45.2
-  resolution: "playwright-core@npm:1.45.2"
+"playwright-core@npm:1.45.3":
+  version: 1.45.3
+  resolution: "playwright-core@npm:1.45.3"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/38f5ccb868c71573d65421faab5727cae0324760e6f8bf0b4053a6590a6c0c35ab4c7498ea32ae96b0e788a0ddf6e28b199b33729c5974aad5eb8a763316c792
+  checksum: 10c0/39cc5920b27c42300e13a0646ca723578085d85940fc1f03e858fa348b5ac06f2eadf34cf15a0c0f4443e63ae188097d3ddbeb4389e7bbf5ae3438d8f6ed23e1
   languageName: node
   linkType: hard
 
-"playwright@npm:1.45.2":
-  version: 1.45.2
-  resolution: "playwright@npm:1.45.2"
+"playwright@npm:1.45.3":
+  version: 1.45.3
+  resolution: "playwright@npm:1.45.3"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.45.2"
+    playwright-core: "npm:1.45.3"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/9646ee3ab7af087f6abb753aacc8e7aed3f1856ad41968507dc2b271333dde9e4856ff086e389b291b5013f0625324b01588792095fcbc227d45e7527a54249f
+  checksum: 10c0/3516ca49deb589171ac6525c0367f2ff948514d791d197f3cc0a135154c2df08a4d7cd11a810e187f35ae9ca490b37ca3a92fb3eb51560f03aefcaca0613efdb
   languageName: node
   linkType: hard
 
