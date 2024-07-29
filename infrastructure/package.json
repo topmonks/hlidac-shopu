@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Infrastructure as Code",
   "dependencies": {
-    "@pulumi/aws": "6.45.2",
+    "@pulumi/aws": "6.46.0",
     "@pulumi/awsx": "2.13.0",
-    "@pulumi/pulumi": "3.126.0",
+    "@pulumi/pulumi": "3.127.0",
     "@topmonks/pulumi-aws": "3.1.4",
     "esbuild": "0.23.0"
   }
