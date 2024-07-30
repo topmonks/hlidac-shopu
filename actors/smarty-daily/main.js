@@ -50,24 +50,25 @@ async function main() {
         stats.add(`categories`, brandsUrls.length);
       },
       [LABEL_CUSTOM.LISTING_PREFLIGHT]: async ({ window: { document }, crawler }) => {
-        const producerId = document.querySelector(`#fId`).value;
-        const producerAlias = document.querySelector(`#producerAlias`).value;
-        const url = `https://www.smarty.cz/Product/ProducerProductItems?${new URLSearchParams({
-          producerId,
-          producerAlias,
-          itemTypeId: ``,
-          productFilter: `1`,
-          paramJson: JSON.stringify({ us: `1`, s: `n`, pg: `all` }),
-          sort: `n`,
-          page: `all`
-        })}`;
+        const producerId = document.querySelector(`#f_id`).value;
+        const count = +document.querySelector(`#fCount`).value;
+        const perPage = 12;
+        const pages = Math.ceil(count / perPage);
+        const urls = [];
+        for (let i = 1; i <= pages; i++) {
+          const url = `https://www.smarty.cz/Products/Product/ProducerProductItems?${new URLSearchParams({
+            id: producerId,
+            cg: `1`,
+            sort: null,
+            page: i.toString()
+          })}`;
+          urls.push(url);
+        }
         await crawler.addRequests(
-          [
-            {
-              url,
-              label: LABEL_CUSTOM.LISTING
-            }
-          ],
+          urls.map(url => ({
+            url,
+            label: "LISTING"
+          })),
           {
             forefront: true // makes debugging easier, cause it reveals problems in LISTING handler faster
           }
@@ -78,17 +79,18 @@ async function main() {
           log.error(`errorPage`, { html: document.innerHTML });
           return;
         }
-        const products = Array.from(document.querySelectorAll(`.item`)).map(el => {
+        const products = Array.from(document.querySelectorAll(`.productList-item`)).map(el => {
+          const pid = el.getAttribute(`data-id`);
           const productJson = JSON.parse(el.getAttribute(`data-gaItem`));
           const urlRel = el.getAttribute(`data-url`);
           return {
-            itemId: el.querySelector(`.icon.compare`).getAttribute(`data-id`),
+            itemId: pid,
             itemUrl: `${baseUrl}${urlRel}`,
             itemName: productJson.name,
             currentPrice: productJson.fullPrice,
             originalPrice:
-              el.querySelector(`.buy .price .d .o`) &&
-              parseFloat(cleanPriceText(el.querySelector(`.buy .price .d .o`)?.textContent)),
+              el.querySelector(`.font-crossed`) &&
+              parseFloat(cleanPriceText(el.querySelector(`.font-crossed`)?.textContent)),
             currency: `CZK`,
             img: el.querySelector(`picture img`)?.getAttribute(`src`),
             inStock: productJson.available.includes(`Skladem`)
