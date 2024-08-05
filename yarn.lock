@@ -4374,7 +4374,7 @@ __metadata:
     date-fns: "npm:3.6.0"
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
-    unzipper: "npm:0.12.2"
+    unzipper: "npm:0.12.3"
   languageName: unknown
   linkType: soft
 
@@ -23768,16 +23768,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unzipper@npm:0.12.2":
-  version: 0.12.2
-  resolution: "unzipper@npm:0.12.2"
+"unzipper@npm:0.12.3":
+  version: 0.12.3
+  resolution: "unzipper@npm:0.12.3"
   dependencies:
     bluebird: "npm:~3.7.2"
     duplexer2: "npm:~0.1.4"
     fs-extra: "npm:^11.2.0"
     graceful-fs: "npm:^4.2.2"
     node-int64: "npm:^0.4.0"
-  checksum: 10c0/6fbaa09972e410cfcdf0674f8ca004a0fb46a909dc5cc7d826d3c26cce75ed33ee1890b26c331fc4a6d2b41ac0a59fc04e7493b211cf69edb14ccfa5bcb7989c
+  checksum: 10c0/4cae2ad23bfd47011d5f8a6d61fb1dc0e4b5008bc3896e6f3d5ab946a64e9482714992a988128bce541440aa646e16e5e5c9bf35e49097edbaf833e7f814d36d
   languageName: node
   linkType: hard
 
