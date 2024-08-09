@@ -4483,7 +4483,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": "workspace:*"
-    lit-html: "npm:3.1.4"
+    lit-html: "npm:3.2.0"
   languageName: unknown
   linkType: soft
 
@@ -4871,7 +4871,7 @@ __metadata:
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.3.7"
     dotenv-cli: "npm:7.4.2"
-    lit-html: "npm:3.1.4"
+    lit-html: "npm:3.2.0"
     postcss-css-variables: "npm:0.19.0"
     prettier: "npm:3.3.3"
     workbox-window: "npm:7.1.0"
@@ -16990,21 +16990,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.1.4, lit-html@npm:^2.0.0 || ^3.0.0, lit-html@npm:^3.1.2":
-  version: 3.1.4
-  resolution: "lit-html@npm:3.1.4"
-  dependencies:
-    "@types/trusted-types": "npm:^2.0.2"
-  checksum: 10c0/538c084ab1d39b59c5c094f7ad7a8bc5c41a17b46f375bb841b304263c1f2546065eeace6e330c20f1f15f2c285b66b46d140e2be618de2e65610c58b53a5af3
-  languageName: node
-  linkType: hard
-
-"lit-html@npm:^3.2.0":
+"lit-html@npm:3.2.0, lit-html@npm:^3.2.0":
   version: 3.2.0
   resolution: "lit-html@npm:3.2.0"
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
   checksum: 10c0/cc0d58fc581d0d838361b3e46a34113ec458822c6600e6eb8dac9a671e4d983c0d34af07a1b3b60cc257e91b7e87760044779328f14d46742915d2c46fe68688
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.0.0 || ^3.0.0, lit-html@npm:^3.1.2":
+  version: 3.1.4
+  resolution: "lit-html@npm:3.1.4"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.2"
+  checksum: 10c0/538c084ab1d39b59c5c094f7ad7a8bc5c41a17b46f375bb841b304263c1f2546065eeace6e330c20f1f15f2c285b66b46d140e2be618de2e65610c58b53a5af3
   languageName: node
   linkType: hard
 
