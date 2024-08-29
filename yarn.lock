@@ -8121,12 +8121,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:0.30.1":
-  version: 0.30.1
-  resolution: "@types/ramda@npm:0.30.1"
+"@types/ramda@npm:0.30.2":
+  version: 0.30.2
+  resolution: "@types/ramda@npm:0.30.2"
   dependencies:
     types-ramda: "npm:^0.30.1"
-  checksum: 10c0/ab3f00c1dc88a647159e3654d6c9ceadd01b91bb64c6cdff1a897ba91630fed345635ffc20f3a00a4981354ea7480d09eb5632c7e2198757e389d9846fffab20
+  checksum: 10c0/dda95008860f594eb7b4fd9819adeb2dcd4d4e2baca6cb33f692f6f8ea76d04a7fd81f9a057c5c67555612769e5592cb15f91de6c9f8b619b8b1d806d19dc9ea
   languageName: node
   linkType: hard
 
@@ -15223,7 +15223,7 @@ __metadata:
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:20.16.1"
     "@types/nunjucks": "npm:3.2.6"
-    "@types/ramda": "npm:0.30.1"
+    "@types/ramda": "npm:0.30.2"
     "@types/whatwg-url": "npm:11.0.5"
     ava: "npm:6.1.3"
     chokidar: "npm:3.6.0"
