@@ -4615,7 +4615,7 @@ __metadata:
     "@types/node": "npm:20.16.2"
     apify: "npm:3.2.5"
     apify-cli: "npm:0.20.5"
-    puppeteer: "npm:23.2.0"
+    puppeteer: "npm:23.2.1"
   languageName: unknown
   linkType: soft
 
@@ -15263,7 +15263,7 @@ __metadata:
     npm-run-all2: "npm:6.2.2"
     postcss: "npm:8.4.41"
     postcss-css-variables: "npm:0.19.0"
-    puppeteer: "npm:23.2.0"
+    puppeteer: "npm:23.2.1"
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
@@ -20724,9 +20724,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:23.2.0":
-  version: 23.2.0
-  resolution: "puppeteer-core@npm:23.2.0"
+"puppeteer-core@npm:23.2.1":
+  version: 23.2.1
+  resolution: "puppeteer-core@npm:23.2.1"
   dependencies:
     "@puppeteer/browsers": "npm:2.3.1"
     chromium-bidi: "npm:0.6.4"
@@ -20734,7 +20734,7 @@ __metadata:
     devtools-protocol: "npm:0.0.1330662"
     typed-query-selector: "npm:^2.12.0"
     ws: "npm:^8.18.0"
-  checksum: 10c0/595dcff8d340069bb6df2853a468b1f5ebb724ca11a436c2ac2c7678b8db7b53bff355b91d0cdf45906088cc6790f2a578a3b8a6a19f90fb56410d5594997c88
+  checksum: 10c0/3c642d473507a4fd1af58c72c938934c45e08a5c702cbeb816be27e33a27b22c4b9d0faa7b2fca104bb619b5a78a781a26f7d27aa15443918c31f3f52450eea6
   languageName: node
   linkType: hard
 
@@ -20751,19 +20751,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:23.2.0":
-  version: 23.2.0
-  resolution: "puppeteer@npm:23.2.0"
+"puppeteer@npm:23.2.1":
+  version: 23.2.1
+  resolution: "puppeteer@npm:23.2.1"
   dependencies:
     "@puppeteer/browsers": "npm:2.3.1"
     chromium-bidi: "npm:0.6.4"
     cosmiconfig: "npm:^9.0.0"
     devtools-protocol: "npm:0.0.1330662"
-    puppeteer-core: "npm:23.2.0"
+    puppeteer-core: "npm:23.2.1"
     typed-query-selector: "npm:^2.12.0"
   bin:
     puppeteer: lib/cjs/puppeteer/node/cli.js
-  checksum: 10c0/69941393e487360bbf155012a09ef2c748c2c10dff13d04e65c0cb855f58521ac6977f41cfe855c38021b2a8c8197266410ae0c4f16662b9eff6154b45650fd5
+  checksum: 10c0/a5f2c549c6e870b0e0d19f139e4bbd305b5177b1a7c51c7505786ba3a48cb537423c85ca6bb46bf7d180891c6594731312801f8e448f29311e3fbab2e7b8d819
   languageName: node
   linkType: hard
 
