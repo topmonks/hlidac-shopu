@@ -4685,7 +4685,7 @@ __metadata:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
     "@open-wc/testing": "npm:4.0.0"
     "@web/test-runner": "npm:0.18.3"
-    "@web/test-runner-junit-reporter": "npm:0.7.1"
+    "@web/test-runner-junit-reporter": "npm:0.7.2"
     chart.js: "npm:4.4.4"
     chartjs-adapter-date-fns: "npm:3.0.0"
     date-fns: "npm:3.6.0"
@@ -8490,6 +8490,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-chrome@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@web/test-runner-chrome@npm:0.17.0"
+  dependencies:
+    "@web/test-runner-core": "npm:^0.13.0"
+    "@web/test-runner-coverage-v8": "npm:^0.8.0"
+    async-mutex: "npm:0.4.0"
+    chrome-launcher: "npm:^0.15.0"
+    puppeteer-core: "npm:^23.2.0"
+  checksum: 10c0/b035961226cf135a6977ebaec09dbd4298425d434dcb47491bbf024b06ebb91c73eb993f68566b6fc1505647605449ac6782531f2ec988424037053fa0bc62eb
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-commands@npm:^0.9.0":
   version: 0.9.0
   resolution: "@web/test-runner-commands@npm:0.9.0"
@@ -8547,15 +8560,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-junit-reporter@npm:0.7.1":
-  version: 0.7.1
-  resolution: "@web/test-runner-junit-reporter@npm:0.7.1"
+"@web/test-runner-junit-reporter@npm:0.7.2":
+  version: 0.7.2
+  resolution: "@web/test-runner-junit-reporter@npm:0.7.2"
   dependencies:
-    "@web/test-runner-chrome": "npm:^0.16.0"
+    "@web/test-runner-chrome": "npm:^0.17.0"
     "@web/test-runner-core": "npm:^0.13.0"
     array-flat-polyfill: "npm:^1.0.1"
     xml: "npm:^1.0.1"
-  checksum: 10c0/192612ee62a3e23c6a4efccfa3835e10aa19bc052a74ebdf26078411890c324bf2f5900ed0fb8ce896818d722ba34fcafe7de047aece6924d541c1cda92e0c6b
+  checksum: 10c0/a4ad4d0ef973986d18fcfda0e6bf0d778116afc606576f1a677e57e5735691bc9c601ebab2f37f15bc28f733fdfc05d93df4de1ef8a62f746e2d13404daef4d1
   languageName: node
   linkType: hard
 
@@ -20756,7 +20769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:23.3.0":
+"puppeteer-core@npm:23.3.0, puppeteer-core@npm:^23.2.0":
   version: 23.3.0
   resolution: "puppeteer-core@npm:23.3.0"
   dependencies:
