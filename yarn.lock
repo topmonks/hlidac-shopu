@@ -15232,7 +15232,7 @@ __metadata:
     esbuild: "npm:0.23.1"
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.4"
-    npm-run-all2: "npm:6.2.2"
+    npm-run-all2: "npm:6.2.3"
     postcss: "npm:8.4.45"
     postcss-css-variables: "npm:0.19.0"
     puppeteer: "npm:23.3.0"
@@ -18611,9 +18611,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:6.2.2":
-  version: 6.2.2
-  resolution: "npm-run-all2@npm:6.2.2"
+"npm-run-all2@npm:6.2.3":
+  version: 6.2.3
+  resolution: "npm-run-all2@npm:6.2.3"
   dependencies:
     ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.3"
@@ -18627,7 +18627,7 @@ __metadata:
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10c0/b32984a1fb6b495415258f88f87269b4049c19a73a1d6e2b13e0dd36dd311a5a4d945c9fd1cc356eb10811febaa03cf1c85d04dc43decd4ab1d590b625918440
+  checksum: 10c0/1f9b4c2aed4dbbb9ddea51693ea5bd83b63602bf824032491156118e2c3ec2598edc1353376a8bb9541d1e2a6899959548a49656a9f87a2e4fc0643be6e2eb6e
   languageName: node
   linkType: hard
 
