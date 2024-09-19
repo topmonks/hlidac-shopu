@@ -4379,7 +4379,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.11.3"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@thi.ng/transducers": "npm:9.2.2"
+    "@thi.ng/transducers": "npm:9.2.3"
     "@types/node": "npm:20.16.5"
     apify: "npm:3.2.5"
     apify-cli: "npm:0.20.7"
@@ -4842,7 +4842,7 @@ __metadata:
     "@crawlee/utils": "npm:3.11.3"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@thi.ng/atom": "npm:5.3.9"
-    "@thi.ng/transducers": "npm:9.2.2"
+    "@thi.ng/transducers": "npm:9.2.3"
     "@types/node": "npm:20.16.5"
     apify: "npm:3.2.5"
     apify-cli: "npm:0.20.7"
@@ -7707,9 +7707,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:9.2.2":
-  version: 9.2.2
-  resolution: "@thi.ng/transducers@npm:9.2.2"
+"@thi.ng/transducers@npm:9.2.3":
+  version: 9.2.3
+  resolution: "@thi.ng/transducers@npm:9.2.3"
   dependencies:
     "@thi.ng/api": "npm:^8.11.9"
     "@thi.ng/arrays": "npm:^2.10.0"
@@ -7719,7 +7719,7 @@ __metadata:
     "@thi.ng/errors": "npm:^2.5.15"
     "@thi.ng/math": "npm:^5.11.9"
     "@thi.ng/random": "npm:^4.0.3"
-  checksum: 10c0/730650435c1df5e020e994bac5b7fcfa0957c538de219e3110bef8bb1ff95b7ca725d2660497bf28dda7c71f9de1d57bd23f2b144b62ed29cc92991bbd1a4bea
+  checksum: 10c0/2c65dafb39908b6f0f5f76bb241ef516330b87126eaa44deb9fb29bfe63b6addad8dbd2b95ca8b72b815136ba1dd738c98f08ff548b7ddf4f6b02403809da4f4
   languageName: node
   linkType: hard
 
