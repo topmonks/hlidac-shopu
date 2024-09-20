@@ -4384,7 +4384,7 @@ __metadata:
     "@thi.ng/atom": "npm:5.3.9"
     "@types/node": "npm:20.16.5"
     apify: "npm:3.2.5"
-    linkedom: "npm:0.18.4"
+    linkedom: "npm:0.18.5"
     rollbar: "npm:2.26.4"
   languageName: unknown
   linkType: soft
@@ -4883,7 +4883,7 @@ __metadata:
     "@types/node": "npm:20.16.5"
     apify: "npm:3.2.5"
     apify-cli: "npm:0.20.7"
-    linkedom: "npm:0.18.4"
+    linkedom: "npm:0.18.5"
   languageName: unknown
   linkType: soft
 
@@ -15404,7 +15404,7 @@ __metadata:
     dotenv-cli: "npm:7.4.2"
     esbuild: "npm:0.23.1"
     gulp-mode: "npm:1.1.0"
-    linkedom: "npm:0.18.4"
+    linkedom: "npm:0.18.5"
     npm-run-all2: "npm:6.2.3"
     postcss: "npm:8.4.47"
     postcss-css-variables: "npm:0.19.0"
@@ -17333,16 +17333,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.18.4":
-  version: 0.18.4
-  resolution: "linkedom@npm:0.18.4"
+"linkedom@npm:0.18.5":
+  version: 0.18.5
+  resolution: "linkedom@npm:0.18.5"
   dependencies:
     css-select: "npm:^5.1.0"
     cssom: "npm:^0.5.0"
     html-escaper: "npm:^3.0.3"
     htmlparser2: "npm:^9.1.0"
     uhyphen: "npm:^0.2.0"
-  checksum: 10c0/c2e25805eb7903e128eb468df88e9961d383131d15f94f87e0c4d484955d951636284d6d4c9ffc9f59822073c29b8344212c463922aa9afd4aaa5daefd20aa14
+  checksum: 10c0/3a54fb699f8c3c973298bfe689c6c96d2f2052fa90bd786a530202b9ab6013242705f66c918fd4a9f646e2320d443cddefb6fa1e0cc6871b0bab85ea467c4a14
   languageName: node
   linkType: hard
 
