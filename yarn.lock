@@ -4425,7 +4425,7 @@ __metadata:
     ava: "npm:6.1.3"
     c8: "npm:10.1.2"
     chai: "npm:5.1.1"
-    date-fns: "npm:4.0.0"
+    date-fns: "npm:4.1.0"
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     unzipper: "npm:0.12.3"
@@ -4690,7 +4690,7 @@ __metadata:
     "@web/test-runner-junit-reporter": "npm:0.7.2"
     chart.js: "npm:4.4.4"
     chartjs-adapter-date-fns: "npm:3.0.0"
-    date-fns: "npm:4.0.0"
+    date-fns: "npm:4.1.0"
     lit: "npm:3.2.0"
   languageName: unknown
   linkType: soft
@@ -4919,7 +4919,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     apify: "npm:3.2.5"
     byte-size: "npm:9.0.0"
-    date-fns: "npm:4.0.0"
+    date-fns: "npm:4.1.0"
     node-gzip: "npm:1.1.2"
   languageName: unknown
   linkType: soft
@@ -11709,10 +11709,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:4.0.0":
-  version: 4.0.0
-  resolution: "date-fns@npm:4.0.0"
-  checksum: 10c0/c706d29f05c28fdaea939068d688489bbc3096ef2486d1fe4a56d209c3a061ba99febae943b9562bb8ac08fe61257cf11fe74adad164adb7ba6df994e09cb99b
+"date-fns@npm:4.1.0":
+  version: 4.1.0
+  resolution: "date-fns@npm:4.1.0"
+  checksum: 10c0/b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
   languageName: node
   linkType: hard
 
