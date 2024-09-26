@@ -10795,12 +10795,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:4.0.0":
-  version: 4.0.0
-  resolution: "chokidar@npm:4.0.0"
+"chokidar@npm:4.0.1, chokidar@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "chokidar@npm:4.0.1"
   dependencies:
     readdirp: "npm:^4.0.1"
-  checksum: 10c0/42d03c53b0ad200689e4fae7763133561480561cab8ba5304e8f2298ff45ff84bf0f6065c3f02b9e557b74b156813734439a1a2ff19a1ea6b35692395cd92738
+  checksum: 10c0/4bb7a3adc304059810bb6c420c43261a15bb44f610d77c35547addc84faa0374265c3adc67f25d06f363d9a4571962b02679268c40de07676d260de1986efea9
   languageName: node
   linkType: hard
 
@@ -10820,15 +10820,6 @@ __metadata:
     fsevents:
       optional: true
   checksum: 10c0/8361dcd013f2ddbe260eacb1f3cb2f2c6f2b0ad118708a343a5ed8158941a39cb8fb1d272e0f389712e74ee90ce8ba864eece9e0e62b9705cb468a2f6d917462
-  languageName: node
-  linkType: hard
-
-"chokidar@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "chokidar@npm:4.0.1"
-  dependencies:
-    readdirp: "npm:^4.0.1"
-  checksum: 10c0/4bb7a3adc304059810bb6c420c43261a15bb44f610d77c35547addc84faa0374265c3adc67f25d06f363d9a4571962b02679268c40de07676d260de1986efea9
   languageName: node
   linkType: hard
 
@@ -15570,7 +15561,7 @@ __metadata:
     "@types/ramda": "npm:0.30.2"
     "@types/whatwg-url": "npm:11.0.5"
     ava: "npm:6.1.3"
-    chokidar: "npm:4.0.0"
+    chokidar: "npm:4.0.1"
     chrome-webstore-upload-cli: "npm:3.3.1"
     commander: "npm:12.1.0"
     dotenv-cli: "npm:7.4.2"
