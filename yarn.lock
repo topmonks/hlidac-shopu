@@ -4590,7 +4590,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
-    "@pulumi/aws": "npm:6.54.0"
+    "@pulumi/aws": "npm:6.54.1"
     "@pulumi/awsx": "npm:2.16.0"
     "@pulumi/pulumi": "npm:3.134.1"
     "@topmonks/pulumi-aws": "npm:3.1.4"
@@ -6089,15 +6089,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.54.0":
-  version: 6.54.0
-  resolution: "@pulumi/aws@npm:6.54.0"
+"@pulumi/aws@npm:6.54.1":
+  version: 6.54.1
+  resolution: "@pulumi/aws@npm:6.54.1"
   dependencies:
     "@pulumi/pulumi": "npm:^3.42.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/fdb172b991600dbc044fd5e9bf6e9362914a3762395b64bae6e48f997af2e103f5c4f722a3bd4c8aaca96e6f9140f1cb1c054c8baf7d8a6520e07d547b48cd6c
+  checksum: 10c0/330b73c68afdea7b26599f72ea8b394a18620ff29cb002736ac18524a2feb0f04ba5dd22ec862df24e0fb5ee212dc731cf264e8818b1861d8c242dbb6c5efdc1
   languageName: node
   linkType: hard
 
