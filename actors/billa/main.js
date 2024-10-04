@@ -10,14 +10,9 @@ import { Actor, LogLevel, log } from "apify";
 const PROCESSED_IDS_KEY = "processedIds";
 
 function getCategoryUrls(document) {
-  // Get content box with categories listing
-  const [section] = Array.from(document.querySelectorAll(".ws-section")).filter(
-    x => x.getAttribute("kontentId") === "2feb2433-51b8-016d-e7aa-b2c80256bf18"
-  );
   // transform categories URLs to API call of products listing
-  return Array.from(section.querySelectorAll(`ul>li>a`) ?? [])
-    .map(a => new URL(a.href, "https://shop.billa.cz/").pathname.substring(10))
-    .map(slug => `https://shop.billa.cz/api/categories/${slug}/products?pageSize=500&page=0`);
+  return Array.from(document.querySelectorAll('a[href*="/produkty/"].ws-card[data-teaser-name]'))
+  .map(link => `https://shop.billa.cz/api/categories/${link.getAttribute("href").split('/').pop()}/products?pageSize=500&page=0`);
 }
 
 function categoryRequest(url, { page, pageSize } = { page: 0, pageSize: 500 }) {
