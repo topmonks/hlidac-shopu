@@ -11,8 +11,10 @@ const PROCESSED_IDS_KEY = "processedIds";
 
 function getCategoryUrls(document) {
   // transform categories URLs to API call of products listing
-  return Array.from(document.querySelectorAll('a[href*="/produkty/"].ws-card[data-teaser-name]'))
-  .map(link => `https://shop.billa.cz/api/categories/${link.getAttribute("href").split('/').pop()}/products?pageSize=500&page=0`);
+  return Array.from(document.querySelectorAll('a[href*="/produkty/"].ws-card[data-teaser-name]')).map(
+    link =>
+      `https://shop.billa.cz/api/categories/${link.getAttribute("href").split("/").pop()}/products?pageSize=500&page=0`
+  );
 }
 
 function categoryRequest(url, { page, pageSize } = { page: 0, pageSize: 500 }) {

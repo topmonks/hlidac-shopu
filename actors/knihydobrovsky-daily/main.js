@@ -55,7 +55,7 @@ function extractProducts({ document }) {
         itemUrl: canonical(item.querySelector("h3 a").getAttribute("href")),
         itemName: item.querySelector("span.name").innerText,
         img: item.querySelector("picture img").getAttribute("src"),
-        currentPrice: currentPrice === "zdarma" ? 0 : cleanPrice(currentPrice) ?? null,
+        currentPrice: currentPrice === "zdarma" ? 0 : (cleanPrice(currentPrice) ?? null),
         originalPrice,
         discounted,
         rating: parseFloat(
@@ -85,7 +85,7 @@ function extractProductFromDetail({ document, url }) {
     itemUrl: url,
     itemName: productEl.querySelector("span.name").innerText,
     img: productEl.querySelector("picture img").getAttribute("src"),
-    currentPrice: currentPrice === "zdarma" ? 0 : cleanPrice(currentPrice) ?? null,
+    currentPrice: currentPrice === "zdarma" ? 0 : (cleanPrice(currentPrice) ?? null),
     originalPrice,
     discounted: Boolean(originalPrice),
     rating: parseFloat(
