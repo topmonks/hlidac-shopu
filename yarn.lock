@@ -4592,7 +4592,7 @@ __metadata:
   dependencies:
     "@pulumi/aws": "npm:6.54.1"
     "@pulumi/awsx": "npm:2.16.0"
-    "@pulumi/pulumi": "npm:3.134.1"
+    "@pulumi/pulumi": "npm:3.135.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.24.0"
   languageName: unknown
@@ -6139,9 +6139,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.134.1, @pulumi/pulumi@npm:^3.42.0":
-  version: 3.134.1
-  resolution: "@pulumi/pulumi@npm:3.134.1"
+"@pulumi/pulumi@npm:3.135.0":
+  version: 3.135.0
+  resolution: "@pulumi/pulumi@npm:3.135.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6181,7 +6181,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/3e1fc0d81316ee1e4ef60e217487c44743ac25259ca5a737ab1af6af953b4b4982d7ebdad4333288bea064e919c3d93a031b91a2ddaf8fdbf74630b3f1507a88
+  checksum: 10c0/3a9476b26d7e84b06637ced781411a74fc94fd924dbe1f23ea095df187f43df0791f5f26961d3cea82c20f37bb699511d52297792c8e91f394b76b1629cf9a7a
   languageName: node
   linkType: hard
 
@@ -6228,6 +6228,52 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/b08ad02fa5f90ab8543021527dfdc2255643ff0aabb67d43b95cef9a926457561c234109a4b398891fa02a4bad644560f253d15e5965a3f84a46930f3025f6e8
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.42.0":
+  version: 3.134.1
+  resolution: "@pulumi/pulumi@npm:3.134.1"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.10.1"
+    "@logdna/tail-file": "npm:^2.0.6"
+    "@npmcli/arborist": "npm:^7.3.1"
+    "@opentelemetry/api": "npm:^1.9"
+    "@opentelemetry/exporter-zipkin": "npm:^1.25"
+    "@opentelemetry/instrumentation": "npm:^0.52"
+    "@opentelemetry/instrumentation-grpc": "npm:^0.52"
+    "@opentelemetry/resources": "npm:^1.25"
+    "@opentelemetry/sdk-trace-base": "npm:^1.25"
+    "@opentelemetry/sdk-trace-node": "npm:^1.25"
+    "@opentelemetry/semantic-conventions": "npm:^1.25"
+    "@pulumi/query": "npm:^0.3.0"
+    "@types/google-protobuf": "npm:^3.15.5"
+    "@types/semver": "npm:^7.5.6"
+    "@types/tmp": "npm:^0.2.6"
+    execa: "npm:^5.1.0"
+    fdir: "npm:^6.1.1"
+    google-protobuf: "npm:^3.5.0"
+    got: "npm:^11.8.6"
+    ini: "npm:^2.0.0"
+    js-yaml: "npm:^3.14.0"
+    minimist: "npm:^1.2.6"
+    normalize-package-data: "npm:^6.0.0"
+    picomatch: "npm:^3.0.1"
+    pkg-dir: "npm:^7.0.0"
+    require-from-string: "npm:^2.0.1"
+    semver: "npm:^7.5.2"
+    source-map-support: "npm:^0.5.6"
+    tmp: "npm:^0.2.1"
+    upath: "npm:^1.1.0"
+  peerDependencies:
+    ts-node: ">= 7.0.1 < 12"
+    typescript: ">= 3.8.3 < 6"
+  peerDependenciesMeta:
+    ts-node:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10c0/3e1fc0d81316ee1e4ef60e217487c44743ac25259ca5a737ab1af6af953b4b4982d7ebdad4333288bea064e919c3d93a031b91a2ddaf8fdbf74630b3f1507a88
   languageName: node
   linkType: hard
 
