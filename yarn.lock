@@ -4360,7 +4360,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.11.5"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@thi.ng/transducers": "npm:9.2.5"
+    "@thi.ng/transducers": "npm:9.2.6"
     "@types/node": "npm:20.16.10"
     apify: "npm:3.2.6"
     apify-cli: "npm:0.20.9"
@@ -4823,7 +4823,7 @@ __metadata:
     "@crawlee/utils": "npm:3.11.5"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@thi.ng/atom": "npm:5.3.11"
-    "@thi.ng/transducers": "npm:9.2.5"
+    "@thi.ng/transducers": "npm:9.2.6"
     "@types/node": "npm:20.16.10"
     apify: "npm:3.2.6"
     apify-cli: "npm:0.20.9"
@@ -7758,7 +7758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/arrays@npm:^2.10.2":
+"@thi.ng/arrays@npm:^2.10.3":
   version: 2.10.3
   resolution: "@thi.ng/arrays@npm:2.10.3"
   dependencies:
@@ -7847,7 +7847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/random@npm:^4.1.0, @thi.ng/random@npm:^4.1.1":
+"@thi.ng/random@npm:^4.1.1":
   version: 4.1.1
   resolution: "@thi.ng/random@npm:4.1.1"
   dependencies:
@@ -7857,19 +7857,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:9.2.5":
-  version: 9.2.5
-  resolution: "@thi.ng/transducers@npm:9.2.5"
+"@thi.ng/transducers@npm:9.2.6":
+  version: 9.2.6
+  resolution: "@thi.ng/transducers@npm:9.2.6"
   dependencies:
     "@thi.ng/api": "npm:^8.11.11"
-    "@thi.ng/arrays": "npm:^2.10.2"
+    "@thi.ng/arrays": "npm:^2.10.3"
     "@thi.ng/checks": "npm:^3.6.13"
     "@thi.ng/compare": "npm:^2.4.3"
     "@thi.ng/compose": "npm:^3.0.14"
     "@thi.ng/errors": "npm:^2.5.17"
     "@thi.ng/math": "npm:^5.11.11"
-    "@thi.ng/random": "npm:^4.1.0"
-  checksum: 10c0/6dc01c143b7f6394882a10917c0bbc444226f9a6c780594f7b852a6528a093d0a1b095d5de7d722f35a7fa2f3315562babec5d88f93cf2d6dbb22d1f7cf84f2d
+    "@thi.ng/random": "npm:^4.1.1"
+  checksum: 10c0/561399acd06d2f49bf51a110d33e8f17efa719ddc4bab159c91557a57a94997dfe9ad81c4c312a7d5ec8c0791a0f45bf9153f42b83c43a18c1fff209f5234540
   languageName: node
   linkType: hard
 
