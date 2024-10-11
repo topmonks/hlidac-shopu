@@ -43,7 +43,7 @@ function flattenChildren(array) {
 }
 
 function findArraysUrl(urlsCatHtml, country) {
-  const { navList } = urlsCatHtml.taxonomy;
+  const { navList } = urlsCatHtml.taxonomy; // { catId, name, url, allUrl, externalUrl, children }[]
   const childrenArr = [];
   for (const item of flattenChildren(navList)) {
     if (item.children) {
@@ -53,6 +53,10 @@ function findArraysUrl(urlsCatHtml, country) {
     }
   }
   const arr = [].concat(childrenArr).map(item => {
+    // Special "microsites" do not have url nor allUrl. They have only externalUrl. Let's skip them. E.g.:
+    // https://nakup.itesco.cz/groceries/cs-CZ/zone/podzim/
+    // https://nakup.itesco.cz/groceries/cs-CZ/zone/tesco-finest
+    if (!item.url) return;
     return item.url.includes("/all") ? item.url : item.allUrl;
   });
 
@@ -60,7 +64,9 @@ function findArraysUrl(urlsCatHtml, country) {
     country === Country.CZ
       ? "https://nakup.itesco.cz/groceries/cs-CZ/shop"
       : "https://potravinydomov.itesco.sk/groceries/sk-SK/shop";
-  return arr.map(item => `${url}${item}`);
+  return arr
+    .filter(Boolean) // Remove undefined
+    .map(item => `${url}${item}`);
 }
 
 /**
