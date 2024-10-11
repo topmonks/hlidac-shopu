@@ -4591,9 +4591,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
-    "@pulumi/aws": "npm:6.54.2"
+    "@pulumi/aws": "npm:6.55.0"
     "@pulumi/awsx": "npm:2.16.1"
-    "@pulumi/pulumi": "npm:3.135.1"
+    "@pulumi/pulumi": "npm:3.136.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.24.0"
   languageName: unknown
@@ -6090,15 +6090,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.54.2":
-  version: 6.54.2
-  resolution: "@pulumi/aws@npm:6.54.2"
+"@pulumi/aws@npm:6.55.0":
+  version: 6.55.0
+  resolution: "@pulumi/aws@npm:6.55.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.42.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/5350278c229f17c6bfbfee0fe9fbefb1fb9c0f9348a24b5f5edac10eba557c948620b95f7729f162aced1307fe912025b752c850f72039124784401a5b09e619
+  checksum: 10c0/d176a638edadb1c96b2bd0c82f0b19377d0aa9e45311b5f26d0ba76346e5dc22b95dd45e5d903298e8a22176da20a02f777dc6af8076fb90128c2d50e322bb55
   languageName: node
   linkType: hard
 
@@ -6140,9 +6140,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.135.1, @pulumi/pulumi@npm:^3.134.1":
-  version: 3.135.1
-  resolution: "@pulumi/pulumi@npm:3.135.1"
+"@pulumi/pulumi@npm:3.136.0":
+  version: 3.136.0
+  resolution: "@pulumi/pulumi@npm:3.136.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6182,7 +6182,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/613d5ab2c3860ccbf6e34edcb69ebfe2947d51dd8f0c7bfa181a8314c302b0170e4c620567c8b327c041078ef24b5f6783b96316fdd5eae95c500276a64f5f9b
+  checksum: 10c0/071cc1e3062e3bc12bc896c449d8df2f4a16f4b9122d9662ad29cf5d20eafd491117340738a79ea62a2851c9d341535f72a6740efc9f33ee7a4ed9c1275311a7
   languageName: node
   linkType: hard
 
@@ -6229,6 +6229,52 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/b08ad02fa5f90ab8543021527dfdc2255643ff0aabb67d43b95cef9a926457561c234109a4b398891fa02a4bad644560f253d15e5965a3f84a46930f3025f6e8
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.134.1":
+  version: 3.135.1
+  resolution: "@pulumi/pulumi@npm:3.135.1"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.10.1"
+    "@logdna/tail-file": "npm:^2.0.6"
+    "@npmcli/arborist": "npm:^7.3.1"
+    "@opentelemetry/api": "npm:^1.9"
+    "@opentelemetry/exporter-zipkin": "npm:^1.25"
+    "@opentelemetry/instrumentation": "npm:^0.52"
+    "@opentelemetry/instrumentation-grpc": "npm:^0.52"
+    "@opentelemetry/resources": "npm:^1.25"
+    "@opentelemetry/sdk-trace-base": "npm:^1.25"
+    "@opentelemetry/sdk-trace-node": "npm:^1.25"
+    "@opentelemetry/semantic-conventions": "npm:^1.25"
+    "@pulumi/query": "npm:^0.3.0"
+    "@types/google-protobuf": "npm:^3.15.5"
+    "@types/semver": "npm:^7.5.6"
+    "@types/tmp": "npm:^0.2.6"
+    execa: "npm:^5.1.0"
+    fdir: "npm:^6.1.1"
+    google-protobuf: "npm:^3.5.0"
+    got: "npm:^11.8.6"
+    ini: "npm:^2.0.0"
+    js-yaml: "npm:^3.14.0"
+    minimist: "npm:^1.2.6"
+    normalize-package-data: "npm:^6.0.0"
+    picomatch: "npm:^3.0.1"
+    pkg-dir: "npm:^7.0.0"
+    require-from-string: "npm:^2.0.1"
+    semver: "npm:^7.5.2"
+    source-map-support: "npm:^0.5.6"
+    tmp: "npm:^0.2.1"
+    upath: "npm:^1.1.0"
+  peerDependencies:
+    ts-node: ">= 7.0.1 < 12"
+    typescript: ">= 3.8.3 < 6"
+  peerDependenciesMeta:
+    ts-node:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10c0/613d5ab2c3860ccbf6e34edcb69ebfe2947d51dd8f0c7bfa181a8314c302b0170e4c620567c8b327c041078ef24b5f6783b96316fdd5eae95c500276a64f5f9b
   languageName: node
   linkType: hard
 
