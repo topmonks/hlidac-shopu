@@ -1,15 +1,16 @@
+import { Actor, LogLevel, log } from "apify";
 import { HttpCrawler } from "@crawlee/http";
+
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, LogLevel, log } from "apify";
-import { FingerprintGenerator } from "fingerprint-generator";
 
 const ROOT_URL = "https://allegro.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
+const YANDEX_PREFIX = 'https://translate.yandex.com/translate?lang=ar-en&url=';
 
 const Label = {
   Start: "Start",
@@ -21,22 +22,34 @@ const Label = {
 async function handleProducts(document, processedIds) {
   const categories = document
     .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
-    .map(cat => cat?.textContent?.trim() ?? "");
+    .map((cat) => cat?.textContent?.trim() ?? "");
 
   categories.shift();
 
   const products = [];
   const productElements = document.querySelectorAll("article");
   let duplicates = 0;
+
+  function getRedirectParameter(url) {
+    const params = new URLSearchParams(new URL(url).search);
+    return params.get("redirect") || undefined;
+  }
+
   for (const prod of productElements) {
-    const itemId =
-      prod.getAttribute("data-analytics-view-custom-representative-offer-id")?.trim() ??
-      prod.getAttribute("data-analytics-view-value")?.trim();
+    let itemUrl = prod.querySelector("article h2 > a[href]").getAttribute("href").trim();
+    itemUrl = getRedirectParameter(itemUrl) ?? itemUrl;
+
+    const itemId = itemUrl.match(/-(\d+)(\?|$)/)?.[1];
+
+    if (!itemId) {
+      throw new Error(`Failed to extract itemId from ${itemUrl}`);
+    }
 
     if (processedIds.has(itemId)) {
       duplicates += 1;
       continue;
     }
+
     processedIds.add(itemId);
 
     const originalPrice =
@@ -46,8 +59,8 @@ async function handleProducts(document, processedIds) {
     const imageElement = prod.querySelector("img");
     products.push({
       itemId,
-      itemName: prod.querySelector("h2 > a[href]").textContent.trim(),
-      itemUrl: prod.getAttribute("data-analytics-view-custom-product-offer-url").trim(),
+      itemName: prod.querySelector("article h2 > a[href]").textContent.trim(),
+      itemUrl: itemUrl.split('https/')?.[1] ? `https://${itemUrl.split('https/')?.[1]}` : itemUrl,
       img: imageElement.getAttribute("data-src") ?? imageElement.getAttribute("src"),
       currentPrice,
       inStock: !!currentPrice,
@@ -68,7 +81,21 @@ async function handleProducts(document, processedIds) {
 function createPaginationRequests(document, url) {
   const pageCount = Number.parseInt(document.querySelector('div > div[role="navigation"] > span').textContent);
   const paginationRequests = [];
+
+  if (url.includes('translated.turbopages.org/proxy_u')) {
+    url = extractAllegroUrl(url);
+  };
+
+  if (!url.includes(YANDEX_PREFIX)) {
+    url = `${YANDEX_PREFIX}${url}`;
+  }
+
   for (let i = 2; i < pageCount + 1; i++) {
+    if (!url) {
+      log.error(`Failed to extract url for pagination request`);
+      continue;
+    }
+
     paginationRequests.push({
       url: `${url}?p=${i}`,
       label: Label.Product,
@@ -80,17 +107,19 @@ function createPaginationRequests(document, url) {
   return paginationRequests;
 }
 
+function extractAllegroUrl(yandexUrl) {
+  const regex = /https:\/\/translated\.turbopages\.org\/proxy_u\/ar-en\.en\.[\w-]+\/(https.*)/;
+  const match = yandexUrl.match(regex);
+  return match ? match[1].replace('https/', 'https://') : null;
+}
+
 async function main() {
-  // fingerprint generator to generate headers to help with the blocking
-  const fingerprintGenerator = new FingerprintGenerator({
-    // chrome is getting blocked a lot for some reason
-    browsers: ["firefox", "safari"],
-    operatingSystems: ["windows", "macos"]
-  });
   const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
+  // @ts-ignore
   const { development = false, debug = false, proxyGroups = [], type = ActorType.Full } = input || {};
+  // @ts-ignore
   const inputtedUrls = input?.urls ?? [];
 
   if (debug) {
@@ -107,6 +136,7 @@ async function main() {
     duplicates: 0
   });
 
+  // @ts-ignore
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) || []);
   Actor.on("persistState", async () => {
     await Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds));
@@ -119,38 +149,30 @@ async function main() {
   const crawler = new HttpCrawler({
     requestQueue,
     useSessionPool: true,
-    persistCookiesPerSession: true,
     proxyConfiguration,
     maxRequestRetries: 60,
     navigationTimeoutSecs: 45,
-    maxConcurrency: 100,
-    sessionPoolOptions: {
-      // limit the pool size so we have stable proxies
-      maxPoolSize: 50
-    },
-    preNavigationHooks: [
-      async ({ request }) => {
-        const generatedHeaders = fingerprintGenerator.getFingerprint().headers;
-        request.headers = {
-          "user-agent": generatedHeaders["user-agent"],
-          "accept": generatedHeaders["accept"],
-          "accept-encoding": generatedHeaders["accept-encoding"],
-          "accept-language": generatedHeaders["accept-language"]
-        };
-      }
-    ],
+    maxConcurrency: 15,
     async requestHandler({ request, body, log }) {
       const { label } = request;
-      log.debug(`${label} - handling ${request.url}`);
+      log.debug(`[${label}] - handling ${request.url}`);
+
+      const { document } = parseHTML(body.toString());
+
+      if (document.querySelector('title').textContent.includes('Are you not a robot')
+        || document.querySelector('html.state-unresolved.state-withDirect')) {
+        log.error(`[${label}] - Got a captcha, will retry`);
+        throw new Error("Got a captcha");
+      }
 
       switch (label) {
         case Label.Start:
           {
-            const { document } = parseHTML(body.toString());
             const requestsToAdd = document
               .querySelectorAll('a[data-description="navigation-layers category link"]')
-              .map(cat => ({
-                url: new URL(cat.href, ROOT_URL).href,
+              // @ts-ignore
+              .map((cat) => ({
+                url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
                 label: Label.Category
               }));
 
@@ -160,30 +182,36 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            log.info(`${request.url} - Added ${requestsToAdd.length} top level categories`);
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${requestsToAdd.length} top level categories`, { url: request.url });
           }
           break;
         case Label.Category:
           {
-            const { document } = parseHTML(body.toString());
-            const categoryRequests = document.querySelectorAll("a.carousel-item").map(cat => {
-              return {
-                url: new URL(cat.href, ROOT_URL).href,
-                label: Label.Subcategory
-              };
-            });
+            const categoryRequests = document
+              .querySelectorAll("a.carousel-item")
+              // @ts-ignore
+              .map((cat) => {
+                if (!cat.href) return;
+
+                return {
+                  url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
+                  label: Label.Subcategory,
+                };
+              })
+              .filter(Boolean);
+
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
             } else {
               await crawler.addRequests(categoryRequests);
             }
+
             stats.add("categories", categoryRequests.length);
-            log.info(`${request.url} - Added ${categoryRequests.length} subcategories`);
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
           }
           break;
         case Label.Subcategory:
           {
-            const { document } = parseHTML(body.toString());
 
             const subcategoryLinks = document.querySelectorAll('[data-role="LinkItemAnchor"]');
             const subcategoryItems = document.querySelectorAll('[data-role="LinkItem"]');
@@ -202,17 +230,20 @@ async function main() {
               }
 
               log.info(
-                `${request.url} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`
-              );
+                `[${label}]: ${extractAllegroUrl(request.url)} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`
+                , { url: request.url });
               return;
             }
 
-            const categoryRequests = subcategoryLinks.map(cat => {
+            // @ts-ignore
+            const categoryRequests = subcategoryLinks.map((cat) => {
+              if (!cat.href) return;
+
               return {
-                url: new URL(cat.href, ROOT_URL).href,
+                url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
                 label: Label.Subcategory
               };
-            });
+            }).filter(Boolean);
 
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
@@ -220,16 +251,15 @@ async function main() {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(`${request.url} - Found ${categoryRequests.length} subcategories`);
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Found ${categoryRequests.length} subcategories`, { url: request.url });
           }
           break;
         case Label.Product:
           {
-            const { document } = parseHTML(body.toString());
             const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
             stats.add("products", totalProducts);
             stats.add("duplicates", duplicates);
-            log.info(`${request.url} - Found ${totalProducts} products, saved ${savedProducts}`);
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Found ${totalProducts} products, saved ${savedProducts}`, { url: request.url });
           }
           break;
       }
@@ -250,7 +280,7 @@ async function main() {
 
     if (url.origin === ROOT_URL) {
       requests.push({
-        url: ROOT_URL,
+        url: `${YANDEX_PREFIX}${ROOT_URL}`,
         label: Label.Start
       });
       continue;
@@ -259,7 +289,7 @@ async function main() {
     const firstPathSegment = url.pathname.split("/")[1] ?? "";
     if (firstPathSegment === "doporucujeme") {
       requests.push({
-        url: inputtedUrl,
+        url: `${YANDEX_PREFIX}${inputtedUrl}`,
         label: Label.Category
       });
       continue;
@@ -267,7 +297,7 @@ async function main() {
 
     if (firstPathSegment === "kategorie") {
       requests.push({
-        url: inputtedUrl,
+        url: `${YANDEX_PREFIX}${inputtedUrl}`,
         label: Label.Subcategory
       });
       continue;
@@ -279,7 +309,7 @@ async function main() {
   if (requests.length === 0) {
     log.info("Got no urls on the input, will start from the home page");
     requests.push({
-      url: ROOT_URL,
+      url: `${YANDEX_PREFIX}${ROOT_URL}`,
       label: Label.Start
     });
   }
