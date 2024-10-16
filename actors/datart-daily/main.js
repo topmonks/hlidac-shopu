@@ -88,25 +88,45 @@ function extractItems(document, rootUrl, country) {
         const searchParams = new URLSearchParams(itemCartDataTarget);
         result.itemId = searchParams.get("id");
       }
-      result.currentPrice = parseFloat(
+      const currentPrice = parseFloat(
         productBoxBuyInfoCart
           .querySelector("div.item-price div.actual")
           .innerText.trim()
           .replace(/[^\d,]+/g, "")
           .replace(",", ".")
       );
-      const cutPrice = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price del");
-      if (cutPrice) {
-        result.originalPrice = parseFloat(
-          cutPrice.innerText
+
+      let lowestPriceInLastMonth = currentPrice;
+      const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price del");
+      if (lowestPriceInLastMonthEl) {
+        lowestPriceInLastMonth = parseFloat(
+          lowestPriceInLastMonthEl.innerText
             .trim()
             .replace(/[^\d,]+/g, "")
             .replace(",", ".")
         );
+      }
+      let couponDiscount = 0;
+      const couponDiscountFlagEl = productEl.querySelector(".product-flags .flag-color-red");
+      if (couponDiscountFlagEl) {
+        const hasDiscountKeyword = country === Country.CZ && /extra sleva/i.test(couponDiscountFlagEl.textContent);
+        if (hasDiscountKeyword) {
+          couponDiscount = parseFloat(couponDiscountFlagEl.innerText.trim()
+            .replace(/[^\d,]+/g, "")
+            .replace(",", ".")
+          );
+        }
+      }
+
+      result.originalPrice = lowestPriceInLastMonth;
+      result.currentPrice = currentPrice;
+
+      if (couponDiscount > 0) {
+        result.currentPrice -= couponDiscount;
         result.discounted = true;
       } else {
-        result.originalPrice = null;
-        result.discounted = false;
+        result.currentPrice = currentPrice;
+        result.discounted = lowestPriceInLastMonth > currentPrice;
       }
 
       return result;
