@@ -1,7 +1,7 @@
 import { HttpCrawler, createHttpRouter, useState } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { parseFloatText, saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -16,8 +16,6 @@ import { Actor, LogLevel, log } from "apify";
 /** @enum {string} */
 export const Labels = {
   CATEGORY: "CATEGORY",
-  SITEMAP: "SITEMAP",
-  PRODUCTS_SITEMAP: "PRODUCTS_SITEMAP",
   PRODUCT_DETAIL: "PRODUCT_DETAIL",
   INITIAL_CATEGORIES: "INITIAL_CATEGORIES",
 };
@@ -38,14 +36,6 @@ export function buildUrl(domain, link) {
   return new URL(link, domain).href;
 }
 
-function sitemapUrl(country) {
-  return [
-    {
-      url: buildUrl(rootWebUrl(country), "/sitemap.xml"),
-      label: Labels.SITEMAP
-    }
-  ];
-}
 function blackFridayUrl(country) {
   return [
     {
@@ -61,50 +51,6 @@ function initialCategoriesUrl(country) {
       label: Labels.INITIAL_CATEGORIES
     }
   ];
-}
-
-/**
- * Pilulka has one root sitemap with linked sub-sitemaps in it.
- * We are looking for sub-sitemaps of product pages.
- */
-function handleSitemap() {
-  /** @param {HttpCrawlingContext} context */
-  async function handler({ body, enqueueLinks, log, response }) {
-    log.info("Reading Sitemap", { url: response.url });
-    const { document } = parseXML(body.toString());
-    const urls = Array.from(document.querySelectorAll("loc"))
-      .map(el => el.textContent)
-      .filter(url => url.includes("/sitemaps/products-"));
-    log.info(`Found ${urls.length} products sitemaps`);
-    await enqueueLinks({ urls, label: Labels.PRODUCTS_SITEMAP });
-  }
-  return handler;
-}
-
-function handleProductsSitemap() {
-  /** @param {HttpCrawlingContext} context */
-  async function handler({ body, enqueueLinks, log, response }) {
-    log.info("Reading Sitemap", { url: response.url });
-    const { document } = parseXML(body.toString());
-    const urls = Array.from(document.querySelectorAll("loc"))
-      .map(el => el.textContent)
-      // Each product has 3 URLs in sitemap, let's take only the main one
-      // 0 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black"
-      // 1 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black/recenze-zkusenosti"
-      // 2 = "https://www.pilulka.cz/niceboy-r-hive-pins-anc-3-black/pribalovy-letak"
-      // 0 = "https://www.pilulka.sk/product/1000016056"
-      // 1 = "https://www.pilulka.sk/product/1000016056/recenzie-zkusenosti"
-      // 2 = "https://www.pilulka.sk/product/1000016056/pribalovy-letak"
-      .filter(url => {
-        const numOfSlashesForMainProductUrl = url.includes(`/product/`)
-          ? 4 // https://www.pilulka.cz/product/1000016056
-          : 3; // https://www.pilulka.cz/niceboy-r-hive
-        return url.split(`/`).length === numOfSlashesForMainProductUrl + 1;
-      });
-    log.info(`Found ${urls.length} products`, { url: response.url });
-    await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
-  }
-  return handler;
 }
 
 function toArray(o) {
@@ -175,8 +121,8 @@ function handleInitialCategories() {
   async function handler({ body, enqueueLinks, log, response }) {
     const { document } = parseHTML(body.toString());
     const linkElements = document.querySelectorAll(`.menu__href`);
-    log.info(`Found categories: ${linkElements.map(element => element.textContent).join(", ")}`);
-    const links = Array.from(linkElements).map(x => buildUrl(response.url, x.href));
+    log.info(`Found categories: ${Array.from(linkElements).map(link => link.textContent).join(", ")}`);
+    const links = Array.from(linkElements).map(link => buildUrl(response.url, link.href));
     await enqueueLinks({ urls: links, label: Labels.CATEGORY });
   }
   return handler;
@@ -224,7 +170,6 @@ function initialRequests(country, type, urls) {
     return blackFridayUrl(country);
   }
   return initialCategoriesUrl(country);
-  // return sitemapUrl(country);
 }
 
 async function main() {
@@ -263,9 +208,7 @@ async function main() {
     persistCookiesPerSession: true,
     maxRequestRetries,
     requestHandler: createHttpRouter({
-      [Labels.SITEMAP]: handleSitemap(),
       [Labels.INITIAL_CATEGORIES]: handleInitialCategories(),
-      [Labels.PRODUCTS_SITEMAP]: handleProductsSitemap(),
       [Labels.PRODUCT_DETAIL]: handleProductDetail({ processedIds, stats }),
       [Labels.CATEGORY]: handleCategory()
     }),
