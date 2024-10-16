@@ -18,7 +18,8 @@ export const Labels = {
   CATEGORY: "CATEGORY",
   SITEMAP: "SITEMAP",
   PRODUCTS_SITEMAP: "PRODUCTS_SITEMAP",
-  PRODUCT_DETAIL: "PRODUCT_DETAIL"
+  PRODUCT_DETAIL: "PRODUCT_DETAIL",
+  INITIAL_CATEGORIES: "INITIAL_CATEGORIES",
 };
 
 /** @enum {string} */
@@ -50,6 +51,14 @@ function blackFridayUrl(country) {
     {
       url: buildUrl(rootWebUrl(country), "/black-friday"),
       label: Labels.CATEGORY
+    }
+  ];
+}
+function initialCategoriesUrl(country) {
+  return [
+    {
+      url: buildUrl(rootWebUrl(country), "/"),
+      label: Labels.INITIAL_CATEGORIES
     }
   ];
 }
@@ -130,6 +139,11 @@ function handleProductDetail({ processedIds, stats }) {
       cleanPriceText(document.querySelector(`.price-before, .superPrice__old__price`)?.textContent ?? "")
     );
     const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
+    const priceWithCode = parseFloatText(
+      cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
+    );
+
+    if (priceWithCode) log.info(`Price with code: ${priceWithCode}`);
 
     const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
 
@@ -147,12 +161,25 @@ function handleProductDetail({ processedIds, stats }) {
           category: breadcrumbs,
           originalPrice: isDiscounted ? originalPrice : null,
           currentPrice,
-          discounted: isDiscounted
+          discounted: isDiscounted,
+          priceWithCode,
         }
       ],
       stats,
       processedIds
     });
+  }
+  return handler;
+}
+
+function handleInitialCategories() {
+  /** @param {HttpCrawlingContext} context */
+  async function handler({ body, enqueueLinks, log, response }) {
+    const { document } = parseHTML(body.toString());
+    const linkElements = document.querySelectorAll(`.menu__href`);
+    log.info(`Found categories: ${linkElements.map(element => element.textContent).join(", ")}`);
+    const links = Array.from(linkElements).map(x => buildUrl(response.url, x.href));
+    await enqueueLinks({ urls: links, label: Labels.CATEGORY });
   }
   return handler;
 }
@@ -198,7 +225,8 @@ function initialRequests(country, type, urls) {
   if (type === ActorType.BlackFriday) {
     return blackFridayUrl(country);
   }
-  return sitemapUrl(country);
+  return initialCategoriesUrl(country);
+  // return sitemapUrl(country);
 }
 
 async function main() {
@@ -238,6 +266,7 @@ async function main() {
     maxRequestRetries,
     requestHandler: createHttpRouter({
       [Labels.SITEMAP]: handleSitemap(),
+      [Labels.INITIAL_CATEGORIES]: handleInitialCategories(),
       [Labels.PRODUCTS_SITEMAP]: handleProductsSitemap(),
       [Labels.PRODUCT_DETAIL]: handleProductDetail({ processedIds, stats }),
       [Labels.CATEGORY]: handleCategory()
