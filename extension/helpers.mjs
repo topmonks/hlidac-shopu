@@ -22,6 +22,7 @@ export function cleanUnitPrice(s, quantity) {
   return quantity * (unitPrice / 1000).toFixed(2);
 }
 
+// populated by calling registerShop
 export const shops = new Map();
 
 export function registerShop(shop, ...names) {
@@ -63,5 +64,6 @@ export function isElementVisible(el) {
 
 export {
   cleanPriceText,
-  cleanUnitPriceText
+  cleanUnitPriceText,
+  getLdJsonByType
 } from "@hlidac-shopu/lib/parse.mjs";
