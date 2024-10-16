@@ -143,8 +143,6 @@ function handleProductDetail({ processedIds, stats }) {
       cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
     );
 
-    if (priceWithCode) log.info(`Price with code: ${priceWithCode}`);
-
     const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
 
     await saveUniqProducts({
