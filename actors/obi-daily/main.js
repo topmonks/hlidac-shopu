@@ -74,7 +74,7 @@ function extractProduct({ url, document }) {
   if (currency === "SKK") {
     currency = "EUR";
   }
-  const discountedPrice = document.querySelector(".saving + del")?.innerText;
+  const discountedPrice = document.querySelector(".buybox .saving + del")?.innerText;
   const originalPrice = discountedPrice ? cleanPrice(discountedPrice) : null;
   let img = document.querySelector(".ads-slider__link").href;
   if (!img) {
