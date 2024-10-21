@@ -104,9 +104,8 @@ function handleProductDetail({ processedIds, stats }) {
           inStock,
           category: breadcrumbs,
           originalPrice: isDiscounted ? originalPrice : null,
-          currentPrice,
+          currentPrice: priceWithCode ?? currentPrice,
           discounted: isDiscounted,
-          priceWithCode,
         }
       ],
       stats,
