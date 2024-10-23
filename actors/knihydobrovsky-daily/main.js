@@ -35,7 +35,7 @@ function extractProducts({ document }) {
     .querySelectorAll("li[data-productinfo]")
     .map(item => {
       // new original price (lowest oprice before discount) can be scraped only from the details page
-      const originalPrice = null;
+      const originalPrice = item.querySelector(".price-before strong")?.innerText?.trim()?.toLowerCase();
       const currentPrice = item.querySelector("p.price strong")?.innerText?.trim()?.toLowerCase();
       const itemId =
         item
@@ -56,7 +56,7 @@ function extractProducts({ document }) {
         itemName: item.querySelector("span.name").innerText,
         img: item.querySelector("picture img").getAttribute("src"),
         currentPrice: currentPrice === "zdarma" ? 0 : (cleanPrice(currentPrice) ?? null),
-        originalPrice,
+        originalPrice: originalPrice != null ? cleanPrice(originalPrice) ?? null: null,
         discounted,
         rating: parseFloat(
           item.querySelector("span.stars.small span")?.getAttribute("style")?.split("width: ")[1] ?? null
