@@ -187,14 +187,18 @@ function extractProductDetail({ document, url, processedIds, stats, currency }) 
   const img = document.querySelector("meta[property='og:image']")?.getAttribute("content");
   const itemName = document.querySelector("meta[property='og:title']")?.getAttribute("content");
   const product = document.querySelector(".product__information");
-
-  const comparePrice = cleanPrice(product.querySelector(".compare_price>.money")?.textContent);
-  const currentPriceSale = cleanPrice(product.querySelector(".current_price.tags-sale")?.textContent);
-  const currentPriceMz = cleanPrice(product.querySelector(".current_price_mz>.money")?.textContent);
-  const currentPriceNotSale = cleanPrice(product.querySelector(".current_price:not(.tags-sale)")?.textContent);
   const category = parseBreadcrumbs(document);
-  const originalPrice = comparePrice ?? currentPriceSale;
-  const currentPrice = currentPriceMz ?? currentPriceNotSale;
+
+  // Original price is present either as "Doporučená cena výrobce" or "Nejnižší cena za posledních 30 dní"
+  const recommendedPrice = cleanPrice(product.querySelector(".was-price .money")?.textContent);
+  const lowestPriceLast30Days = cleanPrice(product.querySelector(".compare_price .money")?.textContent);
+  
+  // Only one of the fields is actually present at a time.
+  const originalPrice = recommendedPrice ?? lowestPriceLast30Days;
+
+  // Current price is called "Cena s DPH"
+  const currentPrice = cleanPrice(product.querySelector(".current-price-incl-vat .money")?.textContent);
+
   return {
     itemId,
     itemUrl: url,
