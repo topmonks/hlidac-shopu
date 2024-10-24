@@ -90,6 +90,33 @@ function homepageRequests(document, country) {
   return links;
 }
 
+function determineCurrentAndOriginalPrice(variantGeneralData) {
+      // Data contain following prices
+      const voucherDiscountedPrice = variantGeneralData.attributes?.VoucherDiscount?.discountedPrice;
+      const price = variantGeneralData.price.value;
+      const originalPrice = variantGeneralData.originalPrice?.value;
+      const recentMinPrice = variantGeneralData.recentMinPrice?.value;
+
+
+      // Some products are automatically discounted using vouchers available for everyone.
+      // In this case, we should take it as the current price, and return the price without voucher as original price
+      if (voucherDiscountedPrice) {
+        return {
+          currentPrice: voucherDiscountedPrice,
+          originalPrice: price,
+        }
+      }
+
+      // Otherwise price is current price, and original price becomes trickier.
+      return {
+        currentPrice: price,
+        originalPrice: recentMinPrice && price < recentMinPrice && recentMinPrice < originalPrice
+          ? recentMinPrice
+          : originalPrice,
+      }
+
+}
+
 /**
  * @param {Document} document
  * @param {Country} country
@@ -136,8 +163,9 @@ function handleProductUsingWindowObject(document, country) {
       };
       product.img = document.querySelector("#pd-image-main")?.getAttribute("src");
       product.category = category;
-      const currentPrice = variantGeneralData.price.value;
-      const originalPrice = variantGeneralData.originalPrice !== null ? variantGeneralData.originalPrice.value : null;
+
+      const { currentPrice, originalPrice } = determineCurrentAndOriginalPrice(variantGeneralData);
+
       product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
       product.currentPrice = currentPrice;
       product.originalPrice = product.discounted ? originalPrice : null;
@@ -189,7 +217,8 @@ async function main() {
     proxyGroups,
     maxRequestRetries,
     country = Country.CZ,
-    type = ActorType.Full
+    type = ActorType.Full,
+    testUrls,
   } = await getInput();
 
   if (development || debug) {
@@ -283,6 +312,7 @@ async function main() {
               stats.add("pages", productVariants.length);
             }
 
+            // Getting the data from apollo state is currently the only working way
             let products = [];
             if (document.querySelector("#__APOLLO_STATE__")?.innerHTML) {
               products = handleProductUsingWindowObject(document, country);
@@ -360,7 +390,7 @@ async function main() {
         userData: { label: Labels.HOME_PAGE }
       });
   }
-  await crawler.run(startingRequests);
+  await crawler.run(testUrls ?? startingRequests);
 
   log.info("Crawling finished.");
 
