@@ -138,8 +138,15 @@ function extractProducts({ json, country }) {
     const productWithSale = calculateTagSalePrice(structuredClone(product));
     const maxPrice = Math.max(product.compare_at_price_max, product.price_max); // use crossed out price if available
     const inStock = product.available;
-    const currentPrice = productWithSale.price_min;
-    const originalPrice = inStock ? maxPrice : currentPrice; // Sold out products don't show original price. For compatibility reason, use current price even if there is no discount.
+
+    // Prices are included without VAT in the data. We need to calculate the VAT from the tags.
+    const vat = parseInt(product.original_tags?.find(tag => tag.startsWith("PRD:Tax-"))?.split('-')?.[1] || 0, 10);
+
+    const currentPrice = productWithSale.price_min * (1 + vat / 100);
+    // TODO: Does the comment still hold?
+    // Sold out products don't show original price. For compatibility reason, use current price even if there is no discount.
+    const originalPrice = (inStock ? maxPrice : currentPrice) * (1 + vat / 100);
+    
     return {
       itemId: product.id,
       itemUrl: `${getBaseUrl(country)}/products/${product.handle}`,
