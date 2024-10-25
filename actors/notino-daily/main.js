@@ -168,7 +168,7 @@ function handleProductUsingWindowObject(document, country) {
 
       product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
       product.currentPrice = currentPrice;
-      product.originalPrice = product.discounted ? originalPrice : null;
+      product.originalPrice = originalPrice;
       product.currency = variantGeneralData.price && variantGeneralData.price.currency;
       product.inStock = true;
       return product;
