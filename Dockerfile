@@ -1,4 +1,4 @@
-FROM node:20-bullseye
+FROM node:22-bullseye
 
 # Add jq to the image
 RUN apt update &&\
