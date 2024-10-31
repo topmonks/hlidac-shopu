@@ -173,6 +173,7 @@ async function main() {
   }
 
   const processedIds = new Set();
+  let totalItems = 0;
   const stats = await withPersistedStats(x => x, {
     ok: 0,
     denied: 0,
@@ -214,13 +215,18 @@ async function main() {
       if (errors) log.error("GraphQL errors", errors);
 
       const {
-        productCollection: { items = [] } = {},
+        productCollection: { items = [], itemsTotalCount } = {},
         ...rest
       } = data || {};
       log.debug(`Got ${items.length} items now`);
 
       if (!items.length) {
         log.warning("No items 🤔", rest);
+      }
+
+      if (page === 1) {
+        totalItems = itemsTotalCount;
+        log.info(`Total items in Black Friday category: ${totalItems}`);
       }
 
       const hasMorePages = items.length === PAGE_LIMIT;
@@ -267,6 +273,16 @@ async function main() {
 
     await uploadToKeboola(tableName);
     log.info("upload to Keboola finished");
+  }
+
+  const processedItemsCount = stats.get().items;
+  log.info(`Processed ${processedItemsCount} items out of ${totalItems} total items`);
+  if (processedItemsCount < totalItems) {
+    log.warning(`We might have missed some items. Processed: ${processedItemsCount}, Total: ${totalItems}`);
+  } else if (processedItemsCount > totalItems) {
+    log.warning(`We processed more items than expected. Processed: ${processedItemsCount}, Total: ${totalItems}`);
+  } else {
+    log.info("All items were successfully processed.");
   }
 }
 
