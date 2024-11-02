@@ -4759,10 +4759,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily":
+"@hlidac-shopu/okay@workspace:actors/okay":
   version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/okay-browser@workspace:actors/okay-browser-daily"
+  resolution: "@hlidac-shopu/okay@workspace:actors/okay"
   dependencies:
+    "@crawlee/http": "npm:3.11.5"
     "@crawlee/playwright": "npm:3.11.5"
     "@hlidac-shopu/actors-common": "npm:2.3.3"
     "@hlidac-shopu/lib": "npm:1.4.0"
@@ -4770,19 +4771,6 @@ __metadata:
     apify: "npm:3.2.6"
     apify-cli: "npm:0.20.11"
     playwright: "npm:1.48.2"
-  languageName: unknown
-  linkType: soft
-
-"@hlidac-shopu/okay-daily@workspace:actors/okay-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/okay-daily@workspace:actors/okay-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.11.5"
-    "@hlidac-shopu/actors-common": "npm:2.3.3"
-    "@hlidac-shopu/lib": "npm:1.4.0"
-    "@types/node": "npm:22.8.4"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.20.11"
   languageName: unknown
   linkType: soft
 
