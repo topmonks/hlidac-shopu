@@ -1,11 +1,12 @@
 {
-  "name": "@hlidac-shopu/okay-browser",
+  "name": "@hlidac-shopu/okay",
   "version": "1.0.0",
-  "description": "This is an Apify actor for okay (full browser version).",
+  "description": "This is an Apify Actor for Okay (http crawler version, product detail).",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
+    "@crawlee/http": "3.11.5",
     "@crawlee/playwright": "3.11.5",
     "@hlidac-shopu/actors-common": "2.3.3",
     "@hlidac-shopu/lib": "1.4.0",
