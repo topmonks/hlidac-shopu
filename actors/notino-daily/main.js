@@ -97,9 +97,6 @@ function determineCurrentAndOriginalPrice(variantGeneralData) {
       const originalPrice = variantGeneralData.originalPrice?.value;
       const recentMinPrice = variantGeneralData.recentMinPrice?.value;
 
-      console.log({ voucherDiscountedPrice, price, originalPrice, recentMinPrice });
-
-
       // Some products are automatically discounted using vouchers available for everyone.
       // In this case, we should take it as the current price, and return the price without voucher as original price
       if (voucherDiscountedPrice) {
