@@ -102,7 +102,7 @@ function determineCurrentAndOriginalPrice(variantGeneralData) {
       if (voucherDiscountedPrice) {
         return {
           currentPrice: voucherDiscountedPrice,
-          originalPrice: recentMinPrice ?? originalPrice,
+          originalPrice: recentMinPrice ?? price,
         }
       }
 
