@@ -4659,9 +4659,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:9.0.0-beta.17":
-  version: 9.0.0-beta.17
-  resolution: "@hckr_/blendid@npm:9.0.0-beta.17"
+"@hckr_/blendid@npm:9.0.0-beta.18":
+  version: 9.0.0-beta.18
+  resolution: "@hckr_/blendid@npm:9.0.0-beta.18"
   dependencies:
     "@vitejs/plugin-basic-ssl": "npm:1.1.0"
     cloudinary: "npm:2.5.1"
@@ -4708,7 +4708,7 @@ __metadata:
     vite: "npm:6.0.0-beta.8"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/c99aa1891b0cc49b17504cc634202cf007c1377f464c3de3cc2886e56e93a169e3b8041251100d5b10d38031541a1559f48430dffa7adebceed7db72b61eefb5
+  checksum: 10c0/38c161067ca044a22820019b967bcc96fdf1ff930f0aebd12be144f245ce73dccb16e292b04770d4fc01bd3208d2277ba62ef1d5753a3c50bf97dc7ddc071004
   languageName: node
   linkType: hard
 
@@ -16152,7 +16152,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.682.0"
     "@biomejs/biome": "npm:1.9.4"
-    "@hckr_/blendid": "npm:9.0.0-beta.17"
+    "@hckr_/blendid": "npm:9.0.0-beta.18"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:22.9.0"
     "@types/nunjucks": "npm:3.2.6"
