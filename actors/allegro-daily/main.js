@@ -16,6 +16,7 @@ const Label = {
   Start: "Start",
   Product: "Product",
   Category: "Category",
+  CZC_Category: "CZC_Category",
   Subcategory: "Subcategory"
 };
 
@@ -110,7 +111,15 @@ function createPaginationRequests(document, url) {
 function extractAllegroUrl(yandexUrl) {
   const regex = /https:\/\/translated\.turbopages\.org\/proxy_u\/ar-en\.en\.[\w-]+\/(https.*)/;
   const match = yandexUrl.match(regex);
-  return match ? match[1].replace('https/', 'https://') : null;
+  return match ? match[1].replace('https/', 'https://') : yandexUrl.replace(YANDEX_PREFIX, '');
+}
+
+const tryParseJson = (str) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return null;
+  }
 }
 
 async function main() {
@@ -153,7 +162,7 @@ async function main() {
     maxRequestRetries: 60,
     navigationTimeoutSecs: 45,
     maxConcurrency: 15,
-    async requestHandler({ request, body, log }) {
+    async requestHandler({ request, body, log, parseWithCheerio }) {
       const { label } = request;
       log.debug(`[${label}] - handling ${request.url}`);
 
@@ -199,6 +208,33 @@ async function main() {
                 };
               })
               .filter(Boolean);
+
+            if (type === ActorType.Test) {
+              await crawler.addRequests(categoryRequests.slice(0, 1));
+            } else {
+              await crawler.addRequests(categoryRequests);
+            }
+
+            stats.add("categories", categoryRequests.length);
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
+          }
+          break;
+        case Label.CZC_Category:
+          {
+            const $ = await parseWithCheerio();
+
+            const categoryRequests = tryParseJson(
+              $(
+                'script[type="application/json"]:contains("searchSellerName")',
+              ).html(),
+            ).headerBanner.categoryNavigation.categoryNavigationItems.flatMap((categoryList) => {
+              return categoryList.items.flatMap((category) => {
+                return category.items.map((item) => ({
+                  url: `${YANDEX_PREFIX}${item.link}`,
+                  label: Label.Subcategory,
+                }));
+              });
+            });
 
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
@@ -284,6 +320,20 @@ async function main() {
         label: Label.Start
       });
       continue;
+    }
+
+    if (url.pathname === '/obchod/czc-cz') {
+      requests.push({
+        url: `${YANDEX_PREFIX}${inputtedUrl}`,
+        label: Label.CZC_Category
+      });
+      continue;
+    } else if (url.pathname.includes('/obchod/czc-cz')) {
+      requests.push({
+        url: `${YANDEX_PREFIX}${inputtedUrl}`,
+        label: Label.Subcategory
+      });
+      continue
     }
 
     const firstPathSegment = url.pathname.split("/")[1] ?? "";
