@@ -10,8 +10,8 @@
       "description": "Specify the type of the actor — daily or count",
       "editor": "select",
       "default": "BF",
-      "enum": ["FULL", "COUNT", "TEST", "CZECHITAS"],
-      "enumTitles": ["DAILY", "COUNT", "TEST", "CZECHITAS"]
+      "enum": ["FULL", "COUNT", "TEST", "BF"],
+      "enumTitles": ["DAILY", "COUNT", "TEST", "BF"]
     },
     "country": {
       "title": "type",
