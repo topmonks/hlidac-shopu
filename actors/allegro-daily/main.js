@@ -162,7 +162,7 @@ async function main() {
     maxRequestRetries: 60,
     navigationTimeoutSecs: 45,
     maxConcurrency: 15,
-    async requestHandler({ request, body, log, parseWithCheerio }) {
+    async requestHandler({ request, body, log }) {
       const { label } = request;
       log.debug(`[${label}] - handling ${request.url}`);
 
@@ -221,29 +221,34 @@ async function main() {
           break;
         case Label.CZC_Category:
           {
-            const $ = await parseWithCheerio();
+            const scripts = document.querySelectorAll('script[type="application/json"]');
+            let scriptContent = null;
 
-            const categoryRequests = tryParseJson(
-              $(
-                'script[type="application/json"]:contains("searchSellerName")',
-              ).html(),
-            ).headerBanner.categoryNavigation.categoryNavigationItems.flatMap((categoryList) => {
-              return categoryList.items.flatMap((category) => {
-                return category.items.map((item) => ({
-                  url: `${YANDEX_PREFIX}${item.link}`,
-                  label: Label.Subcategory,
-                }));
-              });
+            scripts.forEach((script) => {
+              if (script.innerHTML.includes('searchSellerName')) {
+                scriptContent = script.innerHTML;
+              }
             });
 
-            if (type === ActorType.Test) {
-              await crawler.addRequests(categoryRequests.slice(0, 1));
-            } else {
-              await crawler.addRequests(categoryRequests);
+            if (scriptContent) {
+              const categoryRequests = tryParseJson(scriptContent).headerBanner.categoryNavigation.categoryNavigationItems.flatMap((categoryList) => {
+                return categoryList.items.flatMap((category) => {
+                  return category.items.map((item) => ({
+                    url: `${YANDEX_PREFIX}${item.link}`,
+                    label: Label.Subcategory,
+                  }));
+                });
+              });
+  
+              if (type === ActorType.Test) {
+                await crawler.addRequests(categoryRequests.slice(0, 1));
+              } else {
+                await crawler.addRequests(categoryRequests);
+              }
+  
+              stats.add("categories", categoryRequests.length);
+              log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
             }
-
-            stats.add("categories", categoryRequests.length);
-            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
           }
           break;
         case Label.Subcategory:
