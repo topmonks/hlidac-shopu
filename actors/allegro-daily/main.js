@@ -54,15 +54,17 @@ async function handleProducts(document, processedIds) {
     processedIds.add(itemId);
 
     const originalPrice =
-      cleanPrice(prod.querySelector('span[style="font-weight:normal;text-decoration:line-through;"]')?.textContent) ??
+      cleanPrice(prod.querySelector('span[style*="font-weight:normal;text-decoration:line-through"]')?.textContent) ??
       null;
-    const currentPrice = cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent) ?? null;
+    const currentPrice = cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent)
+      || cleanPrice(prod.querySelector('[data-test-tag="price-container"]')?.textContent) || null;
     const imageElement = prod.querySelector("img");
+
     products.push({
       itemId,
       itemName: prod.querySelector("article h2 > a[href]").textContent.trim(),
       itemUrl: itemUrl.split('https/')?.[1] ? `https://${itemUrl.split('https/')?.[1]}` : itemUrl,
-      img: imageElement.getAttribute("data-src") ?? imageElement.getAttribute("src"),
+      img: extractAllegroUrl(imageElement.getAttribute("data-src") || imageElement.getAttribute("src")),
       currentPrice,
       inStock: !!currentPrice,
       originalPrice,
