@@ -9078,12 +9078,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:11.0.5":
-  version: 11.0.5
-  resolution: "@types/whatwg-url@npm:11.0.5"
+"@types/whatwg-url@npm:13.0.0":
+  version: 13.0.0
+  resolution: "@types/whatwg-url@npm:13.0.0"
   dependencies:
     "@types/webidl-conversions": "npm:*"
-  checksum: 10c0/7a9b9252dee98df6db1ad62337daca7f59ae50d7a3406d14ac6b57168d406004359994f3371155e24f3cf12002c4cb8bbb0883bd4cefb9d7ee8e2b510bdd7f5e
+  checksum: 10c0/b7b53ae7b5290a0c26e2a5c6a2353af925fe9fc7ab0bbf642e8b76f65b39f638b471dadfda8da441aed3ca32cafd33b1a03459117c9ec85fd91b1e6c0e93044e
   languageName: node
   linkType: hard
 
@@ -16217,7 +16217,7 @@ __metadata:
     "@types/node": "npm:22.9.0"
     "@types/nunjucks": "npm:3.2.6"
     "@types/ramda": "npm:0.30.2"
-    "@types/whatwg-url": "npm:11.0.5"
+    "@types/whatwg-url": "npm:13.0.0"
     ava: "npm:6.2.0"
     chokidar: "npm:4.0.1"
     chrome-webstore-upload-cli: "npm:3.3.1"
