@@ -129,7 +129,7 @@ async function main() {
 
   const input = await Actor.getInput();
   // @ts-ignore
-  const { development = false, debug = false, proxyGroups = [], type = ActorType.Full, website } = input || {};
+  const { development = false, debug = false, proxyGroups = [], type = ActorType.Full, tableName = "allegro_cz" } = input || {};
   // @ts-ignore
   const inputtedUrls = input?.urls ?? [];
 
@@ -375,7 +375,7 @@ async function main() {
   await stats.save(true);
 
   if (!development) {
-    await uploadToKeboola(website === "czc" ? "czc" : "allegro_cz");
+    await uploadToKeboola(tableName);
   }
 }
 
