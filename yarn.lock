@@ -4976,8 +4976,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
-    "@pulumi/aws": "npm:6.59.0"
-    "@pulumi/awsx": "npm:2.17.0"
+    "@pulumi/aws": "npm:6.59.1"
+    "@pulumi/awsx": "npm:2.18.1"
     "@pulumi/pulumi": "npm:3.138.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.24.0"
@@ -6468,42 +6468,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.59.0":
-  version: 6.59.0
-  resolution: "@pulumi/aws@npm:6.59.0"
+"@pulumi/aws@npm:6.59.1, @pulumi/aws@npm:^6.58.0":
+  version: 6.59.1
+  resolution: "@pulumi/aws@npm:6.59.1"
   dependencies:
     "@pulumi/pulumi": "npm:^3.136.0"
     builtin-modules: "npm:3.0.0"
     mime: "npm:^2.0.0"
     resolve: "npm:^1.7.1"
-  checksum: 10c0/662d6e4c2226ab3ccd34625c750136d1df3b0d8f67540f793720b90ef7cb1b4cb5064aa5dc1f7c8a6abdbc4bae834835ac4d4558e275103c038e7efd301d0c29
+  checksum: 10c0/c0250097eda6dfda3d0856fd4b54a1e995bb08895247f2a20bc2665e3da630f80b812e97faa55d4395087190ba4ce575fc02561a9e9f4b51ceff91f2777850bb
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^6.57.0":
-  version: 6.58.0
-  resolution: "@pulumi/aws@npm:6.58.0"
-  dependencies:
-    "@pulumi/pulumi": "npm:^3.136.0"
-    builtin-modules: "npm:3.0.0"
-    mime: "npm:^2.0.0"
-    resolve: "npm:^1.7.1"
-  checksum: 10c0/1b8014531c422c30a31a437a5d071ddcc2aaec28a627b6dd6babba1003898f8cf70fd97eced8089cf513ddb056a7963f0fea77d20b294312e6c7f58e85edb1cd
-  languageName: node
-  linkType: hard
-
-"@pulumi/awsx@npm:2.17.0":
-  version: 2.17.0
-  resolution: "@pulumi/awsx@npm:2.17.0"
+"@pulumi/awsx@npm:2.18.1":
+  version: 2.18.1
+  resolution: "@pulumi/awsx@npm:2.18.1"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
-    "@pulumi/aws": "npm:^6.57.0"
+    "@pulumi/aws": "npm:^6.58.0"
     "@pulumi/docker": "npm:^4.5.1"
     "@pulumi/pulumi": "npm:^3.136.0"
     "@types/aws-lambda": "npm:^8.10.23"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 10c0/be5a70e5ea42d5189a7e9e5d9a8814f2f0c100e4615295752f8459d06d3b9aab99af4c56707431de80889a023a3e329668a34d3f0a3c82cd56672b398009f344
+  checksum: 10c0/17a07a894d78fdea54d65b5a8b156bc2c0206857865fe7847dc5330479f085dce46e6ab51fb707bdc5accbdefe2d57781aa6f03757e3acbf6993f9442fecefbf
   languageName: node
   linkType: hard
 
