@@ -101,8 +101,10 @@ export function normalizeItem({ item, categoriesById }) {
   if (item.sales.length !== 0) {
     for (const sale of item.sales) {
       if (sale.type === "sale") {
-        result.originalPrice = result.currentPrice;
-        result.originalUnitPrice = result.currentUnitPrice;
+        if (!sale.silent) {
+          result.originalPrice = result.currentPrice;
+          result.originalUnitPrice = result.currentUnitPrice;
+        }
         result.currentPrice = sale.price?.amount ?? null;
         result.currentUnitPrice = sale.priceForUnit?.amount ?? null;
         result.discounted = true;
