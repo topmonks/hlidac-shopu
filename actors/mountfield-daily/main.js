@@ -88,7 +88,7 @@ function extractItems(document, country, stats) {
     result.itemName = name;
     result.category = category.join(" > ");
     result.currency = country === Country.CZ ? "CZK" : "EUR";
-    result.img = item.querySelector("img").src;
+    result.img = item.querySelector("img").getAttribute("data-src") || item.querySelector("img").src;
     stats.inc("items");
     return result;
   });
@@ -109,6 +109,7 @@ function getTableName({ type, country }) {
 
 /**
  * @param {Document} document
+ * @return {import("@crawlee/http").RequestOptions[]}
  */
 function categoryItemsRequests(document) {
   return document.querySelectorAll(".list-categories__item__block").map(cat => ({
@@ -192,26 +193,25 @@ async function main() {
             stats.add("categories", categories.length);
             log.debug(`Found categories ${categories.length}`);
             await crawler.requestQueue.addRequests(requests);
-          } else {
-            const products = extractItems(document, country, stats);
-            await saveUniqProducts({
-              products,
-              stats,
-              processedIds
-            });
-
-            const href = document.querySelector("a.in-paging__control__item--arrow-next")?.getAttribute("href");
-            if (!href) return;
-            const paginationUrl = new URL(href, request.url).href;
-            log.debug(`Found pagination page ${paginationUrl}`);
-            await crawler.requestQueue.addRequest({
-              url: paginationUrl,
-              userData: {
-                label: Labels.CATEGORY,
-                mainCategory
-              }
-            });
           }
+          const products = extractItems(document, country, stats);
+          await saveUniqProducts({
+            products,
+            stats,
+            processedIds
+          });
+
+          const href = document.querySelector("a.in-paging__control__item--arrow-next")?.getAttribute("href");
+          if (!href) return;
+          const paginationUrl = new URL(href, request.url).href;
+          log.debug(`Found pagination page ${paginationUrl}`);
+          await crawler.requestQueue.addRequest({
+            url: paginationUrl,
+            userData: {
+              label: Labels.CATEGORY,
+              mainCategory
+            }
+          });
           break;
         }
       }
