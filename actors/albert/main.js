@@ -65,7 +65,7 @@ function apiQuery(persistedQueryHash, params) {
 // TODO: try to read those from page and store theme for use in the run
 const opHash = new Map([
   ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
-  ["GetCategoryProductSearch", "161b8b6137d82243a0dbfeed8477edec6469b84e16b0d00490c1133c57e3f234"]
+  ["GetCategoryProductSearch", "dd8d3de806d7e82af7e29b491a30df5a93d2c27c04190ef25ab973cbfe913079"]
 ]);
 
 function gql(operationName, variables) {
