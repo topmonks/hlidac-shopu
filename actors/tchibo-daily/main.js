@@ -137,19 +137,24 @@ function productsFromJsonListing({ json, handledIdsSet, currency, country, userD
       title,
     } = item;
     const itemUrl = `${baseUrl}/${productViewUrl}`;
-    products.push({
+    const result = {
       itemId: id,
       itemName: title,
       itemUrl,
       slug: itemSlug(itemUrl),
       img: `${baseUrl}${imageUrlSmallSize}`,
       // NOTE: `249,00Kč` is represented as 24900
-      originalPrice: price.bestPriceAmount / 100,
+      originalPrice: null,
       currentPrice: price.current / 100,
       discounted: false,
       currency,
       category,
-    });
+    }
+    if (price.old!== 0) {
+      result.discounted = true;
+      result.originalPrice = price.bestPriceAmount / 100;
+    }
+    products.push(result);
   }
   const { numFoundAvailable } = metadata;
   return { products, numFoundAvailable, numProductsScraped };
@@ -453,9 +458,9 @@ async function main() {
   const startingRequests =
     type === "test"
       ? [{
-        url: "https://www.tchibo.cz/lozni-pradlo-c400118928.html",
+        url: "https://www.tchibo.cz/service/categoryfrontend/api/categories/navigation-tree?site=CZ",
         userData: {
-          label: Labels.LIST,
+          label: Labels.JSON_NAVIGATION,
           page: 0
         }
       }]
