@@ -85,22 +85,18 @@ function startingRequest({ type, bfUrl }) {
  */
 function saleUrls({ document, rootUrl }) {
   const categoriesUrls = [];
-  let onclickUrl;
-  document.querySelectorAll(".vyprodej_category_head").map(category => {
-    const moreBox = category.querySelector(".bpMoreBox");
+  document.querySelectorAll(".subCat").map(category => {
+    const moreBox = category.querySelector(".subCat_more");
     if (moreBox) {
       moreBox.querySelectorAll("a").map(a => {
         categoriesUrls.push(`${rootUrl}${a.getAttribute("href")}`);
       });
     } else {
-      const onClick = category.getAttribute("onclick");
-      onclickUrl = onClick.replace("location.href=", "").replace(/'/g, "");
+      categoriesUrls.push(`${rootUrl}${category.getAttribute("href")}`);
     }
   });
   if (categoriesUrls.length) {
     return categoriesUrls;
-  } else if (onclickUrl) {
-    return [new URL(onclickUrl, rootUrl).href];
   }
 }
 
@@ -140,7 +136,7 @@ function categoryRequests({ document, requestUrl, rootUrl }) {
  * @returns {string[]}
  */
 function pageUrls({ document, request }) {
-  const pageNum = document.querySelectorAll("a.PageNew").reduce((max, a) => {
+  const pageNum = document.querySelectorAll(".pagination a.mirbtn").reduce((max, a) => {
     const pageNumber = parseInt(a.innerText.trim());
     return pageNumber > max ? pageNumber : max;
   }, 0);
@@ -169,7 +165,7 @@ async function main() {
     maxRequestRetries,
     proxyGroups,
     type = ActorType.Full,
-    bfUrl = "https://www.mironet.cz/vyprodej/?v=blue-friday"
+    bfUrl = "https://www.mironet.cz/vyprodej/?v=black-friday"
   } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
