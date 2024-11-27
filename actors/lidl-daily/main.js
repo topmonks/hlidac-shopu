@@ -92,8 +92,8 @@ function getItemId(url) {
   return arr[arr.length - 1];
 }
 
-function getBaseProducts(documnet) {
-  return documnet.querySelectorAll("article.product").map(article => {
+function getBaseProducts(document) {
+  return document.querySelectorAll("article.product").map(article => {
     const title = article.querySelector("h3").innerText.trim();
     const mainFrame = article.querySelector("a.product__body");
     const itemUrl = mainFrame.getAttribute("href");
@@ -248,28 +248,35 @@ function slug(str) {
 function extractBlackFridayProducts({ document, url }, { stats, processedIds }) {
   stats.inc("categories");
   const items = [];
-  const products = document.querySelectorAll("[data-grid-data]");
+  const products = document.querySelectorAll('[selector="PRODUCT"]');
   for (const el of products) {
     stats.inc("items");
-    const [data] = JSON.parse(el.dataset.gridData);
-    if (processedIds.has(data.productId)) {
+
+    const data = JSON.parse(decodeURIComponent(el.dataset.gridboxImpression));
+    const {id:itemId, price:currentPrice, name: itemName, availability,  category} = data;
+
+    const itemUrl = new URL(el.querySelector('.ods-tile__link').getAttribute("href"), 'https://www.lidl.cz/').href ;
+    const img = el.querySelector('[selector="PRODUCT"] .ods-image-gallery__item--active .ods-image-gallery__image').getAttribute('src');
+    const originalPrice = Number(el.querySelector('.m-price__rrp')?.innerText.replace(' Kč', '').replace(',', '.')) || undefined
+
+    if (processedIds.has(data.id)) {
       stats.inc("itemsDuplicity");
       continue;
     }
-    processedIds.add(data.productId);
+    processedIds.add(itemId);
     stats.inc("itemsUnique");
     items.push({
-      itemId: data.productId,
-      itemUrl: new URL(data.canonicalUrl, url).href,
-      itemName: data.fullTitle,
+      itemId,
+      itemUrl,
+      itemName,
       currency: "CZK",
-      currentPrice: parseFloat(data.price.price),
-      img: data.image,
-      originalPrice: parseFloat(data.price.oldPrice),
-      discounted: Boolean(data.price.discount),
-      inStock: data.stockAvailability?.onlineAvailable,
-      category: data.category.split("/").slice(1).join(" > "),
-      slug: data.productId
+      currentPrice,
+      img,
+      originalPrice,
+      discounted: originalPrice ? originalPrice > currentPrice : false,
+      inStock: !availability.includes('not_'), // "available" or "not_available"
+      category: category.split("/").slice(1).join(" > "),
+      slug: itemId
     });
   }
   return items;
@@ -325,6 +332,7 @@ async function loadLazyContent({ page }) {
     }
   });
 
+  await sleep(1000);
   await page.waitForLoadState("networkidle");
 }
 
