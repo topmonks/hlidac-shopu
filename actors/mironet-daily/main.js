@@ -46,14 +46,14 @@ function allCategoriesRequests(buffer) {
 }
 
 /**
- * @param {{type:ActorType, bfUrl:string}}
+ * @param {{type:ActorType, urls:array}}
  * @returns {{url: string, userData: {label: Labels, baseUrl?: string}}}
  */
-function startingRequest({ type, bfUrl }) {
+function startingRequest({ type, urls }) {
   switch (type) {
     case ActorType.BlackFriday:
       return {
-        url: bfUrl,
+        url: urls.length? urls[0] : 'https://www.mironet.cz/vyprodej/?v=black-friday',
         userData: {
           label: Labels.SaleCategory
         }
@@ -165,7 +165,7 @@ async function main() {
     maxRequestRetries,
     proxyGroups,
     type = ActorType.Full,
-    bfUrl = "https://www.mironet.cz/vyprodej/?v=black-friday"
+    urls
   } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
@@ -284,7 +284,7 @@ async function main() {
     }
   });
 
-  const request = startingRequest({ type, bfUrl });
+  const request = startingRequest({ type, urls });
   log.info("ACTOR - run crawler");
   await crawler.run([request]);
 
