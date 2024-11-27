@@ -12,8 +12,8 @@ const rollbar = Rollbar.init({ lambdaName: "og" });
  * @returns {Promise.<APIGatewayProxyResult>}
  */
 export async function handleRequest(event) {
-  const params = event.queryStringParameters;
-  if (!params?.url) {
+  const qs = event.queryStringParameters;
+  if (!qs?.url) {
     return withCORS(["GET", "OPTIONS"])({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
@@ -21,8 +21,8 @@ export async function handleRequest(event) {
     });
   }
 
-  const url = new URLSearchParams({ url: params.url });
-  const request = new URLSearchParams({
+  const url = new URLSearchParams({ url: qs.url });
+  const params = new URLSearchParams({
     "token": process.env.TOKEN ?? "",
     "url": `https://www.hlidacshopu.cz/widget/?${url}`,
     "waitUntil": "networkidle0",
@@ -32,8 +32,9 @@ export async function handleRequest(event) {
     "dpr": "2"
   });
 
-  const resp = await fetch(`${process.env.HOST}?${request}`, {
-    signal: AbortSignal.timeout(30000)
+  const resp = await fetch(`${process.env.HOST}?${params}`, {
+    signal: AbortSignal.timeout(30000),
+    headers: event.headers
   });
   if (!resp.ok) {
     rollbar.error(resp.statusText, await resp.text());
@@ -46,7 +47,7 @@ export async function handleRequest(event) {
   return withCORS(["GET", "OPTIONS"])({
     statusCode: 200,
     headers: {
-      "Content-Type": "image/png",
+      "Content-Type": resp.headers.get("Content-Type"),
       "Cache-Control": "public, max-age=3600"
     },
     isBase64Encoded: true,
