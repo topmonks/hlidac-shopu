@@ -4504,7 +4504,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:3.0.0"
     "@hlidac-shopu/lib": "npm:1.4.0"
     apify: "npm:3.2.6"
-    byte-size: "npm:9.0.0"
+    byte-size: "npm:9.0.1"
     date-fns: "npm:4.1.0"
     node-gzip: "npm:1.1.2"
   languageName: unknown
@@ -9231,10 +9231,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"byte-size@npm:9.0.0":
-  version: 9.0.0
-  resolution: "byte-size@npm:9.0.0"
-  checksum: 10c0/1ae27afb966981e8e8347657a5b81b407c03386026b502237bfc0c0c253f26def6795b0f3bf44788286c6c49d1cf562398f5646e4f3ceba48b964b4852d83b33
+"byte-size@npm:9.0.1":
+  version: 9.0.1
+  resolution: "byte-size@npm:9.0.1"
+  peerDependencies:
+    "@75lb/nature": "*"
+  peerDependenciesMeta:
+    "@75lb/nature":
+      optional: true
+  checksum: 10c0/0d97d7444a6d4ceb733fe863098417814487fee9a77a8584312566d1990201abcdf0a353085385c775074bb3e2867c1f97f2ca66b0483031af268bdb7403e2ed
   languageName: node
   linkType: hard
 
