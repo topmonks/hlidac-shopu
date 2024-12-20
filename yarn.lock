@@ -2795,16 +2795,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/workers-shared@npm:0.11.0":
-  version: 0.11.0
-  resolution: "@cloudflare/workers-shared@npm:0.11.0"
-  dependencies:
-    mime: "npm:^3.0.0"
-    zod: "npm:^3.22.3"
-  checksum: 10c0/800d6340486ddf03c315321473c929d12075377a7110d5f7b35ce878f9d52da934f9935a641bc64bc513a756cb36092a03c758ce6ba0e006ae67e0efba51fc9c
-  languageName: node
-  linkType: hard
-
 "@crawlee/basic@npm:3.12.1":
   version: 3.12.1
   resolution: "@crawlee/basic@npm:3.12.1"
@@ -15394,7 +15384,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.5.37"
     vitest: "npm:2.1.8"
-    wrangler: "npm:3.95.0"
+    wrangler: "npm:3.96.0"
   languageName: unknown
   linkType: soft
 
@@ -25132,44 +25122,6 @@ __metadata:
   bin:
     workerd: bin/workerd
   checksum: 10c0/69be4a77fe45b4a138bcb3380912e307d50f33fe0d901be30727df5b0f7cef1bf2d23999301016e4af7ecae0d71744ee25f137c7ced8a9ccc5cba1de88b924d6
-  languageName: node
-  linkType: hard
-
-"wrangler@npm:3.95.0":
-  version: 3.95.0
-  resolution: "wrangler@npm:3.95.0"
-  dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.3.4"
-    "@cloudflare/workers-shared": "npm:0.11.0"
-    "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
-    "@esbuild-plugins/node-modules-polyfill": "npm:^0.2.2"
-    blake3-wasm: "npm:^2.1.5"
-    chokidar: "npm:^4.0.1"
-    date-fns: "npm:^4.1.0"
-    esbuild: "npm:0.17.19"
-    fsevents: "npm:~2.3.2"
-    itty-time: "npm:^1.0.6"
-    miniflare: "npm:3.20241205.0"
-    nanoid: "npm:^3.3.3"
-    path-to-regexp: "npm:^6.3.0"
-    resolve: "npm:^1.22.8"
-    selfsigned: "npm:^2.0.1"
-    source-map: "npm:^0.6.1"
-    unenv: "npm:unenv-nightly@2.0.0-20241204-140205-a5d5190"
-    workerd: "npm:1.20241205.0"
-    xxhash-wasm: "npm:^1.0.1"
-  peerDependencies:
-    "@cloudflare/workers-types": ^4.20241205.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@cloudflare/workers-types":
-      optional: true
-  bin:
-    wrangler: bin/wrangler.js
-    wrangler2: bin/wrangler.js
-  checksum: 10c0/967c8b7a82c4e782a88096446e2f2dcbe02ffd2cfa100790f16a44909913f750c8a80854b844311acf3345334a5f8510da74fa997b59751b9c9877cf71a328ca
   languageName: node
   linkType: hard
 
