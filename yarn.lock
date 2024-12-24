@@ -5114,7 +5114,7 @@ __metadata:
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.3.14"
-    dotenv-cli: "npm:7.4.4"
+    dotenv-cli: "npm:8.0.0"
     lit-html: "npm:3.2.1"
     postcss-css-variables: "npm:0.19.0"
     undertaker-registry: "npm:^2.0.0"
@@ -12563,9 +12563,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:7.4.4":
-  version: 7.4.4
-  resolution: "dotenv-cli@npm:7.4.4"
+"dotenv-cli@npm:8.0.0":
+  version: 8.0.0
+  resolution: "dotenv-cli@npm:8.0.0"
   dependencies:
     cross-spawn: "npm:^7.0.6"
     dotenv: "npm:^16.3.0"
@@ -12573,7 +12573,7 @@ __metadata:
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/180801e02dcc02da4557338f48caa54740e38ffef39c7cd231e283d6fc32f4112186980773344df85a4514db28fdedace94d1b83a706ac39a4f1c2c3a402e71d
+  checksum: 10c0/000469632758b7b44aaaa80cbbbd7f0c94dc170ec02e51aa8d8280341a0108fb7407954c23054257b77235b064033efdb8745836633eb6fd1586924953cf0528
   languageName: node
   linkType: hard
 
@@ -15635,7 +15635,7 @@ __metadata:
     chokidar: "npm:4.0.3"
     chrome-webstore-upload-cli: "npm:3.3.1"
     commander: "npm:12.1.0"
-    dotenv-cli: "npm:7.4.4"
+    dotenv-cli: "npm:8.0.0"
     esbuild: "npm:0.24.2"
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.6"
