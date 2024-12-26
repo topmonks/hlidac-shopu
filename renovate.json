@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "schedule:weekdays",
     "npm:unpublishSafe",
     "group:aws-sdk-js-v3Monorepo",
@@ -15,15 +15,21 @@
   "packageRules": [
     {
       "groupName": "pulumi",
-      "matchPackagePrefixes": ["@pulumi/"]
+      "matchPackageNames": [
+        "@pulumi/{/,}**"
+      ]
     },
     {
       "groupName": "crawlee",
-      "matchPackagePrefixes": ["@crawlee/"]
+      "matchPackageNames": [
+        "@crawlee/{/,}**"
+      ]
     },
     {
       "groupName": "thi.ng",
-      "matchPackagePrefixes": ["@thi.ng/"]
+      "matchPackageNames": [
+        "@thi.ng/{/,}**"
+      ]
     }
   ]
 }
