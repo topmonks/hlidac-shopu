@@ -4,7 +4,7 @@
   "description": "Lambda@EDGE for /app endpoint",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-s3": "3.717.0",
+    "@aws-sdk/client-s3": "3.721.0",
     "@hlidac-shopu/lib": "1.4.0"
   }
 }
