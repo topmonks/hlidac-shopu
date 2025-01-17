@@ -28,6 +28,18 @@ const Labels = {
   CAT_PRODUCTS: "CAT_PRODUCTS"
 };
 
+/** @enum {string} */
+const Selectors = {
+  TOP_CATEGORIES: '[data-testid="product-category"] h2 a',
+  SUB_CATEGORIES: '[data-testid="categories-slider"] [data-testid="slider-card"] a',
+  TOTAL_PRODUCTS_COUNT: '[data-testid="result-count"]',
+  PRODUCT_CARD: '[data-testid="article-card"]',
+  ITEM_NAME: '[data-testid="article-title"]',
+  PRODUCT_IMAGE: 'picture img',
+  CURRENT_PRICE: '[class*="display_price"]',
+  CURRENT_UNIT_PRICE: '[class*="bracket_price"]'
+};
+
 /**
  * @param {string} country
  * @param {string} path
@@ -37,7 +49,7 @@ function completeUrl(country, path) {
 }
 
 function topCategoriesRequests({ document, input }) {
-  const links = document.querySelectorAll(`[data-testid="product-category"] h2 a`);
+  const links = document.querySelectorAll(Selectors.TOP_CATEGORIES);
   return links.map(link => {
     log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
     const href = link.getAttribute("href");
@@ -52,7 +64,7 @@ function topCategoriesRequests({ document, input }) {
 }
 
 function subCategoriesRequests({ document, input, request, stats }) {
-  const links = document.querySelectorAll(`[data-testid="categories-rondell"] [data-testid="rondell-card"] a`);
+  const links = document.querySelectorAll(Selectors.SUB_CATEGORIES);
   return links.map(link => {
     const crumb = {
       link: completeUrl(input.country, link.getAttribute("href")),
@@ -97,7 +109,7 @@ function parseCategoryProductsCount(str) {
 }
 
 function catProductsRequests({ document, request }) {
-  const categoryProductsCountNode = document.querySelector(`[data-testid="result-count"]`);
+  const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT);
   if (!categoryProductsCountNode) {
     log.error(`No products count node found in ${request.url}`);
     return;
@@ -128,7 +140,7 @@ function catProductsRequests({ document, request }) {
 function extractProducts({ document, input, request, stats }) {
   const { category } = request.userData;
   const currency = Currency[input.country.toUpperCase()];
-  const productNodes = document.querySelectorAll(`[data-testid="article-card"]`);
+  const productNodes = document.querySelectorAll(Selectors.PRODUCT_CARD);
   return productNodes
     .map(itemNode => {
       const href = itemNode.querySelector("a").getAttribute("href");
@@ -138,10 +150,10 @@ function extractProducts({ document, input, request, stats }) {
       const detail = {
         itemId,
         itemUrl: completeUrl(input.country, href),
-        itemName: itemNode.querySelector(`[data-testid="article-title"]`)?.textContent,
-        img: itemNode.querySelector(`picture img`).getAttribute("src"),
-        currentPrice: cleanPriceText(itemNode.querySelector(`[class*="display_price"]`)?.textContent ?? ""),
-        currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(`[class*="bracket_price"]`)?.textContent ?? ""),
+        itemName: itemNode.querySelector(Selectors.ITEM_NAME)?.textContent,
+        img: itemNode.querySelector(Selectors.PRODUCT_IMAGE).getAttribute("src"),
+        currentPrice: cleanPriceText(itemNode.querySelector(Selectors.CURRENT_PRICE)?.textContent ?? ""),
+        currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(Selectors.CURRENT_UNIT_PRICE)?.textContent ?? ""),
         category: {
           link: category.link,
           title: category.title
@@ -203,9 +215,7 @@ async function main() {
           break;
         case Labels.SUB_CATEGORIES:
           {
-            const links = document.querySelectorAll(
-              `[data-testid="categories-rondell"] [data-testid="rondell-card"] a`
-            );
+            const links = document.querySelectorAll(Selectors.SUB_CATEGORIES);
             if (links.length) {
               const requests = subCategoriesRequests({
                 document,
