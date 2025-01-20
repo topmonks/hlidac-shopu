@@ -32,12 +32,7 @@ const Selectors = {
   TOP_CATEGORIES: '[data-testid="product-category"] h2 a',
   SUB_CATEGORIES: '[data-testid="categories-slider"] [data-testid="slider-card"] a',
   CATEGORY_NAME: '[data-testid="categories-slider"] [data-testid="slider-card"] a p',
-  TOTAL_PRODUCTS_COUNT: '[data-testid="result-count"]',
-  PRODUCT_CARD: '[data-testid="article-card"]',
-  ITEM_NAME: '[data-testid="article-title"]',
-  PRODUCT_IMAGE: 'picture img',
-  CURRENT_PRICE: '[class*="display_price"]',
-  CURRENT_UNIT_PRICE: '[class*="bracket_price"]'
+  TOTAL_PRODUCTS_COUNT: '[data-testid="result-count"]'
 };
 
 /**
@@ -137,36 +132,6 @@ function catProductsRequests({ document, request }) {
   }
 }
 
-// function extractProducts({ document, country, request, stats }) {
-//   const { category } = request.userData;
-//   const currency = Currency[country.toUpperCase()];
-//   const productNodes = document.querySelectorAll(Selectors.PRODUCT_CARD);
-//   return productNodes
-//     .map(itemNode => {
-//       const href = itemNode.querySelector("a").getAttribute("href");
-//       const itemId = href.split("/").filter(Boolean).at(-1);
-//
-//       stats.inc("items");
-//       const detail = {
-//         itemId,
-//         itemUrl: completeUrl(country, href),
-//         itemName: itemNode.querySelector(Selectors.ITEM_NAME)?.textContent,
-//         img: itemNode.querySelector(Selectors.PRODUCT_IMAGE).getAttribute("src"),
-//         currentPrice: cleanPriceText(itemNode.querySelector(Selectors.CURRENT_PRICE)?.textContent ?? ""),
-//         currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(Selectors.CURRENT_UNIT_PRICE)?.textContent ?? ""),
-//         category: {
-//           link: category.link,
-//           title: category.title
-//         },
-//         currency
-//       };
-//
-//       log.debug("Got product detail", detail);
-//
-//       return detail;
-//     })
-//     .filter(Boolean);
-// }
 function extractProducts({document, stats, country, request}) {
   const allDocumentScripts = Array.from(document.querySelectorAll('script'));
   const string = allDocumentScripts.find((script) => script.innerText.includes('__APOLLO_STATE__')).innerText.split('window.__ARTICLE_LISTING_BUGSNAG_CONF')[0];
@@ -213,7 +178,7 @@ async function main() {
 
   const {
     type = ActorType.Full,
-    country = "cz",
+    country = Country.CZ,
     debug= false
   } = await getInput() ?? {};
 
