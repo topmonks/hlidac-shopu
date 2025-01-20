@@ -1,13 +1,12 @@
-import { HttpCrawler } from "@crawlee/http";
-import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { cleanPriceText, cleanUnitPriceText } from "@hlidac-shopu/actors-common/product.js";
+import {HttpCrawler} from "@crawlee/http";
+import {ActorType} from "@hlidac-shopu/actors-common/actor-type.js";
+import {getInput, restPageUrls} from "@hlidac-shopu/actors-common/crawler.js";
+import {parseHTML} from "@hlidac-shopu/actors-common/dom.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { Actor, Dataset, LogLevel, log } from "apify";
+import {withPersistedStats} from "@hlidac-shopu/actors-common/stats.js";
+import {Actor, Dataset, log, LogLevel} from "apify";
+import {uploadToKeboola} from "@hlidac-shopu/actors-common/keboola.js";
+import {shopName} from "@hlidac-shopu/lib/shops.mjs";
 
 /** @enum {string} */
 const Country = {
@@ -32,6 +31,7 @@ const Labels = {
 const Selectors = {
   TOP_CATEGORIES: '[data-testid="product-category"] h2 a',
   SUB_CATEGORIES: '[data-testid="categories-slider"] [data-testid="slider-card"] a',
+  CATEGORY_NAME: '[data-testid="categories-slider"] [data-testid="slider-card"] a p',
   TOTAL_PRODUCTS_COUNT: '[data-testid="result-count"]',
   PRODUCT_CARD: '[data-testid="article-card"]',
   ITEM_NAME: '[data-testid="article-title"]',
@@ -48,13 +48,13 @@ function completeUrl(country, path) {
   return `https://www.hornbach.${country.toLowerCase()}${path}`;
 }
 
-function topCategoriesRequests({ document, input }) {
+function topCategoriesRequests({ document, country }) {
   const links = document.querySelectorAll(Selectors.TOP_CATEGORIES);
   return links.map(link => {
     log.debug(`Queued top lvl category "${link.getAttribute("title")}"`);
     const href = link.getAttribute("href");
     return {
-      url: completeUrl(input.country, href),
+      url: completeUrl(country, href),
       userData: {
         label: Labels.SUB_CATEGORIES,
         crumbs: []
@@ -63,12 +63,12 @@ function topCategoriesRequests({ document, input }) {
   });
 }
 
-function subCategoriesRequests({ document, input, request, stats }) {
+function subCategoriesRequests({ document, country, request, stats }) {
   const links = document.querySelectorAll(Selectors.SUB_CATEGORIES);
   return links.map(link => {
     const crumb = {
-      link: completeUrl(input.country, link.getAttribute("href")),
-      title: link.getAttribute("title")
+      link: completeUrl(country, link.getAttribute("href")),
+      title: document.querySelector(Selectors.CATEGORY_NAME).innerText.trim()
     };
     stats.inc("categories");
     log.debug(`Scraped category "${crumb.title}"`);
@@ -137,39 +137,69 @@ function catProductsRequests({ document, request }) {
   }
 }
 
-function extractProducts({ document, input, request, stats }) {
-  const { category } = request.userData;
-  const currency = Currency[input.country.toUpperCase()];
-  const productNodes = document.querySelectorAll(Selectors.PRODUCT_CARD);
-  return productNodes
-    .map(itemNode => {
-      const href = itemNode.querySelector("a").getAttribute("href");
-      const itemId = href.split("/").filter(Boolean).at(-1);
+// function extractProducts({ document, country, request, stats }) {
+//   const { category } = request.userData;
+//   const currency = Currency[country.toUpperCase()];
+//   const productNodes = document.querySelectorAll(Selectors.PRODUCT_CARD);
+//   return productNodes
+//     .map(itemNode => {
+//       const href = itemNode.querySelector("a").getAttribute("href");
+//       const itemId = href.split("/").filter(Boolean).at(-1);
+//
+//       stats.inc("items");
+//       const detail = {
+//         itemId,
+//         itemUrl: completeUrl(country, href),
+//         itemName: itemNode.querySelector(Selectors.ITEM_NAME)?.textContent,
+//         img: itemNode.querySelector(Selectors.PRODUCT_IMAGE).getAttribute("src"),
+//         currentPrice: cleanPriceText(itemNode.querySelector(Selectors.CURRENT_PRICE)?.textContent ?? ""),
+//         currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(Selectors.CURRENT_UNIT_PRICE)?.textContent ?? ""),
+//         category: {
+//           link: category.link,
+//           title: category.title
+//         },
+//         currency
+//       };
+//
+//       log.debug("Got product detail", detail);
+//
+//       return detail;
+//     })
+//     .filter(Boolean);
+// }
+function extractProducts({document, stats, country, request}) {
+  const allDocumentScripts = Array.from(document.querySelectorAll('script'));
+  const string = allDocumentScripts.find((script) => script.innerText.includes('__APOLLO_STATE__')).innerText.split('window.__ARTICLE_LISTING_BUGSNAG_CONF')[0];
+  const startIndex = string.indexOf('{');
+  const endIndex = string.lastIndexOf('}') + 1;
 
-      stats.inc("items");
-      const detail = {
-        itemId,
-        itemUrl: completeUrl(input.country, href),
-        itemName: itemNode.querySelector(Selectors.ITEM_NAME)?.textContent,
-        img: itemNode.querySelector(Selectors.PRODUCT_IMAGE).getAttribute("src"),
-        currentPrice: cleanPriceText(itemNode.querySelector(Selectors.CURRENT_PRICE)?.textContent ?? ""),
-        currentUnitPrice: cleanUnitPriceText(itemNode.querySelector(Selectors.CURRENT_UNIT_PRICE)?.textContent ?? ""),
-        category: {
-          link: category.link,
-          title: category.title
-        },
-        currency
-      };
+  const jsonString = string.split('window.__ARTICLE_LISTING_BUGSNAG_CONF')[0].substring(startIndex, endIndex)
+  const data = JSON.parse(jsonString);
+  const key = Object.keys(data.ROOT_QUERY).find(key => key.includes('categoryListing'));
 
-      log.debug("Got product detail", detail);
+  const productsInfoArray = data.ROOT_QUERY[key].itemList.filter(item => item.abstractProductId)
 
-      return detail;
-    })
-    .filter(Boolean);
+  return productsInfoArray.map((item) => {
+    const currency = Currency[country.toUpperCase()];
+    stats.inc("items");
+
+    return {
+      itemId: item.abstractProductId,
+      itemUrl: completeUrl(country, item.url),
+      itemName: item.title,
+      img: item?.mainImage?.thumbnailUrl,
+      currentPrice: item.defaultPrice?.price ?? "",
+      currentUnitPrice: item.basicPrice?.price ?? "",
+      category: {
+        ...request.userData.category
+      },
+      currency
+    };
+  });
 }
 
-function filterTestRequests({ requests, input, take = 2 }) {
-  return input.type === ActorType.Test ? requests.slice(0, take) : requests;
+function filterTestRequests( { requests, type, take = 2 }) {
+  return type === ActorType.Test ? requests.slice(0, take) : requests;
 }
 
 async function main() {
@@ -181,19 +211,20 @@ async function main() {
     failed: 0
   });
 
-  const input = await getInput({
-    type: ActorType.Full,
-    country: Country.CZ
-  });
+  const {
+    type = ActorType.Full,
+    country = "cz",
+    debug= false
+  } = await getInput() ?? {};
 
-  if (input.debug) {
+  if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  log.debug(`Running in ${input.type} mode`);
+  log.debug(`Running in ${type} mode`);
 
-  if ([ActorType.Test, ActorType.Full].includes(input.type) === false) {
-    log.error(`Actor type ${input.type} not yet implemented`);
+  if ([ActorType.Test, ActorType.Full].includes(type) === false) {
+    log.error(`Actor type ${type} not yet implemented`);
     return;
   }
 
@@ -207,10 +238,9 @@ async function main() {
       switch (label) {
         case Labels.TOP_CATEGORIES:
           {
-            const requests = topCategoriesRequests({ document, input });
-            await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }), {
-              forefront: true
-            });
+            const requests = topCategoriesRequests({ document, country });
+            const filtered = filterTestRequests({requests, type});
+            await crawler.requestQueue.addRequests(filtered, { forefront: true });
           }
           break;
         case Labels.SUB_CATEGORIES:
@@ -219,29 +249,24 @@ async function main() {
             if (links.length) {
               const requests = subCategoriesRequests({
                 document,
-                input,
+                country,
                 request,
                 stats
               });
-              await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }), { forefront: true });
+              await crawler.requestQueue.addRequests(filterTestRequests({ requests, type }), { forefront: true });
             } else {
               const requests = catProductsFromSubCategoriesRequests({
                 request
               });
-              await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }));
+              await crawler.requestQueue.addRequests(filterTestRequests({ requests, type }));
             }
           }
           break;
         case Labels.CAT_PRODUCTS:
           {
             const requests = catProductsRequests({ document, request });
-            await crawler.requestQueue.addRequests(filterTestRequests({ requests, input }));
-            const products = extractProducts({
-              document,
-              input,
-              request,
-              stats
-            });
+            await crawler.requestQueue.addRequests(filterTestRequests({ requests, type }));
+            const products = extractProducts({ document, stats, country, request });
             await Dataset.pushData(products);
           }
           break;
@@ -255,7 +280,7 @@ async function main() {
     }
   });
 
-  const startUrl = completeUrl(input.country, "/c/");
+  const startUrl = completeUrl(country, "/c/");
   await crawler.run([
     {
       url: startUrl,
@@ -264,9 +289,13 @@ async function main() {
       }
     }
   ]);
+
   log.info("crawler finished");
 
-  await Promise.all([stats.save(true), uploadToKeboola(shopName(startUrl))]);
+  if (type === ActorType.Full && Actor.isAtHome()) {
+    await Promise.all([stats.save(true), uploadToKeboola(shopName(startUrl))]);
+  }
+
   log.info("Finished.");
 }
 
