@@ -3973,9 +3973,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:9.2.1":
-  version: 9.2.1
-  resolution: "@hckr_/blendid@npm:9.2.1"
+"@hckr_/blendid@npm:9.2.2":
+  version: 9.2.2
+  resolution: "@hckr_/blendid@npm:9.2.2"
   dependencies:
     "@csstools/postcss-gamut-mapping": "npm:2.0.7"
     "@vitejs/plugin-basic-ssl": "npm:1.2.0"
@@ -4021,10 +4021,10 @@ __metadata:
     undertaker-registry: "npm:2.0.0"
     vinyl: "npm:3.0.0"
     vinyl-file: "npm:5.0.0"
-    vite: "npm:6.0.7"
+    vite: "npm:6.0.9"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/f94e89d6a3446639233b2eb2d2cd74135c4b076cd562e147c360edaad72dbc0a4fe476cf39cb07d54c084b31328fac846a456c6e97eae9ab01f8a17252e87a54
+  checksum: 10c0/cf5f8672c41904bbeb252d68835468775bf2e82a6ca2de304209839c188804f683ce1ac594fb5de9b4d32953d45386b5e775b6ba5943cf17f5085bda4072905d
   languageName: node
   linkType: hard
 
@@ -4596,7 +4596,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:9.2.1"
+    "@hckr_/blendid": "npm:9.2.2"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -14454,7 +14454,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.731.1"
     "@biomejs/biome": "npm:1.9.4"
-    "@hckr_/blendid": "npm:9.2.1"
+    "@hckr_/blendid": "npm:9.2.2"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:22.10.7"
     "@types/nunjucks": "npm:3.2.6"
@@ -23485,7 +23485,59 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:6.0.7, vite@npm:^5.0.0 || ^6.0.0":
+"vite@npm:6.0.9":
+  version: 6.0.9
+  resolution: "vite@npm:6.0.9"
+  dependencies:
+    esbuild: "npm:^0.24.2"
+    fsevents: "npm:~2.3.3"
+    postcss: "npm:^8.4.49"
+    rollup: "npm:^4.23.0"
+  peerDependencies:
+    "@types/node": ^18.0.0 || ^20.0.0 || >=22.0.0
+    jiti: ">=1.21.0"
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    sass-embedded: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.16.0
+    tsx: ^4.8.1
+    yaml: ^2.4.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    jiti:
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    sass-embedded:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+    tsx:
+      optional: true
+    yaml:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 10c0/b36f0f51318d6c33184da31e280862f23ef89712884e088b864c9edf112d65f6cf6795f201916e370a4434575fd3e2868f07f3bd63c6bdd5c2ae2295fa7f6d8a
+  languageName: node
+  linkType: hard
+
+"vite@npm:^5.0.0 || ^6.0.0":
   version: 6.0.7
   resolution: "vite@npm:6.0.7"
   dependencies:
