@@ -1,5 +1,9 @@
 # Extension
 
+## 2.1.11
+* Fix Notino voucher price parsing
+* Fix Pilulka prices parsing
+
 ## 2.1.10
 * Fix Alza detail title scrape
 
