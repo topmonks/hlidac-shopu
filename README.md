@@ -31,7 +31,7 @@ We are using `package.json` `scripts` (run `yarn run` for a list) for project au
 
 You will need:
 
-* Node.js 18 (we use `nvm` for Node.js version management)
+* Node.js 22 (we use `nvm` for Node.js version management)
 * `yarn` (we use Workspaces. You can't use `npm`. Sorry)
 * Firefox
 * Chrome
