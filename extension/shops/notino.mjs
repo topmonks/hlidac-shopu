@@ -22,8 +22,9 @@ export class Notino extends AsyncShop {
     const elem = document.querySelector(this.#selector);
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = cleanPrice("#pd-price");
-    const originalPrice = cleanPrice(":not(#pd-price) > span[content]:first-of-type");
+    const voucherDiscounted = document.querySelector('[data-testid="voucher-discount-icon"]');
+    const currentPrice = voucherDiscounted ? cleanPrice(":not(#pd-price) > span[content]:first-of-type") : cleanPrice("#pd-price");
+    const originalPrice = voucherDiscounted ? cleanPrice("#pd-price") : cleanPrice(":not(#pd-price) > span[content]:first-of-type");
     const imageUrl = document.getElementById("pd-image-main")?.src;
     const itemId = document.querySelector("input[name=productId]").value;
     const url = getVariantUrl(itemId);
