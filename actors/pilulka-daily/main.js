@@ -17,7 +17,7 @@ import { Actor, LogLevel, log } from "apify";
 export const Labels = {
   CATEGORY: "CATEGORY",
   PRODUCT_DETAIL: "PRODUCT_DETAIL",
-  INITIAL_CATEGORIES: "INITIAL_CATEGORIES",
+  INITIAL_CATEGORIES: "INITIAL_CATEGORIES"
 };
 
 /** @enum {string} */
@@ -39,7 +39,7 @@ export function buildUrl(domain, link) {
 function blackFridayUrl(country) {
   return [
     {
-      url: buildUrl(rootWebUrl(country), (country === Country.CZ ? '/akce-a-slevy' : '/akcie-a-zlavy')),
+      url: buildUrl(rootWebUrl(country), country === Country.CZ ? "/akce-a-slevy" : "/akcie-a-zlavy"),
       label: Labels.CATEGORY
     }
   ];
@@ -105,7 +105,7 @@ function handleProductDetail({ processedIds, stats }) {
           category: breadcrumbs,
           originalPrice: isDiscounted ? originalPrice : null,
           currentPrice: priceWithCode ?? currentPrice,
-          discounted: isDiscounted,
+          discounted: isDiscounted
         }
       ],
       stats,
@@ -120,7 +120,11 @@ function handleInitialCategories() {
   async function handler({ body, enqueueLinks, log, response }) {
     const { document } = parseHTML(body.toString());
     const linkElements = document.querySelectorAll(`.menu__href`);
-    log.info(`Found categories: ${Array.from(linkElements).map(link => link.textContent).join(", ")}`);
+    log.info(
+      `Found categories: ${Array.from(linkElements)
+        .map(link => link.textContent)
+        .join(", ")}`
+    );
     const links = Array.from(linkElements).map(link => buildUrl(response.url, link.href));
     await enqueueLinks({ urls: links, label: Labels.CATEGORY });
   }

@@ -91,29 +91,27 @@ function homepageRequests(document, country) {
 }
 
 function determineCurrentAndOriginalPrice(variantGeneralData) {
-      // Data contain following prices
-      const voucherDiscountedPrice = variantGeneralData.attributes?.VoucherDiscount?.discountedPrice;
-      const price = variantGeneralData.price.value;
-      const originalPrice = variantGeneralData.originalPrice?.value;
-      const recentMinPrice = variantGeneralData.recentMinPrice?.value;
+  // Data contain following prices
+  const voucherDiscountedPrice = variantGeneralData.attributes?.VoucherDiscount?.discountedPrice;
+  const price = variantGeneralData.price.value;
+  const originalPrice = variantGeneralData.originalPrice?.value;
+  const recentMinPrice = variantGeneralData.recentMinPrice?.value;
 
-      // Some products are automatically discounted using vouchers available for everyone.
-      // In this case, we should take it as the current price, and return the price without voucher as original price
-      if (voucherDiscountedPrice) {
-        return {
-          currentPrice: voucherDiscountedPrice,
-          originalPrice: recentMinPrice ?? price,
-        }
-      }
+  // Some products are automatically discounted using vouchers available for everyone.
+  // In this case, we should take it as the current price, and return the price without voucher as original price
+  if (voucherDiscountedPrice) {
+    return {
+      currentPrice: voucherDiscountedPrice,
+      originalPrice: recentMinPrice ?? price
+    };
+  }
 
-      // Otherwise price is current price, and original price becomes trickier.
-      return {
-        currentPrice: price,
-        originalPrice: recentMinPrice && price < recentMinPrice && recentMinPrice < originalPrice
-          ? recentMinPrice
-          : originalPrice,
-      }
-
+  // Otherwise price is current price, and original price becomes trickier.
+  return {
+    currentPrice: price,
+    originalPrice:
+      recentMinPrice && price < recentMinPrice && recentMinPrice < originalPrice ? recentMinPrice : originalPrice
+  };
 }
 
 /**
@@ -217,7 +215,7 @@ async function main() {
     maxRequestRetries,
     country = Country.CZ,
     type = ActorType.Full,
-    testUrls,
+    testUrls
   } = await getInput();
 
   if (development || debug) {

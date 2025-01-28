@@ -1,15 +1,15 @@
 :root {
-    color-scheme: light dark;
+  color-scheme: light dark;
 }
 
 body {
-    width: 100px;
-    padding: 10px;
+  width: 100px;
+  padding: 10px;
 
-    font-family: system-ui;
-    text-align: center;
+  font-family: system-ui;
+  text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {
-    /* Dark Mode styles go here. */
+  /* Dark Mode styles go here. */
 }

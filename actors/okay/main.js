@@ -1,5 +1,5 @@
-import { HttpCrawler } from '@crawlee/http';
-import { launchPlaywright } from '@crawlee/playwright';
+import { HttpCrawler } from "@crawlee/http";
+import { launchPlaywright } from "@crawlee/playwright";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
@@ -9,7 +9,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import fs from 'node:fs';
+import fs from "node:fs";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -34,7 +34,7 @@ const Labels = {
 };
 
 // Copy of script accessible from https://www.okay.cz/cdn/shop/t/366/assets/product-price-by-tags.js?v=18180124900739432381729674289
-const PRODUCT_PRICE_BY_TAGS_SCRIPT = fs.readFileSync('./external-scripts/product-price-by-tags.js', 'utf8');
+const PRODUCT_PRICE_BY_TAGS_SCRIPT = fs.readFileSync("./external-scripts/product-price-by-tags.js", "utf8");
 
 /**
  * @param {Country} country
@@ -50,11 +50,10 @@ function getBaseUrl(country) {
   }
 }
 
-
 /**
- * 
- * @param {string} country 
- * @param {string | undefined} proxyUrl 
+ *
+ * @param {string} country
+ * @param {string | undefined} proxyUrl
  * @returns {Promise<object>}
  */
 const getShopifyObject = async (country, proxyUrl) => {
@@ -63,21 +62,24 @@ const getShopifyObject = async (country, proxyUrl) => {
   const browser = await launchPlaywright({ proxyUrl });
   const page = await browser.newPage();
   await page.goto(getBaseUrl(country));
-  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState("domcontentloaded");
 
   const Shopify = await page.evaluate(() => {
-    return ['theme_settings', 'translation', 'locale'].reduce((acc, field) => ({
+    return ["theme_settings", "translation", "locale"].reduce(
+      (acc, field) => ({
         ...acc,
-        [field]: window.Shopify[field],
-    }), {});
+        [field]: window.Shopify[field]
+      }),
+      {}
+    );
   });
-  Shopify.formatMoney = (x) => x / 100;
+  Shopify.formatMoney = x => x / 100;
 
   return Shopify;
-}
+};
 
 /**
- * @param {string} body 
+ * @param {string} body
  */
 function productSitemapUrls(body) {
   const { document } = parseXML(body);
@@ -101,7 +103,7 @@ function listProductUrlsFromSitemap(body) {
 }
 
 /**
- * @param {string} country 
+ * @param {string} country
  */
 function sitemapRequest(country) {
   return [
@@ -121,7 +123,7 @@ function sitemapRequest(country) {
 function startRequests(country, type, urls) {
   if (urls?.length) return urls;
   if (type === ActorType.BlackFriday) {
-    throw new Error('Blackfriday type not implemented');
+    throw new Error("Blackfriday type not implemented");
   }
   return sitemapRequest(country);
 }
@@ -131,7 +133,7 @@ function parseBreadcrumbs(document) {
   const bl = Array.from(ld, x => {
     try {
       return JSON.parse(x.innerHTML);
-    } catch (err) { }
+    } catch (err) {}
   }).filter(x => x?.["@type"] === "BreadcrumbList")?.[0];
   return bl.itemListElement
     .slice(1, -1) // First is shop name, last is product name, so skip them
@@ -182,12 +184,12 @@ function extractProductDetail({ itemId, document, url, stats, currency }) {
   };
 }
 
-const fetchMfData = async (productUrl, {sendRequest}) => {
+const fetchMfData = async (productUrl, { sendRequest }) => {
   const additionalDataUrl = new URL(productUrl);
-  additionalDataUrl.searchParams.set('view', 'mf-and-data-for-collections');
+  additionalDataUrl.searchParams.set("view", "mf-and-data-for-collections");
   const { body } = await sendRequest({ url: additionalDataUrl.toString() });
   return JSON.parse(body.toString());
-}
+};
 
 async function main() {
   const rollbar = Rollbar.init();
@@ -262,65 +264,66 @@ async function main() {
             // Call an endpoint that contains additional data we need to be able to calculate the prices
             const mfData = await fetchMfData(request.url, { sendRequest });
 
-
             const { document } = parseHTML(body.toString());
 
             // The modifications of dom rely on subset of jquery, we'll just mock it a bit
-            const mockJquery = (selector) => {
+            const mockJquery = selector => {
               // Getting the product data is handled in a special way
-              if (selector === '.product_form') {
+              if (selector === ".product_form") {
                 const element = document.querySelector(selector);
-                return element ? {
-                  data: () => JSON.parse(element.getAttribute('data-product') || 'null'),
-                  length: 1,
-                  } : { length: 0};
+                return element
+                  ? {
+                      data: () => JSON.parse(element.getAttribute("data-product") || "null"),
+                      length: 1
+                    }
+                  : { length: 0 };
               }
 
               // Otherwise mock small subset of jquery
               return {
                 before: () => {
-                    // No need to implement this one - this modification doesn't affect our data
-                    // Also, the selector is jquery specific, so we can't just pass it to querySelector
+                  // No need to implement this one - this modification doesn't affect our data
+                  // Also, the selector is jquery specific, so we can't just pass it to querySelector
                 },
-                find: (sel) => mockJquery(`${selector} ${sel}`),
-                after: (html) => {
+                find: sel => mockJquery(`${selector} ${sel}`),
+                after: html => {
                   const element = document.querySelector(selector);
                   if (!element) return;
-                  const template = document.createElement('template');
+                  const template = document.createElement("template");
                   template.innerHTML = html;
                   element.parentNode.insertBefore(template.content.firstChild, element.nextSibling);
                 },
-                addClass: (cls) => {
+                addClass: cls => {
                   const element = document.querySelector(selector);
                   if (!element) return;
                   element.classList.add(cls);
                 },
-                html: (html) => {
+                html: html => {
                   const element = document.querySelector(selector);
                   if (!element) return;
                   element.innerHTML = `${html}`;
                 }
-              }
-            }
+              };
+            };
 
             const context = {
               pricesHistory: mfData.mf_price_history,
               Shopify,
               // Not relevant
-              Currency: { money_format: '' },
+              Currency: { money_format: "" },
               localStorage: {},
               storage: {},
               ProductCard: { isDisabledTagAction: () => false },
               FILTER_PRODUCTS_BY_STORE: false,
               $: mockJquery,
               window: document.defaultView,
-              document,
-            }
+              document
+            };
 
             // This function puts it all together. After we run it with our document and window,
             // we'll get item id and document will be modified and contain current prices.
             // In general, eval is unsafe, but in this case we're evaluating a script that we know.
-            const adjustPrices = eval(`({${Object.keys(context).join(', ')}}) => { 
+            const adjustPrices = eval(`({${Object.keys(context).join(", ")}}) => { 
               ${PRODUCT_PRICE_BY_TAGS_SCRIPT}
 
               const updatedProductData = calculateTagSalePrice();

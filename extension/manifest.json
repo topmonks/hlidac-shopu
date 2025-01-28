@@ -40,9 +40,7 @@
       }
     ]
   },
-  "host_permissions": [
-    "https://api.hlidacshopu.cz/*"
-  ],
+  "host_permissions": ["https://api.hlidacshopu.cz/*"],
   "content_scripts": [
     {
       "matches": [
@@ -99,9 +97,7 @@
         "https://www.smarty.cz/*",
         "https://www.smarty.sk/*"
       ],
-      "js": [
-        "content.js"
-      ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],

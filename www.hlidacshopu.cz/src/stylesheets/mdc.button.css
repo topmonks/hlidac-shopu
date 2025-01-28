@@ -35,9 +35,9 @@
   /* @alternate */
   line-height: inherit;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   -webkit-appearance: none;
   overflow: visible;
   vertical-align: middle;
@@ -76,7 +76,8 @@
   position: relative;
   vertical-align: top;
 }
-[dir=rtl] .mdc-button .mdc-button__icon, .mdc-button .mdc-button__icon[dir=rtl] {
+[dir="rtl"] .mdc-button .mdc-button__icon,
+.mdc-button .mdc-button__icon[dir="rtl"] {
   /*rtl:begin:ignore*/
   /* @noflip */
   /*rtl:ignore*/
@@ -94,7 +95,8 @@
   display: none;
 }
 @media screen and (forced-colors: active) {
-  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring, .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring {
+  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring,
+  .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring {
     pointer-events: none;
     border: 2px solid transparent;
     border-radius: 6px;
@@ -107,23 +109,21 @@
     /* @noflip */
     /*rtl:ignore*/
     -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
-    height: calc(
-      100% + 4px
-    );
-    width: calc(
-      100% + 4px
-    );
+    transform: translate(-50%, -50%);
+    height: calc(100% + 4px);
+    width: calc(100% + 4px);
     display: block;
   }
 }
 @media screen and (forced-colors: active) and (forced-colors: active) {
-  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring, .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring {
+  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring,
+  .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring {
     border-color: CanvasText;
   }
 }
 @media screen and (forced-colors: active) {
-  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring::after, .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring::after {
+  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring::after,
+  .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring::after {
     content: "";
     border: 2px solid transparent;
     border-radius: 8px;
@@ -136,13 +136,14 @@
     /* @noflip */
     /*rtl:ignore*/
     -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     height: calc(100% + 4px);
     width: calc(100% + 4px);
   }
 }
 @media screen and (forced-colors: active) and (forced-colors: active) {
-  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring::after, .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring::after {
+  .mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__focus-ring::after,
+  .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__focus-ring::after {
     border-color: CanvasText;
   }
 }
@@ -153,7 +154,7 @@
   left: 0;
   right: 0;
   -webkit-transform: translateY(-50%);
-          transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
 .mdc-button__label + .mdc-button__icon {
@@ -164,7 +165,8 @@
   /*rtl:ignore*/
   margin-right: 0;
 }
-[dir=rtl] .mdc-button__label + .mdc-button__icon, .mdc-button__label + .mdc-button__icon[dir=rtl] {
+[dir="rtl"] .mdc-button__label + .mdc-button__icon,
+.mdc-button__label + .mdc-button__icon[dir="rtl"] {
   /*rtl:begin:ignore*/
   /* @noflip */
   /*rtl:ignore*/
@@ -193,7 +195,7 @@ svg.mdc-button__icon {
   text-decoration: none;
   /* @alternate */
   -webkit-text-decoration: var(--mdc-typography-button-text-decoration, none);
-          text-decoration: var(--mdc-typography-button-text-decoration, none);
+  text-decoration: var(--mdc-typography-button-text-decoration, none);
 }
 
 .mdc-button {
@@ -234,32 +236,32 @@ svg.mdc-button__icon {
 @-webkit-keyframes mdc-ripple-fg-radius-in {
   from {
     -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
-            transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
+    transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
   }
   to {
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-            transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+    transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
   }
 }
 
 @keyframes mdc-ripple-fg-radius-in {
   from {
     -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
-            transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
+    transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
   }
   to {
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-            transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+    transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
   }
 }
 @-webkit-keyframes mdc-ripple-fg-opacity-in {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: 0;
   }
   to {
@@ -269,7 +271,7 @@ svg.mdc-button__icon {
 @keyframes mdc-ripple-fg-opacity-in {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: 0;
   }
   to {
@@ -279,7 +281,7 @@ svg.mdc-button__icon {
 @-webkit-keyframes mdc-ripple-fg-opacity-out {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: var(--mdc-ripple-fg-opacity, 0);
   }
   to {
@@ -289,7 +291,7 @@ svg.mdc-button__icon {
 @keyframes mdc-ripple-fg-opacity-out {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: var(--mdc-ripple-fg-opacity, 0);
   }
   to {
@@ -327,7 +329,7 @@ svg.mdc-button__icon {
 }
 .mdc-button.mdc-ripple-upgraded .mdc-button__ripple::before {
   -webkit-transform: scale(var(--mdc-ripple-fg-scale, 1));
-          transform: scale(var(--mdc-ripple-fg-scale, 1));
+  transform: scale(var(--mdc-ripple-fg-scale, 1));
 }
 .mdc-button.mdc-ripple-upgraded .mdc-button__ripple::after {
   top: 0;
@@ -335,9 +337,9 @@ svg.mdc-button__icon {
   /*rtl:ignore*/
   left: 0;
   -webkit-transform: scale(0);
-          transform: scale(0);
+  transform: scale(0);
   -webkit-transform-origin: center center;
-          transform-origin: center center;
+  transform-origin: center center;
 }
 .mdc-button.mdc-ripple-upgraded--unbounded .mdc-button__ripple::after {
   top: var(--mdc-ripple-top, 0);
@@ -347,13 +349,13 @@ svg.mdc-button__icon {
 }
 .mdc-button.mdc-ripple-upgraded--foreground-activation .mdc-button__ripple::after {
   -webkit-animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
-          animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
+  animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
 }
 .mdc-button.mdc-ripple-upgraded--foreground-deactivation .mdc-button__ripple::after {
   -webkit-animation: mdc-ripple-fg-opacity-out 150ms;
-          animation: mdc-ripple-fg-opacity-out 150ms;
+  animation: mdc-ripple-fg-opacity-out 150ms;
   -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-          transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+  transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
 }
 .mdc-button .mdc-button__ripple::before,
 .mdc-button .mdc-button__ripple::after {
@@ -383,13 +385,19 @@ svg.mdc-button__icon {
 .mdc-button {
   font-family: Roboto, sans-serif;
   /* @alternate */
-  font-family: var(--mdc-text-button-label-text-font, var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif)));
+  font-family: var(
+    --mdc-text-button-label-text-font,
+    var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))
+  );
   font-size: 0.875rem;
   /* @alternate */
   font-size: var(--mdc-text-button-label-text-size, var(--mdc-typography-button-font-size, 0.875rem));
   letter-spacing: 0.0892857143em;
   /* @alternate */
-  letter-spacing: var(--mdc-text-button-label-text-tracking, var(--mdc-typography-button-letter-spacing, 0.0892857143em));
+  letter-spacing: var(
+    --mdc-text-button-label-text-tracking,
+    var(--mdc-typography-button-letter-spacing, 0.0892857143em)
+  );
   font-weight: 500;
   /* @alternate */
   font-weight: var(--mdc-text-button-label-text-weight, var(--mdc-typography-button-font-weight, 500));
@@ -430,12 +438,14 @@ svg.mdc-button__icon {
   /* @alternate */
   background-color: var(--mdc-text-button-hover-state-layer-color, var(--mdc-theme-primary, #6200ee));
 }
-.mdc-button:hover .mdc-button__ripple::before, .mdc-button.mdc-ripple-surface--hover .mdc-button__ripple::before {
+.mdc-button:hover .mdc-button__ripple::before,
+.mdc-button.mdc-ripple-surface--hover .mdc-button__ripple::before {
   opacity: 0.04;
   /* @alternate */
   opacity: var(--mdc-text-button-hover-state-layer-opacity, 0.04);
 }
-.mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+.mdc-button.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before,
+.mdc-button:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
   transition-duration: 75ms;
   opacity: 0.12;
   /* @alternate */
@@ -462,13 +472,19 @@ svg.mdc-button__icon {
 .mdc-button--unelevated {
   font-family: Roboto, sans-serif;
   /* @alternate */
-  font-family: var(--mdc-filled-button-label-text-font, var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif)));
+  font-family: var(
+    --mdc-filled-button-label-text-font,
+    var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))
+  );
   font-size: 0.875rem;
   /* @alternate */
   font-size: var(--mdc-filled-button-label-text-size, var(--mdc-typography-button-font-size, 0.875rem));
   letter-spacing: 0.0892857143em;
   /* @alternate */
-  letter-spacing: var(--mdc-filled-button-label-text-tracking, var(--mdc-typography-button-letter-spacing, 0.0892857143em));
+  letter-spacing: var(
+    --mdc-filled-button-label-text-tracking,
+    var(--mdc-typography-button-letter-spacing, 0.0892857143em)
+  );
   font-weight: 500;
   /* @alternate */
   font-weight: var(--mdc-filled-button-label-text-weight, var(--mdc-typography-button-font-weight, 500));
@@ -519,12 +535,14 @@ svg.mdc-button__icon {
   /* @alternate */
   background-color: var(--mdc-filled-button-hover-state-layer-color, var(--mdc-theme-on-primary, #fff));
 }
-.mdc-button--unelevated:hover .mdc-button__ripple::before, .mdc-button--unelevated.mdc-ripple-surface--hover .mdc-button__ripple::before {
+.mdc-button--unelevated:hover .mdc-button__ripple::before,
+.mdc-button--unelevated.mdc-ripple-surface--hover .mdc-button__ripple::before {
   opacity: 0.08;
   /* @alternate */
   opacity: var(--mdc-filled-button-hover-state-layer-opacity, 0.08);
 }
-.mdc-button--unelevated.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .mdc-button--unelevated:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+.mdc-button--unelevated.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before,
+.mdc-button--unelevated:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
   transition-duration: 75ms;
   opacity: 0.24;
   /* @alternate */
@@ -551,27 +569,38 @@ svg.mdc-button__icon {
 .mdc-button--raised {
   font-family: Roboto, sans-serif;
   /* @alternate */
-  font-family: var(--mdc-protected-button-label-text-font, var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif)));
+  font-family: var(
+    --mdc-protected-button-label-text-font,
+    var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))
+  );
   font-size: 0.875rem;
   /* @alternate */
   font-size: var(--mdc-protected-button-label-text-size, var(--mdc-typography-button-font-size, 0.875rem));
   letter-spacing: 0.0892857143em;
   /* @alternate */
-  letter-spacing: var(--mdc-protected-button-label-text-tracking, var(--mdc-typography-button-letter-spacing, 0.0892857143em));
+  letter-spacing: var(
+    --mdc-protected-button-label-text-tracking,
+    var(--mdc-typography-button-letter-spacing, 0.0892857143em)
+  );
   font-weight: 500;
   /* @alternate */
   font-weight: var(--mdc-protected-button-label-text-weight, var(--mdc-typography-button-font-weight, 500));
   text-transform: uppercase;
   /* @alternate */
-  text-transform: var(--mdc-protected-button-label-text-transform, var(--mdc-typography-button-text-transform, uppercase));
+  text-transform: var(
+    --mdc-protected-button-label-text-transform,
+    var(--mdc-typography-button-text-transform, uppercase)
+  );
   height: 36px;
   /* @alternate */
   height: var(--mdc-protected-button-container-height, 36px);
   border-radius: 4px;
   /* @alternate */
   border-radius: var(--mdc-protected-button-container-shape, var(--mdc-shape-small, 4px));
-  --mdc-elevation-box-shadow-for-gss: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-box-shadow-for-gss: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px
+    5px 0px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px
+    rgba(0, 0, 0, 0.12);
   /* @alternate */
   box-shadow: var(--mdc-protected-button-container-elevation, var(--mdc-elevation-box-shadow-for-gss));
 }
@@ -612,12 +641,14 @@ svg.mdc-button__icon {
   /* @alternate */
   background-color: var(--mdc-protected-button-hover-state-layer-color, var(--mdc-theme-on-primary, #fff));
 }
-.mdc-button--raised:hover .mdc-button__ripple::before, .mdc-button--raised.mdc-ripple-surface--hover .mdc-button__ripple::before {
+.mdc-button--raised:hover .mdc-button__ripple::before,
+.mdc-button--raised.mdc-ripple-surface--hover .mdc-button__ripple::before {
   opacity: 0.08;
   /* @alternate */
   opacity: var(--mdc-protected-button-hover-state-layer-opacity, 0.08);
 }
-.mdc-button--raised.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .mdc-button--raised:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+.mdc-button--raised.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before,
+.mdc-button--raised:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
   transition-duration: 75ms;
   opacity: 0.24;
   /* @alternate */
@@ -640,46 +671,64 @@ svg.mdc-button__icon {
   /* @alternate */
   border-radius: var(--mdc-protected-button-container-shape, var(--mdc-shape-small, 4px));
 }
-.mdc-button--raised.mdc-ripple-upgraded--background-focused, .mdc-button--raised:not(.mdc-ripple-upgraded):focus {
-  --mdc-elevation-box-shadow-for-gss: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+.mdc-button--raised.mdc-ripple-upgraded--background-focused,
+.mdc-button--raised:not(.mdc-ripple-upgraded):focus {
+  --mdc-elevation-box-shadow-for-gss: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px
+    10px 0px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px
+    rgba(0, 0, 0, 0.12);
   /* @alternate */
   box-shadow: var(--mdc-protected-button-focus-container-elevation, var(--mdc-elevation-box-shadow-for-gss));
 }
 .mdc-button--raised:hover {
-  --mdc-elevation-box-shadow-for-gss: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-box-shadow-for-gss: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px
+    10px 0px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px
+    rgba(0, 0, 0, 0.12);
   /* @alternate */
   box-shadow: var(--mdc-protected-button-hover-container-elevation, var(--mdc-elevation-box-shadow-for-gss));
 }
 .mdc-button--raised:not(:disabled):active {
-  --mdc-elevation-box-shadow-for-gss: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-box-shadow-for-gss: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px
+    14px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px
+    rgba(0, 0, 0, 0.12);
   /* @alternate */
   box-shadow: var(--mdc-protected-button-pressed-container-elevation, var(--mdc-elevation-box-shadow-for-gss));
 }
 .mdc-button--raised:disabled {
-  --mdc-elevation-box-shadow-for-gss: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
-  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --mdc-elevation-box-shadow-for-gss: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px
+    0px 0px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px
+    rgba(0, 0, 0, 0.12);
   /* @alternate */
   box-shadow: var(--mdc-protected-button-disabled-container-elevation, var(--mdc-elevation-box-shadow-for-gss));
 }
 .mdc-button--outlined {
   font-family: Roboto, sans-serif;
   /* @alternate */
-  font-family: var(--mdc-outlined-button-label-text-font, var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif)));
+  font-family: var(
+    --mdc-outlined-button-label-text-font,
+    var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))
+  );
   font-size: 0.875rem;
   /* @alternate */
   font-size: var(--mdc-outlined-button-label-text-size, var(--mdc-typography-button-font-size, 0.875rem));
   letter-spacing: 0.0892857143em;
   /* @alternate */
-  letter-spacing: var(--mdc-outlined-button-label-text-tracking, var(--mdc-typography-button-letter-spacing, 0.0892857143em));
+  letter-spacing: var(
+    --mdc-outlined-button-label-text-tracking,
+    var(--mdc-typography-button-letter-spacing, 0.0892857143em)
+  );
   font-weight: 500;
   /* @alternate */
   font-weight: var(--mdc-outlined-button-label-text-weight, var(--mdc-typography-button-font-weight, 500));
   text-transform: uppercase;
   /* @alternate */
-  text-transform: var(--mdc-outlined-button-label-text-transform, var(--mdc-typography-button-text-transform, uppercase));
+  text-transform: var(
+    --mdc-outlined-button-label-text-transform,
+    var(--mdc-typography-button-text-transform, uppercase)
+  );
   height: 36px;
   /* @alternate */
   height: var(--mdc-outlined-button-container-height, 36px);
@@ -718,12 +767,14 @@ svg.mdc-button__icon {
   /* @alternate */
   background-color: var(--mdc-outlined-button-hover-state-layer-color, var(--mdc-theme-primary, #6200ee));
 }
-.mdc-button--outlined:hover .mdc-button__ripple::before, .mdc-button--outlined.mdc-ripple-surface--hover .mdc-button__ripple::before {
+.mdc-button--outlined:hover .mdc-button__ripple::before,
+.mdc-button--outlined.mdc-ripple-surface--hover .mdc-button__ripple::before {
   opacity: 0.04;
   /* @alternate */
   opacity: var(--mdc-outlined-button-hover-state-layer-opacity, 0.04);
 }
-.mdc-button--outlined.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before, .mdc-button--outlined:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
+.mdc-button--outlined.mdc-ripple-upgraded--background-focused .mdc-button__ripple::before,
+.mdc-button--outlined:not(.mdc-ripple-upgraded):focus .mdc-button__ripple::before {
   transition-duration: 75ms;
   opacity: 0.12;
   /* @alternate */
@@ -790,7 +841,12 @@ svg.mdc-button__icon {
   /*rtl:ignore*/
   margin-right: 8px;
 }
-[dir=rtl] .mdc-button--raised .mdc-button__icon, [dir=rtl] .mdc-button--unelevated .mdc-button__icon, [dir=rtl] .mdc-button--outlined .mdc-button__icon, .mdc-button--raised .mdc-button__icon[dir=rtl], .mdc-button--unelevated .mdc-button__icon[dir=rtl], .mdc-button--outlined .mdc-button__icon[dir=rtl] {
+[dir="rtl"] .mdc-button--raised .mdc-button__icon,
+[dir="rtl"] .mdc-button--unelevated .mdc-button__icon,
+[dir="rtl"] .mdc-button--outlined .mdc-button__icon,
+.mdc-button--raised .mdc-button__icon[dir="rtl"],
+.mdc-button--unelevated .mdc-button__icon[dir="rtl"],
+.mdc-button--outlined .mdc-button__icon[dir="rtl"] {
   /*rtl:begin:ignore*/
   /* @noflip */
   /*rtl:ignore*/
@@ -811,7 +867,12 @@ svg.mdc-button__icon {
   /*rtl:ignore*/
   margin-right: -4px;
 }
-[dir=rtl] .mdc-button--raised .mdc-button__label + .mdc-button__icon, [dir=rtl] .mdc-button--unelevated .mdc-button__label + .mdc-button__icon, [dir=rtl] .mdc-button--outlined .mdc-button__label + .mdc-button__icon, .mdc-button--raised .mdc-button__label + .mdc-button__icon[dir=rtl], .mdc-button--unelevated .mdc-button__label + .mdc-button__icon[dir=rtl], .mdc-button--outlined .mdc-button__label + .mdc-button__icon[dir=rtl] {
+[dir="rtl"] .mdc-button--raised .mdc-button__label + .mdc-button__icon,
+[dir="rtl"] .mdc-button--unelevated .mdc-button__label + .mdc-button__icon,
+[dir="rtl"] .mdc-button--outlined .mdc-button__label + .mdc-button__icon,
+.mdc-button--raised .mdc-button__label + .mdc-button__icon[dir="rtl"],
+.mdc-button--unelevated .mdc-button__label + .mdc-button__icon[dir="rtl"],
+.mdc-button--outlined .mdc-button__label + .mdc-button__icon[dir="rtl"] {
   /*rtl:begin:ignore*/
   /* @noflip */
   /*rtl:ignore*/

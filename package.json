@@ -57,6 +57,7 @@
     "test:api": "ava api.hlidacshopu.cz/**/*.test.mjs",
     "test:actors": "ava actors/**/*.test.mjs",
     "test:extension": "node scripts/test-extension.mjs",
+    "fmt": "biome format --write",
     "lint": "run-p 'lint:*'",
     "lint:actors": "biome lint ./actors",
     "lint:website": "biome lint ./www.hlidacshopu.cz",

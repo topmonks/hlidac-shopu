@@ -252,11 +252,14 @@ function extractBlackFridayProducts({ document, url }, { stats, processedIds }) 
     stats.inc("items");
 
     const data = JSON.parse(decodeURIComponent(el.dataset.gridboxImpression));
-    const {id:itemId, price:currentPrice, name: itemName, availability,  category} = data;
+    const { id: itemId, price: currentPrice, name: itemName, availability, category } = data;
 
-    const itemUrl = new URL(el.querySelector('.ods-tile__link').getAttribute("href"), 'https://www.lidl.cz/').href ;
-    const img = el.querySelector('[selector="PRODUCT"] .ods-image-gallery__item--active .ods-image-gallery__image').getAttribute('src');
-    const originalPrice = Number(el.querySelector('.m-price__rrp')?.innerText.replace(' Kč', '').replace(',', '.')) || undefined
+    const itemUrl = new URL(el.querySelector(".ods-tile__link").getAttribute("href"), "https://www.lidl.cz/").href;
+    const img = el
+      .querySelector('[selector="PRODUCT"] .ods-image-gallery__item--active .ods-image-gallery__image')
+      .getAttribute("src");
+    const originalPrice =
+      Number(el.querySelector(".m-price__rrp")?.innerText.replace(" Kč", "").replace(",", ".")) || undefined;
 
     if (processedIds.has(data.id)) {
       stats.inc("itemsDuplicity");
@@ -273,7 +276,7 @@ function extractBlackFridayProducts({ document, url }, { stats, processedIds }) 
       img,
       originalPrice,
       discounted: originalPrice ? originalPrice > currentPrice : false,
-      inStock: !availability.includes('not_'), // "available" or "not_available"
+      inStock: !availability.includes("not_"), // "available" or "not_available"
       category: category.split("/").slice(1).join(" > "),
       slug: itemId
     });

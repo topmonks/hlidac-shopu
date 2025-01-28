@@ -1,12 +1,12 @@
-import {HttpCrawler} from "@crawlee/http";
-import {ActorType} from "@hlidac-shopu/actors-common/actor-type.js";
-import {getInput, restPageUrls} from "@hlidac-shopu/actors-common/crawler.js";
-import {parseHTML} from "@hlidac-shopu/actors-common/dom.js";
+import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import {withPersistedStats} from "@hlidac-shopu/actors-common/stats.js";
-import {Actor, Dataset, log, LogLevel} from "apify";
-import {uploadToKeboola} from "@hlidac-shopu/actors-common/keboola.js";
-import {shopName} from "@hlidac-shopu/lib/shops.mjs";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { Actor, Dataset, log, LogLevel } from "apify";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 
 /** @enum {string} */
 const Country = {
@@ -132,19 +132,21 @@ function catProductsRequests({ document, request }) {
   }
 }
 
-function extractProducts({document, stats, country, request}) {
-  const allDocumentScripts = Array.from(document.querySelectorAll('script'));
-  const string = allDocumentScripts.find((script) => script.innerText.includes('__APOLLO_STATE__')).innerText.split('window.__ARTICLE_LISTING_BUGSNAG_CONF')[0];
-  const startIndex = string.indexOf('{');
-  const endIndex = string.lastIndexOf('}') + 1;
+function extractProducts({ document, stats, country, request }) {
+  const allDocumentScripts = Array.from(document.querySelectorAll("script"));
+  const string = allDocumentScripts
+    .find(script => script.innerText.includes("__APOLLO_STATE__"))
+    .innerText.split("window.__ARTICLE_LISTING_BUGSNAG_CONF")[0];
+  const startIndex = string.indexOf("{");
+  const endIndex = string.lastIndexOf("}") + 1;
 
-  const jsonString = string.split('window.__ARTICLE_LISTING_BUGSNAG_CONF')[0].substring(startIndex, endIndex)
+  const jsonString = string.split("window.__ARTICLE_LISTING_BUGSNAG_CONF")[0].substring(startIndex, endIndex);
   const data = JSON.parse(jsonString);
-  const key = Object.keys(data.ROOT_QUERY).find(key => key.includes('categoryListing'));
+  const key = Object.keys(data.ROOT_QUERY).find(key => key.includes("categoryListing"));
 
-  const productsInfoArray = data.ROOT_QUERY[key].itemList.filter(item => item.abstractProductId)
+  const productsInfoArray = data.ROOT_QUERY[key].itemList.filter(item => item.abstractProductId);
 
-  return productsInfoArray.map((item) => {
+  return productsInfoArray.map(item => {
     const currency = Currency[country.toUpperCase()];
     stats.inc("items");
 
@@ -163,7 +165,7 @@ function extractProducts({document, stats, country, request}) {
   });
 }
 
-function filterTestRequests( { requests, type, take = 2 }) {
+function filterTestRequests({ requests, type, take = 2 }) {
   return type === ActorType.Test ? requests.slice(0, take) : requests;
 }
 
@@ -176,11 +178,7 @@ async function main() {
     failed: 0
   });
 
-  const {
-    type = ActorType.Full,
-    country = Country.CZ,
-    debug= false
-  } = await getInput() ?? {};
+  const { type = ActorType.Full, country = Country.CZ, debug = false } = (await getInput()) ?? {};
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -204,7 +202,7 @@ async function main() {
         case Labels.TOP_CATEGORIES:
           {
             const requests = topCategoriesRequests({ document, country });
-            const filtered = filterTestRequests({requests, type});
+            const filtered = filterTestRequests({ requests, type });
             await crawler.requestQueue.addRequests(filtered, { forefront: true });
           }
           break;

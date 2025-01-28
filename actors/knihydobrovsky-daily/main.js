@@ -56,7 +56,7 @@ function extractProducts({ document }) {
         itemName: item.querySelector("span.name").innerText,
         img: item.querySelector("img").getAttribute("srcset"),
         currentPrice: currentPrice === "zdarma" ? 0 : (cleanPrice(currentPrice) ?? null),
-        originalPrice: originalPrice != null ? cleanPrice(originalPrice) ?? null: null,
+        originalPrice: originalPrice != null ? (cleanPrice(originalPrice) ?? null) : null,
         discounted,
         rating: parseFloat(
           item.querySelector("span.stars.small span")?.getAttribute("style")?.split("width: ")[1] ?? null

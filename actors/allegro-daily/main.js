@@ -10,7 +10,7 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 
 const ROOT_URL = "https://allegro.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
-const YANDEX_PREFIX = 'https://translate.yandex.com/translate?lang=ar-en&url=';
+const YANDEX_PREFIX = "https://translate.yandex.com/translate?lang=ar-en&url=";
 
 const Label = {
   Start: "Start",
@@ -23,7 +23,7 @@ const Label = {
 async function handleProducts(document, processedIds) {
   const categories = document
     .querySelectorAll('ol[data-role="breadcrumbs-list"] span')
-    .map((cat) => cat?.textContent?.trim() ?? "");
+    .map(cat => cat?.textContent?.trim() ?? "");
 
   categories.shift();
 
@@ -56,14 +56,16 @@ async function handleProducts(document, processedIds) {
     const originalPrice =
       cleanPrice(prod.querySelector('span[style*="font-weight:normal;text-decoration:line-through"]')?.textContent) ??
       null;
-    const currentPrice = cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent)
-      || cleanPrice(prod.querySelector('[data-test-tag="price-container"]')?.textContent) || null;
+    const currentPrice =
+      cleanPrice(prod.querySelector("span[aria-label] > span")?.textContent) ||
+      cleanPrice(prod.querySelector('[data-test-tag="price-container"]')?.textContent) ||
+      null;
     const imageElement = prod.querySelector("img");
 
     products.push({
       itemId,
       itemName: prod.querySelector("article h2 > a[href]").textContent.trim(),
-      itemUrl: itemUrl.split('https/')?.[1] ? `https://${itemUrl.split('https/')?.[1]}` : itemUrl,
+      itemUrl: itemUrl.split("https/")?.[1] ? `https://${itemUrl.split("https/")?.[1]}` : itemUrl,
       img: extractAllegroUrl(imageElement.getAttribute("data-src") || imageElement.getAttribute("src")),
       currentPrice,
       inStock: !!currentPrice,
@@ -85,9 +87,9 @@ function createPaginationRequests(document, url) {
   const pageCount = Number.parseInt(document.querySelector('div > div[role="navigation"] > span').textContent);
   const paginationRequests = [];
 
-  if (url.includes('translated.turbopages.org/proxy_u')) {
+  if (url.includes("translated.turbopages.org/proxy_u")) {
     url = extractAllegroUrl(url);
-  };
+  }
 
   if (!url.includes(YANDEX_PREFIX)) {
     url = `${YANDEX_PREFIX}${url}`;
@@ -113,23 +115,29 @@ function createPaginationRequests(document, url) {
 function extractAllegroUrl(yandexUrl) {
   const regex = /https:\/\/translated\.turbopages\.org\/proxy_u\/ar-en\.en\.[\w-]+\/(https.*)/;
   const match = yandexUrl.match(regex);
-  return match ? match[1].replace('https/', 'https://') : yandexUrl.replace(YANDEX_PREFIX, '');
+  return match ? match[1].replace("https/", "https://") : yandexUrl.replace(YANDEX_PREFIX, "");
 }
 
-const tryParseJson = (str) => {
+const tryParseJson = str => {
   try {
     return JSON.parse(str);
   } catch (e) {
     return null;
   }
-}
+};
 
 async function main() {
   const rollbar = Rollbar.init();
 
   const input = await Actor.getInput();
   // @ts-ignore
-  const { development = false, debug = false, proxyGroups = [], type = ActorType.Full, tableName = "allegro_cz" } = input || {};
+  const {
+    development = false,
+    debug = false,
+    proxyGroups = [],
+    type = ActorType.Full,
+    tableName = "allegro_cz"
+  } = input || {};
   // @ts-ignore
   const inputtedUrls = input?.urls ?? [];
 
@@ -170,8 +178,10 @@ async function main() {
 
       const { document } = parseHTML(body.toString());
 
-      if (document.querySelector('title').textContent.includes('Are you not a robot')
-        || document.querySelector('html.state-unresolved.state-withDirect')) {
+      if (
+        document.querySelector("title").textContent.includes("Are you not a robot") ||
+        document.querySelector("html.state-unresolved.state-withDirect")
+      ) {
         log.error(`[${label}] - Got a captcha, will retry`);
         throw new Error("Got a captcha");
       }
@@ -182,7 +192,7 @@ async function main() {
             const requestsToAdd = document
               .querySelectorAll('a[data-description="navigation-layers category link"]')
               // @ts-ignore
-              .map((cat) => ({
+              .map(cat => ({
                 url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
                 label: Label.Category
               }));
@@ -193,7 +203,10 @@ async function main() {
               await crawler.addRequests(requestsToAdd);
             }
             stats.add("categories", requestsToAdd.length);
-            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${requestsToAdd.length} top level categories`, { url: request.url });
+            log.info(
+              `[${label}]: ${extractAllegroUrl(request.url)} - Added ${requestsToAdd.length} top level categories`,
+              { url: request.url }
+            );
           }
           break;
         case Label.Category:
@@ -201,12 +214,12 @@ async function main() {
             const categoryRequests = document
               .querySelectorAll("a.carousel-item")
               // @ts-ignore
-              .map((cat) => {
+              .map(cat => {
                 if (!cat.href) return;
 
                 return {
                   url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
-                  label: Label.Subcategory,
+                  label: Label.Subcategory
                 };
               })
               .filter(Boolean);
@@ -218,7 +231,9 @@ async function main() {
             }
 
             stats.add("categories", categoryRequests.length);
-            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, {
+              url: request.url
+            });
           }
           break;
         case Label.CZC_Category:
@@ -226,36 +241,40 @@ async function main() {
             const scripts = document.querySelectorAll('script[type="application/json"]');
             let scriptContent = null;
 
-            scripts.forEach((script) => {
-              if (script.innerHTML.includes('searchSellerName')) {
+            scripts.forEach(script => {
+              if (script.innerHTML.includes("searchSellerName")) {
                 scriptContent = script.innerHTML;
               }
             });
 
             if (scriptContent) {
-              const categoryRequests = tryParseJson(scriptContent).headerBanner.categoryNavigation.categoryNavigationItems.flatMap((categoryList) => {
-                return categoryList.items.flatMap((category) => {
-                  return category.items.map((item) => ({
+              const categoryRequests = tryParseJson(
+                scriptContent
+              ).headerBanner.categoryNavigation.categoryNavigationItems.flatMap(categoryList => {
+                return categoryList.items.flatMap(category => {
+                  return category.items.map(item => ({
                     url: `${YANDEX_PREFIX}${item.link}`,
-                    label: Label.Subcategory,
+                    label: Label.Subcategory
                   }));
                 });
               });
-  
+
               if (type === ActorType.Test) {
                 await crawler.addRequests(categoryRequests.slice(0, 1));
               } else {
                 await crawler.addRequests(categoryRequests);
               }
-  
+
               stats.add("categories", categoryRequests.length);
-              log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`, { url: request.url });
+              log.info(
+                `[${label}]: ${extractAllegroUrl(request.url)} - Added ${categoryRequests.length} subcategories`,
+                { url: request.url }
+              );
             }
           }
           break;
         case Label.Subcategory:
           {
-
             const subcategoryLinks = document.querySelectorAll('[data-role="LinkItemAnchor"]');
             const subcategoryItems = document.querySelectorAll('[data-role="LinkItem"]');
 
@@ -273,20 +292,23 @@ async function main() {
               }
 
               log.info(
-                `[${label}]: ${extractAllegroUrl(request.url)} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`
-                , { url: request.url });
+                `[${label}]: ${extractAllegroUrl(request.url)} - Reached lowest subcategory, found ${totalProducts} products, saved ${savedProducts}, added ${paginationRequests.length} pagination requests`,
+                { url: request.url }
+              );
               return;
             }
 
             // @ts-ignore
-            const categoryRequests = subcategoryLinks.map((cat) => {
-              if (!cat.href) return;
+            const categoryRequests = subcategoryLinks
+              .map(cat => {
+                if (!cat.href) return;
 
-              return {
-                url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
-                label: Label.Subcategory
-              };
-            }).filter(Boolean);
+                return {
+                  url: `${YANDEX_PREFIX}${extractAllegroUrl(new URL(cat.href, ROOT_URL).href)}`,
+                  label: Label.Subcategory
+                };
+              })
+              .filter(Boolean);
 
             if (type === ActorType.Test) {
               await crawler.addRequests(categoryRequests.slice(0, 1));
@@ -294,7 +316,9 @@ async function main() {
               await crawler.addRequests(categoryRequests);
             }
             stats.add("categories", categoryRequests.length);
-            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Found ${categoryRequests.length} subcategories`, { url: request.url });
+            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Found ${categoryRequests.length} subcategories`, {
+              url: request.url
+            });
           }
           break;
         case Label.Product:
@@ -302,7 +326,10 @@ async function main() {
             const { totalProducts, savedProducts, duplicates } = await handleProducts(document, processedIds);
             stats.add("products", totalProducts);
             stats.add("duplicates", duplicates);
-            log.info(`[${label}]: ${extractAllegroUrl(request.url)} - Found ${totalProducts} products, saved ${savedProducts}`, { url: request.url });
+            log.info(
+              `[${label}]: ${extractAllegroUrl(request.url)} - Found ${totalProducts} products, saved ${savedProducts}`,
+              { url: request.url }
+            );
           }
           break;
       }
@@ -329,18 +356,18 @@ async function main() {
       continue;
     }
 
-    if (url.pathname === '/obchod/czc-cz') {
+    if (url.pathname === "/obchod/czc-cz") {
       requests.push({
         url: `${YANDEX_PREFIX}${inputtedUrl}`,
         label: Label.CZC_Category
       });
       continue;
-    } else if (url.pathname.includes('/obchod/czc-cz')) {
+    } else if (url.pathname.includes("/obchod/czc-cz")) {
       requests.push({
         url: `${YANDEX_PREFIX}${inputtedUrl}`,
         label: Label.Subcategory
       });
-      continue
+      continue;
     }
 
     const firstPathSegment = url.pathname.split("/")[1] ?? "";

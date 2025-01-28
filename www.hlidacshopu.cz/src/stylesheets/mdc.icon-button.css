@@ -14,13 +14,15 @@
 .mdc-icon-button .mdc-icon-button__focus-ring {
   display: none;
 }
-.mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
+.mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring,
+.mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
   display: block;
   max-height: 48px;
   max-width: 48px;
 }
 @media screen and (forced-colors: active) {
-  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
+  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring,
+  .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
     pointer-events: none;
     border: 2px solid transparent;
     border-radius: 6px;
@@ -33,18 +35,20 @@
     /* @noflip */
     /*rtl:ignore*/
     -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     height: 100%;
     width: 100%;
   }
 }
 @media screen and (forced-colors: active) and (forced-colors: active) {
-  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
+  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring,
+  .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
     border-color: CanvasText;
   }
 }
 @media screen and (forced-colors: active) {
-  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring::after, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring::after {
+  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring::after,
+  .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring::after {
     content: "";
     border: 2px solid transparent;
     border-radius: 8px;
@@ -57,13 +61,14 @@
     /* @noflip */
     /*rtl:ignore*/
     -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     height: calc(100% + 4px);
     width: calc(100% + 4px);
   }
 }
 @media screen and (forced-colors: active) and (forced-colors: active) {
-  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring::after, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring::after {
+  .mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring::after,
+  .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring::after {
     border-color: CanvasText;
   }
 }
@@ -75,7 +80,8 @@
   margin-right: 4px;
   margin-left: 4px;
 }
-.mdc-icon-button.mdc-icon-button--reduced-size.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring, .mdc-icon-button.mdc-icon-button--reduced-size:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
+.mdc-icon-button.mdc-icon-button--reduced-size.mdc-ripple-upgraded--background-focused .mdc-icon-button__focus-ring,
+.mdc-icon-button.mdc-icon-button--reduced-size:not(.mdc-ripple-upgraded):focus .mdc-icon-button__focus-ring {
   max-height: 40px;
   max-width: 40px;
 }
@@ -88,7 +94,7 @@
   left: 50%;
   width: 48px;
   -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 .mdc-icon-button:disabled {
   color: rgba(0, 0, 0, 0.38);
@@ -113,9 +119,9 @@
   text-decoration: none;
   cursor: pointer;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   z-index: 0;
   overflow: visible;
 }
@@ -128,7 +134,7 @@
   left: 50%;
   width: 48px;
   -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 .mdc-icon-button:disabled {
   cursor: default;
@@ -167,32 +173,32 @@
 @-webkit-keyframes mdc-ripple-fg-radius-in {
   from {
     -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
-            transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
+    transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
   }
   to {
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-            transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+    transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
   }
 }
 
 @keyframes mdc-ripple-fg-radius-in {
   from {
     -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
-            transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
+    transform: translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1);
   }
   to {
     -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-            transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+    transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
   }
 }
 @-webkit-keyframes mdc-ripple-fg-opacity-in {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: 0;
   }
   to {
@@ -202,7 +208,7 @@
 @keyframes mdc-ripple-fg-opacity-in {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: 0;
   }
   to {
@@ -212,7 +218,7 @@
 @-webkit-keyframes mdc-ripple-fg-opacity-out {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: var(--mdc-ripple-fg-opacity, 0);
   }
   to {
@@ -222,7 +228,7 @@
 @keyframes mdc-ripple-fg-opacity-out {
   from {
     -webkit-animation-timing-function: linear;
-            animation-timing-function: linear;
+    animation-timing-function: linear;
     opacity: var(--mdc-ripple-fg-opacity, 0);
   }
   to {
@@ -260,7 +266,7 @@
 }
 .mdc-icon-button.mdc-ripple-upgraded .mdc-icon-button__ripple::before {
   -webkit-transform: scale(var(--mdc-ripple-fg-scale, 1));
-          transform: scale(var(--mdc-ripple-fg-scale, 1));
+  transform: scale(var(--mdc-ripple-fg-scale, 1));
 }
 .mdc-icon-button.mdc-ripple-upgraded .mdc-icon-button__ripple::after {
   top: 0;
@@ -268,9 +274,9 @@
   /*rtl:ignore*/
   left: 0;
   -webkit-transform: scale(0);
-          transform: scale(0);
+  transform: scale(0);
   -webkit-transform-origin: center center;
-          transform-origin: center center;
+  transform-origin: center center;
 }
 .mdc-icon-button.mdc-ripple-upgraded--unbounded .mdc-icon-button__ripple::after {
   top: var(--mdc-ripple-top, 0);
@@ -280,13 +286,13 @@
 }
 .mdc-icon-button.mdc-ripple-upgraded--foreground-activation .mdc-icon-button__ripple::after {
   -webkit-animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
-          animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
+  animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
 }
 .mdc-icon-button.mdc-ripple-upgraded--foreground-deactivation .mdc-icon-button__ripple::after {
   -webkit-animation: mdc-ripple-fg-opacity-out 150ms;
-          animation: mdc-ripple-fg-opacity-out 150ms;
+  animation: mdc-ripple-fg-opacity-out 150ms;
   -webkit-transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
-          transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
+  transform: translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1));
 }
 .mdc-icon-button .mdc-icon-button__ripple::before,
 .mdc-icon-button .mdc-icon-button__ripple::after {
@@ -310,17 +316,20 @@
   width: var(--mdc-ripple-fg-size, 100%);
   height: var(--mdc-ripple-fg-size, 100%);
 }
-.mdc-icon-button .mdc-icon-button__ripple::before, .mdc-icon-button .mdc-icon-button__ripple::after {
+.mdc-icon-button .mdc-icon-button__ripple::before,
+.mdc-icon-button .mdc-icon-button__ripple::after {
   background-color: #000;
   /* @alternate */
   background-color: var(--mdc-ripple-color, #000);
 }
-.mdc-icon-button:hover .mdc-icon-button__ripple::before, .mdc-icon-button.mdc-ripple-surface--hover .mdc-icon-button__ripple::before {
+.mdc-icon-button:hover .mdc-icon-button__ripple::before,
+.mdc-icon-button.mdc-ripple-surface--hover .mdc-icon-button__ripple::before {
   opacity: 0.04;
   /* @alternate */
   opacity: var(--mdc-ripple-hover-opacity, 0.04);
 }
-.mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__ripple::before, .mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__ripple::before {
+.mdc-icon-button.mdc-ripple-upgraded--background-focused .mdc-icon-button__ripple::before,
+.mdc-icon-button:not(.mdc-ripple-upgraded):focus .mdc-icon-button__ripple::before {
   transition-duration: 75ms;
   opacity: 0.12;
   /* @alternate */

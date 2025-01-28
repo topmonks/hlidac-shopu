@@ -53,7 +53,7 @@ function startingRequest({ type, urls }) {
   switch (type) {
     case ActorType.BlackFriday:
       return {
-        url: urls.length? urls[0] : 'https://www.mironet.cz/vyprodej/?v=black-friday',
+        url: urls.length ? urls[0] : "https://www.mironet.cz/vyprodej/?v=black-friday",
         userData: {
           label: Labels.SaleCategory
         }
@@ -160,13 +160,7 @@ async function main() {
     failed: 0
   });
 
-  const {
-    development,
-    maxRequestRetries,
-    proxyGroups,
-    type = ActorType.Full,
-    urls
-  } = await getInput();
+  const { development, maxRequestRetries, proxyGroups, type = ActorType.Full, urls } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
 

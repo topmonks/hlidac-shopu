@@ -114,9 +114,9 @@ function jsonNavigationRequests({ json, country }) {
         scraped: 0,
         page,
         path,
-        category: title,
-      },
-    })
+        category: title
+      }
+    });
   }
   return requests;
 }
@@ -129,13 +129,7 @@ function productsFromJsonListing({ json, handledIdsSet, currency, country, userD
   for (const item of items) {
     if (handledIdsSet[item.id]) continue;
     handledIdsSet[item.id] = true;
-    const {
-      id,
-      imageUrlSmallSize,
-      price,
-      productViewUrl,
-      title,
-    } = item;
+    const { id, imageUrlSmallSize, price, productViewUrl, title } = item;
     const itemUrl = `${baseUrl}/${productViewUrl}`;
     const result = {
       itemId: id,
@@ -148,9 +142,9 @@ function productsFromJsonListing({ json, handledIdsSet, currency, country, userD
       currentPrice: price.current / 100,
       discounted: false,
       currency,
-      category,
-    }
-    if (price.old!== 0) {
+      category
+    };
+    if (price.old !== 0) {
       result.discounted = true;
       result.originalPrice = price.bestPriceAmount / 100;
     }
@@ -359,28 +353,32 @@ async function main() {
             handledIdsSet,
             currency,
             country,
-            userData,
+            userData
           });
 
           const scraped = userData.scraped + numProductsScraped;
           const page = userData.page + 1;
 
-          log.info(`[${label}] - [${request.url}] - Found ${numProductsScraped} (${products.length} unique) products, total ${scraped}/${numFoundAvailable}`);
+          log.info(
+            `[${label}] - [${request.url}] - Found ${numProductsScraped} (${products.length} unique) products, total ${scraped}/${numFoundAvailable}`
+          );
           await Dataset.pushData(products);
 
           const nextUserData = {
             ...userData,
             scraped,
-            page,
+            page
           };
 
           // we want to enqueue next page if `products` is not empty and we haven't reached `numFoundAvailable`
           if (numProductsScraped > 0 && scraped < numFoundAvailable) {
             const url = prepareCategoryJsonUrl(userData.path, country, page);
-            await crawler.addRequests([{
-              url,
-              userData: nextUserData,
-            }]);
+            await crawler.addRequests([
+              {
+                url,
+                userData: nextUserData
+              }
+            ]);
           }
         }
         case Labels.LIST:
@@ -443,27 +441,29 @@ async function main() {
     {
       url: `https://www.tchibo.${country}/jsonflyoutnavigation`,
       userData: {
-        label: Labels.NAVIGATION,
+        label: Labels.NAVIGATION
       }
     },
     // most non-coffee categories & products are found at this enpoint
     {
       url: `https://www.tchibo.${country}/service/categoryfrontend/api/categories/navigation-tree?site=${country.toUpperCase()}`,
       userData: {
-        label: Labels.JSON_NAVIGATION,
+        label: Labels.JSON_NAVIGATION
       }
     }
   ];
 
   const startingRequests =
     type === "test"
-      ? [{
-        url: "https://www.tchibo.cz/service/categoryfrontend/api/categories/navigation-tree?site=CZ",
-        userData: {
-          label: Labels.JSON_NAVIGATION,
-          page: 0
-        }
-      }]
+      ? [
+          {
+            url: "https://www.tchibo.cz/service/categoryfrontend/api/categories/navigation-tree?site=CZ",
+            userData: {
+              label: Labels.JSON_NAVIGATION,
+              page: 0
+            }
+          }
+        ]
       : startNavigationRequests;
   await crawler.run(startingRequests);
   log.info("crawler finished");

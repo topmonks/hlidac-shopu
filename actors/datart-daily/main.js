@@ -111,9 +111,11 @@ function extractItems(document, rootUrl, country) {
       if (couponDiscountFlagEl) {
         const hasDiscountKeyword = country === Country.CZ && /extra sleva/i.test(couponDiscountFlagEl.textContent);
         if (hasDiscountKeyword) {
-          couponDiscount = parseFloat(couponDiscountFlagEl.innerText.trim()
-            .replace(/[^\d,]+/g, "")
-            .replace(",", ".")
+          couponDiscount = parseFloat(
+            couponDiscountFlagEl.innerText
+              .trim()
+              .replace(/[^\d,]+/g, "")
+              .replace(",", ".")
           );
         }
       }
