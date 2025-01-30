@@ -394,7 +394,7 @@ async function main() {
                 .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
                 .slice(-2, -1)?.[0]?.innerText;
               const urls = pagesUrls(request.url, lastPage);
-              log.debug(`Urls, ${urls}, ${lastPage}`);
+            log.debug(`Urls, ${urls}, ${lastPage}`)
               if (urls) {
                 log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
                 await enqueueLinks({
