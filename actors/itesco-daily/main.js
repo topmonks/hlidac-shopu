@@ -27,47 +27,9 @@ const Labels = {
 
 /** @enum {string} */
 const StartUrls = {
-  CZ: "https://nakup.itesco.cz/groceries/cs-CZ/shop/ovoce-a-zelenina?include-children=true",
-  SK: "https://potravinydomov.itesco.sk/groceries/sk-SK/shop/ovocie-a-zelenina?include-children=true"
+  CZ: "https://nakup.itesco.cz/groceries",
+  SK: "https://potravinydomov.itesco.sk/groceries"
 };
-
-function flattenChildren(array) {
-  let result = [];
-  for (const a of array) {
-    result.push(a);
-    if (Array.isArray(a.children)) {
-      result = result.concat(flattenChildren(a.children));
-    }
-  }
-  return result;
-}
-
-function findArraysUrl(urlsCatHtml, country) {
-  const { navList } = urlsCatHtml.taxonomy; // { catId, name, url, allUrl, externalUrl, children }[]
-  const childrenArr = [];
-  for (const item of flattenChildren(navList)) {
-    if (item.children) {
-      for (const url of item.children) {
-        childrenArr.push(url);
-      }
-    }
-  }
-  const arr = [].concat(childrenArr).map(item => {
-    // Special "microsites" do not have url nor allUrl. They have only externalUrl. Let's skip them. E.g.:
-    // https://nakup.itesco.cz/groceries/cs-CZ/zone/podzim/
-    // https://nakup.itesco.cz/groceries/cs-CZ/zone/tesco-finest
-    if (!item.url) return;
-    return item.url.includes("/all") ? item.url : item.allUrl;
-  });
-
-  const url =
-    country === Country.CZ
-      ? "https://nakup.itesco.cz/groceries/cs-CZ/shop"
-      : "https://potravinydomov.itesco.sk/groceries/sk-SK/shop";
-  return arr
-    .filter(Boolean) // Remove undefined
-    .map(item => `${url}${item}`);
-}
 
 /**
  * @param {number} productId
@@ -185,9 +147,21 @@ function getTableName(country, type) {
  * @param {Country} country
  */
 function startUrls(document, country) {
-  const script = document.querySelector("body").getAttribute("data-redux-state");
-  const urlsCatHtml = JSON.parse(script);
-  return findArraysUrl(urlsCatHtml, country);
+  const categories = document.getElementsByClassName('menu__link--superdepartment');
+  const hrefs = []
+
+  for (const item of categories) {
+    hrefs.push(item.getAttribute('href'));
+  }
+
+  const url =
+    country === Country.CZ
+      ? "https://nakup.itesco.cz"
+      : "https://potravinydomov.itesco.sk";
+
+  return hrefs
+    .filter(Boolean) // Remove undefined
+    .map(item => `${url}${item}`);
 }
 
 /**
@@ -197,7 +171,7 @@ function startUrls(document, country) {
  */
 function pagesUrls(url, lastPage) {
   const parsedLastPage = parseInt(lastPage);
-  if (parsedLastPage > 1 && url.includes("?page=")) {
+  if (parsedLastPage > 1) {
     return restPageUrls(parsedLastPage, page => `${url}?page=${page}`);
   }
 }
@@ -343,7 +317,7 @@ async function main() {
         case Labels.Start:
           {
             const urls = startUrls(document, country);
-            log.debug(`Found ${startUrls.length} on ${request.url} ${request.userData.label}`);
+            log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
             await enqueueLinks({
               urls,
               userData: {
@@ -358,6 +332,7 @@ async function main() {
               .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
               .slice(-2, -1)?.[0]?.innerText;
             const urls = pagesUrls(request.url, lastPage);
+            log.debug(`Urls, ${urls}, ${lastPage}`)
             if (urls) {
               log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
               await enqueueLinks({
