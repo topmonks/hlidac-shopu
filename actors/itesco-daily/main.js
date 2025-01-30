@@ -31,6 +31,67 @@ const StartUrls = {
   SK: "https://potravinydomov.itesco.sk/groceries"
 };
 
+const saleParsers = {
+  [Country.CZ]: (offerText) => {
+    const matchedPrices = /^.* předtím ([0-9,]+ Kč), teď ([0-9,]+ Kč)$/.exec(offerText);
+    if (!matchedPrices) {
+      return null;
+    }
+    const [originalPrice, currentPrice] = matchedPrices
+      .slice(1)
+      .map(cleanPrice);
+    return { originalPrice, currentPrice };
+  },
+  [Country.SK]: (offerText) => {
+    const matchedPrices = /^.* predtým ([0-9,]+ €), teraz ([0-9,]+ €)$/.exec(offerText);
+    if (!matchedPrices) {
+      return null;
+    }
+    const [originalPrice, currentPrice] = matchedPrices
+      .slice(1)
+      .map(cleanPrice);
+    return { originalPrice, currentPrice };
+  }
+}
+
+function flattenChildren(array) {
+  let result = [];
+  for (const a of array) {
+    result.push(a);
+    if (Array.isArray(a.children)) {
+      result = result.concat(flattenChildren(a.children));
+    }
+  }
+  return result;
+}
+
+function findArraysUrl(urlsCatHtml, country) {
+  const { navList } = urlsCatHtml.taxonomy; // { catId, name, url, allUrl, externalUrl, children }[]
+  const childrenArr = [];
+  for (const item of flattenChildren(navList)) {
+    if (item.children) {
+      for (const url of item.children) {
+        childrenArr.push(url);
+      }
+    }
+  }
+  const arr = [].concat(childrenArr).map(item => {
+    // Special "microsites" do not have url nor allUrl. They have only externalUrl. Let's skip them. E.g.:
+    // https://nakup.itesco.cz/groceries/cs-CZ/zone/podzim/
+    // https://nakup.itesco.cz/groceries/cs-CZ/zone/tesco-finest
+    if (!item.url) return;
+    return item.url.includes("/all") ? item.url : item.allUrl;
+  });
+
+  const url =
+    country === Country.CZ
+      ? "https://nakup.itesco.cz/groceries/cs-CZ/shop"
+      : "https://potravinydomov.itesco.sk/groceries/sk-SK/shop";
+  return arr
+    .filter(Boolean) // Remove undefined
+    .map(item => `${url}${item}`);
+}
+
 /**
  * @param {number} productId
  * @param {Object} reduxResults
@@ -90,17 +151,11 @@ function extractItems({ document, country, uniqueItems, stats }) {
 
       const offer = item.querySelector(".product-details--wrapper .offer-text")?.innerText;
       if (offer && !offer.includes("Clubcard")) {
-        result.discounted = true;
-
-        if (country === Country.CZ) {
-          result.currentPrice = cleanPrice(offer.split("nyní")[1]);
-          result.originalPrice = cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""));
-        } else {
-          result.currentPrice = cleanPrice(offer.split("teraz")[1]);
-          const match = offer.match(/(predtým) ([\d+|,]+)/);
-          if (match && match.length === 3) {
-            result.originalPrice = cleanPrice(match[2]);
-          }
+        const saleData = saleParsers[country](offer);
+        if (saleData) {
+          result.discounted = true;
+          result.originalPrice = saleData.originalPrice;
+          result.currentPrice = saleData.currentPrice;
         }
 
         result.useUnitPrice = Boolean(
@@ -227,8 +282,11 @@ function extractBFItems(document, country) {
       originalPrice,
       currentPrice,
       discounted: originalPrice ? originalPrice > currentPrice : false,
-      category: country.toLowerCase() === "cz" ? ["Akční nabídky"] : ["Špeciálne ponuky"],
-      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+      category:
+        country.toLowerCase() === "cz"
+          ? ["Speciální nabídky"]
+          : ["Špeciálne ponuky"],
+      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR",
     };
   });
 }
