@@ -4,7 +4,7 @@ import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
@@ -147,17 +147,14 @@ function getTableName(country, type) {
  * @param {Country} country
  */
 function startUrls(document, country) {
-  const categories = document.getElementsByClassName('menu__link--superdepartment');
-  const hrefs = []
+  const categories = document.getElementsByClassName("menu__link--superdepartment");
+  const hrefs = [];
 
   for (const item of categories) {
-    hrefs.push(item.getAttribute('href'));
+    hrefs.push(item.getAttribute("href"));
   }
 
-  const url =
-    country === Country.CZ
-      ? "https://nakup.itesco.cz"
-      : "https://potravinydomov.itesco.sk";
+  const url = country === Country.CZ ? "https://nakup.itesco.cz" : "https://potravinydomov.itesco.sk";
 
   return hrefs
     .filter(Boolean) // Remove undefined
@@ -237,7 +234,7 @@ function extractBFItems(document, country) {
 }
 
 async function main() {
-  rollbar.init();
+  Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     offers: 0,
@@ -252,6 +249,7 @@ async function main() {
     maxRequestRetries = 5,
     country = Country.CZ,
     type = ActorType.Full,
+    // TODO: use urls = []; instead
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
     testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/alkoholicke-napoje/whisky-a-bourbon/bourbon/all"
   } = await getInput();
@@ -278,6 +276,7 @@ async function main() {
       }
     },
     preNavigationHooks: [
+      // TODO: extract named the hook
       async ({ blockRequests }) => {
         await blockRequests({
           extraUrlPatterns: [
@@ -296,6 +295,7 @@ async function main() {
         });
       }
     ],
+    // TODO: use router
     async requestHandler({ request, response, enqueueLinks, crawler }) {
       const { document } = parseHTML(await response.text());
       log.info(`Processing ${request.url}, ${request.userData.label}`);
@@ -332,7 +332,7 @@ async function main() {
               .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
               .slice(-2, -1)?.[0]?.innerText;
             const urls = pagesUrls(request.url, lastPage);
-            log.debug(`Urls, ${urls}, ${lastPage}`)
+            log.debug(`Urls, ${urls}, ${lastPage}`);
             if (urls) {
               log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
               await enqueueLinks({
@@ -391,10 +391,8 @@ async function main() {
   await startCrawler(crawler, { type, country, bfUrl, testUrl });
   await stats.save(true);
 
-  if (!development) {
-    await uploadToKeboola(getTableName(country, type));
-    log.info("upload to Keboola finished");
-  }
+  await uploadToKeboola(getTableName(country, type));
+  log.info("upload to Keboola finished");
 }
 
 await Actor.main(main);
