@@ -7,17 +7,21 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
-const PROCESSED_IDS_KEY = "processedIds";
-
-// This is map of persisted query hashes for given operation.
-// When something breaks, it is likely you just have to update the hash here.
-// LeftHandNavigationBar try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
-// GetCategoryProductSearch try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
-// TODO: try to read those from page and store them for use in the run
+// This is a map of persisted query hashes for given operation.
+// When something breaks, it is likely you have to update the hash here.
+// `LeftHandNavigationBar` try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
+// `GetCategoryProductSearch` try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
+// Those hashes can be found in XHR request of a given type, use DevTools/Network to get the URL and then the Console to parse the hash:
+// ```javascript
+// let url = "<<paste GraphQL query URL here >>";
+// JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
+// ```
 const opHash = new Map([
   ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
   ["GetCategoryProductSearch", "52764906c44e42aec923b3896810a61c85d344084ba2080b5c655b3453d4560e"]
 ]);
+
+const PROCESSED_IDS_KEY = "processedIds";
 
 function toProduct(result, { url, category }) {
   const itemId = result.code;
