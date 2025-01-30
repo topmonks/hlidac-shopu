@@ -1,0 +1,20 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "es2020": true,
+        "node": true
+    },
+    "extends": [
+        "@apify/eslint-config-ts"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": 2020
+    },
+    "ignorePatterns": [
+        "node_modules",
+        "dist",
+        "**/*.d.ts"
+    ]
+}
