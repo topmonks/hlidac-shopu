@@ -275,6 +275,9 @@ async function main() {
         maxErrorScore: 1
       }
     },
+    launchContext: {
+      launchOptions: { args: ["--no-sandbox"] }
+    },
     preNavigationHooks: [
       // TODO: extract named the hook
       async ({ blockRequests }) => {
