@@ -141,8 +141,10 @@ function defRouter({ country, stats, rawData }) {
       for (const item of json.results[0].items) {
         stats.inc("items");
         await rawData.pushData(item);
-        await Dataset.pushData(toProduct(item));
       }
+      // We push all data at once to avoid hitting the Apify API rate limit
+      // Note: There is a size limit of 5MB, but these arrays seem to always be <=500 items
+      await Dataset.pushData(json.results[0].items.map(toProduct));
     }
   });
 }
