@@ -9,6 +9,16 @@ import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
+// This is map of persisted query hashes for given operation.
+// When something breaks, it is likely you just have to update the hash here.
+// LeftHandNavigationBar try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
+// GetCategoryProductSearch try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
+// TODO: try to read those from page and store them for use in the run
+const opHash = new Map([
+  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
+  ["GetCategoryProductSearch", "52764906c44e42aec923b3896810a61c85d344084ba2080b5c655b3453d4560e"]
+]);
+
 function toProduct(result, { url, category }) {
   const itemId = result.code;
   const itemUrl = new URL(result.url, url).href;
@@ -59,16 +69,6 @@ function apiQuery(persistedQueryHash, params) {
   }
   return `https://www.albert.cz/api/v1/?${new URLSearchParams(params)}`;
 }
-
-// This is map of persisted query hashes for given operation.
-// When something breaks, it is likely you just have to update the hash here.
-// LeftHandNavigationBar try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
-// GetCategoryProductSearch try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
-// TODO: try to read those from page and store them for use in the run
-const opHash = new Map([
-  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
-  ["GetCategoryProductSearch", "52764906c44e42aec923b3896810a61c85d344084ba2080b5c655b3453d4560e"]
-]);
 
 function gql(operationName, variables) {
   return apiQuery(opHash.get(operationName), { operationName, variables });
@@ -169,7 +169,14 @@ async function main() {
   });
 
   const input = await Actor.getInput();
-  const { debug = false, proxyGroups = [], type = ActorType.Full, urls = [getStartUrl()] } = input || {};
+  const {
+    debug = false,
+    proxyGroups = [],
+    type = ActorType.Full,
+    urls = [getStartUrl()],
+    maxConcurrency = 4,
+    maxRequestRetries = 5
+  } = input || {};
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -180,8 +187,8 @@ async function main() {
   });
 
   const crawler = new HttpCrawler({
-    maxConcurrency: 4,
-    maxRequestRetries: 5,
+    maxConcurrency,
+    maxRequestRetries,
     proxyConfiguration,
     additionalMimeTypes: ["application/json"],
     requestHandler: defRouter({ stats, processedIds }),
