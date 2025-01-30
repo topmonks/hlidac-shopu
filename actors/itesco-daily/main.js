@@ -1,4 +1,4 @@
-import { PuppeteerCrawler } from "@crawlee/puppeteer";
+import { Configuration, PuppeteerCrawler } from "@crawlee/puppeteer";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -263,133 +263,138 @@ async function main() {
     countryCode: proxyGroupCountry,
     useApifyProxy: false
   });
-  const crawler = new PuppeteerCrawler({
-    maxRequestRetries,
-    proxyConfiguration,
-    requestHandlerTimeoutSecs: 60,
-    maxRequestsPerMinute: 500,
-    headless: true,
-    useSessionPool: true,
-    sessionPoolOptions: {
-      sessionOptions: {
-        maxErrorScore: 1
-      }
-    },
-    launchContext: {
-      launchOptions: { args: ["--no-sandbox"] }
-    },
-    preNavigationHooks: [
-      // TODO: extract named the hook
-      async ({ blockRequests }) => {
-        await blockRequests({
-          extraUrlPatterns: [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".svg",
-            ".webp",
-            ".gif",
-            ".css",
-            "googlesyndication.com",
-            "googletagmanager.com",
-            "newrelic.com",
-            "sentry.io"
-          ]
-        });
-      }
-    ],
-    // TODO: use router
-    async requestHandler({ request, response, enqueueLinks, crawler }) {
-      const { document } = parseHTML(await response.text());
-      log.info(`Processing ${request.url}, ${request.userData.label}`);
-      const redirectUrl = document.querySelector('[http-equiv="refresh"]')?.content?.match(/URL='(.+)'/)?.[1];
-      if (redirectUrl) {
-        const url = `${new URL(request.url).origin}${redirectUrl}`;
-        log.info(`Redirecting to ${url}`);
-        await crawler.requestQueue.addRequest(
-          {
-            url,
-            userData: request.userData
-          },
-          { forefront: true }
-        );
-        return;
-      }
+  const crawler = new PuppeteerCrawler(
+    {
+      maxRequestRetries,
+      proxyConfiguration,
+      requestHandlerTimeoutSecs: 60,
+      maxRequestsPerMinute: 500,
+      headless: true,
+      useSessionPool: true,
+      sessionPoolOptions: {
+        sessionOptions: {
+          maxErrorScore: 1
+        }
+      },
+      launchContext: {
+        launchOptions: { args: ["--no-sandbox"] }
+      },
+      preNavigationHooks: [
+        // TODO: extract named the hook
+        async ({ blockRequests }) => {
+          await blockRequests({
+            extraUrlPatterns: [
+              ".jpg",
+              ".jpeg",
+              ".png",
+              ".svg",
+              ".webp",
+              ".gif",
+              ".css",
+              "googlesyndication.com",
+              "googletagmanager.com",
+              "newrelic.com",
+              "sentry.io"
+            ]
+          });
+        }
+      ],
+      // TODO: use router
+      async requestHandler({ request, response, enqueueLinks, crawler }) {
+        const { document } = parseHTML(await response.text());
+        log.info(`Processing ${request.url}, ${request.userData.label}`);
+        const redirectUrl = document.querySelector('[http-equiv="refresh"]')?.content?.match(/URL='(.+)'/)?.[1];
+        if (redirectUrl) {
+          const url = `${new URL(request.url).origin}${redirectUrl}`;
+          log.info(`Redirecting to ${url}`);
+          await crawler.requestQueue.addRequest(
+            {
+              url,
+              userData: request.userData
+            },
+            { forefront: true }
+          );
+          return;
+        }
 
-      switch (request.userData.label) {
-        case Labels.Start:
-          {
-            const urls = startUrls(document, country);
-            log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
-            await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.Page
-              }
-            });
-          }
-          break;
-        case Labels.Page:
-          {
-            const lastPage = document
-              .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
-              .slice(-2, -1)?.[0]?.innerText;
-            const urls = pagesUrls(request.url, lastPage);
-            log.debug(`Urls, ${urls}, ${lastPage}`);
-            if (urls) {
+        switch (request.userData.label) {
+          case Labels.Start:
+            {
+              const urls = startUrls(document, country);
               log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
               await enqueueLinks({
                 urls,
                 userData: {
-                  label: Labels.Pagination
+                  label: Labels.Page
                 }
               });
             }
-            const items = extractItems({
-              document,
-              country,
-              uniqueItems,
-              stats
-            });
-            await Dataset.pushData(items);
-          }
-          break;
-        case Labels.PageBF:
-          {
-            const lastPage = document.querySelector(".ddl_plp_pagination .page a:last-child")?.innerText?.trim();
-            const urls = pagesUrls(request.url, lastPage);
-            await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.PageBF
+            break;
+          case Labels.Page:
+            {
+              const lastPage = document
+                .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
+                .slice(-2, -1)?.[0]?.innerText;
+              const urls = pagesUrls(request.url, lastPage);
+              log.debug(`Urls, ${urls}, ${lastPage}`);
+              if (urls) {
+                log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
+                await enqueueLinks({
+                  urls,
+                  userData: {
+                    label: Labels.Pagination
+                  }
+                });
               }
-            });
-            const items = extractBFItems(document, country);
-            await Dataset.pushData(items);
-          }
-          break;
-        case Labels.Pagination:
-          {
-            const items = extractItems({
-              document,
-              country,
-              uniqueItems,
-              stats
-            });
-            log.debug(`Found ${items.length} storing them, ${request.url}`);
-            await Dataset.pushData(items);
-          }
-          break;
+              const items = extractItems({
+                document,
+                country,
+                uniqueItems,
+                stats
+              });
+              await Dataset.pushData(items);
+            }
+            break;
+          case Labels.PageBF:
+            {
+              const lastPage = document.querySelector(".ddl_plp_pagination .page a:last-child")?.innerText?.trim();
+              const urls = pagesUrls(request.url, lastPage);
+              await enqueueLinks({
+                urls,
+                userData: {
+                  label: Labels.PageBF
+                }
+              });
+              const items = extractBFItems(document, country);
+              await Dataset.pushData(items);
+            }
+            break;
+          case Labels.Pagination:
+            {
+              const items = extractItems({
+                document,
+                country,
+                uniqueItems,
+                stats
+              });
+              log.debug(`Found ${items.length} storing them, ${request.url}`);
+              await Dataset.pushData(items);
+            }
+            break;
+        }
+      },
+      async errorHandler({ response, session }) {
+        session.retireOnBlockedStatusCodes(response?.statusCode);
+      },
+      failedRequestHandler({ request, log }, error) {
+        log.error(`Request ${request.url} failed multiple times`, error);
+        stats.inc("failed");
       }
     },
-    async errorHandler({ response, session }) {
-      session.retireOnBlockedStatusCodes(response?.statusCode);
-    },
-    failedRequestHandler({ request, log }, error) {
-      log.error(`Request ${request.url} failed multiple times`, error);
-      stats.inc("failed");
-    }
-  });
+    new Configuration({
+      availableMemoryRatio: 0.9
+    })
+  );
 
   await startCrawler(crawler, { type, country, bfUrl, testUrl });
   await stats.save(true);
