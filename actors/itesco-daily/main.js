@@ -31,6 +31,10 @@ const StartUrls = {
   SK: "https://potravinydomov.itesco.sk/groceries"
 };
 
+/**
+ * Map of non-clubcard sale text parsers. Get the appropriate parser by country.
+ * @type {Record<Country, (offerText: string) => { originalPrice: number, currentPrice: number } | null>}
+ */
 const saleParsers = {
   [Country.CZ]: (offerText) => {
     const matchedPrices = /^.* předtím ([0-9,]+ Kč), teď ([0-9,]+ Kč)$/.exec(offerText);
