@@ -138,12 +138,10 @@ function defRouter({ country, stats, rawData }) {
         await crawler.addRequests(Array.from(categoryPagination(country, category, { max, pageSize })));
       }
 
-      for (const item of json.results[0].items) {
-        stats.inc("items");
-        await rawData.pushData(item);
-      }
       // We push all data at once to avoid hitting the Apify API rate limit
       // Note: There is a size limit of 5MB, but these arrays seem to always be <=500 items
+      stats.add("items", json.results[0].items.length);
+      await rawData.pushData(json.results[0].items);
       await Dataset.pushData(json.results[0].items.map(toProduct));
     }
   });
