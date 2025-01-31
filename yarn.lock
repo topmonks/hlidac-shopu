@@ -4310,6 +4310,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/grizly@workspace:actors/grizly":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/grizly@workspace:actors/grizly"
+  dependencies:
+    "@crawlee/http": "npm:3.12.1"
+    "@hlidac-shopu/actors-common": "npm:3.0.0"
+    "@types/node": "npm:22.10.7"
+    apify: "npm:3.2.6"
+    apify-cli: "npm:0.21.0"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily"
