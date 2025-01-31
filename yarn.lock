@@ -14993,7 +14993,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.6.8"
     vitest: "npm:3.0.4"
-    wrangler: "npm:3.105.1"
+    wrangler: "npm:3.106.0"
   languageName: unknown
   linkType: soft
 
@@ -23821,19 +23821,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unenv@npm:2.0.0-rc.0":
-  version: 2.0.0-rc.0
-  resolution: "unenv@npm:2.0.0-rc.0"
-  dependencies:
-    defu: "npm:^6.1.4"
-    mlly: "npm:^1.7.4"
-    ohash: "npm:^1.1.4"
-    pathe: "npm:^1.1.2"
-    ufo: "npm:^1.5.4"
-  checksum: 10c0/87e2d8485ce17ba8342cbd65072c3ed5b19aea695bff4033bd3e1bc673aa9a8f9aec3ebf5a396be70953a948a269da1ad01935c7d89f1a3c392105447dd4a8aa
-  languageName: node
-  linkType: hard
-
 "unenv@npm:2.0.0-rc.1":
   version: 2.0.0-rc.1
   resolution: "unenv@npm:2.0.0-rc.1"
@@ -25090,35 +25077,6 @@ __metadata:
   bin:
     workerd: bin/workerd
   checksum: 10c0/d990268ad6fe53d2125e704b0997614650441eb8c54ddf219b6e4326eed2430c39f865189ab31aaf0baa2318984d04a17d776cd027d256b02f0595dc74809dee
-  languageName: node
-  linkType: hard
-
-"wrangler@npm:3.105.1":
-  version: 3.105.1
-  resolution: "wrangler@npm:3.105.1"
-  dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.3.4"
-    "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
-    "@esbuild-plugins/node-modules-polyfill": "npm:0.2.2"
-    blake3-wasm: "npm:2.1.5"
-    esbuild: "npm:0.17.19"
-    fsevents: "npm:~2.3.2"
-    miniflare: "npm:3.20250124.0"
-    path-to-regexp: "npm:6.3.0"
-    unenv: "npm:2.0.0-rc.0"
-    workerd: "npm:1.20250124.0"
-  peerDependencies:
-    "@cloudflare/workers-types": ^4.20250121.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@cloudflare/workers-types":
-      optional: true
-  bin:
-    wrangler: bin/wrangler.js
-    wrangler2: bin/wrangler.js
-  checksum: 10c0/6f2903fe05bdd31856f07f3dc5703358564997f31ba63774cefcff8b0b17830cab3b7ff72e700157135774ca5271c8d0c2ef70027ce18f105e663ece91f5d378
   languageName: node
   linkType: hard
 
