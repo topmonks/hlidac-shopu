@@ -199,6 +199,7 @@ async function main() {
     }
   ]);
 
+  // shortcut run example for testing:
   // await crawler.run([
   //   {
   //     url: 'https://www.grizly.cz/proteinove-tycinky',
