@@ -46,7 +46,7 @@
             Tato praktika není ojedinělá, viz text&nbsp;níže.</p>
 
           <picture>
-            {% set chart01 = images["graf-01.png"]["public_id"] %}
+            {% set chart01 = collections.images["graf-01.png"]["public_id"] %}
             <source media="screen and (max-width: 479px)"
                     srcset="{{ chart01 | cloudinaryUrl(width=440) }} 1x,
                             {{ chart01 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
@@ -144,7 +144,7 @@
             akce) najednou navýšil původní cenu z&nbsp;2,799&nbsp;Kč na 4,899&nbsp;Kč.</p>
 
           <picture>
-            {% set chart02 = images["graf-02.png"]["public_id"] %}
+            {% set chart02 = collections.images["graf-02.png"]["public_id"] %}
             <source media="screen and (max-width: 479px)"
                     srcset="{{ chart02 | cloudinaryUrl(width=440) }} 1x,
                             {{ chart02 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
@@ -166,7 +166,7 @@
             sleva 37&nbsp;%.</p>
 
           <picture>
-            {% set chart03 = images["graf-03.png"]["public_id"] %}
+            {% set chart03 = collections.images["graf-03.png"]["public_id"] %}
             <source media="screen and (max-width: 479px)"
                     srcset="{{ chart03 | cloudinaryUrl(width=440) }} 1x,
                             {{ chart03 | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
@@ -195,7 +195,7 @@
               href="https://www.datafestak.cz/">Data
               fesťák</a>, v&nbsp;rámci kterého se vytvořil tým z&nbsp;
             <a href="https://www.apify.com/">Apify</a>, <a href="https://www.topmonks.cz/">TopMonks</a>,
-            <a href="https://www.keboola.com/">Kebooly</a> a <a href="https://www.biztreat.com">Bizztreatu</a>.
+            <a href="https://www.keboola.com/">Kebooly</a> a <a href="https://www.bizztreat.com/">Bizztreatu</a>.
             V&nbsp;tomto týmu jsme vytvořili <a
               href="https://www.lupa.cz/clanky/black-friday-po-cesku-kouzla-se-slevami-po-roce/">analýzu Black Friday po
               roce</a>
@@ -209,8 +209,8 @@
             <a href="https://www.apify.com/">Apify</a>, <a href="https://www.topmonks.cz/">TopMonks</a> a
             <a href="https://www.keboola.com/">Keboola</a>.</p>
           <picture>
-            {% set priceComparationMobile = images["porovnani-cen-mobile.png"]["public_id"] %}
-            {% set priceComparationDesktop = images["porovnani-cen.png"]["public_id"] %}
+            {% set priceComparationMobile = collections.images["porovnani-cen-mobile.png"]["public_id"] %}
+            {% set priceComparationDesktop = collections.images["porovnani-cen.png"]["public_id"] %}
             <source media="screen and (max-width: 479px)"
                     srcset="{{ priceComparationMobile | cloudinaryUrl(width=440) }} 1x,
                             {{ priceComparationMobile | cloudinaryUrl(width=440,dpr=1.5) }} 1.5x,
