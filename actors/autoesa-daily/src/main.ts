@@ -6,9 +6,97 @@ import { getInput } from '@hlidac-shopu/actors-common/crawler.js';
 import { parseHTML } from '@hlidac-shopu/actors-common/dom.js';
 import { Dataset, HttpCrawler, Source } from 'crawlee';
 import { uploadToKeboola } from '@hlidac-shopu/actors-common/keboola.js';
-import { extractPrice, extractSnippet, extractTotalPages, getPageUrl, getRootUrl, removeHtmlEntities } from './utils.js';
-import { BASE_CATEGORY, BASE_URL, CURRENCIES, CURRENCY, LABEL } from './consts.js';
-import { Input, Product } from './types.js';
+
+/* ------- CONSTANTS ------- */
+
+const BASE_URL = 'https://www.autoesa.cz';
+const BASE_CATEGORY = 'vsechna-auta';
+
+const CURRENCY = {
+  CZK: 'CZK',
+} as const;
+
+const CURRENCIES = {
+  [CURRENCY.CZK]: {
+    label: 'Kč',
+  },
+} as const;
+
+const LABEL = {
+  START: 'START',
+  PAGE: 'PAGE',
+  DETAIL: 'DETAIL',
+} as const;
+
+/* ------- TYPES ------- */
+
+interface Input {
+  development: boolean;
+  debug: boolean;
+  maxRequestRetries: number;
+  type: ActorType;
+  proxyGroups: string[];
+}
+
+interface Product {
+  itemUrl: string | null;
+  itemId?: string | null;
+  img?: string | null;
+  itemName?: string;
+  currentPrice?: number;
+  originalPrice?: number;
+  currency: string;
+  discounted: boolean;
+  year?: string;
+  km?: string;
+  power?: string;
+  fuelType?: string;
+}
+
+/* ------- UTILS ------- */
+
+function getRootUrl(type = ActorType.Full, category = BASE_CATEGORY) {
+  return getPageUrl(1, type, category);
+}
+
+function getPageUrl(page: number, type = ActorType.Full, category = BASE_CATEGORY) {
+  const root = `${BASE_URL}/${category}/?stranka=${page}`;
+
+  switch (type) {
+    case ActorType.Full:
+      return root;
+    default:
+      throw new Error(`Unsupported actor type ${type}`);
+  }
+}
+
+function removeHtmlEntities(str: string) {
+  return str.replace(/&[#a-zA-Z0-9]+;/g, '');
+}
+
+function extractPrice(priceStr: string) {
+  if (!priceStr) return;
+  priceStr = removeHtmlEntities(priceStr);
+  const match = priceStr.match(/[\d*\s]*Kč/g);
+  if (!match) return;
+
+  const value = match[0].replace(/\s/g, '').replace('Kč', '').replace('€', '').replace('Cena', '');
+  return parseInt(value, 10);
+}
+
+function extractSnippet(body: string, snippetId: string): string {
+  const content = JSON.parse(body);
+  return content.snippets[snippetId];
+}
+
+function extractTotalPages(body: string): number {
+  const snippet = extractSnippet(body, 'snippet--paginationBottom');
+  const { document } = parseHTML(snippet);
+  const lastPage = document.querySelector('.dots-last a');
+  return lastPage ? parseInt(lastPage.textContent.match(/\d+/)[0], 10) : 0;
+}
+
+/* ------- MAIN ------- */
 
 await Actor.init();
 const rollbar = Rollbar.init();
