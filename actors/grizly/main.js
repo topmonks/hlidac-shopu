@@ -1,4 +1,4 @@
-import {HttpCrawler, ProxyConfiguration} from "@crawlee/http";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -44,8 +44,14 @@ const Selectors = {
 /**
  * @param {string} country
  * @param {string} path
+ * @param {string} category
  */
-function completeUrl(country, path='') {
+function completeUrl(country, path= "", category = "") {
+  if (path && path[0] !== "/") {
+    // sometimes path to next page is broken: href="lody-v-cokolade-a-jogurtu/p3"
+    const [_, page] = path.split('/') // e.g. "lody-v-cokolade-a-jogurtu/p3" => "/p3"
+    return `https://www.grizly.${country.toLowerCase()}${category}/${page}`
+  }
   return `https://www.grizly.${country.toLowerCase()}${path}`;
 }
 
@@ -60,22 +66,27 @@ function cleanPrice(string) {
   return Number(string.replace(/\D/g, ''));
 }
 
-function categoriesRequests({ document, country }) {
+function categoriesRequests({ document, country}) {
   const links = document.querySelectorAll(Selectors.CATEGORIES_LINKS);
   return links.map(link => {
     log.debug(`Queued category "${link.innerText.trim()}"`);
     const href = link.getAttribute("href");
+    const url = completeUrl(country, href)
     return {
-      url: completeUrl(country, href),
+      url,
       label: Labels.CATEGORY,
+      userData: {
+        category: href
+      }
     };
   });
 }
 
 /**
- * @param {string} str
+ * @param {string} country
+ * @param {HTMLDocument} document
  */
-function extractProducts({ document, stats, country, request }) {
+function extractProducts({ document, country }) {
   const category = document.querySelector(Selectors.CATEGORY_NAME).innerText.trim();
   const products = document.querySelectorAll(Selectors.SINGLE_PRODUCT);
 
@@ -133,14 +144,14 @@ async function main() {
     maxRequestsPerMinute: 600,
     proxyConfiguration,
     async requestHandler({ request, crawler, body, log }) {
-      const { url, label} = request;
+      const { url, label, userData: {category}} = request;
       log.info(`Processing ${url} (${label})`);
       const { document } = parseHTML(body.toString());
 
       switch (label) {
         case Labels.MAIN:
           {
-            const requests = categoriesRequests({ document, country });
+            const requests = categoriesRequests({ document, country, url });
             const filtered = filterTestRequests({ requests, type });
             stats.add("categories", filtered.length)
             await crawler.requestQueue.addRequests(filtered, { forefront: true });
@@ -148,7 +159,6 @@ async function main() {
           break;
         case Labels.CATEGORY:
           {
-            console.log(request.url)
             const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT).getAttribute('value');
             if (!categoryProductsCountNode) {
               log.error(`No products count node found in ${request.url}`);
@@ -159,12 +169,15 @@ async function main() {
             if (nextPageButton && type !== ActorType.Test ) {
               await crawler.requestQueue.addRequests([
                 {
-                  url: completeUrl(country, nextPageButton.getAttribute('href')),
-                  label: Labels.CATEGORY
+                  url: completeUrl(country, nextPageButton.getAttribute('href'), category),
+                  label: Labels.CATEGORY,
+                  userData: {
+                    category
+                  }
                 }
               ]);
             }
-            const products = extractProducts({ document, country, request })
+            const products = extractProducts({ document, country })
             stats.add("items", products.length);
             await Dataset.pushData(products);
           }
@@ -188,8 +201,11 @@ async function main() {
 
   // await crawler.run([
   //   {
-  //     url: 'https://www.grizly.cz/seminka',
-  //     label: Labels.CATEGORY
+  //     url: 'https://www.grizly.cz/proteinove-tycinky',
+  //     label: Labels.CATEGORY,
+  //     userData: {
+  //       category: "/proteinove-tycinky"
+  //     }
   //   }
   // ]);
 
