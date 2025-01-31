@@ -1,10 +1,10 @@
-import { PuppeteerCrawler } from "@crawlee/puppeteer";
+import { Configuration, PuppeteerCrawler } from "@crawlee/puppeteer";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
@@ -30,6 +30,34 @@ const StartUrls = {
   CZ: "https://nakup.itesco.cz/groceries",
   SK: "https://potravinydomov.itesco.sk/groceries"
 };
+
+/**
+ * Map of non-clubcard sale text parsers. Get the appropriate parser by country.
+ * @type {Record<Country, (offerText: string) => { originalPrice: number, currentPrice: number } | null>}
+ */
+const saleParsers = {
+  [Country.CZ]: (offerText) => {
+    const matchedPrices = /^.* předtím ([0-9,]+ Kč), teď ([0-9,]+ Kč)$/.exec(offerText);
+    if (!matchedPrices) {
+      return null;
+    }
+    const [originalPrice, currentPrice] = matchedPrices
+      .slice(1)
+      .map(cleanPrice);
+    return { originalPrice, currentPrice };
+  },
+  [Country.SK]: (offerText) => {
+    const matchedPrices = /^.* predtým ([0-9,]+ €), teraz ([0-9,]+ €)$/.exec(offerText);
+    if (!matchedPrices) {
+      return null;
+    }
+    const [originalPrice, currentPrice] = matchedPrices
+      .slice(1)
+      .map(cleanPrice);
+    return { originalPrice, currentPrice };
+  }
+}
+
 
 /**
  * @param {number} productId
@@ -90,17 +118,11 @@ function extractItems({ document, country, uniqueItems, stats }) {
 
       const offer = item.querySelector(".product-details--wrapper .offer-text")?.innerText;
       if (offer && !offer.includes("Clubcard")) {
-        result.discounted = true;
-
-        if (country === Country.CZ) {
-          result.currentPrice = cleanPrice(offer.split("nyní")[1]);
-          result.originalPrice = cleanPrice(offer.replace(/^.+cena|nyní.+/g, ""));
-        } else {
-          result.currentPrice = cleanPrice(offer.split("teraz")[1]);
-          const match = offer.match(/(predtým) ([\d+|,]+)/);
-          if (match && match.length === 3) {
-            result.originalPrice = cleanPrice(match[2]);
-          }
+        const saleData = saleParsers[country](offer);
+        if (saleData) {
+          result.discounted = true;
+          result.originalPrice = saleData.originalPrice;
+          result.currentPrice = saleData.currentPrice;
         }
 
         result.useUnitPrice = Boolean(
@@ -147,17 +169,14 @@ function getTableName(country, type) {
  * @param {Country} country
  */
 function startUrls(document, country) {
-  const categories = document.getElementsByClassName('menu__link--superdepartment');
-  const hrefs = []
+  const categories = document.getElementsByClassName("menu__link--superdepartment");
+  const hrefs = [];
 
   for (const item of categories) {
-    hrefs.push(item.getAttribute('href'));
+    hrefs.push(item.getAttribute("href"));
   }
 
-  const url =
-    country === Country.CZ
-      ? "https://nakup.itesco.cz"
-      : "https://potravinydomov.itesco.sk";
+  const url = country === Country.CZ ? "https://nakup.itesco.cz" : "https://potravinydomov.itesco.sk";
 
   return hrefs
     .filter(Boolean) // Remove undefined
@@ -230,14 +249,17 @@ function extractBFItems(document, country) {
       originalPrice,
       currentPrice,
       discounted: originalPrice ? originalPrice > currentPrice : false,
-      category: country.toLowerCase() === "cz" ? ["Akční nabídky"] : ["Špeciálne ponuky"],
-      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
+      category:
+        country.toLowerCase() === "cz"
+          ? ["Speciální nabídky"]
+          : ["Špeciálne ponuky"],
+      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR",
     };
   });
 }
 
 async function main() {
-  rollbar.init();
+  Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     offers: 0,
@@ -252,6 +274,7 @@ async function main() {
     maxRequestRetries = 5,
     country = Country.CZ,
     type = ActorType.Full,
+    // TODO: use urls = []; instead
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
     testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/alkoholicke-napoje/whisky-a-bourbon/bourbon/all"
   } = await getInput();
@@ -265,136 +288,144 @@ async function main() {
     countryCode: proxyGroupCountry,
     useApifyProxy: false
   });
-  const crawler = new PuppeteerCrawler({
-    maxRequestRetries,
-    proxyConfiguration,
-    requestHandlerTimeoutSecs: 60,
-    maxRequestsPerMinute: 500,
-    headless: true,
-    useSessionPool: true,
-    sessionPoolOptions: {
-      sessionOptions: {
-        maxErrorScore: 1
-      }
-    },
-    preNavigationHooks: [
-      async ({ blockRequests }) => {
-        await blockRequests({
-          extraUrlPatterns: [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".svg",
-            ".webp",
-            ".gif",
-            ".css",
-            "googlesyndication.com",
-            "googletagmanager.com",
-            "newrelic.com",
-            "sentry.io"
-          ]
-        });
-      }
-    ],
-    async requestHandler({ request, response, enqueueLinks, crawler }) {
-      const { document } = parseHTML(await response.text());
-      log.info(`Processing ${request.url}, ${request.userData.label}`);
-      const redirectUrl = document.querySelector('[http-equiv="refresh"]')?.content?.match(/URL='(.+)'/)?.[1];
-      if (redirectUrl) {
-        const url = `${new URL(request.url).origin}${redirectUrl}`;
-        log.info(`Redirecting to ${url}`);
-        await crawler.requestQueue.addRequest(
-          {
-            url,
-            userData: request.userData
-          },
-          { forefront: true }
-        );
-        return;
-      }
+  const crawler = new PuppeteerCrawler(
+    {
+      maxRequestRetries,
+      proxyConfiguration,
+      requestHandlerTimeoutSecs: 60,
+      maxRequestsPerMinute: 500,
+      headless: true,
+      useSessionPool: true,
+      sessionPoolOptions: {
+        sessionOptions: {
+          maxErrorScore: 1
+        }
+      },
+      launchContext: {
+        launchOptions: { args: ["--no-sandbox"] }
+      },
+      preNavigationHooks: [
+        // TODO: extract named the hook
+        async ({ blockRequests }) => {
+          await blockRequests({
+            extraUrlPatterns: [
+              ".jpg",
+              ".jpeg",
+              ".png",
+              ".svg",
+              ".webp",
+              ".gif",
+              ".css",
+              "googlesyndication.com",
+              "googletagmanager.com",
+              "newrelic.com",
+              "sentry.io"
+            ]
+          });
+        }
+      ],
+      // TODO: use router
+      async requestHandler({ request, response, enqueueLinks, crawler }) {
+        const { document } = parseHTML(await response.text());
+        log.info(`Processing ${request.url}, ${request.userData.label}`);
+        const redirectUrl = document.querySelector('[http-equiv="refresh"]')?.content?.match(/URL='(.+)'/)?.[1];
+        if (redirectUrl) {
+          const url = `${new URL(request.url).origin}${redirectUrl}`;
+          log.info(`Redirecting to ${url}`);
+          await crawler.requestQueue.addRequest(
+            {
+              url,
+              userData: request.userData
+            },
+            { forefront: true }
+          );
+          return;
+        }
 
-      switch (request.userData.label) {
-        case Labels.Start:
-          {
-            const urls = startUrls(document, country);
-            log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
-            await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.Page
-              }
-            });
-          }
-          break;
-        case Labels.Page:
-          {
-            const lastPage = document
-              .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
-              .slice(-2, -1)?.[0]?.innerText;
-            const urls = pagesUrls(request.url, lastPage);
-            log.debug(`Urls, ${urls}, ${lastPage}`)
-            if (urls) {
+        switch (request.userData.label) {
+          case Labels.Start:
+            {
+              const urls = startUrls(document, country);
               log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
               await enqueueLinks({
                 urls,
                 userData: {
-                  label: Labels.Pagination
+                  label: Labels.Page
                 }
               });
             }
-            const items = extractItems({
-              document,
-              country,
-              uniqueItems,
-              stats
-            });
-            await Dataset.pushData(items);
-          }
-          break;
-        case Labels.PageBF:
-          {
-            const lastPage = document.querySelector(".ddl_plp_pagination .page a:last-child")?.innerText?.trim();
-            const urls = pagesUrls(request.url, lastPage);
-            await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.PageBF
+            break;
+          case Labels.Page:
+            {
+              const lastPage = document
+                .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
+                .slice(-2, -1)?.[0]?.innerText;
+              const urls = pagesUrls(request.url, lastPage);
+            log.debug(`Urls, ${urls}, ${lastPage}`)
+              if (urls) {
+                log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
+                await enqueueLinks({
+                  urls,
+                  userData: {
+                    label: Labels.Pagination
+                  }
+                });
               }
-            });
-            const items = extractBFItems(document, country);
-            await Dataset.pushData(items);
-          }
-          break;
-        case Labels.Pagination:
-          {
-            const items = extractItems({
-              document,
-              country,
-              uniqueItems,
-              stats
-            });
-            log.debug(`Found ${items.length} storing them, ${request.url}`);
-            await Dataset.pushData(items);
-          }
-          break;
+              const items = extractItems({
+                document,
+                country,
+                uniqueItems,
+                stats
+              });
+              await Dataset.pushData(items);
+            }
+            break;
+          case Labels.PageBF:
+            {
+              const lastPage = document.querySelector(".ddl_plp_pagination .page a:last-child")?.innerText?.trim();
+              const urls = pagesUrls(request.url, lastPage);
+              await enqueueLinks({
+                urls,
+                userData: {
+                  label: Labels.PageBF
+                }
+              });
+              const items = extractBFItems(document, country);
+              await Dataset.pushData(items);
+            }
+            break;
+          case Labels.Pagination:
+            {
+              const items = extractItems({
+                document,
+                country,
+                uniqueItems,
+                stats
+              });
+              log.debug(`Found ${items.length} storing them, ${request.url}`);
+              await Dataset.pushData(items);
+            }
+            break;
+        }
+      },
+      async errorHandler({ response, session }) {
+        session.retireOnBlockedStatusCodes(response?.statusCode);
+      },
+      failedRequestHandler({ request, log }, error) {
+        log.error(`Request ${request.url} failed multiple times`, error);
+        stats.inc("failed");
       }
     },
-    async errorHandler({ response, session }) {
-      session.retireOnBlockedStatusCodes(response?.statusCode);
-    },
-    failedRequestHandler({ request, log }, error) {
-      log.error(`Request ${request.url} failed multiple times`, error);
-      stats.inc("failed");
-    }
-  });
+    new Configuration({
+      availableMemoryRatio: 0.9
+    })
+  );
 
   await startCrawler(crawler, { type, country, bfUrl, testUrl });
   await stats.save(true);
 
-  if (!development) {
-    await uploadToKeboola(getTableName(country, type));
-    log.info("upload to Keboola finished");
-  }
+  await uploadToKeboola(getTableName(country, type));
+  log.info("upload to Keboola finished");
 }
 
 await Actor.main(main);
