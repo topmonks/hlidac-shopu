@@ -205,9 +205,7 @@ async function main() {
     useApifyProxy: !development
   });
 
-  log.info("before sitemap");
   const sitemap = await Sitemap.load(['https://www.pilulka.cz/sitemaps/products-0.xml', 'https://www.pilulka.cz/sitemaps/products-1.xml']);
-  console.log('after sitemap');
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
@@ -225,8 +223,14 @@ async function main() {
       stats.inc("failed");
     }
   });
-  // await crawler.run(initialRequests(country, type, urls));
-  await crawler.run(sitemap.urls.map(url => ({ url, label: Labels.PRODUCT_DETAIL })));
+
+  // Czech republic has all products in sitemap
+  if (country === Country.CZ) {
+    await crawler.run(sitemap.urls.map(url => ({ url, label: Labels.PRODUCT_DETAIL })));
+  } else {
+    // Slovakia does not
+    await crawler.run(initialRequests(country, type, urls));
+  }
 
   if (!development) {
     let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
