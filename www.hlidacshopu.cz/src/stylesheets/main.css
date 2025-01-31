@@ -336,16 +336,15 @@ footer {
     font-size: 13px;
     line-height: 26px;
 
-    a {
+    a:not(.social-media-link) {
       text-decoration: underline;
     }
-    a:link,
-    a:visited,
+    a:any-link,
     span {
       color: var(--mdc-theme-text-secondary-on-light);
     }
 
-    a:hover {
+    a:not(.social-media-link):hover {
       color: var(--mdc-theme-secondary-dark);
       text-decoration: underline;
     }
