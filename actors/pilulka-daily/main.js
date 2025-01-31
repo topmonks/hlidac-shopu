@@ -1,4 +1,5 @@
 import { HttpCrawler, createHttpRouter, useState } from "@crawlee/http";
+import { Sitemap } from "crawlee";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -204,6 +205,9 @@ async function main() {
     useApifyProxy: !development
   });
 
+  const sitemap = await Sitemap.load(['https://www.pilulka.cz/sitemaps/products-0.xml', 'https://www.pilulka.cz/sitemaps/products-1.xml']);
+  console.log('🚀 ~ main ~ sitemap:', sitemap);
+
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestsPerMinute: 300,
@@ -220,7 +224,8 @@ async function main() {
       stats.inc("failed");
     }
   });
-  await crawler.run(initialRequests(country, type, urls));
+  // await crawler.run(initialRequests(country, type, urls));
+  await crawler.run(sitemap.urls.map(url => ({ url, label: Labels.PRODUCT_DETAIL })));
 
   if (!development) {
     let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
