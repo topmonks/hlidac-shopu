@@ -1,6 +1,6 @@
-import { HttpCrawler } from "@crawlee/http";
+import {HttpCrawler, ProxyConfiguration} from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
@@ -30,7 +30,15 @@ const Labels = {
 const Selectors = {
   CATEGORIES_LINKS: '.sub-menu--3 li a',
   TOTAL_PRODUCTS_COUNT: '#itemscount',
-  NEXT_PAGE_BUTTON: '.pager-wrap .next'
+  NEXT_PAGE_BUTTON: '.next',
+  CATEGORY_NAME: 'h1',
+  SINGLE_PRODUCT: '.content__catagories .product',
+  UNAVAILABLE_BUTTON: '.watchDog',
+  ITEM_URL: 'h3 a',
+  ITEM_NAME: '.product__header-name',
+  ITEM_IMAGE: '.product__image img',
+  ITEM_PRICE_CURRENT: '.product__prices .pricevat.price',
+  ITEM_PRICE_DISCOUNTED_FROM: '.product__prices .pricerecom',
 };
 
 /**
@@ -41,6 +49,17 @@ function completeUrl(country, path='') {
   return `https://www.grizly.${country.toLowerCase()}${path}`;
 }
 
+function filterTestRequests({ requests, type, take = 10 }) {
+  return type === ActorType.Test ? requests.slice(0, take) : requests;
+}
+
+function cleanPrice(string) {
+  if (!string) {
+    return undefined
+  }
+  return Number(string.replace(/\D/g, ''));
+}
+
 function categoriesRequests({ document, country }) {
   const links = document.querySelectorAll(Selectors.CATEGORIES_LINKS);
   return links.map(link => {
@@ -48,64 +67,39 @@ function categoriesRequests({ document, country }) {
     const href = link.getAttribute("href");
     return {
       url: completeUrl(country, href),
-      label: Labels.CATEGORIES,
+      label: Labels.CATEGORY,
     };
   });
 }
+
 /**
  * @param {string} str
  */
-function parseCategoryProductsCount(str) {
-  if (!str) return 0;
-  const match = str.match(/\d+/g);
-  return match ? Number(match[0]) : 0;
-}
-
-function catProductsRequests({ document, request }) {
-  const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT);
-  if (!categoryProductsCountNode) {
-    log.error(`No products count node found in ${request.url}`);
-    return;
-  }
-  const categoryProductsCount = parseCategoryProductsCount(categoryProductsCountNode?.textContent);
-
-  const { category } = request.userData;
-
-  log.debug(`Scraping ${request.userData.page}. Page on ${request.url}`);
-  if (request.userData.page === 1) {
-    log.debug(`Category URL is ${category.link}`);
-    const pagesCount = Math.ceil(categoryProductsCount / 72);
-    log.debug(`Category has ${pagesCount} pages`);
-
-    return restPageUrls(pagesCount, page => ({
-      url: `${category.link}?page=${page}`,
-      userData: {
-        label: Labels.CAT_PRODUCTS,
-        category,
-        page
-      }
-    }));
-  } else {
-    return [];
-  }
-}
-
 function extractProducts({ document, stats, country, request }) {
-  const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT).getAttribute('value');
-  if (!categoryProductsCountNode) {
-    log.error(`No products count node found in ${request.url}`);
-    return;
-  }
+  const category = document.querySelector(Selectors.CATEGORY_NAME).innerText.trim();
+  const products = document.querySelectorAll(Selectors.SINGLE_PRODUCT);
 
-  const nwxtPageButton =
-
-  console.log(categoryProductsCountNode)
-
-
-}
-
-function filterTestRequests({ requests, type, take = 2 }) {
-  return type === ActorType.Test ? requests.slice(0, take) : requests;
+  return products.map(product => {
+    const itemId = product.getAttribute('data-id');
+    const itemUrl = completeUrl(country, product.querySelector(Selectors.ITEM_URL).getAttribute('href'));
+    const itemName = product.querySelector(Selectors.ITEM_NAME).innerText;
+    const img = completeUrl(country, product.querySelector(Selectors.ITEM_IMAGE).getAttribute('src'));
+    const currentPrice = cleanPrice(product.querySelector(Selectors.ITEM_PRICE_CURRENT).innerText.trim());
+    const originalPrice = cleanPrice(product.querySelector(Selectors.ITEM_PRICE_DISCOUNTED_FROM)?.innerText.trim());
+    const inStock = !product.querySelector(Selectors.UNAVAILABLE_BUTTON)
+    return {
+      itemId,
+      itemUrl,
+      itemName,
+      img,
+      discounted: !!originalPrice,
+      originalPrice,
+      currency: Currency[country],
+      currentPrice,
+      category,
+      inStock
+    }
+  })
 }
 
 async function main() {
@@ -130,8 +124,14 @@ async function main() {
     return;
   }
 
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: ["CZECH_LUMINATI"],
+    useApifyProxy: type === ActorType.Full
+  });
+
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 600,
+    proxyConfiguration,
     async requestHandler({ request, crawler, body, log }) {
       const { url, label} = request;
       log.info(`Processing ${url} (${label})`);
@@ -142,12 +142,31 @@ async function main() {
           {
             const requests = categoriesRequests({ document, country });
             const filtered = filterTestRequests({ requests, type });
+            stats.add("categories", filtered.length)
             await crawler.requestQueue.addRequests(filtered, { forefront: true });
           }
           break;
-        case Labels.CATEGORY: {
-            const products = extractProducts({ document, stats, country, request });
-            // await Dataset.pushData(products);
+        case Labels.CATEGORY:
+          {
+            console.log(request.url)
+            const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT).getAttribute('value');
+            if (!categoryProductsCountNode) {
+              log.error(`No products count node found in ${request.url}`);
+              return;
+            }
+
+            const nextPageButton = document.querySelector(Selectors.NEXT_PAGE_BUTTON);
+            if (nextPageButton && type !== ActorType.Test ) {
+              await crawler.requestQueue.addRequests([
+                {
+                  url: completeUrl(country, nextPageButton.getAttribute('href')),
+                  label: Labels.CATEGORY
+                }
+              ]);
+            }
+            const products = extractProducts({ document, country, request })
+            stats.add("items", products.length);
+            await Dataset.pushData(products);
           }
           break;
         default:
@@ -166,6 +185,13 @@ async function main() {
       label: Labels.MAIN
     }
   ]);
+
+  // await crawler.run([
+  //   {
+  //     url: 'https://www.grizly.cz/seminka',
+  //     label: Labels.CATEGORY
+  //   }
+  // ]);
 
   log.info("crawler finished");
 
