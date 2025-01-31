@@ -205,8 +205,9 @@ async function main() {
     useApifyProxy: !development
   });
 
+  log.info("before sitemap");
   const sitemap = await Sitemap.load(['https://www.pilulka.cz/sitemaps/products-0.xml', 'https://www.pilulka.cz/sitemaps/products-1.xml']);
-  console.log('🚀 ~ main ~ sitemap:', sitemap);
+  console.log('after sitemap');
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
