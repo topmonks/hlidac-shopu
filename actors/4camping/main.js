@@ -14,7 +14,8 @@ import { Actor, LogLevel, log } from "apify";
 const PROCESSED_IDS_KEY = "processedIds";
 
 function toProduct(result, { url, originalPrice }) {
-  const itemId = result.productId;
+  const slug = result.url;
+  const itemId = result.id;
   const itemUrl = new URL(result.url, url).href;
   const itemName = result.name;
   const img = result.photoFile;
@@ -23,7 +24,7 @@ function toProduct(result, { url, originalPrice }) {
   const inStock = true;
   const category = result.mainCategory;
   return {
-    slug: itemId,
+    slug,
     itemId,
     itemUrl,
     itemName,
