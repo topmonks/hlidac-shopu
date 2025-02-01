@@ -6,7 +6,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
+import { comp, map, push, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
@@ -105,6 +105,9 @@ function defRouter({ stats, processedIds }) {
     async categoryPage({ request, json, crawler }) {
       const { categoryId } = request.userData;
       const { currentPage, lastPage, items } = json;
+      if (!items) {
+        console.log(json);
+      }
       const { document } = parseHTML(`<!document html><body>${items}</body>`);
       const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
         product: JSON.parse(x.dataset.product),
@@ -113,12 +116,12 @@ function defRouter({ stats, processedIds }) {
 
       const batch = [];
       for (const { product, originalPrice } of products) {
-        if (processedIds.has(product.productId)) {
+        if (processedIds.has(product.id)) {
           stats.inc("duplicates");
           continue;
         }
         batch.push(toProduct(product, { url: request.url, originalPrice }));
-        processedIds.add(product.productId);
+        processedIds.add(product.id);
         stats.inc("products");
       }
       await Dataset.pushData(batch);
