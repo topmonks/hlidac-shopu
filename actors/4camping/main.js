@@ -54,7 +54,7 @@ function categoryPageRequest(categoryId, page) {
         sort: null,
         page,
         conditions: {},
-        baseConditions: { codebookParameters: { "771": [12041] } },
+        baseConditions: {},
         existingFilters: {},
         lang: "cs",
         currency: "czk"
@@ -96,7 +96,7 @@ function defRouter({ stats, processedIds }) {
         .find(x => x.startsWith("current-cat-id-"))
         .split("current-cat-id-");
       const page = 1;
-      await crawler.addRequests(categoryPageRequest(Number.parseInt(categoryId), page));
+      await crawler.addRequests(categoryPageRequest(Number.parseInt(categoryId), page, document));
     },
     /**
      * @param {HttpCrawlingContext} ctx
