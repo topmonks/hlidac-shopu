@@ -1,5 +1,5 @@
 import { HttpCrawler, createHttpRouter, useState } from "@crawlee/http";
-import { Sitemap } from "crawlee";
+import { Sitemap } from "@crawlee/utils";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -16,9 +16,9 @@ import { Actor, LogLevel, log } from "apify";
 
 /** @enum {string} */
 export const Labels = {
-  CATEGORY: "CATEGORY",
-  PRODUCT_DETAIL: "PRODUCT_DETAIL",
-  INITIAL_CATEGORIES: "INITIAL_CATEGORIES"
+  CATEGORY: "category",
+  PRODUCT_DETAIL: "productDetail",
+  INITIAL_CATEGORIES: "initialCategories"
 };
 
 /** @enum {string} */
@@ -45,6 +45,7 @@ function blackFridayUrl(country) {
     }
   ];
 }
+
 function initialCategoriesUrl(country) {
   return [
     {
@@ -57,100 +58,6 @@ function initialCategoriesUrl(country) {
 function toArray(o) {
   if (Array.isArray(o)) return o;
   return [o];
-}
-
-function handleProductDetail({ processedIds, stats }) {
-  /** @param {HttpCrawlingContext} context */
-  async function handler({ body, log, response }) {
-    stats.inc("items");
-    const itemUrl = response.url;
-    log.debug("Extracting product data", { url: itemUrl });
-    const { document } = parseHTML(body.toString());
-    const data = toArray(JSON.parse(document.querySelector("script[type='application/ld+json']")?.textContent ?? "[]"));
-    const product = data.find(x => x["@type"] === "Product");
-    const title = product?.name;
-    const currentPrice = product?.offers?.price;
-
-    if (currentPrice == null || Number.isNaN(currentPrice) || currentPrice < 0) {
-      stats.inc("itemNoPrice");
-      log.warning("Item has no price. Skipping...", { url: itemUrl });
-      return;
-    }
-
-    const inStock = product?.offers?.availability === "https://schema.org/InStock";
-    const imageUrl = product?.image?.[0];
-    const shortDesc = product?.description;
-
-    const { id: itemId } = document.querySelector("[componentname='catalog.product']");
-    const originalPrice = parseFloatText(
-      cleanPriceText(document.querySelector(`.price-before, .superPrice__old__price`)?.textContent ?? "")
-    );
-    const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
-    const priceWithCode = parseFloatText(
-      cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
-    );
-
-    const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
-
-    await saveUniqProducts({
-      products: [
-        {
-          itemId,
-          itemUrl,
-          itemName: title,
-          shop: shopName(itemUrl),
-          slug: itemSlug(itemUrl),
-          img: imageUrl,
-          shortDesc,
-          inStock,
-          category: breadcrumbs,
-          originalPrice: isDiscounted ? originalPrice : null,
-          currentPrice: priceWithCode ?? currentPrice,
-          discounted: isDiscounted
-        }
-      ],
-      stats,
-      processedIds
-    });
-  }
-  return handler;
-}
-
-function handleInitialCategories() {
-  /** @param {HttpCrawlingContext} context */
-  async function handler({ body, enqueueLinks, log, response }) {
-    const { document } = parseHTML(body.toString());
-    const linkElements = document.querySelectorAll(`.menu__href`);
-    log.info(
-      `Found categories: ${Array.from(linkElements)
-        .map(link => link.textContent)
-        .join(", ")}`
-    );
-    const links = Array.from(linkElements).map(link => buildUrl(response.url, link.href));
-    await enqueueLinks({ urls: links, label: Labels.CATEGORY });
-  }
-  return handler;
-}
-
-function handleCategory() {
-  /** @param {HttpCrawlingContext} context */
-  async function handler({ body, enqueueLinks, log, response }) {
-    const categoryUrl = response.url;
-    log.debug("Extracting category", { url: categoryUrl });
-    const { document } = parseHTML(body.toString());
-
-    const detailLinks = document.querySelectorAll(`.product-list .product__name`);
-    const urls = Array.from(detailLinks).map(x => buildUrl(categoryUrl, x.href));
-    if (urls.length) await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
-
-    const nextPageUrl = document.querySelector(`.page-item--next a`)?.href;
-    if (!nextPageUrl) return;
-    await enqueueLinks({
-      urls: [buildUrl(categoryUrl, nextPageUrl)],
-      label: Labels.CATEGORY
-    });
-  }
-  return handler;
 }
 
 /**
@@ -174,6 +81,95 @@ function initialRequests(country, type, urls) {
     return blackFridayUrl(country);
   }
   return initialCategoriesUrl(country);
+}
+
+function defRouter(processedIds, stats) {
+  return createHttpRouter({
+    /** @param {HttpCrawlingContext} context */
+    async initialCategories({ body, enqueueLinks, log, response }) {
+      const { document } = parseHTML(body.toString());
+      const linkElements = document.querySelectorAll(`.menu__href`);
+      log.info(
+        `Found categories: ${Array.from(linkElements)
+          .map(link => link.textContent)
+          .join(", ")}`
+      );
+      const links = Array.from(linkElements).map(link => buildUrl(response.url, link.href));
+      await enqueueLinks({ urls: links, label: Labels.CATEGORY });
+    },
+    /** @param {HttpCrawlingContext} context */
+    async productDetail({ body, log, response }) {
+      stats.inc("items");
+      const itemUrl = response.url;
+      log.debug("Extracting product data", { url: itemUrl });
+      const { document } = parseHTML(body.toString());
+      const data = toArray(
+        JSON.parse(document.querySelector("script[type='application/ld+json']")?.textContent ?? "[]")
+      );
+      const product = data.find(x => x["@type"] === "Product");
+      const title = product?.name;
+      const currentPrice = product?.offers?.price;
+
+      if (currentPrice == null || Number.isNaN(currentPrice) || currentPrice < 0) {
+        stats.inc("itemNoPrice");
+        log.warning("Item has no price. Skipping...", { url: itemUrl });
+        return;
+      }
+
+      const inStock = product?.offers?.availability === "https://schema.org/InStock";
+      const imageUrl = product?.image?.[0];
+      const shortDesc = product?.description;
+
+      const { id: itemId } = document.querySelector("[componentname='catalog.product']");
+      const originalPrice = parseFloatText(
+        cleanPriceText(document.querySelector(`.price-before, .superPrice__old__price`)?.textContent ?? "")
+      );
+      const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
+      const priceWithCode = parseFloatText(
+        cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
+      );
+
+      const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
+
+      await saveUniqProducts({
+        products: [
+          {
+            itemId,
+            itemUrl,
+            itemName: title,
+            shop: shopName(itemUrl),
+            slug: itemSlug(itemUrl),
+            img: imageUrl,
+            shortDesc,
+            inStock,
+            category: breadcrumbs,
+            originalPrice: isDiscounted ? originalPrice : null,
+            currentPrice: priceWithCode ?? currentPrice,
+            discounted: isDiscounted
+          }
+        ],
+        stats,
+        processedIds
+      });
+    },
+    /** @param {HttpCrawlingContext} context */
+    async category({ body, enqueueLinks, log, response }) {
+      const categoryUrl = response.url;
+      log.debug("Extracting category", { url: categoryUrl });
+      const { document } = parseHTML(body.toString());
+
+      const detailLinks = document.querySelectorAll(`.product-list .product__name`);
+      const urls = Array.from(detailLinks).map(x => buildUrl(categoryUrl, x.href));
+      if (urls.length) await enqueueLinks({ urls, label: Labels.PRODUCT_DETAIL });
+
+      const nextPageUrl = document.querySelector(`.page-item--next a`)?.href;
+      if (!nextPageUrl) return;
+      await enqueueLinks({
+        urls: [buildUrl(categoryUrl, nextPageUrl)],
+        label: Labels.CATEGORY
+      });
+    }
+  });
 }
 
 async function main() {
@@ -205,7 +201,10 @@ async function main() {
     useApifyProxy: !development
   });
 
-  const sitemap = await Sitemap.load(['https://www.pilulka.cz/sitemaps/products-0.xml', 'https://www.pilulka.cz/sitemaps/products-1.xml']);
+  const sitemap = await Sitemap.load([
+    "https://www.pilulka.cz/sitemaps/products-0.xml",
+    "https://www.pilulka.cz/sitemaps/products-1.xml"
+  ]);
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
@@ -213,11 +212,7 @@ async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     maxRequestRetries,
-    requestHandler: createHttpRouter({
-      [Labels.INITIAL_CATEGORIES]: handleInitialCategories(),
-      [Labels.PRODUCT_DETAIL]: handleProductDetail({ processedIds, stats }),
-      [Labels.CATEGORY]: handleCategory()
-    }),
+    requestHandler: defRouter(processedIds, stats),
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
       stats.inc("failed");
@@ -232,15 +227,13 @@ async function main() {
     await crawler.run(initialRequests(country, type, urls));
   }
 
-  if (!development) {
-    let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
-    if (type === ActorType.BlackFriday) {
-      tableName = `${tableName}_bf`;
-    }
-
-    await uploadToKeboola(tableName);
-    log.info("upload to Keboola finished");
+  let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
+  if (type === ActorType.BlackFriday) {
+    tableName = `${tableName}_bf`;
   }
+
+  await uploadToKeboola(tableName);
+  log.info("upload to Keboola finished");
 }
 
 await Actor.main(main, { statusMessage: "Finished." });
