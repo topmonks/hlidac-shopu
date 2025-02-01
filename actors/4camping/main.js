@@ -105,9 +105,6 @@ function defRouter({ stats, processedIds }) {
     async categoryPage({ request, json, crawler }) {
       const { categoryId } = request.userData;
       const { currentPage, lastPage, items } = json;
-      if (!items) {
-        console.log(json);
-      }
       const { document } = parseHTML(`<!document html><body>${items}</body>`);
       const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
         product: JSON.parse(x.dataset.product),
