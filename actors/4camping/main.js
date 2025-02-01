@@ -1,0 +1,176 @@
+import { Dataset, HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
+import { Actor, LogLevel, log } from "apify";
+
+/** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
+
+const PROCESSED_IDS_KEY = "processedIds";
+
+function toProduct(result, { url, originalPrice }) {
+  const itemId = result.productId;
+  const itemUrl = new URL(result.url, url).href;
+  const itemName = result.name;
+  const img = result.photoFile;
+  const currentPrice = result.unitPriceWithVat;
+  const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
+  const inStock = true;
+  const category = result.mainCategory;
+  return {
+    slug: itemId,
+    itemId,
+    itemUrl,
+    itemName,
+    img,
+    currentPrice,
+    originalPrice,
+    currency: "CZK",
+    category,
+    discounted,
+    inStock
+  };
+}
+
+/**
+ * @param {Number} categoryId
+ * @param {Number} page
+ * @returns {RequestOptions[]}
+ */
+function categoryPageRequest(categoryId, page) {
+  return [
+    {
+      url: "https://www.4camping.cz/api/parametric-search/",
+      method: "POST",
+      payload: JSON.stringify({
+        typeClassname: "ParametricSearch\\Type\\Category",
+        options: { categoryId, additionalCategoryIds: [] },
+        sort: null,
+        page,
+        conditions: {},
+        baseConditions: { codebookParameters: { "771": [12041] } },
+        existingFilters: {},
+        lang: "cs",
+        currency: "czk"
+      }),
+      label: "categoryPage",
+      userData: { categoryId },
+      useExtendedUniqueKey: true
+    }
+  ];
+}
+
+function defRouter({ stats, processedIds }) {
+  return createHttpRouter({
+    /**
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async start({ crawler, body }) {
+      const { document } = parseXML(body.toString());
+      const urls = transduce(
+        comp(
+          map(x => x.textContent.trim()),
+          map(url => ({ url, label: "category" }))
+        ),
+        push(),
+        document.getElementsByTagNameNS("", "loc")
+      );
+      await crawler.addRequests(urls);
+    },
+    /**
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async category({ body, crawler }) {
+      stats.inc("categories");
+
+      const { document } = parseHTML(body.toString());
+      const [, categoryId] = Array.from(document.body.classList)
+        .find(x => x.startsWith("current-cat-id-"))
+        .split("current-cat-id-");
+      const page = 1;
+      await crawler.addRequests(categoryPageRequest(Number.parseInt(categoryId), page));
+    },
+    /**
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async categoryPage({ request, json, crawler }) {
+      const { categoryId } = request.userData;
+      const { currentPage, lastPage, items } = json;
+      const { document } = parseHTML(`<!document html><body>${items}</body>`);
+      const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
+        product: JSON.parse(x.dataset.product),
+        originalPrice: cleanPrice(x.querySelector(".price .discount del")?.textContent)
+      }));
+
+      const batch = [];
+      for (const { product, originalPrice } of products) {
+        if (processedIds.has(product.productId)) {
+          stats.inc("duplicates");
+          continue;
+        }
+        batch.push(toProduct(product, { url: request.url, originalPrice }));
+        processedIds.add(product.productId);
+        stats.inc("products");
+      }
+      await Dataset.pushData(batch);
+
+      if (currentPage < lastPage) {
+        await crawler.addRequests(categoryPageRequest(categoryId, currentPage + 1));
+      }
+    }
+  });
+}
+
+async function main() {
+  Rollbar.init();
+
+  const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
+  Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
+
+  const stats = await withPersistedStats(x => x, {
+    categories: 0,
+    products: 0,
+    duplicates: 0
+  });
+
+  const { type, debug, proxyGroups, urls, maxConcurrency = 25, maxRequestRetries } = await getInput();
+
+  if (debug) {
+    log.setLevel(LogLevel.DEBUG);
+  }
+
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups
+  });
+
+  const crawler = new HttpCrawler({
+    maxConcurrency,
+    maxRequestRetries,
+    proxyConfiguration,
+    additionalMimeTypes: ["application/json", "application/xml"],
+    requestHandler: defRouter({ stats, processedIds }),
+    async failedRequestHandler({ request }, error) {
+      log.error(`Request ${request.url} failed multiple times`, error);
+    }
+  });
+
+  await crawler.run(urls.length ? urls : [{ url: "https://www.4camping.cz/sitemap/categories/", label: "start" }]);
+  log.info("Crawler finished");
+
+  await stats.save(true);
+
+  const tableName = `4camping_cz${type === ActorType.BlackFriday ? "_bf" : ""}`;
+  await uploadToKeboola(tableName);
+
+  log.info("Finished.");
+}
+
+await Actor.main(main);

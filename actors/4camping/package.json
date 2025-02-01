@@ -1,0 +1,22 @@
+{
+  "name": "@hlidac-shopu/4camping",
+  "version": "1.0.0",
+  "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
+  "license": "EUPL-1.2",
+  "description": "This is the 4camping.cz actor.",
+  "type": "module",
+  "dependencies": {
+    "@crawlee/http": "3.12.2",
+    "@hlidac-shopu/actors-common": "3.0.0",
+    "@thi.ng/transducers": "9.2.16",
+    "apify": "3.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.7",
+    "apify-cli": "0.21.0"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "../../scripts/test-actor.sh"
+  }
+}
