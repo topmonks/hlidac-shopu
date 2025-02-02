@@ -200,13 +200,15 @@ async function main() {
   });
 
   await crawler.run(
-    urls ?? [
-      {
-        url: getRootUrl(type),
-        headers: { "x-requested-with": "XMLHttpRequest" },
-        label: "start"
-      }
-    ]
+    urls.length
+      ? urls
+      : [
+          {
+            url: getRootUrl(type),
+            headers: { "x-requested-with": "XMLHttpRequest" },
+            label: "start"
+          }
+        ]
   );
   log.info("Crawler finished");
 
