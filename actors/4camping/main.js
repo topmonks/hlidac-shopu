@@ -138,6 +138,17 @@ function defRouter({ stats, processedIds }) {
   });
 }
 
+/**
+ *
+ * @param {Object} params
+ * @param {ActorType} params.type
+ * @param {string} params.country
+ * @returns {Source}
+ */
+function getStartUrls({ type, country }) {
+  return [{ url: `https://www.4camping.${country.toLowerCase()}/sitemap/categories/`, label: "start" }];
+}
+
 async function main() {
   Rollbar.init();
 
@@ -150,7 +161,15 @@ async function main() {
     duplicates: 0
   });
 
-  const { type, debug, proxyGroups, urls, maxConcurrency = 25, maxRequestRetries } = await getInput();
+  const {
+    type = ActorType.Full,
+    country = "CZ",
+    debug,
+    proxyGroups,
+    urls,
+    maxConcurrency = 25,
+    maxRequestRetries
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -171,12 +190,12 @@ async function main() {
     }
   });
 
-  await crawler.run(urls.length ? urls : [{ url: "https://www.4camping.cz/sitemap/categories/", label: "start" }]);
+  await crawler.run(urls.length ? urls : getStartUrls({ type, country }));
   log.info("Crawler finished");
 
   await stats.save(true);
 
-  const tableName = `4camping_cz${type === ActorType.BlackFriday ? "_bf" : ""}`;
+  const tableName = `4camping_${country.toLowerCase()}${type === ActorType.BlackFriday ? "_bf" : ""}`;
   await uploadToKeboola(tableName);
 }
 
