@@ -5,12 +5,12 @@
   "type": "module",
   "dependencies": {
     "@crawlee/linkedom": "3.12.2",
-    "@hlidac-shopu/actors-common": "3.0.0",
+    "@hlidac-shopu/actors-common": "3.1.1",
     "apify": "3.2.6",
     "linkedom": "0.18.7"
   },
   "devDependencies": {
-    "@types/node": "22.10.7",
+    "@types/node": "22.13.0",
     "apify-cli": "0.21.0"
   },
   "scripts": {
