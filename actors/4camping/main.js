@@ -208,7 +208,6 @@ async function main() {
   });
 
   await crawler.run(urls.length ? urls : getStartUrls({ type, country }));
-  log.info("Crawler finished");
 
   await stats.save(true);
 

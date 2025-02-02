@@ -288,7 +288,6 @@ async function main() {
     });
   }
   await crawler.run(startingRequests);
-  log.info("crawler finished");
 
   if (!development) {
     let tableName = "teta_cz";

@@ -370,7 +370,6 @@ export async function main() {
   const request = startingRequest({ rootUrl, country, type });
   await crawler.run([request]);
   await stats.save(true);
-  log.info("crawler finished");
 
   try {
     let tableName = "";

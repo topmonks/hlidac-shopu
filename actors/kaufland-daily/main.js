@@ -308,7 +308,6 @@ async function main() {
           label: LABELS.START
         };
   await crawler.run([startingRequest]);
-  log.info("Crawler finished");
 
   await stats.save(true);
 

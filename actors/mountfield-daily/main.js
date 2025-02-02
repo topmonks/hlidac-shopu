@@ -251,7 +251,6 @@ async function main() {
       break;
   }
   await crawler.run(startingRequests);
-  log.info("crawler finished");
 
   await stats.save(true);
 

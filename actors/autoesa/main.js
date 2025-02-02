@@ -195,7 +195,6 @@ async function main() {
           }
         ]
   );
-  log.info("Crawler finished");
 
   await uploadToKeboola("autoesa_cz");
 }

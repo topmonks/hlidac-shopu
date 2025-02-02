@@ -305,7 +305,6 @@ async function main() {
 
   const requests = startingRequests(type, country);
   await crawler.run(requests);
-  log.info("crawler finished");
 
   if (Actor.isAtHome()) {
     log.info("uploading data to Keboola");

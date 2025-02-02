@@ -210,7 +210,6 @@ async function main() {
   });
 
   await crawler.run(urls);
-  log.info("Crawler finished");
 
   await stats.save(true);
 
