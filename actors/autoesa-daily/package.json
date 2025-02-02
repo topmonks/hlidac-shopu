@@ -1,0 +1,32 @@
+{
+	"name": "autoesa-daily",
+	"version": "0.0.1",
+	"type": "module",
+	"description": "AutoEsa daily actor",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"@hlidac-shopu/actors-common": "^3.0.0",
+		"apify": "^3.2.6",
+		"crawlee": "^3.12.2"
+	},
+	"devDependencies": {
+		"@apify/eslint-config-ts": "^0.3.0",
+		"@apify/tsconfig": "^0.1.0",
+		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/parser": "^7.18.0",
+		"eslint": "^8.50.0",
+		"tsx": "^4.6.2",
+		"typescript": "^5.3.3"
+	},
+	"scripts": {
+		"start": "npm run start:dev",
+		"start:prod": "node dist/main.js",
+		"start:dev": "tsx src/main.ts",
+		"build": "tsc",
+		"test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+	},
+	"author": "Martin Forejt <martin.forejt@apify.com>",
+	"license": "ISC"
+}
