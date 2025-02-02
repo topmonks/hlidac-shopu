@@ -1,12 +1,14 @@
-import { HttpCrawler } from "@crawlee/http";
+import { Dataset, HttpCrawler, createHttpRouter } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, LogLevel, log } from "apify";
+
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 
 /** @enum {string} */
 const Country = {
@@ -14,107 +16,142 @@ const Country = {
   SK: "SK"
 };
 
-/** @enum {string} */
-const Currency = {
-  CZ: "CZK",
-  SK: "EUR"
-};
-
-/** @enum {string} */
-const Labels = {
-  MAIN: "MAIN",
-  CATEGORY: "CATEGORY"
-};
-
-/** @enum {string} */
-const Selectors = {
-  CATEGORIES_LINKS: '.sub-menu--3 li a',
-  TOTAL_PRODUCTS_COUNT: '#itemscount',
-  NEXT_PAGE_BUTTON: '.next',
-  CATEGORY_NAME: 'h1',
-  SINGLE_PRODUCT: '.content__catagories .product',
-  UNAVAILABLE_BUTTON: '.watchDog',
-  ITEM_URL: 'h3 a',
-  ITEM_NAME: '.product__header-name',
-  ITEM_IMAGE: '.product__image img',
-  ITEM_PRICE_CURRENT: '.product__prices .pricevat.price',
-  ITEM_PRICE_DISCOUNTED_FROM: '.product__prices .pricerecom',
-};
+const currencyByCountry = new Map([
+  ["CZ", "CZK"],
+  ["SK", "EUR"]
+]);
 
 /**
  * @param {string} country
  * @param {string} path
  * @param {string} category
  */
-function completeUrl(country, path= "", category = "") {
+function completeUrl(country, path = "", category = "") {
   if (path && path[0] !== "/") {
     // sometimes path to next page is broken: href="lody-v-cokolade-a-jogurtu/p3"
-    const [_, page] = path.split('/') // e.g. "lody-v-cokolade-a-jogurtu/p3" => "/p3"
-    return `https://www.grizly.${country.toLowerCase()}${category}/${page}`
+    const [_, page] = path.split("/"); // e.g. "lody-v-cokolade-a-jogurtu/p3" => "/p3"
+    return `https://www.grizly.${country.toLowerCase()}${category}/${page}`;
   }
   return `https://www.grizly.${country.toLowerCase()}${path}`;
 }
 
-function filterTestRequests({ requests, type, take = 10 }) {
-  return type === ActorType.Test ? requests.slice(0, take) : requests;
+function filterTestRequests(requests, userData) {
+  return userData.type === ActorType.Test ? requests.slice(0, 10) : requests;
 }
 
 function cleanPrice(string) {
   if (!string) {
-    return undefined
+    return undefined;
   }
-  return Number(string.replace(/\D/g, ''));
+  return Number(string.replace(/\D/g, ""));
 }
 
-function categoriesRequests({ document, country}) {
-  const links = document.querySelectorAll(Selectors.CATEGORIES_LINKS);
+function categoriesRequests(document, userData, log) {
+  const links = document.querySelectorAll(".sub-menu--3 li a");
   return links.map(link => {
     log.debug(`Queued category "${link.innerText.trim()}"`);
     const href = link.getAttribute("href");
-    const url = completeUrl(country, href)
+    const url = completeUrl(userData.country, href);
     return {
       url,
-      label: Labels.CATEGORY,
-      userData: {
-        category: href
-      }
+      label: "category",
+      userData: Object.assign({}, userData, { category: href })
     };
   });
 }
 
 /**
  * @param {string} country
- * @param {HTMLDocument} document
+ * @param {Document} document
+ * @return {Product[]}
  */
-function extractProducts({ document, country }) {
-  const category = document.querySelector(Selectors.CATEGORY_NAME).innerText.trim();
-  const products = document.querySelectorAll(Selectors.SINGLE_PRODUCT);
+function extractProducts(document, country) {
+  const category = document.querySelector("h1").innerText.trim();
+  const products = document.querySelectorAll(".content__catagories .product");
 
   return products.map(product => {
-    const itemId = product.getAttribute('data-id');
-    const itemUrl = completeUrl(country, product.querySelector(Selectors.ITEM_URL).getAttribute('href'));
-    const itemName = product.querySelector(Selectors.ITEM_NAME).innerText;
-    const img = completeUrl(country, product.querySelector(Selectors.ITEM_IMAGE).getAttribute('src'));
-    const currentPrice = cleanPrice(product.querySelector(Selectors.ITEM_PRICE_CURRENT).innerText.trim());
-    const originalPrice = cleanPrice(product.querySelector(Selectors.ITEM_PRICE_DISCOUNTED_FROM)?.innerText.trim());
-    const inStock = !product.querySelector(Selectors.UNAVAILABLE_BUTTON)
+    const itemId = product.getAttribute("data-id");
+    const itemUrl = completeUrl(country, product.querySelector("h3 a").getAttribute("href"));
+    const itemName = product.querySelector(".product__header-name").innerText;
+    const img = completeUrl(country, product.querySelector(".product__image img").getAttribute("src"));
+    const currentPrice = cleanPrice(product.querySelector(".product__prices .pricevat.price").innerText.trim());
+    const originalPrice = cleanPrice(product.querySelector(".product__prices .pricerecom")?.innerText.trim());
+    const inStock = !product.querySelector(".watchDog");
+    const currency = currencyByCountry.get(country);
     return {
+      slug: itemId,
       itemId,
       itemUrl,
       itemName,
       img,
       discounted: !!originalPrice,
       originalPrice,
-      currency: Currency[country],
+      currency,
       currentPrice,
       category,
       inStock
+    };
+  });
+}
+
+function defRouter({ stats }) {
+  return createHttpRouter({
+    /**
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async start({ request, body, crawler }) {
+      const { userData } = request;
+      const { document } = parseHTML(body.toString());
+      const requests = categoriesRequests(document, userData, log);
+      const filtered = filterTestRequests(requests, userData);
+      stats.add("categories", filtered.length);
+      await crawler.addRequests(filtered);
+    },
+    /**
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async category({ request, body, crawler, log }) {
+      const { url, userData } = request;
+      const { country, type, category } = userData;
+      const { document } = parseHTML(body.toString());
+      const categoryProductsCountNode = document.querySelector("#itemscount").value;
+      if (!categoryProductsCountNode) {
+        return log.error(`No products count node found on ${url}`);
+      }
+
+      const nextPageButton = document.querySelector(".next");
+      if (nextPageButton && type !== ActorType.Test) {
+        await crawler.requestQueue.addRequests([
+          {
+            url: completeUrl(country, nextPageButton.getAttribute("href"), category),
+            label: "category",
+            userData
+          }
+        ]);
+      }
+      const products = extractProducts(document, country);
+      stats.add("items", products.length);
+      await Dataset.pushData(products);
     }
-  })
+  });
+}
+
+function getStartUrls(urls, country, type) {
+  return urls.length
+    ? urls
+    : [
+        {
+          url: completeUrl(country),
+          label: "start",
+          userData: { type, country }
+        }
+      ];
 }
 
 async function main() {
-  rollbar.init();
+  Rollbar.init();
 
   const stats = await withPersistedStats(x => x, {
     categories: 0,
@@ -122,101 +159,40 @@ async function main() {
     failed: 0
   });
 
-  const { type = ActorType.Full, country = Country.CZ, debug = false } = (await getInput()) ?? {};
+  const {
+    debug,
+    type = ActorType.Full,
+    country = Country.CZ,
+    proxyGroups,
+    urls,
+    maxConcurrency = 25,
+    maxRequestRetries
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  log.debug(`Running in ${type} mode`);
-
-  if ([ActorType.Test, ActorType.Full].includes(type) === false) {
-    log.error(`Actor type ${type} not yet implemented`);
-    return;
-  }
-
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: ["CZECH_LUMINATI"],
-    useApifyProxy: type === ActorType.Full
+    groups: proxyGroups
   });
 
   const crawler = new HttpCrawler({
+    maxConcurrency,
+    maxRequestRetries,
     maxRequestsPerMinute: 600,
     proxyConfiguration,
-    async requestHandler({ request, crawler, body, log }) {
-      const { url, label, userData: {category}} = request;
-      log.info(`Processing ${url} (${label})`);
-      const { document } = parseHTML(body.toString());
-
-      switch (label) {
-        case Labels.MAIN:
-          {
-            const requests = categoriesRequests({ document, country, url });
-            const filtered = filterTestRequests({ requests, type });
-            stats.add("categories", filtered.length)
-            await crawler.requestQueue.addRequests(filtered, { forefront: true });
-          }
-          break;
-        case Labels.CATEGORY:
-          {
-            const categoryProductsCountNode = document.querySelector(Selectors.TOTAL_PRODUCTS_COUNT).getAttribute('value');
-            if (!categoryProductsCountNode) {
-              log.error(`No products count node found in ${request.url}`);
-              return;
-            }
-
-            const nextPageButton = document.querySelector(Selectors.NEXT_PAGE_BUTTON);
-            if (nextPageButton && type !== ActorType.Test ) {
-              await crawler.requestQueue.addRequests([
-                {
-                  url: completeUrl(country, nextPageButton.getAttribute('href'), category),
-                  label: Labels.CATEGORY,
-                  userData: {
-                    category
-                  }
-                }
-              ]);
-            }
-            const products = extractProducts({ document, country })
-            stats.add("items", products.length);
-            await Dataset.pushData(products);
-          }
-          break;
-        default:
-          log.warning(`Unknown label ${label}`);
-      }
-    },
+    requestHandler: defRouter({ stats }),
     async failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
       stats.inc("failed");
     }
   });
 
-  await crawler.run([
-    {
-      url: completeUrl(country),
-      label: Labels.MAIN
-    }
-  ]);
-
-  // shortcut run example for testing:
-  // await crawler.run([
-  //   {
-  //     url: 'https://www.grizly.cz/proteinove-tycinky',
-  //     label: Labels.CATEGORY,
-  //     userData: {
-  //       category: "/proteinove-tycinky"
-  //     }
-  //   }
-  // ]);
-
-  log.info("crawler finished");
-
-  if (type === ActorType.Full && Actor.isAtHome()) {
-    await Promise.all([stats.save(true), uploadToKeboola(shopName(completeUrl(country)))]);
-  }
-
-  log.info("Finished.");
+  const startUrls = getStartUrls(urls, country, type);
+  await crawler.run(startUrls);
+  await stats.save(true);
+  await uploadToKeboola(shopName(startUrls.map(x => x.url ?? x).at(0)));
 }
 
-await Actor.main(main);
+await Actor.main(main, { statusMessage: "DONE" });

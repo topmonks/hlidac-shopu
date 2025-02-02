@@ -1,8 +1,8 @@
 FROM apify/actor-node:22
 
-COPY package.json ./
+COPY ./package.json ./
 
 RUN npm --quiet set progress=false \
- && npm install --only=prod --no-optional
+ && npm install --omit=dev --omit=optional
 
 COPY . ./

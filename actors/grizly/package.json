@@ -1,21 +1,20 @@
 {
   "name": "@hlidac-shopu/grizly",
-  "version": "2.0.0",
-  "description": "This is the Hornbach actor.",
+  "version": "1.0.0",
+  "description": "This is the Grizly actor.",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.12.1",
-    "@hlidac-shopu/actors-common": "3.0.0",
+    "@crawlee/http": "3.12.2",
+    "@hlidac-shopu/actors-common": "3.1.1",
     "apify": "3.2.6"
   },
   "devDependencies": {
-    "@types/node": "22.10.7",
+    "@types/node": "22.13.0",
     "apify-cli": "0.21.0"
   },
   "scripts": {
-    "run": "apify run -p",
     "start": "node main.js",
     "test": "../../scripts/test-actor.sh"
   }
