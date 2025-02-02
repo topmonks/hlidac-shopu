@@ -92,10 +92,11 @@ function toProduct(document, url) {
   const originalPrice = prices.find(price => price.discount)?.price;
 
   return {
-    itemUrl: url,
+    slug: itemId,
     itemId,
-    img: img ? `${BASE_URL}${img}` : null,
     itemName,
+    itemUrl: url,
+    img: img ? `${BASE_URL}${img}` : null,
     currentPrice,
     originalPrice,
     currency: "CZK",
