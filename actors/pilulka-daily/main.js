@@ -5,7 +5,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { parseFloatText, saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
-import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
@@ -173,7 +173,7 @@ function defRouter(processedIds, stats) {
 }
 
 async function main() {
-  rollbar.init();
+  Rollbar.init();
 
   const {
     development,
