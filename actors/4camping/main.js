@@ -14,14 +14,21 @@ import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
+const currencyByCountry = new Map([
+  ["CZ", "CZK"],
+  ["SK", "EUR"]
+]);
+
 /**
  *
  * @param result
- * @param {string} url
- * @param {number} originalPrice
+ * @param {Object} params
+ * @param {string} params.url
+ * @param {number} params.originalPrice
+ * @param {string} params.country
  * @returns {Product}
  */
-function toProduct(result, { url, originalPrice }) {
+function toProduct(result, { url, originalPrice, country }) {
   const slug = result.url;
   const itemId = result.id;
   const itemUrl = new URL(result.url, url).href;
@@ -31,6 +38,7 @@ function toProduct(result, { url, originalPrice }) {
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const inStock = true;
   const category = result.mainCategory;
+  const currency = currencyByCountry.get(country);
   return {
     slug,
     itemId,
@@ -39,7 +47,7 @@ function toProduct(result, { url, originalPrice }) {
     img,
     currentPrice,
     originalPrice,
-    currency: "CZK",
+    currency,
     category,
     discounted,
     inStock
@@ -47,11 +55,11 @@ function toProduct(result, { url, originalPrice }) {
 }
 
 /**
- * @param {Number} categoryId
- * @param {Number} page
+ * @param {number} page
+ * @param {Object} userData
  * @returns {RequestOptions[]}
  */
-function categoryPageRequest(categoryId, page) {
+function categoryPageRequest(page, userData) {
   return [
     {
       url: "https://www.4camping.cz/api/parametric-search/",
@@ -68,7 +76,7 @@ function categoryPageRequest(categoryId, page) {
         currency: "czk"
       }),
       label: "categoryPage",
-      userData: { categoryId },
+      userData,
       useExtendedUniqueKey: true
     }
   ];
@@ -80,12 +88,12 @@ function defRouter({ stats, processedIds }) {
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
-    async start({ crawler, body }) {
+    async start({ request, body, crawler }) {
       const { document } = parseXML(body.toString());
       const urls = transduce(
         comp(
           map(x => x.textContent.trim()),
-          map(url => ({ url, label: "category" }))
+          map(url => ({ url, label: "category", userData: request.userData }))
         ),
         push(),
         document.getElementsByTagNameNS("", "loc")
@@ -96,7 +104,7 @@ function defRouter({ stats, processedIds }) {
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
-    async category({ body, crawler }) {
+    async category({ request, body, crawler }) {
       stats.inc("categories");
 
       const { document } = parseHTML(body.toString());
@@ -104,14 +112,17 @@ function defRouter({ stats, processedIds }) {
         .find(x => x.startsWith("current-cat-id-"))
         .split("current-cat-id-");
       const page = 1;
-      await crawler.addRequests(categoryPageRequest(Number.parseInt(categoryId), page, document));
+      await crawler.addRequests(
+        categoryPageRequest(page, Object.assign({}, request.userData, { categoryId: Number.parseInt(categoryId) }))
+      );
     },
     /**
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
     async categoryPage({ request, json, crawler }) {
-      const { categoryId } = request.userData;
+      const { url, userData } = request;
+      const { country } = userData;
       const { currentPage, lastPage, items } = json;
       const { document } = parseHTML(items);
       const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
@@ -125,14 +136,14 @@ function defRouter({ stats, processedIds }) {
           stats.inc("duplicates");
           continue;
         }
-        batch.push(toProduct(product, { url: request.url, originalPrice }));
+        batch.push(toProduct(product, { url, originalPrice, country }));
         processedIds.add(product.id);
         stats.inc("products");
       }
       await Dataset.pushData(batch);
 
       if (currentPage < lastPage) {
-        await crawler.addRequests(categoryPageRequest(categoryId, currentPage + 1));
+        await crawler.addRequests(categoryPageRequest(currentPage + 1, request.userData));
       }
     }
   });
@@ -146,7 +157,13 @@ function defRouter({ stats, processedIds }) {
  * @returns {Source}
  */
 function getStartUrls({ type, country }) {
-  return [{ url: `https://www.4camping.${country.toLowerCase()}/sitemap/categories/`, label: "start" }];
+  return [
+    {
+      url: `https://www.4camping.${country.toLowerCase()}/sitemap/categories/`,
+      label: "start",
+      userData: { country, type }
+    }
+  ];
 }
 
 async function main() {
