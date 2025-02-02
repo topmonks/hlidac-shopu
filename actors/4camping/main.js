@@ -170,8 +170,6 @@ async function main() {
 
   const tableName = `4camping_cz${type === ActorType.BlackFriday ? "_bf" : ""}`;
   await uploadToKeboola(tableName);
-
-  log.info("Finished.");
 }
 
-await Actor.main(main);
+await Actor.main(main, { statusMessage: "DONE" });

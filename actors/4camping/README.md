@@ -1,6 +1,6 @@
 # 4camping
 
-1. Get list of categories from https://www.4camping.cz/sitemap/categories/
+1. Get the list of categories from https://www.4camping.cz/sitemap/categories/
 2. Get categoryId from `body.className` `current-cat-id-${categoryId}`
 3. POST on https://www.4camping.cz/api/parametric-search/ 
    ```json
