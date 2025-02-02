@@ -79,7 +79,7 @@ function extractProducts(document, country) {
     const inStock = !product.querySelector(".watchDog");
     const currency = currencyByCountry.get(country);
     return {
-      slug: itemId,
+      slug: new URL(itemUrl).pathname,
       itemId,
       itemUrl,
       itemName,
@@ -192,7 +192,9 @@ async function main() {
   const startUrls = getStartUrls(urls, country, type);
   await crawler.run(startUrls);
   await stats.save(true);
-  await uploadToKeboola(shopName(startUrls.map(x => x.url ?? x).at(0)));
+
+  const tableName = `grizly_${country.toLowerCase()}`;
+  await uploadToKeboola(tableName);
 }
 
 await Actor.main(main, { statusMessage: "DONE" });
