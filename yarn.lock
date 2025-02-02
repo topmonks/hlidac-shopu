@@ -3809,9 +3809,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/grizly@workspace:actors/grizly"
   dependencies:
-    "@crawlee/http": "npm:3.12.1"
-    "@hlidac-shopu/actors-common": "npm:3.0.0"
-    "@types/node": "npm:22.10.7"
+    "@crawlee/http": "npm:3.12.2"
+    "@hlidac-shopu/actors-common": "npm:3.1.1"
+    "@types/node": "npm:22.13.0"
     apify: "npm:3.2.6"
     apify-cli: "npm:0.21.0"
   languageName: unknown
