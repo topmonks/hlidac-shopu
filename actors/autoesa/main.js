@@ -3,30 +3,14 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { default as Rollbar } from "@hlidac-shopu/actors-common/rollbar.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { map, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
 const BASE_URL = "https://www.autoesa.cz";
 const BASE_CATEGORY = "vsechna-auta";
-
-const CURRENCY = {
-  CZK: "CZK"
-};
-
-const CURRENCIES = {
-  [CURRENCY.CZK]: {
-    label: "Kč"
-  }
-};
-
-/** @enum */
-const LABEL = {
-  START: "start",
-  PAGE: "page",
-  DETAIL: "detail"
-};
 
 function getRootUrl(type = ActorType.Full, category = BASE_CATEGORY) {
   return getPageUrl(1, type, category);
@@ -53,8 +37,8 @@ function extractPrice(priceStr) {
   const match = priceStr.match(/[\d*\s]*Kč/g);
   if (!match) return;
 
-  const value = match[0].replace(/\s/g, "").replace("Kč", "").replace("€", "").replace("Cena", "");
-  return parseInt(value, 10);
+  const value = match[0].replace(/\s/g, "").replace("Cena", "");
+  return cleanPrice(value, 10);
 }
 
 function extractSnippet(body, snippetId) {
@@ -114,7 +98,7 @@ function toProduct(document, url) {
     itemName,
     currentPrice,
     originalPrice,
-    currency: CURRENCIES[CURRENCY.CZK].label,
+    currency: "CZK",
     discounted: !!discountedPrice,
     year,
     km: range,
