@@ -16,13 +16,9 @@ import { aaaautoValidator } from "./src/validators/aaaautoValidator.js";
 import { alzaFeedValidator } from "./src/validators/alzaFeedValidator.js";
 import { alzaValidator } from "./src/validators/alzaValidator.js";
 import { benuczValidator } from "./src/validators/benuczValidator.js";
-import { coopValidator } from "./src/validators/coopValidator.js";
-import { czcValidator } from "./src/validators/czcValidator.js";
 import { datartValidator } from "./src/validators/datartValidator.js";
 import { datartValidatorBf } from "./src/validators/datartValidatorBf.js";
-import { dekValidator } from "./src/validators/dekValidator.js";
 import { dmValidator } from "./src/validators/dmValidator.js";
-import { electroworldValidator } from "./src/validators/electroworldValidator.js";
 import { evaValidator } from "./src/validators/evaValidator.js";
 import { globusValidator } from "./src/validators/globusValidator.js";
 import { hornbachValidator } from "./src/validators/hornbachValidator.js";
@@ -46,7 +42,6 @@ import { pilulkaczValidator } from "./src/validators/pilulkaczValidator.js";
 import { prozdraviczValidator } from "./src/validators/prozdraviczValidator.js";
 import { rohlikDetailValidator } from "./src/validators/rohlikDetailValidator.js";
 import { rohlikValidator } from "./src/validators/rohlikValidator.js";
-import { rozetkaValidator } from "./src/validators/rozetkaValidator.js";
 import { tchiboValidator } from "./src/validators/tchiboValidator.js";
 import { tetaValidator } from "./src/validators/tetaValidator.js";
 import { tsbohemiaPriceValidator } from "./src/validators/tsbohemiaPriceValidator.js";
@@ -139,9 +134,6 @@ async function processItems(
       case "alza_at_feed":
         item = alzaFeedValidator(item);
         break;
-      case "czc":
-        item = czcValidator(item);
-        break;
       case "mall":
         item = mallValidator(item);
         break;
@@ -156,9 +148,6 @@ async function processItems(
         break;
       case "luxor_cz":
         item = luxorValidator(item);
-        break;
-      case "czc_bf":
-        item = czcValidator(item);
         break;
       case "mall_bf":
         item = mallValidator(item);
@@ -193,9 +182,6 @@ async function processItems(
       case "globus_cz":
         item = globusValidator(item);
         break;
-      case "coop_cz":
-        item = coopValidator(item);
-        break;
       case "makro_cz":
         item = makroczValidator(item);
         break;
@@ -211,17 +197,10 @@ async function processItems(
       case "teta_cz_bf":
         item = tetaValidator(item);
         break;
-      case "rozetka_ua":
-        item = rozetkaValidator(item);
-        break;
       case "hornbach":
       case "hornbach_cz":
       case "hornbach_sk":
         item = hornbachValidator(item);
-        break;
-      case "electroworld_cz":
-      case "electroworld_cz_bf":
-        item = electroworldValidator(item);
         break;
       case "lidl_cz":
         item = lidlValidator(item);
@@ -266,10 +245,6 @@ async function processItems(
       case "ikea_at":
       case "ikea_de":
         item = ikeaValidator(item);
-        break;
-      case "dek_cz":
-      case "dek_sk":
-        item = dekValidator(item);
         break;
     }
 
