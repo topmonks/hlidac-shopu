@@ -7,7 +7,12 @@ export interface Product {
   currentPrice: number;
   originalPrice: number;
   currency: string;
-  category?: string;
   discounted: boolean;
   inStock: boolean;
+  category?: string;
+  useUnitPrice?: boolean;
+  currentUnitPrice?: number;
+  originalUnitPrice?: number;
+  unit?: string;
+  quantity?: number;
 }

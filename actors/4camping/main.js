@@ -9,10 +9,18 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { comp, map, push, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 
 const PROCESSED_IDS_KEY = "processedIds";
 
+/**
+ *
+ * @param result
+ * @param {string} url
+ * @param {number} originalPrice
+ * @returns {Product}
+ */
 function toProduct(result, { url, originalPrice }) {
   const slug = result.url;
   const itemId = result.id;
@@ -105,7 +113,7 @@ function defRouter({ stats, processedIds }) {
     async categoryPage({ request, json, crawler }) {
       const { categoryId } = request.userData;
       const { currentPage, lastPage, items } = json;
-      const { document } = parseHTML(`<!document html><body>${items}</body>`);
+      const { document } = parseHTML(items);
       const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
         product: JSON.parse(x.dataset.product),
         originalPrice: cleanPrice(x.querySelector(".price .discount del")?.textContent)

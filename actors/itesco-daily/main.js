@@ -36,28 +36,23 @@ const StartUrls = {
  * @type {Record<Country, (offerText: string) => { originalPrice: number, currentPrice: number } | null>}
  */
 const saleParsers = {
-  [Country.CZ]: (offerText) => {
+  [Country.CZ]: offerText => {
     const matchedPrices = /^.* předtím ([0-9,]+ Kč), teď ([0-9,]+ Kč)$/.exec(offerText);
     if (!matchedPrices) {
       return null;
     }
-    const [originalPrice, currentPrice] = matchedPrices
-      .slice(1)
-      .map(cleanPrice);
+    const [originalPrice, currentPrice] = matchedPrices.slice(1).map(cleanPrice);
     return { originalPrice, currentPrice };
   },
-  [Country.SK]: (offerText) => {
+  [Country.SK]: offerText => {
     const matchedPrices = /^.* predtým ([0-9,]+ €), teraz ([0-9,]+ €)$/.exec(offerText);
     if (!matchedPrices) {
       return null;
     }
-    const [originalPrice, currentPrice] = matchedPrices
-      .slice(1)
-      .map(cleanPrice);
+    const [originalPrice, currentPrice] = matchedPrices.slice(1).map(cleanPrice);
     return { originalPrice, currentPrice };
   }
-}
-
+};
 
 /**
  * @param {number} productId
@@ -249,11 +244,8 @@ function extractBFItems(document, country) {
       originalPrice,
       currentPrice,
       discounted: originalPrice ? originalPrice > currentPrice : false,
-      category:
-        country.toLowerCase() === "cz"
-          ? ["Speciální nabídky"]
-          : ["Špeciálne ponuky"],
-      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR",
+      category: country.toLowerCase() === "cz" ? ["Speciální nabídky"] : ["Špeciálne ponuky"],
+      currency: country.toLowerCase() === "cz" ? "CZK" : "EUR"
     };
   });
 }
@@ -361,7 +353,7 @@ async function main() {
                 .querySelectorAll(".pagination--page-selector-wrapper ul li") // :nth-last-child(2) throws for some reason
                 .slice(-2, -1)?.[0]?.innerText;
               const urls = pagesUrls(request.url, lastPage);
-            log.debug(`Urls, ${urls}, ${lastPage}`)
+              log.debug(`Urls, ${urls}, ${lastPage}`);
               if (urls) {
                 log.debug(`Found ${urls.length} on ${request.url} ${request.userData.label}`);
                 await enqueueLinks({

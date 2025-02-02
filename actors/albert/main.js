@@ -7,6 +7,8 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
+
 // This is a map of persisted query hashes for given operation.
 // When something breaks, it is likely you have to update the hash here.
 // `LeftHandNavigationBar` try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
@@ -23,6 +25,12 @@ const opHash = new Map([
 
 const PROCESSED_IDS_KEY = "processedIds";
 
+/**
+ * @param result
+ * @param {string} url
+ * @param {string} category
+ * @returns {Product}
+ */
 function toProduct(result, { url, category }) {
   const itemId = result.code;
   const itemUrl = new URL(result.url, url).href;
