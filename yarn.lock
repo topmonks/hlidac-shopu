@@ -3759,20 +3759,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/czc-daily@workspace:actors/czc-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/czc-daily@workspace:actors/czc-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.12.2"
-    "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@hlidac-shopu/lib": "npm:1.4.0"
-    "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
-    "@types/node": "npm:22.13.0"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.21.0"
-  languageName: unknown
-  linkType: soft
-
 "@hlidac-shopu/datart-daily@workspace:actors/datart-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
@@ -3789,33 +3775,6 @@ __metadata:
 "@hlidac-shopu/dm-daily@workspace:actors/dm-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.12.2"
-    "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@types/node": "npm:22.13.0"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.21.0"
-  languageName: unknown
-  linkType: soft
-
-"@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/electroworld-daily@workspace:actors/electroworld-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.12.2"
-    "@crawlee/playwright": "npm:3.12.2"
-    "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@types/node": "npm:22.13.0"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.21.0"
-    got-scraping: "npm:4.0.8"
-    playwright: "npm:1.50.1"
-  languageName: unknown
-  linkType: soft
-
-"@hlidac-shopu/electroworld@workspace:actors/electroworld":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/electroworld@workspace:actors/electroworld"
   dependencies:
     "@crawlee/http": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
@@ -4097,19 +4056,6 @@ __metadata:
     "@crawlee/http": "npm:3.12.2"
     "@crawlee/utils": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@types/node": "npm:22.13.0"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.21.0"
-  languageName: unknown
-  linkType: soft
-
-"@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/prozdravi-daily@workspace:actors/prozdravi-daily"
-  dependencies:
-    "@crawlee/http": "npm:3.12.2"
-    "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@hlidac-shopu/lib": "npm:1.4.0"
     "@types/node": "npm:22.13.0"
     apify: "npm:3.2.6"
     apify-cli: "npm:0.21.0"
