@@ -6,7 +6,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { default as Rollbar } from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { map, push, range, transduce } from "@thi.ng/transducers";
-import { Actor, log } from "apify";
+import { Actor, LogLevel, log } from "apify";
 
 const BASE_URL = "https://www.autoesa.cz";
 const BASE_CATEGORY = "vsechna-auta";
@@ -166,8 +166,11 @@ function defRouter({ stats, type }) {
 async function main() {
   Rollbar.init();
 
-  const { development, maxRequestRetries, type = ActorType.Full, proxyGroups, urls } = await getInput();
+  const { debug, development, maxRequestRetries, type = ActorType.Full, proxyGroups, urls } = await getInput();
 
+  if (debug) {
+    log.setLevel(LogLevel.DEBUG);
+  }
   const stats = await withPersistedStats(x => x, {
     products: 0,
     failed: 0
