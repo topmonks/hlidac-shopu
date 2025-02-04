@@ -66,7 +66,7 @@ function categoryPageRequest(page, userData) {
       method: "POST",
       payload: JSON.stringify({
         typeClassname: "ParametricSearch\\Type\\Category",
-        options: { categoryId, additionalCategoryIds: [] },
+        options: { categoryId: userData.categoryId, additionalCategoryIds: [] },
         sort: null,
         page,
         conditions: {},
