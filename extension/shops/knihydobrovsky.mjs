@@ -7,7 +7,11 @@ export class Knihydobrovsky extends Shop {
     if (elem) {
       return ["afterend", "#snippet--deliveryInfo .variants"];
     }
-    return ["afterend", "#snippet--deliveryInfo .b-gift"];
+    const belem = document.querySelector("#snippet--deliveryInfo .b-gift");
+    if (belem) {
+      return ["afterend", "#snippet--deliveryInfo .b-gift"];
+    }
+    return ["afterend", "#snippet--deliveryInfo .b-package"];
   }
 
   async scrape() {
