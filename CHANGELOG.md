@@ -1,5 +1,11 @@
 # Extension
 
+## 2.1.13
+* Fix Alza voucher price parsing
+* Fix Tetadrogerie price parsing for multiple pieces
+* Fix Okay.cz curent price parsing
+* Fix Knihy Dobrovsky extension rendering
+
 ## 2.1.12
 * Removed unsupported e-shops
 
