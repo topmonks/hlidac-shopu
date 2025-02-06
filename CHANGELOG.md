@@ -1,5 +1,8 @@
 # Extension
 
+## 2.1.12
+* Removed unsupported e-shops
+
 ## 2.1.11
 * Fix Notino voucher price parsing
 * Fix Pilulka prices parsing
