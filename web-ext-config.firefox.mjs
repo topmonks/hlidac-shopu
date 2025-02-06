@@ -1,4 +1,4 @@
 export default {
   sourceDir: "./extension-dist",
-  ignoreFiles: ["README.md", "background.js", "**/*.mjs"]
+  ignoreFiles: ["README.md", "**/*.mjs"]
 };

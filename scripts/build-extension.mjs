@@ -14,5 +14,6 @@ esbuild.buildSync({
   target: ["es2017", "firefox57", "safari12"],
   charset: "utf8",
   bundle: true,
-  outfile: output
+  outfile: output,
+  sourcemap: "linked"
 });

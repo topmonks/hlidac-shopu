@@ -1,19 +1,35 @@
 import { cleanPriceText, cleanUnitPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { shopName, shops as shops_lib } from "@hlidac-shopu/lib/shops.mjs";
 
+/**
+ *
+ * @param {Element|string} s DOM element or CSS selector of the element
+ * @returns {string|null}
+ */
 export function cleanPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
   let priceText = el.textContent;
   return cleanPriceText(priceText);
 }
-//Check if price is per unit or per weight
+
+/**
+ * Check if the price is per unit or per weight
+ * @param {Element|string} s DOM element or CSS selector of the element
+ * @returns {boolean|null}
+ */
 export function isUnitPrice(s) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
   return el.textContent.includes("/kg");
 }
-//Get price for product weight from price per 1 Kg
+
+/**
+ * Get price for product weight from price per 1 Kg
+ * @param {Element|string} s DOM element or CSS selector of the element
+ * @param {number} quantity
+ * @returns {number|null}
+ */
 export function cleanUnitPrice(s, quantity) {
   const el = typeof s === "string" ? document.querySelector(s) : s;
   if (!el) return null;
@@ -45,18 +61,16 @@ export function getItemIdFromUrl(url) {
  * @returns {boolean}
  */
 export function isElementVisible(el) {
-  if (el == document) return true;
+  if (el === document) return true;
 
   if (!el) return false;
   if (!el.parentNode) return false;
-  if (el.style) {
-    if (el.style.display == "none") return false;
-    if (el.style.visibility == "hidden") return false;
-  }
+  if (el.style?.display === "none") return false;
+  if (el.style?.visibility === "hidden") return false;
 
   const style = window.getComputedStyle(el, "");
-  if (style.display == "none") return false;
-  if (style.visibility == "hidden") return false;
+  if (style.display === "none") return false;
+  if (style.visibility === "hidden") return false;
 
   return isElementVisible(el.parentNode);
 }
