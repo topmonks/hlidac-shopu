@@ -1,5 +1,9 @@
 # Extension
 
+## 2.2.0
+* The detail API call moved from content script to service worker
+* Removed custom CSP
+
 ## 2.1.13
 * Fix Alza voucher price parsing
 * Fix Tetadrogerie price parsing for multiple pieces
