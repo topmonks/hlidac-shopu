@@ -76,7 +76,9 @@ function getDetailItemInfo() {
 
   const itemId = elem.dataset.id;
   const title = document.querySelector("h1").innerText.trim();
-  const currentPrice = cleanPrice(".price-box__price");
+  const currentPrice =
+    cleanPrice(".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price") ||
+    cleanPrice(".price-box__price");
   const originalPrice = cleanPrice(".price-box__compare-price");
   const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
 
@@ -95,7 +97,7 @@ export class Alza extends Shop {
 
   injectOnDetailPage(renderMarkup) {
     this.element.insertAdjacentElement(
-      "beforestart",
+      "beforebegin",
       renderMarkup({
         "order": "0",
         "margin": "0",
