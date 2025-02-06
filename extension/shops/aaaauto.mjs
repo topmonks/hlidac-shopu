@@ -5,8 +5,8 @@ export class AAAAuto extends Shop {
   async scrape() {
     const url = new URL(location.href);
     const itemId = url.searchParams.get("id");
-    if (!itemId) return false;
-    const imageUrl = document.querySelector("meta[name='og:image']").content;
+    if (!itemId) return;
+    const imageUrl = document.querySelector("meta[property='og:image']")?.content;
 
     // eng variant
     const engTabCard = document.querySelector("#tab-card");
@@ -24,38 +24,19 @@ export class AAAAuto extends Shop {
       return { itemId, title, currentPrice, originalPrice, imageUrl };
     }
 
-    const title = document.querySelector("#carCardHead h1").innerText;
-    const price = document.querySelectorAll(`
-      .sidebar ul.infoBoxNav li:not([style]):not([class]),
-      .sidebar ul.infoBoxNav .fixedBarScrollHide,
-      .sidebar ul.infoBoxNav .infoBoxNavTitle
-    `);
-    let originalPrice = null;
-    let currentPrice = null;
-    for (const p of price) {
-      if (p.textContent.includes("Cena")) {
-        let strikePrice = p.querySelector("span.notranslate s");
-        if (strikePrice) {
-          strikePrice = p.querySelector("span.notranslate");
-          const prices = Array.from(strikePrice.childNodes)
-            .map(n => cleanPriceText(n.textContent))
-            .filter(Boolean);
-          [originalPrice, currentPrice] = prices;
-        } else {
-          currentPrice = cleanPriceText(p.textContent);
-        }
-      }
-    }
-
-    console.log(`originalPrice ${originalPrice}`);
-    console.log(`currentPrice ${currentPrice}`);
+    const title = document.querySelector(".carCard__name h1")?.innerText.trim().replaceAll(/\s+/g, " ");
+    const originalPrice = cleanPrice(document.querySelector(".carCard__price-item s"));
+    const currentPrice = cleanPrice(document.querySelector(".carCard__price-value:not(.secondary)"));
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 
   inject(renderMarkup) {
-    let elem = document.querySelector("#testdrive-button");
+    let elem = document.querySelector(".carCard__head");
     if (elem) {
-      const markup = renderMarkup();
+      const markup = renderMarkup({
+        "max-width": "640px",
+        margin: "2em auto"
+      });
       elem.insertAdjacentElement("afterend", markup);
       return elem;
     }
