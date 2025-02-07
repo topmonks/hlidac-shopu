@@ -10,7 +10,6 @@ function fetchData(url, info) {
   const searchString = new URLSearchParams(Object.entries(info).filter(([, val]) => Boolean(val)));
   searchString.append("url", url);
   searchString.append("ext", getVersion());
-  console.log(searchString.toString());
   return fetch(`https://api.hlidacshopu.cz/v2/detail?${searchString}`).then(resp => {
     if (resp.status === 404) {
       return resp.json();

@@ -72,10 +72,25 @@ export * from "./alza.mjs";
 
 and run command
 
-```
+```bash
 yarn build:extension
 ```
 
 
-## Development
+## Extension development
 
+To develop extension in local environment, run this sequence in the terminal:
+
+```bash
+yarn watch:extension
+```
+
+This will prepare extension for development and rebuild the content script when changed.
+
+Then in the separate terminal start browser with loaded extension and auto reload on changes:
+
+```bash
+yarn start:firefox
+```
+
+Have fun!
