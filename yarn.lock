@@ -14120,7 +14120,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.6.12"
     vitest: "npm:3.0.5"
-    wrangler: "npm:3.107.2"
+    wrangler: "npm:3.107.3"
   languageName: unknown
   linkType: soft
 
@@ -23896,35 +23896,6 @@ __metadata:
   bin:
     workerd: bin/workerd
   checksum: 10c0/e85216a3ba0fa9768b94898c594858dc0bf667542f8e24d6ceec4490fbe4ba439f7fe287cf72731afcaaa25fe4d880e8a63fb0073b3fb5640793d552d2f6d70a
-  languageName: node
-  linkType: hard
-
-"wrangler@npm:3.107.2":
-  version: 3.107.2
-  resolution: "wrangler@npm:3.107.2"
-  dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.3.4"
-    "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
-    "@esbuild-plugins/node-modules-polyfill": "npm:0.2.2"
-    blake3-wasm: "npm:2.1.5"
-    esbuild: "npm:0.17.19"
-    fsevents: "npm:~2.3.2"
-    miniflare: "npm:3.20250129.0"
-    path-to-regexp: "npm:6.3.0"
-    unenv: "npm:2.0.0-rc.1"
-    workerd: "npm:1.20250129.0"
-  peerDependencies:
-    "@cloudflare/workers-types": ^4.20250129.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@cloudflare/workers-types":
-      optional: true
-  bin:
-    wrangler: bin/wrangler.js
-    wrangler2: bin/wrangler.js
-  checksum: 10c0/90af1b16d285cdf44d918b2ee70fe6cd39950208f57ec366640ed5845a7b5d04c65df8a21054db60954f0d883568206cc09cf455098f095d57905119e3fc721b
   languageName: node
   linkType: hard
 
