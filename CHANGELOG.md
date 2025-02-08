@@ -2,6 +2,7 @@
 
 ## Next
 * Added new shops 4camping.cz and 4camping.sk
+* Removed PennyDomu.cz as it's no longer operational
 
 ## 2.2.0
 * The detail API call moved from content script to service worker
