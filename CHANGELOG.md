@@ -1,5 +1,8 @@
 # Extension
 
+## Next
+* Added new shops 4camping.cz and 4camping.sk
+
 ## 2.2.0
 * The detail API call moved from content script to service worker
 * Removed custom CSP
