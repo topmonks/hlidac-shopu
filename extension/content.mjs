@@ -74,10 +74,8 @@ function handleDetail(shop) {
     async fetchData(info) {
       const url = info.url || location.href;
       const message = { name: "hs-detail", options: { url, info } };
-      console.log({ message });
       try {
         const res = await (chrome || browser).runtime.sendMessage(message);
-        console.log({ res });
         if (res.error || res.metadata?.error) {
           console.error("Hlídačshopů.cz - Error fetching data: ", res.error || res.metadata.error);
           return null;
