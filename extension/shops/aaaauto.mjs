@@ -1,4 +1,4 @@
-import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class AAAAuto extends Shop {
