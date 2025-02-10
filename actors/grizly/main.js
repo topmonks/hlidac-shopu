@@ -5,7 +5,6 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
@@ -61,6 +60,20 @@ function categoriesRequests(document, userData, log) {
 }
 
 /**
+ * @param {Element} prices
+ * @returns {{currentPrice: number|null, originalPrice: number|null}}
+ */
+function parsePrices(prices) {
+  const priceVat = cleanPrice(prices.querySelector(".pricevat.price").innerText.trim());
+  const priceRecom = cleanPrice(prices.querySelector(".price-recom")?.innerText.trim());
+  const priceSaleCode = cleanPrice(prices.querySelector(".sale-code__price")?.innerText.trim());
+
+  const currentPrice = priceSaleCode ?? priceVat ?? null;
+  const originalPrice = (priceSaleCode ? priceVat : priceRecom) ?? null;
+  return { currentPrice, originalPrice };
+}
+
+/**
  * @param {string} country
  * @param {Document} document
  * @return {Product[]}
@@ -70,12 +83,14 @@ function extractProducts(document, country) {
   const products = document.querySelectorAll(".content__catagories .product");
 
   return products.map(product => {
-    const itemId = product.getAttribute("data-id");
-    const itemUrl = completeUrl(country, product.querySelector("h3 a").getAttribute("href"));
+    const itemId = product.dataset.id;
+    const itemUrl = completeUrl(country, product.querySelector("h3 a").href);
     const itemName = product.querySelector(".product__header-name").innerText;
-    const img = completeUrl(country, product.querySelector(".product__image img").getAttribute("src"));
-    const currentPrice = cleanPrice(product.querySelector(".product__prices .pricevat.price").innerText.trim());
-    const originalPrice = cleanPrice(product.querySelector(".product__prices .pricerecom")?.innerText.trim());
+    const img = completeUrl(country, product.querySelector(".product__image img").src);
+
+    const prices = product.querySelector(".product__prices");
+    const { currentPrice, originalPrice } = parsePrices(prices);
+
     const inStock = !product.querySelector(".watchDog");
     const currency = currencyByCountry.get(country);
     return {
