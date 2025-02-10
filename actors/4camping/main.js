@@ -14,9 +14,9 @@ import { Actor, LogLevel, log } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
-const currencyByCountry = new Map([
-  ["CZ", "CZK"],
-  ["SK", "EUR"]
+const locales = new Map([
+  ["CZ", { lang: "cs", currency: "CZK" }],
+  ["SK", { lang: "sk", currency: "EUR" }]
 ]);
 
 /**
@@ -38,7 +38,7 @@ function toProduct(result, { url, originalPrice, country }) {
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const inStock = true;
   const category = result.mainCategory;
-  const currency = currencyByCountry.get(country);
+  const { currency } = locales.get(country.toUpperCase());
   return {
     slug,
     itemId,
@@ -54,22 +54,17 @@ function toProduct(result, { url, originalPrice, country }) {
   };
 }
 
-const locales = new Map([
-  ["CZ", { lang: "cs", currency: "CZK" }],
-  ["SK", { lang: "sk", currency: "EUR" }]
-]);
-
 /**
  * @param {number} page
  * @param {Object} userData
  * @returns {RequestOptions[]}
  */
 function categoryPageRequest(page, userData) {
-  const { country } = userData;
+  const { country, rootUrl } = userData;
   const locale = locales.get(country.toUpperCase());
   return [
     {
-      url: `https://www.4camping.${country.toLowerCase()}/api/parametric-search/`,
+      url: new URL("/api/parametric-search/", rootUrl).href,
       method: "POST",
       payload: JSON.stringify({
         typeClassname: "ParametricSearch\\Type\\Category",
@@ -162,14 +157,15 @@ function defRouter({ stats, processedIds }) {
  * @param {Object} params
  * @param {ActorType} params.type
  * @param {string} params.country
- * @returns {Source}
+ * @returns {RequestOptions[]}
  */
 function getStartUrls({ type, country }) {
+  const rootUrl = `https://www.4camping.${country.toLowerCase()}`;
   return [
     {
-      url: `https://www.4camping.${country.toLowerCase()}/sitemap/categories/`,
+      url: new URL("/sitemap/categories/", rootUrl).href,
       label: "start",
-      userData: { country, type }
+      userData: { country, type, rootUrl }
     }
   ];
 }
