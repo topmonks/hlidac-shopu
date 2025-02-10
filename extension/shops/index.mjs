@@ -23,7 +23,6 @@ export * from "./notino.mjs";
 export * from "./obi.mjs";
 export * from "./okay.mjs";
 export * from "./pilulka.mjs";
-export * from "./penny.mjs";
 export * from "./rohlik.mjs";
 export * from "./tetadrogerie.mjs";
 export * from "./tsbohemia.mjs";
