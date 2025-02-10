@@ -54,15 +54,22 @@ function toProduct(result, { url, originalPrice, country }) {
   };
 }
 
+const locales = new Map([
+  ["CZ", { lang: "cs", currency: "CZK" }],
+  ["SK", { lang: "sk", currency: "EUR" }]
+]);
+
 /**
  * @param {number} page
  * @param {Object} userData
  * @returns {RequestOptions[]}
  */
 function categoryPageRequest(page, userData) {
+  const { country } = userData;
+  const locale = locales.get(country.toUpperCase());
   return [
     {
-      url: "https://www.4camping.cz/api/parametric-search/",
+      url: `https://www.4camping.${country.toLowerCase()}/api/parametric-search/`,
       method: "POST",
       payload: JSON.stringify({
         typeClassname: "ParametricSearch\\Type\\Category",
@@ -72,8 +79,7 @@ function categoryPageRequest(page, userData) {
         conditions: {},
         baseConditions: {},
         existingFilters: {},
-        lang: "cs",
-        currency: "czk"
+        ...locale
       }),
       label: "categoryPage",
       userData,
@@ -90,10 +96,11 @@ function defRouter({ stats, processedIds }) {
      */
     async start({ request, body, crawler }) {
       const { document } = parseXML(body.toString());
+      const { userData } = request;
       const urls = transduce(
         comp(
           map(x => x.textContent.trim()),
-          map(url => ({ url, label: "category", userData: request.userData }))
+          map(url => ({ url, label: "category", userData }))
         ),
         push(),
         document.getElementsByTagNameNS("", "loc")
@@ -107,13 +114,14 @@ function defRouter({ stats, processedIds }) {
     async category({ request, body, crawler }) {
       stats.inc("categories");
 
+      const { userData } = request;
       const { document } = parseHTML(body.toString());
       const [, categoryId] = Array.from(document.body.classList)
         .find(x => x.startsWith("current-cat-id-"))
         .split("current-cat-id-");
       const page = 1;
       await crawler.addRequests(
-        categoryPageRequest(page, Object.assign({}, request.userData, { categoryId: Number.parseInt(categoryId) }))
+        categoryPageRequest(page, Object.assign({}, userData, { categoryId: Number.parseInt(categoryId) }))
       );
     },
     /**
