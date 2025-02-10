@@ -4044,7 +4044,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.4.0"
     "@thi.ng/atom": "npm:5.3.20"
     "@types/node": "npm:22.13.0"
-    linkedom: "npm:0.18.7"
+    linkedom: "npm:0.18.9"
     rollbar: "npm:2.26.4"
   peerDependencies:
     apify: ^3.2.0
@@ -4492,7 +4492,7 @@ __metadata:
     "@types/node": "npm:22.13.0"
     apify: "npm:3.3.0"
     apify-cli: "npm:0.21.1"
-    linkedom: "npm:0.18.7"
+    linkedom: "npm:0.18.9"
   languageName: unknown
   linkType: soft
 
@@ -11719,7 +11719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"domutils@npm:^3.0.1, domutils@npm:^3.1.0":
+"domutils@npm:^3.0.1, domutils@npm:^3.1.0, domutils@npm:^3.2.1":
   version: 3.2.2
   resolution: "domutils@npm:3.2.2"
   dependencies:
@@ -12020,6 +12020,13 @@ __metadata:
   version: 4.5.0
   resolution: "entities@npm:4.5.0"
   checksum: 10c0/5b039739f7621f5d1ad996715e53d964035f75ad3b9a4d38c6b3804bb226e282ffeae2443624d8fdd9c47d8e926ae9ac009c54671243f0c3294c26af7cc85250
+  languageName: node
+  linkType: hard
+
+"entities@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "entities@npm:6.0.0"
+  checksum: 10c0/b82a7bd5de282860f3c36a91e815e41e874fd036c83956a568b82729678492eb088359d6f7e0a4f5c00776427263fcba04959b8340fefa430c39b9bce770427e
   languageName: node
   linkType: hard
 
@@ -14778,7 +14785,7 @@ __metadata:
     dotenv-cli: "npm:8.0.0"
     esbuild: "npm:0.25.0"
     gulp-mode: "npm:1.1.0"
-    linkedom: "npm:0.18.7"
+    linkedom: "npm:0.18.9"
     npm-run-all2: "npm:7.0.2"
     postcss: "npm:8.5.1"
     postcss-css-variables: "npm:0.19.0"
@@ -14847,6 +14854,18 @@ __metadata:
   bin:
     html-minifier: ./cli.js
   checksum: 10c0/38c2d1cab49593671b104e3bc120b1c5fdf00c75930fcb32e257322219c9d31515af6b39af76e8ecd71fdf3a77d168f8b7b7ce02beba0b72eb5631599b5561bc
+  languageName: node
+  linkType: hard
+
+"htmlparser2@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "htmlparser2@npm:10.0.0"
+  dependencies:
+    domelementtype: "npm:^2.3.0"
+    domhandler: "npm:^5.0.3"
+    domutils: "npm:^3.2.1"
+    entities: "npm:^6.0.0"
+  checksum: 10c0/47cfa37e529c86a7ba9a1e0e6f951ad26ef8ca5af898ab6e8916fa02c0264c1453b4a65f28b7b8a7f9d0d29b5a70abead8203bf8b3f07bc69407e85e7d9a68e4
   languageName: node
   linkType: hard
 
@@ -16664,7 +16683,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.18.7, linkedom@npm:^0.18.0":
+"linkedom@npm:0.18.9":
+  version: 0.18.9
+  resolution: "linkedom@npm:0.18.9"
+  dependencies:
+    css-select: "npm:^5.1.0"
+    cssom: "npm:^0.5.0"
+    html-escaper: "npm:^3.0.3"
+    htmlparser2: "npm:^10.0.0"
+    uhyphen: "npm:^0.2.0"
+  checksum: 10c0/7d8e0498726d4e0bdd8a52c7f3d5b454ec7e84fc0b52578bcb30b05114b9fd5dcc9d4db505c05dba3b56c16c39787ebeb320a88a1c72f84abbec76546dfa8535
+  languageName: node
+  linkType: hard
+
+"linkedom@npm:^0.18.0":
   version: 0.18.7
   resolution: "linkedom@npm:0.18.7"
   dependencies:
