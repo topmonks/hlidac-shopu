@@ -69,7 +69,7 @@ function parsePrices(prices) {
   const priceSaleCode = cleanPrice(prices.querySelector(".sale-code__price")?.innerText.trim());
 
   const currentPrice = priceSaleCode ?? priceVat ?? null;
-  const originalPrice = (priceSaleCode ? priceVat : priceRecom) ?? null;
+  const originalPrice = priceRecom ?? priceVat ?? null;
   return { currentPrice, originalPrice };
 }
 
