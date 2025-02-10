@@ -4090,18 +4090,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hlidac-shopu/penny@workspace:actors/penny":
-  version: 0.0.0-use.local
-  resolution: "@hlidac-shopu/penny@workspace:actors/penny"
-  dependencies:
-    "@crawlee/http": "npm:3.12.2"
-    "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@types/node": "npm:22.13.0"
-    apify: "npm:3.2.6"
-    apify-cli: "npm:0.21.0"
-  languageName: unknown
-  linkType: soft
-
 "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
