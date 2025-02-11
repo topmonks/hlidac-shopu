@@ -41,8 +41,7 @@
     "puppeteer": "24.2.0",
     "rollbar": "2.26.4",
     "source-map-explorer": "2.5.3",
-    "web-ext": "8.4.0",
-    "web-ext-submit": "7.8.0"
+    "web-ext": "8.4.0"
   },
   "resolutions": {
     "lodash": "4.17.21"
@@ -71,7 +70,7 @@
     "build:firefox": "run-s build:firefox:build build:firefox:rename",
     "start:firefox": "web-ext run --browser-console --devtools",
     "start:firefox-android": "web-ext run --target=firefox-android --adb-device 127.0.0.1:6555 --firefox-apk org.mozilla.firefox",
-    "publish:firefox": "web-ext-submit --channel=listed",
+    "publish:firefox": "web-ext sign --use-submission-api --channel=listed",
     "build:chrome:build": "web-ext build --overwrite-dest",
     "build:chrome:rename": "node scripts/rename.mjs dist/*.zip 'hl_da_shop_(.*)' 'chrome-extension%1'",
     "build:chrome": "run-s build:chrome:build build:chrome:rename",
