@@ -1,13 +1,13 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Lidl extends Shop {
+export class Lidl extends AsyncShop {
+  get waitForSelector() {
+    return ".buybox:has(.delivery-info)";
+  }
+
   get injectionPoint() {
-    if (this.isMobileDetailPage()) {
-      return ["beforebegin", ".buybox__bottom"];
-    } else {
-      return ["beforeend", ".detail__column--keyfacts"];
-    }
+    return ["beforebegin", ".buybox__item:has(.delivery-info)"];
   }
 
   async scrape() {
@@ -20,12 +20,6 @@ export class Lidl extends Shop {
     const imageUrl = document.querySelector(".gallery-image__img").src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  isMobileDetailPage() {
-    const elem = document.querySelector("article.detail");
-    const style = window.getComputedStyle(elem);
-    return style.margin === "8px 0px 0px";
   }
 }
 registerShop(new Lidl(), "lidl_cz");
