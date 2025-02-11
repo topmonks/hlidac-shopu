@@ -53,7 +53,7 @@ function getMobileDetailInfo() {
 
   const itemId = location.href.match(/d(\d+)\.htm$/)?.at(-1) ?? new URLSearchParams(location.search).get("dq");
   const title = elem.querySelector("h1").innerText.trim();
-  const currentPrice = cleanPrice("#detailPage .js-price-withVat");
+  const currentPrice = cleanPrice("#detailPage .js-price-box-container--main  .js-price-withVat");
   const originalPrice = cleanPrice("#detailPage .js-price-compare");
   return { itemId, title, currentPrice, originalPrice };
 }
