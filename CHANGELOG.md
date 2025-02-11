@@ -5,6 +5,7 @@
 * Removed PennyDomu.cz as it's no longer operational
 * Removed definitions of non-CZ and SK shop variants as we don't provide data for them in our API
 * Fixed m.alza.cz current price extraction
+* Fixed Albert.cz
 * Enabled Firefox Android support - experimental, not tested on all shops
 
 ## 2.2.0
