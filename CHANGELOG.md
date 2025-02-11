@@ -7,6 +7,7 @@
 * Fixed m.alza.cz current price extraction
 * Fixed Albert.cz
 * Fixed Lidl.cz
+* Fixed DM.cz
 * Enabled Firefox Android support - experimental, not tested on all shops
 
 ## 2.2.0
