@@ -1,8 +1,11 @@
 # Extension
 
-## Next
+## 2.3.0
 * Added new shops 4camping.cz and 4camping.sk
 * Removed PennyDomu.cz as it's no longer operational
+* Removed definitions of non-CZ and SK shop variants as we don't provide data for them in our API
+* Fixed m.alza.cz current price extraction
+* Enabled Firefox Android support - experimental, not tested on all shops
 
 ## 2.2.0
 * The detail API call moved from content script to service worker
