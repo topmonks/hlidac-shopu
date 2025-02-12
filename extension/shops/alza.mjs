@@ -77,9 +77,10 @@ function getDetailItemInfo() {
   const itemId = elem.dataset.id;
   const title = document.querySelector("h1").innerText.trim();
   const currentPrice =
-    cleanPrice(".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price") ||
+    cleanPrice(".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price") ??
     cleanPrice(".price-box__price");
-  const originalPrice = cleanPrice(".price-box__compare-price");
+  const originalPrice =
+    cleanPrice(".price-box__compare-price") ?? cleanPrice(".price-box--super-price .price-box__body");
   const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
