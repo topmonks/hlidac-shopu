@@ -1,8 +1,28 @@
+/**
+ * @typedef {Object} ProductInfo
+ * @property {string} itemId
+ * @property {string} title
+ * @property {string} currentPrice
+ * @property {string|null} originalPrice
+ * @property {string} imageUrl
+ */
+
+/**
+ * @abstract
+ */
 export class Shop {
+  /**
+   * @abstract
+   * @returns {Promise<ProductInfo|void>}
+   */
   async scrape() {
     throw new Error("Method not implemented");
   }
 
+  /**
+   * @abstract
+   * @return {[InsertPosition,string]|[InsertPosition,string,Record<string, any>]}
+   */
   get injectionPoint() {
     throw new Error("Property not implemented");
   }
@@ -24,6 +44,9 @@ export class Shop {
   }
 }
 
+/**
+ * @abstract
+ */
 export class AsyncShop extends Shop {
   constructor() {
     super();
@@ -33,6 +56,10 @@ export class AsyncShop extends Shop {
     this.firstLoad = true;
   }
 
+  /**
+   * @abstract
+   * @return {string} CSS selector of Element to wait for
+   */
   get waitForSelector() {
     throw new Error("Property not implemented");
   }
@@ -74,19 +101,34 @@ export class AsyncShop extends Shop {
   }
 }
 
+/**
+ * @abstract
+ */
 export class StatefulShop extends Shop {
+  /**
+   * @abstract
+   */
   get detailSelector() {
     throw new Error("Property not implemented");
   }
 
+  /**
+   * @abstract
+   */
   get observerTarget() {
     return document.body;
   }
 
+  /**
+   * @abstract
+   */
   shouldRender(mutations) {
     throw new Error("Method not implemented");
   }
 
+  /**
+   * @abstract
+   */
   shouldCleanup(mutations) {
     throw new Error("Method not implemented");
   }
