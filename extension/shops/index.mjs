@@ -9,6 +9,7 @@ export * from "./datart.mjs";
 export * from "./dm.mjs";
 export * from "./eva.mjs";
 export * from "./globus.mjs";
+export * from "./grizly.mjs";
 export * from "./ikea.mjs";
 export * from "./itesco.mjs";
 export * from "./kaufland.mjs";
