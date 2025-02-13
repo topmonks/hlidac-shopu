@@ -18,11 +18,10 @@ export class Tchibo extends AsyncShop {
     const itemUrl = document.location.href;
     const itemId = itemUrl.split("/").at(-2);
     const title = document.querySelector(".pdp-buybox__title").textContent.trim();
-    const currentPrice = cleanPrice(".tp-price-current");
-    const originalPrice = cleanPrice(".tp-price-previous .tp-price-value");
+    const currentPrice = cleanPrice("#pdp-buybox .tp-price-current .tp-price-number");
+    const originalPrice = cleanPrice("#pdp-buybox .tp-price-previous .tp-price-number");
     const imageUrl = document.querySelector(".tp-imagegallery-main-container img")?.src;
 
-    console.log({ itemId, title, currentPrice, originalPrice, imageUrl });
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
