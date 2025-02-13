@@ -3,6 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
+import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { Actor, LogLevel, log } from "apify";
@@ -38,13 +39,6 @@ function filterTestRequests(requests, userData) {
   return userData.type === ActorType.Test ? requests.slice(0, 10) : requests;
 }
 
-function cleanPrice(string) {
-  if (!string) {
-    return undefined;
-  }
-  return Number(string.replace(/\D/g, ""));
-}
-
 function categoriesRequests(document, userData, log) {
   const links = document.querySelectorAll(".sub-menu--3 li a");
   return links.map(link => {
@@ -64,9 +58,9 @@ function categoriesRequests(document, userData, log) {
  * @returns {{currentPrice: number|null, originalPrice: number|null}}
  */
 function parsePrices(prices) {
-  const priceVat = cleanPrice(prices.querySelector(".pricevat.price").innerText.trim());
-  const priceRecom = cleanPrice(prices.querySelector(".price-recom")?.innerText.trim());
-  const priceSaleCode = cleanPrice(prices.querySelector(".sale-code__price")?.innerText.trim());
+  const priceVat = cleanPrice(prices.querySelector(".pricevat.price")?.innerText?.trim());
+  const priceRecom = cleanPrice(prices.querySelector(".price-recom")?.innerText?.trim());
+  const priceSaleCode = cleanPrice(prices.querySelector(".sale-code__price")?.innerText?.trim());
 
   const currentPrice = priceSaleCode ?? priceVat ?? null;
   const originalPrice = priceRecom ?? priceVat ?? null;
@@ -131,7 +125,7 @@ function defRouter({ stats }) {
       const { url, userData } = request;
       const { country, type, category } = userData;
       const { document } = parseHTML(body.toString());
-      const categoryProductsCountNode = document.querySelector("#itemscount").value;
+      const categoryProductsCountNode = document.querySelector("#itemscount")?.value;
       if (!categoryProductsCountNode) {
         return log.error(`No products count node found on ${url}`);
       }
@@ -140,7 +134,7 @@ function defRouter({ stats }) {
       if (nextPageButton && type !== ActorType.Test) {
         await crawler.requestQueue.addRequests([
           {
-            url: completeUrl(country, nextPageButton.getAttribute("href"), category),
+            url: completeUrl(country, nextPageButton.href, category),
             label: "category",
             userData
           }
