@@ -2484,9 +2484,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/vitest-pool-workers@npm:0.6.15":
-  version: 0.6.15
-  resolution: "@cloudflare/vitest-pool-workers@npm:0.6.15"
+"@cloudflare/vitest-pool-workers@npm:0.6.16":
+  version: 0.6.16
+  resolution: "@cloudflare/vitest-pool-workers@npm:0.6.16"
   dependencies:
     birpc: "npm:0.2.14"
     cjs-module-lexer: "npm:^1.2.3"
@@ -2494,13 +2494,13 @@ __metadata:
     esbuild: "npm:0.17.19"
     miniflare: "npm:3.20250204.1"
     semver: "npm:^7.5.1"
-    wrangler: "npm:3.109.0"
+    wrangler: "npm:3.109.1"
     zod: "npm:^3.22.3"
   peerDependencies:
     "@vitest/runner": 2.0.x - 2.1.x
     "@vitest/snapshot": 2.0.x - 2.1.x
     vitest: 2.0.x - 2.1.x
-  checksum: 10c0/107779dd2167357479b309122160483ba573642b1add7ff1f2d3b838f0a272760aa7be623a52d4cce5b066ebff19e5139747bea205f266982f81f2cad795676d
+  checksum: 10c0/5e0fc65f2895e5da2002be3012adbfb27bcdbfe17fde79e3d4df24da1b9f3ab967a593820759f44a23d73ebe1e154f16aaeacd7c6019c9c12cfbcb9c68de568b
   languageName: node
   linkType: hard
 
@@ -14517,7 +14517,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidacshopu-google-stats@workspace:workers/hlidacshopu-google-stats"
   dependencies:
-    "@cloudflare/vitest-pool-workers": "npm:0.6.15"
+    "@cloudflare/vitest-pool-workers": "npm:0.6.16"
     vitest: "npm:3.0.5"
     wrangler: "npm:3.107.3"
   languageName: unknown
@@ -23904,9 +23904,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wrangler@npm:3.109.0":
-  version: 3.109.0
-  resolution: "wrangler@npm:3.109.0"
+"wrangler@npm:3.109.1":
+  version: 3.109.1
+  resolution: "wrangler@npm:3.109.1"
   dependencies:
     "@cloudflare/kv-asset-handler": "npm:0.3.4"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
@@ -23932,7 +23932,7 @@ __metadata:
   bin:
     wrangler: bin/wrangler.js
     wrangler2: bin/wrangler.js
-  checksum: 10c0/0ca84b850a0a362629a1df7c4623f0ff3f021c65f8e405f7cd2df1d1c808e07ca7a9fab9cf5ebdd7cec06e2f56967f445a2d9feb3be60449230d955ab333d0c8
+  checksum: 10c0/117af434f8e35963c2de70d6933aa32e59435d5033d65814f21d07c103b559b29d58f1ab8451a9e3f959dd1b31400fd201f5dce582f8678991f2539dcf9bd802
   languageName: node
   linkType: hard
 
