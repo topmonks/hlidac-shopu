@@ -14541,7 +14541,7 @@ __metadata:
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.9"
     npm-run-all2: "npm:7.0.2"
-    postcss: "npm:8.5.2"
+    postcss: "npm:8.5.3"
     postcss-css-variables: "npm:0.19.0"
     puppeteer: "npm:24.2.1"
     ramda: "npm:0.30.1"
@@ -19492,14 +19492,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.2":
-  version: 8.5.2
-  resolution: "postcss@npm:8.5.2"
+"postcss@npm:8.5.3":
+  version: 8.5.3
+  resolution: "postcss@npm:8.5.3"
   dependencies:
     nanoid: "npm:^3.3.8"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10c0/3044d49bc725029ab62292e8bf9849741251b95f3b754e191bf8b4025414d40ec3b4ac05c5a563d4b50060b5c8e96683eb4d783d8d8fa3867eb7b763cbe66127
+  checksum: 10c0/b75510d7b28c3ab728c8733dd01538314a18c52af426f199a3c9177e63eb08602a3938bfb66b62dc01350b9aed62087eabbf229af97a1659eb8d3513cec823b3
   languageName: node
   linkType: hard
 
