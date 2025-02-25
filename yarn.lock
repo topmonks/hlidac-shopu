@@ -4056,7 +4056,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@thi.ng/transducers": "npm:9.2.19"
+    "@thi.ng/transducers": "npm:9.2.20"
     "@types/node": "npm:22.13.5"
     apify: "npm:3.3.2"
     apify-cli: "npm:0.21.1"
@@ -4080,7 +4080,7 @@ __metadata:
   resolution: "@hlidac-shopu/actors-common@workspace:actors/common"
   dependencies:
     "@hlidac-shopu/lib": "npm:1.4.0"
-    "@thi.ng/atom": "npm:5.3.22"
+    "@thi.ng/atom": "npm:5.3.23"
     "@types/node": "npm:22.13.5"
     linkedom: "npm:0.18.9"
     rollbar: "npm:2.26.4"
@@ -4095,7 +4095,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@thi.ng/transducers": "npm:9.2.19"
+    "@thi.ng/transducers": "npm:9.2.20"
     "@types/node": "npm:22.13.5"
     apify: "npm:3.3.2"
     apify-cli: "npm:0.21.1"
@@ -4162,7 +4162,7 @@ __metadata:
   dependencies:
     "@crawlee/http": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@thi.ng/transducers": "npm:9.2.19"
+    "@thi.ng/transducers": "npm:9.2.20"
     "@types/node": "npm:22.13.5"
     apify: "npm:3.3.2"
     apify-cli: "npm:0.21.1"
@@ -4504,8 +4504,8 @@ __metadata:
     "@crawlee/http": "npm:3.12.2"
     "@crawlee/utils": "npm:3.12.2"
     "@hlidac-shopu/actors-common": "npm:3.1.1"
-    "@thi.ng/atom": "npm:5.3.22"
-    "@thi.ng/transducers": "npm:9.2.19"
+    "@thi.ng/atom": "npm:5.3.23"
+    "@thi.ng/transducers": "npm:9.2.20"
     "@types/node": "npm:22.13.5"
     apify: "npm:3.3.2"
     apify-cli: "npm:0.21.1"
@@ -4598,7 +4598,7 @@ __metadata:
     "@material/layout-grid": "npm:14.0.0"
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
-    "@thi.ng/atom": "npm:5.3.22"
+    "@thi.ng/atom": "npm:5.3.23"
     dotenv-cli: "npm:8.0.0"
     lit-html: "npm:3.2.1"
     postcss-css-variables: "npm:0.19.0"
@@ -7434,7 +7434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/arrays@npm:^2.10.16":
+"@thi.ng/arrays@npm:^2.10.17":
   version: 2.10.17
   resolution: "@thi.ng/arrays@npm:2.10.17"
   dependencies:
@@ -7448,20 +7448,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/atom@npm:5.3.22":
-  version: 5.3.22
-  resolution: "@thi.ng/atom@npm:5.3.22"
+"@thi.ng/atom@npm:5.3.23":
+  version: 5.3.23
+  resolution: "@thi.ng/atom@npm:5.3.23"
   dependencies:
     "@thi.ng/api": "npm:^8.11.21"
     "@thi.ng/equiv": "npm:^2.1.77"
     "@thi.ng/errors": "npm:^2.5.27"
-    "@thi.ng/paths": "npm:^5.2.2"
+    "@thi.ng/paths": "npm:^5.2.3"
     tslib: "npm:^2.8.1"
-  checksum: 10c0/5ef43dce238ab78cecefc153dcdccc46553f3d4f3416d04d7ee1df8fd8a6aa135dd0a53385bca1648c415ca19213ae6d2b0c4b7c3d90774961a7b65eba6fc906
+  checksum: 10c0/9f01bebf5294252e8c141ea1ac1a35de9dbddd7ac6eb32ba81070ef92eb98dae40e2f35623402e617d952d0b69436be10198d400849cfa090d3225acb0996054
   languageName: node
   linkType: hard
 
-"@thi.ng/checks@npm:^3.6.24, @thi.ng/checks@npm:^3.7.0":
+"@thi.ng/checks@npm:^3.7.0":
   version: 3.7.0
   resolution: "@thi.ng/checks@npm:3.7.0"
   dependencies:
@@ -7512,7 +7512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/paths@npm:^5.2.2":
+"@thi.ng/paths@npm:^5.2.3":
   version: 5.2.3
   resolution: "@thi.ng/paths@npm:5.2.3"
   dependencies:
@@ -7540,20 +7540,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:9.2.19":
-  version: 9.2.19
-  resolution: "@thi.ng/transducers@npm:9.2.19"
+"@thi.ng/transducers@npm:9.2.20":
+  version: 9.2.20
+  resolution: "@thi.ng/transducers@npm:9.2.20"
   dependencies:
     "@thi.ng/api": "npm:^8.11.21"
-    "@thi.ng/arrays": "npm:^2.10.16"
-    "@thi.ng/checks": "npm:^3.6.24"
+    "@thi.ng/arrays": "npm:^2.10.17"
+    "@thi.ng/checks": "npm:^3.7.0"
     "@thi.ng/compare": "npm:^2.4.13"
     "@thi.ng/compose": "npm:^3.0.24"
     "@thi.ng/errors": "npm:^2.5.27"
     "@thi.ng/math": "npm:^5.11.21"
     "@thi.ng/random": "npm:^4.1.12"
     "@thi.ng/timestamp": "npm:^1.1.6"
-  checksum: 10c0/3f477ca4d48061548bd9a8393f62e28f932f761c8340d122e1b3207c974dd2eb4c2c67acf58ef2f3ef8c185be40860005dbf862c60ddcab0fa7897ad280b1b32
+  checksum: 10c0/90e849283af9d9defc527f7e5cab9fdf1d4bb94679f37232aefd4d41d18382677a853a65bae44838ff9cc837b9168eabe22c0090234ed919fda5b98b2ceb4d77
   languageName: node
   linkType: hard
 
