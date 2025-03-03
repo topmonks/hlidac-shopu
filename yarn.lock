@@ -14572,7 +14572,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.7.4"
     vitest: "npm:3.0.7"
-    wrangler: "npm:3.109.3"
+    wrangler: "npm:3.111.0"
   languageName: unknown
   linkType: soft
 
@@ -16995,27 +16995,6 @@ __metadata:
   version: 4.0.0
   resolution: "mimic-response@npm:4.0.0"
   checksum: 10c0/761d788d2668ae9292c489605ffd4fad220f442fbae6832adce5ebad086d691e906a6d5240c290293c7a11e99fbdbbef04abbbed498bf8699a4ee0f31315e3fb
-  languageName: node
-  linkType: hard
-
-"miniflare@npm:3.20250214.0":
-  version: 3.20250214.0
-  resolution: "miniflare@npm:3.20250214.0"
-  dependencies:
-    "@cspotcode/source-map-support": "npm:0.8.1"
-    acorn: "npm:8.14.0"
-    acorn-walk: "npm:8.3.2"
-    exit-hook: "npm:2.2.1"
-    glob-to-regexp: "npm:0.4.1"
-    stoppable: "npm:1.1.0"
-    undici: "npm:^5.28.5"
-    workerd: "npm:1.20250214.0"
-    ws: "npm:8.18.0"
-    youch: "npm:3.2.3"
-    zod: "npm:3.22.3"
-  bin:
-    miniflare: bootstrap.js
-  checksum: 10c0/7da82302f1f7e24750970434bc8e7e9c944cc4b37a5f46125441dac5c1fe5622bb245ac9bedca2b28adc77819732f2bca450c1b71f36b01898b1a68db7b07edd
   languageName: node
   linkType: hard
 
@@ -23903,38 +23882,6 @@ __metadata:
   bin:
     workerd: bin/workerd
   checksum: 10c0/9fbcb7c7e39ac3a413179fcc18a7abab50ffcabc4aebc1673246991de26941ed4de801bfb9875c9db5256079742409ac92df41425666818ca58253ad3ca5cacd
-  languageName: node
-  linkType: hard
-
-"wrangler@npm:3.109.3":
-  version: 3.109.3
-  resolution: "wrangler@npm:3.109.3"
-  dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.3.4"
-    "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
-    "@esbuild-plugins/node-modules-polyfill": "npm:0.2.2"
-    blake3-wasm: "npm:2.1.5"
-    esbuild: "npm:0.17.19"
-    fsevents: "npm:~2.3.2"
-    miniflare: "npm:3.20250214.0"
-    path-to-regexp: "npm:6.3.0"
-    sharp: "npm:^0.33.5"
-    unenv: "npm:2.0.0-rc.1"
-    workerd: "npm:1.20250214.0"
-  peerDependencies:
-    "@cloudflare/workers-types": ^4.20250214.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-    sharp:
-      optional: true
-  peerDependenciesMeta:
-    "@cloudflare/workers-types":
-      optional: true
-  bin:
-    wrangler: bin/wrangler.js
-    wrangler2: bin/wrangler.js
-  checksum: 10c0/41440cd7c11c19628e9e865fb0eac5611b2ee75aa3f7d20b91e161555f54af1a96c143ea17945646c7c8e774206552a3d302a9f1904d6af653e55421c3de4d99
   languageName: node
   linkType: hard
 
