@@ -4435,7 +4435,7 @@ __metadata:
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
     "@pulumi/aws": "npm:6.71.0"
-    "@pulumi/awsx": "npm:2.21.0"
+    "@pulumi/awsx": "npm:2.21.1"
     "@pulumi/pulumi": "npm:3.154.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.25.1"
@@ -6161,29 +6161,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^6.66.2":
-  version: 6.67.0
-  resolution: "@pulumi/aws@npm:6.67.0"
+"@pulumi/aws@npm:^6.66.3":
+  version: 6.72.0
+  resolution: "@pulumi/aws@npm:6.72.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.142.0"
     mime: "npm:^2.0.0"
-  checksum: 10c0/f28d4605dbfa6796859ba6e9042fda2804c8b4a6a005dc4fd7cd72f6017592b42b42afbe92383ed6c553ec97dddcd31b2c8a7f5b264c6f3e36554f71700b9f4c
+  checksum: 10c0/b27b5fd3681fc1024c600d5c7ffdc6f95773da3c1f8547d0ee685aa98e1a2d35e577dc14b7b6120bc1703c0729b9e595ab35266f32163eb16c1a135b556f3f67
   languageName: node
   linkType: hard
 
-"@pulumi/awsx@npm:2.21.0":
-  version: 2.21.0
-  resolution: "@pulumi/awsx@npm:2.21.0"
+"@pulumi/awsx@npm:2.21.1":
+  version: 2.21.1
+  resolution: "@pulumi/awsx@npm:2.21.1"
   dependencies:
     "@aws-sdk/client-ecs": "npm:^3.405.0"
-    "@pulumi/aws": "npm:^6.66.2"
+    "@pulumi/aws": "npm:^6.66.3"
     "@pulumi/docker": "npm:^4.6.0"
     "@pulumi/docker-build": "npm:^0.0.8"
     "@pulumi/pulumi": "npm:^3.142.0"
     "@types/aws-lambda": "npm:^8.10.23"
     docker-classic: "npm:@pulumi/docker@3.6.1"
     mime: "npm:^2.0.0"
-  checksum: 10c0/f66571546f213520cfab9d2ee7f9f645e4dfae3b8dd0fe2b8622d2cbb03a3fc1754b80ef97640c8709ef5ba0259a74f48ed5709f9324622a82d97c50cd3d9633
+  checksum: 10c0/c1c3267a2222cc5ce3eb26ce718297caa2798f1582da529d9b299bbf884008897fda795edb05e012d56e88f81d074c50b4d545445b130fcee136e18584af678d
   languageName: node
   linkType: hard
 
