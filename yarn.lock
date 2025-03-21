@@ -2332,7 +2332,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.26.7, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.26.10":
+  version: 7.26.10
+  resolution: "@babel/runtime@npm:7.26.10"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/6dc6d88c7908f505c4f7770fb4677dfa61f68f659b943c2be1f2a99cb6680343462867abf2d49822adc435932919b36c77ac60125793e719ea8745f2073d3745
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.8.4":
   version: 7.26.7
   resolution: "@babel/runtime@npm:7.26.7"
   dependencies:
@@ -5347,10 +5356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdn/browser-compat-data@npm:5.6.31":
-  version: 5.6.31
-  resolution: "@mdn/browser-compat-data@npm:5.6.31"
-  checksum: 10c0/4c6e94cffd63a3d9eaf16a87a7afdd01677f04838b96b712c8c89612b911893f115af683068e25f230151211a709add7cba23542cd2f14216ed6525bc530757a
+"@mdn/browser-compat-data@npm:5.7.3":
+  version: 5.7.3
+  resolution: "@mdn/browser-compat-data@npm:5.7.3"
+  checksum: 10c0/a630301c646deb11b3ea75056b5e71976da0e0935b21248e8cfa10c3cb03555b1561b998e4eea1a1f0a4820449b16bc8d0f220cc9b98741192c45dc1efd054d8
   languageName: node
   linkType: hard
 
@@ -8494,13 +8503,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"addons-linter@npm:7.8.0":
-  version: 7.8.0
-  resolution: "addons-linter@npm:7.8.0"
+"addons-linter@npm:7.9.0":
+  version: 7.9.0
+  resolution: "addons-linter@npm:7.9.0"
   dependencies:
     "@fluent/syntax": "npm:0.19.0"
     "@fregante/relaxed-json": "npm:2.0.0"
-    "@mdn/browser-compat-data": "npm:5.6.31"
+    "@mdn/browser-compat-data": "npm:5.7.3"
     addons-moz-compare: "npm:1.3.0"
     addons-scanner-utils: "npm:9.12.0"
     ajv: "npm:8.17.1"
@@ -8515,17 +8524,17 @@ __metadata:
     espree: "npm:10.3.0"
     esprima: "npm:4.0.1"
     fast-json-patch: "npm:3.1.1"
-    image-size: "npm:1.2.0"
+    image-size: "npm:2.0.1"
     json-merge-patch: "npm:1.0.2"
     pino: "npm:8.20.0"
-    semver: "npm:7.6.3"
+    semver: "npm:7.7.1"
     source-map-support: "npm:0.5.21"
     upath: "npm:2.0.1"
     yargs: "npm:17.7.2"
     yauzl: "npm:2.10.0"
   bin:
     addons-linter: bin/addons-linter
-  checksum: 10c0/fe659629914e90b5a0c25c9f4366a00ba2822586bdb41506f24d96e07b337cb06a13da27762c00d9c1217c7db746ffd530ca0567bda1e208c939468fc654029a
+  checksum: 10c0/fb3e3f9ad072419dfcb33a7a5aae56742295ce2b39a8de2f77684e7ddfd69c9e89d8d6fa9bc4e0cb0a061becfe76f7a03bcd46c6e79e1464b2086ca1ae2491e1
   languageName: node
   linkType: hard
 
@@ -14399,7 +14408,7 @@ __metadata:
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
-    web-ext: "npm:8.4.0"
+    web-ext: "npm:8.5.0"
   languageName: unknown
   linkType: soft
 
@@ -14704,14 +14713,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:1.2.0":
-  version: 1.2.0
-  resolution: "image-size@npm:1.2.0"
-  dependencies:
-    queue: "npm:6.0.2"
+"image-size@npm:2.0.1":
+  version: 2.0.1
+  resolution: "image-size@npm:2.0.1"
   bin:
     image-size: bin/image-size.js
-  checksum: 10c0/782669b530d9bbdcb334c8451db5f104dfbbcf90940751e6b75ba4e1b86d98bf3127c339eac8fb7a25c7a9ec4ea868d27b4916df3943c269b7419a8cc4459dca
+  checksum: 10c0/925bf741630a1c5b42fd96ae5332763ce034817f8b65221cfaaea64c3d38f4cf774763fd810e26e9510f635de57b10331404e3ca0e4e511e875d5d05f33036c0
   languageName: node
   linkType: hard
 
@@ -19648,15 +19655,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"queue@npm:6.0.2":
-  version: 6.0.2
-  resolution: "queue@npm:6.0.2"
-  dependencies:
-    inherits: "npm:~2.0.3"
-  checksum: 10c0/cf987476cc72e7d3aaabe23ccefaab1cd757a2b5e0c8d80b67c9575a6b5e1198807ffd4f0948a3f118b149d1111d810ee773473530b77a5c606673cac2c9c996
-  languageName: node
-  linkType: hard
-
 "quick-format-unescaped@npm:^4.0.3":
   version: 4.0.4
   resolution: "quick-format-unescaped@npm:4.0.4"
@@ -20573,12 +20571,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.6.3":
-  version: 7.6.3
-  resolution: "semver@npm:7.6.3"
+"semver@npm:7.7.1, semver@npm:^7.7.0, semver@npm:^7.7.1, semver@npm:~7.7.0":
+  version: 7.7.1
+  resolution: "semver@npm:7.7.1"
   bin:
     semver: bin/semver.js
-  checksum: 10c0/88f33e148b210c153873cb08cfe1e281d518aaa9a666d4d148add6560db5cd3c582f3a08ccb91f38d5f379ead256da9931234ed122057f40bb5766e65e58adaf
+  checksum: 10c0/fd603a6fb9c399c6054015433051bdbe7b99a940a8fb44b85c2b524c4004b023d7928d47cb22154f8d054ea7ee8597f586605e05b52047f048278e4ac56ae958
   languageName: node
   linkType: hard
 
@@ -20606,15 +20604,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10c0/bcd1c03209b4be7d8ca86c976a0410beba7d4ec1d49d846a4be154b958db1ff5eaee50760c1d4f4070b19dee3236b8672d3e09642c53ea23740398bba2538a2d
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.7.0, semver@npm:^7.7.1, semver@npm:~7.7.0":
-  version: 7.7.1
-  resolution: "semver@npm:7.7.1"
-  bin:
-    semver: bin/semver.js
-  checksum: 10c0/fd603a6fb9c399c6054015433051bdbe7b99a940a8fb44b85c2b524c4004b023d7928d47cb22154f8d054ea7ee8597f586605e05b52047f048278e4ac56ae958
   languageName: node
   linkType: hard
 
@@ -23139,13 +23128,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:8.4.0":
-  version: 8.4.0
-  resolution: "web-ext@npm:8.4.0"
+"web-ext@npm:8.5.0":
+  version: 8.5.0
+  resolution: "web-ext@npm:8.5.0"
   dependencies:
-    "@babel/runtime": "npm:7.26.7"
+    "@babel/runtime": "npm:7.26.10"
     "@devicefarmer/adbkit": "npm:3.3.8"
-    addons-linter: "npm:7.8.0"
+    addons-linter: "npm:7.9.0"
     camelcase: "npm:8.0.0"
     chrome-launcher: "npm:1.1.2"
     debounce: "npm:1.2.1"
@@ -23168,12 +23157,12 @@ __metadata:
     tmp: "npm:0.2.3"
     update-notifier: "npm:7.3.1"
     watchpack: "npm:2.4.2"
-    ws: "npm:8.18.0"
+    ws: "npm:8.18.1"
     yargs: "npm:17.7.2"
     zip-dir: "npm:2.0.0"
   bin:
     web-ext: bin/web-ext.js
-  checksum: 10c0/b351d30cfb3c3551e86f68c359f72293800740c34294ddc708e83421f150565b3d6f17e9c70105c06c25510159483f77ce89b592394b65d442aa3c849ecb25d7
+  checksum: 10c0/9ec48a65e95297d4d1dbcd4d3906be31b27acc0d520fc1d44c221bbdbbec25ea45c51211e79ff2e7683aef7f58631639379cf9fcc4ddc50abae9fe779694db32
   languageName: node
   linkType: hard
 
@@ -23785,6 +23774,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:8.18.1, ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "ws@npm:8.18.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/e498965d6938c63058c4310ffb6967f07d4fa06789d3364829028af380d299fe05762961742971c764973dce3d1f6a2633fe8b2d9410c9b52e534b4b882a99fa
+  languageName: node
+  linkType: hard
+
 "ws@npm:^7.5.10":
   version: 7.5.10
   resolution: "ws@npm:7.5.10"
@@ -23797,21 +23801,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/bd7d5f4aaf04fae7960c23dcb6c6375d525e00f795dd20b9385902bd008c40a94d3db3ce97d878acc7573df852056ca546328b27b39f47609f80fb22a0a9b61d
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.18.1":
-  version: 8.18.1
-  resolution: "ws@npm:8.18.1"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10c0/e498965d6938c63058c4310ffb6967f07d4fa06789d3364829028af380d299fe05762961742971c764973dce3d1f6a2633fe8b2d9410c9b52e534b4b882a99fa
   languageName: node
   linkType: hard
 
