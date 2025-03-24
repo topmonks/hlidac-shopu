@@ -3931,13 +3931,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:9.3.2":
-  version: 9.3.2
-  resolution: "@hckr_/blendid@npm:9.3.2"
+"@hckr_/blendid@npm:9.3.3":
+  version: 9.3.3
+  resolution: "@hckr_/blendid@npm:9.3.3"
   dependencies:
     "@csstools/postcss-gamut-mapping": "npm:2.0.8"
     "@vitejs/plugin-basic-ssl": "npm:2.0.0"
-    cloudinary: "npm:2.5.1"
+    cloudinary: "npm:2.6.0"
     cssnano: "npm:7.0.6"
     del: "npm:8.0.0"
     gulp: "npm:5.0.0"
@@ -3979,10 +3979,10 @@ __metadata:
     undertaker-registry: "npm:2.0.0"
     vinyl: "npm:3.0.0"
     vinyl-file: "npm:5.0.0"
-    vite: "npm:6.2.1"
+    vite: "npm:6.2.2"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/bc305281a32c5f0df4ccbbd83a7949acf54f0f8f5c0c03f2eb4bdad600930f3ba4ab62607f261a09c8029887f97faf5c0b90234db293e48562ff121411a5f04e
+  checksum: 10c0/4bdc182d6c010a1b68800d5bc5aea524b10f7c2ce54dcdd0b6a475c4d29f05a8ed116813894a5ed89cb57f5b4e693bb47d31a9c3da5ab251d6ccc9613a07da89
   languageName: node
   linkType: hard
 
@@ -4527,7 +4527,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:9.3.2"
+    "@hckr_/blendid": "npm:9.3.3"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -10459,13 +10459,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cloudinary@npm:2.5.1":
-  version: 2.5.1
-  resolution: "cloudinary@npm:2.5.1"
+"cloudinary@npm:2.6.0":
+  version: 2.6.0
+  resolution: "cloudinary@npm:2.6.0"
   dependencies:
     lodash: "npm:^4.17.21"
     q: "npm:^1.5.1"
-  checksum: 10c0/7ae2addf925003c3e6b6846413f23934437e42ecde586adbfba8adfc5dce98660c500173c0fbe677690d8b5ea367ec3326e62048045574e88d04555b7725fb1b
+  checksum: 10c0/03fe9a264371b928dbdf52409e54a5d42b809a48a197f15576caadee6078ab68c4c35708b384645d74295090e0f429dfd19590116c4ff13b3ae4062fba8129df
   languageName: node
   linkType: hard
 
@@ -14399,7 +14399,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.772.0"
     "@biomejs/biome": "npm:1.9.4"
-    "@hckr_/blendid": "npm:9.3.2"
+    "@hckr_/blendid": "npm:9.3.3"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:22.13.5"
     "@types/nunjucks": "npm:3.2.6"
@@ -22957,9 +22957,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:6.2.1":
-  version: 6.2.1
-  resolution: "vite@npm:6.2.1"
+"vite@npm:6.2.2":
+  version: 6.2.2
+  resolution: "vite@npm:6.2.2"
   dependencies:
     esbuild: "npm:^0.25.0"
     fsevents: "npm:~2.3.3"
@@ -23005,7 +23005,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/2c024376a840eae2ce9cfba98d62e9f1eae93caa8304875854dbc0740414aedcfbe157c2244567bd456cdb60a300312af02ae9b5c63c147d35cf4da3a0591312
+  checksum: 10c0/52f5b1c10cfe5e3b6382c6de1811ebbf76df9b5a8bab3d65169446c6b54a5f1528f775b1548009a6d8aad11def20fba046bb3e9abb10c0c2c9ccd78118623bb8
   languageName: node
   linkType: hard
 
