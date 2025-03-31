@@ -13,10 +13,10 @@ export class ForCamping extends Shop {
   }
 
   inject(renderMarkup) {
-    const el = document.querySelector("#detailBuy>.product-info-row");
+    const el = document.querySelector("#priceInfo>.product-detail__extras");
     if (!el) return;
-    const markup = renderMarkup();
-    el.insertAdjacentElement("afterend", markup);
+    const markup = renderMarkup({ "grid-area": "extras" });
+    el.insertAdjacentElement("beforebegin", markup);
     return el;
   }
 }

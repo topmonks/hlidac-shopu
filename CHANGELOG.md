@@ -1,13 +1,21 @@
 # Extension
 
+## 2.4.0
+* Added new shops grizly.cz and grizly.sk
+* Fixed Megapixel.cz rendering
+* Fixed Lekarna.cz rendering
+* Fixed Alza.cz extraction of coupon price 
+* Fixed Tchibo.cz prices extraction
+* Fixed 4camping new design injection point
+
 ## 2.3.0
 * Added new shops 4camping.cz and 4camping.sk
 * Removed PennyDomu.cz as it's no longer operational
 * Removed definitions of non-CZ and SK shop variants as we don't provide data for them in our API
 * Fixed m.alza.cz current price extraction
-* Fixed Albert.cz
-* Fixed Lidl.cz
-* Fixed DM.cz
+* Fixed Albert.cz rendering
+* Fixed Lidl.cz rendering
+* Fixed DM.cz rendering
 * Enabled Firefox Android support - experimental, not tested on all shops
 
 ## 2.2.0
