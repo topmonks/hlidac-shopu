@@ -455,7 +455,6 @@ workflows:
               only: /^extension-.*/
       - publish-apple-apps:
           requires:
-            - test-lib
             - build-web-extension
           filters:
             branches:

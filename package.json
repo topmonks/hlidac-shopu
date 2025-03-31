@@ -16,12 +16,12 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "packageManager": "yarn@4.7.0",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.775.0",
+    "@aws-sdk/client-dynamodb": "3.777.0",
     "ramda": "0.30.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@hckr_/blendid": "9.3.3",
+    "@hckr_/blendid": "9.3.4",
     "@types/firefox-webext-browser": "120.0.4",
     "@types/node": "22.13.14",
     "@types/nunjucks": "3.2.6",
@@ -29,10 +29,10 @@
     "@types/whatwg-url": "13.0.0",
     "ava": "6.2.0",
     "chokidar": "4.0.3",
-    "chrome-webstore-upload-cli": "3.3.1",
+    "chrome-webstore-upload-cli": "3.3.2",
     "commander": "13.1.0",
     "dotenv-cli": "8.0.0",
-    "esbuild": "0.25.1",
+    "esbuild": "0.25.2",
     "gulp-mode": "1.1.0",
     "linkedom": "0.18.9",
     "npm-run-all2": "7.0.2",
