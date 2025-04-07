@@ -2604,23 +2604,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/vitest-pool-workers@npm:0.8.9":
-  version: 0.8.9
-  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.9"
+"@cloudflare/vitest-pool-workers@npm:0.8.10":
+  version: 0.8.10
+  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.10"
   dependencies:
     birpc: "npm:0.2.14"
     cjs-module-lexer: "npm:^1.2.3"
     devalue: "npm:^4.3.0"
     esbuild: "npm:0.24.2"
-    miniflare: "npm:4.20250321.1"
+    miniflare: "npm:4.20250321.2"
     semver: "npm:^7.7.1"
-    wrangler: "npm:4.7.0"
+    wrangler: "npm:4.7.1"
     zod: "npm:^3.22.3"
   peerDependencies:
     "@vitest/runner": 2.0.x - 3.0.x
     "@vitest/snapshot": 2.0.x - 3.0.x
     vitest: 2.0.x - 3.0.x
-  checksum: 10c0/48155802ff69b45b4277e2294ea1db3300cd3275044f3e5e8bde2a0fe7a9aa78f1c760a07cc246e82d5ae8ddee232cbed8a7a3b5c0e8541aa83e770e9a2b2148
+  checksum: 10c0/13ebb8f6e187fa158e572f8a40cfd378b4efec531211d1b5b28fb77657662ccf5f49479205ae885d6ee8260593b5c33a61f4fd836c7ce3b5c0fced77970f9729
   languageName: node
   linkType: hard
 
@@ -11318,6 +11318,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:^0.7.1":
+  version: 0.7.2
+  resolution: "cookie@npm:0.7.2"
+  checksum: 10c0/9596e8ccdbf1a3a88ae02cf5ee80c1c50959423e1022e4e60b91dd87c622af1da309253d8abdb258fb5e3eacb4f08e579dc58b4897b8087574eee0fd35dfa5d2
+  languageName: node
+  linkType: hard
+
 "cookies@npm:~0.9.0":
   version: 0.9.1
   resolution: "cookies@npm:0.9.1"
@@ -14988,7 +14995,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidacshopu-google-stats@workspace:workers/hlidacshopu-google-stats"
   dependencies:
-    "@cloudflare/vitest-pool-workers": "npm:0.8.9"
+    "@cloudflare/vitest-pool-workers": "npm:0.8.10"
     vitest: "npm:3.1.1"
     wrangler: "npm:4.6.0"
   languageName: unknown
@@ -17432,6 +17439,27 @@ __metadata:
   bin:
     miniflare: bootstrap.js
   checksum: 10c0/ffe12b324d0f7929fd727ba2e8bc48dabeb5c02971413d4ef9f092a3ca0787da736d709522a13b8d3dadfaf9d8a955c417f4bfd6f099831887917ea44248a488
+  languageName: node
+  linkType: hard
+
+"miniflare@npm:4.20250321.2":
+  version: 4.20250321.2
+  resolution: "miniflare@npm:4.20250321.2"
+  dependencies:
+    "@cspotcode/source-map-support": "npm:0.8.1"
+    acorn: "npm:8.14.0"
+    acorn-walk: "npm:8.3.2"
+    exit-hook: "npm:2.2.1"
+    glob-to-regexp: "npm:0.4.1"
+    stoppable: "npm:1.1.0"
+    undici: "npm:^5.28.5"
+    workerd: "npm:1.20250321.0"
+    ws: "npm:8.18.0"
+    youch: "npm:3.3.4"
+    zod: "npm:3.22.3"
+  bin:
+    miniflare: bootstrap.js
+  checksum: 10c0/995c16b421af115a7e4ed586af978a46a2e139808f80aee914c1d9d7f9b14cd374f2cb6d154491c0429ac4a99783cd22c0f5733a272f24da160dc1f425f0b399
   languageName: node
   linkType: hard
 
@@ -24248,16 +24276,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wrangler@npm:4.7.0":
-  version: 4.7.0
-  resolution: "wrangler@npm:4.7.0"
+"wrangler@npm:4.7.1":
+  version: 4.7.1
+  resolution: "wrangler@npm:4.7.1"
   dependencies:
     "@cloudflare/kv-asset-handler": "npm:0.4.0"
     "@cloudflare/unenv-preset": "npm:2.3.1"
     blake3-wasm: "npm:2.1.5"
     esbuild: "npm:0.24.2"
     fsevents: "npm:~2.3.2"
-    miniflare: "npm:4.20250321.1"
+    miniflare: "npm:4.20250321.2"
     path-to-regexp: "npm:6.3.0"
     sharp: "npm:^0.33.5"
     unenv: "npm:2.0.0-rc.15"
@@ -24275,7 +24303,7 @@ __metadata:
   bin:
     wrangler: bin/wrangler.js
     wrangler2: bin/wrangler.js
-  checksum: 10c0/0e56b11e9f4cdee795b701e28d698ef23f3ea1e795514af1a3344162643029686743859802b334a69424affae30dbef9512cb16ec666a68f72a8a5ce1f920fdb
+  checksum: 10c0/c2e563312bf6f39342922152046473b5da004f81e68c1f45326d2c27b279124cef9d8032d22c5020398755d9305db64fe8f7b891e09eb7ef0d56ce08efb933c5
   languageName: node
   linkType: hard
 
@@ -24581,6 +24609,17 @@ __metadata:
     mustache: "npm:^4.2.0"
     stacktracey: "npm:^2.1.8"
   checksum: 10c0/a6992afaa15d0ea3a4cc42b71fd20d21c7368e07da6f9de45d4d3b9e1bb0f1d74f51105a720419bc71ae8691f49ed33b6d17631c66a3b0be669a964f0dd0f1a0
+  languageName: node
+  linkType: hard
+
+"youch@npm:3.3.4":
+  version: 3.3.4
+  resolution: "youch@npm:3.3.4"
+  dependencies:
+    cookie: "npm:^0.7.1"
+    mustache: "npm:^4.2.0"
+    stacktracey: "npm:^2.1.8"
+  checksum: 10c0/ab573c7dccebdaf2d6b084d262d5bfb22ad5c049fb1ad3e2d6a840af851042dd3a8a072665c5a5ee73c75bbc1618fbc08f1371ac896e54556bced0ddf996b026
   languageName: node
   linkType: hard
 
