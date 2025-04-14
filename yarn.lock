@@ -4609,7 +4609,7 @@ __metadata:
   dependencies:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
     "@open-wc/testing": "npm:4.0.0"
-    "@web/test-runner": "npm:0.20.0"
+    "@web/test-runner": "npm:0.20.1"
     "@web/test-runner-junit-reporter": "npm:0.8.0"
     chart.js: "npm:4.4.8"
     chartjs-adapter-date-fns: "npm:3.0.0"
@@ -8869,6 +8869,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/test-runner-chrome@npm:^0.18.1":
+  version: 0.18.1
+  resolution: "@web/test-runner-chrome@npm:0.18.1"
+  dependencies:
+    "@web/test-runner-core": "npm:^0.13.0"
+    "@web/test-runner-coverage-v8": "npm:^0.8.0"
+    chrome-launcher: "npm:^0.15.0"
+    puppeteer-core: "npm:^24.0.0"
+  checksum: 10c0/cad008d86d2252613aa3dcbc86dc92c83e8cc8581cdf8ced458d70574960e31ff626c2e3782b4b98e8985720101c2512dbfe2b49988cf74e9a472f60ce08d79a
+  languageName: node
+  linkType: hard
+
 "@web/test-runner-commands@npm:^0.9.0":
   version: 0.9.0
   resolution: "@web/test-runner-commands@npm:0.9.0"
@@ -8947,14 +8959,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.20.0":
-  version: 0.20.0
-  resolution: "@web/test-runner@npm:0.20.0"
+"@web/test-runner@npm:0.20.1":
+  version: 0.20.1
+  resolution: "@web/test-runner@npm:0.20.1"
   dependencies:
     "@web/browser-logs": "npm:^0.4.0"
     "@web/config-loader": "npm:^0.3.0"
     "@web/dev-server": "npm:^0.4.0"
-    "@web/test-runner-chrome": "npm:^0.18.0"
+    "@web/test-runner-chrome": "npm:^0.18.1"
     "@web/test-runner-commands": "npm:^0.9.0"
     "@web/test-runner-core": "npm:^0.13.0"
     "@web/test-runner-mocha": "npm:^0.9.0"
@@ -8970,7 +8982,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: 10c0/0f8bbc2c362638f7c03f498d67168c0fa2ed4386b039da5ff2c8d026640e07865eecf2d2fd15f7b9da44c4a73b48b338825756200c8e546533a00f2b20989f07
+  checksum: 10c0/283dd50c04bd2d2665248c961add05373f00a26a66e3a501e716186ee28a50c024c2189fd85ccba4dc1151d66ba1b81dcdafc2b395e545978c4179ec95e5e8f4
   languageName: node
   linkType: hard
 
