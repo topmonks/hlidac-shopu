@@ -4533,9 +4533,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
-    "@pulumi/aws": "npm:6.75.0"
+    "@pulumi/aws": "npm:6.76.0"
     "@pulumi/awsx": "npm:2.21.1"
-    "@pulumi/pulumi": "npm:3.160.0"
+    "@pulumi/pulumi": "npm:3.162.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.25.2"
   languageName: unknown
@@ -6250,13 +6250,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.75.0":
-  version: 6.75.0
-  resolution: "@pulumi/aws@npm:6.75.0"
+"@pulumi/aws@npm:6.76.0":
+  version: 6.76.0
+  resolution: "@pulumi/aws@npm:6.76.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.142.0"
     mime: "npm:^2.0.0"
-  checksum: 10c0/ef4ccce68bedbb7ebfd6dc8adfb2b422f668eb047bb7e59a2047b924535308cbd66fb8f235fc53c5b0e41c091e464f82c540902c609c5f2740bb3e29f7327da1
+  checksum: 10c0/f87ac47e17242bbe90d73e84ea81e2599dd9506602e4dcebbcc5fb329bcf6fc7d8878b8a81adc9dd0f00bf4464454e9e9d7ce49c2992005850aca200a48e1887
   languageName: node
   linkType: hard
 
@@ -6305,9 +6305,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.160.0":
-  version: 3.160.0
-  resolution: "@pulumi/pulumi@npm:3.160.0"
+"@pulumi/pulumi@npm:3.162.0":
+  version: 3.162.0
+  resolution: "@pulumi/pulumi@npm:3.162.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6319,7 +6319,6 @@ __metadata:
     "@opentelemetry/resources": "npm:^1.28"
     "@opentelemetry/sdk-trace-base": "npm:^1.28"
     "@opentelemetry/sdk-trace-node": "npm:^1.28"
-    "@pulumi/query": "npm:^0.3.0"
     "@types/google-protobuf": "npm:^3.15.5"
     "@types/semver": "npm:^7.5.6"
     "@types/tmp": "npm:^0.2.6"
@@ -6346,7 +6345,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/f252edbdeef42bfae8a2c5c6c6b2b45d578828174da8e313caefddcc95d6932f7f056e6e5956e4bb5b51e17404ab25ceff8269eec382686f0e259d6d23789e25
+  checksum: 10c0/36ee2de4da07dda3abb91a9b13524a22c1e434c19d34607ebd4403130772d0aec4d724c2af8ff4948135eb069836dfa341403d6c882f4ff4cb4c6586487ebe40
   languageName: node
   linkType: hard
 
