@@ -6,9 +6,9 @@
   "description": "This is an actor to get data from obi eshop",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.12.1",
-    "@hlidac-shopu/actors-common": "3.0.0",
-    "apify": "3.2.6"
+    "@crawlee/http": "3.13.2",
+    "@hlidac-shopu/actors-common": "3.1.1",
+    "apify": "3.4.0"
   },
   "scripts": {
     "start": "node main.js",

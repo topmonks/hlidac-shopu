@@ -1,18 +1,18 @@
 # Extension
 
-Extension shows historical prices for biggest czech e-commerce websites.
+Extension shows historic prices for biggest czech e-commerce websites on product details page.
 
 ## Shop
 
-Object with getInfo and insertChartElement methods.
+Object with `getInfo` and `insertChartElement` methods.
 
-To create new shop create new shop with those two methods:
+To create a new shop, create a new `Shop` class with those two methods:
 
 `scrape` method selects itemId, image, title, original and current price of the product from the page.
 Returns of object with .
 
-`inject` method inserts widget element to the page. Usually it inserts whole chart wrapper with border and info text.
-First param is `renderMarkup` function that returns html element, you can add styles to the root element of the wrapper
+`inject` method inserts a widget element to the page. Usually it inserts a whole chart wrapper with border and info text.
+First param is `renderMarkup` function that returns HTML element, you can add styles to the root element of the wrapper
 by passing string to it.
 
 ### Create new file `alza.mjs` in folder `shops`:
@@ -72,6 +72,25 @@ export * from "./alza.mjs";
 
 and run command
 
-```
+```bash
 yarn build:extension
 ```
+
+
+## Extension development
+
+To develop extension in local environment, run this sequence in the terminal:
+
+```bash
+yarn watch:extension
+```
+
+This will prepare extension for development and rebuild the content script when changed.
+
+Then in the separate terminal start browser with loaded extension and auto reload on changes:
+
+```bash
+yarn start:firefox
+```
+
+Have fun!

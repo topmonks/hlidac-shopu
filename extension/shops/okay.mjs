@@ -37,7 +37,7 @@ export class Okay extends Shop {
     const manufacturersRecommendedPrice = manufacturersRecommendedPriceVisible
       ? cleanPrice(manufacturersRecommendedPriceSel)
       : null;
-    const priceSel = ".modal_price .current_price .money";
+    const priceSel = ".modal_price .current-price-incl-vat .money";
     const priceVisible = isElementVisible(document.querySelector(priceSel));
     const price = priceVisible ? cleanPrice(priceSel) : null;
     const priceAfterDiscountSel = ".modal_price .current_price_mz .money.sale";

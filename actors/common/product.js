@@ -1,11 +1,12 @@
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { Dataset } from "apify";
 
-/** @typedef { import("./stats").Stats} Stats */
+/** @typedef {import("./types.js").Product} Product */
+/** @typedef {import("./stats").Stats} Stats */
 
 /**
  * Save unique products to dataset
- * @param {{products: object[], stats: Stats, processedIds: Object<string, Object>}} options
+ * @param {{products: Product[], stats: Stats, processedIds: Object<string, Object>}} options
  * @returns {Promise<number>}
  */
 export async function saveUniqProducts({ products, stats, processedIds }) {

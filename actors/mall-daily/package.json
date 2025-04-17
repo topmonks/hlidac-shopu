@@ -6,17 +6,17 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.12.1",
-    "@hlidac-shopu/actors-common": "3.0.0",
+    "@crawlee/http": "3.13.2",
+    "@hlidac-shopu/actors-common": "3.1.1",
     "@hlidac-shopu/lib": "1.4.0",
-    "apify": "3.2.6",
-    "got-scraping": "4.0.8",
+    "apify": "3.4.0",
+    "got-scraping": "4.1.1",
     "graphql": "16.10.0",
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
-    "@types/node": "22.10.7",
-    "apify-cli": "0.21.0"
+    "@types/node": "22.14.1",
+    "apify-cli": "0.21.3"
   },
   "scripts": {
     "start": "node main.js",

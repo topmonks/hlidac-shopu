@@ -258,16 +258,13 @@ async function main() {
   await crawler.run(startingRequests);
   await stats.save(true);
 
-  log.info("invalidated Data CDN");
-  if (type !== ActorType.Test && !development) {
-    let tableName = country === "CZ" ? "mall" : "mall_sk";
-    if (type === ActorType.BlackFriday) {
-      tableName = `${tableName}_bf`;
-    }
-
-    await uploadToKeboola(tableName);
-    log.info("upload to Keboola finished");
+  let tableName = country === "CZ" ? "mall" : "mall_sk";
+  if (type === ActorType.BlackFriday) {
+    tableName = `${tableName}_bf`;
   }
+
+  await uploadToKeboola(tableName);
+  log.info("upload to Keboola finished");
 }
 
 await Actor.main(main);

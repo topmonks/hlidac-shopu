@@ -186,8 +186,6 @@ async function main() {
   }
   await crawler.run(startingRequests);
 
-  log.info("crawler finished");
-
   stats.save(true);
   if (!development && type !== "COUNT") {
     await uploadToKeboola("eva_cz");

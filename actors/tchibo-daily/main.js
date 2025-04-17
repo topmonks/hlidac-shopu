@@ -466,7 +466,6 @@ async function main() {
         ]
       : startNavigationRequests;
   await crawler.run(startingRequests);
-  log.info("crawler finished");
 
   if (!development) {
     await uploadToKeboola(`tchibo_${country === "com.tr" ? "tr" : country}`);

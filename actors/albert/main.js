@@ -7,8 +7,30 @@ import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
+
+// This is a map of persisted query hashes for given operation.
+// When something breaks, it is likely you have to update the hash here.
+// `LeftHandNavigationBar` try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
+// `GetCategoryProductSearch` try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
+// Those hashes can be found in XHR request of a given type, use DevTools/Network to get the URL and then the Console to parse the hash:
+// ```javascript
+// let url = "<<paste GraphQL query URL here >>";
+// JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
+// ```
+const opHash = new Map([
+  ["LeftHandNavigationBar", "96d324363b3adeda3549db6e4fe1c858b59d6ff37ae31e8c1aca50b37ad61ddc"],
+  ["GetCategoryProductSearch", "2aec9814466f9ca92be6df1a2b058bcf83cc3237ef089776e675308d228c2969"]
+]);
+
 const PROCESSED_IDS_KEY = "processedIds";
 
+/**
+ * @param result
+ * @param {string} url
+ * @param {string} category
+ * @returns {Product}
+ */
 function toProduct(result, { url, category }) {
   const itemId = result.code;
   const itemUrl = new URL(result.url, url).href;
@@ -59,16 +81,6 @@ function apiQuery(persistedQueryHash, params) {
   }
   return `https://www.albert.cz/api/v1/?${new URLSearchParams(params)}`;
 }
-
-// This is map of persisted query hashes for given operation.
-// When something breaks, it is likely you just have to update the hash here.
-// LeftHandNavigationBar try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
-// GetCategoryProductSearch try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
-// TODO: try to read those from page and store them for use in the run
-const opHash = new Map([
-  ["LeftHandNavigationBar", "96d324363b3adeda3549db6e4fe1c858b59d6ff37ae31e8c1aca50b37ad61ddc"],
-  ["GetCategoryProductSearch", "2aec9814466f9ca92be6df1a2b058bcf83cc3237ef089776e675308d228c2969"]
-]);
 
 function gql(operationName, variables) {
   return apiQuery(opHash.get(operationName), { operationName, variables });
@@ -169,7 +181,14 @@ async function main() {
   });
 
   const input = await Actor.getInput();
-  const { debug = false, proxyGroups = [], type = ActorType.Full, urls = [getStartUrl()] } = input || {};
+  const {
+    debug = false,
+    proxyGroups = [],
+    type = ActorType.Full,
+    urls = [getStartUrl()],
+    maxConcurrency = 4,
+    maxRequestRetries = 5
+  } = input || {};
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -180,8 +199,8 @@ async function main() {
   });
 
   const crawler = new HttpCrawler({
-    maxConcurrency: 4,
-    maxRequestRetries: 5,
+    maxConcurrency,
+    maxRequestRetries,
     proxyConfiguration,
     additionalMimeTypes: ["application/json"],
     requestHandler: defRouter({ stats, processedIds }),
@@ -191,14 +210,11 @@ async function main() {
   });
 
   await crawler.run(urls);
-  log.info("Crawler finished");
 
   await stats.save(true);
 
   const tableName = `albert_cz${type === ActorType.BlackFriday ? "_bf" : ""}`;
   await uploadToKeboola(tableName);
-
-  log.info("Finished.");
 }
 
-await Actor.main(main);
+await Actor.main(main, { statusMessage: "DONE" });

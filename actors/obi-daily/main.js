@@ -272,7 +272,6 @@ async function main() {
       userData: { label: Labels.Start }
     }
   ]);
-  log.info("crawler finished");
 
   await stats.save();
 

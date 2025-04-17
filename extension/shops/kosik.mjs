@@ -37,7 +37,7 @@ export class Kosik extends StatefulShop {
       data.currentPrice = cleanPriceText(elem.querySelector(".product-price").textContent);
       data.originalPrice = cleanPrice(".product-header-box s");
       data.imageUrl = elem
-        .querySelector("[data-tid=product-detail__product-image] img")
+        .querySelector("[data-tid=product-detail__product-image]")
         .getAttribute("srcset")
         .split(",")
         .pop()

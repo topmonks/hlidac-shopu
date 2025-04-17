@@ -456,7 +456,6 @@ async function main() {
 
   await crawler.run(createInitRequests({ urls, type }));
   await stats.save(true);
-  log.info("crawler finished");
 
   if (!development) {
     const tableName = type === ActorType.BlackFriday ? "lidl_cz_bf" : "lidl_cz";

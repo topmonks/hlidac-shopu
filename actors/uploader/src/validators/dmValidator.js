@@ -10,7 +10,7 @@ export function dmValidator(item) {
     "category",
     "discounted",
     "breadCrumbs",
-    "inStok"
+    "inStock"
   ];
   for (const attr of attributes) {
     if (item[attr] === undefined) {

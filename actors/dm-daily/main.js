@@ -82,7 +82,7 @@ function parseItem(p, country, category) {
     itemId: p.gtin,
     itemName: `${p.brandName} ${p.name}`,
     itemUrl: createProductUrl(country, p.relativeProductUrl),
-    img: p.imageUrlTemplates?.[0]?.replace("{transformations}", "f_auto,q_auto,c_fit,w_260,h_270"),
+    img: p.imageUrlTemplates?.[0]?.replace("{transformations}", "f_auto,q_auto,c_fit,w_260,h_270") ?? null,
     inStock: p.purchasable,
     currentPrice: p.price.value,
     originalPrice: p.isSellout
@@ -305,7 +305,6 @@ async function main() {
 
   const requests = startingRequests(type, country);
   await crawler.run(requests);
-  log.info("crawler finished");
 
   if (Actor.isAtHome()) {
     log.info("uploading data to Keboola");

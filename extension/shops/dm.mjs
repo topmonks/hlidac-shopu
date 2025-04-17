@@ -1,19 +1,27 @@
 import { cleanPriceText, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Dm extends AsyncShop {
-  selector = `script[type='application/ld+json'][data-source=composing-ui]`;
-
-  get injectionPoint() {
-    return ["afterend", `[data-dmid=add-to-cart-with-quantity-form]`];
+export class Dm extends StatefulShop {
+  get detailSelector() {
+    return "script[type='application/ld+json'][data-source=composing-ui]";
   }
 
-  get waitForSelector() {
-    return this.selector;
+  shouldRender(mutations) {
+    return Boolean(
+      mutations.find(x => x.target.classList.contains("bv-content-list-container") && x.removedNodes.length)
+    );
+  }
+
+  shouldCleanup(mutations) {
+    return Boolean(mutations.find(x => x.target.id === "mainSectionContainer" && x.removedNodes.length));
+  }
+
+  get injectionPoint() {
+    return ["beforebegin", `[data-dmid=detail-availability-container]`];
   }
 
   async scrape() {
-    const data = JSON.parse(document.querySelector(this.selector).textContent);
+    const data = JSON.parse(document.querySelector(this.detailSelector).textContent);
     if (!data) return;
     const itemId = data.gtin ?? data.sku;
     const title = data.name;

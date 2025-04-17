@@ -3,11 +3,14 @@
   "default_locale": "cs",
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "2.1.11",
+  "version": "2.4.0",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "homepage_url": "https://www.hlidacshopu.cz/",
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "sw.js"
+    ],
+    "service_worker": "sw.js"
   },
   "icons": {
     "128": "icons/favicon-128x128.png",
@@ -40,10 +43,14 @@
       }
     ]
   },
-  "host_permissions": ["https://api.hlidacshopu.cz/*"],
+  "host_permissions": [
+    "https://api.hlidacshopu.cz/*"
+  ],
   "content_scripts": [
     {
       "matches": [
+        "https://www.4camping.cz/p/*",
+        "https://www.4camping.sk/p/*",
         "https://www.aaaauto.cz/*",
         "https://www.aaaauto.sk/*",
         "https://www.albert.cz/*",
@@ -53,18 +60,24 @@
         "https://m.alza.sk/*",
         "https://www.benu.cz/*",
         "https://shop.billa.cz/*",
-        "https://www.czc.cz/*",
         "https://www.datart.cz/*",
         "https://www.datart.sk/*",
         "https://www.dm.cz/*",
         "https://www.mojadm.sk/*",
-        "https://www.electroworld.cz/*",
         "https://www.eva.cz/*",
         "https://*.iglobus.cz/*",
+        "https://www.grizly.cz/*",
+        "https://www.grizly.sk/*",
+        "https://www.hornbach.cz/*",
+        "https://www.hornbach.sk/*",
         "https://www.ikea.com/*",
-        "https://www.kosik.cz/*",
+        "https://nakup.itesco.cz/*",
+        "https://potravinydomov.itesco.sk/*",
+        "https://www.kaufland.cz/*",
         "https://www.knihydobrovsky.cz/*",
+        "https://www.kosik.cz/*",
         "https://www.lekarna.cz/*",
+        "https://www.lidl.cz/*",
         "https://www.mall.cz/*",
         "https://www.mall.sk/*",
         "https://www.megapixel.cz/*",
@@ -77,37 +90,29 @@
         "https://www.obi.sk/*",
         "https://www.okay.cz/*",
         "https://www.okay.sk/*",
-        "https://www.pennydomu.cz/*",
         "https://www.pilulka.cz/*",
         "https://www.pilulka.sk/*",
-        "https://www.prozdravi.cz/*",
         "https://www.rohlik.cz/*",
-        "https://www.siko.cz/*",
-        "https://siko.cz/*",
-        "https://www.tetadrogerie.cz/*",
-        "https://nakup.itesco.cz/*",
-        "https://potravinydomov.itesco.sk/*",
-        "https://www.tsbohemia.cz/*",
-        "https://www.lidl.cz/*",
+        "https://www.smarty.cz/*",
+        "https://www.smarty.sk/*",
         "https://www.tchibo.cz/*",
         "https://www.tchibo.sk/*",
-        "https://www.hornbach.cz/*",
-        "https://www.hornbach.sk/*",
-        "https://www.kaufland.cz/*",
-        "https://www.smarty.cz/*",
-        "https://www.smarty.sk/*"
+        "https://www.tetadrogerie.cz/*",
+        "https://www.tsbohemia.cz/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
-  "content_security_policy": {
-    "extension_pages": "default-src 'self'"
-  },
   "browser_specific_settings": {
     "gecko": {
       "id": "{d6f0f975-91a3-4d78-96f7-5f1859ad18b6}",
       "strict_min_version": "109.0"
+    },
+    "gecko_android": {
+      "strict_min_version": "113.0"
     }
   }
 }

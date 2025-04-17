@@ -231,7 +231,6 @@ async function main() {
   });
 
   await crawler.run(startingRequests(type, stats));
-  log.info("crawler finished");
 
   await Promise.all([stats.save(true), uploadToKeboola(type === ActorType.BlackFriday ? "benu_cz_bf" : "benu_cz")]);
 }

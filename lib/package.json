@@ -5,16 +5,16 @@
   "type": "module",
   "types": "types.d.ts",
   "dependencies": {
-    "chart.js": "4.4.7",
+    "chart.js": "4.4.8",
     "chartjs-adapter-date-fns": "3.0.0",
     "date-fns": "4.1.0",
-    "lit": "3.2.1"
+    "lit": "3.3.0"
   },
   "devDependencies": {
     "@esm-bundle/chai": "4.3.4-fix.0",
     "@open-wc/testing": "4.0.0",
-    "@web/test-runner": "0.19.0",
-    "@web/test-runner-junit-reporter": "0.7.2"
+    "@web/test-runner": "0.20.1",
+    "@web/test-runner-junit-reporter": "0.8.0"
   },
   "scripts": {
     "test": "wtr **/*.test.mjs --coverage --node-resolve"

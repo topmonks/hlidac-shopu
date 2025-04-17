@@ -6,12 +6,7 @@ import { formatISO } from "date-fns/formatISO";
 import { parseHTML } from "linkedom/cached";
 
 const test = false;
-const urls = [
-  "https://www.zive.cz/clanky/ceske-e-shopy-uz-na-black-friday-prilis-nepodvadeji-smejdske-praktiky-ale-zkousi-zahranicni-trziste/sc-3-a-231680/default.aspx",
-  "https://www.denik.cz/ekonomika/black-friday-cesko-trzby.html",
-  "https://roklen24.cz/?quick_news=black-friday-2024-zahranicni-trziste-pravidla-obchazela-ceske-e-shopy-se-naopak-vyrazne-zlepsily",
-  "https://www.penize.cz/slevy/465130-skutecne-slevy-behem-black-friday-nasli-jsme-triky-e-shopu"
-];
+const urls = ["https://ct24.ceskatelevize.cz/clanek/svet/de-facto-ne-kazda-deklarovana-sleva-je-skutecna-357643"];
 
 const template = ({ url, title, date, perex, filename }) => `---
 title: "${title}"

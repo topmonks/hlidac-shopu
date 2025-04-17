@@ -2,11 +2,11 @@ import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { Actor, Dataset, log, LogLevel } from "apify";
-import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
 const Country = {
@@ -252,8 +252,6 @@ async function main() {
       }
     }
   ]);
-
-  log.info("crawler finished");
 
   if (type === ActorType.Full && Actor.isAtHome()) {
     await Promise.all([stats.save(true), uploadToKeboola(shopName(startUrl))]);
