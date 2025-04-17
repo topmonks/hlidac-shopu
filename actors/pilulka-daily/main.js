@@ -122,7 +122,7 @@ function defRouter(processedIds, stats) {
 
       const { id: itemId } = document.querySelector("[componentname='catalog.product']");
       const originalPrice = parseFloatText(
-        cleanPriceText(document.querySelector(`.price-before, .superPrice__old__price`)?.textContent ?? "")
+        cleanPriceText(document.querySelector(`.product-price-container .product-card-price__old`)?.textContent ?? "")
       );
       const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
       const priceWithCode = parseFloatText(
