@@ -122,7 +122,7 @@ function extractItems(document, rootUrl, country) {
 
       let percentageDiscount = 0;
       const percentageDiscountFlagEls = productEl.querySelectorAll(".product-flags .flag");
-      Array.from(percentageDiscountFlagEls).filter((flagEl) => {
+      Array.from(percentageDiscountFlagEls).forEach((flagEl) => {
         const hasDiscountKeyword = country === Country.CZ && (
           /^sleva\s+\d+\s*%$/i.test(flagEl.textContent) // 20 % sleva
           || /^\d+\s*%\s*sleva$/i.test(flagEl.textContent) // sleva 20 %
