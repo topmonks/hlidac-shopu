@@ -106,13 +106,13 @@ function extractItems(document, rootUrl, country) {
             .replace(",", ".")
         );
       }
-      let couponDiscount = 0;
-      const couponDiscountFlagEl = productEl.querySelector(".product-flags .flag-color-red");
-      if (couponDiscountFlagEl) {
-        const hasDiscountKeyword = country === Country.CZ && /extra sleva/i.test(couponDiscountFlagEl.textContent);
+      let fixedDiscount = 0;
+      const fixedDiscountFlagEl = productEl.querySelector(".product-flags .flag-color-red");
+      if (fixedDiscountFlagEl) {
+        const hasDiscountKeyword = country === Country.CZ && /extra sleva/i.test(fixedDiscountFlagEl.textContent);
         if (hasDiscountKeyword) {
-          couponDiscount = parseFloat(
-            couponDiscountFlagEl.innerText
+          fixedDiscount = parseFloat(
+            fixedDiscountFlagEl.innerText
               .trim()
               .replace(/[^\d,]+/g, "")
               .replace(",", ".")
@@ -120,11 +120,32 @@ function extractItems(document, rootUrl, country) {
         }
       }
 
+      let percentageDiscount = 0;
+      const percentageDiscountFlagEls = productEl.querySelectorAll(".product-flags .flag");
+      Array.from(percentageDiscountFlagEls).filter((flagEl) => {
+        const hasDiscountKeyword = country === Country.CZ && (
+          /^sleva\s+\d+\s*%$/i.test(flagEl.textContent) // 20 % sleva
+          || /^\d+\s*%\s*sleva$/i.test(flagEl.textContent) // sleva 20 %
+        );
+
+        if (hasDiscountKeyword) {
+          percentageDiscount = parseFloat(
+            flagEl.innerText
+              .trim()
+              .replace(/[^\d,]+/g, "")
+              .replace(",", ".")
+          );
+        }
+      });
+
       result.originalPrice = lowestPriceInLastMonth;
       result.currentPrice = currentPrice;
 
-      if (couponDiscount > 0) {
-        result.currentPrice -= couponDiscount;
+      if (percentageDiscount > 0) {
+        result.currentPrice -= (currentPrice * percentageDiscount) / 100;
+        result.discounted = true;
+      } else if (fixedDiscount > 0) {
+        result.currentPrice -= fixedDiscount;
         result.discounted = true;
       } else {
         result.currentPrice = currentPrice;
