@@ -19,8 +19,8 @@ import { Actor, LogLevel, log } from "apify";
 // JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
 // ```
 const opHash = new Map([
-  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
-  ["GetCategoryProductSearch", "52764906c44e42aec923b3896810a61c85d344084ba2080b5c655b3453d4560e"]
+  ["LeftHandNavigationBar", "96d324363b3adeda3549db6e4fe1c858b59d6ff37ae31e8c1aca50b37ad61ddc"],
+  ["GetCategoryProductSearch", "2aec9814466f9ca92be6df1a2b058bcf83cc3237ef089776e675308d228c2969"]
 ]);
 
 const PROCESSED_IDS_KEY = "processedIds";

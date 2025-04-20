@@ -226,14 +226,16 @@ async function main() {
             });
           }
         }
-        const breadCrumbs = document.querySelectorAll("div#displaypath > a.CatParent").map(cat => cat.innerText.trim());
-        const requests = document.querySelectorAll(".item_b").flatMap(item => {
+        const breadCrumbs = Array.from(document.querySelectorAll("div#displaypath > a.CatParent")).map(cat =>
+          cat.innerText.trim()
+        );
+        const requests = Array.from(document.querySelectorAll(".item_b")).flatMap(async item => {
           const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
-          const idElem = item.querySelector(".item_kod");
+          const idElem = item.querySelector(".item-code");
           const linkElem = item.querySelector(".nazev a");
           const priceElem = item.querySelector(".item_cena .item_b_cena");
           const imgElem = item.querySelector(".item_obr img");
-          const oPriceElem = item.querySelector(".item_s_cena span");
+          const oPriceElem = item.querySelector(".item_s_cena span.trought");
           const img = imgElem ? `https:${imgElem.getAttribute("src")}` : null;
           const link = linkElem ? linkElem.getAttribute("href") : null;
           const id = idElem ? idElem.innerText.trim().replace("Kód: ", "") : null;
@@ -256,7 +258,7 @@ async function main() {
             processedIds.add(dataItem.itemId);
             const slug = itemSlug(dataItem.itemUrl);
             return [
-              Dataset.pushData({
+              await Dataset.pushData({
                 ...dataItem,
                 shop,
                 slug

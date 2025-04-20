@@ -33,9 +33,15 @@ function extractItems(document, category) {
     result.itemUrl = extractProductUrl(product.querySelector("div.product-item__info > a").getAttribute("onclick"));
     result.img = product.querySelector(".image-link img").getAttribute("src");
 
-    result.currentPrice = parseFloat(
-      cleanPriceText(product.querySelector(".money-price > span:last-child").innerText.trim())
-    );
+    const currentPrice =
+      product.querySelector(".money-price span.money-price__amount-discount")?.innerText?.trim() ??
+      product.querySelector(".money-price span.money-price__amount")?.innerText?.trim();
+
+    if (currentPrice === null || currentPrice === undefined) {
+      throw new Error("Could not find current price");
+    }
+
+    result.currentPrice = parseFloat(cleanPriceText(currentPrice));
     const originalPrice = product.querySelector(".money-price__amount--original")?.innerText?.trim();
     result.originalPrice = originalPrice ? parseFloat(cleanPriceText(originalPrice)) : null;
     result.currentUnitPrice = parseFloat(
