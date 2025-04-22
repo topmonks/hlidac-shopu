@@ -6,6 +6,10 @@ export class ForCamping extends AsyncShop {
     return "#id_98";
   }
 
+  get injectionPoint() {
+    return ["beforebegin", "#priceInfo>.product-detail__extras", { "grid-area": "extras" }];
+  }
+
   async scrape() {
     const product = JSON.parse(document.querySelector("#formProductAddToBasket").dataset.product);
     const itemId = product.id;
@@ -14,14 +18,6 @@ export class ForCamping extends AsyncShop {
     const originalPrice = cleanPrice("#productOldPrice");
     const imageUrl = product.photoFile;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
-  }
-
-  inject(renderMarkup) {
-    const el = document.querySelector("#priceInfo>.product-detail__extras");
-    if (!el) return;
-    const markup = renderMarkup({ "grid-area": "extras" });
-    el.insertAdjacentElement("beforebegin", markup);
-    return el;
   }
 }
 
