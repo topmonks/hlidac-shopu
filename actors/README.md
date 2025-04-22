@@ -67,8 +67,10 @@ může nacházet ve více než jedné kategorii, je potřeba ukládat pouze jeho
   }
 ```
 #### Data produktu
+
 ```json
 {
+  "slug": "",
   "itemId": "",
   "itemUrl": "",
   "itemName": "",

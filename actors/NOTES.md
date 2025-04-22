@@ -58,6 +58,7 @@ describe("shopSlug", () => {
 
 ## Product properties
 ```
+slug*
 itemId*
 itemUrl*
 itemName*
