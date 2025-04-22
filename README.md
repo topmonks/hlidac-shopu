@@ -104,8 +104,20 @@ Update to new version run
 For seamless development experience we have `yarn watch:extension` script with incremental builds
 on source files changes.
 
+```bash
+yarn watch:extension
+```
+
 We also have convenient script `yarn start:chrome` and `yarn start:firefox` to start browsers with
 an already registered extension and automatic reloading on changes.
+
+```bash
+yarn start:chrome
+```
+
+```bash
+yarn start:firefox
+```
 
 For visual testing at scale, there is `./scripts/screenshotter.mjs`. This will run Chrome with an installed extension
 and take a screenshot of embedded widget on every supported e-shop. You can find resulting pictures in `./screenshots`
@@ -180,4 +192,4 @@ You can use all supported transformations in JS SDK, for more details see [Cloud
     yarn up @hlidac-shopu/lib -i
     ```
 
-© 2018-2024 TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors; Licensed under [EUPL-1.2](LICENSE.txt)
+© 2018-2025 TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors; Licensed under [EUPL-1.2](LICENSE.txt)

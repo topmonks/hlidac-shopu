@@ -1,5 +1,9 @@
 # Extension
 
+## 2.4.1
+* Fixed Lidl.cz rendering
+* Fixed 4camping data fetching
+
 ## 2.4.0
 * Added new shops grizly.cz and grizly.sk
 * Fixed Megapixel.cz rendering
