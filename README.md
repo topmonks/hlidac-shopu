@@ -174,7 +174,6 @@ You can use all supported transformations in JS SDK, for more details see [Cloud
 ## Other sources
 
 * [Figma design sources](https://www.figma.com/file/hKLyCOXXN6LtS0NtVAbJzk/Hlidacshopu.cz?node-id=869%3A3)
-* [Apify Actors sources](https://gitlab.com/apify-private-actors/hlidac-shopu/)
 * [Keboola Connect](https://connection.eu-central-1.keboola.com/admin/projects/395/dashboard)
 
 ---
@@ -184,8 +183,8 @@ You can use all supported transformations in JS SDK, for more details see [Cloud
 2. Publish package to npm. Login credentials are in TopMonks 1password. 
     ```bash
     cd lib
-    npm login
-    npm publish --access public --tag latest
+    yarn npm login
+    yarn npm publish --access public --tag latest
     ```
 3. Update version @hlidac-shopu/lib across the project
     ```bash
