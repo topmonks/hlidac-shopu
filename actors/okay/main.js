@@ -4,10 +4,9 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import { cleanPrice, shopName } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
 import fs from "node:fs";
 
@@ -323,7 +322,7 @@ async function main() {
             // This function puts it all together. After we run it with our document and window,
             // we'll get item id and document will be modified and contain current prices.
             // In general, eval is unsafe, but in this case we're evaluating a script that we know.
-            const adjustPrices = eval(`({${Object.keys(context).join(", ")}}) => { 
+            const adjustPrices = eval(`({${Object.keys(context).join(", ")}}) => {
               ${PRODUCT_PRICE_BY_TAGS_SCRIPT}
 
               const updatedProductData = calculateTagSalePrice();

@@ -4,7 +4,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
-import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";
+import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, log } from "apify";
 
 const baseUrl = "https://www.kosik.cz/";
