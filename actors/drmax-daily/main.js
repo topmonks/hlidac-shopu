@@ -3,18 +3,25 @@ import { Sitemap } from "@crawlee/utils";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { parseFloatText, saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
+import {
+  itemSlug,
+  parseFloatText,
+  saveUniqProducts,
+  shopName,
+  shopOrigin
+} from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { Actor, LogLevel, log } from "apify";
 
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
 
 /** @enum {string} */
 export const Labels = {
-  CATEGORY: "category",
+  CATEGORY: "category"
 };
 
 /** @enum {string} */
@@ -43,27 +50,29 @@ function defRouter(processedIds, stats) {
         const path = item.querySelector('[data-test-id="category-tile-product-link"] a')?.href;
         const priceBox = item.querySelector('[data-test-id="category-tile-product-price"]');
         const title = item.querySelector('[data-test-id="category-tile-product-name"]')?.textContent.trim();
-        const shortDesc = item.querySelector('.tile__desc')?.textContent.trim();
+        const shortDesc = item.querySelector(".tile__desc")?.textContent.trim();
 
         const itemUrl = new URL(path ?? "", response.url).href;
-        const imageSrc = item.querySelector('img')?.src ?? null;
+        const imageSrc = item.querySelector("img")?.src ?? null;
         const imageUrl = imageSrc ? new URL(imageSrc ?? "", response.url).href : null;
 
-        const currentPrice = parseFloatText(
-          cleanPriceText(priceBox.childNodes[0]?.textContent.trim() ?? "")
-        );
+        const currentPrice = parseFloatText(cleanPriceText(priceBox.childNodes[0]?.textContent.trim() ?? ""));
         const originalPrice = parseFloatText(
-          cleanPriceText(priceBox.querySelector('.tile__price__before')?.textContent.trim() ?? "")
+          cleanPriceText(priceBox.querySelector(".tile__price__before")?.textContent.trim() ?? "")
         );
 
-        const outOfStock = !!item.querySelector('.product__out-of-stock');
+        const outOfStock = !!item.querySelector(".product__out-of-stock");
 
         log.debug("Extracting product", { path, itemUrl, currentPrice, originalPrice });
 
+        const itemId = item.querySelector("meta").getAttribute("content");
         await saveUniqProducts({
           products: [
             {
-              itemId: new URL(itemUrl).pathname,
+              shop: shopName(itemUrl),
+              shopOrigin: shopOrigin(itemUrl),
+              slug: itemSlug(itemUrl),
+              itemId,
               itemUrl,
               itemName: title,
               img: imageUrl,
@@ -80,7 +89,7 @@ function defRouter(processedIds, stats) {
         });
       }
 
-      const nextPageUrl = document.querySelector('.page-next a')?.href
+      const nextPageUrl = document.querySelector(".page-next a")?.href;
       if (!nextPageUrl) return;
       await enqueueLinks({
         urls: [nextPageUrl],
@@ -119,9 +128,7 @@ async function main() {
     useApifyProxy: !development
   });
 
-  const sitemap = await Sitemap.load([
-    `${rootUrl.replace('www', 'backend')}/media/sitemap/kategorie.xml`,
-  ]);
+  const sitemap = await Sitemap.load([`${rootUrl.replace("www", "backend")}/media/sitemap/kategorie.xml`]);
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
@@ -136,9 +143,9 @@ async function main() {
     }
   });
 
-  await crawler.run(sitemap.urls.map(url => ({ url, label: Labels.CATEGORY })));
+  await crawler.run(urls ?? sitemap.urls.map(url => ({ url, label: Labels.CATEGORY })));
 
-  let tableName = country === Country.CZ ? "drmax_cz" : "drmax_sk";
+  const tableName = country === Country.CZ ? "drmax_cz" : "drmax_sk";
 
   await uploadToKeboola(tableName);
   log.info("upload to Keboola finished");

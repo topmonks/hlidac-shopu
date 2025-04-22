@@ -1,13 +1,13 @@
-import { Dataset, HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { createHttpRouter, Dataset, HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
+import { cleanPrice, itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { comp, map, push, transduce } from "@thi.ng/transducers";
-import { Actor, LogLevel, log } from "apify";
+import { Actor, log, LogLevel } from "apify";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
@@ -29,7 +29,6 @@ const locales = new Map([
  * @returns {Product}
  */
 function toProduct(result, { url, originalPrice, country }) {
-  const slug = result.url;
   const itemId = result.id;
   const itemUrl = new URL(result.url, url).href;
   const itemName = result.name;
@@ -40,7 +39,9 @@ function toProduct(result, { url, originalPrice, country }) {
   const category = result.mainCategory;
   const { currency } = locales.get(country.toUpperCase());
   return {
-    slug,
+    shop: shopName(url),
+    shopOrigin: shopOrigin(url),
+    slug: itemSlug(result.url, url),
     itemId,
     itemUrl,
     itemName,
