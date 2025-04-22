@@ -1,12 +1,16 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class ForCamping extends Shop {
+export class ForCamping extends AsyncShop {
+  get waitForSelector() {
+    return "#id_98";
+  }
+
   async scrape() {
     const product = JSON.parse(document.querySelector("#formProductAddToBasket").dataset.product);
     const itemId = product.id;
     const title = product.name;
-    const currentPrice = product.unitPriceWithVat;
+    const currentPrice = cleanPrice("#priceSellingVat");
     const originalPrice = cleanPrice("#productOldPrice");
     const imageUrl = product.photoFile;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
