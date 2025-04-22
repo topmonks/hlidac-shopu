@@ -2,6 +2,7 @@ import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { Dataset } from "apify";
 
 /** @typedef {import("./types.js").Product} Product */
+
 /** @typedef {import("./stats").Stats} Stats */
 
 /**
@@ -47,3 +48,5 @@ export function cleanPrice(s) {
 }
 
 export * from "@hlidac-shopu/lib/parse.mjs";
+
+export { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/lib/shops.mjs";

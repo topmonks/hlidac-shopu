@@ -1,4 +1,6 @@
 export interface Product {
+  shop: string;
+  shopOrigin: string;
   slug: string;
   itemId: string;
   itemName: string;
