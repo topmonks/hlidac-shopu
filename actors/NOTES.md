@@ -1,8 +1,9 @@
 # Tips and advice for beginners
 
-## How to start with actor HlidacShopu
-Please don't start a new actor via `apify create`. It is a way to create an actor for Apify,
-not for HlidacShopu. The Better way is to copy the already functional actor and edit.
+## How to start with the HlidacShopu actor
+
+Do not use  `apify create`. This is a way to create an actor for Apify,
+not for HlidacShopu. The better way is to copy the existing actor and modif it.
 Some modules then don’t match and aren’t configured correctly for the HlidacShopu
 at the beginning of the code that the input data is filled in correctly.
 In otherwise case, it is possible to create an actor via `apify create`, but it will be necessary
@@ -13,21 +14,21 @@ If sorting is not defined, there can some recommended products exist in the prod
 Therefore, it is better to sort the list of products, e.g., from the cheapest alphabetically.
 
 ## API processing via RequestAsBrowser / gotScraping
-`Apify.utils.requestAsBrowser` is deprecated. Use `HttpCrawler` for all requests, it is enough for most use cases.
+Usage `Apify.utils.requestAsBrowser` is forbidden. Use `HttpCrawler` for all requests, it is enough for most use cases.
 
 ## How to see CI log of the pushed actor changes
 https://docs.apify.com/crawling-basics/scraping-the-data#review-code
 
 Here you can monitor CI errors to avoid blocking other people's code testing.
-The notification is sent by e-mail or in the `#ntf-hlidac-shop` channel on Slack too.
+Notifications are sent by e-mail or in the `#ntf-hlidac-shop` channel on Slack too.
 
 ## Number of products on the page
 It is usually safe to keep the original number of products per page,
 which is normally loaded in the e-shop.
 
 ## Register eshop in shop.mjs
-Remember to add an actor to `lib/shops.mjs` file.
-You can let inspire in DM or Alza actors, which are presentable.
+Don't forget to add an actor to`lib/shops.mjs` file.
+You can get inspiration from DM or 4camping actors, which are presentable.
 
 ```
 ["luxor_cz", {
@@ -58,9 +59,11 @@ describe("shopSlug", () => {
 
 ## Product properties
 ```
-slug*
-itemId*
-itemUrl*
+shop* -- use `shopName` function from `@hlidacshopu/actors-common/product.js`
+shopOrigin -- use `shopOrigin` function from `@hlidacshopu/actors-common/product.js`
+slug*  -- our product identifier used as key in KV story, has to be unique on the origin/shop; use `itemSlug` function from `@hlidacshopu/actors-common/product.js`
+itemId* -- origin/shop ID, SKU or GTIN
+itemUrl* -- full absolute URL of the product detail page
 itemName*
 img*
 discounted,*
