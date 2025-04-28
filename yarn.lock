@@ -4770,7 +4770,7 @@ __metadata:
     "@types/node": "npm:22.14.1"
     apify: "npm:3.4.0"
     apify-cli: "npm:0.21.6"
-    puppeteer: "npm:24.7.0"
+    puppeteer: "npm:24.7.2"
   languageName: unknown
   linkType: soft
 
@@ -6639,9 +6639,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@puppeteer/browsers@npm:2.10.1":
-  version: 2.10.1
-  resolution: "@puppeteer/browsers@npm:2.10.1"
+"@puppeteer/browsers@npm:2.10.2":
+  version: 2.10.2
+  resolution: "@puppeteer/browsers@npm:2.10.2"
   dependencies:
     debug: "npm:^4.4.0"
     extract-zip: "npm:^2.0.1"
@@ -6652,7 +6652,7 @@ __metadata:
     yargs: "npm:^17.7.2"
   bin:
     browsers: lib/cjs/main-cli.js
-  checksum: 10c0/795bc29fc356b9db629bdd9d2a0ef8034d7944fb9fdb723017f24c7d9a67612e7859623cfe868cc14531989a29348e67c8760e3ea22c2ea00c8a2b6acd67b69c
+  checksum: 10c0/c3a11b48b49cf85b3320706c759ea8dd5a576ef7bc58005ece733e5a0808fe1736f184ce641c2a43b534361644bf87cd9d28ad4080b739d19e7b54e52d221154
   languageName: node
   linkType: hard
 
@@ -11077,15 +11077,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromium-bidi@npm:4.0.1":
-  version: 4.0.1
-  resolution: "chromium-bidi@npm:4.0.1"
+"chromium-bidi@npm:4.1.1":
+  version: 4.1.1
+  resolution: "chromium-bidi@npm:4.1.1"
   dependencies:
     mitt: "npm:^3.0.1"
     zod: "npm:^3.24.1"
   peerDependencies:
     devtools-protocol: "*"
-  checksum: 10c0/dd3af53713c2692b079a2d0e6787538a6537a542658f1f1eebf6eaeace5ca9777111a66a53f67be14fd1f12cf7d72d38d2ea7cb50056854490c629b519323075
+  checksum: 10c0/2250efff48bd66ad5fbf31da23392550ff3be541f24533afee8d1785c1f7532e969cbe2d9cebc986e7dd101520a14d59b317b748426fca73827f43ae4b63893a
   languageName: node
   linkType: hard
 
@@ -15460,7 +15460,7 @@ __metadata:
     npm-run-all2: "npm:7.0.2"
     postcss: "npm:8.5.3"
     postcss-css-variables: "npm:0.19.0"
-    puppeteer: "npm:24.7.0"
+    puppeteer: "npm:24.7.2"
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
@@ -20704,17 +20704,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:24.7.0":
-  version: 24.7.0
-  resolution: "puppeteer-core@npm:24.7.0"
+"puppeteer-core@npm:24.7.2":
+  version: 24.7.2
+  resolution: "puppeteer-core@npm:24.7.2"
   dependencies:
-    "@puppeteer/browsers": "npm:2.10.1"
-    chromium-bidi: "npm:4.0.1"
+    "@puppeteer/browsers": "npm:2.10.2"
+    chromium-bidi: "npm:4.1.1"
     debug: "npm:^4.4.0"
     devtools-protocol: "npm:0.0.1425554"
     typed-query-selector: "npm:^2.12.0"
     ws: "npm:^8.18.1"
-  checksum: 10c0/e874ed831ec66fcf8923f0f0c1df44477fb9798880e86ed2bdf14bd60f35f88f65a389394fbd0dea6ebfc8ab21699c545a634e50ef32946b59221d62dc668f96
+  checksum: 10c0/1888faee798f46aae2476398be1e448f6ed9241eb108cfe1d0c996b9f91f453e11c806e56bb89265d49d7952c658119339b6c5123f2f30a956ea6c184d991247
   languageName: node
   linkType: hard
 
@@ -20732,19 +20732,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:24.7.0":
-  version: 24.7.0
-  resolution: "puppeteer@npm:24.7.0"
+"puppeteer@npm:24.7.2":
+  version: 24.7.2
+  resolution: "puppeteer@npm:24.7.2"
   dependencies:
-    "@puppeteer/browsers": "npm:2.10.1"
-    chromium-bidi: "npm:4.0.1"
+    "@puppeteer/browsers": "npm:2.10.2"
+    chromium-bidi: "npm:4.1.1"
     cosmiconfig: "npm:^9.0.0"
     devtools-protocol: "npm:0.0.1425554"
-    puppeteer-core: "npm:24.7.0"
+    puppeteer-core: "npm:24.7.2"
     typed-query-selector: "npm:^2.12.0"
   bin:
     puppeteer: lib/cjs/puppeteer/node/cli.js
-  checksum: 10c0/eb4bd30bf09ee347d02f720aa66ae4f3afbe69bb39d9d18568b02c9d299819dddc5ac5b695e50343f20c3006773a9bfc144c7508b89e099af15708d8ffcfd2b0
+  checksum: 10c0/b89bf7b364535eb03e97c3a43389b744885d92c020084568fed7bbde3d39a2ee011f8a14c4984eed5ae105fb003b3b9162e415955275e89c94292894b046fc19
   languageName: node
   linkType: hard
 
