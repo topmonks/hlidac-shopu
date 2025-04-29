@@ -2430,12 +2430,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.26.10":
-  version: 7.26.10
-  resolution: "@babel/runtime@npm:7.26.10"
+"@babel/runtime@npm:7.27.0":
+  version: 7.27.0
+  resolution: "@babel/runtime@npm:7.27.0"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
-  checksum: 10c0/6dc6d88c7908f505c4f7770fb4677dfa61f68f659b943c2be1f2a99cb6680343462867abf2d49822adc435932919b36c77ac60125793e719ea8745f2073d3745
+  checksum: 10c0/35091ea9de48bd7fd26fb177693d64f4d195eb58ab2b142b893b7f3fa0f1d7c677604d36499ae0621a3703f35ba0c6a8f6c572cc8f7dc0317213841e493cf663
   languageName: node
   linkType: hard
 
@@ -5893,10 +5893,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdn/browser-compat-data@npm:5.7.3":
-  version: 5.7.3
-  resolution: "@mdn/browser-compat-data@npm:5.7.3"
-  checksum: 10c0/a630301c646deb11b3ea75056b5e71976da0e0935b21248e8cfa10c3cb03555b1561b998e4eea1a1f0a4820449b16bc8d0f220cc9b98741192c45dc1efd054d8
+"@mdn/browser-compat-data@npm:6.0.6":
+  version: 6.0.6
+  resolution: "@mdn/browser-compat-data@npm:6.0.6"
+  checksum: 10c0/6583eb2609f2d954ffc96be19286d3005892be14005ac73ed0731ea8b276dfda97d2519fcee9450f5030c2dfcaabf799f3926a124d622c9a33481064ab05b50f
   languageName: node
   linkType: hard
 
@@ -9342,13 +9342,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"addons-linter@npm:7.9.0":
-  version: 7.9.0
-  resolution: "addons-linter@npm:7.9.0"
+"addons-linter@npm:7.11.0":
+  version: 7.11.0
+  resolution: "addons-linter@npm:7.11.0"
   dependencies:
     "@fluent/syntax": "npm:0.19.0"
     "@fregante/relaxed-json": "npm:2.0.0"
-    "@mdn/browser-compat-data": "npm:5.7.3"
+    "@mdn/browser-compat-data": "npm:6.0.6"
     addons-moz-compare: "npm:1.3.0"
     addons-scanner-utils: "npm:9.12.0"
     ajv: "npm:8.17.1"
@@ -9363,7 +9363,7 @@ __metadata:
     espree: "npm:10.3.0"
     esprima: "npm:4.0.1"
     fast-json-patch: "npm:3.1.1"
-    image-size: "npm:2.0.1"
+    image-size: "npm:2.0.2"
     json-merge-patch: "npm:1.0.2"
     pino: "npm:8.20.0"
     semver: "npm:7.7.1"
@@ -9373,7 +9373,7 @@ __metadata:
     yauzl: "npm:2.10.0"
   bin:
     addons-linter: bin/addons-linter
-  checksum: 10c0/fb3e3f9ad072419dfcb33a7a5aae56742295ce2b39a8de2f77684e7ddfd69c9e89d8d6fa9bc4e0cb0a061becfe76f7a03bcd46c6e79e1464b2086ca1ae2491e1
+  checksum: 10c0/284b0b80d395777a3fc4b41caa7414d3b69b0e080b273bbcbf01b65460bb311dd08cc6be7d724bbc6ab654d9262481f556c08444df693732d5d7bbddd3d20da5
   languageName: node
   linkType: hard
 
@@ -15464,7 +15464,7 @@ __metadata:
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
-    web-ext: "npm:8.5.0"
+    web-ext: "npm:8.6.0"
   languageName: unknown
   linkType: soft
 
@@ -15776,12 +15776,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:2.0.1":
-  version: 2.0.1
-  resolution: "image-size@npm:2.0.1"
+"image-size@npm:2.0.2":
+  version: 2.0.2
+  resolution: "image-size@npm:2.0.2"
   bin:
     image-size: bin/image-size.js
-  checksum: 10c0/925bf741630a1c5b42fd96ae5332763ce034817f8b65221cfaaea64c3d38f4cf774763fd810e26e9510f635de57b10331404e3ca0e4e511e875d5d05f33036c0
+  checksum: 10c0/f09dd0f7cf8511cd20e4f756bdb5a7cb6d2240de3323f41bde266bed8373392a293892bf12e907e2995f52833fd88dd27cf6b1a52ab93968afc716cb78cd7b79
   languageName: node
   linkType: hard
 
@@ -19506,13 +19506,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-abstract-transport@npm:^1.1.0, pino-abstract-transport@npm:^1.2.0":
+"pino-abstract-transport@npm:^1.1.0":
   version: 1.2.0
   resolution: "pino-abstract-transport@npm:1.2.0"
   dependencies:
     readable-stream: "npm:^4.0.0"
     split2: "npm:^4.0.0"
   checksum: 10c0/b4ab59529b7a91f488440147fc58ee0827a6c1c5ca3627292339354b1381072c1a6bfa9b46d03ad27872589e8477ecf74da12cf286e1e6b665ac64a3b806bf07
+  languageName: node
+  linkType: hard
+
+"pino-abstract-transport@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "pino-abstract-transport@npm:2.0.0"
+  dependencies:
+    split2: "npm:^4.0.0"
+  checksum: 10c0/02c05b8f2ffce0d7c774c8e588f61e8b77de8ccb5f8125afd4a7325c9ea0e6af7fb78168999657712ae843e4462bb70ac550dfd6284f930ee57f17f486f25a9f
   languageName: node
   linkType: hard
 
@@ -19551,14 +19560,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:9.4.0":
-  version: 9.4.0
-  resolution: "pino@npm:9.4.0"
+"pino@npm:9.6.0":
+  version: 9.6.0
+  resolution: "pino@npm:9.6.0"
   dependencies:
     atomic-sleep: "npm:^1.0.0"
     fast-redact: "npm:^3.1.1"
     on-exit-leak-free: "npm:^2.1.0"
-    pino-abstract-transport: "npm:^1.2.0"
+    pino-abstract-transport: "npm:^2.0.0"
     pino-std-serializers: "npm:^7.0.0"
     process-warning: "npm:^4.0.0"
     quick-format-unescaped: "npm:^4.0.3"
@@ -19568,7 +19577,7 @@ __metadata:
     thread-stream: "npm:^3.0.0"
   bin:
     pino: bin.js
-  checksum: 10c0/12a3d74968964d92b18ca7d6095a3c5b86478dc22264a37486d64e102085ed08820fcbe75e640acc3542fdf2937a34e5050b624f98e6ac62dd10f5e1328058a2
+  checksum: 10c0/bcd1e9d9b301bea13b95689ca9ad7105ae9451928fb6c0b67b3e58c5fe37cea1d40665f3d6641e3da00be0bbc17b89031e67abbc8ea6aac6164f399309fd78e7
   languageName: node
   linkType: hard
 
@@ -24277,13 +24286,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:8.5.0":
-  version: 8.5.0
-  resolution: "web-ext@npm:8.5.0"
+"web-ext@npm:8.6.0":
+  version: 8.6.0
+  resolution: "web-ext@npm:8.6.0"
   dependencies:
-    "@babel/runtime": "npm:7.26.10"
+    "@babel/runtime": "npm:7.27.0"
     "@devicefarmer/adbkit": "npm:3.3.8"
-    addons-linter: "npm:7.9.0"
+    addons-linter: "npm:7.11.0"
     camelcase: "npm:8.0.0"
     chrome-launcher: "npm:1.1.2"
     debounce: "npm:1.2.1"
@@ -24298,7 +24307,7 @@ __metadata:
     node-notifier: "npm:10.0.1"
     open: "npm:9.1.0"
     parse-json: "npm:7.1.1"
-    pino: "npm:9.4.0"
+    pino: "npm:9.6.0"
     promise-toolbox: "npm:0.21.0"
     source-map-support: "npm:0.5.21"
     strip-bom: "npm:5.0.0"
@@ -24311,7 +24320,7 @@ __metadata:
     zip-dir: "npm:2.0.0"
   bin:
     web-ext: bin/web-ext.js
-  checksum: 10c0/9ec48a65e95297d4d1dbcd4d3906be31b27acc0d520fc1d44c221bbdbbec25ea45c51211e79ff2e7683aef7f58631639379cf9fcc4ddc50abae9fe779694db32
+  checksum: 10c0/f42c1246f247446b3653342a94e0340c4f2e3ac7f2caaffb05cdf46f1c83efe604f41db3367253ca932c4d07162fd29dc8f20bba0244aeed9da5b5b464a07997
   languageName: node
   linkType: hard
 
