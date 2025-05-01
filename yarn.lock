@@ -4481,7 +4481,7 @@ __metadata:
     "@hlidac-shopu/lib": "npm:1.5.1"
     "@thi.ng/atom": "npm:5.3.29"
     "@types/node": "npm:22.15.3"
-    linkedom: "npm:0.18.9"
+    linkedom: "npm:0.18.10"
     rollbar: "npm:2.26.4"
   peerDependencies:
     apify: ^3.2.0
@@ -4947,7 +4947,7 @@ __metadata:
     "@types/node": "npm:22.15.3"
     apify: "npm:3.4.0"
     apify-cli: "npm:0.21.6"
-    linkedom: "npm:0.18.9"
+    linkedom: "npm:0.18.10"
   languageName: unknown
   linkType: soft
 
@@ -15421,7 +15421,7 @@ __metadata:
     dotenv-cli: "npm:8.0.0"
     esbuild: "npm:0.25.3"
     gulp-mode: "npm:1.1.0"
-    linkedom: "npm:0.18.9"
+    linkedom: "npm:0.18.10"
     npm-run-all2: "npm:7.0.2"
     postcss: "npm:8.5.3"
     postcss-css-variables: "npm:0.19.0"
@@ -17193,16 +17193,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkedom@npm:0.18.9":
-  version: 0.18.9
-  resolution: "linkedom@npm:0.18.9"
+"linkedom@npm:0.18.10":
+  version: 0.18.10
+  resolution: "linkedom@npm:0.18.10"
   dependencies:
     css-select: "npm:^5.1.0"
     cssom: "npm:^0.5.0"
     html-escaper: "npm:^3.0.3"
     htmlparser2: "npm:^10.0.0"
     uhyphen: "npm:^0.2.0"
-  checksum: 10c0/7d8e0498726d4e0bdd8a52c7f3d5b454ec7e84fc0b52578bcb30b05114b9fd5dcc9d4db505c05dba3b56c16c39787ebeb320a88a1c72f84abbec76546dfa8535
+  checksum: 10c0/cbc60aa9db83e2a34e5af9934b736cd5fe6aba84b65ac72fbaddbaa22ad13d8f5000939495199a13fc2869f6bc03efa33c9e589d5626521be94be73373a37f53
   languageName: node
   linkType: hard
 
