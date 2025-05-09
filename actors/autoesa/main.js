@@ -88,8 +88,8 @@ function toProduct(document, url) {
     }
   }
 
-  const currentPrice = prices.find(price => !price.discount)?.price || null;
-  const originalPrice = prices.find(price => price.discount)?.price || null;
+  const currentPrice = prices.find(price => !price.discount)?.price ?? null;
+  const originalPrice = prices.find(price => price.discount)?.price ?? null;
 
   return {
     slug: itemId,
