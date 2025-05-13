@@ -4543,9 +4543,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/infrastructure@workspace:infrastructure"
   dependencies:
-    "@pulumi/aws": "npm:6.79.1"
+    "@pulumi/aws": "npm:6.80.0"
     "@pulumi/awsx": "npm:2.21.1"
-    "@pulumi/pulumi": "npm:3.167.0"
+    "@pulumi/pulumi": "npm:3.169.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.25.4"
   languageName: unknown
@@ -6277,13 +6277,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:6.79.1":
-  version: 6.79.1
-  resolution: "@pulumi/aws@npm:6.79.1"
+"@pulumi/aws@npm:6.80.0":
+  version: 6.80.0
+  resolution: "@pulumi/aws@npm:6.80.0"
   dependencies:
     "@pulumi/pulumi": "npm:^3.142.0"
     mime: "npm:^2.0.0"
-  checksum: 10c0/28e2628a6d858b891193d35f0be3717bd6445497f2754e1226d81a27243feddab92694a4b026d964b0ead00faebfa439eb6164749d41221753c69977c6bdb99a
+  checksum: 10c0/3d9b8b10c7ba02691fec5051fb0054bedf477850500a7c24d3b2b6790909e6309b42b1b200e631f1b52b9173331de4f5ec00b2f38cf5eab74b62d0f10f9bf926
   languageName: node
   linkType: hard
 
@@ -6332,9 +6332,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.167.0":
-  version: 3.167.0
-  resolution: "@pulumi/pulumi@npm:3.167.0"
+"@pulumi/pulumi@npm:3.169.0":
+  version: 3.169.0
+  resolution: "@pulumi/pulumi@npm:3.169.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6372,7 +6372,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/1970a542a294c07cef4fcf032959195837ff3a04b7aa7f103b68a5aee40a1b0f88316ea845c3b3d2423ddfea0e7c63160ed9f1bb4dc8e738455d74982935ffe4
+  checksum: 10c0/2239d8f9474393748cd16abf4957a6184c537b77c772ce0e5bd57b8518797d054507b07c06bdaf4469df8617140b728c6a0777597268ece53339d2a0ccf00d34
   languageName: node
   linkType: hard
 
