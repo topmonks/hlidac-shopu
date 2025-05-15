@@ -151,7 +151,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{ meta.url }}">
   <meta name="twitter:image" property="og:image" content="https://www.hlidacshopu.cz/og-image.png">
-  <link rel="canonical" href="{{ meta.url }}">
+  <link rel="canonical" href="{{ canonicalUrl or page.url | resolveUrl(meta.url) }}">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/sitemanifest.json">

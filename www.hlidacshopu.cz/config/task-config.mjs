@@ -86,6 +86,9 @@ const config = {
       filters: {
         longDate(str) {
           return longDateFormatter.format(new Date(str));
+        },
+        resolveUrl(str, base) {
+          return URL.parse(str, base).href;
         }
       }
     },
