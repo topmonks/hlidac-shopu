@@ -87,6 +87,11 @@ export function createDatabase() {
         true,
         ["@aws-sdk/client-dynamodb"]
       ),
+      environment: {
+        variables: {
+          "ROLLBAR_ACCESS_TOKEN": config.require("rollbar_token")
+        }
+      },
       memorySize: 128,
       timeout: 15
     }),
@@ -204,31 +209,56 @@ export function createApi(domainName: string, options?: any) {
         path: "/detail",
         fileName: "detail/index.mjs",
         requiredParameters: [{ in: "query", name: "url" }],
-        memorySize: 512
+        memorySize: 512,
+        environment: {
+          variables: {
+            "ROLLBAR_ACCESS_TOKEN": config.require("rollbar_token")
+          }
+        }
       }),
       createHandlerRoute("shop-numbers", {
         httpMethod: "GET",
         path: "/shop-numbers",
         fileName: "shopNumbers/index.mjs",
-        requiredParameters: [{ in: "query", name: "year" }]
+        requiredParameters: [{ in: "query", name: "year" }],
+        environment: {
+          variables: {
+            "ROLLBAR_ACCESS_TOKEN": config.require("rollbar_token")
+          }
+        }
       }),
       createHandlerRoute("reviews-stats", {
         httpMethod: "GET",
         path: "/reviews-stats",
         fileName: "reviewStats/index.mjs",
-        cache: { ttl: 3600 }
+        cache: { ttl: 3600 },
+        environment: {
+          variables: {
+            ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
+          }
+        }
       }),
       createHandlerRoute("dashboard", {
         httpMethod: "GET",
         path: "/dashboard",
         fileName: "dashboard/index.mjs",
-        cache: { ttl: 3600 }
+        cache: { ttl: 3600 },
+        environment: {
+          variables: {
+            ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
+          }
+        }
       }),
       createHandlerRoute("black-friday", {
         httpMethod: "GET",
         path: "/black-friday",
         fileName: "blackFriday/index.mjs",
-        requiredParameters: [{ in: "query", name: "year" }]
+        requiredParameters: [{ in: "query", name: "year" }],
+        environment: {
+          variables: {
+            ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
+          }
+        }
       }),
       createHandlerRoute("og", {
         httpMethod: "GET",
@@ -239,8 +269,9 @@ export function createApi(domainName: string, options?: any) {
         timeout: 60,
         environment: {
           variables: {
-            "TOKEN": config.get("screenshotter-token") ?? "",
-            "HOST": config.get("screenshotter-host") ?? ""
+            TOKEN: config.get("screenshotter-token") ?? "",
+            HOST: config.get("screenshotter-host") ?? "",
+            ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
           }
         }
       })
@@ -310,7 +341,12 @@ export function createSQSIngest(options = {}) {
     ...defaultLambdaOpts,
     code: buildAssets("ingest-uploader/index.mjs"),
     memorySize: 128,
-    timeout: uploaderTimeout
+    timeout: uploaderTimeout,
+    environment: {
+      variables: {
+        ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
+      }
+    }
   });
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
@@ -333,7 +369,8 @@ export function createSQSIngest(options = {}) {
     timeout: 900,
     environment: {
       variables: {
-        SQS_URL: ingestQueue.url
+        SQS_URL: ingestQueue.url,
+        ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
       }
     }
   });

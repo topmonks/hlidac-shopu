@@ -2,6 +2,7 @@ encryptionsalt: v1:QiUd4qNAqng=:v1:tCt5J/nnMKCFE8a0:YRjy4AlM+iMG9p2i6p+INBIec3K1
 config:
   aws:region: eu-central-1
   hlidacshopu:data_bucket: data.hlidacshopu.cz
+  hlidacshopu:rollbar_token: f761f4d603f1f86de4b7380d1a466bdb
   topmonks_website:assets_paths:
     - /assets/*
   hlidacshopu:screenshotter-host:
