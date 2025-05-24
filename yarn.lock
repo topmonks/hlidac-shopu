@@ -15250,7 +15250,7 @@ __metadata:
     esbuild: "npm:0.25.4"
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.10"
-    npm-run-all2: "npm:8.0.2"
+    npm-run-all2: "npm:8.0.3"
     postcss: "npm:8.5.3"
     postcss-css-variables: "npm:0.19.0"
     puppeteer: "npm:24.8.2"
@@ -17758,7 +17758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^10.0.0":
+"minimatch@npm:^10.0.0, minimatch@npm:^10.0.1":
   version: 10.0.1
   resolution: "minimatch@npm:10.0.1"
   dependencies:
@@ -18414,14 +18414,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:8.0.2":
-  version: 8.0.2
-  resolution: "npm-run-all2@npm:8.0.2"
+"npm-run-all2@npm:8.0.3":
+  version: 8.0.3
+  resolution: "npm-run-all2@npm:8.0.3"
   dependencies:
     ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.6"
     memorystream: "npm:^0.3.1"
-    picomatch: "npm:^4.0.2"
+    minimatch: "npm:^10.0.1"
     pidtree: "npm:^0.6.0"
     read-package-json-fast: "npm:^4.0.0"
     shell-quote: "npm:^1.7.3"
@@ -18431,7 +18431,7 @@ __metadata:
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10c0/f123741fc221bd6b51ec173f1e9345191599f087108d60a10e856e033a97903b0444db8a41af7a9548eeb14c48486ab109d091bc3489b72fae03cf0f014755d4
+  checksum: 10c0/22773c2144bf0477f2be464043e180c4b37078df63147a374a47b3bac9b5bc5825e7a7253d7b138a2a5e34d2ff13f0fc7cfff4f7d46170405728c373dd733855
   languageName: node
   linkType: hard
 
