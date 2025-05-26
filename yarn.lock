@@ -4630,7 +4630,7 @@ __metadata:
   dependencies:
     "@esm-bundle/chai": "npm:4.3.4-fix.0"
     "@open-wc/testing": "npm:4.0.0"
-    "@web/test-runner": "npm:0.20.1"
+    "@web/test-runner": "npm:0.20.2"
     "@web/test-runner-junit-reporter": "npm:0.8.0"
     chart.js: "npm:4.4.9"
     chartjs-adapter-date-fns: "npm:3.0.0"
@@ -9040,9 +9040,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner@npm:0.20.1":
-  version: 0.20.1
-  resolution: "@web/test-runner@npm:0.20.1"
+"@web/test-runner@npm:0.20.2":
+  version: 0.20.2
+  resolution: "@web/test-runner@npm:0.20.2"
   dependencies:
     "@web/browser-logs": "npm:^0.4.0"
     "@web/config-loader": "npm:^0.3.0"
@@ -9063,7 +9063,7 @@ __metadata:
   bin:
     web-test-runner: dist/bin.js
     wtr: dist/bin.js
-  checksum: 10c0/283dd50c04bd2d2665248c961add05373f00a26a66e3a501e716186ee28a50c024c2189fd85ccba4dc1151d66ba1b81dcdafc2b395e545978c4179ec95e5e8f4
+  checksum: 10c0/9d06cd262e790a5f5f28876b8681d88e2be767336734343e453b2cd4790b76ca35f3c6450ebf7fc7230ce17307bfdd1979e226aba30d6efd5e20276cc40b06a0
   languageName: node
   linkType: hard
 
