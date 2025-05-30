@@ -9177,9 +9177,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"addons-linter@npm:7.12.0":
-  version: 7.12.0
-  resolution: "addons-linter@npm:7.12.0"
+"addons-linter@npm:7.13.0":
+  version: 7.13.0
+  resolution: "addons-linter@npm:7.13.0"
   dependencies:
     "@fluent/syntax": "npm:0.19.0"
     "@fregante/relaxed-json": "npm:2.0.0"
@@ -9208,7 +9208,7 @@ __metadata:
     yauzl: "npm:2.10.0"
   bin:
     addons-linter: bin/addons-linter
-  checksum: 10c0/1eeced1574094703ef64ac64279244d657633ea74e06d1ca03219f369c13015d948847288e8bcb6a033b214828d70925df22314dd49285ca561e30fc8392c29b
+  checksum: 10c0/53ade510714cddbe77f727c622c6c750779c19252457114ecde72ef2f9c3c6fc1170c9ebe786054cfb385770b677d9ceaff935120391319a62a9ff7f48d16ffe
   languageName: node
   linkType: hard
 
@@ -15204,7 +15204,7 @@ __metadata:
     ramda: "npm:0.30.1"
     rollbar: "npm:2.26.4"
     source-map-explorer: "npm:2.5.3"
-    web-ext: "npm:8.7.0"
+    web-ext: "npm:8.7.1"
   languageName: unknown
   linkType: soft
 
@@ -24013,13 +24013,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-ext@npm:8.7.0":
-  version: 8.7.0
-  resolution: "web-ext@npm:8.7.0"
+"web-ext@npm:8.7.1":
+  version: 8.7.1
+  resolution: "web-ext@npm:8.7.1"
   dependencies:
     "@babel/runtime": "npm:7.27.1"
     "@devicefarmer/adbkit": "npm:3.3.8"
-    addons-linter: "npm:7.12.0"
+    addons-linter: "npm:7.13.0"
     camelcase: "npm:8.0.0"
     chrome-launcher: "npm:1.2.0"
     debounce: "npm:1.2.1"
@@ -24047,7 +24047,7 @@ __metadata:
     zip-dir: "npm:2.0.0"
   bin:
     web-ext: bin/web-ext.js
-  checksum: 10c0/303cca3f4c54b3ab1251a1f9d51966970c8243a490ea53009060f2164137bfdceb5469b69b7cec02d8711c78aa92f73f4d75097f62dcd7146d4aafe034fe94a4
+  checksum: 10c0/649d4be3a9856e25d57375fca3562c56e4f2eafbd271a5fdf7236c06c7843001dedd65a2bd7a38aa1e647634f7611ba5637bfcf512729143c5c8a0d79e6f5768
   languageName: node
   linkType: hard
 
