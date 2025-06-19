@@ -191,8 +191,6 @@ async function main() {
     maxRequestRetries = 5
   } = input || {};
 
-  console.log(urls);
-
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
