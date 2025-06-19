@@ -18,6 +18,7 @@ import { Actor, LogLevel, log } from "apify";
 // let url = "<<paste GraphQL query URL here >>";
 // JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
 // ```
+// TODO it should be possible to scrape these automatically
 const opHash = new Map([
   ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
   ["GetCategoryProductSearch", "55224bfc7292d3ccda6c7e1365a3a17de4475b0a4b1998df4718442f0eb1d2e8"]
