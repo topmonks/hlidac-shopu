@@ -88,7 +88,8 @@ function extractProduct({ url, document }) {
     currentPrice: cleanPrice(document.querySelector('[data-ui-name="ads.price.strong"]').innerText),
     discounted: Boolean(discountedPrice),
     originalPrice,
-    inStock: Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
+    // It looks like the inStock is not available on the product page, so we are not using it anymore.
+    // inStock: Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
     img: `https:${img}`,
     category: document
       .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
