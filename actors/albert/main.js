@@ -19,8 +19,8 @@ import { Actor, LogLevel, log } from "apify";
 // JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
 // ```
 const opHash = new Map([
-  ["LeftHandNavigationBar", "96d324363b3adeda3549db6e4fe1c858b59d6ff37ae31e8c1aca50b37ad61ddc"],
-  ["GetCategoryProductSearch", "2aec9814466f9ca92be6df1a2b058bcf83cc3237ef089776e675308d228c2969"]
+  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
+  ["GetCategoryProductSearch", "55224bfc7292d3ccda6c7e1365a3a17de4475b0a4b1998df4718442f0eb1d2e8"]
 ]);
 
 const PROCESSED_IDS_KEY = "processedIds";
@@ -189,6 +189,8 @@ async function main() {
     maxConcurrency = 4,
     maxRequestRetries = 5
   } = input || {};
+
+  console.log(urls);
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
