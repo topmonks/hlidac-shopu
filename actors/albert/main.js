@@ -21,7 +21,7 @@ import { Actor, LogLevel, log } from "apify";
 // TODO it should be possible to scrape these automatically
 const opHash = new Map([
   ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
-  ["GetCategoryProductSearch", "55224bfc7292d3ccda6c7e1365a3a17de4475b0a4b1998df4718442f0eb1d2e8"]
+  ["GetCategoryProductSearch", "ffb484cc27cd657f54e198351025b3cf485d07fedb1dc6cd09c039278ca8cddd"]
 ]);
 
 const PROCESSED_IDS_KEY = "processedIds";
