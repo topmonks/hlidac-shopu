@@ -4236,9 +4236,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:9.3.8":
-  version: 9.3.8
-  resolution: "@hckr_/blendid@npm:9.3.8"
+"@hckr_/blendid@npm:9.4.0":
+  version: 9.4.0
+  resolution: "@hckr_/blendid@npm:9.4.0"
   dependencies:
     "@csstools/postcss-gamut-mapping": "npm:2.0.10"
     "@vitejs/plugin-basic-ssl": "npm:2.0.0"
@@ -4287,7 +4287,7 @@ __metadata:
     vite: "npm:6.3.5"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/5cb46f714e31a856a66256be9a2104a06c942d8ba3fdb6dab36878a0806795f2044aac3c695d6f7b4c1fee8a6d3dc1fca588288edfa2c0380c9de555b0568123
+  checksum: 10c0/a9446ec303d19e294cd5c2e5a493280184764942f915c79829d27285fed97b4e39c46867c3df2ee54a84933187c47c67b56820796f88a1d1f92d48546bab3617
   languageName: node
   linkType: hard
 
@@ -4851,7 +4851,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:9.3.8"
+    "@hckr_/blendid": "npm:9.4.0"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -15382,7 +15382,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.826.0"
     "@biomejs/biome": "npm:1.9.4"
-    "@hckr_/blendid": "npm:9.3.8"
+    "@hckr_/blendid": "npm:9.4.0"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:22.15.32"
     "@types/nunjucks": "npm:3.2.6"
