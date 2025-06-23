@@ -89,7 +89,7 @@ function extractProduct({ url, document }) {
     discounted: Boolean(discountedPrice),
     originalPrice,
     // It looks like the inStock is not available on the product page, so we are not using it anymore.
-    // inStock: Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
+    inStock: true, // Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
     img: `https:${img}`,
     category: document
       .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
