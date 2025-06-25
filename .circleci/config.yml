@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@5.4.0
   aws-cloudfront: topmonks/aws-cloudfront@1.0.0
-  aws-s3: circleci/aws-s3@4.1.1
+  aws-s3: circleci/aws-s3@4.1.2
   browser-tools: circleci/browser-tools@1.5.3
   codecov: codecov/codecov@5.4.3
   github: topmonks/github@1.4.0
