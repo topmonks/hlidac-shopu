@@ -1,5 +1,5 @@
-import { registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import {registerShop} from "../helpers.mjs";
+import {Shop} from "./shop.mjs";
 
 export class Hornbach extends Shop {
   get injectionPoint() {
@@ -7,21 +7,23 @@ export class Hornbach extends Shop {
   }
 
   async scrape() {
-    const elems = document.querySelectorAll('script[type="application/ld+json"]');
-    if (!elems) return;
-    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-    for (const script of scripts) {
-      if (script.textContent.includes(`"@type":"Product"`)) {
-        const article = JSON.parse(script.textContent);
-        return {
-          itemId: article.sku,
-          title: article.name,
-          currentPrice: parseFloat(article.offers[0]?.price),
-          originalPrice: null,
-          imageUrl: article.image[0].url
-        };
-      }
-    }
+    const allDocumentScripts = Array.from(document.querySelectorAll("script"));
+    const string = allDocumentScripts
+      .find(script => script.innerText.startsWith("window.pushTrackingInfo")).innerText
+
+    const startIndex = string.indexOf("{");
+    const endIndex = string.lastIndexOf("}") + 1;
+
+    const jsonString = string.substring(startIndex, endIndex);
+    const data = JSON.parse(jsonString);
+
+    return {
+      itemId: data["product.sku"],
+      title: data["page.title"],
+      currentPrice: parseFloat(data["product.defaultPrice.value"]),
+      originalPrice: null,
+      imageUrl: data["product.assets.thumbnail"]
+    };
   }
 }
 
