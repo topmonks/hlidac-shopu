@@ -15,7 +15,7 @@ export class Pilulka extends AsyncShop {
     const title = document.querySelector(".service-detail__title ").title;
     const itemId = document.querySelector("[componentname='catalog.product']").id;
     const currentPrice = cleanPrice(`.product-card-price__prices`);
-    const originalPrice = cleanPrice(`.price-before, .superPrice__old__price`);
+    const originalPrice = cleanPrice(`.product-price-container .product-card-price__old`);
     const imageUrl = document.querySelector(".service-detail__main-link").href;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
