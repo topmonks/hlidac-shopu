@@ -15450,7 +15450,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:0.8.46"
     vitest: "npm:3.2.4"
-    wrangler: "npm:4.20.5"
+    wrangler: "npm:4.21.2"
   languageName: unknown
   linkType: soft
 
@@ -17909,28 +17909,6 @@ __metadata:
   version: 4.0.0
   resolution: "mimic-response@npm:4.0.0"
   checksum: 10c0/761d788d2668ae9292c489605ffd4fad220f442fbae6832adce5ebad086d691e906a6d5240c290293c7a11e99fbdbbef04abbbed498bf8699a4ee0f31315e3fb
-  languageName: node
-  linkType: hard
-
-"miniflare@npm:4.20250617.3":
-  version: 4.20250617.3
-  resolution: "miniflare@npm:4.20250617.3"
-  dependencies:
-    "@cspotcode/source-map-support": "npm:0.8.1"
-    acorn: "npm:8.14.0"
-    acorn-walk: "npm:8.3.2"
-    exit-hook: "npm:2.2.1"
-    glob-to-regexp: "npm:0.4.1"
-    sharp: "npm:^0.33.5"
-    stoppable: "npm:1.1.0"
-    undici: "npm:^5.28.5"
-    workerd: "npm:1.20250617.0"
-    ws: "npm:8.18.0"
-    youch: "npm:3.3.4"
-    zod: "npm:3.22.3"
-  bin:
-    miniflare: bootstrap.js
-  checksum: 10c0/ed4ede8ed849819c27ed3ce4187c777cef822a6733861120db0bac5a33acce35927240babd4ca669a5d6ce56a735424e25df33af4d66d805d7ed41c3819d898e
   languageName: node
   linkType: hard
 
@@ -24930,34 +24908,6 @@ __metadata:
   bin:
     workerd: bin/workerd
   checksum: 10c0/3f3342840a4d439232f86d88019601071f18470c37582a2b7de1273346785aa090d0259e674be1f4d59f898d38d5b6d276da2cc4625de1609e0966e9405bdf7a
-  languageName: node
-  linkType: hard
-
-"wrangler@npm:4.20.5":
-  version: 4.20.5
-  resolution: "wrangler@npm:4.20.5"
-  dependencies:
-    "@cloudflare/kv-asset-handler": "npm:0.4.0"
-    "@cloudflare/unenv-preset": "npm:2.3.3"
-    blake3-wasm: "npm:2.1.5"
-    esbuild: "npm:0.25.4"
-    fsevents: "npm:~2.3.2"
-    miniflare: "npm:4.20250617.3"
-    path-to-regexp: "npm:6.3.0"
-    unenv: "npm:2.0.0-rc.17"
-    workerd: "npm:1.20250617.0"
-  peerDependencies:
-    "@cloudflare/workers-types": ^4.20250617.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@cloudflare/workers-types":
-      optional: true
-  bin:
-    wrangler: bin/wrangler.js
-    wrangler2: bin/wrangler.js
-  checksum: 10c0/8f8d397b6878b5b767abc98ed6cfcb5119aef5dcb7db25832cf1f056cf378afa79efe787668f4caf8bc6f88e88253dc1676d05e8ef2d820cd964dbde1b529a55
   languageName: node
   linkType: hard
 
