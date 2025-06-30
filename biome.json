@@ -9,9 +9,7 @@
     "lineWidth": 120,
     "attributePosition": "auto"
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
@@ -20,7 +18,14 @@
         "useBlockStatements": "off"
       }
     },
-    "ignore": ["**/apple/", "**/public/", "extension/content.js", "**/extension-dist/", "**/node_modules/"]
+    "includes": [
+      "**",
+      "!**/apple/",
+      "!**/public/",
+      "!**/extension/content.js",
+      "!**/extension-dist/",
+      "!**/node_modules/"
+    ]
   },
   "javascript": {
     "formatter": {
