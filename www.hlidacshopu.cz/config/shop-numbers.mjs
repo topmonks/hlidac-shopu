@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import projectPath from "@hckr_/blendid/lib/projectPath.mjs";
-import { fetchShopsStats, fetchStats } from "@hlidac-shopu/lib/remoting.mjs";
+import { fetchShopsStats } from "@hlidac-shopu/lib/remoting.mjs";
 import DefaultRegistry from "undertaker-registry";
 
 export class ShopNumbersRegistry extends DefaultRegistry {
