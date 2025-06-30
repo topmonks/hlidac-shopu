@@ -2609,22 +2609,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/vitest-pool-workers@npm:0.8.46":
-  version: 0.8.46
-  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.46"
+"@cloudflare/vitest-pool-workers@npm:0.8.47":
+  version: 0.8.47
+  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.47"
   dependencies:
     birpc: "npm:0.2.14"
     cjs-module-lexer: "npm:^1.2.3"
     devalue: "npm:^4.3.0"
     miniflare: "npm:4.20250617.4"
     semver: "npm:^7.7.1"
-    wrangler: "npm:4.21.2"
+    wrangler: "npm:4.22.0"
     zod: "npm:^3.22.3"
   peerDependencies:
     "@vitest/runner": 2.0.x - 3.2.x
     "@vitest/snapshot": 2.0.x - 3.2.x
     vitest: 2.0.x - 3.2.x
-  checksum: 10c0/cb9437b95991a095813442e99cf88532c77077d8537411e9d50c389a2c359a7efe5a72d6ee701a1e68313f214ef20d464959a500561e0b0887355323a4fc3009
+  checksum: 10c0/34f6a7441aca7bba1e6c3903e6a068882fde2a41c5c3633668728e6802f8208b27c2d953699f4ddbaac712507281355e0e67f61d73457162814cc2b359b9cbdb
   languageName: node
   linkType: hard
 
@@ -15448,7 +15448,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidacshopu-google-stats@workspace:workers/hlidacshopu-google-stats"
   dependencies:
-    "@cloudflare/vitest-pool-workers": "npm:0.8.46"
+    "@cloudflare/vitest-pool-workers": "npm:0.8.47"
     vitest: "npm:3.2.4"
     wrangler: "npm:4.21.2"
   languageName: unknown
@@ -24936,6 +24936,34 @@ __metadata:
     wrangler: bin/wrangler.js
     wrangler2: bin/wrangler.js
   checksum: 10c0/2d087fe8e7aadb9d8226653b6e22d6a1ddd92cee8dcd262fe113442bd8201f030ba41a340f1960a6aaa54f9eeab1d65978c4f6b4c30adc2e4969bd9c8a7f4434
+  languageName: node
+  linkType: hard
+
+"wrangler@npm:4.22.0":
+  version: 4.22.0
+  resolution: "wrangler@npm:4.22.0"
+  dependencies:
+    "@cloudflare/kv-asset-handler": "npm:0.4.0"
+    "@cloudflare/unenv-preset": "npm:2.3.3"
+    blake3-wasm: "npm:2.1.5"
+    esbuild: "npm:0.25.4"
+    fsevents: "npm:~2.3.2"
+    miniflare: "npm:4.20250617.4"
+    path-to-regexp: "npm:6.3.0"
+    unenv: "npm:2.0.0-rc.17"
+    workerd: "npm:1.20250617.0"
+  peerDependencies:
+    "@cloudflare/workers-types": ^4.20250617.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@cloudflare/workers-types":
+      optional: true
+  bin:
+    wrangler: bin/wrangler.js
+    wrangler2: bin/wrangler.js
+  checksum: 10c0/a1d5deab6f600d1e3807c94ca5f0fbe1884a34d76ec0d2880c1fb2f9125a3b4e8607502bf8c06cc6ef960ea85d93a587f00a36b5e4e479b8daffd3f5237e053c
   languageName: node
   linkType: hard
 
