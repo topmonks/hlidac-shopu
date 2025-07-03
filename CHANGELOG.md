@@ -1,5 +1,11 @@
 # Extension
 
+## 2.4.2
+* Fixed Grizzly original price extraction
+* Fixed Globus current price extraction
+* Fixed Hornbach current price extraction
+* Fixed Pilulka original price extraction
+
 ## 2.4.1
 * Fixed Lidl.cz rendering
 * Fixed 4camping data fetching
