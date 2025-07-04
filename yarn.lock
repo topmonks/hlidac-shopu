@@ -2609,9 +2609,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/vitest-pool-workers@npm:0.8.47":
-  version: 0.8.47
-  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.47"
+"@cloudflare/vitest-pool-workers@npm:0.8.48":
+  version: 0.8.48
+  resolution: "@cloudflare/vitest-pool-workers@npm:0.8.48"
   dependencies:
     birpc: "npm:0.2.14"
     cjs-module-lexer: "npm:^1.2.3"
@@ -2624,7 +2624,7 @@ __metadata:
     "@vitest/runner": 2.0.x - 3.2.x
     "@vitest/snapshot": 2.0.x - 3.2.x
     vitest: 2.0.x - 3.2.x
-  checksum: 10c0/34f6a7441aca7bba1e6c3903e6a068882fde2a41c5c3633668728e6802f8208b27c2d953699f4ddbaac712507281355e0e67f61d73457162814cc2b359b9cbdb
+  checksum: 10c0/bb3f20f7436beceadfca736a1518400f0993d898f4cfa84ef7bdc17ba8b49d1942b9ef24949392b73221ba971d4dae1f04a584308221d9b1f39a3a5d233627a7
   languageName: node
   linkType: hard
 
@@ -15325,7 +15325,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidacshopu-google-stats@workspace:workers/hlidacshopu-google-stats"
   dependencies:
-    "@cloudflare/vitest-pool-workers": "npm:0.8.47"
+    "@cloudflare/vitest-pool-workers": "npm:0.8.48"
     vitest: "npm:3.2.4"
     wrangler: "npm:4.22.0"
   languageName: unknown
