@@ -4280,12 +4280,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hckr_/blendid@npm:9.5.0":
-  version: 9.5.0
-  resolution: "@hckr_/blendid@npm:9.5.0"
+"@hckr_/blendid@npm:9.5.1":
+  version: 9.5.1
+  resolution: "@hckr_/blendid@npm:9.5.1"
   dependencies:
     "@csstools/postcss-gamut-mapping": "npm:2.0.10"
-    "@vitejs/plugin-basic-ssl": "npm:2.0.0"
+    "@vitejs/plugin-basic-ssl": "npm:2.1.0"
     cloudinary: "npm:2.7.0"
     cssnano: "npm:7.0.7"
     del: "npm:8.0.0"
@@ -4328,10 +4328,10 @@ __metadata:
     undertaker-registry: "npm:2.0.0"
     vinyl: "npm:3.0.1"
     vinyl-file: "npm:5.0.0"
-    vite: "npm:7.0.0"
+    vite: "npm:7.0.4"
   bin:
     blendid: bin/blendid.js
-  checksum: 10c0/4f4570c13af22b5ab0d04fa73cf57f98e8ffcaa5ec09558268badd84da344ab6f210fe8944df0fb09117e6f6c73f7b4c1f081b07faac477113c70e7b75f02e47
+  checksum: 10c0/c61c00739b4a040f0f6793474445b6e4ef7a650c31918d63dc70b119674002da56421d8444f7210227d3e8a4958e88526db486a9b0ae15900c6837064b61985d
   languageName: node
   linkType: hard
 
@@ -4895,7 +4895,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/web@workspace:www.hlidacshopu.cz"
   dependencies:
-    "@hckr_/blendid": "npm:9.5.0"
+    "@hckr_/blendid": "npm:9.5.1"
     "@hlidac-shopu/lib": "workspace:*"
     "@material/button": "npm:14.0.0"
     "@material/icon-button": "npm:14.0.0"
@@ -8862,12 +8862,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-basic-ssl@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@vitejs/plugin-basic-ssl@npm:2.0.0"
+"@vitejs/plugin-basic-ssl@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@vitejs/plugin-basic-ssl@npm:2.1.0"
   peerDependencies:
-    vite: ^6.0.0
-  checksum: 10c0/673f46dc5ee042f6fcfa7ecf514e717e770085f8979d4608cab952f3e9003fe7aed589cc812a67f3dcd5e80655975c6490ce8a07a4b6feef98766003256d4283
+    vite: ^6.0.0 || ^7.0.0
+  checksum: 10c0/aa618be6bd915163aba27b2db780eab2f0e5d800fea48795f638fb6c1d098db8008ba7f84c708dc191159efecf6ec4e0191ebc5bb7a1a31779c01d0252bf56b0
   languageName: node
   linkType: hard
 
@@ -15409,7 +15409,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.840.0"
     "@biomejs/biome": "npm:2.1.1"
-    "@hckr_/blendid": "npm:9.5.0"
+    "@hckr_/blendid": "npm:9.5.1"
     "@types/firefox-webext-browser": "npm:120.0.4"
     "@types/node": "npm:24.0.13"
     "@types/nunjucks": "npm:3.2.6"
@@ -24144,9 +24144,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:7.0.0":
-  version: 7.0.0
-  resolution: "vite@npm:7.0.0"
+"vite@npm:7.0.4":
+  version: 7.0.4
+  resolution: "vite@npm:7.0.4"
   dependencies:
     esbuild: "npm:^0.25.0"
     fdir: "npm:^6.4.6"
@@ -24195,7 +24195,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/860838d223f877dd8e04bd2b8f33cf67a38706643bdf07e3153e2857d7c0d33c3ee94cea7e86e60937cc91b3793272912cc7af14565641476f814bd61b3a1374
+  checksum: 10c0/2eb3572d60e8e6f0e291905e30989a52042350439c03002603d27a396652bf0484e13d5e8b15e0d7bd9988a8dc03ee712d45eb83e9dcf8aab4e8ecb28b0419b6
   languageName: node
   linkType: hard
 
