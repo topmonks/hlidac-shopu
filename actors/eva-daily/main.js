@@ -3,7 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, KeyValueStore, log } from "apify";
 
 const HOST = "https://www.eva.cz";
@@ -83,7 +83,7 @@ async function main() {
   } = input;
 
   const processedIds = new Set();
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     pages: 0,
     items: 0,

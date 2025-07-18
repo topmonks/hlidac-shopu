@@ -5,7 +5,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
@@ -355,7 +355,7 @@ async function main() {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     items: 0,
     itemsUnique: 0,

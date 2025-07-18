@@ -5,7 +5,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { map, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
@@ -156,7 +156,7 @@ async function main() {
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
   }
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     products: 0,
     failed: 0
   });

@@ -6,7 +6,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 
 const ROOT_URL = "https://allegro.cz/";
 const PROCESSED_IDS_KEY = "processedIds";
@@ -149,7 +149,7 @@ async function main() {
     groups: proxyGroups
   });
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     products: 0,
     duplicates: 0

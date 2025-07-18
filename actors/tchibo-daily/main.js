@@ -3,7 +3,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, log } from "apify";
 
@@ -316,7 +316,7 @@ async function main() {
   rollbar.init();
   const handledIdsSet = await useState("HANDLED_PRODUCT_IDS", {});
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     urls: 0,
     failed: 0
   });

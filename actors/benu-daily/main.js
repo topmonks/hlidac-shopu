@@ -4,7 +4,7 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -126,7 +126,7 @@ async function main() {
 
   const { development, maxRequestRetries, proxyGroups, type = ActorType.Full } = await getInput();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     urls: 0,
     pages: 0,

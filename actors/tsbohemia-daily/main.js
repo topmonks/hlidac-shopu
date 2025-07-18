@@ -3,7 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, log } from "apify";
 
 /** @enum {string} */
@@ -62,7 +62,7 @@ async function main() {
     development
   } = await getInput();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     items: 0,
     failed: 0
   });

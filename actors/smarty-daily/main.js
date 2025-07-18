@@ -3,7 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { Actor, log } from "apify";
 
@@ -21,7 +21,7 @@ async function main() {
 
   const { development, type = ActorType.Full, proxyGroups, maxRequestRetries } = await getInput();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0, // in this actor, categories are brands
     items: 0,
     failed: 0

@@ -5,7 +5,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, LogLevel, log } from "apify";
 
 const ROOT_URL = "https://www.kaufland.cz/";
@@ -185,7 +185,7 @@ async function main() {
     await Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds));
   });
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     products: 0,
     duplicates: 0

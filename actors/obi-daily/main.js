@@ -5,7 +5,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
@@ -146,7 +146,7 @@ async function main() {
   rollbar.init();
 
   const processedIds = new Set();
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     urls: 0,
     items: 0,
     totalItems: 0,

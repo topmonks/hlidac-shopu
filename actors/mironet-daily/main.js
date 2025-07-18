@@ -5,7 +5,7 @@ import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
 
@@ -152,7 +152,7 @@ function pageUrls({ document, request }) {
 async function main() {
   rollbar.init();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     urls: 0,
     pages: 0,
     items: 0,

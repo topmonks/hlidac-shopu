@@ -1,14 +1,14 @@
+import fs from "node:fs";
 import { HttpCrawler } from "@crawlee/http";
 import { launchPlaywright } from "@crawlee/playwright";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice, shopName } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import fs from "node:fs";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
@@ -193,7 +193,7 @@ const fetchMfData = async (productUrl, { sendRequest }) => {
 async function main() {
   const rollbar = Rollbar.init();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     urls: 0,
     items: 0,
     itemsDuplicity: 0,

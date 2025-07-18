@@ -3,7 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { comp, map, mapcat, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, LogLevel, log } from "apify";
 
@@ -175,7 +175,7 @@ async function main() {
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
   Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categories: 0,
     products: 0,
     duplicates: 0

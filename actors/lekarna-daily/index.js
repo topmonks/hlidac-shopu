@@ -5,7 +5,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, log } from "apify";
 
 const web = "https://www.lekarna.cz";
@@ -203,7 +203,7 @@ export async function main() {
     type = ActorType.Full
   } = await getInput();
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     urls: 0,
     pages: 0,
     items: 0,

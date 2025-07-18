@@ -11,7 +11,7 @@ import {
   shopOrigin
 } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { Actor, LogLevel, log } from "apify";
 
@@ -117,7 +117,7 @@ async function main() {
 
   const rootUrl = rootWebUrl(country);
   const processedIds = await useState("processedIds");
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     items: 0,
     itemNoPrice: 0,
     failed: 0

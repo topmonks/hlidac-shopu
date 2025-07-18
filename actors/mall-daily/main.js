@@ -3,7 +3,7 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, LogLevel, log } from "apify";
 import { gql } from "graphql-tag";
 
@@ -173,7 +173,7 @@ async function main() {
   }
 
   const processedIds = new Set();
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     ok: 0,
     denied: 0,
     pages: 0,

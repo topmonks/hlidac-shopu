@@ -3,7 +3,7 @@ import { HttpCrawler, useState } from "@crawlee/http";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { defAtom } from "@thi.ng/atom";
 import { choices, partition, push, take, transduce } from "@thi.ng/transducers";
 import { Actor, Dataset, LogLevel, log } from "apify";
@@ -251,7 +251,7 @@ async function main() {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     categoriesTotal: 0,
     subCategoriesTotal: 0,
     categoryPagesCount: 0,

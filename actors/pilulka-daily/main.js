@@ -6,7 +6,7 @@ import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { parseFloatText, saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hlidac-shopu/actors-common/stats.js";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, LogLevel, log } from "apify";
@@ -190,7 +190,7 @@ async function main() {
   }
 
   const processedIds = await useState("processedIds");
-  const stats = await withPersistedStats(x => x, {
+  const stats = await withPersistedStats({
     items: 0,
     itemNoPrice: 0,
     failed: 0
