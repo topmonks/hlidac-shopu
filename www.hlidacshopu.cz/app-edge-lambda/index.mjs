@@ -6,20 +6,21 @@ import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */
 
 const s3 = new S3({ region: "eu-central-1", maxAttempts: 3 });
+const html = String.raw;
 
-const content = ({ url, name, imageUrl }) => `<\!DOCTYPE html>
+const content = ({ url, name, imageUrl }) => html`<\!DOCTYPE html>
 <html lang="cs">
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
-<meta charset="utf-8">
-<title>${name}</title>
-<meta property="og:type" content="og:website">
-<meta property="og:title" content="${name}">
-<meta property="og:url" content="${url}">
-<meta name="twitter:image" property="og:image" content="${imageUrl}">
-<meta name="twitter:description" property="og:description" content="Podívejte se na vývoj ceny a reálnost slevy.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@hlidacshopucz">
-<meta name="twitter:title" content="${name}">
+  <meta charset="utf-8">
+  <title>${name}</title>
+  <meta property="og:type" content="og:website">
+  <meta property="og:title" content="${name}">
+  <meta property="og:url" content="${url}">
+  <meta name="twitter:image" property="og:image" content="${imageUrl}">
+  <meta name="twitter:description" property="og:description" content="Podívejte se na vývoj ceny a reálnost slevy.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@hlidacshopucz">
+  <meta name="twitter:title" content="${name}">
 </head>
 <body></body>
 </html>

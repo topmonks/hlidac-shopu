@@ -20,7 +20,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
   static create(name: string) {
     const role = createRole(name);
     new aws.iam.RolePolicyAttachment(`${name}-basic-execution-attachment`, {
-      policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
       role
     });
     new aws.iam.RolePolicyAttachment(`${name}-dynamo-read-attachment`, {
@@ -42,7 +42,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
         role: role.arn,
         timeout: 5,
         handler: "index.handler",
-        runtime: aws.lambda.Runtime.NodeJS20dX,
+        runtime: aws.lambda.Runtime.NodeJS22dX,
         code: buildAssets("index.mjs")
       },
       { provider: awsUsEast1 }

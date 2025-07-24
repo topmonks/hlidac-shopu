@@ -3,12 +3,14 @@ import { isSocialMediaBot } from "@hlidac-shopu/lib/user-agent.mjs";
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestEvent } CloudFrontRequestEvent */
 /** @typedef { import("@types/aws-lambda").CloudFrontRequestResult } CloudFrontRequestResult */
 
-const content = url => `<\!DOCTYPE html>
+const html = String.raw;
+
+const content = url => html`<\!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="utf-8">
-<title></title>
-<link rel="canonical" href="${url}">
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="canonical" href="${url}">
 </head>
 </html>
 `;
