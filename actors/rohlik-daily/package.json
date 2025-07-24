@@ -8,16 +8,16 @@
   "dependencies": {
     "@crawlee/http": "3.13.10",
     "@crawlee/utils": "3.13.10",
-    "@hckr_/apify-persistent-stats": "1.0.0",
+    "@hckr_/apify-persistent-stats": "1.0.1",
     "@hlidac-shopu/actors-common": "3.2.2",
-    "@thi.ng/atom": "5.3.34",
-    "@thi.ng/transducers": "9.6.0",
+    "@thi.ng/atom": "5.3.36",
+    "@thi.ng/transducers": "9.6.3",
     "apify": "3.4.3",
     "core-async": "2.0.6"
   },
   "devDependencies": {
-    "@types/node": "24.0.13",
-    "apify-cli": "0.21.8"
+    "@types/node": "24.1.0",
+    "apify-cli": "0.21.9"
   },
   "scripts": {
     "start": "node main.js",
