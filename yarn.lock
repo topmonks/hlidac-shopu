@@ -4931,7 +4931,7 @@ __metadata:
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.3.36"
-    dotenv-cli: "npm:8.0.0"
+    dotenv-cli: "npm:9.0.0"
     lit-html: "npm:3.3.1"
     postcss-css-variables: "npm:0.19.0"
     undertaker-registry: "npm:^2.0.0"
@@ -12842,17 +12842,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:8.0.0":
-  version: 8.0.0
-  resolution: "dotenv-cli@npm:8.0.0"
+"dotenv-cli@npm:9.0.0":
+  version: 9.0.0
+  resolution: "dotenv-cli@npm:9.0.0"
   dependencies:
     cross-spawn: "npm:^7.0.6"
-    dotenv: "npm:^16.3.0"
+    dotenv: "npm:^17.1.0"
     dotenv-expand: "npm:^10.0.0"
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/000469632758b7b44aaaa80cbbbd7f0c94dc170ec02e51aa8d8280341a0108fb7407954c23054257b77235b064033efdb8745836633eb6fd1586924953cf0528
+  checksum: 10c0/6a77003f8cc63410098a0d9cf8dff10f97653fc077a07a5aa85a24e08f75f4b5c31d79734fecfca1d61959a206077717c0c895147d5b017e0b72f4410991a2f3
   languageName: node
   linkType: hard
 
@@ -12863,10 +12863,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.3.0":
-  version: 16.4.7
-  resolution: "dotenv@npm:16.4.7"
-  checksum: 10c0/be9f597e36a8daf834452daa1f4cc30e5375a5968f98f46d89b16b983c567398a330580c88395069a77473943c06b877d1ca25b4afafcdd6d4adb549e8293462
+"dotenv@npm:^17.1.0":
+  version: 17.2.1
+  resolution: "dotenv@npm:17.2.1"
+  checksum: 10c0/918dd2f9d8b8f86b0afabad9534793d51de3718c437f9e7b6525628cf68c1d4ae768cc37a5afff38c066f58a8ecf549f4ac6cd5617485bd328e826112cc2650a
   languageName: node
   linkType: hard
 
@@ -15684,7 +15684,7 @@ __metadata:
     chokidar: "npm:4.0.3"
     chrome-webstore-upload-cli: "npm:3.3.2"
     commander: "npm:14.0.0"
-    dotenv-cli: "npm:8.0.0"
+    dotenv-cli: "npm:9.0.0"
     esbuild: "npm:0.25.8"
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.11"
