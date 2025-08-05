@@ -4931,7 +4931,7 @@ __metadata:
     "@material/snackbar": "npm:14.0.0"
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.3.37"
-    dotenv-cli: "npm:9.0.0"
+    dotenv-cli: "npm:10.0.0"
     lit-html: "npm:3.3.1"
     postcss-css-variables: "npm:0.19.0"
     undertaker-registry: "npm:^2.0.0"
@@ -12864,24 +12864,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:9.0.0":
-  version: 9.0.0
-  resolution: "dotenv-cli@npm:9.0.0"
+"dotenv-cli@npm:10.0.0":
+  version: 10.0.0
+  resolution: "dotenv-cli@npm:10.0.0"
   dependencies:
     cross-spawn: "npm:^7.0.6"
     dotenv: "npm:^17.1.0"
-    dotenv-expand: "npm:^10.0.0"
+    dotenv-expand: "npm:^11.0.0"
     minimist: "npm:^1.2.6"
   bin:
     dotenv: cli.js
-  checksum: 10c0/6a77003f8cc63410098a0d9cf8dff10f97653fc077a07a5aa85a24e08f75f4b5c31d79734fecfca1d61959a206077717c0c895147d5b017e0b72f4410991a2f3
+  checksum: 10c0/c469e65167fc3d1ef7bc6f90c8b7a0accd245ad1cdb73da8c72b32ddb308550dc4d5bfcdae964ab1f8a247957d756afc7b050d0f88fa5868c05ff6d3dfb4c1ba
   languageName: node
   linkType: hard
 
-"dotenv-expand@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv-expand@npm:10.0.0"
-  checksum: 10c0/298f5018e29cfdcb0b5f463ba8e8627749103fbcf6cf81c561119115754ed582deee37b49dfc7253028aaba875ab7aea5fa90e5dac88e511d009ab0e6677924e
+"dotenv-expand@npm:^11.0.0":
+  version: 11.0.7
+  resolution: "dotenv-expand@npm:11.0.7"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+  checksum: 10c0/d80b8a7be085edf351270b96ac0e794bc3ddd7f36157912939577cb4d33ba6492ebee349d59798b71b90e36f498d24a2a564fb4aa00073b2ef4c2a3a49c467b1
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.4.5":
+  version: 16.6.1
+  resolution: "dotenv@npm:16.6.1"
+  checksum: 10c0/15ce56608326ea0d1d9414a5c8ee6dcf0fffc79d2c16422b4ac2268e7e2d76ff5a572d37ffe747c377de12005f14b3cc22361e79fc7f1061cce81f77d2c973dc
   languageName: node
   linkType: hard
 
@@ -15706,7 +15715,7 @@ __metadata:
     chokidar: "npm:4.0.3"
     chrome-webstore-upload-cli: "npm:3.3.2"
     commander: "npm:14.0.0"
-    dotenv-cli: "npm:9.0.0"
+    dotenv-cli: "npm:10.0.0"
     esbuild: "npm:0.25.8"
     gulp-mode: "npm:1.1.0"
     linkedom: "npm:0.18.11"
