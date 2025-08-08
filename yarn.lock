@@ -4250,16 +4250,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fast-csv/format@npm:5.0.2":
-  version: 5.0.2
-  resolution: "@fast-csv/format@npm:5.0.2"
+"@fast-csv/format@npm:5.0.5":
+  version: 5.0.5
+  resolution: "@fast-csv/format@npm:5.0.5"
   dependencies:
     lodash.escaperegexp: "npm:^4.1.2"
     lodash.isboolean: "npm:^3.0.3"
-    lodash.isequal: "npm:^4.5.0"
     lodash.isfunction: "npm:^3.0.9"
     lodash.isnil: "npm:^4.0.0"
-  checksum: 10c0/dd31e0d6809a4e8e77e24927da35357aa49018965cbee9040a49af66d3dd0adbcdb4b516f1b2092523ea8d410e17ae55ed3cedeb51743d6869d0476def73f5b9
+  checksum: 10c0/9c61b61799e8f07380eaf67dd93204b3787b1cce73efad761a5b6bc43e58d37e6672ed96c19ce189dd525a5280a700247636d3bc6d3118a33b6209748d72ea4b
   languageName: node
   linkType: hard
 
@@ -4960,7 +4959,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.859.0"
     "@crawlee/utils": "npm:3.14.1"
-    "@fast-csv/format": "npm:5.0.2"
+    "@fast-csv/format": "npm:5.0.5"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@hlidac-shopu/lib": "npm:1.5.1"
     apify: "npm:3.4.4"
