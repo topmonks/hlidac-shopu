@@ -98,24 +98,12 @@ export function createSecurityHeadersAndPermissionsPolicy(
  * @returns {aws.s3.Bucket}
  */
 function createBucket(parent: pulumi.ComponentResource, domain: string, settings: aws.s3.BucketArgs) {
-  const website = settings.website || {
-    indexDocument: "index.html",
-    errorDocument: "404.html"
-  };
   const bucket = new aws.s3.Bucket(
     `${domain}/bucket`,
     {
       bucket: domain,
-      corsRules: [
-        {
-          allowedHeaders: ["*"],
-          allowedMethods: ["GET", "HEAD"],
-          allowedOrigins: ["*"]
-        }
-      ],
       forceDestroy: true,
-      ...settings,
-      website
+      ...settings
     },
     { parent }
   );
@@ -125,6 +113,16 @@ function createBucket(parent: pulumi.ComponentResource, domain: string, settings
     blockPublicPolicy: false,
     ignorePublicAcls: false,
     restrictPublicBuckets: false
+  });
+  new aws.s3.BucketCorsConfiguration(`${domain}-bucket-cors`, {
+    bucket: bucket.id,
+    corsRules: [
+      {
+        allowedHeaders: ["*"],
+        allowedMethods: ["GET", "HEAD"],
+        allowedOrigins: ["*"]
+      }
+    ]
   });
 
   return bucket;
@@ -409,6 +407,7 @@ function createAliasRecords(
     })
   ];
 }
+
 /**
  * Creates CNAME record in Route 53
  * @param name {string}
@@ -683,7 +682,12 @@ export class Website extends pulumi.ComponentResource {
         ...settings
       };
       const website = new Website(domain, settings, opts);
-      const contentBucket = createBucket(website, domain, settings.bucket || {});
+      const contentBucket = createBucket(website, domain, settings.bucket ?? {});
+      new aws.s3.BucketWebsiteConfiguration(domain, {
+        indexDocument: { suffix: "index.html" },
+        errorDocument: { key: "404.html" },
+        bucket: contentBucket.bucket
+      });
       website.contentBucket = contentBucket;
       website.contentBucketPolicy = createBucketPolicy(website, domain, contentBucket);
       if (!settings.cdn?.disabled) {
@@ -728,20 +732,16 @@ export class Website extends pulumi.ComponentResource {
     opts?: pulumi.ComponentResourceOptions
   ): Website | null {
     try {
-      const bucketSettings = {
-        website: {
-          redirectAllRequestsTo: settings.target
+      const website = new Website(domain, { certificateProvider: settings.certificateProvider }, opts);
+      const targetUrl = new URL(settings.target);
+      const bucket = (website.contentBucket = createBucket(website, domain, {}));
+      new aws.s3.BucketWebsiteConfiguration(domain, {
+        bucket: bucket.bucket,
+        redirectAllRequestsTo: {
+          hostName: targetUrl.hostname,
+          protocol: targetUrl.protocol.replace(":", "")
         }
-      };
-      const website = new Website(
-        domain,
-        {
-          bucket: bucketSettings,
-          certificateProvider: settings.certificateProvider
-        },
-        opts
-      );
-      const bucket = (website.contentBucket = createBucket(website, domain, bucketSettings));
+      });
       website.contentBucketPolicy = createBucketPolicy(website, domain, bucket);
       website.cdn = createCloudFront(website, domain, bucket, {
         isSPA: false,

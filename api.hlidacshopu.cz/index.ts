@@ -352,16 +352,21 @@ export function createSQSIngest(options = {}) {
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
   const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
-    bucket: "ingest.hlidacshopu.cz",
-    acl: "private",
-    lifecycleRules: [
+    bucket: "ingest.hlidacshopu.cz"
+  });
+  new aws.s3.BucketLifecycleConfiguration("ingest-lifecycle", {
+    bucket: ingestBucket.id,
+    rules: [
       {
-        enabled: true,
-        expiration: {
-          days: 2
-        }
+        id: "delete-after-2-days",
+        status: "Enabled",
+        expiration: { days: 2 }
       }
     ]
+  });
+  new aws.s3.BucketAcl("ingest-acl", {
+    bucket: ingestBucket.id,
+    acl: "private"
   });
   const extractorLambda = new aws.lambda.Function(hsName(`sqs-ingest-extractor-lambda`, options), {
     ...defaultLambdaOpts,
