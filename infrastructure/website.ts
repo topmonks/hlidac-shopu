@@ -187,8 +187,7 @@ function createCloudFront(
     responseHeadersPolicyId,
     extraOrigins,
     extraCacheBehaviors,
-    provider,
-    webAcl
+    provider
   }: CloudFrontArgs
 ) {
   const acmCertificate = getCertificate(domain, provider);
@@ -233,8 +232,13 @@ function createCloudFront(
         ]
       : undefined
   });
-  const lambdaAssociation = ({ pathPattern, lambdaAssociation }) =>
-    createLambdaAssociation(pathPattern, lambdaAssociation, contentBucket, securityHeadersLambdaArn);
+  const lambdaAssociation = ({
+    pathPattern,
+    lambdaAssociation
+  }: {
+    pathPattern: string;
+    lambdaAssociation: LambdaAssociation;
+  }) => createLambdaAssociation(pathPattern, lambdaAssociation, contentBucket, securityHeadersLambdaArn);
   const assetsCacheBehaviors = assetsPaths?.map(assetsCacheBoost);
   const lambdaAssociationBehavior = edgeLambdas?.map(lambdaAssociation);
   let orderedCacheBehaviors =
@@ -312,24 +316,20 @@ function createCloudFront(
         sslSupportMethod: "sni-only",
         minimumProtocolVersion: "TLSv1.2_2021"
       },
-      isIpv6Enabled: true,
-      webAclId: webAcl?.id
+      isIpv6Enabled: true
     },
     {
       parent,
-      dependsOn: [contentBucket, webAcl]
+      dependsOn: [contentBucket]
     }
   );
 }
 
 function createLambdaAssociation(
   pathPattern: string,
-  lambdaAssociation: {
-    lambdaArn: string | pulumi.Output<string>;
-    eventType: string;
-  },
+  lambdaAssociation: LambdaAssociation,
   contentBucket: Bucket,
-  securityHeadersLambdaArn: string | pulumi.Output<string>
+  securityHeadersLambdaArn?: string | pulumi.Output<string>
 ): aws.types.input.cloudfront.DistributionOrderedCacheBehavior {
   const cacheBehavior = {
     pathPattern: pathPattern,
@@ -637,10 +637,10 @@ function getDomainAndSubdomain(domain: string) {
  * hosted in AWS S3 and distributed via CloudFront CDN with Route53 DNS Record.
  */
 export class Website extends pulumi.ComponentResource {
-  contentBucket: aws.s3.Bucket;
-  contentBucketPolicy: aws.s3.BucketPolicy;
+  contentBucket!: aws.s3.Bucket;
+  contentBucketPolicy!: aws.s3.BucketPolicy;
   cdn?: aws.cloudfront.Distribution;
-  dnsRecords: aws.route53.Record[];
+  dnsRecords!: aws.route53.Record[];
   public domain: pulumi.Output<string>;
   public url: pulumi.Output<string>;
 
@@ -701,8 +701,7 @@ export class Website extends pulumi.ComponentResource {
           responseHeadersPolicyId: settings.responseHeadersPolicyId,
           extraOrigins: settings.extraOrigins,
           extraCacheBehaviors: settings.extraCacheBehaviors,
-          provider: settings.certificateProvider,
-          webAcl: settings.webAcl
+          provider: settings.certificateProvider
         });
       }
       if (!settings.dns?.disabled) {
@@ -775,7 +774,6 @@ export interface CloudFrontArgs {
   extraOrigins?: inputs.cloudfront.DistributionOrigin[];
   extraCacheBehaviors?: inputs.cloudfront.DistributionOrderedCacheBehavior[];
   provider?: aws.Provider;
-  webAcl?: aws.waf.WebAcl;
 }
 
 export interface WebsiteSettings {
@@ -798,7 +796,6 @@ export interface WebsiteSettings {
   extraOrigins?: inputs.cloudfront.DistributionOrigin[];
   extraCacheBehaviors?: inputs.cloudfront.DistributionOrderedCacheBehavior[];
   certificateProvider?: aws.Provider;
-  webAcl?: aws.waf.WebAcl;
 }
 
 export interface EdgeLambdaAssociation {
@@ -833,4 +830,9 @@ export interface SecurityHeadersPolicyArgs {
   corsConfig?: inputs.cloudfront.ResponseHeadersPolicyCorsConfig;
   etag?: string;
   customHeaders?: inputs.cloudfront.ResponseHeadersPolicyCustomHeadersConfigItem[];
+}
+
+export interface LambdaAssociation {
+  lambdaArn: string | pulumi.Output<string>;
+  eventType: string;
 }

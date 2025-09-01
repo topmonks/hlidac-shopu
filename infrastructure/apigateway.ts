@@ -287,7 +287,7 @@ function defineMethodResponse(
   );
 }
 
-function defineMethodSettings(parent, name: string, args: LambdaMethodExecutionArgs) {
+function defineMethodSettings(parent: LambdaMethodExecution, name: string, args: LambdaMethodExecutionArgs) {
   new aws.apigateway.MethodSettings(
     name,
     {
@@ -332,9 +332,9 @@ function defineIntegrationResponse(
 }
 
 export interface CorsSettings {
-  origin?: string;
-  methods?: string | string[];
-  headers?: string[];
+  origin: string;
+  methods: string | string[];
+  headers: string[];
 }
 
 export interface CacheSettings {
