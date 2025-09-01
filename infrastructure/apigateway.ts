@@ -252,7 +252,7 @@ function createRoutes(
 
 function getMethodResource(gateway: awsx.apigateway.API, path: string): Output<aws.apigateway.GetResourceResult> {
   return gateway.restAPI.executionArn.apply(x =>
-    gateway.deployment.executionArn.apply(_ =>
+    gateway.deployment.restApi.apply(_ =>
       aws.apigateway.getResource({
         path,
         restApiId: <string>x.split(":").pop()
