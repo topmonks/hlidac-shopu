@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "bin",
-    "target": "ES2024",
+    "target": "esnext",
     "lib": ["ES2024", "WebWorker", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
