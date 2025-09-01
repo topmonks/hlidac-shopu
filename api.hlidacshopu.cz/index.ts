@@ -160,7 +160,7 @@ export function createApi(domainName: string, options?: any) {
   ): aws.lambda.Function =>
     new aws.lambda.Function(hsName(`api-${name}-lambda`, options), {
       publish: true,
-      runtime: aws.lambda.Runtime.NodeJS20dX,
+      runtime: aws.lambda.Runtime.NodeJS22dX,
       architectures: ["arm64"],
       role: role.arn,
       handler: "index.handler",
@@ -327,7 +327,7 @@ export function createSQSIngest(options = {}) {
 
   const defaultLambdaOpts = {
     publish: true,
-    runtime: aws.lambda.Runtime.NodeJS20dX,
+    runtime: aws.lambda.Runtime.NodeJS22dX,
     architectures: ["arm64"],
     role: defaultLambdaRole.arn,
     handler: "index.handler"
