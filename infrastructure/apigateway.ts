@@ -26,7 +26,7 @@ export class Api extends ComponentResource {
         stageName: args.stageName,
         routes: createRoutes(name, args.deploymentGroup, args.routes),
         restApiArgs: {
-          minimumCompressionSize: 860,
+          minimumCompressionSize: "860",
           description: args.description
         },
         stageArgs: {
