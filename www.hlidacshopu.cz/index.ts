@@ -1,11 +1,11 @@
 import {
   CloudFront,
-  Website,
   createCacheBoostingPolicy,
   createGoogleMxRecords,
   createSecurityHeadersAndPermissionsPolicy,
-  createTxtRecord
-} from "@topmonks/pulumi-aws";
+  createTxtRecord,
+  Website
+} from "../infrastructure/website";
 import { AppEdgeLambda } from "./app-edge-lambda";
 import { RootEdgeLambda } from "./root-edge-lambda";
 

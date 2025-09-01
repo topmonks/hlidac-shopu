@@ -4,8 +4,9 @@ import { lambda } from "@pulumi/aws/types/input";
 import { LambdaAuthorizer, Method } from "@pulumi/awsx/classic/apigateway";
 import { Parameter } from "@pulumi/awsx/classic/apigateway/requestValidator";
 import * as pulumi from "@pulumi/pulumi";
-import { Api, ApiRoute, CacheSettings, CustomDomainDistribution, Website } from "@topmonks/pulumi-aws";
+import { Api, ApiRoute, CacheSettings, CustomDomainDistribution } from "../infrastructure/apigateway";
 import * as lambdaBuilder from "../infrastructure/lambda-builder";
+import { Website } from "../infrastructure/website";
 
 const config = new pulumi.Config("hlidacshopu");
 
@@ -78,7 +79,7 @@ export function createDatabase() {
     "notify-about-missing-items",
     new aws.lambda.Function("notify-about-missing-items", {
       publish: true,
-      runtime: aws.lambda.Runtime.NodeJS20dX,
+      runtime: aws.lambda.Runtime.NodeJS22dX,
       architectures: ["arm64"],
       role: defaultLambdaRole.arn,
       handler: "index.handler",

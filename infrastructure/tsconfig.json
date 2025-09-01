@@ -2,8 +2,8 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "bin",
-    "target": "ES2019",
-    "lib": ["ES2019", "WebWorker", "DOM"],
+    "target": "ES2024",
+    "lib": ["ES2024", "WebWorker", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,

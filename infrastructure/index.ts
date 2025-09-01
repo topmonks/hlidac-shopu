@@ -1,7 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
-import { Website, createCertificate, registerAutoTags } from "@topmonks/pulumi-aws";
+import { registerAutoTags } from "@topmonks/pulumi-aws";
 import { createApi, createDatabase, createDatastore, createSQSIngest } from "../api.hlidacshopu.cz";
 import { createWebsite } from "../www.hlidacshopu.cz";
+import { createCertificate, Website } from "./website";
 
 registerAutoTags({
   "user:Project": pulumi.getProject(),
