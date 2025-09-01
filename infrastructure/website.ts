@@ -57,7 +57,7 @@ export function createCacheBoostingPolicy(
 
 export function createSecurityHeadersAndPermissionsPolicy(
   name: string,
-  { customName, corsConfig, etag, customHeaders = [] }: SecurityHeadersPolicyArgs
+  { customName, corsConfig, customHeaders = [] }: SecurityHeadersPolicyArgs
 ) {
   return new aws.cloudfront.ResponseHeadersPolicy(name, {
     name: customName ?? "SecurityHeaders-and-PermissionsPolicy",
@@ -73,7 +73,6 @@ export function createSecurityHeadersAndPermissionsPolicy(
         ...customHeaders
       ]
     },
-    etag,
     securityHeadersConfig: {
       contentTypeOptions: { override: true },
       frameOptions: { frameOption: "SAMEORIGIN", override: false },
@@ -509,7 +508,7 @@ export function createCertificate(
     provider ??
     new aws.Provider(`${domain}/provider/us-east-1`, {
       profile: aws.config.profile,
-      region: aws.USEast1Region
+      region: aws.Region.USEast1
     });
 
   const certificate = new aws.acm.Certificate(
@@ -584,7 +583,7 @@ export function getCertificate(domain: string, provider?: aws.Provider) {
     provider ??
     new aws.Provider(`${domain}/get-provider/us-east-1`, {
       profile: aws.config.profile,
-      region: aws.USEast1Region
+      region: aws.Region.USEast1
     });
   const certificate = aws.acm.getCertificate(
     { domain: `*.${parentDomain}`, mostRecent: true, statuses: ["ISSUED"] },

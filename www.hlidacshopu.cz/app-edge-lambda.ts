@@ -33,7 +33,7 @@ export class AppEdgeLambda extends pulumi.ComponentResource {
 
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider(`${name}-us-east-1`, {
-      region: aws.USEast1Region
+      region: aws.Region.USEast1
     });
     const lambda = new aws.lambda.Function(
       `${name}-function`,
