@@ -3,7 +3,7 @@
     "strict": true,
     "outDir": "bin",
     "target": "esnext",
-    "lib": ["ES2024", "WebWorker", "DOM"],
+    "lib": ["esnext", "WebWorker", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
