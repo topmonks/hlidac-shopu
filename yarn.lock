@@ -2620,69 +2620,69 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudflare/unenv-preset@npm:2.7.4":
-  version: 2.7.4
-  resolution: "@cloudflare/unenv-preset@npm:2.7.4"
+"@cloudflare/unenv-preset@npm:2.7.5":
+  version: 2.7.5
+  resolution: "@cloudflare/unenv-preset@npm:2.7.5"
   peerDependencies:
     unenv: 2.0.0-rc.21
-    workerd: ^1.20250912.0
+    workerd: ^1.20250924.0
   peerDependenciesMeta:
     workerd:
       optional: true
-  checksum: 10c0/f1b856c612cf62f1f05a81f43ce1f5c5f5c69ba0d987ec8463a910c02f702278ef1adf76dfb5fd8b8419e20467a71503a559ab0378b0c69091f04fafb249bf09
+  checksum: 10c0/22c4d8e395138870c6cc24c90bba80674892d2a922f64fa5ecb23e05cf247f30b39cb548a4fabfa78ca2680363d84769eed0efa8bd363ee917888d2aea92d6ef
   languageName: node
   linkType: hard
 
-"@cloudflare/vitest-pool-workers@npm:0.9.7":
-  version: 0.9.7
-  resolution: "@cloudflare/vitest-pool-workers@npm:0.9.7"
+"@cloudflare/vitest-pool-workers@npm:0.9.8":
+  version: 0.9.8
+  resolution: "@cloudflare/vitest-pool-workers@npm:0.9.8"
   dependencies:
     birpc: "npm:0.2.14"
     cjs-module-lexer: "npm:^1.2.3"
     devalue: "npm:^5.3.2"
-    miniflare: "npm:4.20250924.0"
+    miniflare: "npm:4.20250927.0"
     semver: "npm:^7.7.1"
-    wrangler: "npm:4.40.2"
+    wrangler: "npm:4.40.3"
     zod: "npm:^3.22.3"
   peerDependencies:
     "@vitest/runner": 2.0.x - 3.2.x
     "@vitest/snapshot": 2.0.x - 3.2.x
     vitest: 2.0.x - 3.2.x
-  checksum: 10c0/62eb5e7e0ddf4afad491dd22104092ed2427012636b495ed51c1d91250c7cbf8e2d9f819ba3bacde36d76350b00dbf88e052eb94e9eee1607e223f4c8ae8159c
+  checksum: 10c0/6fbd57495f80411c4bee86252ca11fb805846c8a1b3ab279ec2af466001b31078ea9e25160de5b6c2ba6e1baa00eb26634b79c19ccb5bc4fc64606aa1c2bc096
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-darwin-64@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "@cloudflare/workerd-darwin-64@npm:1.20250924.0"
+"@cloudflare/workerd-darwin-64@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "@cloudflare/workerd-darwin-64@npm:1.20250927.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-darwin-arm64@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "@cloudflare/workerd-darwin-arm64@npm:1.20250924.0"
+"@cloudflare/workerd-darwin-arm64@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "@cloudflare/workerd-darwin-arm64@npm:1.20250927.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-linux-64@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "@cloudflare/workerd-linux-64@npm:1.20250924.0"
+"@cloudflare/workerd-linux-64@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "@cloudflare/workerd-linux-64@npm:1.20250927.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-linux-arm64@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "@cloudflare/workerd-linux-arm64@npm:1.20250924.0"
+"@cloudflare/workerd-linux-arm64@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "@cloudflare/workerd-linux-arm64@npm:1.20250927.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@cloudflare/workerd-windows-64@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "@cloudflare/workerd-windows-64@npm:1.20250924.0"
+"@cloudflare/workerd-windows-64@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "@cloudflare/workerd-windows-64@npm:1.20250927.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -4363,7 +4363,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@hlidac-shopu/lib": "npm:1.5.1"
     "@thi.ng/transducers": "npm:9.6.10"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4376,7 +4376,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4388,7 +4388,7 @@ __metadata:
   dependencies:
     "@hlidac-shopu/lib": "npm:1.5.1"
     "@thi.ng/atom": "npm:5.3.43"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     linkedom: "npm:0.18.12"
     rollbar: "npm:2.26.4"
   peerDependencies:
@@ -4404,7 +4404,7 @@ __metadata:
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/transducers": "npm:9.6.10"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4417,7 +4417,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4431,7 +4431,7 @@ __metadata:
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4473,7 +4473,7 @@ __metadata:
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/transducers": "npm:9.6.10"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4486,7 +4486,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4499,7 +4499,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4512,7 +4512,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     got-scraping: "npm:4.1.2"
@@ -4526,7 +4526,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4540,7 +4540,7 @@ __metadata:
     "@crawlee/utils": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4553,7 +4553,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4575,7 +4575,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4588,7 +4588,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4602,7 +4602,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:3.899.0"
     "@crawlee/http": "npm:3.15.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     csv-parse: "npm:6.1.0"
@@ -4617,7 +4617,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4630,7 +4630,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4655,7 +4655,7 @@ __metadata:
     "@crawlee/puppeteer": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     puppeteer: "npm:24.22.3"
@@ -4669,7 +4669,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4682,7 +4682,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4695,7 +4695,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4708,7 +4708,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4737,7 +4737,7 @@ __metadata:
     "@crawlee/playwright": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     playwright: "npm:1.55.1"
@@ -4751,7 +4751,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     got-scraping: "npm:4.1.2"
@@ -4767,7 +4767,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4780,7 +4780,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4816,7 +4816,7 @@ __metadata:
     "@crawlee/playwright": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     playwright: "npm:1.55.1"
@@ -4831,7 +4831,7 @@ __metadata:
     "@crawlee/utils": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4847,7 +4847,7 @@ __metadata:
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/atom": "npm:5.3.43"
     "@thi.ng/transducers": "npm:9.6.10"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     core-async: "npm:2.0.6"
@@ -4869,7 +4869,7 @@ __metadata:
     "@crawlee/linkedom": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     linkedom: "npm:0.18.12"
@@ -4883,7 +4883,7 @@ __metadata:
     "@crawlee/http": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -4896,7 +4896,7 @@ __metadata:
     "@crawlee/playwright": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
     playwright: "npm:1.55.1"
@@ -4910,7 +4910,7 @@ __metadata:
     "@crawlee/core": "npm:3.15.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     apify: "npm:3.4.5"
     apify-cli: "npm:1.1.1"
   languageName: unknown
@@ -8888,12 +8888,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.6.0":
-  version: 24.6.0
-  resolution: "@types/node@npm:24.6.0"
+"@types/node@npm:24.6.1":
+  version: 24.6.1
+  resolution: "@types/node@npm:24.6.1"
   dependencies:
     undici-types: "npm:~7.13.0"
-  checksum: 10c0/06f1aa1b5d9a8c26285b34c25aee554f31a1dc0b39627cc14e7c1c6967e75a47ab9f409eee14796cbcc004ae4059fa884cb6092ecfb368c9656d16686d7cc9d8
+  checksum: 10c0/f2f8aea441d72139345cfa2e392af51bc27d12eb5f74b9b4d202046a2e82ab70d6da89c46a2ac7feea98854c2919e53070869d4af9d448e173a77249fcb7bca3
   languageName: node
   linkType: hard
 
@@ -15341,7 +15341,7 @@ __metadata:
     "@biomejs/biome": "npm:2.2.4"
     "@hckr_/blendid": "npm:9.6.5"
     "@types/firefox-webext-browser": "npm:120.0.5"
-    "@types/node": "npm:24.6.0"
+    "@types/node": "npm:24.6.1"
     "@types/nunjucks": "npm:3.2.6"
     "@types/ramda": "npm:0.31.1"
     "@types/whatwg-url": "npm:13.0.0"
@@ -15368,10 +15368,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hlidacshopu-google-stats@workspace:workers/hlidacshopu-google-stats"
   dependencies:
-    "@cloudflare/vitest-pool-workers": "npm:0.9.7"
+    "@cloudflare/vitest-pool-workers": "npm:0.9.8"
     json5: "npm:2.2.3"
     vitest: "npm:3.2.4"
-    wrangler: "npm:4.40.2"
+    wrangler: "npm:4.40.3"
   languageName: unknown
   linkType: soft
 
@@ -17740,9 +17740,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"miniflare@npm:4.20250924.0":
-  version: 4.20250924.0
-  resolution: "miniflare@npm:4.20250924.0"
+"miniflare@npm:4.20250927.0":
+  version: 4.20250927.0
+  resolution: "miniflare@npm:4.20250927.0"
   dependencies:
     "@cspotcode/source-map-support": "npm:0.8.1"
     acorn: "npm:8.14.0"
@@ -17752,13 +17752,13 @@ __metadata:
     sharp: "npm:^0.33.5"
     stoppable: "npm:1.1.0"
     undici: "npm:7.14.0"
-    workerd: "npm:1.20250924.0"
+    workerd: "npm:1.20250927.0"
     ws: "npm:8.18.0"
     youch: "npm:4.1.0-beta.10"
     zod: "npm:3.22.3"
   bin:
     miniflare: bootstrap.js
-  checksum: 10c0/482618cd2e97d63d1be5cd0473c722b2e277f30ebb72010611933907791ce7c7c1636c2fd3b1edcc3f36e414bbda66877ad525b6338270dacebc625166543045
+  checksum: 10c0/591fbd04349613d26d9558d2c91d48d43e2f1ec8f742067c3ed233815c7f6be9acf94f93f01a97d99b112189e04a4a6b1273b8678d3981faee4c9a9a445e0b99
   languageName: node
   linkType: hard
 
@@ -24439,15 +24439,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"workerd@npm:1.20250924.0":
-  version: 1.20250924.0
-  resolution: "workerd@npm:1.20250924.0"
+"workerd@npm:1.20250927.0":
+  version: 1.20250927.0
+  resolution: "workerd@npm:1.20250927.0"
   dependencies:
-    "@cloudflare/workerd-darwin-64": "npm:1.20250924.0"
-    "@cloudflare/workerd-darwin-arm64": "npm:1.20250924.0"
-    "@cloudflare/workerd-linux-64": "npm:1.20250924.0"
-    "@cloudflare/workerd-linux-arm64": "npm:1.20250924.0"
-    "@cloudflare/workerd-windows-64": "npm:1.20250924.0"
+    "@cloudflare/workerd-darwin-64": "npm:1.20250927.0"
+    "@cloudflare/workerd-darwin-arm64": "npm:1.20250927.0"
+    "@cloudflare/workerd-linux-64": "npm:1.20250927.0"
+    "@cloudflare/workerd-linux-arm64": "npm:1.20250927.0"
+    "@cloudflare/workerd-windows-64": "npm:1.20250927.0"
   dependenciesMeta:
     "@cloudflare/workerd-darwin-64":
       optional: true
@@ -24461,25 +24461,25 @@ __metadata:
       optional: true
   bin:
     workerd: bin/workerd
-  checksum: 10c0/d793f7bbb675a00f17c90db057a37a14a865ec8f054769616aa3578bc0083be36a2b0108739690c1c4f798a28934297c7f16199ff017434ec36e35a66c8000a4
+  checksum: 10c0/b2412eb1263e9037b09a99995a6e5aebf68e2b6bc16917e43a86838146f3639ac1201bfcd431276d354312af1f83bb8031f25a96c450f43a2099f1579602eddf
   languageName: node
   linkType: hard
 
-"wrangler@npm:4.40.2":
-  version: 4.40.2
-  resolution: "wrangler@npm:4.40.2"
+"wrangler@npm:4.40.3":
+  version: 4.40.3
+  resolution: "wrangler@npm:4.40.3"
   dependencies:
     "@cloudflare/kv-asset-handler": "npm:0.4.0"
-    "@cloudflare/unenv-preset": "npm:2.7.4"
+    "@cloudflare/unenv-preset": "npm:2.7.5"
     blake3-wasm: "npm:2.1.5"
     esbuild: "npm:0.25.4"
     fsevents: "npm:~2.3.2"
-    miniflare: "npm:4.20250924.0"
+    miniflare: "npm:4.20250927.0"
     path-to-regexp: "npm:6.3.0"
     unenv: "npm:2.0.0-rc.21"
-    workerd: "npm:1.20250924.0"
+    workerd: "npm:1.20250927.0"
   peerDependencies:
-    "@cloudflare/workers-types": ^4.20250924.0
+    "@cloudflare/workers-types": ^4.20250927.0
   dependenciesMeta:
     fsevents:
       optional: true
@@ -24489,7 +24489,7 @@ __metadata:
   bin:
     wrangler: bin/wrangler.js
     wrangler2: bin/wrangler.js
-  checksum: 10c0/2bf97123134849e1348d53939102a4f2c4e8a15f5beb9442050ea16cfeb2c41be9afa4438ac339085214156a7254b667b0e3fa15320c405676ef7c46a54b5c6a
+  checksum: 10c0/efe0df3b2b6de9433728a66db83586d5328ca6797d68f5693b09ec012fc076aec76687b4f7a05607e03564128df2ec01dd366b3a1b7e32d91dfcc2fbbaccb78c
   languageName: node
   linkType: hard
 
