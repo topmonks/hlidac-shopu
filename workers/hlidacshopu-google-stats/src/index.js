@@ -1,9 +1,13 @@
+import JSON5 from "json5";
+
 export default {
   async fetch(request, env, ctx) {
     const resp = await fetch("https://chrome-stats.com/d/plmlonggbfebcjelncogcnclagkmkikk");
     const html = await resp.text();
-    const downloads = parseInt(/userCount:(?<count>\d+)/gm.exec(html).groups.count);
-    const reviews = parseInt(/"ratingCount":(?<count>\d+)/gm.exec(html).groups.count);
+    const json = JSON5.parse(/data: (?<json>\[.+]),/gm.exec(html).groups.json);
+    const { data } = json?.filter(x => x.data?.extension?.name === "Hlídač Shopů")[0];
+    const downloads = data?.extension?.userCount;
+    const reviews = data?.extension?.ratingCount;
     return Response.json([
       {
         "@context": "https://schema.org",
