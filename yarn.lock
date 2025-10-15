@@ -11370,9 +11370,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrome-webstore-upload-cli@npm:3.4.0":
-  version: 3.4.0
-  resolution: "chrome-webstore-upload-cli@npm:3.4.0"
+"chrome-webstore-upload-cli@npm:3.5.0":
+  version: 3.5.0
+  resolution: "chrome-webstore-upload-cli@npm:3.5.0"
   dependencies:
     chrome-webstore-upload: "npm:^3.2.0"
     junk: "npm:^4.0.1"
@@ -11381,7 +11381,7 @@ __metadata:
     yazl: "npm:^2.5.1"
   bin:
     chrome-webstore-upload: cli.js
-  checksum: 10c0/be75d726928a54b75efbf4fd599275486f9d9e02ca452f276af3359defbb061f620cf8b12f6c5c558c148288ba102abdfd98c6c2ef5655fdcdc034c7628036a5
+  checksum: 10c0/2f7dd358f63f0a075287547e5b97039ee632024c07c9a50c2917e8a7cb5b041385d1bb7e73b9eb927624423e21f5f8d148e950bce3a53fcc82aabb4e8677d078
   languageName: node
   linkType: hard
 
@@ -15522,7 +15522,7 @@ __metadata:
     "@types/whatwg-url": "npm:13.0.0"
     ava: "npm:6.4.1"
     chokidar: "npm:4.0.3"
-    chrome-webstore-upload-cli: "npm:3.4.0"
+    chrome-webstore-upload-cli: "npm:3.5.0"
     commander: "npm:14.0.1"
     dotenv-cli: "npm:10.0.0"
     esbuild: "npm:0.25.10"
