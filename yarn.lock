@@ -4390,7 +4390,7 @@ __metadata:
     "@thi.ng/atom": "npm:5.3.43"
     "@types/node": "npm:24.7.2"
     linkedom: "npm:0.18.12"
-    rollbar: "npm:2.26.4"
+    rollbar: "npm:2.26.5"
   peerDependencies:
     apify: ^3.2.0
   languageName: unknown
@@ -4451,7 +4451,7 @@ __metadata:
     chai: "npm:6.2.0"
     date-fns: "npm:4.1.0"
     ramda: "npm:0.32.0"
-    rollbar: "npm:2.26.4"
+    rollbar: "npm:2.26.5"
     unzipper: "npm:0.12.3"
   languageName: unknown
   linkType: soft
@@ -12451,15 +12451,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decache@npm:^3.0.5":
-  version: 3.1.0
-  resolution: "decache@npm:3.1.0"
-  dependencies:
-    find: "npm:^0.2.4"
-  checksum: 10c0/8c024016a59fee4e0c8ae5cf2934e77729295685f7012dfe19a324f493dca4bb870e27750379f31537ac43ea4395ef24a5b1e67d3ea8d001fd73ca40d45b5cec
-  languageName: node
-  linkType: hard
-
 "decamelize@npm:6.0.1":
   version: 6.0.1
   resolution: "decamelize@npm:6.0.1"
@@ -14234,15 +14225,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find@npm:^0.2.4":
-  version: 0.2.9
-  resolution: "find@npm:0.2.9"
-  dependencies:
-    traverse-chain: "npm:~0.1.0"
-  checksum: 10c0/7c6beae9b966c2aa40ebabfed38a5f1e9cd5dc6706c0855b11d39ad5bc3770b0027ead6205e9a07d39ccecbe3b17390792014a67f0a6e4d1637d0a897e7af288
-  languageName: node
-  linkType: hard
-
 "findup-sync@npm:^5.0.0":
   version: 5.0.0
   resolution: "findup-sync@npm:5.0.0"
@@ -15533,7 +15515,7 @@ __metadata:
     postcss-css-variables: "npm:0.19.0"
     puppeteer: "npm:24.24.1"
     ramda: "npm:0.32.0"
-    rollbar: "npm:2.26.4"
+    rollbar: "npm:2.26.5"
     source-map-explorer: "npm:2.5.3"
     web-ext: "npm:9.0.0"
   languageName: unknown
@@ -21192,22 +21174,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollbar@npm:2.26.4":
-  version: 2.26.4
-  resolution: "rollbar@npm:2.26.4"
+"rollbar@npm:2.26.5":
+  version: 2.26.5
+  resolution: "rollbar@npm:2.26.5"
   dependencies:
     async: "npm:~3.2.3"
     console-polyfill: "npm:0.3.0"
-    decache: "npm:^3.0.5"
     error-stack-parser: "npm:^2.0.4"
     json-stringify-safe: "npm:~5.0.0"
     lru-cache: "npm:~2.2.1"
     request-ip: "npm:~3.3.0"
     source-map: "npm:^0.5.7"
-  dependenciesMeta:
-    decache:
-      optional: true
-  checksum: 10c0/46403936c191776702aff9a34844d36aa377979313faf78a6a065358fd9e849fbf2dff526a01403cf2d74d15f2c6c2fdb3e1d579ce7575ade57cd0663546ad22
+  checksum: 10c0/1747b7642273b079291119cbb4af05b4dd371f28b809095473d316257e466cb0adaec80c29b53d1654d3afe802f09c222b7ede52fe4ecc3278e83b40a58a781c
   languageName: node
   linkType: hard
 
@@ -23238,13 +23216,6 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
-  languageName: node
-  linkType: hard
-
-"traverse-chain@npm:~0.1.0":
-  version: 0.1.0
-  resolution: "traverse-chain@npm:0.1.0"
-  checksum: 10c0/2b4fc19b52692c4970a18a777ba19ecbc1664f25b33815a5e5f06d0311e9e6a65ad2511b86e4ff0f0211ca0bf242a8ec3a902d8893c9d6a8f9d3ef4e658e2b24
   languageName: node
   linkType: hard
 
