@@ -82,7 +82,7 @@ function extractItems(document, rootUrl, country) {
 
       const productBoxBuyInfoCart = productEl.querySelector("div.product-box-buy-info > div.product-box-buy-info-cart");
       const itemCartDataTarget = productBoxBuyInfoCart
-        .querySelector("div.item-link-compare > button")
+        .querySelector("div.item-link-compare button")
         .getAttribute("data-target-add");
       if (itemCartDataTarget) {
         const searchParams = new URLSearchParams(itemCartDataTarget);
