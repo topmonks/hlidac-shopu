@@ -10,52 +10,7 @@ import { Actor, log } from "apify";
 
 const web = "https://www.lekarna.cz";
 
-function extractItems({ products, breadCrumbs }) {
-  return products
-    .map(item => {
-      const result = {};
-      const itemUrl = item.querySelector("meta[itemprop=url]").getAttribute("content");
-      const name = item.querySelector("h2").textContent.trim();
-      const cartBut = item.querySelector('input[name="productSkuId"]');
-      let id;
-      if (cartBut) {
-        id = cartBut.getAttribute("value");
-      } else if (item.querySelector("a[data-gtm]")) {
-        const itemJsonObject = JSON.parse(item.querySelector("a[data-gtm]").getAttribute("data-gtm"));
-        const products =
-          itemJsonObject.ecommerce.click && itemJsonObject.ecommerce.click.products
-            ? itemJsonObject.ecommerce.click.products
-            : [];
-        const filteredProducts = products.filter(item => item.variant.indexOf("Dlouhodobě nedostupný"));
-        id = filteredProducts.length !== 0 ? filteredProducts[0].id : null;
-      }
-
-      const actualPriceSpan = item.querySelector("span[itemprop=price]");
-      const oldPriceSpan = item.querySelector("span.text-gray-500.line-through");
-
-      if (actualPriceSpan) {
-        const itemImgUrl = item.querySelectorAll("picture source").at(-1).getAttribute("srcset");
-        result.itemId = id;
-        result.itemName = name;
-        result.itemUrl = itemUrl.includes("https") ? itemUrl : `${web}${itemUrl}`;
-        result.img = itemImgUrl;
-        result.category = breadCrumbs;
-        result.currentPrice = parseFloat(actualPriceSpan.getAttribute("content"));
-        result.currency = item.querySelector("span[itemprop=priceCurrency]").getAttribute("content");
-        if (oldPriceSpan) {
-          result.originalPrice = parseFloat(oldPriceSpan.textContent.replace("Kč", "").replace(/\s/g, "").trim());
-          result.discounted = true;
-        } else {
-          result.originalPrice = null;
-          result.discounted = false;
-        }
-        return result;
-      }
-    })
-    .filter(Boolean);
-}
-
-function extractBfItems(products) {
+function extractItems(products) {
   return Array.from(products)
     .map(item => {
       const itemHeader = item.querySelector("a[data-datalayer]");
@@ -143,28 +98,8 @@ async function handleProducts({ crawler, document, type }) {
             "#snippet--productListItems > .items-stretch:has(a[data-datalayer])" // subcategories have different layout
         )
       : document.querySelectorAll('[itemprop="itemListElement"]:has(h2):has([itemprop=url])');
-  const breadCrumbs = document
-    .querySelectorAll("ul[itemtype='https://schema.org/BreadcrumbList'] [itemprop='name']")
-    .flatMap(item => {
-      const breadCrumbs = [];
-      const attrContent = item.getAttribute("content")?.trim();
-      if (attrContent && attrContent !== "Úvodní strana") {
-        breadCrumbs.push(attrContent);
-      }
 
-      const text = item.textContent?.trim();
-      if (text) {
-        breadCrumbs.push(text);
-      }
-      return breadCrumbs;
-    })
-    .join(" > ");
-
-  // return type === ActorType.Full
-  //   ? extractItems({ products: itemListElements, breadCrumbs })
-  //   : extractBfItems(itemListElements);
-
-  return extractBfItems(itemListElements);
+  return extractItems(itemListElements);
 }
 
 /**
