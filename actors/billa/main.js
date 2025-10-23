@@ -13,7 +13,7 @@ function getCategoryUrls(document) {
   // transform categories URLs to API call of products listing
   return Array.from(document.querySelectorAll('a[href*="/produkty/"].ws-card[data-teaser-name]')).map(
     link =>
-      `https://shop.billa.cz/api/categories/${link.getAttribute("href").split("/").pop()}/products?pageSize=500&page=0`
+      `https://shop.billa.cz/api/product-discovery/categories/${link.getAttribute("href").split("/").pop()}/products?pageSize=500&page=0`
   );
 }
 
@@ -32,6 +32,11 @@ function toCZK(price) {
 }
 
 function toProduct(result) {
+  // Skip products without price data
+  if (!result.price || !result.price.regular) {
+    return null;
+  }
+
   const itemId = result.sku.replace(/-/g, "");
   const itemUrl = `https://shop.billa.cz/produkt/${result.slug}`;
   const itemName = result.name;
@@ -86,9 +91,10 @@ function defRouter({ stats, processedIds }) {
       if (!results) return;
 
       const unprocessedProducts = results.filter(x => !processedIds.has(x.productId));
-      await Actor.pushData(unprocessedProducts.map(x => toProduct(x)));
+      const products = unprocessedProducts.map(x => toProduct(x)).filter(Boolean);
+      await Actor.pushData(products);
 
-      stats.add("products", unprocessedProducts.length);
+      stats.add("products", products.length);
       for (const { productId } of unprocessedProducts) {
         processedIds.add(productId);
       }
