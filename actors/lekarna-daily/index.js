@@ -160,9 +160,11 @@ async function handleProducts({ crawler, document, type }) {
     })
     .join(" > ");
 
-  return type === ActorType.Full
-    ? extractItems({ products: itemListElements, breadCrumbs })
-    : extractBfItems(itemListElements);
+  // return type === ActorType.Full
+  //   ? extractItems({ products: itemListElements, breadCrumbs })
+  //   : extractBfItems(itemListElements);
+
+  return extractBfItems(itemListElements);
 }
 
 /**
