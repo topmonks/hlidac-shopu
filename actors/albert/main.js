@@ -1,4 +1,5 @@
 import { HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { PlaywrightCrawler } from "@crawlee/playwright";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
@@ -9,22 +10,69 @@ import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 
-// This is a map of persisted query hashes for given operation.
-// When something breaks, it is likely you have to update the hash here.
-// `LeftHandNavigationBar` try to search here https://www.albert.cz/online?intcmp=web_all_megamenu_albert-online_still_hp_cz
-// `GetCategoryProductSearch` try to search here https://www.albert.cz/shop/Trvale-nizke/c/zeB001
-// Those hashes can be found in XHR request of a given type, use DevTools/Network to get the URL and then the Console to parse the hash:
-// ```javascript
-// let url = "<<paste GraphQL query URL here >>";
-// JSON.parse(new URL(url).searchParams.get("extensions")).persistedQuery.sha256Hash;
-// ```
-// TODO it should be possible to scrape these automatically
-const opHash = new Map([
-  ["LeftHandNavigationBar", "29a05b50daa7ab7686d28bf2340457e2a31e1a9e4d79db611fcee435536ee01c"],
-  ["GetCategoryProductSearch", "ffb484cc27cd657f54e198351025b3cf485d07fedb1dc6cd09c039278ca8cddd"]
-]);
+/**
+ * Automatically extracts GraphQL persisted query hashes by intercepting network requests.
+ * This function opens Albert.cz pages and captures the hash values from actual GraphQL calls.
+ * @returns {Promise<Map<string, string>>} Map of operation names to their sha256 hashes
+ */
+async function extractPersistedQueryHashes() {
+  log.info("Extracting persisted query hashes from Albert.cz...");
+  const hashes = new Map();
+
+  const crawler = new PlaywrightCrawler({
+    maxRequestsPerCrawl: 2,
+    launchContext: {
+      launchOptions: {
+        headless: true
+      }
+    },
+    preNavigationHooks: [async ({ page }) => {
+      await page.route("**/*", async (route) => {
+        const url = route.request().url();
+        if (url.includes("/api/v1/") && url.includes("extensions")) {
+          try {
+            const urlObj = new URL(url);
+            const operationName = urlObj.searchParams.get("operationName");
+            const extensions = urlObj.searchParams.get("extensions");
+            if (operationName && extensions) {
+              const parsed = JSON.parse(extensions);
+              const hash = parsed?.persistedQuery?.sha256Hash;
+              if (hash) {
+                hashes.set(operationName, hash);
+                log.info(`Extracted hash for ${operationName}: ${hash}`);
+              }
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+        await route.continue();
+      });
+    }],
+    async requestHandler({ page }) {
+      // Just wait for page to load and trigger GraphQL requests
+      await page.waitForTimeout(3000);
+    }
+  });
+
+  // Visit pages that trigger the GraphQL queries we need
+  await crawler.run([
+    "https://www.albert.cz/online",
+    "https://www.albert.cz/shop/Trvale-nizke/c/zeB001"
+  ]);
+
+  if (hashes.size === 0) {
+    throw new Error("Failed to extract any persisted query hashes");
+  }
+
+  log.info(`Successfully extracted ${hashes.size} persisted query hashes`);
+  return hashes;
+}
 
 const PROCESSED_IDS_KEY = "processedIds";
+
+// Global variable to store dynamically extracted hashes
+let opHash = new Map();
 
 /**
  * @param result
@@ -94,7 +142,13 @@ function getStartUrl() {
       cutOffLevel: "5",
       lang: "cs"
     }),
-    label: "start"
+    label: "start",
+    headers: {
+      "content-type": "application/json",
+      "apollographql-client-name": "cz-alb-web-stores",
+      "apollographql-client-version": "9f7f73067ae74ca1179954e9a94f3a23f1822b6b",
+      "x-apollo-operation-name": "LeftHandNavigationBar"
+    }
   };
 }
 
@@ -114,7 +168,13 @@ function getCategoryProductsUrl(
       plainChildCategories: true
     }),
     label: "category",
-    userData: { pageNumber, pageSize, categoryCode: category }
+    userData: { pageNumber, pageSize, categoryCode: category },
+    headers: {
+      "content-type": "application/json",
+      "apollographql-client-name": "cz-alb-web-stores",
+      "apollographql-client-version": "9f7f73067ae74ca1179954e9a94f3a23f1822b6b",
+      "x-apollo-operation-name": "GetCategoryProductSearch"
+    }
   };
 }
 
@@ -171,6 +231,9 @@ function defRouter({ stats, processedIds }) {
 
 async function main() {
   Rollbar.init();
+
+  // Extract persisted query hashes automatically on startup
+  opHash = await extractPersistedQueryHashes();
 
   const processedIds = new Set((await Actor.getValue(PROCESSED_IDS_KEY)) ?? []);
   Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
