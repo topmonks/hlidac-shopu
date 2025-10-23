@@ -286,7 +286,7 @@ git checkout -b fix/ISSUE_NUMBER-shop-name
 
 2. **Make changes** and test thoroughly
 
-3. **Commit** with clear message:
+3. **Commit** with clear message (no co-author, no tool mentions):
 ```bash
 git add actors/SHOP-daily/main.js
 git commit -m "fix(SHOP): update selectors for website redesign
@@ -295,6 +295,8 @@ git commit -m "fix(SHOP): update selectors for website redesign
 - Fix originalPrice extraction via API endpoint
 - Fixes #ISSUE_NUMBER"
 ```
+
+**Important**: Do NOT include Co-Authored-By lines or mentions of AI tools in commits or PRs
 
 ### Creating Pull Requests
 
