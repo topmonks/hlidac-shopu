@@ -38,9 +38,11 @@ function findSUKL(document) {
 
 /**
  * @param {Document} document
- * @returns {Product | null}
+ * @param {string} html
+ * @param {Function} sendRequest
+ * @returns {Promise<Product | null>}
  */
-function extractProduct(document) {
+async function extractProduct(document, html, sendRequest) {
   const script = document.querySelector("#snippet-productRichSnippet-richSnippet").textContent.trim();
   const jsonData = JSON.parse(script);
   const itemId = jsonData.identifier; // can have several identical IDs and differ only in the URL
@@ -48,10 +50,25 @@ function extractProduct(document) {
   if (!itemId || !itemUrl) return null;
   const { offers } = jsonData;
   const currentPrice = offers.price;
-  const originalPriceEl = document.querySelector("#product-detail .buy-box__price-head del");
-  const originalPrice = originalPriceEl
-    ? parseFloat(originalPriceEl.innerText.replace("Kč", "").replace(/\s/g, "").trim())
-    : null;
+
+  // Extract internal product ID from HTML and fetch pricing data from API
+  let originalPrice = null;
+  const apiMatch = html.match(/api\/base\/v1\/products\/(\d+)/);
+  if (apiMatch) {
+    const productId = apiMatch[1];
+    try {
+      const apiUrl = `https://www.benu.cz/api/base/v1/products/${productId}`;
+      const response = await sendRequest({ url: apiUrl });
+      const apiData = JSON.parse(response.body);
+      const rrpPrice = apiData?.data?.attributes?.price?.rrpPrice;
+      if (rrpPrice && rrpPrice !== currentPrice) {
+        originalPrice = rrpPrice;
+      }
+    } catch (e) {
+      log.warning(`Failed to fetch price data from API for product ${productId}:`, e.message);
+    }
+  }
+
   return {
     itemId,
     itemName: jsonData.name,
@@ -59,7 +76,7 @@ function extractProduct(document) {
     img: jsonData.image,
     currentPrice,
     identifierSUKL: findSUKL(document),
-    originalPrice: originalPrice ? originalPrice : null,
+    originalPrice,
     url: jsonData.url,
     category: document.querySelectorAll("ol#breadcrumb > li > a").map(a => a.innerText),
     discounted: originalPrice ? currentPrice < originalPrice : false
@@ -143,7 +160,7 @@ async function main() {
     maxRequestRetries,
     maxRequestsPerMinute: 400,
     proxyConfiguration,
-    async requestHandler({ body, request, crawler }) {
+    async requestHandler({ body, request, crawler, sendRequest }) {
       const { document } = parseHTML(body.toString());
       switch (request.userData.label) {
         case Labels.START:
@@ -179,8 +196,12 @@ async function main() {
         case Labels.PAGE:
           {
             log.info(`START with page ${request.url}`);
-            const maxPage =
-              document.querySelectorAll("p.paging a:not(.next):not(.ico-arr-right)").at(-1)?.innerText?.trim() ?? 0;
+            const paginationLinks = document.querySelectorAll("nav.paging ul.pager li a");
+            // Filter out "Další" (Next) and "Předchozí" (Previous) links, get numeric page numbers
+            const pageNumbers = Array.from(paginationLinks)
+              .map(a => parseInt(a.innerText.trim()))
+              .filter(n => !isNaN(n));
+            const maxPage = pageNumbers.length > 0 ? Math.max(...pageNumbers) : 0;
             const requests = productListingRequests(document);
             await crawler.requestQueue.addRequests(requests);
             if (maxPage !== 0) {
@@ -213,7 +234,7 @@ async function main() {
         case Labels.DETAIL:
           {
             log.info(`START with product ${request.url}`);
-            const result = extractProduct(document);
+            const result = await extractProduct(document, body.toString(), sendRequest);
             if (result) {
               await Dataset.pushData(result);
               stats.inc("items");
