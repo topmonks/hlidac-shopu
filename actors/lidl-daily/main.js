@@ -71,7 +71,7 @@ function createInitRequests({ type, urls }) {
     }
   });*/
   sources.push({
-    url: "https://www.lidl.cz/q/query/Slevy?offset=0&sort=Price-asc",
+    url: "https://www.lidl.cz/c/slevy/s10076329",
     userData: {
       label: Labels.LIDL_SHOP_CAT
     }
@@ -284,59 +284,7 @@ function extractBlackFridayProducts({ document, url }, { stats, processedIds }) 
   return items;
 }
 
-function extractProducts({ document, stats, processedIds, log, url }) {
-  const products = document.querySelectorAll("#s-results .s-grid__item:not(.s-grid__item--hidden) [data-grid-data]");
-  log.info("Extract products", { url, products: products.length });
-  const items = [];
-  for (const el of products) {
-    stats.inc("items");
-    const data = JSON.parse(el.dataset.gridData);
-    if (processedIds.has(data.productId)) {
-      stats.inc("itemsDuplicity");
-      continue;
-    }
-    processedIds.add(data.productId);
-    stats.inc("itemsUnique");
-    items.push({
-      itemId: data.productId,
-      itemUrl: new URL(data.canonicalUrl, url).href,
-      itemName: data.fullTitle,
-      currency: "CZK",
-      currentPrice: parseFloat(data.price.price),
-      img: data.image,
-      originalPrice: parseFloat(data.price.oldPrice),
-      discounted: Boolean(data.price.discount),
-      inStock: data.stockAvailability.onlineAvailable,
-      category: data.category.split("/").slice(1).join(" > "),
-      slug: data.productId
-    });
-  }
-  return items;
-}
-
-async function loadLazyContent({ page }) {
-  await page.waitForLoadState("networkidle");
-
-  page.on("console", consoleObj => console.log(consoleObj.text()));
-
-  await page.evaluate(async () => {
-    /* global window, document */
-    if (!document.body) return;
-    const maxScrolls = 100;
-    let scrollCount = 0;
-    let scrolledBy = 0;
-    while (scrollCount < maxScrolls) {
-      scrolledBy += 1000;
-      window.scrollTo(0, scrolledBy);
-      if (scrolledBy >= document.body.scrollHeight) break;
-      scrollCount += 1;
-      await new Promise(resolve => setTimeout(resolve, 250));
-    }
-  });
-
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  await page.waitForLoadState("networkidle");
-}
+// extractProducts and loadLazyContent functions removed - now using API directly
 
 async function main() {
   const rollbar = Rollbar.init();
@@ -367,9 +315,7 @@ async function main() {
     useApifyProxy: !development && !debug
   });
 
-  const crawler =
-    type === ActorType.BlackFriday
-      ? new PlaywrightCrawler({
+  const crawler = new PlaywrightCrawler({
           maxRequestsPerMinute: 400,
           proxyConfiguration,
           maxRequestRetries,
@@ -378,7 +324,6 @@ async function main() {
               headless: true
             }
           },
-          postNavigationHooks: [loadLazyContent],
           async requestHandler(context) {
             const { request, log, page } = context;
             const { label } = request.userData;
@@ -386,20 +331,6 @@ async function main() {
 
             const text = await page.content();
             const { document } = parseHTML(text);
-            const products = extractBlackFridayProducts({ document, url: request.url }, { stats, processedIds });
-            await Dataset.pushData(products);
-          }
-        })
-      : new HttpCrawler({
-          maxRequestsPerMinute: 400,
-          proxyConfiguration,
-          maxRequestRetries,
-          async requestHandler(context) {
-            const { request, log, body } = context;
-            const { label } = request.userData;
-            log.info("processing page", { url: request.url, label });
-
-            const { document } = parseHTML(body.toString());
 
             switch (label) {
               case Labels.DETAIL:
@@ -412,24 +343,80 @@ async function main() {
                 await crawler.requestQueue.addRequests(mainNavigationRequests(document));
                 break;
               case Labels.LIDL_SHOP_CAT:
-                const nextButton = document.querySelector(".s-load-more__button");
-                if (nextButton) {
-                  await crawler.requestQueue.addRequest(
-                    {
-                      url: new URL(nextButton.getAttribute("href"), "https://www.lidl.cz").href,
-                      userData: { label: Labels.LIDL_SHOP_CAT }
-                    },
-                    { forefront: true }
-                  );
+                {
+                  // Extract category ID and path from URL
+                  // URLs look like: /h/panska-moda/h10067568 or /c/slevy/s10076329
+                  const urlMatch = request.url.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
+                  if (!urlMatch) {
+                    log.error(`Could not extract category ID from URL: ${request.url}`);
+                    break;
+                  }
+
+                  const [, , categoryPath, categoryId] = urlMatch;
+                  log.info(`Fetching products via API for category ${categoryId}`);
+
+                  // Fetch all products using pagination API
+                  let offset = 0;
+                  const fetchsize = 1000; // Max allowed by API
+                  let totalFetched = 0;
+
+                  while (true) {
+                    const apiUrl = `https://www.lidl.cz/q/api/category/${categoryPath}/${categoryId}?offset=${offset}&fetchsize=${fetchsize}&locale=cs_CZ&assortment=CZ&version=2.1.0`;
+
+                    const response = await page.request.fetch(apiUrl);
+                    const data = await response.json();
+
+                    if (!data.items || data.items.length === 0) {
+                      log.info(`No more items found at offset ${offset}`);
+                      break;
+                    }
+
+                    log.info(`Fetched ${data.items.length} items from API (offset: ${offset}, total: ${data.numFound})`);
+
+                    // Process items
+                    const products = data.items.map(item => {
+                      const gridData = item.gridbox?.data;
+                      if (!gridData) return null;
+
+                      stats.inc("items");
+
+                      if (processedIds.has(item.code)) {
+                        stats.inc("itemsDuplicity");
+                        return null;
+                      }
+
+                      processedIds.add(item.code);
+                      stats.inc("itemsUnique");
+
+                      return {
+                        itemId: item.code,
+                        itemName: gridData.fullTitle,
+                        itemUrl: `https://www.lidl.cz${gridData.canonicalPath}`,
+                        img: gridData.image,
+                        currentPrice: gridData.price?.price,
+                        originalPrice: gridData.price?.discount?.deletedPrice || gridData.price?.price,
+                        discounted: gridData.price?.discount?.showDiscount || false,
+                        inStock: gridData.stockAvailability?.onlineAvailable || false,
+                        currency: "CZK",
+                        category: gridData.category ? gridData.category.split('/').slice(1).join(' > ') : "",
+                        slug: item.code
+                      };
+                    }).filter(Boolean);
+
+                    if (products.length > 0) {
+                      await Dataset.pushData(products);
+                      totalFetched += products.length;
+                    }
+
+                    offset += data.items.length;
+
+                    // Check if we've fetched everything
+                    if (offset >= data.numFound) {
+                      log.info(`Finished fetching all ${totalFetched} products for category ${categoryId}`);
+                      break;
+                    }
+                  }
                 }
-                const products = extractProducts({
-                  document,
-                  stats,
-                  processedIds,
-                  log,
-                  url: request.url
-                });
-                await Dataset.pushData(products);
                 break;
               case Labels.LIDL_SHOP_MAIN_CAT:
                 await crawler.requestQueue.addRequests(scrapeShopMainCategory({ document, request }));
