@@ -3,7 +3,6 @@ import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { currencyToISO4217 } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { shopName } from "@hlidac-shopu/lib/shops.mjs";
@@ -77,25 +76,33 @@ function* traverseCategories(categories, names = []) {
   }
 }
 
-function parseItem(p, country, category) {
+/*
+  See item.json for a sample response from the API for an item
+*/
+function parseItem(item, country, category) {
+  const p = item.tileData;
+
+  const currentPrice = parseFloat(p.price.price.current.value
+                        .trim()
+                        .replace(/[^\d,]+/g, "")
+                        .replace(",", "."));
+  const originalPrice = p.price.price.previous ?
+                        parseFloat(p.price.price.previous.value
+                          .trim()
+                          .replace(/[^\d,]+/g, "")
+                          .replace(",", ".")) :
+                        null
+
   return {
     itemId: p.gtin,
-    itemName: `${p.brandName} ${p.name}`,
-    itemUrl: createProductUrl(country, p.relativeProductUrl),
-    img: p.imageUrlTemplates?.[0]?.replace("{transformations}", "f_auto,q_auto,c_fit,w_260,h_270") ?? null,
-    inStock: p.purchasable,
-    currentPrice: p.price.value,
-    originalPrice: p.isSellout
-      ? parseFloat(
-          p.selloutPrice.formattedValue
-            .trim()
-            .replace(/[^\d,]+/g, "")
-            .replace(",", ".")
-        )
-      : null,
-    currency: currencyToISO4217(p.price.currencySymbol),
+    itemName: `${p.title.preheadline} ${p.title.tileHeadline}`,
+    itemUrl: createProductUrl(country, p.self),
+    img: p.images[0]?.tileSrc ?? null,
+    currentPrice,
+    originalPrice,
+    currency: p.trackingData.currency,
     category,
-    discounted: p.isSellout
+    discounted: originalPrice ? currentPrice !== originalPrice : false,
   };
 }
 
