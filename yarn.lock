@@ -2694,16 +2694,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/basic@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/basic@npm:3.15.1"
+"@crawlee/basic@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/basic@npm:3.15.2"
   dependencies:
     "@apify/log": "npm:^2.4.0"
     "@apify/timeout": "npm:^0.3.0"
     "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/core": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/core": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     csv-stringify: "npm:^6.2.0"
     fs-extra: "npm:^11.0.0"
     got-scraping: "npm:^4.0.0"
@@ -2711,18 +2711,18 @@ __metadata:
     tldts: "npm:^7.0.0"
     tslib: "npm:^2.4.0"
     type-fest: "npm:^4.0.0"
-  checksum: 10c0/24dabedbe62aebc37877a63474ab79a2122d8923e921b397ff3226655a66d062ccf134f3c42003b0ef163ac2759b9fb7d6754a5d83631ebd599fb3f1d6aba171
+  checksum: 10c0/89aacf50a782567a3b78fbaae9ee9a847c5aca6a39ea839dd58342c7b284359d86f3cde0780948f94c970e0ea94930ca8726cccd069c38ae564a7c3a97340656
   languageName: node
   linkType: hard
 
-"@crawlee/browser-pool@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/browser-pool@npm:3.15.1"
+"@crawlee/browser-pool@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/browser-pool@npm:3.15.2"
   dependencies:
     "@apify/log": "npm:^2.4.0"
     "@apify/timeout": "npm:^0.3.0"
-    "@crawlee/core": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
+    "@crawlee/core": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
     fingerprint-generator: "npm:^2.1.68"
     fingerprint-injector: "npm:^2.1.68"
     lodash.merge: "npm:^4.6.2"
@@ -2741,19 +2741,19 @@ __metadata:
       optional: true
     puppeteer:
       optional: true
-  checksum: 10c0/b0db753ea94437deaccbaa0d0137c7c165e84cc4236987d941fea9030ea823c8e98e7a65d3ce2c506053df8ec8bc43b579a0764f28c428e2c7a28ed7427cd506
+  checksum: 10c0/bdceb55f82c95cb0e32f3e91db98a02778af7b06fba5761f3d198e6b0013e5ef65fa65d42a51f03e1b1799f48e40e292a52009b11b399d8d9b45517e8da0df29
   languageName: node
   linkType: hard
 
-"@crawlee/browser@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/browser@npm:3.15.1"
+"@crawlee/browser@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/browser@npm:3.15.2"
   dependencies:
     "@apify/timeout": "npm:^0.3.0"
-    "@crawlee/basic": "npm:3.15.1"
-    "@crawlee/browser-pool": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/basic": "npm:3.15.2"
+    "@crawlee/browser-pool": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
     type-fest: "npm:^4.0.0"
@@ -2765,13 +2765,13 @@ __metadata:
       optional: true
     puppeteer:
       optional: true
-  checksum: 10c0/03e056bf3a4307308b603cdd0d3e78c10d5653042702d3bf0d0c2593e67cedfe6b2b9dd89f928c2dcecdad44a72925a0360904cd927ae5d7551bba5e6a955621
+  checksum: 10c0/954748aee64e0c5d44e0637b9f84d7ebd6c9ae86eacda9059eba023bd9f13b3fde8670ab73ceb1b166db9a83f68b1bbdff82395fe276ffb962b1752854bd5d50
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/core@npm:3.15.1"
+"@crawlee/core@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/core@npm:3.15.2"
   dependencies:
     "@apify/consts": "npm:^2.20.0"
     "@apify/datastructures": "npm:^2.0.0"
@@ -2779,9 +2779,9 @@ __metadata:
     "@apify/pseudo_url": "npm:^2.0.30"
     "@apify/timeout": "npm:^0.3.0"
     "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/memory-storage": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/memory-storage": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     "@sapphire/async-queue": "npm:^1.5.1"
     "@vladfrangu/async_event_emitter": "npm:^2.2.2"
     csv-stringify: "npm:^6.2.0"
@@ -2795,7 +2795,7 @@ __metadata:
     tough-cookie: "npm:^6.0.0"
     tslib: "npm:^2.4.0"
     type-fest: "npm:^4.0.0"
-  checksum: 10c0/7b8a01cc9836201cdd98a8f85e160a7421a2bdc06e4af70b853d286be3ad5df593cbcecfaf0836fe95fb67b723251259b5198b546d581bfd59ebc3060666a7ac
+  checksum: 10c0/aef5ac85c2f0fba140172a993552c88e6451828a31b8253c4046860a65add5f5956f302c4b554ea06ccc35e79937ff6e2ee040a7c8d0b71a5f33481a89ea7a4b
   languageName: node
   linkType: hard
 
@@ -2829,15 +2829,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/http@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/http@npm:3.15.1"
+"@crawlee/http@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/http@npm:3.15.2"
   dependencies:
     "@apify/timeout": "npm:^0.3.0"
     "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/basic": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/basic": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     "@types/content-type": "npm:^1.1.5"
     cheerio: "npm:1.0.0-rc.12"
     content-type: "npm:^1.0.4"
@@ -2847,22 +2847,22 @@ __metadata:
     ow: "npm:^0.28.1"
     tslib: "npm:^2.4.0"
     type-fest: "npm:^4.0.0"
-  checksum: 10c0/b15d14dc6c75024442740c506c0afc2ae073453c4d0e09c4900bb01a9c9d2100f5bbb3000b2b688cdf72009e05ee78aae2a9b80932e3ac0a0566f16e8a5956b7
+  checksum: 10c0/972629a62952e8f5df0cca44767739ca8d86226c82fc4c31fd0d2a4c8c015e6cfc7f1489aa0ecaf7df53b146d7f3ecf7eca1291a5c2d6f8b8be5458dd63ac5e7
   languageName: node
   linkType: hard
 
-"@crawlee/linkedom@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/linkedom@npm:3.15.1"
+"@crawlee/linkedom@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/linkedom@npm:3.15.2"
   dependencies:
     "@apify/timeout": "npm:^0.3.0"
     "@apify/utilities": "npm:^2.7.10"
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
     linkedom: "npm:^0.18.0"
     ow: "npm:^0.28.2"
     tslib: "npm:^2.4.0"
-  checksum: 10c0/57fd9aaab37a42d8c9264b7a3b0e537d6cc06243340365a50aa3925f0c23b1e6bdd36ca346fd99a8544d91a05f0c8421739d7864b201a66436ed3ff92ef688fb
+  checksum: 10c0/25d3395416a2667070516ba5bd585b8a1921ebd9ab4b0313cc8657cef9fecfa30e3621fc1fb4eff64b3d29dc3dd5226709040713616a39309ea40861a4889618
   languageName: node
   linkType: hard
 
@@ -2884,12 +2884,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/memory-storage@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/memory-storage@npm:3.15.1"
+"@crawlee/memory-storage@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/memory-storage@npm:3.15.2"
   dependencies:
     "@apify/log": "npm:^2.4.0"
-    "@crawlee/types": "npm:3.15.1"
+    "@crawlee/types": "npm:3.15.2"
     "@sapphire/async-queue": "npm:^1.5.0"
     "@sapphire/shapeshift": "npm:^3.0.0"
     content-type: "npm:^1.0.4"
@@ -2898,22 +2898,22 @@ __metadata:
     mime-types: "npm:^2.1.35"
     proper-lockfile: "npm:^4.1.2"
     tslib: "npm:^2.4.0"
-  checksum: 10c0/f8c6a27f9057bbc945d6507c43532ad920e594210ac87b1741d941dc30eee8d9763f40ddddcfccaf5bc7af7b01d606081834ca10817a2dfc1a7f5c424a648abb
+  checksum: 10c0/e8f30e8c3efd392eef64465357112294cf06b21bf944551ea1d4c964b965e7b8769505b1f832992b5134ab97fa40270a3ee84ae2814ccde4e1b2d3097733109b
   languageName: node
   linkType: hard
 
-"@crawlee/playwright@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/playwright@npm:3.15.1"
+"@crawlee/playwright@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/playwright@npm:3.15.2"
   dependencies:
     "@apify/datastructures": "npm:^2.0.0"
     "@apify/log": "npm:^2.4.0"
     "@apify/timeout": "npm:^0.3.1"
-    "@crawlee/browser": "npm:3.15.1"
-    "@crawlee/browser-pool": "npm:3.15.1"
-    "@crawlee/core": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/browser": "npm:3.15.2"
+    "@crawlee/browser-pool": "npm:3.15.2"
+    "@crawlee/core": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     cheerio: "npm:1.0.0-rc.12"
     idcac-playwright: "npm:^0.1.2"
     jquery: "npm:^3.6.0"
@@ -2928,20 +2928,20 @@ __metadata:
   peerDependenciesMeta:
     playwright:
       optional: true
-  checksum: 10c0/53d7b4460f6da17d995fd9d5be7bad50aef413f78363d93f976341c28c616aa3e1c92190577a1a593c174419db77efbcfc7b940efcad42be6ab240e5767c6951
+  checksum: 10c0/e37c7846de5bbf0231e56576f46e6b25c2fa623f5009bf2767c7aee4b00344e3abbcc5a7d7ece6575f83242e88f55f2af96ccb142e5261619e9d237300902522
   languageName: node
   linkType: hard
 
-"@crawlee/puppeteer@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/puppeteer@npm:3.15.1"
+"@crawlee/puppeteer@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/puppeteer@npm:3.15.2"
   dependencies:
     "@apify/datastructures": "npm:^2.0.0"
     "@apify/log": "npm:^2.4.0"
-    "@crawlee/browser": "npm:3.15.1"
-    "@crawlee/browser-pool": "npm:3.15.1"
-    "@crawlee/types": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/browser": "npm:3.15.2"
+    "@crawlee/browser-pool": "npm:3.15.2"
+    "@crawlee/types": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     cheerio: "npm:1.0.0-rc.12"
     devtools-protocol: "npm:*"
     idcac-playwright: "npm:^0.1.2"
@@ -2953,7 +2953,7 @@ __metadata:
   peerDependenciesMeta:
     puppeteer:
       optional: true
-  checksum: 10c0/2db7f9de589494362376c9e5522c4aee74d957e8dc27d7e794696febfae4ecc9707d8eb4148da6744e5f1c2f27d4a0798dfb9e37f759acde2fdbe129edb78d93
+  checksum: 10c0/048020e997142e7ddce45db4151fb60331701d7e1629c7fcc4b82a7f9cc8e1e02ea151d861abd70161c87ffdcc931756cd9ab4cbaec84ab559ea188a452fc1e3
   languageName: node
   linkType: hard
 
@@ -2966,12 +2966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/types@npm:3.15.1"
+"@crawlee/types@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/types@npm:3.15.2"
   dependencies:
     tslib: "npm:^2.4.0"
-  checksum: 10c0/c0eaa9d5e88ac4a8d3baf1012b753cfdd6b070dc54b5b222930a244c464fedee71ca8162bd447c7472df7c6f784743258eaf0e144c03f112c05894c934622b5f
+  checksum: 10c0/071ae4b40e32f0f0bb72f4345176192e9ba9acbb53843c3f8d25521495d8f5166cbf74aac0f3480561309e0fb68e61077972b650e5f8c60205b4eda0f466b08f
   languageName: node
   linkType: hard
 
@@ -2995,13 +2995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.15.1":
-  version: 3.15.1
-  resolution: "@crawlee/utils@npm:3.15.1"
+"@crawlee/utils@npm:3.15.2":
+  version: 3.15.2
+  resolution: "@crawlee/utils@npm:3.15.2"
   dependencies:
     "@apify/log": "npm:^2.4.0"
     "@apify/ps-tree": "npm:^1.2.0"
-    "@crawlee/types": "npm:3.15.1"
+    "@crawlee/types": "npm:3.15.2"
     "@types/sax": "npm:^1.2.7"
     cheerio: "npm:1.0.0-rc.12"
     file-type: "npm:^20.0.0"
@@ -3011,7 +3011,7 @@ __metadata:
     sax: "npm:^1.4.1"
     tslib: "npm:^2.4.0"
     whatwg-mimetype: "npm:^4.0.0"
-  checksum: 10c0/39ab743b4f6ecf54f7bba0f008b6e45f59e49c311f9fa4c991658d45993d1872b2e627698b67f50c8679caf71785eb603a32bcdd7b1a2b5860eb528b174fa676
+  checksum: 10c0/1714bd859de752d19587e37bf5db30501cb76a310be3a8be2ac2d596d464ba1f05e36090295e5b61df3972373d3f1fad631f7446185a4ad352961d61b00a0691
   languageName: node
   linkType: hard
 
@@ -4358,7 +4358,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/4camping@workspace:actors/4camping"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@hlidac-shopu/lib": "npm:1.5.1"
@@ -4373,7 +4373,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/aaaauto-daily@workspace:actors/aaaauto-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4400,7 +4400,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/albert@workspace:actors/albert"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/transducers": "npm:9.6.10"
@@ -4414,7 +4414,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/allegro-daily@workspace:actors/allegro-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4427,7 +4427,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza@workspace:actors/alza"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
@@ -4469,7 +4469,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/autoesa@workspace:actors/autoesa"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/transducers": "npm:9.6.10"
@@ -4483,7 +4483,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/benu-daily@workspace:actors/benu-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4496,7 +4496,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/billa@workspace:actors/billa"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4509,7 +4509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/datart-daily@workspace:actors/datart-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4523,7 +4523,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/dm-daily@workspace:actors/dm-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4536,8 +4536,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/drmax-daily@workspace:actors/drmax-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4550,7 +4550,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/eva-daily@workspace:actors/eva-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4572,7 +4572,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/grizly@workspace:actors/grizly"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4585,7 +4585,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/hornbach-daily@workspace:actors/hornbach-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4600,7 +4600,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-cloudfront": "npm:3.913.0"
     "@aws-sdk/client-s3": "npm:3.913.0"
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
     apify: "npm:3.5.1"
@@ -4614,7 +4614,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/iglobus-daily@workspace:actors/iglobus-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4627,7 +4627,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/ikea-scraper@workspace:actors/ikea-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4652,7 +4652,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/itesco-daily@workspace:actors/itesco-daily"
   dependencies:
-    "@crawlee/puppeteer": "npm:3.15.1"
+    "@crawlee/puppeteer": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4666,7 +4666,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kaufland-daily@workspace:actors/kaufland-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4679,7 +4679,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/knihydobrovsky-daily@workspace:actors/knihydobrovsky-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4692,7 +4692,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/kosik-daily@workspace:actors/kosik-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4705,7 +4705,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lekarna-daily@workspace:actors/lekarna-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4733,8 +4733,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/playwright": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/playwright": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4748,7 +4748,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mall-daily@workspace:actors/mall-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4764,7 +4764,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4777,7 +4777,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mountfield-daily@workspace:actors/mountfield-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4790,7 +4790,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/notino-daily@workspace:actors/notino-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     apify: "npm:3.5.1"
@@ -4801,7 +4801,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/obi-daily@workspace:actors/obi-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     apify: "npm:3.5.1"
@@ -4812,8 +4812,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/okay@workspace:actors/okay"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/playwright": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/playwright": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4827,8 +4827,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/pilulka-daily@workspace:actors/pilulka-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4841,8 +4841,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/rohlik-daily@workspace:actors/rohlik-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
+    "@crawlee/utils": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@thi.ng/atom": "npm:5.3.43"
@@ -4866,7 +4866,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/smarty-daily@workspace:actors/smarty-daily"
   dependencies:
-    "@crawlee/linkedom": "npm:3.15.1"
+    "@crawlee/linkedom": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4880,7 +4880,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tchibo-daily@workspace:actors/tchibo-daily"
   dependencies:
-    "@crawlee/http": "npm:3.15.1"
+    "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4893,7 +4893,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tetadrogerie-daily@workspace:actors/tetadrogerie-daily"
   dependencies:
-    "@crawlee/playwright": "npm:3.15.1"
+    "@crawlee/playwright": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4907,7 +4907,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia-daily@workspace:actors/tsbohemia-daily"
   dependencies:
-    "@crawlee/core": "npm:3.15.1"
+    "@crawlee/core": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.1"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@types/node": "npm:24.9.1"
@@ -4921,7 +4921,7 @@ __metadata:
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:3.913.0"
-    "@crawlee/utils": "npm:3.15.1"
+    "@crawlee/utils": "npm:3.15.2"
     "@fast-csv/format": "npm:5.0.5"
     "@hlidac-shopu/actors-common": "npm:3.2.2"
     "@hlidac-shopu/lib": "npm:1.5.1"
