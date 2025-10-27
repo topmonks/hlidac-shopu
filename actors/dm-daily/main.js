@@ -93,11 +93,16 @@ function parseItem(item, country, category) {
                           .replace(",", ".")) :
                         null
 
+  // inStock information was moved to a different API call:
+  // https://products.dm.de/availability/api/v1/tiles/CZ/<id>
+  // Not necessary to make the extra call. But the Keboola table schema
+  // requires it, so we include it (set to null)
   return {
     itemId: p.gtin,
     itemName: `${p.title.preheadline} ${p.title.tileHeadline}`,
     itemUrl: createProductUrl(country, p.self),
     img: p.images[0]?.tileSrc ?? null,
+    inStock: null,
     currentPrice,
     originalPrice,
     currency: p.trackingData.currency,
