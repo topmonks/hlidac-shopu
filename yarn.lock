@@ -2799,7 +2799,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/core@npm:^3.13.0, @crawlee/core@npm:^3.14.1":
+"@crawlee/core@npm:^3.14.1":
   version: 3.14.1
   resolution: "@crawlee/core@npm:3.14.1"
   dependencies:
@@ -2957,7 +2957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/types@npm:3.14.1, @crawlee/types@npm:^3.13.0, @crawlee/types@npm:^3.14.1, @crawlee/types@npm:^3.3.0":
+"@crawlee/types@npm:3.14.1, @crawlee/types@npm:^3.14.1, @crawlee/types@npm:^3.3.0":
   version: 3.14.1
   resolution: "@crawlee/types@npm:3.14.1"
   dependencies:
@@ -2975,7 +2975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crawlee/utils@npm:3.14.1, @crawlee/utils@npm:^3.13.0, @crawlee/utils@npm:^3.14.1":
+"@crawlee/utils@npm:3.14.1, @crawlee/utils@npm:^3.14.1":
   version: 3.14.1
   resolution: "@crawlee/utils@npm:3.14.1"
   dependencies:
@@ -9841,7 +9841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apify-client@npm:^2.12.1, apify-client@npm:^2.14.0":
+"apify-client@npm:^2.14.0":
   version: 2.16.0
   resolution: "apify-client@npm:2.16.0"
   dependencies:
@@ -9876,28 +9876,6 @@ __metadata:
     tslib: "npm:^2.5.0"
     type-fest: "npm:^4.0.0"
   checksum: 10c0/46f197d2bd42f5a4d0fbcf5bff8e756f18bb17997167a86cb244bd0ea3a931bc2801bce248591a3bf1247d4dfc12f5a3623880514ec3718899517d5dd02dc871
-  languageName: node
-  linkType: hard
-
-"apify@npm:3.4.3":
-  version: 3.4.3
-  resolution: "apify@npm:3.4.3"
-  dependencies:
-    "@apify/consts": "npm:^2.23.0"
-    "@apify/input_secrets": "npm:^1.2.0"
-    "@apify/log": "npm:^2.4.3"
-    "@apify/timeout": "npm:^0.3.0"
-    "@apify/utilities": "npm:^2.13.0"
-    "@crawlee/core": "npm:^3.13.0"
-    "@crawlee/types": "npm:^3.13.0"
-    "@crawlee/utils": "npm:^3.13.0"
-    apify-client: "npm:^2.12.1"
-    fs-extra: "npm:^11.2.0"
-    ow: "npm:^0.28.2"
-    semver: "npm:^7.5.4"
-    tslib: "npm:^2.6.2"
-    ws: "npm:^8.18.0"
-  checksum: 10c0/d041c39aaf54b44142e081f3e1c987a149d910bc645c7f67254fff335ea7a08cd130f0c4860ec08a8d2448f87cdd43c6a2af2b30861c6e2d3d56cf5def1a9d36
   languageName: node
   linkType: hard
 

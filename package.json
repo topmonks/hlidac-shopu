@@ -44,7 +44,8 @@
     "web-ext": "9.0.0"
   },
   "resolutions": {
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "apify": "3.5.1"
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
