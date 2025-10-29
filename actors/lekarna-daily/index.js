@@ -105,8 +105,9 @@ async function handleProducts({ crawler, document, type }) {
 }
 
 /**
- * @param {string} url
- * @param {ActorType} type
+ * @param {Object} params
+ * @param {string} params.url
+ * @param {ActorType} params.type
  */
 export function getInitialUrls({ url, type }) {
   if (type === ActorType.BlackFriday) {
