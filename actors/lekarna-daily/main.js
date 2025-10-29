@@ -1,4 +1,8 @@
 import { Actor } from "apify";
-import { main } from "./index.js";
 
-await Actor.main(main, { statusMessage: "DONE" });
+await Actor.init();
+
+const { main } = await import("./index.js");
+await main();
+
+await Actor.exit("DONE");
