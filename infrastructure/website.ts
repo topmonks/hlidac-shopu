@@ -409,28 +409,6 @@ function createAliasRecords(
 }
 
 /**
- * Creates CNAME record in Route 53
- * @param name {string}
- * @param domain {string}
- * @param value {string}
- * @param provider {aws.Provider}
- */
-export function createCNAMERecord(name: string, domain: string, value: string, provider?: aws.Provider) {
-  const hostedZone = getHostedZone(domain, provider);
-  return new aws.route53.Record(
-    `${domain}/txt-record-${name}`,
-    {
-      name: hostedZone.apply(x => x.name),
-      type: "CNAME",
-      zoneId: hostedZone.apply(x => x.zoneId),
-      records: [value],
-      ttl: 3600
-    },
-    { provider }
-  );
-}
-
-/**
  * Creates TXT record in Route 53
  * @param name {string}
  * @param domain {string}

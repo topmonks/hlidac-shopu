@@ -7,13 +7,13 @@
   "type": "module",
   "dependencies": {
     "@crawlee/puppeteer": "3.15.2",
-    "@hckr_/apify-persistent-stats": "1.0.1",
-    "@hlidac-shopu/actors-common": "3.2.2",
+    "@hckr_/apify-persistent-stats": "1.0.2",
+    "@hlidac-shopu/actors-common": "3.2.3",
     "apify": "3.5.1",
-    "puppeteer": "24.25.0"
+    "puppeteer": "24.27.0"
   },
   "devDependencies": {
-    "@types/node": "24.9.1",
+    "@types/node": "24.9.2",
     "apify-cli": "1.1.1"
   },
   "scripts": {
