@@ -25,6 +25,8 @@ function extractItems(products) {
       const itemUrl = itemHeader.getAttribute("href");
       const itemImgUrl = item.querySelector("picture img").getAttribute("src");
 
+      const couponPrice = parseFloat(item.querySelector("form[id*='productAutomaticDiscount'] + button")?.querySelector('strong.whitespace-no-wrap')?.textContent?.replace("Kč", "")?.replace(/\s/g, "")?.trim());
+
       if (parseFloat(product.price) <= 0) {
         return log.debug(`Skip product without price [${product.name}]`);
       }
@@ -34,8 +36,8 @@ function extractItems(products) {
         itemUrl: `https://lekarna.cz/${itemUrl}`,
         img: itemImgUrl,
         category: product.categories,
-        currentPrice: currentPrice,
-        originalPrice: originalPrice,
+        currentPrice: couponPrice ? couponPrice : currentPrice,
+        originalPrice: couponPrice ? originalPrice ?? currentPrice : originalPrice,
         discounted: originalPrice > currentPrice,
         currency: "CZK",
         inStock: product.availability === "InStock"
