@@ -1,4 +1,4 @@
-import { HttpCrawler } from "@crawlee/http";
+import { PlaywrightCrawler } from "@crawlee/playwright";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -62,8 +62,8 @@ function extractStructuredData(structuredData) {
     rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
     inStock: offer.get("availability") === "http://schema.org/InStock",
     discontinued: offer.get("availability") === "http://schema.org/Discontinued",
-    currentPrice: cleanPrice(currentPrice),
-    originalPrice: cleanPrice(referralPrice),
+    currentPrice: cleanPrice(currentPrice != null ? String(currentPrice) : null),
+    originalPrice: cleanPrice(referralPrice != null ? String(referralPrice) : null),
     currency
   };
 }
@@ -134,7 +134,7 @@ function extractPaginationInfo(document) {
 }
 
 function createPaginationPayload({ categoryId, page }) {
-  return JSON.stringify({
+  return {
     "idCategory": categoryId,
     "producers": "",
     "parameters": [],
@@ -165,7 +165,7 @@ function createPaginationPayload({ categoryId, page }) {
     "sectionId": 1,
     "hash": `#f&cst=1&cud=0&pg=${page}&prod=`,
     "counter": page + 1
-  });
+  };
 }
 
 async function handleDetail(body, stats) {
@@ -181,41 +181,60 @@ async function handleDetail(body, stats) {
   }
 }
 
-async function handlePagination(json, createUrl, requestQueue, stats) {
-  const { d } = json;
-  const { document } = parseHTML(d.Boxes);
-  const links = Array.from(document.querySelectorAll(".browsinglink.name"));
-  const urls = links.map(x => createUrl(x.href));
-  await requestQueue.addRequests(urls.map(url => ({ label: Label.Detail, url })));
-  stats.inc("pages");
+async function handlePagination(page, userData, createUrl, requestQueue, stats, log) {
+  const { categoryId, pageNum } = userData;
+
+  // Make API call from browser context to avoid Cloudflare detection
+  const payload = createPaginationPayload({ categoryId, page: pageNum });
+  const response = await page.evaluate(async ([filterUrl, payloadData]) => {
+    const res = await fetch(filterUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payloadData)
+    });
+    return await res.json();
+  }, [createUrl("/Services/EShopService.svc/Filter"), payload]);
+
+  // Extract product URLs from the response
+  if (response && response.d && response.d.Boxes) {
+    const { document: pageDoc } = parseHTML(response.d.Boxes);
+    const links = Array.from(pageDoc.querySelectorAll(".browsinglink.name"));
+    const urls = links.map(x => createUrl(x.href));
+    await requestQueue.addRequests(urls.map(url => ({ label: Label.Detail, url })));
+    stats.inc("pages");
+    log.info(`Processed page ${pageNum + 1}, found ${urls.length} products`);
+  }
 }
 
-async function handleCategory(body, log, session, stats, createUrl, requestQueue) {
+async function handleCategory(body, log, session, stats, createUrl, requestQueue, categoryUrl) {
   const html = body.toString();
   const { document } = parseHTML(html);
   const pagination = extractPaginationInfo(document);
   if (!pagination) {
     log.warning(document.innerHTML);
-    session.isBlocked();
+    if (session) session.isBlocked();
     stats.inc("errors");
     throw new Error("Can't find pagination info");
   }
   const { categoryId, pages } = pagination;
   log.info("Category pagination info", { categoryId, pages });
-  const url = createUrl("/Services/EShopService.svc/Filter");
-  for (let page = 0; page < pages; page++) {
+
+  // Queue pagination requests (each will be processed independently)
+  for (let pageNum = 0; pageNum < pages; pageNum++) {
     await requestQueue.addRequest({
-      url,
-      uniqueKey: `${url}?page=${page}`,
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      payload: createPaginationPayload({ categoryId, page }),
-      userData: { label: Label.Pagination }
+      url: categoryUrl,  // Navigate to category page to establish browser context
+      uniqueKey: `pagination-${categoryId}-${pageNum}`,
+      userData: {
+        label: Label.Pagination,
+        categoryId,
+        pageNum
+      }
     });
   }
+
   stats.inc("categories");
 }
 
@@ -265,7 +284,7 @@ async function main() {
     failed: 0
   });
 
-  const crawler = new HttpCrawler({
+  const crawler = new PlaywrightCrawler({
     useSessionPool: true,
     sessionPoolOptions: {
       maxPoolSize: 50,
@@ -273,25 +292,28 @@ async function main() {
     },
     proxyConfiguration,
     maxRequestsPerMinute: 600,
-    async requestHandler({ request, response, body, json, session, log, crawler }) {
+    launchContext: {
+      launchOptions: {
+        headless: true
+      }
+    },
+    async requestHandler({ request, page, log, crawler }) {
       const { label } = request.userData;
 
       log.info(`Visiting: ${request.url}, ${label}`);
-      if (response.statusCode === 403) {
-        stats.inc("denied");
-        session.isBlocked();
-        throw new Error("Access Denied");
-      }
-      if (response.statusCode === 200) stats.inc("ok");
-      session.setCookiesFromResponse(response);
+      stats.inc("ok");
+
       const createUrl = s => new URL(s, request.url).href;
+
       switch (label) {
         case Label.Category:
-          return handleCategory(body, log, session, stats, createUrl, crawler.requestQueue);
+          const html = await page.content();
+          return handleCategory(Buffer.from(html), log, null, stats, createUrl, crawler.requestQueue, request.url);
         case Label.Pagination:
-          return handlePagination(json, createUrl, crawler.requestQueue, stats);
+          return handlePagination(page, request.userData, createUrl, crawler.requestQueue, stats, log);
         case Label.Detail:
-          return handleDetail(body, stats);
+          const detailHtml = await page.content();
+          return handleDetail(Buffer.from(detailHtml), stats);
       }
     },
     async failedRequestHandler({ request, log }, error) {
