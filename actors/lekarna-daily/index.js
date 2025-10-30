@@ -21,7 +21,7 @@ function extractItems(products) {
 
       const itemJsonObject = JSON.parse(itemHeader.dataset.datalayer);
       const [product] = itemJsonObject.ecommerce.products;
-      const currentPrice = parseFloat(product.price);
+      const currentPrice = parseFloat(product.price_with_tax);
       const itemUrl = itemHeader.getAttribute("href");
       const itemImgUrl = item.querySelector("picture img").getAttribute("src");
 
