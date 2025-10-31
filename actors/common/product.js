@@ -24,7 +24,7 @@ export async function saveUniqProducts({ products, stats, processedIds }) {
     }
   }
   await Dataset.pushData(newProducts);
-  return products.length;
+  return newProducts.length;
 }
 
 export function currencyToISO4217(currency) {
