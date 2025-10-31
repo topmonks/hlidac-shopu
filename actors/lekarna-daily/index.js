@@ -133,7 +133,7 @@ export function getInitialUrls({ url, type }) {
 export async function main() {
   rollbar.init();
 
-  const processedIds = useState("processedIds", {});
+  const processedIds = await useState("processedIds", {});
 
   const {
     development = false,
