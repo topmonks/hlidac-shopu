@@ -7,10 +7,10 @@
   "type": "module",
   "main": "main.js",
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "3.920.0",
-    "@aws-sdk/client-s3": "3.920.0",
+    "@aws-sdk/client-cloudfront": "3.921.0",
+    "@aws-sdk/client-s3": "3.921.0",
     "@crawlee/http": "3.15.2",
-    "@hlidac-shopu/actors-common": "3.2.3",
+    "@hlidac-shopu/actors-common": "3.2.4",
     "apify": "3.5.1",
     "csv-parse": "6.1.0",
     "jsonwebtoken": "9.0.2"

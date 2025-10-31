@@ -6,10 +6,10 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.920.0",
+    "@aws-sdk/client-dynamodb": "3.921.0",
     "@crawlee/utils": "3.15.2",
     "@fast-csv/format": "5.0.5",
-    "@hlidac-shopu/actors-common": "3.2.3",
+    "@hlidac-shopu/actors-common": "3.2.4",
     "@hlidac-shopu/lib": "1.5.2",
     "apify": "3.5.1",
     "byte-size": "9.0.1",
