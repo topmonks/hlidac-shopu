@@ -7,10 +7,12 @@
   "type": "module",
   "dependencies": {
     "@crawlee/http": "3.15.2",
+    "@crawlee/playwright": "3.15.2",
     "@hckr_/apify-persistent-stats": "1.0.2",
     "@hlidac-shopu/actors-common": "3.2.4",
     "@topmonks/eu-shop-monitoring-lib": "1.2.3",
-    "apify": "3.5.1"
+    "apify": "3.5.1",
+    "jsonc-parser": "^3.2.0"
   },
   "devDependencies": {
     "@types/node": "24.9.2",
