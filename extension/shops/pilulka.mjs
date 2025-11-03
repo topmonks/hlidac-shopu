@@ -1,22 +1,34 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { AsyncShop } from "./shop.mjs";
+import { StatefulShop } from "./shop.mjs";
 
-export class Pilulka extends AsyncShop {
-  constructor() {
-    super();
-    this.previousItemId = null;
-    this.firstLoad = true;
-    this.state = null;
-    this.observer = null;
-    this.debounceTimer = null;
+const didRenderDetail = mutations => {
+  const find = mutations.find((x) => {
+      // console.log(x.target, x, x.removedNodes ? {removedNodes: x.removedNodes, length :x.removedNodes.length, test: x.removedNodes.length === 1, result: x.target.nodeName === `DIV` && x.removedNodes.length === 1 && x.removedNodes[0].nodeType === 8} : "nema");
+      return x.removedNodes.length === 1 && x.target.nodeName === `DIV` && x.removedNodes[0].nodeType === 8 && x.removedNodes[0].previousSibling?.nodeType === 8;
+    }
+  );
+  return !!find;
+}
+
+export class Pilulka extends StatefulShop {
+  get detailSelector() {
+    return "nonsense";
   }
 
   get injectionPoint() {
     return ["afterend", "ul.usp"];
   }
 
-  get waitForSelector() {
-    return ".service-detail__main .rating";
+  shouldRender(mutations) {
+    return didRenderDetail(mutations);
+  }
+
+  shouldCleanup(mutations) {
+    return this.didMutate(mutations, "addedNodes", "menu__item--simple");
+  }
+
+  get observerTarget() {
+    return document.querySelector("#__nuxt");
   }
 
   async scrape() {
@@ -25,7 +37,7 @@ export class Pilulka extends AsyncShop {
       if (!productEl) return null;
 
       const itemId = productEl.id;
-      const title = productEl.querySelector(".service-detail__title")?.title;
+      const title = productEl.querySelector(".service-detail__main .service-detail__title")?.title;
       const currentPrice = cleanPrice(`.service-detail__main .product-card-price__prices`);
       const originalPrice = cleanPrice(`.service-detail__main .product-price-container .product-card-price__old`);
       const imageUrl = document.querySelector(".service-detail__main-link")?.href;
@@ -36,43 +48,6 @@ export class Pilulka extends AsyncShop {
       console.error("Error in scrape():", err);
       return null;
     }
-  }
-
-  async scheduleRendering({ render, cleanup, fetchData }) {
-    if (this.observer) this.observer.disconnect();
-
-    const processPage = async () => {
-      const productEl = document.querySelector("[componentname='catalog.product']");
-      const info = await this.scrape();
-
-      if (!productEl || !info || info.itemId === this.previousItemId) return;
-
-      this.previousItemId = info.itemId;
-      this.state = JSON.stringify(info);
-
-      const data = await fetchData(info);
-      if (!data) return;
-
-      render(!this.firstLoad, data);
-      this.firstLoad = false;
-    };
-
-    const scheduleProcess = () => {
-      if (this.debounceTimer) clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(processPage, 300); // wait for DOM to stabilize
-    };
-
-    const root = document.querySelector("#__nuxt");
-    if (!root) return console.error("Nuxt root container not found");
-
-    this.observer = new MutationObserver(scheduleProcess);
-    this.observer.observe(root, {
-      childList: true,
-      subtree: true,
-    });
-
-    // First site initial render
-    scheduleProcess();
   }
 }
 
