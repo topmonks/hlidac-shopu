@@ -4432,10 +4432,10 @@ __metadata:
     "@crawlee/http": "npm:3.15.2"
     "@hckr_/apify-persistent-stats": "npm:1.0.2"
     "@hlidac-shopu/actors-common": "npm:3.2.4"
-    "@topmonks/eu-shop-monitoring-lib": "npm:1.2.3"
     "@types/node": "npm:24.9.2"
     apify: "npm:3.5.1"
     apify-cli: "npm:1.1.1"
+    undici: "npm:^7.2.0"
   languageName: unknown
   linkType: soft
 
@@ -8457,13 +8457,6 @@ __metadata:
   version: 0.23.0
   resolution: "@tootallnate/quickjs-emscripten@npm:0.23.0"
   checksum: 10c0/2a939b781826fb5fd3edd0f2ec3b321d259d760464cf20611c9877205aaca3ccc0b7304dea68416baa0d568e82cd86b17d29548d1e5139fa3155a4a86a2b4b49
-  languageName: node
-  linkType: hard
-
-"@topmonks/eu-shop-monitoring-lib@npm:1.2.3":
-  version: 1.2.3
-  resolution: "@topmonks/eu-shop-monitoring-lib@npm:1.2.3"
-  checksum: 10c0/c84d22c5944817c581b04b71bea48faa851c94676ae0f89a36a5aa7df2161703bc97bc3abf30ff1d850467f4b195604bb5490e2d1d5a458684da2f449bdd7de2
   languageName: node
   linkType: hard
 
@@ -23197,6 +23190,13 @@ __metadata:
   version: 7.15.0
   resolution: "undici@npm:7.15.0"
   checksum: 10c0/2c526bf157771c11e3ce297b2173cbde67b057db33263d3923529f40f57159a5ed8dab5134766091ed8aba529ddf023becb5e04292e23924f14d9b6fa79dcd4e
+  languageName: node
+  linkType: hard
+
+"undici@npm:^7.2.0":
+  version: 7.16.0
+  resolution: "undici@npm:7.16.0"
+  checksum: 10c0/efd867792e9f233facf9efa0a087e2d9c3e4415c0b234061b9b40307ca4fa01d945fee4d43c7b564e1b80e0d519bcc682f9f6e0de13c717146c00a80e2f1fb0f
   languageName: node
   linkType: hard
 
