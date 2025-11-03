@@ -70,12 +70,15 @@ function createInitRequests({ type, urls }) {
       label: LABELS.LIDL_SHOP_DETAIL
     }
   });*/
+  // 1. Discounts (known leaf category with products)
   sources.push({
     url: "https://www.lidl.cz/c/slevy/s10076329",
     userData: {
       label: Labels.LIDL_SHOP_CAT
     }
   });
+
+  // 2. Main category hub (discovers sections via DOM)
   sources.push({
     url: "https://www.lidl.cz/c/kategorie/s10004543",
     userData: {
@@ -83,6 +86,27 @@ function createInitRequests({ type, urls }) {
       level: 1
     }
   });
+
+  // 3. Direct navigation hub entry points for complete coverage
+  // These navigation hubs will be traversed to discover leaf categories
+  const navigationHubs = [
+    "/h/damska-moda/h10003533",
+    "/h/panska-moda/h10003526",
+    "/h/sportovni-moda-a-doplnky/h10003620",
+    "/h/d-tska-moda/h10003626",
+    "/h/obuv/h10003537",
+    "/h/modni-doplnky/h10003614"
+  ];
+
+  for (const hub of navigationHubs) {
+    sources.push({
+      url: `https://www.lidl.cz${hub}`,
+      userData: {
+        label: Labels.LIDL_SHOP_CAT
+      }
+    });
+  }
+
   return sources;
 }
 
@@ -221,6 +245,62 @@ function shopSectionRequests({ document, request }, { stats }) {
   return requests;
 }
 
+/**
+ * Determines if a URL is a navigation hub (/h/) or potential product category (/c/)
+ * @param {string} url
+ * @returns {'hub'|'category'|'unknown'}
+ */
+function getCategoryType(url) {
+  if (url.includes('/h/')) return 'hub';
+  if (url.includes('/c/')) return 'category';
+  return 'unknown';
+}
+
+/**
+ * Extracts subcategory links from a navigation hub page
+ * Navigation hubs have nested category lists that need to be traversed
+ */
+function extractNavigationLinks({ document, request }) {
+  const links = [];
+
+  // Strategy 1: Look for card-style navigation (like section pages)
+  const cardLinks = document.querySelectorAll(
+    ".ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked"
+  );
+
+  for (const link of cardLinks) {
+    const href = link.getAttribute("href");
+    if (href) {
+      const url = href.startsWith('http') ? href : `https://www.lidl.cz${href}`;
+      links.push({
+        url,
+        type: getCategoryType(url)
+      });
+    }
+  }
+
+  // Strategy 2: Look for sidebar/menu navigation (alternative structure)
+  if (links.length === 0) {
+    const menuLinks = document.querySelectorAll(
+      "#category a, .category-nav a, nav a[href*='/h/'], nav a[href*='/c/']"
+    );
+
+    for (const link of menuLinks) {
+      const href = link.getAttribute("href");
+      if (href && (href.includes('/h/') || href.includes('/c/'))) {
+        const url = href.startsWith('http') ? href : `https://www.lidl.cz${href}`;
+        links.push({
+          url,
+          type: getCategoryType(url)
+        });
+      }
+    }
+  }
+
+  log.info(`Found ${links.length} navigation links in hub ${request.url}`);
+  return links;
+}
+
 const from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
 const to = "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
 
@@ -307,7 +387,8 @@ async function main() {
     categories: 0,
     items: 0,
     itemsUnique: 0,
-    itemsDuplicity: 0
+    itemsDuplicity: 0,
+    navigationHubsProcessed: 0
   });
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
@@ -344,6 +425,27 @@ async function main() {
                 break;
               case Labels.LIDL_SHOP_CAT:
                 {
+                  // Check if this is a navigation hub or product category
+                  const categoryType = getCategoryType(request.url);
+
+                  if (categoryType === 'hub') {
+                    // This is a navigation hub - extract subcategories
+                    log.info(`Processing navigation hub: ${request.url}`);
+                    const subLinks = extractNavigationLinks({ document, request });
+
+                    const requests = subLinks.map(({ url, type }) => ({
+                      url,
+                      userData: {
+                        label: Labels.LIDL_SHOP_CAT // All subcategories go through same handler
+                      }
+                    }));
+
+                    await crawler.requestQueue.addRequests(requests);
+                    stats.inc("navigationHubsProcessed");
+                    break;
+                  }
+
+                  // Otherwise, this is a product category - proceed with API extraction
                   // Extract category ID and path from URL
                   // URLs look like: /h/panska-moda/h10067568 or /c/slevy/s10076329
                   const urlMatch = request.url.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
