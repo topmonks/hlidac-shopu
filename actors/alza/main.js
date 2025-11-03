@@ -1,343 +1,539 @@
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
-import { parseStructuredData } from "@topmonks/eu-shop-monitoring-lib/structured-data-extractor.mjs";
 import { Actor, Dataset, log } from "apify";
+import { ProxyAgent } from "undici";
 
-/** @typedef {import("linkedom/types/interface/document").Document} Document */
-
-/** @enum {string} */
-const Label = {
-  Category: "CATEGORY",
-  Detail: "DETAIL",
-  Pagination: "PAGINATION"
-};
-
-const extractItem = item => (Array.isArray(item) ? item[0] : item);
-
-function getOffer(jsonld, microdata) {
-  const product = extractItem(jsonld.get("Product"));
-  const offers = product?.offers ?? microdata.get("offers");
-  if (!offers) return new Map();
-
-  const firstOffer = extractItem(offers);
-  if (firstOffer instanceof Map) return firstOffer;
-  return new Map(Object.entries(firstOffer));
-}
-
-/**
- * Extracts prices from structured data
- * @param {Map<string, any>} structuredData
- * @returns {object}
- */
-function extractStructuredData(structuredData) {
-  const metaTags = structuredData.get("metatags");
-  const jsonLd = structuredData.get("jsonld");
-  const microdata = structuredData.get("microdata");
-  const offer = getOffer(jsonLd, microdata);
-
-  const currentPrice =
-    extractItem(metaTags.get("product:price:amount")) ??
-    extractItem(offer.get("lowPrice")) ??
-    extractItem(offer.get("price"));
-  const currency = extractItem(metaTags.get("product:price:currency")) ?? extractItem(offer.get("priceCurrency"));
-  const referralPrice =
-    extractItem(offer.get("lowPrice")) != extractItem(offer.get("highPrice"))
-      ? extractItem(offer.get("highPrice"))
-      : null;
-
-  return {
-    itemName: extractItem(metaTags.get("twitter:title")),
-    itemUrl: extractItem(metaTags.get("og:url")),
-    img: extractItem(metaTags.get("twitter:image")),
-    category: extractItem(jsonLd.get("BreadcrumbList"))
-      .itemListElement.map(x => x.item.name)
-      .join(" > "),
-    itemCode: extractItem(jsonLd.get("Product"))?.sku,
-    rating: extractItem(jsonLd.get("Product"))?.aggregateRating?.ratingValue,
-    inStock: offer.get("availability") === "http://schema.org/InStock",
-    discontinued: offer.get("availability") === "http://schema.org/Discontinued",
-    currentPrice: cleanPrice(currentPrice != null ? String(currentPrice) : null),
-    originalPrice: cleanPrice(referralPrice != null ? String(referralPrice) : null),
-    currency
-  };
-}
-
-/**
- * @param {string} encodedString
- * @return {string}
- */
-function decodeEntities(encodedString) {
-  const translate_re = /&(nbsp|amp|quot|lt|gt);/g;
-  const translate = new Map([
-    ["nbsp", " "],
-    ["amp", "&"],
-    ["quot", '"'],
-    ["lt", "<"],
-    ["gt", ">"]
-  ]);
-  return encodedString
-    .replace(translate_re, (match, entity) => translate.get(entity))
-    .replace(/&#(\d+);/gi, (match, numStr) => String.fromCharCode(parseInt(numStr, 10)));
-}
-
-/**
- * @param {Document} document
- */
-function extractDOM(document) {
-  const detailPage = document.querySelector(".detail-page");
-  if (!detailPage) return;
-  return {
-    itemId: detailPage.dataset.id,
-    originalPrice: cleanPrice(document.querySelector("#detailText .price-box__compare-price")?.textContent)
-  };
-}
-
-/**
- * @param {Document} document
- * @param {Map} structuredData
- */
-function extractDetail(document, structuredData) {
-  const domParts = extractDOM(document);
-  if (!domParts) return;
-
-  const structuredParts = extractStructuredData(structuredData);
-  return Object.assign(
-    {
-      get discounted() {
-        return this.originalPrice ? this.currentPrice < this.originalPrice : false;
-      }
-    },
-    structuredParts,
-    domParts,
-    { category: decodeEntities(structuredParts.category) }
-  );
-}
-
-/**
- * @param {Document} document
- * @return {{pages: number, categoryId: number} | undefined}
- */
-function extractPaginationInfo(document) {
-  const surveyInfoForm = document.querySelector(".surveyInfoForm");
-  if (!surveyInfoForm) return;
-
-  const categoryId = cleanPrice(surveyInfoForm?.dataset?.id);
-  const itemsCount = cleanPrice(document.getElementById("lblNumberItem")?.textContent);
-  const pages = Math.ceil(itemsCount / 24);
-  return { categoryId, pages };
-}
-
-function createPaginationPayload({ categoryId, page }) {
-  return {
-    "idCategory": categoryId,
-    "producers": "",
-    "parameters": [],
-    "idPrefix": 0,
-    "prefixType": 3,
-    page,
-    // "pageTo": page,
-    "availabilityType": 0,
-    "newsOnly": false,
-    "commodityStatusType": 1,
-    "upperDescriptionStatus": 0,
-    "branchId": -2,
-    "sort": 0,
-    "categoryType": 29,
-    "searchTerm": "",
-    "sendProducers": false,
-    "layout": 1,
-    "append": false,
-    "yearFrom": null,
-    "yearTo": null,
-    "artistId": null,
-    "minPrice": -1,
-    "maxPrice": -1,
-    "showOnlyActionCommodities": false,
-    "callFromParametrizationDialog": false,
-    "commodityWearType": null,
-    "configurationId": 3,
-    "sectionId": 1,
-    "hash": `#f&cst=1&cud=0&pg=${page}&prod=`,
-    "counter": page + 1
-  };
-}
-
-async function handleDetail(body, stats) {
-  const html = body.toString();
-  const { document } = parseHTML(html);
-  const structuredData = parseStructuredData(document);
-  const detail = extractDetail(document, structuredData);
-  if (detail) {
-    await Dataset.pushData(detail);
-    stats.inc("details");
-  } else {
-    stats.inc("zeroItems");
+// ========================================
+// CRITICAL: Czech Price Parser
+// ========================================
+// Czech prices use \xa0 (non-breaking space) instead of regular space
+// Example: "3 879,-" where space is \xa0, NOT regular space
+function parsePrice(priceStr) {
+  if (!priceStr) return null;
+  try {
+    const cleaned = priceStr
+      .replace(/ /g, '')           // Regular space
+      .replace(/\xa0/g, '')        // Non-breaking space (CRITICAL!)
+      .replace(/,/g, '')           // Comma
+      .replace(/-/g, '');          // Dash
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? null : parsed;
+  } catch {
+    return null;
   }
 }
 
-async function handlePagination(page, userData, createUrl, requestQueue, stats, log) {
-  const { categoryId, pageNum } = userData;
+// ========================================
+// Session Manager - Handles authentication
+// ========================================
+class AlzaSessionManager {
+  constructor() {
+    this.baseUrl = "https://www.alza.cz/services/restservice.svc";
+    this.cookies = {
+      platform: "androidtablet",
+      ApV22: "2"
+    };
+    this.headers = {
+      "user-agent": "okhttp/4.12.0;unknown/Generic_Android-x86_64;13;en_GB;2025.17.0;436;0;cz.alza.eshop",
+      "accept": "application/json",
+      "accept-language": "en-GB",
+      "accept-encoding": "gzip",
+      "content-type": "application/json; charset=utf-8"
+    };
+  }
 
-  // Make API call from browser context to avoid Cloudflare detection
-  const payload = createPaginationPayload({ categoryId, page: pageNum });
-  const response = await page.evaluate(async ([filterUrl, payloadData]) => {
-    const res = await fetch(filterUrl, {
+  /**
+   * Extract categoryId from a category URL by visiting it with mobile user agent
+   * @param {string} url - Category URL (e.g., https://www.alza.cz/EN/computers-and-laptops)
+   * @param {string} proxyUrl - Proxy URL
+   * @returns {Promise<number|null>} - Extracted categoryId or null
+   */
+  async extractCategoryIdFromUrl(url, proxyUrl) {
+    log.info(`Extracting categoryId from URL: ${url}`);
+
+    try {
+      // First, try to extract from URL pattern: /categoryName/12345.htm
+      const urlMatch = url.match(/\/(\d+)\.htm/);
+      if (urlMatch && urlMatch[1]) {
+        const categoryId = parseInt(urlMatch[1], 10);
+        log.info(`Extracted categoryId: ${categoryId} from URL pattern`);
+        return categoryId;
+      }
+
+      // If not in URL, fetch the page and extract from HTML
+      const fetchOptions = {
+        headers: {
+          ...this.headers,
+          "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        },
+        redirect: 'follow'
+      };
+      if (proxyUrl) {
+        fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
+      }
+
+      const response = await fetch(url, fetchOptions);
+      const html = await response.text();
+
+      // Extract all category IDs using pattern: category/<id>?t=
+      const regex = /category\/(\d+)\?t=/g;
+      const allMatches = [];
+      let match;
+      while ((match = regex.exec(html)) !== null) {
+        const id = parseInt(match[1], 10);
+        if (!allMatches.includes(id)) {
+          allMatches.push(id);
+        }
+      }
+
+      if (allMatches.length === 0) {
+        log.warning(`Could not extract categoryId from ${url}`);
+        return null;
+      }
+
+      // If multiple categories found and first is 1 (Black Friday promo), use the second one
+      let categoryId;
+      if (allMatches.length > 1 && allMatches[0] === 1) {
+        categoryId = allMatches[1];
+        log.info(`Found multiple categories, skipping promotional category 1, using ${categoryId}`);
+      } else {
+        categoryId = allMatches[0];
+      }
+
+      log.info(`Extracted categoryId: ${categoryId} from ${url}`);
+      return categoryId;
+    } catch (error) {
+      log.error(`Failed to extract categoryId from ${url}: ${error.message}`);
+      return null;
+    }
+  }
+
+  resetCookies() {
+    this.cookies = {
+      platform: "androidtablet",
+      ApV22: "2"
+    };
+  }
+
+  getCookies() {
+    return { ...this.cookies };
+  }
+
+  getHeaders() {
+    return { ...this.headers };
+  }
+
+  async performHandshake(proxyUrl) {
+    log.info("Performing handshake with new session...");
+
+    const fetchOptions = { headers: this.headers };
+    if (proxyUrl) {
+      fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
+    }
+
+    const response = await fetch(
+      `${this.baseUrl}/v1/getAllDeliveryCountries?country=CZ`,
+      fetchOptions
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Handshake failed with status ${response.status}`);
+    }
+
+    // Extract cookies from Set-Cookie header
+    const setCookie = response.headers.get('set-cookie');
+    if (setCookie) {
+      const cookies = setCookie.split(',').map(c => c.trim());
+      for (const cookie of cookies) {
+        const [nameValue] = cookie.split(';');
+        const [name, value] = nameValue.split('=');
+        if (['VST', 'lb_id', '__cf_bm', '_cfuvid'].includes(name)) {
+          this.cookies[name] = value;
+          log.info(`Got cookie: ${name}`);
+        }
+      }
+    }
+
+    if (!this.cookies.VST) {
+      throw new Error("VST cookie not received from handshake");
+    }
+
+    log.info("Handshake successful");
+  }
+
+  async setCountry(proxyUrl) {
+    log.info("Setting country to CZ...");
+
+    const fetchOptions = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(payloadData)
-    });
-    return await res.json();
-  }, [createUrl("/Services/EShopService.svc/Filter"), payload]);
+      headers: this.headers,
+      body: JSON.stringify({ countryId: 0 })
+    };
+    if (proxyUrl) {
+      fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
+    }
 
-  // Extract product URLs from the response
-  if (response && response.d && response.d.Boxes) {
-    const { document: pageDoc } = parseHTML(response.d.Boxes);
-    const links = Array.from(pageDoc.querySelectorAll(".browsinglink.name"));
-    const urls = links.map(x => createUrl(x.href));
-    await requestQueue.addRequests(urls.map(url => ({ label: Label.Detail, url })));
-    stats.inc("pages");
-    log.info(`Processed page ${pageNum + 1}, found ${urls.length} products`);
+    const response = await fetch(
+      `${this.baseUrl}/v1/setCountry?country=CZ`,
+      fetchOptions
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Set country failed with status ${response.status}`);
+    }
+
+    log.info("Country set to CZ");
   }
-}
 
-async function handleCategory(body, log, session, stats, createUrl, requestQueue, categoryUrl) {
-  const html = body.toString();
-  const { document } = parseHTML(html);
-  const pagination = extractPaginationInfo(document);
-  if (!pagination) {
-    log.warning(document.innerHTML);
-    if (session) session.isBlocked();
-    stats.inc("errors");
-    throw new Error("Can't find pagination info");
-  }
-  const { categoryId, pages } = pagination;
-  log.info("Category pagination info", { categoryId, pages });
+  async fetchProducts(page, categoryId, proxyUrl) {
+    const url = `${this.baseUrl}/v2/products?categoryId=${categoryId}&country=CZ`;
 
-  // Queue pagination requests (each will be processed independently)
-  for (let pageNum = 0; pageNum < pages; pageNum++) {
-    await requestQueue.addRequest({
-      url: categoryUrl,  // Navigate to category page to establish browser context
-      uniqueKey: `pagination-${categoryId}-${pageNum}`,
-      userData: {
-        label: Label.Pagination,
-        categoryId,
-        pageNum
+    // Use MAILINGACTION for Black Friday (categoryId=1), CATEGORY for others
+    const type = categoryId === 1 ? "MAILINGACTION" : "CATEGORY";
+
+    const requestBody = {
+      filterParameters: {
+        id: categoryId,
+        type: type,
+        typeId: 0,
+        orderBy: 0,
+        page: page,
+        availabilityType: 0,
+        selectedBranches: [],
+        sendPrices: false,
+        params: [],
+        producers: [],
+        useRatingThreshold: false
       }
-    });
+    };
+
+    const fetchOptions = {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(requestBody)
+    };
+    if (proxyUrl) {
+      fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
+    }
+
+    const response = await fetch(url, fetchOptions);
+
+    if (response.status !== 200) {
+      throw new Error(`Fetch products failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data_cnt === 0) {
+      return null;
+    }
+
+    return {
+      products: data.data,
+      breadcrumbs: data.breadcrumbs || [],
+      count: data.data_cnt
+    };
+  }
+}
+
+// ========================================
+// Proxy Rotation Handler
+// ========================================
+class ProxyRotationHandler {
+  constructor(proxyConfiguration) {
+    this.proxyConfiguration = proxyConfiguration;
+    this.currentProxyUrl = null;
   }
 
-  stats.inc("categories");
-}
+  async getProxyUrl() {
+    if (!this.proxyConfiguration) {
+      return null;
+    }
+    if (!this.currentProxyUrl) {
+      this.currentProxyUrl = await this.proxyConfiguration.newUrl();
+    }
+    return this.currentProxyUrl;
+  }
 
-/**
- * @param {ActorType} type
- */
-function getPostfix(type) {
-  switch (type) {
-    case ActorType.BlackFriday:
-      return "_bf";
-    case ActorType.Feed:
-      return "_feed";
-    default:
-      return "";
+  async rotateAndRefresh(sessionManager) {
+    if (!this.proxyConfiguration) {
+      log.warning("No proxy configuration available, cannot rotate");
+      throw new Error("Cannot rotate proxy in development mode without proxy configuration");
+    }
+
+    log.warning("Rotating proxy and refreshing session...");
+
+    // Get new proxy
+    this.currentProxyUrl = await this.proxyConfiguration.newUrl();
+
+    // Reset cookies
+    sessionManager.resetCookies();
+
+    // Perform fresh handshake with new proxy
+    await sessionManager.performHandshake(this.currentProxyUrl);
+    await sessionManager.setCountry(this.currentProxyUrl);
+
+    log.info("Proxy rotated and session refreshed");
   }
 }
 
-/**
- * @param {string} country
- * @param {ActorType} type
- */
-function getTableName(country, type) {
-  const countryCode = country.toLowerCase();
-  const postfix = getPostfix(type);
-  return `alza_${countryCode}${postfix}`;
+// ========================================
+// Product Normalization
+// ========================================
+function buildCategoryPath(breadcrumbs) {
+  if (!breadcrumbs || breadcrumbs.length === 0) {
+    return "Black Friday";
+  }
+
+  const categories = [];
+  for (const crumb of breadcrumbs) {
+    if (crumb.category && crumb.category.name) {
+      categories.push(crumb.category.name);
+    }
+  }
+
+  return categories.length > 0 ? categories.join(" > ") : "Black Friday";
 }
 
+function parseStockStatus(availStr) {
+  if (!availStr) return false;
+  return availStr.toLowerCase().includes("in stock");
+}
+
+function normalizeProduct(product, category) {
+  // Parse prices
+  const currentPrice = product.priceNoCurrency;  // Already numeric
+  const originalPrice = parsePrice(product.cprice);  // CRITICAL: parse \xa0
+
+  // Stock status
+  const inStock = parseStockStatus(product.avail);
+
+  // Compute discounted flag
+  const discounted = (
+    originalPrice !== null &&
+    currentPrice !== null &&
+    currentPrice < originalPrice
+  );
+
+  return {
+    itemId: product.id,
+    itemName: product.name,
+    itemUrl: product.url,
+    img: product.img,
+    inStock: inStock,
+    currentPrice: currentPrice,
+    originalPrice: originalPrice,
+    currency: "CZK",
+    itemCode: product.code,
+    rating: product.rating,
+    breadCrumbs: category,
+    discounted: discounted,
+    slug: product.id
+  };
+}
+
+// ========================================
+// Rate Limit & Retry Handler
+// ========================================
+async function handleRequestWithRetry(requestFn, proxyHandler, sessionManager, retryCount = 0) {
+  try {
+    return await requestFn();
+  } catch (error) {
+    log.warning(`Request failed (attempt ${retryCount + 1}): ${error.message}`);
+
+    if (retryCount < 3) {
+      // Exponential backoff: 2s, 4s, 8s
+      const delay = Math.pow(2, retryCount + 1) * 1000;
+      log.info(`Waiting ${delay}ms before retry...`);
+      await new Promise(r => setTimeout(r, delay));
+      return handleRequestWithRetry(requestFn, proxyHandler, sessionManager, retryCount + 1);
+    } else {
+      // Rotate proxy and retry with fresh handshake
+      log.warning("Max retries reached, rotating proxy...");
+      await proxyHandler.rotateAndRefresh(sessionManager);
+      return handleRequestWithRetry(requestFn, proxyHandler, sessionManager, 0);
+    }
+  }
+}
+
+// ========================================
+// Migration State Management
+// ========================================
+async function saveState(currentPage, totalProducts) {
+  await Actor.setValue('STATE', {
+    lastProcessedPage: currentPage,
+    totalProducts: totalProducts,
+    timestamp: Date.now()
+  });
+}
+
+async function loadState() {
+  const state = await Actor.getValue('STATE');
+  if (state) {
+    log.info(`Resuming from migration: page ${state.lastProcessedPage + 1}, ${state.totalProducts} products`);
+    return {
+      startPage: state.lastProcessedPage + 1,
+      existingProducts: state.totalProducts
+    };
+  }
+  return { startPage: 1, existingProducts: 0 };
+}
+
+// ========================================
+// Main Actor Logic
+// ========================================
 async function main() {
   const rollbar = Rollbar.init();
 
-  const { development, proxyGroups, country = "CZ", type = ActorType.BlackFriday, urls = [] } = await getInput();
+  // 1. Get input
+  const {
+    development = false,
+    proxyGroups = [],
+    country = "CZ",
+    type = ActorType.BlackFriday,
+    urls = [],
+    categoryId: inputCategoryId = null
+  } = await getInput();
 
+  // 2. Initialize proxy configuration
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
     useApifyProxy: !development
   });
 
+  // 3. Initialize stats
   const stats = await withPersistedStats({
-    categories: 0,
-    details: 0,
     pages: 0,
-    items: 0,
-    denied: 0,
-    ok: 0,
-    zeroItems: 0,
+    products: 0,
     errors: 0,
-    failed: 0
+    proxyRotations: 0
   });
 
-  const crawler = new PlaywrightCrawler({
-    useSessionPool: true,
-    sessionPoolOptions: {
-      maxPoolSize: 50,
-      persistStateKeyValueStoreId: "alza-sessions"
-    },
-    proxyConfiguration,
-    maxRequestsPerMinute: 600,
-    launchContext: {
-      launchOptions: {
-        headless: true
-      }
-    },
-    async requestHandler({ request, page, log, crawler }) {
-      const { label } = request.userData;
+  // 4. Check for migration state
+  const { startPage, existingProducts } = await loadState();
+  log.info(`Starting from page ${startPage} (${existingProducts} existing products)`);
 
-      log.info(`Visiting: ${request.url}, ${label}`);
-      stats.inc("ok");
+  // 5. Initialize session manager and proxy handler
+  const sessionManager = new AlzaSessionManager();
+  const proxyHandler = new ProxyRotationHandler(proxyConfiguration);
 
-      const createUrl = s => new URL(s, request.url).href;
+  // ALWAYS perform fresh handshake (ignore saved cookies after migration)
+  const proxyUrl = await proxyHandler.getProxyUrl();
+  await sessionManager.performHandshake(proxyUrl);
+  await sessionManager.setCountry(proxyUrl);
 
-      switch (label) {
-        case Label.Category:
-          const html = await page.content();
-          return handleCategory(Buffer.from(html), log, null, stats, createUrl, crawler.requestQueue, request.url);
-        case Label.Pagination:
-          return handlePagination(page, request.userData, createUrl, crawler.requestQueue, stats, log);
-        case Label.Detail:
-          const detailHtml = await page.content();
-          return handleDetail(Buffer.from(detailHtml), stats);
-      }
-    },
-    async failedRequestHandler({ request, log }, error) {
-      log.error(`Request ${request.url} ${error.message} failed multiple times`);
-      rollbar.error(error, request);
-      stats.inc("failed");
+  // 5b. Determine categoryId: from URL, input, or default
+  let categoryId = inputCategoryId;
+
+  if (!categoryId && urls.length > 0) {
+    // Extract categoryId from first URL
+    categoryId = await sessionManager.extractCategoryIdFromUrl(urls[0], proxyUrl);
+    if (!categoryId) {
+      throw new Error(`Could not extract categoryId from URL: ${urls[0]}`);
     }
-  });
+  } else if (!categoryId) {
+    // Default to Black Friday
+    categoryId = 1;
+  }
 
-  if (urls.length === 0) {
-    if (type === ActorType.BlackFriday) {
-      urls.push(`https://www.alza.${country.toLowerCase()}/black-friday`);
-    } else {
-      log.info("No URLs provided");
+  log.info(`Configuration: categoryId=${categoryId}, country=${country}, type=${type}`);
+
+  // 6. Get category info (for breadcrumbs)
+  let category = "Black Friday";
+  try {
+    const categoryUrl = `${sessionManager.baseUrl}/v1/category/${categoryId}?t=MAILINGACTION&p=0&country=CZ`;
+    const fetchOptions = { headers: sessionManager.getHeaders() };
+    if (proxyUrl) {
+      fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
+    }
+    const categoryResp = await fetch(categoryUrl, fetchOptions);
+    if (categoryResp.status === 200) {
+      const categoryData = await categoryResp.json();
+      const categoryName = categoryData.priceKiller?.name || categoryData.name || 'Unknown';
+      category = categoryName;
+      log.info(`Category: ${categoryName}`);
+    }
+  } catch (e) {
+    log.warning(`Failed to get category info: ${e.message}`);
+  }
+
+  // 7. Scrape all pages
+  let currentPage = startPage;
+  let emptyPagesCount = 0;
+  const MAX_EMPTY_PAGES = 3;
+
+  while (emptyPagesCount < MAX_EMPTY_PAGES) {
+    try {
+      log.info(`Scraping page ${currentPage}...`);
+
+      // Fetch products with retry & rotation
+      const result = await handleRequestWithRetry(
+        () => sessionManager.fetchProducts(currentPage, categoryId, proxyHandler.currentProxyUrl),
+        proxyHandler,
+        sessionManager
+      );
+
+      if (!result || !result.products || result.products.length === 0) {
+        log.warning(`No products on page ${currentPage}`);
+        emptyPagesCount++;
+        currentPage++;
+        continue;
+      }
+
+      emptyPagesCount = 0;  // Reset counter
+
+      // Extract category from breadcrumbs
+      if (result.breadcrumbs && result.breadcrumbs.length > 0) {
+        category = buildCategoryPath(result.breadcrumbs);
+      }
+
+      // Normalize and push to dataset
+      for (const product of result.products) {
+        const normalized = normalizeProduct(product, category);
+        await Dataset.pushData(normalized);
+        stats.inc('products');
+      }
+
+      stats.inc('pages');
+      const currentStats = stats.get();
+      log.info(`✓ Page ${currentPage}: ${result.products.length} products (total: ${currentStats.products})`);
+
+      // Save state every 10 pages (migration protection)
+      if (currentPage % 10 === 0) {
+        await saveState(currentPage, currentStats.products);
+        log.info(`State saved at page ${currentPage}`);
+      }
+
+      currentPage++;
+
+    } catch (error) {
+      log.error(`Page ${currentPage} failed: ${error.message}`);
+      rollbar.error(error, { page: currentPage });
+      stats.inc('errors');
+      currentPage++;
     }
   }
-  await crawler.run(urls.map(url => ({ url, userData: { label: Label.Category } })));
+
+  const finalStats = stats.get();
+  log.info(`Scraping complete: ${finalStats.pages} pages, ${finalStats.products} products`);
+
+  // 8. Save final stats
   await stats.save(true);
 
+  // 9. Upload to Keboola
   try {
-    const tableName = getTableName(country, type);
+    const tableName = `alza_${country.toLowerCase()}_bf`;
+    log.info(`Uploading to Keboola table: ${tableName}`);
     await uploadToKeboola(tableName);
+    log.info("Keboola upload successful");
   } catch (err) {
-    log.error(err);
+    log.error(`Keboola upload failed: ${err.message}`);
+    rollbar.error(err);
   }
 }
 
