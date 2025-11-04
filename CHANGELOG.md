@@ -1,5 +1,9 @@
 # Extension
 
+## 2.4.3
+* Fixed Pilulka rendering
+* Fixed Notino original price extraction
+
 ## 2.4.2
 * Fixed Grizzly original price extraction
 * Fixed Globus current price extraction
