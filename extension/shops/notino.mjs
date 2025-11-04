@@ -1,4 +1,4 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 function getVariantUrl(itemId) {
@@ -22,13 +22,11 @@ export class Notino extends AsyncShop {
     const elem = document.querySelector(this.#selector);
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
-    const voucherDiscounted = document.querySelector('[data-testid="voucher-discount-icon"]');
-    const currentPrice = voucherDiscounted
-      ? cleanPrice(":not(#pd-price) > span[content]:first-of-type")
-      : cleanPrice("#pd-price");
-    const originalPrice = voucherDiscounted
-      ? cleanPrice("#pd-price")
-      : cleanPrice(":not(#pd-price) > span[content]:first-of-type");
+    const currentPrice =
+      cleanPrice("#pd-price");
+
+    const lowestPrice = document.querySelector('[data-testid="product-specifications"]')?.textContent.split("Poslední nejnižší cena")[1];
+    const originalPrice = lowestPrice ? cleanPriceText(lowestPrice) : null;
     const imageUrl = document.getElementById("pd-image-main")?.src;
     const itemId = document.querySelector("input[name=productId]").value;
     const url = getVariantUrl(itemId);
