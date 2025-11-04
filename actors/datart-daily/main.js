@@ -97,11 +97,16 @@ function extractItems(document, rootUrl, country) {
       );
 
       let lowestPriceInLastMonth = currentPrice;
-      const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price del");
+      const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price--strike");
       if (lowestPriceInLastMonthEl) {
+        // Remove sr-only content first to avoid extracting digits from screen reader text
+        const srOnly = lowestPriceInLastMonthEl.querySelector('.sr-only');
+        const priceText = srOnly
+          ? lowestPriceInLastMonthEl.innerText.replace(srOnly.innerText, '').trim()
+          : lowestPriceInLastMonthEl.innerText.trim();
+
         lowestPriceInLastMonth = parseFloat(
-          lowestPriceInLastMonthEl.innerText
-            .trim()
+          priceText
             .replace(/[^\d,]+/g, "")
             .replace(",", ".")
         );
