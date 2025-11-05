@@ -1,5 +1,9 @@
 # Extension
 
+## 2.4.4
+* Fixed Pilulka current price extraction
+* Fixed Tchibo.cz rendering
+
 ## 2.4.3
 * Fixed Pilulka rendering
 * Fixed Notino original price extraction
