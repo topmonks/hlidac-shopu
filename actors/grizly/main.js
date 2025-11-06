@@ -1,4 +1,4 @@
-import { Dataset, HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { HttpCrawler, createHttpRouter } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -142,7 +142,7 @@ function defRouter({ stats }) {
       }
       const products = extractProducts(document, country);
       stats.add("items", products.length);
-      await Dataset.pushData(products);
+      await Actor.pushData(products);
     }
   });
 }
@@ -174,7 +174,7 @@ async function main() {
     country = Country.CZ,
     proxyGroups,
     urls,
-    maxConcurrency = 25,
+    maxConcurrency = 3,
     maxRequestRetries
   } = await getInput();
 
