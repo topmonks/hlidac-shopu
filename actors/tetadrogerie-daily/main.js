@@ -117,8 +117,8 @@ function resolveCategory(categories) {
  */
 function parseItems(json) {
   return json.items.map((item) => {
-    const originalPrice = (item.bbyPrices.zcmd ?? item.originalPrice) / 100;
-    let currentPrice = (item.bbyPrices.acmd ?? item.currentPrice) / 100;
+    const originalPrice = (item.bbyPrices.zcmd ?? item.originalPrice ?? item.price) / 100;
+    let currentPrice = (item.bbyPrices.acmd ?? item.currentPrice ?? item.price) / 100;
 
     // We do not consider multi-item discount as a discount
     const isMultiItemDiscount = /za\s+.*ks\s+při\s+koupi.*\s+ks/i.test(item.bbyPrices.conditions);
@@ -257,7 +257,7 @@ async function main() {
   const startingRequests = [];
   if (development && test) {
     startingRequests.push({
-      url: "https://www.tetadrogerie.cz/eshop/produkty/tablety-do-mycky",
+      url: "https://www.tetadrogerie.cz/eshop/produkty/hubeni-hmyzu",
       userData: {
         initial: true,
       }
