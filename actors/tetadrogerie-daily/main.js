@@ -1,5 +1,4 @@
 import { URL, URLSearchParams } from "url";
-import { PlaywrightCrawler, useState } from "@crawlee/playwright";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -8,102 +7,134 @@ import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, LogLevel, log } from "apify";
+import { PlaywrightCrawler, useState } from "@crawlee/playwright";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
-const RootUrl = "https://www.tetadrogerie.cz";
-
 /**
- * @param {string} baseUrl
- * @param {number=} currentPage
- * @param {number=} pageSize
+ * Modifies the page parameter in a URL for pagination
+ * @param {string} originalUrl - The original URL to modify
+ * @param {number} [newPage=1] - The new page number to set
+ * @returns {string} Modified URL with updated page parameters
  */
-function listingBfUrl(baseUrl, currentPage = 1, pageSize = 60) {
-  const url = new URL(baseUrl);
-  const params = new URLSearchParams(url.search);
-  params.set("stranka", currentPage.toString());
-  params.set("pocet", pageSize.toString());
-  // change the search property of the main url
-  url.search = params.toString();
-  return url.toString();
+function changeListingUrlPage(originalUrl, newPage = 1) {
+  newPage = String(newPage);
+
+  const url = new URL(originalUrl);
+  url.searchParams.set("page", String(newPage));
+  url.searchParams.set("strana", String(newPage)); // Yes, it is really set twice on the API
+
+  return url.href;
 }
 
 /**
- * @param {string} baseUrl
- * @param {number=} currentPage
- * @param {number=} pageSize
+ * Converts a traditional category URL to the corresponding API URL format
+ * @param {string} url - The traditional category URL to convert
+ * @returns {string} The converted API URL or original URL if no conversion needed
  */
-function listingUrl(baseUrl, currentPage = 1, pageSize = 60) {
-  return new URL(
-    `${baseUrl}?${new URLSearchParams({
-      stranka: currentPage.toString(),
-      pocet: pageSize.toString(),
-      razeni: "price"
-    })}`,
-    RootUrl
-  ).href;
+function translateToApiUrl(url) {
+  const traditionalUrlRegexp = /https:\/\/www\.tetadrogerie\.cz\/eshop\/produkty\//;
+
+  // Translates traditional category URL to the API one
+  if (traditionalUrlRegexp.test(url)) {
+    const currentPage = new URL(url).searchParams.get('strana') || '1';
+    const taxon = url.replace(traditionalUrlRegexp, '')
+      .replace(/\?|&.*/g, '');
+    return createListingProductApiUrl(taxon, currentPage);
+  }
+  return url;
 }
 
-const categoryLinkSelectors = ["ul.j-cat-3>li>a", "ul.j-cat-2>li>a", "ul.j-shop-categories-menu>li>a"];
+/**
+ * @param {string} categorySlug
+ * @param {number=1} currentPage
+ */
+function createListingProductApiUrl(categorySlug, currentPage = 1) {
+  currentPage = String(currentPage);
+  const newUrl = new URL(
+    `https://be.tetadrogerie.cz/api/v2/shop/search/products-variants?${new URLSearchParams({
+      taxon: categorySlug,
+      page: String(currentPage),
+      itemsPerPage: "40",
+      sort: "asc",
+      order_by: "price",
+      strana: String(currentPage), // Yes, it is really like that on the API
+    })}`
+  );
+
+  return newUrl.href;
+}
+
+const categoryLinkSelectors = [
+  // 1st level categories - includes all the products, other levels are not included in the initial response, so it
+  // cannot be easily scraped by HttCrawler. As this includes all the products, it is not needed to scraped other
+  // category levels
+  ".c-menu-item__link-wrapper > a"
+];
 
 /**
- * @param {Document} document
+ * Extracts category URLs from the document based on predefined selectors
+ * @param {Document} document - The parsed HTML document
+ * @returns {string[]} Array of absolute category URLs
  */
 function categoryRequests(document) {
+  const ROOT_URL = "https://www.tetadrogerie.cz";
   const requests = [];
   for (const selector of categoryLinkSelectors) {
-    for (const category of document.querySelectorAll(`.j-eshop-menu ${selector}`)) {
-      requests.push(category.href);
+    for (const category of document.querySelectorAll(`.c-main-menu ${selector}`)) {
+      requests.push(new URL(category.href, ROOT_URL).href);
     }
   }
   return requests;
 }
 
 /**
- * @param {HTMLElement} el
- * @param {string} category
+ * Builds a hierarchical category path from product taxons
+ * @param {Array} categories - Array of category objects with hierarchy information
+ * @returns {string|null} Category path separated by ' > ' or null if no categories
  */
-function parseItem(el, category) {
-  const actionPrice = parseFloat(el.querySelectorAll(".sx-item-price-action")?.at(-1)?.innerText?.replace(/\s+/g, ""));
-  const initialPrice = parseFloat(el.querySelector(".sx-item-price-initial")?.innerText?.replace(/\s+/g, ""));
-  const originalPrice = actionPrice ? initialPrice / 100 : null;
-  const currentPrice = actionPrice ? actionPrice / 100 : initialPrice / 100;
-  console.assert(currentPrice, "missing price");
-  const itemUrl = new URL(el.querySelector(".sx-item-title").href, RootUrl).href;
-  const multiItemDiscount =
-    el.querySelector(".sx-item-condition").innerText?.startsWith("Cena za kus při koupi") ?? false;
-  return {
-    itemId: el.querySelector(".j-product").getAttribute("data-skuid"),
-    itemName: el.querySelector(".sx-item-title").innerText,
-    img: el.querySelector("img").getAttribute("src"),
-    itemUrl,
-    currentPrice: multiItemDiscount ? originalPrice : currentPrice,
-    originalPrice: null, // real original price is located on the detail page, there it will be scraped
-    discounted: !multiItemDiscount && originalPrice > currentPrice,
-    inStock: true,
-    category
-  };
+function resolveCategory(categories) {
+  if (!categories?.length) return null;
+
+  const categoryPath = [];
+  let currentCategory = categories[0];
+
+  // Build category path from first level down
+  while (currentCategory) {
+    categoryPath.push(currentCategory.name);
+    currentCategory = categories.find(
+      category => category.parent.code === currentCategory.code
+    );
+  }
+
+  return categoryPath.length ? categoryPath.join(' > ') : null;
 }
 
 /**
- * @param {Document} document
+ * Parses product items from API response
+ * @param json - API response containing product items
+ * @returns {Array} Parsed product items
  */
-function parseItems(document) {
-  const category = document.querySelectorAll(".CMSBreadCrumbsLink").map(x => x.innerText);
-  const currentCategory = document.querySelectorAll(".CMSBreadCrumbsCurrentItem").map(x => x.innerText);
-  category.push(currentCategory);
-  const categories = category.join(" > ");
-  return document.querySelectorAll(".j-products .j-item").map(el => parseItem(el, categories));
-}
+function parseItems(json) {
+  return json.items.map((item) => {
+    const isMultiItemDiscount = /za\s+.*ks\s+při\s+koupi.*\s+ks/i.test(item.bbyPrices.conditions);
 
-const itemsPerPage = 60;
+    const originalPrice = (item.bbyPrices.zcmd ?? item.originalPrice) / 100;
+    const currentPrice = (item.bbyPrices.acmd ?? item.currentPrice) / 100;
 
-// Because shop dont use offsets, last page include all items from previous pages. Dont need scrap them, skip to last.
-/**
- * @param {number} count
- */
-function lastPageNumber(count) {
-  return Math.ceil(count / itemsPerPage);
+    return {
+      itemId: String(item.code).replace(/^0+/g, ''),
+      itemName: item.name.replace(/<[^>]*>/g, ''),
+      img: `https://teta-drogerie.fra1.digitaloceanspaces.com/cache/inveocz_product_gallery/${item.image}`,
+      slug: item.slug,
+      itemUrl: `https://www.tetadrogerie.cz/eshop/katalog/${item.slug}`,
+      currentPrice,
+      originalPrice,
+      discounted: !isMultiItemDiscount && originalPrice > currentPrice,
+      inStock: item.isStockAvailable,
+      category: resolveCategory(item.taxa)
+    }
+  });
 }
 
 async function main() {
@@ -116,7 +147,7 @@ async function main() {
     test,
     maxRequestRetries,
     type = ActorType.Full,
-    bfUrl = "https://www.tetadrogerie.cz/eshop/produkty?offerID=ESH210007"
+    bfUrl = "https://www.tetadrogerie.cz/eshop/produkty/stitky-entilos-black-friday"
   } = await getInput();
 
   if (development || debug) {
@@ -140,123 +171,75 @@ async function main() {
       autoscaleIntervalSecs: 5
     },
     proxyConfiguration,
-    maxRequestsPerMinute: 600,
     maxRequestRetries,
-    navigationTimeoutSecs: 120,
+    navigationTimeoutSecs: 30,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    browserPoolOptions: {
-      useFingerprints: true,
-      fingerprintOptions: {
-        fingerprintGeneratorOptions: { locales: ["cs-CZ"] }
-      }
-    },
-    async requestHandler({ request, page, sendRequest }) {
-      const { step, category, currentPage } = request.userData;
-      log.info("Processing page", { url: request.url, step });
+    preNavigationHooks: [async ({ blockRequests }) => {
+      await blockRequests(); // block images, stylesheets, etc.
+    }],
+    async requestHandler({ request, response, page }) {
+      let { label, initial } = request.userData;
 
-      if (step === "DETAIL") {
-        const { product } = request.userData;
-        log.info("Scraping product", { url: product.itemUrl });
-        // navigation is skipped in this request - there is no need to load product
-        // pages in the browser as the original price is scrapable from response that
-        // we can get by plain HTTP request, it is also much faster/cheaper this way
-        const resp = await sendRequest({
-          url: request.url,
-          throwHttpErrors: true
-        });
-        const { document } = parseHTML(resp.body);
-        const originalPrice = parseFloat(
-          document.querySelector(".sx-sale-w-arrow-container > span").innerText?.replace(/\s+/g, "")?.replace(",", ".")
-        );
-        product.originalPrice = originalPrice;
-        await saveUniqProducts({
-          products: [product],
-          stats,
-          processedIds
-        });
-        return;
-      }
+      log.info("Processing page", { url: request.url, label });
 
-      await page.waitForSelector(".sx-item-price-group");
-      const text = await page.content();
-      const { document } = parseHTML(text);
+      await page.waitForLoadState("load");
 
-      const itemsCount = parseInt(document.querySelector(".j-product-count-main").innerText.match(/(\d+)/)[1], 10);
-
-      switch (step) {
+      switch (label) {
         case "START":
-          {
-            log.info("Pagination info", { allItemsCount: itemsCount });
-            const requests = categoryRequests(document).map(category => ({
-              url: listingUrl(category),
-              userData: {
-                category,
-                currentPage: 1
-              }
-            }));
-            stats.add("categories", requests.length);
-            await crawler.requestQueue.addRequests(requests);
-          }
-          break;
-        case "BF":
-          log.info("Pagination info", { itemsCount, currentPage });
-          if (!currentPage) {
-            const lastPage = lastPageNumber(itemsCount);
-            if (lastPage) {
-              const url = listingBfUrl(request.url, lastPage);
-              log.info(`Add last pagination to queue: ${url}`);
-              await crawler.requestQueue.addRequest({
-                url,
-                userData: {
-                  currentPage: page,
-                  category: "BF"
-                }
-              });
+          const { document } = parseHTML((await response.body()).toString());
+
+          const initialCategoryUrls = await page.$$eval('.c-main-menu .c-menu-item__link-wrapper > a', (links) => {
+            return [...links].map(link => link.href);
+          });
+
+          const initialCategoryRequests = initialCategoryUrls.map((url) => ({
+            url,
+            userData: {
+              initial: true, // to generate pagination requests for the initial categories only once
             }
-          }
-          break;
-        default:
-          {
-            log.info("Pagination info", { category, itemsCount, currentPage });
-            if (currentPage === 1 && itemsCount > itemsPerPage && category !== "BF") {
-              const lastPage = lastPageNumber(itemsCount);
-              if (lastPage) {
-                const url = listingUrl(category, lastPage);
-                log.info(`Add last pagination to queue: ${url}`);
-                await crawler.requestQueue.addRequest(
-                  {
-                    url,
-                    userData: {
-                      category,
-                      currentPage: lastPage
-                    }
-                  },
-                  { forefront: true }
-                );
-              }
+          }));
+
+          stats.add("categories", initialCategoryRequests.length);
+          await crawler.requestQueue.addRequests(initialCategoryRequests);
+        default: // any category overview page
+          const categoryUrlRegexp = /^https:\/\/www\.tetadrogerie\.cz\/eshop\/produkty\//;
+
+          // Translates traditional category URL to the API one
+          if (categoryUrlRegexp.test(request.url)) {
+            const currentPage = new URL(request.url).searchParams.get('strana') || '1';
+            const initialCategorySlug = request.url.replace(categoryUrlRegexp, '')
+              .replace(/[?&].*/g, '');
+            const fetchApiUrl = createListingProductApiUrl(initialCategorySlug, currentPage);
+
+            const json = await page.evaluate(async ({fetchApiUrl}) => {
+              return await fetch(fetchApiUrl).then(res => res.json());
+            }, { fetchApiUrl });
+
+            if (json.message) {
+              log.warning(`problem during processing: ${request.url}`);
+              throw new Error(json.message);
             }
 
-            const products = parseItems(document);
+            log.info(`Pagination info for slug: ${request.url}`, json.pagination);
+
+            if (initial) {
+              // resolve pagination
+              const paginationUrls = [];
+              for (let page = 1; page <= json.pagination.lastPage; page++) {
+                const url = changeListingUrlPage(request.url, page);
+                paginationUrls.push({url});
+              }
+              await crawler.requestQueue.addRequests(paginationUrls);
+            }
+
+            const products = parseItems(json);
+
             await saveUniqProducts({
-              products: products.filter(x => !x.discounted),
+              products,
               stats,
               processedIds
             });
-            await crawler.addRequests(
-              products
-                .filter(x => x.discounted)
-                .map(x => ({
-                  url: x.itemUrl,
-                  skipNavigation: true, // no need to load it in browser
-                  userData: {
-                    step: "DETAIL",
-                    product: x
-                  }
-                })),
-              { forefront: true }
-            );
-            log.info(`Found ${products.length} items, ${request.url}`);
           }
           break;
       }
@@ -270,20 +253,24 @@ async function main() {
   const startingRequests = [];
   if (development && test) {
     startingRequests.push({
-      url: "https://www.tetadrogerie.cz/eshop/produkty/uklid/myti-nadobi/doplnky-do-mycky?pocet=40&razeni=price"
+      url: "https://www.tetadrogerie.cz/eshop/produkty/hubeni-hmyzu",
+      userData: {
+        initial: true,
+      }
     });
   } else if (type === ActorType.BlackFriday) {
     startingRequests.push({
-      url: `${bfUrl}&pocet=60&razeni=price`,
+      url: bfUrl,
       userData: {
-        step: "BF"
+        initial: true,
       }
     });
   } else {
     startingRequests.push({
-      url: listingUrl("/eshop", 1, 20),
+      url: `https://www.tetadrogerie.cz/eshop/`,
       userData: {
-        step: "START"
+        label: "START",
+        initial: true,
       }
     });
   }
