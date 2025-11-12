@@ -117,10 +117,14 @@ function resolveCategory(categories) {
  */
 function parseItems(json) {
   return json.items.map((item) => {
-    const isMultiItemDiscount = /za\s+.*ks\s+při\s+koupi.*\s+ks/i.test(item.bbyPrices.conditions);
-
     const originalPrice = (item.bbyPrices.zcmd ?? item.originalPrice) / 100;
-    const currentPrice = (item.bbyPrices.acmd ?? item.currentPrice) / 100;
+    let currentPrice = (item.bbyPrices.acmd ?? item.currentPrice) / 100;
+
+    // We do not consider multi-item discount as a discount
+    const isMultiItemDiscount = /za\s+.*ks\s+při\s+koupi.*\s+ks/i.test(item.bbyPrices.conditions);
+    if (isMultiItemDiscount) {
+      currentPrice = originalPrice;
+    }
 
     return {
       itemId: String(item.code).replace(/^0+/g, ''),
@@ -129,8 +133,8 @@ function parseItems(json) {
       slug: item.slug,
       itemUrl: `https://www.tetadrogerie.cz/eshop/katalog/${item.slug}`,
       currentPrice,
-      originalPrice,
-      discounted: !isMultiItemDiscount && originalPrice > currentPrice,
+      originalPrice: currentPrice !== originalPrice ? originalPrice : null,
+      discounted: originalPrice > currentPrice,
       inStock: item.isStockAvailable,
       category: resolveCategory(item.taxa)
     }
@@ -253,7 +257,7 @@ async function main() {
   const startingRequests = [];
   if (development && test) {
     startingRequests.push({
-      url: "https://www.tetadrogerie.cz/eshop/produkty/hubeni-hmyzu",
+      url: "https://www.tetadrogerie.cz/eshop/produkty/tablety-do-mycky",
       userData: {
         initial: true,
       }
