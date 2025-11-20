@@ -16,13 +16,13 @@ export class Grizly extends Shop {
     const itemId = form.iditem.value;
     const title = document.querySelector("[property='og:title']").content;
 
-    const couponPrice = cleanPrice(".coupons .coupon-price");
-    const oldPrice = cleanPrice(".pd__data-price-old");
-    const regularPrice = cleanPrice(".pd__data-price-regular");
+    const couponPrice = cleanPrice(".pd__data-variants-select-price .pd__data-variants-select-price-code");
+    const oldPrice = cleanPrice(".pd__data-variants-select-price .pd__data-variants-select-price-old");
+    const regularPrice = cleanPrice(".pd__data-variants-select-price .regular");
 
     const currentPrice = couponPrice ?? regularPrice;
     const originalPrice = oldPrice ?? regularPrice;
-    const imageUrl = new URL(document.querySelector("[itemprop=image]").src, location.href).href;
+    const imageUrl = document.querySelector("[property='og:image']").content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
