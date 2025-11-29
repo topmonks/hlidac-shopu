@@ -2,6 +2,7 @@
 shop: mall.cz
 link: https://docs.google.com/spreadsheets/d/1knaEvMdOK_IYesf-YoSYhzAjsrB9yg8__a2x-fdgrro/edit?usp=sharing
 rating: 2
+hidden: true
 ---
 
 Mall.cz se snaží implementovat slevy dle EU směrnic. Nicméně stále se neshodujeme na ca 20% slev, z nichž naprostá většina spadá pod partnerský prodej.
