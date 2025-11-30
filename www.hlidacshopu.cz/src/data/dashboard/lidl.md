@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1vLoKIxkricZKnZRwLL6kcnM9cUYQTIVqPk
 rating: 3
 ---
 
-Lidl.cz ke dni platnosti EU směrnice upravil svou slevovou politiku a nyní vyčísluje slevy s souladu se směrnicí. Případné neshody vznikají kvůli příliš dlouhé platnosti slev.
+Lidl.cz slevy vyčísluje správně. Případné neshody jsou způsobené nekompletností dat.
