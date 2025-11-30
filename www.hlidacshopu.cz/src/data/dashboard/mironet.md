@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1Cd-OZ2ywGYAt9hmqmIbeZEIn3T87SAwuUc
 rating: 3
 ---
 
-Mironet.cz s platností směrnice vypnul slevy, což je za nás v pořádku a rádi e-shop zkontrolujeme při vyhlášení nějaké další slevové akce.
+2025/11: Mironet.cz počítá slevy v souladu s pravidly. Neshody jsou způsobené kurzovní oscilací některých cen, rozdílným přístupem k souvislému zlevňování, případně chybějícími daty na straně Hlídače.
