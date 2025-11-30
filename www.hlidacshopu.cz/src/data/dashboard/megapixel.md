@@ -4,8 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1oGytWLUXldr1Jt-HeSaSK5DGQl0Wprty8S
 rating: 3
 ---
 
-Megapixel.cz počítá slevy zcela v souladu s novou EU směrnici.
-
-Slovy e-shopu:
-
-> 05/2022: "Algoritmus pro výpočet slevy chceme mít ve stejné logice jako máte v Hlídači shopů."
+2025/11: Megapixel.cz počítá slevy zcela v souladu se směrnicí.
