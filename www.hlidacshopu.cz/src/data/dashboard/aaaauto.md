@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/12Ool0WTPw5nTcEutGrSVynKLX2PjRV8eR9
 rating: 2
 ---
 
-AAAAuto.cz upravili svou slevovou politiku kvůli nové EU směrnicí. Aktuálně většina neshod vzniká rozdíly v metodice postupného zlevňování (shop uplatňuje postupné zlevňování po dobu delší jak 90 dní). V některých případech jsme zaznamenali krátkodobé nasazení ceny při uvedení do prodeje, následuje snížení ceny a uvádění slevy po nepoměrně dlouhou dobu.
+2025/11 - Aktuálně většina neshod vzniká zařazením vozu do prodeje rovnou s vyčíslenou slevou a referenční cenou, která nemá pak podklad v předchozí prodejní ceně daného vozu. V některých případech jsme zaznamenali postupné zlevňování, kdy se vyčíslená výše slevy objeví až s odstupem času od reálného poklesu ceny a je referováno k původní prodejní ceně. V takovém případě by správně mělo být referováno k nejnižší ceně za 30 dní před dnem vyčíslení slevy.
