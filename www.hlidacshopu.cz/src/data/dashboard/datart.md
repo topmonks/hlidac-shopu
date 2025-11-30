@@ -4,8 +4,4 @@ link: https://docs.google.com/spreadsheets/d/19d_xSz46xdjPwTqO3LTPUhLtkiiTF73R1u
 rating: 2
 ---
 
-Datart.cz upravil svou slevovou politiku v souladu s EU směrnicí. Neshody ve slevě pramení z příliš dlouhé platnosti slev. Někdy je zboží inzerováno se stejnou slevou 6 či dokonce 9 měsíců, což je dle nás nepřiměřené.
-
-Slovy e-shopu:
-
-> 05/2022 Z popisu slevy: "Nejnižší cena v době 30 dnů před poskytnutím slevy nebo nejnižší cena od okamžiku začátku prodeje do poskytnutí slevy, je-li výrobek v prodeji méně než 30 dnů."
+2025/11: Datart.cz běžné slevy vyčísluje správně. Nyní ale musíme vytknout, že v případě cen s kódem nezohledňuje takovou prodejní cenu při budoucích slevových akcích, které pak z tohoto důvodu uvádějí nesprávnou výši slev. Ceny s kódem tak nepoužívají v souladu se stávajícími pravidly.
