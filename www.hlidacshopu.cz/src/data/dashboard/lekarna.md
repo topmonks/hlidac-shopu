@@ -4,8 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1v_tSB8DHqlkHT6xo5hBVRfa2-KYcxCOJqv
 rating: 2
 ---
 
-Lekarna.cz neupravila svou slevovou politiku dle EU směrnice, stále referuje k maloobchodním cenám. Neshody způsobují opakované slevy referované k MOC a také dlouhá platnost slev.
-
-Slovy e-shopu:
-
-> 05/2022: "Implementace nové směrnice EU o ochraně spotřebitele nabrala v ČR zpoždění, takže čekáme, až jí dají poslanci PČR zelenou. Tento "čas navíc" využíváme na dolaďování cenotvorby a stále respektujeme v naší nabídce ceny doporučené výrobcem při listingu produktů."
+2025/11: Lekarna.cz běžné slevy vyčísluje správně. Nyní ale musíme vytknout, že v případě cen s kódem nezohledňuje takovou prodejní cenu při budoucích slevových akcích, které pak z tohoto důvodu uvádějí nesprávnou výši slev. Ceny s kódem tak nepoužívají v souladu se stávajícími pravidly.
