@@ -1,3 +1,4 @@
+import { utc, UTCDate } from "@date-fns/utc";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { endOfToday } from "date-fns/endOfToday";
 import { isAfter } from "date-fns/isAfter";
@@ -104,9 +105,9 @@ const saleActionInterval = 90;
  */
 const isInLastDays = days => date =>
   isWithinInterval(date, {
-    start: subDays(new Date(), days),
-    end: new Date()
-  });
+    start: subDays(new UTCDate(), days),
+    end: new UTCDate()
+  }, { in: utc });
 
 /**
  *
@@ -201,20 +202,21 @@ export function getClaimedDiscount(data) {
 export function prepareData(priceHistory) {
   const rows = Array.isArray(priceHistory) ? priceHistory : priceHistory.entries;
 
-  // TODO: remove parsing after transition to S3 based API
   const data = rows.map(({ o, c, d }) => ({
     currentPrice: c,
     originalPrice: o,
-    date: new Date(d)
+    date: new UTCDate(d)
   }));
 
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
   const days = eachDayOfInterval({
     start: head(data)?.date,
     end: endOfToday()
-  });
+  }, { in: utc });
+
 
   let prevDay = head(data);
+
   /**
    * @param {Date} date
    * @returns {DataRow}
