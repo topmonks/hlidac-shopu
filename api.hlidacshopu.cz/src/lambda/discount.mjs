@@ -40,7 +40,10 @@ function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
   const startDate = subDays(lastDiscountDate, 30);
   // find lowest price in 30 days interval before sale action
   const minPrice = series
-    .filter(([date, price]) => Boolean(price) && isWithinInterval(date, { start: startDate, end: lastDiscountDate }))
+    .filter(([date, price]) => Boolean(price) && isWithinInterval(date, {
+      start: startDate,
+      end: lastDiscountDate
+    }, { in: utc }))
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
   const [, currentPrice] = last(series);
@@ -105,7 +108,7 @@ const saleActionInterval = 90;
  */
 const isInLastDays = days => date =>
   isWithinInterval(date, {
-    start: subDays(new UTCDate(), days),
+    start: subDays(new UTCDate(), days, { in: utc }),
     end: new UTCDate()
   }, { in: utc });
 

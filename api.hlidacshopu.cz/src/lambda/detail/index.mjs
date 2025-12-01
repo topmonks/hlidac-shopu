@@ -1,11 +1,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
+import { UTCDate } from "@date-fns/utc";
 import { parseItemDetails, shopHost } from "@hlidac-shopu/lib/shops.mjs";
 import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalDataFromS3,
-  getMetadataFromS3,
+  getMetadataFromS3,on
   getParsedData,
   incHitCounter,
   putParsedData
@@ -120,7 +121,7 @@ export async function handler(event) {
     const rows = prepareData(priceHistory);
     const { currentPrice, originalPrice, imageUrl } = Object.assign({}, extraData, scrapedData(params));
     if (currentPrice) {
-      rows.push({ currentPrice, originalPrice, date: new Date() });
+      rows.push({ currentPrice, originalPrice, date: new UTCDate() });
     }
     console.timeEnd("data preparation");
 
