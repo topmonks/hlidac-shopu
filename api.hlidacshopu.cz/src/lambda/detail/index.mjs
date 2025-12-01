@@ -96,9 +96,7 @@ export async function handler(event) {
       getParsedData(db, shop)
     ]);
     console.timeEnd(`data fetching ${now}`);
-
-    console.log(priceHistory);
-
+    
     if (!meta) {
       return withCORS(["GET", "OPTIONS"])(
         notFound({
