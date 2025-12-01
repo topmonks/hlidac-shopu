@@ -23,8 +23,7 @@ export function createDatabase() {
       { name: "pkey", type: "S" },
       { name: "date", type: "S" }
     ],
-    writeCapacity: 1,
-    readCapacity: 1
+    billingMode: "PAY_PER_REQUEST",
   });
 
   const apiHitCounterDataTable = new aws.dynamodb.Table("api_hit_counter", {
@@ -36,16 +35,14 @@ export function createDatabase() {
       { name: "date", type: "S" }
       //{ name: "views", type: "N" }
     ],
-    writeCapacity: 1,
-    readCapacity: 1
+    billingMode: "PAY_PER_REQUEST",
   });
 
   const blackFridayDataTable = new aws.dynamodb.Table("black_friday_data", {
     name: "black_friday_data",
     hashKey: "year",
     attributes: [{ name: "year", type: "S" }],
-    writeCapacity: 1,
-    readCapacity: 1
+    billingMode: "PAY_PER_REQUEST",
   });
 
   const dailyShopItemsCountTable = new aws.dynamodb.Table("daily_shop_items_count", {
