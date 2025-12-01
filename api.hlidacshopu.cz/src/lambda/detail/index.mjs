@@ -97,6 +97,8 @@ export async function handler(event) {
     ]);
     console.timeEnd(`data fetching ${now}`);
 
+    console.log(priceHistory);
+
     if (!meta) {
       return withCORS(["GET", "OPTIONS"])(
         notFound({
