@@ -6,7 +6,7 @@ import { getClaimedDiscount, prepareData, realDiscount } from "../discount.mjs";
 import { notFound, response, withCORS } from "../http.mjs";
 import {
   getHistoricalDataFromS3,
-  getMetadataFromS3,on
+  getMetadataFromS3,
   getParsedData,
   incHitCounter,
   putParsedData
@@ -24,16 +24,17 @@ function createDataset(data) {
   const originalPrice = new Array(data.length);
   const currentPrice = new Array(data.length);
 
-  data.forEach((item, i) => {
+  for (let i = 0; i < data.length; i++){
+    const item = data[i];
     originalPrice[i] = {
       x: item.date,
-      y: item?.originalPrice
+      y: item.originalPrice
     };
     currentPrice[i] = {
       x: item.date,
-      y: item?.currentPrice
+      y: item.currentPrice
     };
-  });
+  }
 
   return { originalPrice, currentPrice };
 }
