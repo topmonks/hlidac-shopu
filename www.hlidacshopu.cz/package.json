@@ -8,15 +8,15 @@
     "@material/top-app-bar": "14.0.0",
     "@thi.ng/atom": "5.3.50",
     "lit-html": "3.3.1",
-    "workbox-precaching": "^7.3.0",
-    "workbox-recipes": "^7.3.0",
+    "workbox-precaching": "7.4.0",
+    "workbox-recipes": "7.4.0",
     "workbox-window": "7.4.0"
   },
   "devDependencies": {
-    "@hckr_/blendid": "9.6.5",
+    "@hckr_/blendid": "9.6.6",
     "dotenv-cli": "11.0.0",
     "postcss-css-variables": "0.19.0",
-    "undertaker-registry": "^2.0.0",
-    "workbox-build": "^7.3.0"
+    "undertaker-registry": "2.0.0",
+    "workbox-build": "7.4.0"
   }
 }
