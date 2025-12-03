@@ -2,6 +2,30 @@
 <div class="mdc-layout-grid__cell">
   <div class="hs-card">
     <a
+      href="https://blog.apify.com/black-friday-2024-najezd-trzist-ze-zahranici/">
+      {% set analyza2024 = collections.images["analyza-2024.png"]["public_id"] %}
+      <img
+        alt=""
+        width="340"
+        height="170"
+        class="responsive"
+        src="{{ analyza2024 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+        srcset="{{ analyza2024 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                {{ analyza2024 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                {{ analyza2024 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+        loading="lazy"
+        role="presentation">
+      <h3>BLACK FRIDAY ANALÝZA 2024</h3>
+      <p>Podle letošních výsledků tradiční analýzy Black Friday se již
+        většina největších českých e-shopů sladila s novými pravidly
+        zobrazování slev. Při pohledu na nově příchozí zahraniční tržiště je
+        situace bohužel žalostná.</p>
+    </a>
+  </div>
+</div>
+<div class="mdc-layout-grid__cell">
+  <div class="hs-card">
+    <a
       href="https://blog.apify.com/black-friday-2023-poprve-s-novymi-pravidly/">
       {% set analyza2023 = collections.images["analyza-2023.png"]["public_id"] %}
       <img
