@@ -4967,7 +4967,7 @@ __metadata:
   dependencies:
     "@pulumi/aws": "npm:7.12.0"
     "@pulumi/awsx": "npm:3.1.0"
-    "@pulumi/pulumi": "npm:3.209.0"
+    "@pulumi/pulumi": "npm:3.210.0"
     "@topmonks/pulumi-aws": "npm:3.1.4"
     esbuild: "npm:0.27.1"
   languageName: unknown
@@ -7034,9 +7034,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.209.0":
-  version: 3.209.0
-  resolution: "@pulumi/pulumi@npm:3.209.0"
+"@pulumi/pulumi@npm:3.210.0":
+  version: 3.210.0
+  resolution: "@pulumi/pulumi@npm:3.210.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -7059,8 +7059,8 @@ __metadata:
     js-yaml: "npm:^3.14.2"
     minimist: "npm:^1.2.6"
     normalize-package-data: "npm:^6.0.0"
+    package-directory: "npm:^8.1.0"
     picomatch: "npm:^3.0.1"
-    pkg-dir: "npm:^7.0.0"
     require-from-string: "npm:^2.0.1"
     semver: "npm:^7.5.2"
     source-map-support: "npm:^0.5.6"
@@ -7074,7 +7074,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/9f9958feecd488143c9cd2797f191a9e93af86d079df9de8e94002b6eb22953e435a84107c7bc7b257ad4b8dae2f0a293c518e5f4ea367197a2ce27a5fabf867
+  checksum: 10c0/386a833128d581d91d507d9be3a9525605450166618ad03ef83988cc06c2e730f712feb67d22949716d110f10c8fd4b88ae1fc020522b1f062d0ad483d598fe3
   languageName: node
   linkType: hard
 
@@ -19289,6 +19289,15 @@ __metadata:
     find-up-simple: "npm:^1.0.0"
     load-json-file: "npm:^7.0.1"
   checksum: 10c0/f6c48930700b73a41d839bf2898b628d23665827488a4f34aed2d05e4a99d7a70a70ada115c3546765947fbc8accff94c0779da21ea084b25df47cb774531eeb
+  languageName: node
+  linkType: hard
+
+"package-directory@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "package-directory@npm:8.1.0"
+  dependencies:
+    find-up-simple: "npm:^1.0.0"
+  checksum: 10c0/29eee99ac9979dc852bbaab64968123ba44abaa8f2d49add065101612db81f3d4ac1eb27df3b1893878cd67dd8b5c36186876a139ec4fdd6a755abc810ce2749
   languageName: node
   linkType: hard
 
