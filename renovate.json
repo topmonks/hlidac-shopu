@@ -7,7 +7,10 @@
     "group:aws-sdk-js-v3Monorepo",
     "group:postcss",
     "group:linters",
-    ":dependencyDashboard"
+    ":configMigration",
+    ":pinDevDependencies",
+    "abandonments:recommended",
+    "security:minimumReleaseAgeNpm"
   ],
   "automerge": true,
   "automergeType": "pr",
