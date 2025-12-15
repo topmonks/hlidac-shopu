@@ -4816,7 +4816,7 @@ __metadata:
     "@types/node": "npm:24.10.3"
     apify: "npm:3.5.2"
     apify-cli: "npm:1.1.1"
-    puppeteer: "npm:24.32.1"
+    puppeteer: "npm:24.33.0"
   languageName: unknown
   linkType: soft
 
@@ -15506,7 +15506,7 @@ __metadata:
     npm-run-all2: "npm:8.0.4"
     postcss: "npm:8.5.6"
     postcss-css-variables: "npm:0.19.0"
-    puppeteer: "npm:24.32.1"
+    puppeteer: "npm:24.33.0"
     ramda: "npm:0.32.0"
     rollbar: "npm:2.26.5"
     source-map-explorer: "npm:2.5.3"
@@ -20555,9 +20555,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:24.32.1":
-  version: 24.32.1
-  resolution: "puppeteer-core@npm:24.32.1"
+"puppeteer-core@npm:24.33.0":
+  version: 24.33.0
+  resolution: "puppeteer-core@npm:24.33.0"
   dependencies:
     "@puppeteer/browsers": "npm:2.11.0"
     chromium-bidi: "npm:11.0.0"
@@ -20566,7 +20566,7 @@ __metadata:
     typed-query-selector: "npm:^2.12.0"
     webdriver-bidi-protocol: "npm:0.3.9"
     ws: "npm:^8.18.3"
-  checksum: 10c0/814df095cecfc331a79b5984fc071fbe429e32175bb27949984b49f92212e9a0f26e80f12441d535c7a9dc335d0b90cd2ea7eb686271e26dbfca00166dd8255c
+  checksum: 10c0/9aac80cfba7b5bb2013fc44e7ab99f41c84c76cc612b25736b52df5f6772d1c1a0f28058bb0d31ea6691e13de25eb3ba8529ad62074b488c39b0709c923356da
   languageName: node
   linkType: hard
 
@@ -20584,19 +20584,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:24.32.1":
-  version: 24.32.1
-  resolution: "puppeteer@npm:24.32.1"
+"puppeteer@npm:24.33.0":
+  version: 24.33.0
+  resolution: "puppeteer@npm:24.33.0"
   dependencies:
     "@puppeteer/browsers": "npm:2.11.0"
     chromium-bidi: "npm:11.0.0"
     cosmiconfig: "npm:^9.0.0"
     devtools-protocol: "npm:0.0.1534754"
-    puppeteer-core: "npm:24.32.1"
+    puppeteer-core: "npm:24.33.0"
     typed-query-selector: "npm:^2.12.0"
   bin:
     puppeteer: lib/cjs/puppeteer/node/cli.js
-  checksum: 10c0/13ea933513312908b2f36938fffd26e10d7be1299b4691f48c5db7ed1bf46dea7ff5bca005cd79e5746e34040b9b1ea382a5c9541a1d6663bf7079354bf81126
+  checksum: 10c0/06d30aa0970df9e1c0a9282bc5dec61ce76a2a777f57bb03ddcb331fa72c5701730007cb918924a02198520fc7581ca168645e7e5a7ae138b59eed0ad72315b7
   languageName: node
   linkType: hard
 
