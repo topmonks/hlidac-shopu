@@ -4674,7 +4674,7 @@ __metadata:
     "@types/node": "npm:24.10.4"
     apify: "npm:3.5.2"
     apify-cli: "npm:1.1.1"
-    got-scraping: "npm:4.1.2"
+    got-scraping: "npm:4.1.3"
   languageName: unknown
   linkType: soft
 
@@ -4913,7 +4913,7 @@ __metadata:
     "@types/node": "npm:24.10.4"
     apify: "npm:3.5.2"
     apify-cli: "npm:1.1.1"
-    got-scraping: "npm:4.1.2"
+    got-scraping: "npm:4.1.3"
     graphql: "npm:16.12.0"
     graphql-tag: "npm:2.12.6"
   languageName: unknown
@@ -14966,7 +14966,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got-scraping@npm:4.1.2, got-scraping@npm:^4.0.0, got-scraping@npm:^4.0.3":
+"got-scraping@npm:4.1.3":
+  version: 4.1.3
+  resolution: "got-scraping@npm:4.1.3"
+  dependencies:
+    got: "npm:^14.2.1"
+    header-generator: "npm:^2.1.41"
+    http2-wrapper: "npm:^2.2.0"
+    mimic-response: "npm:^4.0.0"
+    ow: "npm:^1.1.1"
+    quick-lru: "npm:^7.0.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/bad55048f569d84f2dc83ac3ff3c7cf9ce591f2e200f99b88c67a948eaef78c8b4c702c725f241fd596c1dc7cb7bbae6386f96db9901421cb7a7fbd71e05599d
+  languageName: node
+  linkType: hard
+
+"got-scraping@npm:^4.0.0, got-scraping@npm:^4.0.3":
   version: 4.1.2
   resolution: "got-scraping@npm:4.1.2"
   dependencies:
