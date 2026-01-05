@@ -4723,7 +4723,7 @@ __metadata:
   resolution: "@hlidac-shopu/extension@workspace:extension"
   dependencies:
     "@hlidac-shopu/lib": "workspace:*"
-    lit-html: "npm:3.3.1"
+    lit-html: "npm:3.3.2"
   languageName: unknown
   linkType: soft
 
@@ -5101,7 +5101,7 @@ __metadata:
     "@material/top-app-bar": "npm:14.0.0"
     "@thi.ng/atom": "npm:5.3.51"
     dotenv-cli: "npm:11.0.0"
-    lit-html: "npm:3.3.1"
+    lit-html: "npm:3.3.2"
     postcss-css-variables: "npm:0.19.0"
     undertaker-registry: "npm:2.0.0"
     workbox-build: "npm:7.4.0"
@@ -17288,7 +17288,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.3.1, lit-html@npm:^2.0.0 || ^3.0.0, lit-html@npm:^3.3.0":
+"lit-html@npm:3.3.2":
+  version: 3.3.2
+  resolution: "lit-html@npm:3.3.2"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.2"
+  checksum: 10c0/0a6763875acd03dfc5d4483ea74ca4bfe5d71a90b05bfc484e8201721c8603db982760fd27566a69a834f21d34437f7c390e21cd4c6bff149ca7e3a46d3b217a
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^2.0.0 || ^3.0.0, lit-html@npm:^3.3.0":
   version: 3.3.1
   resolution: "lit-html@npm:3.3.1"
   dependencies:
