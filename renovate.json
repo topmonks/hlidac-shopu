@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended",
     "schedule:weekdays",
-    "npm:unpublishSafe",
+    "security:minimumReleaseAgeNpm",
     "group:aws-sdk-js-v3Monorepo",
     "group:postcss",
     "group:linters",
@@ -18,15 +18,21 @@
   "packageRules": [
     {
       "groupName": "pulumi",
-      "matchPackageNames": ["@pulumi/{/,}**"]
+      "matchPackageNames": [
+        "@pulumi/{/,}**"
+      ]
     },
     {
       "groupName": "crawlee",
-      "matchPackageNames": ["@crawlee/{/,}**"]
+      "matchPackageNames": [
+        "@crawlee/{/,}**"
+      ]
     },
     {
       "groupName": "thi.ng",
-      "matchPackageNames": ["@thi.ng/{/,}**"]
+      "matchPackageNames": [
+        "@thi.ng/{/,}**"
+      ]
     }
   ]
 }
