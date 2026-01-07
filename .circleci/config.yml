@@ -16,10 +16,9 @@ commands:
     steps:
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v3
-          override-ci-command: yarn install --immutable
+      - run:
+          name: Install dependencies
+          command: yarn install --immutable
   read_deployment_envs:
     parameters:
       pulumi_backend_uri:
@@ -113,10 +112,9 @@ jobs:
       - checkout
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-api
-          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/api-lambdas
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/api-lambdas
       - run:
           name: Lint API
           command: yarn lint:api
@@ -137,10 +135,9 @@ jobs:
       - browser-tools/install_chrome
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-lib
-          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib
       - run:
           name: Run tests
           command: yarn test:lib
@@ -164,10 +161,9 @@ jobs:
       - checkout
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-web
-          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/web
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/web
       - run:
           name: Lint website
           command: yarn lint:website
@@ -200,10 +196,9 @@ jobs:
       - checkout
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-ext
-          override-ci-command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/extension
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus hlidac-shopu @hlidac-shopu/lib @hlidac-shopu/extension
       - run:
           name: Build extension bundle
           command: yarn build:extension
@@ -264,10 +259,9 @@ jobs:
           at: .
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-tools
-          override-ci-command: yarn workspaces focus hlidac-shopu
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus hlidac-shopu
       - run:
           name: Publish extension
           command: yarn publish:<< parameters.browser >>
@@ -302,10 +296,9 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-infra
-          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
       - run:
           working_directory: infrastructure
           command: pulumi stack select hlidac-shopu-prod
@@ -328,10 +321,9 @@ jobs:
           cloud-url: s3://pulumi.hlidacshopu.cz
       - node/install
       - node/install-yarn
-      - node/install-packages:
-          pkg-manager: yarn-berry
-          cache-version: v2-infra
-          override-ci-command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
+      - run:
+          name: Install dependencies
+          command: yarn workspaces focus @hlidac-shopu/infrastructure @hlidac-shopu/api-lambdas
       - run:
           working_directory: infrastructure
           command: pulumi stack select hlidac-shopu-prod
