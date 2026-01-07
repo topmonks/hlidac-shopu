@@ -90,7 +90,7 @@ jobs:
   test-actors:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - install_packages
@@ -108,7 +108,7 @@ jobs:
   test-api:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - node/install
@@ -131,6 +131,7 @@ jobs:
   test-lib:
     docker:
       - image: cimg/node:current-browsers
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - browser-tools/install_chrome
@@ -158,7 +159,7 @@ jobs:
   build-website:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - node/install
@@ -194,7 +195,7 @@ jobs:
   build-web-extension:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - node/install
@@ -234,9 +235,9 @@ jobs:
     # - Push new actor with current extension
     # - Download sample set of URLs from shops
     # - Run script that will start actor with given URLs and collect screenshots
-    machine:
-      image: ubuntu-2204:2022.10.2
-    # resource_class: arm.medium
+    docker:
+      - image: cimg/node:current
+    resource_class: topmonks/hetzner
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -256,7 +257,7 @@ jobs:
         type: string
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - attach_workspace:
@@ -281,8 +282,9 @@ jobs:
           channel: ntf-hlidac-shopu
 
   publish-apple-apps:
-    machine:
-      image: ubuntu-2204:2022.10.2
+    docker:
+      - image: cimg/base:current
+    resource_class: topmonks/hetzner
     steps:
       - run:
           name: Refer to xcode cloud
@@ -291,7 +293,7 @@ jobs:
   provision:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
     steps:
@@ -319,7 +321,7 @@ jobs:
   preview-provision:
     docker:
       - image: cimg/node:current
-    resource_class: arm.medium
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - pulumi/login:
@@ -348,7 +350,9 @@ jobs:
       after_s3_sync:
         type: steps
         default: []
-    executor: aws-cli/default
+    docker:
+      - image: cimg/base:current
+    resource_class: topmonks/hetzner
     environment:
       ROLLBAR_ACCESS_TOKEN: "224cde202c354c2cabe73cf7ae008471"
     steps:
@@ -367,6 +371,7 @@ jobs:
   merge_pr:
     docker:
       - image: cimg/base:current
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - github/install
@@ -380,6 +385,7 @@ jobs:
   github_release:
     docker:
       - image: cimg/base:current
+    resource_class: topmonks/hetzner
     steps:
       - checkout
       - attach_workspace:
