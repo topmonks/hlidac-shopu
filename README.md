@@ -79,7 +79,7 @@ To build Chrome extension run `yarn build:chrome`. It will create package in `./
 
 1. Run `yarn build:extension` to get latest bundle script, domains (eshops) permissions and current version for Safari
 2. Distribute app by XCode: `yarn start:safari` > Product > Archive > Distribute App\*
-3. Manually send new app version to Review on [Itunes Connect](https://itunesconnect.apple.com/) - you will need to be logged in as TopMonks developer (credentials in 1Password)
+3. Manually send new app version to Review on [App Store Connect](https://appstoreconnect.apple.com/) - you will need to be logged in as TopMonks developer (credentials in 1Password)
 
 \* Use autosigning feature and use the TopMonks s.r.o Apple developer team account. 
 If this fails with missing private key, download one named "itunes Mac App Distribution mac_app.cer"
