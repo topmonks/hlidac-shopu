@@ -44,8 +44,8 @@
 		82CC146027FDC29F001A030F /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145C27FDC29F001A030F /* content.js */; };
 		82CC146127FDC29F001A030F /* popup in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145D27FDC29F001A030F /* popup */; };
 		82CC146227FDC29F001A030F /* popup in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145D27FDC29F001A030F /* popup */; };
-		82CC146327FDC29F001A030F /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145E27FDC29F001A030F /* background.js */; };
-		82CC146427FDC29F001A030F /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145E27FDC29F001A030F /* background.js */; };
+		82CC146327FDC29F001A030F /* sw.js in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145E27FDC29F001A030F /* sw.js */; };
+		82CC146427FDC29F001A030F /* sw.js in Resources */ = {isa = PBXBuildFile; fileRef = 82CC145E27FDC29F001A030F /* sw.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,7 +132,7 @@
 		82CC145927FDC21B001A030F /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = ../../../extension/icons; sourceTree = "<group>"; };
 		82CC145C27FDC29F001A030F /* content.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = content.js; path = ../../../extension/content.js; sourceTree = "<group>"; };
 		82CC145D27FDC29F001A030F /* popup */ = {isa = PBXFileReference; lastKnownFileType = folder; name = popup; path = ../../../extension/popup; sourceTree = "<group>"; };
-		82CC145E27FDC29F001A030F /* background.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = background.js; path = ../../../extension/background.js; sourceTree = "<group>"; };
+		82CC145E27FDC29F001A030F /* sw.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = sw.js; path = ../../../extension/sw.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,7 +233,7 @@
 		82CC13EC27FDB81B001A030F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				82CC145E27FDC29F001A030F /* background.js */,
+				82CC145E27FDC29F001A030F /* sw.js */,
 				82CC145C27FDC29F001A030F /* content.js */,
 				82CC145D27FDC29F001A030F /* popup */,
 				82CC145627FDBAE2001A030F /* manifest.json */,
@@ -481,7 +481,7 @@
 				82CC145A27FDC21B001A030F /* icons in Resources */,
 				82CC146127FDC29F001A030F /* popup in Resources */,
 				82CC145727FDBAE2001A030F /* manifest.json in Resources */,
-				82CC146327FDC29F001A030F /* background.js in Resources */,
+				82CC146327FDC29F001A030F /* sw.js in Resources */,
 				82CC143627FDB81B001A030F /* _locales in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,7 +494,7 @@
 				82CC145B27FDC21B001A030F /* icons in Resources */,
 				82CC146227FDC29F001A030F /* popup in Resources */,
 				82CC145827FDBAE2001A030F /* manifest.json in Resources */,
-				82CC146427FDC29F001A030F /* background.js in Resources */,
+				82CC146427FDC29F001A030F /* sw.js in Resources */,
 				82CC143727FDB81B001A030F /* _locales in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -615,7 +615,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (ShareExtension)/Info.plist";
@@ -644,7 +644,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (ShareExtension)/Info.plist";
@@ -783,7 +783,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
@@ -816,7 +816,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
@@ -853,7 +853,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
@@ -893,7 +893,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
@@ -932,7 +932,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/hlidac shopu.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -966,7 +966,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/hlidac shopu.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1003,7 +1003,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/hlidac shopu.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1043,7 +1043,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/hlidac shopu.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 92;
 				DEVELOPMENT_TEAM = 8P5697C5H7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
