@@ -124,12 +124,34 @@ function defRouter(processedIds, stats) {
       const originalPrice = parseFloatText(
         cleanPriceText(document.querySelector(`.product-price-container .product-card-price__old`)?.textContent ?? "")
       );
-      const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0;
-      const priceWithCode = parseFloatText(
+
+      const giftElement = document.querySelector(`.giftEvents__item`);
+      const giftPriceElement = document.querySelector(`.giftEvents__price__price`);
+
+      const hasCouponPrice = !!giftPriceElement
+        && !!giftPriceElement
+        && !/pro\s+členy\s+Pilulka/i.test(giftElement.textContent);
+
+      if (!!giftPriceElement && !hasCouponPrice) {
+        log.warning("Product has discount price only for club members", { url: itemUrl });
+      }
+
+      let priceWithCode;
+
+      if (hasCouponPrice) {
+        priceWithCode = parseFloatText(
+          cleanPriceText(giftPriceElement?.textContent ?? "")
+        );
+        log.info("Product has discount", { url: itemUrl });
+      }
+
+      priceWithCode ??= parseFloatText(
         cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
       );
 
       const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
+
+      const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0 || hasCouponPrice;
 
       await saveUniqProducts({
         products: [
@@ -151,6 +173,7 @@ function defRouter(processedIds, stats) {
         stats,
         processedIds
       });
+      log.info("Successfully scraped product detail", { url: itemUrl });
     },
     /** @param {HttpCrawlingContext} context */
     async category({ body, enqueueLinks, log, response }) {
