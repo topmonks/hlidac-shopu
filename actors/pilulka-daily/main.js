@@ -113,7 +113,6 @@ function defRouter(processedIds, stats) {
       let currentPrice;
       let originalPrice;
       let isDiscounted = false;
-      let isDiscounted = false;
 
       if (productPrice == null || Number.isNaN(productPrice) || productPrice < 0) {
         stats.inc("itemNoPrice");
