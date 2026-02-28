@@ -108,9 +108,14 @@ function defRouter(processedIds, stats) {
       );
       const product = data.find(x => x["@type"] === "Product");
       const title = product?.name;
-      const currentPrice = product?.offers?.price;
 
-      if (currentPrice == null || Number.isNaN(currentPrice) || currentPrice < 0) {
+      const productPrice  = product?.offers?.price
+      let currentPrice;
+      let originalPrice;
+      let isDiscounted = false;
+      let isDiscounted = false;
+
+      if (productPrice == null || Number.isNaN(productPrice) || productPrice < 0) {
         stats.inc("itemNoPrice");
         log.warning("Item has no price. Skipping...", { url: itemUrl });
         return;
@@ -121,7 +126,7 @@ function defRouter(processedIds, stats) {
       const shortDesc = product?.description;
 
       const { id: itemId } = document.querySelector("[componentname='catalog.product']");
-      const originalPrice = parseFloatText(
+      const oldPrice = parseFloatText(
         cleanPriceText(document.querySelector(`.product-price-container .product-card-price__old`)?.textContent ?? "")
       );
 
@@ -132,26 +137,33 @@ function defRouter(processedIds, stats) {
         && !!giftPriceElement
         && !/pro\s+členy\s+Pilulka/i.test(giftElement.textContent);
 
+      const hasDiscount = !Number.isNaN(oldPrice) && oldPrice > 0;
+
       if (!!giftPriceElement && !hasCouponPrice) {
         log.warning("Product has discount price only for club members", { url: itemUrl });
       }
 
-      let priceWithCode;
-
-      if (hasCouponPrice) {
-        priceWithCode = parseFloatText(
-          cleanPriceText(giftPriceElement?.textContent ?? "")
-        );
-        log.info("Product has discount", { url: itemUrl });
-      }
-
-      priceWithCode ??= parseFloatText(
+      const priceWithCode = parseFloatText(
         cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
       );
 
-      const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
+      if (hasCouponPrice) {
+        currentPrice = parseFloatText(
+          cleanPriceText(giftPriceElement?.textContent ?? "")
+        );
+        originalPrice = oldPrice ?? productPrice;
+        isDiscounted = true;
+        log.info("Product has discount", { url: itemUrl });
+      } else if (hasDiscount) {
+        currentPrice = priceWithCode ?? productPrice;
+        originalPrice = oldPrice ?? null;
+        isDiscounted = true;
+      } else {
+        currentPrice = productPrice
+        originalPrice = null;
+      }
 
-      const isDiscounted = !Number.isNaN(originalPrice) && originalPrice > 0 || hasCouponPrice;
+      const breadcrumbs = product?.category?.split(" / ").join(" > "); // "Foo / Bar / Baz" -> "Foo > Bar > Baz"
 
       await saveUniqProducts({
         products: [
@@ -165,8 +177,8 @@ function defRouter(processedIds, stats) {
             shortDesc,
             inStock,
             category: breadcrumbs,
-            originalPrice: isDiscounted ? originalPrice : null,
-            currentPrice: priceWithCode ?? currentPrice,
+            originalPrice,
+            currentPrice,
             discounted: isDiscounted
           }
         ],
