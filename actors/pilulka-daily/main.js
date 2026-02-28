@@ -142,10 +142,6 @@ function defRouter(processedIds, stats) {
         log.warning("Product has discount price only for club members", { url: itemUrl });
       }
 
-      const priceWithCode = parseFloatText(
-        cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
-      );
-
       if (hasCouponPrice) {
         currentPrice = parseFloatText(
           cleanPriceText(giftPriceElement?.textContent ?? "")
@@ -154,6 +150,10 @@ function defRouter(processedIds, stats) {
         isDiscounted = true;
         log.info("Product has discount", { url: itemUrl });
       } else if (hasDiscount) {
+        const priceWithCode = parseFloatText(
+          cleanPriceText(document.querySelector(`.price-with-code__price`)?.textContent ?? "")
+        );
+
         currentPrice = priceWithCode ?? productPrice;
         originalPrice = oldPrice ?? null;
         isDiscounted = true;
