@@ -358,8 +358,7 @@ export function createSQSIngest(options = {}) {
   new aws.cloudwatch.LogGroup(hsName("sqs-ingest-uploader-logs", options), {
     name: pulumi.interpolate`/aws/lambda/${uploaderLambda.name}`,
     retentionInDays: 30
-    // TODO: remove `import` after first successful deploy
-  }, { import: "/aws/lambda/hlidac-shopu-sqs-ingest-uploader-lambda-9af8052" });
+  });
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
   const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
@@ -394,8 +393,7 @@ export function createSQSIngest(options = {}) {
   new aws.cloudwatch.LogGroup(hsName("sqs-ingest-extractor-logs", options), {
     name: pulumi.interpolate`/aws/lambda/${extractorLambda.name}`,
     retentionInDays: 30
-    // TODO: remove `import` after first successful deploy
-  }, { import: "/aws/lambda/hlidac-shopu-sqs-ingest-extractor-lambda-72cc4b8" });
+  });
   ingestBucket.onObjectCreated("ingest", extractorLambda);
 
   return ingestQueue;
