@@ -25,12 +25,10 @@ function enqueueMessage(buffer, items) {
     rollbar.error(`SQS message is probably too big ${byteLength} bytes (shop URL example: ${items.at(-1).path})`);
   }
   buffer.push(
-    sqs
-      .sendMessage({
-        MessageBody: messageBody,
-        QueueUrl: process.env.SQS_URL
-      })
-      .catch(err => console.error(err))
+    sqs.sendMessage({
+      MessageBody: messageBody,
+      QueueUrl: process.env.SQS_URL
+    })
   );
 }
 
@@ -66,7 +64,7 @@ async function handleEvents(event, _context) {
         }
         if (buffer.length >= 100) {
           console.log("waiting for buffer");
-          await Promise.allSettled(buffer);
+          await Promise.all(buffer);
           buffer = [];
         }
       }
@@ -84,7 +82,7 @@ async function handleEvents(event, _context) {
   }
 
   if (items.length) enqueueMessage(buffer, items);
-  await Promise.allSettled(buffer);
+  await Promise.all(buffer);
 }
 
 export const handler = rollbar.lambdaHandler(handleEvents);

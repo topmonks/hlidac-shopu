@@ -331,9 +331,18 @@ export function createSQSIngest(options = {}) {
   };
 
   const uploaderTimeout = 600;
+  const ingestDLQ = new aws.sqs.Queue("ingest-dlq", {
+    messageRetentionSeconds: 14 * 24 * 60 * 60 // 14 days
+  });
   const ingestQueue = new aws.sqs.Queue("ingest", {
-    messageRetentionSeconds: 60 * 60, // 1 hour
-    visibilityTimeoutSeconds: uploaderTimeout
+    messageRetentionSeconds: 4 * 60 * 60, // 4 hours
+    visibilityTimeoutSeconds: uploaderTimeout,
+    redrivePolicy: ingestDLQ.arn.apply(arn =>
+      JSON.stringify({
+        deadLetterTargetArn: arn,
+        maxReceiveCount: 3
+      })
+    )
   });
   const uploaderLambda = new aws.lambda.Function(hsName(`sqs-ingest-uploader-lambda`, options), {
     ...defaultLambdaOpts,
@@ -345,6 +354,10 @@ export function createSQSIngest(options = {}) {
         ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
       }
     }
+  });
+  new aws.cloudwatch.LogGroup(hsName("sqs-ingest-uploader-logs", options), {
+    name: pulumi.interpolate`/aws/lambda/${uploaderLambda.name}`,
+    retentionInDays: 30
   });
   ingestQueue.onEvent("upload-changed", uploaderLambda);
 
@@ -376,6 +389,10 @@ export function createSQSIngest(options = {}) {
         ROLLBAR_ACCESS_TOKEN: config.require("rollbar_token")
       }
     }
+  });
+  new aws.cloudwatch.LogGroup(hsName("sqs-ingest-extractor-logs", options), {
+    name: pulumi.interpolate`/aws/lambda/${extractorLambda.name}`,
+    retentionInDays: 30
   });
   ingestBucket.onObjectCreated("ingest", extractorLambda);
 

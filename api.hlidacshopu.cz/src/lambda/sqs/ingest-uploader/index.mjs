@@ -8,6 +8,8 @@ const bucket = "data.hlidacshopu.cz";
 
 const s3 = new S3({ region: "eu-central-1", maxAttempts: 3 });
 
+const CONCURRENCY_LIMIT = 10;
+
 async function readStoredHash(key) {
   try {
     const resp = await s3.headObject({
@@ -23,36 +25,48 @@ async function readStoredHash(key) {
   }
 }
 
-function uploadFile(key, body, hash) {
+async function uploadFile(key, body, hash) {
   console.log("Uploading file", key);
-  try {
-    return s3.putObject({
-      Bucket: bucket,
-      Key: key,
-      Body: body,
-      ContentType: "application/json",
-      Metadata: { hash }
-    });
-  } catch (err) {
-    rollbar.error(err);
+  return s3.putObject({
+    Bucket: bucket,
+    Key: key,
+    Body: body,
+    ContentType: "application/json",
+    Metadata: { hash }
+  });
+}
+
+async function processItem({ content, path }) {
+  const storedHash = await readStoredHash(path);
+  const computedHash = createHash("md5").update(content).digest("base64");
+  if (storedHash !== computedHash) {
+    await uploadFile(path, content, computedHash);
+    return true;
   }
+  return false;
 }
 
 async function handleEvents(event, _context) {
-  const uploads = [];
+  const items = [];
   for (const record of event.Records) {
-    const items = JSON.parse(record.body).items;
-    console.log(`Processing ${items.length} records (${items[0].path})`);
-    for (const item of items) {
-      const { content, path } = item;
-      const storedHash = readStoredHash(path);
-      const computedHash = createHash("md5").update(content).digest("base64");
-      if ((await storedHash) !== computedHash) {
-        uploads.push(uploadFile(path, content, computedHash));
-      }
+    const parsed = JSON.parse(record.body).items;
+    console.log(`Processing ${parsed.length} records (${parsed[0].path})`);
+    items.push(...parsed);
+  }
+
+  let uploaded = 0;
+  let skipped = 0;
+
+  // Process items with limited concurrency to avoid S3 throttling
+  for (let i = 0; i < items.length; i += CONCURRENCY_LIMIT) {
+    const batch = items.slice(i, i + CONCURRENCY_LIMIT);
+    const results = await Promise.all(batch.map(item => processItem(item)));
+    for (const result of results) {
+      if (result) uploaded++;
+      else skipped++;
     }
   }
-  await Promise.allSettled(uploads);
+  console.log(`Done: ${uploaded} uploaded, ${skipped} skipped (unchanged), ${items.length} total`);
 }
 
 export const handler = rollbar.lambdaHandler(handleEvents);
