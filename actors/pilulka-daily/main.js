@@ -83,6 +83,20 @@ function initialRequests(country, type, urls) {
   return initialCategoriesUrl(country);
 }
 
+/**
+ * Extracts plain text content from HTML string.
+ * Removes all HTML tags and returns trimmed text content.
+ * HTML entities are automatically decoded by the DOM parser.
+ *
+ * @param {string|null|undefined} textWithHTML - HTML string to extract text from
+ * @returns {string|null} Extracted and trimmed text content, or null if input is falsy or empty
+ */
+function extractTextFromHtml(textWithHTML) {
+  if (!textWithHTML) return null;
+  const { document } = parseHTML(`<div>${textWithHTML}</div>`);
+  return document.querySelector('*')?.textContent?.trim() || null;
+}
+
 function defRouter(processedIds, stats) {
   return createHttpRouter({
     /** @param {HttpCrawlingContext} context */
@@ -122,12 +136,8 @@ function defRouter(processedIds, stats) {
 
       const inStock = product?.offers?.availability === "https://schema.org/InStock";
       const imageUrl = product?.image?.[0];
-      // Getting rid of HTML characters and encoding in text
-      const shortDesc = (() => {
-        const temporaryDescriptionDiv = document.createElement('div');
-        temporaryDescriptionDiv.innerHTML = product?.description;
-        return temporaryDescriptionDiv.innerText;
-      })().trim() || null;
+
+      const shortDesc = extractTextFromHtml(product?.description);
 
       const { id: itemId } = document.querySelector("[componentname='catalog.product']");
       const oldPrice = parseFloatText(
@@ -137,8 +147,7 @@ function defRouter(processedIds, stats) {
       const giftElement = document.querySelector(`.giftEvents__item`);
       const giftPriceElement = document.querySelector(`.giftEvents__price__price`);
 
-      const hasCouponPrice = !!giftPriceElement
-        && !!giftPriceElement
+      const hasCouponPrice = Boolean(giftPriceElement)
         && !/pro\s+členy\s+Pilulka/i.test(giftElement.textContent);
 
       const hasDiscount = !Number.isNaN(oldPrice) && oldPrice > 0;
@@ -189,7 +198,6 @@ function defRouter(processedIds, stats) {
         stats,
         processedIds
       });
-      log.info("Successfully scraped product detail", { url: itemUrl });
     },
     /** @param {HttpCrawlingContext} context */
     async category({ body, enqueueLinks, log, response }) {
