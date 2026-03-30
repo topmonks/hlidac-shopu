@@ -122,7 +122,12 @@ function defRouter(processedIds, stats) {
 
       const inStock = product?.offers?.availability === "https://schema.org/InStock";
       const imageUrl = product?.image?.[0];
-      const shortDesc = product?.description;
+      // Getting rid of HTML characters and encoding in text
+      const shortDesc = (() => {
+        const temporaryDescriptionDiv = document.createElement('div');
+        temporaryDescriptionDiv.innerHTML = product?.description;
+        return temporaryDescriptionDiv.innerText;
+      })().trim() || null;
 
       const { id: itemId } = document.querySelector("[componentname='catalog.product']");
       const oldPrice = parseFloatText(
