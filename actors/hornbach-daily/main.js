@@ -40,7 +40,7 @@ const Selectors = {
  * @param {string} path
  */
 function completeUrl(country, path) {
-  return `https://www.hornbach.${country.toLowerCase()}${path}`;
+  return new URL(path, `https://www.hornbach.${country.toLowerCase()}`).href;
 }
 
 function topCategoriesRequests({ document, country }) {
