@@ -1,4 +1,4 @@
-import { BasicCrawler } from "@crawlee/basic";
+import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -31,26 +31,6 @@ const StartUrls = {
   SK: "https://potravinydomov.itesco.sk/groceries/sk-SK/"
 };
 
-// Chrome header set required to bypass Akamai Bot Manager on nakup.itesco.cz.
-// Keep the key order and values in sync with what a real Chrome on Linux sends
-// for a top-level navigation — Akamai checks the full set, not just the UA.
-const CHROME_HEADERS = Object.freeze({
-  "user-agent":
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
-  accept:
-    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-  "accept-language": "cs-CZ,cs;q=0.9,en;q=0.8",
-  "accept-encoding": "gzip, deflate, br, zstd",
-  "sec-ch-ua": '"Chromium";v="136", "Google Chrome";v="136", "Not:A-Brand";v="99"',
-  "sec-ch-ua-mobile": "?0",
-  "sec-ch-ua-platform": '"Linux"',
-  "sec-fetch-dest": "document",
-  "sec-fetch-mode": "navigate",
-  "sec-fetch-site": "none",
-  "sec-fetch-user": "?1",
-  "upgrade-insecure-requests": "1"
-});
-
 /**
  * Map of non-clubcard sale text parsers. Get the appropriate parser by country.
  * The new MFE state exposes promotion descriptions as e.g. "33%, předtím 29.90 Kč",
@@ -69,25 +49,6 @@ const saleParsers = {
     return { originalPrice: cleanPrice(matched[1]) };
   }
 };
-
-/**
- * Fetch an HTML page with the Chrome header profile required by Akamai.
- * Throws on non-2xx or when the response body is an Akamai sensor challenge,
- * so the Crawlee retry loop kicks in.
- * @param {string} url
- * @returns {Promise<string>}
- */
-async function fetchHtml(url) {
-  const res = await fetch(url, { headers: CHROME_HEADERS, redirect: "follow" });
-  const body = await res.text();
-  if (res.status >= 400) {
-    throw new Error(`HTTP ${res.status} for ${url}`);
-  }
-  if (body.includes("sec-if-cpt-container")) {
-    throw new Error(`Akamai bot challenge for ${url}`);
-  }
-  return body;
-}
 
 /**
  * Parse the MFE state blob embedded in every nakup.itesco.cz page as a
@@ -360,13 +321,31 @@ async function main() {
     log.setLevel(LogLevel.DEBUG);
   }
 
-  const crawler = new BasicCrawler({
+  const crawler = new HttpCrawler({
     maxRequestRetries,
-    maxRequestsPerMinute: 600,
+    // Akamai on nakup.itesco.cz aggressively throttles IPs that sustain more
+    // than ~1 req/s without a real-browser behavioral signal. Keep the per-IP
+    // rate under that ceiling; session pool + cookie persistence gives Akamai
+    // a consistent identity to meter against.
+    maxRequestsPerMinute: 60,
+    maxConcurrency: 2,
     requestHandlerTimeoutSecs: 60,
-    async requestHandler({ request, crawler, log }) {
+    useSessionPool: true,
+    persistCookiesPerSession: true,
+    sessionPoolOptions: {
+      sessionOptions: {
+        maxErrorScore: 1
+      }
+    },
+    async requestHandler({ request, crawler, log, body, session }) {
       log.info(`Processing ${request.url}, ${request.userData.label}`);
-      const html = await fetchHtml(request.url);
+      const html = body.toString();
+      // Detect Akamai sensor-challenge body (stealth 200 with no real content)
+      // and retire the session so Crawlee retries against a fresh one.
+      if (html.includes("sec-if-cpt-container")) {
+        session?.retire();
+        throw new Error(`Akamai bot challenge for ${request.url}`);
+      }
       const { document } = parseHTML(html);
 
       switch (request.userData.label) {
