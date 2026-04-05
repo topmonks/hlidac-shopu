@@ -36,10 +36,18 @@ const Selectors = {
 };
 
 /**
+ * Resolve a Hornbach link against the localized origin. Accepts both the
+ * legacy relative paths (`/c/...`, `/p/...`) used by the navigation scrape
+ * and the absolute URLs now emitted by the Apollo state for product items
+ * (`https://www.hornbach.cz/p/.../<id>/`). Without the absolute-URL guard
+ * the scraper would concatenate the origin twice, producing malformed
+ * itemUrls that later crash the Keboola uploader in itemSlug()
+ * (TypeError: Cannot read properties of undefined (reading 'parse')).
  * @param {string} country
  * @param {string} path
  */
 function completeUrl(country, path) {
+  if (typeof path === "string" && /^https?:\/\//i.test(path)) return path;
   return `https://www.hornbach.${country.toLowerCase()}${path}`;
 }
 
