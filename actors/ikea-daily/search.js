@@ -84,8 +84,17 @@ function* categoryPagination(country, category, { max, pageSize }) {
   }
 }
 
-function readGlobalNavigation(document) {
-  return JSON.parse(document.querySelector(`.hnf-tabs-navigation > script[type='text/hydration']`).textContent);
+function readTopCategories(document) {
+  const el = document.querySelector("div.hnf-inpage-nav[data-props]");
+  if (!el) {
+    throw new Error("IKEA homepage: div.hnf-inpage-nav[data-props] not found — DOM structure changed");
+  }
+  const props = JSON.parse(el.getAttribute("data-props"));
+  const subs = props?.categories?.subs;
+  if (!Array.isArray(subs) || subs.length === 0) {
+    throw new Error("IKEA homepage: categories.subs missing or empty in hnf-inpage-nav data-props");
+  }
+  return subs;
 }
 
 function toProduct({ product }) {
@@ -99,7 +108,7 @@ function toProduct({ product }) {
     itemId: product.itemNoGlobal,
     itemUrl: product.pipUrl,
     itemName: product.mainImageAlt ?? product.imageAlt,
-    img: product.imageUrl ?? null,
+    img: product.mainImageUrl ?? null,
     currentPrice: isIkeaFamily ? originalPrice : currentPrice,
     originalPrice: isIkeaFamily ? null : originalPrice,
     currency: product.salesPrice.currencyCode,
@@ -123,8 +132,7 @@ function defRouter({ country, stats, rawData }) {
     /** @param {HttpCrawlingContext} ctx */
     async start({ body, crawler }) {
       const { document } = parseHTML(body.toString("utf8"));
-      const nav = readGlobalNavigation(document);
-      const categories = nav.topCategories.map(x => x.id);
+      const categories = readTopCategories(document).map(x => x.id);
       await crawler.addRequests(categories.map(x => getCategoryProducts(country, x)));
     },
     /** @param {HttpCrawlingContext} ctx */
@@ -138,11 +146,16 @@ function defRouter({ country, stats, rawData }) {
         await crawler.addRequests(Array.from(categoryPagination(country, category, { max, pageSize })));
       }
 
+      // The API response mixes PRODUCT items with "breakouts" like PLANNER and
+      // LOGIN_REMINDER (see getCategoryProducts types.breakouts). Only PRODUCT
+      // items have a `product` payload that toProduct can consume.
+      const productItems = json.results[0].items.filter(item => item.product);
+
       // We push all data at once to avoid hitting the Apify API rate limit
       // Note: There is a size limit of 5MB, but these arrays seem to always be <=500 items
-      stats.add("items", json.results[0].items.length);
+      stats.add("items", productItems.length);
       await rawData.pushData(json.results[0].items);
-      await Dataset.pushData(json.results[0].items.map(toProduct));
+      await Dataset.pushData(productItems.map(toProduct));
     }
   });
 }
