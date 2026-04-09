@@ -115,7 +115,7 @@ export default function (pathConfig, mode, verbose) {
         sourcemap: true,
         format: "esm",
         platform: "browser",
-        target: ["es2020", "firefox109", "safari14.1", "chrome90"],
+        target: ["es2017", "firefox67", "safari12"],
         charset: "utf8",
         metafile: true,
         metafileName: "../../../../www.hlidacshopu.cz/src/data/assets.json"
