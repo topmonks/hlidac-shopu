@@ -21,7 +21,13 @@ const shadow = renderRoot.attachShadow({ mode: "closed" });
 let chart;
 
 function renderHTML(repaint, shop, data, metadata) {
-  if (!shop.loaded || !repaint) {
+  // (Re-)inject the renderRoot whenever it isn't currently in the document.
+  // Some SPA frameworks (e.g. dm.cz's Vue setup) wholesale-replace their
+  // mount subtree on client-side navigation, taking our renderRoot along
+  // with it. The previous shop.loaded-based check missed that case because
+  // AsyncShop sets `loaded = true` before calling render(). Checking the
+  // node's actual liveness via isConnected is the source of truth.
+  if (!renderRoot.isConnected) {
     shop.inject(styles => {
       renderRoot.setAttribute("style", toCssString(Object.assign({ "margin": "16px 0" }, styles)));
       return renderRoot;
