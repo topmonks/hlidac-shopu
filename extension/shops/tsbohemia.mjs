@@ -1,23 +1,25 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class TSBohemia extends Shop {
+export class TSBohemia extends AsyncShop {
+  get waitForSelector() {
+    // present on both available and disabled (out-of-stock / discontinued) product pages
+    return ".product-detail .product-detail__content";
+  }
+
   get injectionPoint() {
-    return ["beforebegin", ".product-tools"];
+    return ["beforeend", ".product-detail .product-detail__content"];
   }
 
   async scrape() {
-    const elem = document.querySelector("#stoitem_detail");
-    if (!elem) return;
-    const itemId = document.querySelector(".sti_detail_head").dataset.stiid;
-    const title = document.querySelector("h1").textContent.trim();
-    const currentPrice = document
-      .querySelector(".price .wvat")
-      .textContent.split("Kč")[0]
-      .replace(",-", "")
-      .replace(/\s/g, "");
-    const originalPrice = cleanPrice(".price .mc");
-    const imageUrl = document.querySelector("#sti_bigimg img").src;
+    const detail = document.querySelector(".product-detail");
+    if (!detail) return;
+
+    const itemId = location.pathname.match(/_d(\d+)(?:\.html)?$/)?.[1];
+    const title = detail.querySelector("h1.product-title__headline")?.textContent?.trim();
+    const currentPrice = cleanPrice(detail.querySelector(".product-detail__price .product-tile__price-value"));
+    const originalPrice = cleanPrice(detail.querySelector(".product-detail__price .product-tile__price-del"));
+    const imageUrl = detail.querySelector(".product-detail__gallery img")?.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
