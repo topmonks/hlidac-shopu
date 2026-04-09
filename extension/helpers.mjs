@@ -75,6 +75,57 @@ export function isElementVisible(el) {
   return isElementVisible(el.parentNode);
 }
 
+/**
+ * Wait until the subtree of `selector` has had no DOM mutations for `stabilityMs`,
+ * with a hard `maxWaitMs` fallback. Resolves with no value either way.
+ *
+ * Useful for SPA-rendered shops (Vue/Nuxt 3, etc.) where injecting our chart
+ * before the framework finishes hydrating causes the framework's diff to treat
+ * our injected node as a hydration mismatch and wipe it on the next render
+ * pass. Stability detection adapts to slow networks/devices because it
+ * observes actual DOM activity instead of using a fixed delay.
+ *
+ * @param {string} selector
+ * @param {{ stabilityMs?: number, maxWaitMs?: number }} [options]
+ * @returns {Promise<void>}
+ */
+export function waitForHydration(selector, { stabilityMs = 500, maxWaitMs = 15000 } = {}) {
+  return new Promise(resolve => {
+    const overallStart = Date.now();
+
+    const start = () => {
+      const target = document.querySelector(selector);
+      if (!target) {
+        if (Date.now() - overallStart >= maxWaitMs) return resolve();
+        setTimeout(start, 50);
+        return;
+      }
+
+      let lastMutation = Date.now();
+      const obs = new MutationObserver(() => {
+        lastMutation = Date.now();
+      });
+      obs.observe(target, { childList: true, subtree: true, attributes: true });
+
+      const check = () => {
+        const now = Date.now();
+        if (now - overallStart >= maxWaitMs) {
+          obs.disconnect();
+          return resolve();
+        }
+        if (now - lastMutation >= stabilityMs) {
+          obs.disconnect();
+          return resolve();
+        }
+        setTimeout(check, 100);
+      };
+      setTimeout(check, stabilityMs);
+    };
+
+    start();
+  });
+}
+
 export {
   cleanPriceText,
   cleanUnitPriceText
