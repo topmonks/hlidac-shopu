@@ -11,7 +11,7 @@ const output = path.resolve(__dirname, "../extension/content.js");
 esbuild.buildSync({
   color: true,
   entryPoints: [entryPoint],
-  target: ["es2017", "firefox57", "safari12"],
+  target: ["es2020", "firefox109", "safari14.1", "chrome90"],
   charset: "utf8",
   bundle: true,
   outfile: output,

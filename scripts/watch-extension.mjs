@@ -22,7 +22,7 @@ async function build() {
       outfile: output,
       bundle: true,
       sourcemap: true,
-      target: ["es2017", "firefox57", "safari12"],
+      target: ["es2020", "firefox109", "safari14.1", "chrome90"],
       charset: "utf8"
     });
     fs.copyFileSync(output, outputFF);
