@@ -1,19 +1,25 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class Benu extends Shop {
+export class Benu extends AsyncShop {
+  get waitForSelector() {
+    return "#product-detail-module form";
+  }
+
   get injectionPoint() {
-    return ["afterend", ".buy"];
+    return ["afterend", "#product-detail-module form"];
   }
 
   async scrape() {
-    const richSnippet = JSON.parse(document.querySelector("#snippet-productRichSnippet-richSnippet").innerText);
+    const richSnippetEl = document.querySelector("#snippet-productRichSnippet-richSnippet");
+    if (!richSnippetEl) return;
+    const richSnippet = JSON.parse(richSnippetEl.textContent);
 
-    const title = richSnippet.name || document.querySelector(".product-title-rating .title").innerText;
+    const title = richSnippet.name || document.querySelector("h1")?.textContent?.trim();
     const itemId = richSnippet.identifier;
-    const currentPrice = cleanPrice(".buy strong.buy-box__big-price");
-    const originalPrice = cleanPrice(".buy .buy-box__price-head del");
-    const imageUrl = document.querySelector("meta[property='og:image']").content;
+    const currentPrice = richSnippet.offers?.price?.toString();
+    const originalPrice = cleanPrice("#product-detail-module .line-through");
+    const imageUrl = document.querySelector("meta[property='og:image']")?.content;
 
     return { title, itemId, currentPrice, originalPrice, imageUrl };
   }
