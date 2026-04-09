@@ -1,5 +1,17 @@
 # Extension
 
+## 2.4.6
+* Fixed Lidl.cz rendering and Vue/Nuxt hydration race
+* Fixed Eva.cz rendering after meta tag removal
+* Fixed DM.cz rendering and SPA navigation between products
+* Fixed Benu.cz rendering after Vite app rewrite
+* Fixed Kosik.cz rendering after data-tid migration and split-span price parsing
+* Fixed Teta drogerie rendering after full site redesign
+* Fixed TS Bohemia rendering after Next.js redesign (incl. disabled / out-of-stock products)
+* Fixed Ikea rendering after structured-data selector removal
+* Fixed Lekarna rendering after structured-data snippet removal
+* Fixed chart not re-injecting on SPA client-side navigation when the framework removes the parent subtree
+
 ## 2.4.5
 * Fixed Datart slug extraction
 * Fixed Grizly rendering
