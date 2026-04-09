@@ -1,39 +1,88 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { cleanPrice, registerShop, waitForHydration } from "../helpers.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class TetaDrogerie extends Shop {
+// Teta is a Nuxt 3 SPA. We need to handle the hydration race here:
+// Vue treats our injected node as a hydration mismatch and wipes it on the
+// next render pass, so we wait for the `.c-detail` subtree to stabilize
+// before letting AsyncShop start rendering.
+//
+// Note we deliberately do NOT scrape the JSON-LD `<script>` in the head:
+// Nuxt 3's `useHead` does not run on client-side navigation, so after a SPA
+// route change the JSON-LD is the previous page's metadata. Everything we
+// need (slug, title, prices) is available in the visible DOM, which IS
+// up-to-date because `waitForSelector` matched and `.c-detail` stabilized.
+// The API at /v2/detail looks up Teta products by URL slug, not by SKU.
+export class TetaDrogerie extends AsyncShop {
+  get waitForSelector() {
+    return ".c-detail__sticky-side .c-product-price--detail";
+  }
+
   get injectionPoint() {
-    return [
-      "beforeend",
-      ".sx-detail-overview",
-      {
-        margin: 0,
-        padding: "16px 0px"
+    return ["afterend", ".c-detail__sticky-side .c-product-price--detail"];
+  }
+
+  async scheduleRendering({ render, cleanup, fetchData }) {
+    const tryRender = async () => {
+      if (location.href !== this.lastHref) {
+        this.loaded = false;
+        this.lastHref = location.href;
       }
-    ];
+      if (this.loaded || this.loading) return;
+      // Bail cheaply (no lock) if we are not on a product page yet — otherwise
+      // a long waitForHydration would block subsequent observer ticks during
+      // SPA navigation.
+      if (!document.querySelector(this.waitForSelector)) {
+        cleanup();
+        return;
+      }
+      this.loading = true;
+      try {
+        await waitForHydration(".c-detail");
+        // URL may have changed again while we were waiting; if so, re-trigger
+        if (location.href !== this.lastHref) {
+          this.loaded = false;
+          this.lastHref = location.href;
+          setTimeout(tryRender, 0);
+          return;
+        }
+        // Selector might have disappeared during the wait (Vue replacing the
+        // detail subtree); only proceed if it's still there.
+        if (!document.querySelector(this.waitForSelector)) {
+          cleanup();
+          return;
+        }
+        const info = await this.scrape();
+        if (!info) return;
+        const data = await fetchData(info);
+        if (!data) return;
+        this.loaded = render(!this.firstLoad, data);
+        this.firstLoad = false;
+      } finally {
+        this.loading = false;
+      }
+    };
+
+    new MutationObserver(tryRender).observe(document.body, { childList: true, subtree: true });
+    await tryRender();
   }
 
   async scrape() {
-    const elem = document.querySelector("#product-overview");
-    if (!elem) return;
-    const product = elem.querySelector(".j-product");
-    const itemId = product.dataset.skuid;
-    const title = product.querySelector(".sx-detail-product-name").innerText;
-    const priceCondition = product
-      .querySelector(".sx-detail-condition-price")
-      .innerText.includes("Cena za kus při koupi");
-    const offerPrice = cleanPrice(".sx-detail-offer-valid-to .sx-sale-w-arrow-container");
-    const actionPrice = cleanPrice(".sx-detail-price-action");
-    const initialPrice = cleanPrice(".sx-detail-price-initial");
-    const originalPrice = offerPrice ?? (actionPrice && !priceCondition ? initialPrice / 100 : null);
-    const currentPrice = actionPrice && !priceCondition ? actionPrice / 100 : initialPrice / 100;
-    const cssDesktopImageUrl = document.querySelector(".zoomWindowContainer .zoomWindow");
-    const cssMobileImageUrl = document.querySelector(".j-gallery-image");
-    const finalImageUrl = cssDesktopImageUrl
-      ? cssDesktopImageUrl.style.backgroundImage
-      : cssMobileImageUrl.style.backgroundImage;
-    const imageUrl = finalImageUrl.substring(4, finalImageUrl.length - 1);
-    return { itemId, title, currentPrice, originalPrice, imageUrl };
+    const sticky = document.querySelector(".c-detail__sticky-side");
+    if (!sticky) return;
+
+    // Slug is the URL segment after /eshop/katalog/ — same shape as
+    // `lib/shops.mjs`'s tetadrogerieCz.parse(). The API resolves Teta
+    // products by slug rather than by SKU.
+    const slug = location.pathname.replace(/^\/eshop\/katalog\//, "");
+    if (!slug) return;
+
+    return {
+      itemId: slug,
+      title: document.querySelector("h1")?.textContent?.trim(),
+      currentPrice: cleanPrice(sticky.querySelector(".c-product-price__value--action")),
+      originalPrice: cleanPrice(sticky.querySelector(".c-product-price__former-price--sale")),
+      imageUrl: undefined
+    };
   }
 }
 
