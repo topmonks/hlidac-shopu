@@ -17,7 +17,8 @@ const Labels = {
   COUNT: "COUNT",
   CATEGORY: "CATEGORY",
   CATEGORY_NEXT: "CATEGORY_NEXT",
-  BF: "BF"
+  BF: "BF",
+  DETAIL: "DETAIL"
 };
 
 /** @enum {string} */
@@ -398,8 +399,8 @@ export async function main() {
   log.info("ACTOR - setUp crawler");
   const crawler = new BasicCrawler({
     maxRequestRetries,
-    maxRequestsPerMinute: 100,
-    maxConcurrency: 20,
+    maxRequestsPerMinute: 200,
+    maxConcurrency: 30,
     async requestHandler({ request, log, crawler }) {
       if (solvePromise) await solvePromise;
       const { status, body } = await executorFetch(impit, f5Cookies, request.url);
@@ -420,7 +421,8 @@ export async function main() {
       // is exempt. The marker set covers every product-bearing label:
       // START → microsite-katalog / category-submenu; CATEGORY →
       // product-box-list / subcategory-box-list / category-tree-box-list;
-      // BF → ms-category-box; everything deeper carries breadcrumb.
+      // BF → ms-category-box; DETAIL → product-detail / breadcrumb;
+      // everything deeper carries breadcrumb.
       if (request.userData.label !== Labels.COUNT) {
         const looksLikeDatart =
           body.includes("product-box-list")
@@ -429,6 +431,7 @@ export async function main() {
           || body.includes("microsite-katalog")
           || body.includes("category-submenu")
           || body.includes("ms-category-box")
+          || body.includes("product-detail")
           || body.includes("breadcrumb");
         if (!looksLikeDatart && body.length < 100_000) {
           stats.inc("blocked");
@@ -521,24 +524,54 @@ export async function main() {
       }
       if (request.userData.label === Labels.CATEGORY || request.userData.label === Labels.CATEGORY_NEXT) {
         const products = extractItems(document, rootUrl, country);
+        const detailRequests = [];
         for (const product of products) {
-          if (processedIds[product.itemId] !== product.currentPrice) {
-            if (processedIds[product.itemId]) {
-              stats.inc("itemsChanged");
-              log.info(
-                `Product ${product.itemId} changed price from ${
-                  processedIds[product.itemId]
-                } to ${product.currentPrice}`
-              );
-            }
-            processedIds[product.itemId] = product.currentPrice;
-            await Dataset.pushData(product);
+          if (!processedIds[product.itemId]) {
+            processedIds[product.itemId] = true;
+            detailRequests.push({
+              url: product.itemUrl,
+              userData: {
+                label: Labels.DETAIL,
+                product
+              }
+            });
           } else {
             stats.inc("itemsDuplicity");
             log.info(`ID ${product.itemId} already saved`);
           }
         }
-        log.info(`${request.url} Found ${products.length} products`);
+        if (detailRequests.length > 0) {
+          await enqueueNewUrls({
+            requestQueue: crawler.requestQueue,
+            processedUrls,
+            urls: detailRequests,
+            stats
+          });
+        }
+        log.info(`${request.url} Found ${products.length} products, enqueued ${detailRequests.length} detail pages`);
+      }
+      if (request.userData.label === Labels.DETAIL) {
+        const product = request.userData.product;
+        const couponPriceEl = document.querySelector(
+          ".product-price-discount.discount-price-box .price-finally"
+        );
+        if (couponPriceEl) {
+          const couponPrice = parseFloat(
+            couponPriceEl.innerText
+              .trim()
+              .replace(/[^\d,]+/g, "")
+              .replace(",", ".")
+          );
+          if (couponPrice > 0 && couponPrice < product.currentPrice) {
+            log.info(
+              `Product ${product.itemId}: coupon price ${couponPrice} (was ${product.currentPrice})`
+            );
+            product.currentPrice = couponPrice;
+            product.discounted = true;
+          }
+        }
+        await Dataset.pushData(product);
+        stats.inc("items");
       }
       if (request.userData.label === Labels.BF) {
         log.info(`START BF ${request.url}`);
