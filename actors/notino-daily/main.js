@@ -92,7 +92,11 @@ function homepageRequests(document, country) {
 
 function determineCurrentAndOriginalPrice(variantGeneralData) {
   // Data contain following prices
-  const voucherDiscountedPrice = variantGeneralData.attributes?.VoucherDiscount?.discountedPrice;
+  const voucherDiscountedPrice =
+    variantGeneralData.attributes?.VoucherDiscount?.discountedPrice ??
+    variantGeneralData.attributes?.ConditionalVoucherDiscount?.discountConditions?.find(
+      c => c.productMeetsCondition
+    )?.discountedPrice;
   const price = variantGeneralData.price.value;
   const originalPrice = variantGeneralData.originalPrice?.value;
   const recentMinPrice = variantGeneralData.recentMinPrice?.value;
@@ -164,8 +168,8 @@ function handleProductUsingWindowObject(document, country) {
       const { currentPrice, originalPrice } = determineCurrentAndOriginalPrice(variantGeneralData);
 
       product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
-      product.currentPrice = currentPrice;
-      product.originalPrice = originalPrice;
+      product.currentPrice = Math.round(currentPrice);
+      product.originalPrice = originalPrice != null ? Math.round(originalPrice) : null;
       product.currency = variantGeneralData.price && variantGeneralData.price.currency;
       product.inStock = true;
       return product;
