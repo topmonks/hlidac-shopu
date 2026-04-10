@@ -1,5 +1,11 @@
 # Extension
 
+## 2.4.7
+* Fixed Kosik.cz rendering when navigating between products in the popup product detail
+* Fixed TS Bohemia stale chart from previous product when navigating to another product
+* Fixed AsyncShop leaving the loading lock acquired on early-return paths, which permanently blocked subsequent renders for any shop where the API returned no data once
+* Removed noisy "Data not found" console errors emitted during SPA route transitions on Kosik and TS Bohemia
+
 ## 2.4.6
 * Fixed Lidl.cz rendering and Vue/Nuxt hydration race
 * Fixed Eva.cz rendering after meta tag removal
