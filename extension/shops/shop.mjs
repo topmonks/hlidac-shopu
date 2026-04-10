@@ -81,12 +81,22 @@ export class AsyncShop extends Shop {
       const info = await this.scrape();
       if (!info) return;
       this.loading = true;
-      const data = await fetchData(info);
-      if (!data) return;
-      this.loaded = true;
-      this.loading = false;
-      this.loaded = render(!this.firstLoad, data);
-      this.firstLoad = false;
+      try {
+        const data = await fetchData(info);
+        if (!data) {
+          // No data for this URL — clean up any stale chart from a previous
+          // render so the user does not see incorrect data.
+          cleanup();
+          return;
+        }
+        this.loaded = render(!this.firstLoad, data);
+        this.firstLoad = false;
+      } finally {
+        // Always release the loading lock; otherwise an early return in any
+        // of the await branches would leave the observer permanently
+        // bailing at `if (this.loading) return`.
+        this.loading = false;
+      }
     });
     // Start observing the target node for configured mutations
     observer.observe(document.body, { childList: true, subtree: true });
