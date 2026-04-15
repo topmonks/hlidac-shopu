@@ -5,6 +5,11 @@
 * Fixed TS Bohemia stale chart from previous product when navigating to another product
 * Fixed AsyncShop leaving the loading lock acquired on early-return paths, which permanently blocked subsequent renders for any shop where the API returned no data once
 * Removed noisy "Data not found" console errors emitted during SPA route transitions on Kosik and TS Bohemia
+* Fixed Mountfield ignoring club/loyalty price and using recommended retail price as originalPrice fallback
+* Fixed Notino.cz respecting voucher/coupon prices
+* Fixed Teta drogerie returning null prices for non-discounted products
+* Fixed Alza.cz price selectors for new markup and coupon originalPrice
+* Fixed Datart.cz coupon price handling
 
 ## 2.4.6
 * Fixed Lidl.cz rendering and Vue/Nuxt hydration race
@@ -18,7 +23,7 @@
 * Fixed Lekarna rendering after structured-data snippet removal
 * Fixed chart not re-injecting on SPA client-side navigation when the framework removes the parent subtree
 
-## 2.4.5
+## 2.4.5 
 * Fixed Datart slug extraction
 * Fixed Grizly rendering
 
