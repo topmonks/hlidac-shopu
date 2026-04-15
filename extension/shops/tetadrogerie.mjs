@@ -76,11 +76,12 @@ export class TetaDrogerie extends AsyncShop {
     const slug = location.pathname.replace(/^\/eshop\/katalog\//, "");
     if (!slug) return;
 
+    const actionPrice = cleanPrice(sticky.querySelector(".c-product-price__value--action"));
     return {
       itemId: slug,
       title: document.querySelector("h1")?.textContent?.trim(),
-      currentPrice: cleanPrice(sticky.querySelector(".c-product-price__value--action")),
-      originalPrice: cleanPrice(sticky.querySelector(".c-product-price__former-price--sale")),
+      currentPrice: actionPrice ?? cleanPrice(sticky.querySelector(".c-product-price__former-price")),
+      originalPrice: actionPrice ? cleanPrice(sticky.querySelector(".c-product-price__former-price--sale")) : null,
       imageUrl: undefined
     };
   }
