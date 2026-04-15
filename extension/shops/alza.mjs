@@ -76,11 +76,14 @@ function getDetailItemInfo() {
 
   const itemId = elem.dataset.id;
   const title = document.querySelector("h1").innerText.trim();
-  const currentPrice =
-    cleanPrice(".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price") ??
-    cleanPrice(".price-box__price");
-  const originalPrice =
+  const couponPrice = cleanPrice(
+    ".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price"
+  );
+  const mainPrice = cleanPrice(".price-box__price") ?? cleanPrice(".ads-pb__price-value");
+  const comparePrice =
     cleanPrice(".price-box__compare-price") ?? cleanPrice(".price-box--super-price .price-box__body");
+  const currentPrice = couponPrice ?? mainPrice;
+  const originalPrice = couponPrice ? (comparePrice ?? mainPrice) : comparePrice;
   const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
 
   return { itemId, title, currentPrice, originalPrice, imageUrl };
