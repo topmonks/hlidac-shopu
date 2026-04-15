@@ -8,7 +8,7 @@
 
 import UIKit
 import WebKit
-import MobileCoreServices
+import UniformTypeIdentifiers
 
 class ActionViewController: UIViewController {
   @IBOutlet weak var webView: WKWebView!
@@ -21,8 +21,8 @@ class ActionViewController: UIViewController {
   private func getAndOpenURL() {
     guard let attachments = (extensionContext?.inputItems.first as? NSExtensionItem)?.attachments else { return }
 
-    for itemProvider in attachments where itemProvider.hasItemConformingToTypeIdentifier(String(kUTTypeURL)) {
-      itemProvider.loadItem(forTypeIdentifier: String(kUTTypeURL), options: nil) { result, _ in
+    for itemProvider in attachments where itemProvider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+      itemProvider.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { result, _ in
         guard
           let urlString = result as? NSURL,
           var url = URLComponents(string: "https://www.hlidacshopu.cz/share-action/")
