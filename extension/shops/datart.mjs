@@ -11,9 +11,10 @@ export class Datart extends Shop {
     const itemId = itemIdTarget.split("-").at(-1);
 
     const title = elem.querySelector("h1.product-detail-title").textContent.trim();
-    const displayPrice = elem.querySelector(".product-price").dataset.priceValue;
-    const currentPrice = cleanPrice(".product-price-discount .price-finally") ?? displayPrice;
-    const originalPrice = displayPrice !== currentPrice ? displayPrice : cleanPrice(".product-price .cut-price del");
+    const displayPrice = Number(elem.querySelector(".product-price").dataset.priceValue);
+    const couponPrice = cleanPrice(".product-price-discount .price-finally");
+    const currentPrice = couponPrice ?? displayPrice;
+    const originalPrice = couponPrice ? displayPrice : cleanPrice(".product-price .cut-price del");
     const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").dataset.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
