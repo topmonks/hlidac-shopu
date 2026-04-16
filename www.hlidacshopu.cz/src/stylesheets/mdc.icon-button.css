@@ -254,7 +254,9 @@
   content: "";
 }
 .mdc-icon-button .mdc-icon-button__ripple::before {
-  transition: opacity 15ms linear, background-color 15ms linear;
+  transition:
+    opacity 15ms linear,
+    background-color 15ms linear;
   z-index: 1;
   /* @alternate */
   z-index: var(--mdc-ripple-z-index, 1);
@@ -285,8 +287,12 @@
   left: var(--mdc-ripple-left, 0);
 }
 .mdc-icon-button.mdc-ripple-upgraded--foreground-activation .mdc-icon-button__ripple::after {
-  -webkit-animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
-  animation: mdc-ripple-fg-radius-in 225ms forwards, mdc-ripple-fg-opacity-in 75ms forwards;
+  -webkit-animation:
+    mdc-ripple-fg-radius-in 225ms forwards,
+    mdc-ripple-fg-opacity-in 75ms forwards;
+  animation:
+    mdc-ripple-fg-radius-in 225ms forwards,
+    mdc-ripple-fg-opacity-in 75ms forwards;
 }
 .mdc-icon-button.mdc-ripple-upgraded--foreground-deactivation .mdc-icon-button__ripple::after {
   -webkit-animation: mdc-ripple-fg-opacity-out 150ms;

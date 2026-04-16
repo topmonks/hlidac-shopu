@@ -82,16 +82,20 @@ function* traverseCategories(categories, names = []) {
 function parseItem(item, country, category) {
   const p = item.tileData;
 
-  const currentPrice = parseFloat(p.price.price.current.value
-                        .trim()
-                        .replace(/[^\d,]+/g, "")
-                        .replace(",", "."));
-  const originalPrice = p.price.price.previous ?
-                        parseFloat(p.price.price.previous.value
-                          .trim()
-                          .replace(/[^\d,]+/g, "")
-                          .replace(",", ".")) :
-                        null
+  const currentPrice = parseFloat(
+    p.price.price.current.value
+      .trim()
+      .replace(/[^\d,]+/g, "")
+      .replace(",", ".")
+  );
+  const originalPrice = p.price.price.previous
+    ? parseFloat(
+        p.price.price.previous.value
+          .trim()
+          .replace(/[^\d,]+/g, "")
+          .replace(",", ".")
+      )
+    : null;
 
   // inStock information was moved to a different API call:
   // https://products.dm.de/availability/api/v1/tiles/CZ/<id>
@@ -107,7 +111,7 @@ function parseItem(item, country, category) {
     originalPrice,
     currency: p.trackingData.currency,
     category,
-    discounted: originalPrice ? currentPrice !== originalPrice : false,
+    discounted: originalPrice ? currentPrice !== originalPrice : false
   };
 }
 

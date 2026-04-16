@@ -17,10 +17,10 @@ function parsePrice(priceStr) {
   if (!priceStr) return null;
   try {
     const cleaned = priceStr
-      .replace(/ /g, '')           // Regular space
-      .replace(/\xa0/g, '')        // Non-breaking space (CRITICAL!)
-      .replace(/,/g, '')           // Comma
-      .replace(/-/g, '');          // Dash
+      .replace(/ /g, "") // Regular space
+      .replace(/\xa0/g, "") // Non-breaking space (CRITICAL!)
+      .replace(/,/g, "") // Comma
+      .replace(/-/g, ""); // Dash
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? null : parsed;
   } catch {
@@ -71,7 +71,7 @@ class AlzaSessionManager {
           ...this.headers,
           "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
         },
-        redirect: 'follow'
+        redirect: "follow"
       };
       if (proxyUrl) {
         fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
@@ -136,23 +136,20 @@ class AlzaSessionManager {
       fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
     }
 
-    const response = await fetch(
-      `${this.baseUrl}/v1/getAllDeliveryCountries?country=CZ`,
-      fetchOptions
-    );
+    const response = await fetch(`${this.baseUrl}/v1/getAllDeliveryCountries?country=CZ`, fetchOptions);
 
     if (response.status !== 200) {
       throw new Error(`Handshake failed with status ${response.status}`);
     }
 
     // Extract cookies from Set-Cookie header
-    const setCookie = response.headers.get('set-cookie');
+    const setCookie = response.headers.get("set-cookie");
     if (setCookie) {
-      const cookies = setCookie.split(',').map(c => c.trim());
+      const cookies = setCookie.split(",").map(c => c.trim());
       for (const cookie of cookies) {
-        const [nameValue] = cookie.split(';');
-        const [name, value] = nameValue.split('=');
-        if (['VST', 'lb_id', '__cf_bm', '_cfuvid'].includes(name)) {
+        const [nameValue] = cookie.split(";");
+        const [name, value] = nameValue.split("=");
+        if (["VST", "lb_id", "__cf_bm", "_cfuvid"].includes(name)) {
           this.cookies[name] = value;
           log.info(`Got cookie: ${name}`);
         }
@@ -170,7 +167,7 @@ class AlzaSessionManager {
     log.info("Setting country to CZ...");
 
     const fetchOptions = {
-      method: 'POST',
+      method: "POST",
       headers: this.headers,
       body: JSON.stringify({ countryId: 0 })
     };
@@ -178,10 +175,7 @@ class AlzaSessionManager {
       fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
     }
 
-    const response = await fetch(
-      `${this.baseUrl}/v1/setCountry?country=CZ`,
-      fetchOptions
-    );
+    const response = await fetch(`${this.baseUrl}/v1/setCountry?country=CZ`, fetchOptions);
 
     if (response.status !== 200) {
       throw new Error(`Set country failed with status ${response.status}`);
@@ -213,7 +207,7 @@ class AlzaSessionManager {
     };
 
     const fetchOptions = {
-      method: 'POST',
+      method: "POST",
       headers: this.headers,
       body: JSON.stringify(requestBody)
     };
@@ -307,18 +301,14 @@ function parseStockStatus(availStr) {
 
 function normalizeProduct(product, category) {
   // Parse prices
-  const currentPrice = product.priceNoCurrency;  // Already numeric
-  const originalPrice = parsePrice(product.cprice);  // CRITICAL: parse \xa0
+  const currentPrice = product.priceNoCurrency; // Already numeric
+  const originalPrice = parsePrice(product.cprice); // CRITICAL: parse \xa0
 
   // Stock status
   const inStock = parseStockStatus(product.avail);
 
   // Compute discounted flag
-  const discounted = (
-    originalPrice !== null &&
-    currentPrice !== null &&
-    currentPrice < originalPrice
-  );
+  const discounted = originalPrice !== null && currentPrice !== null && currentPrice < originalPrice;
 
   return {
     itemId: product.id,
@@ -365,7 +355,7 @@ async function handleRequestWithRetry(requestFn, proxyHandler, sessionManager, r
 // Migration State Management
 // ========================================
 async function saveState(currentPage, totalProducts) {
-  await Actor.setValue('STATE', {
+  await Actor.setValue("STATE", {
     lastProcessedPage: currentPage,
     totalProducts: totalProducts,
     timestamp: Date.now()
@@ -373,7 +363,7 @@ async function saveState(currentPage, totalProducts) {
 }
 
 async function loadState() {
-  const state = await Actor.getValue('STATE');
+  const state = await Actor.getValue("STATE");
   if (state) {
     log.info(`Resuming from migration: page ${state.lastProcessedPage + 1}, ${state.totalProducts} products`);
     return {
@@ -454,7 +444,7 @@ async function main() {
     const categoryResp = await fetch(categoryUrl, fetchOptions);
     if (categoryResp.status === 200) {
       const categoryData = await categoryResp.json();
-      const categoryName = categoryData.priceKiller?.name || categoryData.name || 'Unknown';
+      const categoryName = categoryData.priceKiller?.name || categoryData.name || "Unknown";
       category = categoryName;
       log.info(`Category: ${categoryName}`);
     }
@@ -485,7 +475,7 @@ async function main() {
         continue;
       }
 
-      emptyPagesCount = 0;  // Reset counter
+      emptyPagesCount = 0; // Reset counter
 
       // Extract category from breadcrumbs
       if (result.breadcrumbs && result.breadcrumbs.length > 0) {
@@ -496,10 +486,10 @@ async function main() {
       for (const product of result.products) {
         const normalized = normalizeProduct(product, category);
         await Dataset.pushData(normalized);
-        stats.inc('products');
+        stats.inc("products");
       }
 
-      stats.inc('pages');
+      stats.inc("pages");
       const currentStats = stats.get();
       log.info(`✓ Page ${currentPage}: ${result.products.length} products (total: ${currentStats.products})`);
 
@@ -510,11 +500,10 @@ async function main() {
       }
 
       currentPage++;
-
     } catch (error) {
       log.error(`Page ${currentPage} failed: ${error.message}`);
       rollbar.error(error, { page: currentPage });
-      stats.inc('errors');
+      stats.inc("errors");
       currentPage++;
     }
   }

@@ -1,5 +1,5 @@
-import {registerShop} from "../helpers.mjs";
-import {Shop} from "./shop.mjs";
+import { registerShop } from "../helpers.mjs";
+import { Shop } from "./shop.mjs";
 
 export class Hornbach extends Shop {
   get injectionPoint() {
@@ -8,8 +8,7 @@ export class Hornbach extends Shop {
 
   async scrape() {
     const allDocumentScripts = Array.from(document.querySelectorAll("script"));
-    const string = allDocumentScripts
-      .find(script => script.innerText.startsWith("window.pushTrackingInfo")).innerText
+    const string = allDocumentScripts.find(script => script.innerText.startsWith("window.pushTrackingInfo")).innerText;
 
     const startIndex = string.indexOf("{");
     const endIndex = string.lastIndexOf("}") + 1;

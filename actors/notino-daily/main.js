@@ -94,9 +94,8 @@ function determineCurrentAndOriginalPrice(variantGeneralData) {
   // Data contain following prices
   const voucherDiscountedPrice =
     variantGeneralData.attributes?.VoucherDiscount?.discountedPrice ??
-    variantGeneralData.attributes?.ConditionalVoucherDiscount?.discountConditions?.find(
-      c => c.productMeetsCondition
-    )?.discountedPrice;
+    variantGeneralData.attributes?.ConditionalVoucherDiscount?.discountConditions?.find(c => c.productMeetsCondition)
+      ?.discountedPrice;
   const price = variantGeneralData.price.value;
   const originalPrice = variantGeneralData.originalPrice?.value;
   const recentMinPrice = variantGeneralData.recentMinPrice?.value;

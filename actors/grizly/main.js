@@ -72,7 +72,7 @@ function parsePrices(prices) {
  * @return {Product[]}
  */
 function extractProducts(document, country) {
-  const category = document.querySelector("[property='og:title']").getAttribute('content');
+  const category = document.querySelector("[property='og:title']").getAttribute("content");
   const products = document.querySelectorAll(".content__catagories .product");
 
   return products.map(product => {

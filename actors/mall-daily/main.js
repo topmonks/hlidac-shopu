@@ -207,16 +207,10 @@ async function main() {
       const { page = 1 } = request.userData || {};
       log.debug(`We are on ${page} page`);
 
-      const {
-        data: { getCampaign: data } = {},
-        errors
-      } = json;
+      const { data: { getCampaign: data } = {}, errors } = json;
       if (errors) throw new Error(errors[0].message);
 
-      const {
-        productCollection: { items = [] } = {},
-        ...rest
-      } = data || {};
+      const { productCollection: { items = [] } = {}, ...rest } = data || {};
       log.debug(`Got ${items.length} items now`);
 
       if (!items.length) {

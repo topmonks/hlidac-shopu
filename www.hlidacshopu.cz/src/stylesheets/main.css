@@ -10,10 +10,13 @@
   }
 
   /* enable transitions */
-  [popover], dialog, ::backdrop {
-    transition: display 300ms allow-discrete,
-    overlay 300ms allow-discrete,
-    opacity 300ms;
+  [popover],
+  dialog,
+  ::backdrop {
+    transition:
+      display 300ms allow-discrete,
+      overlay 300ms allow-discrete,
+      opacity 300ms;
     opacity: 0;
   }
 
@@ -397,7 +400,9 @@ footer {
     .app-bar_menu {
       transform: scaleY(0) translateY(-64px);
       transform-origin: top;
-      transition: visibility 0.3s ease, transform 0.3s ease;
+      transition:
+        visibility 0.3s ease,
+        transform 0.3s ease;
       order: 3;
       visibility: hidden;
     }
@@ -538,7 +543,9 @@ footer {
   backdrop-filter: blur(3px);
   transform: scale(1) translate(0);
   transform-origin: left;
-  transition: transform 0.3s ease, backdrop-filter 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    backdrop-filter 0.3s ease;
 
   &.modal--hidden {
     transform: scale(0) translateX(-100vw);

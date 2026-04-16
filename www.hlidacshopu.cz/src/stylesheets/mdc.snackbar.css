@@ -43,8 +43,10 @@
 
 .mdc-snackbar__surface {
   /* @alternate */
-  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px
-    rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 18px 0px rgba(0, 0, 0, 0.12);
 }
 
 .mdc-snackbar__surface {
@@ -147,9 +149,15 @@
   transform: scale(1);
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1), -webkit-transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1);
-  transition: opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1), transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1);
-  transition: opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1), transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1),
+  transition:
+    opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1),
+    -webkit-transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1);
+  transition:
+    opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1),
+    transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1);
+  transition:
+    opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1),
+    transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1),
     -webkit-transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1);
 }
 .mdc-snackbar--closing .mdc-snackbar__surface {

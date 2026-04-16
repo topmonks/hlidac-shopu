@@ -94,7 +94,7 @@ function initialRequests(country, type, urls) {
 function extractTextFromHtml(textWithHTML) {
   if (!textWithHTML) return null;
   const { document } = parseHTML(`<div>${textWithHTML}</div>`);
-  return document.querySelector('*')?.textContent?.trim() || null;
+  return document.querySelector("*")?.textContent?.trim() || null;
 }
 
 function defRouter(processedIds, stats) {
@@ -123,7 +123,7 @@ function defRouter(processedIds, stats) {
       const product = data.find(x => x["@type"] === "Product");
       const title = product?.name;
 
-      const productPrice  = product?.offers?.price
+      const productPrice = product?.offers?.price;
       let currentPrice;
       let originalPrice;
       let isDiscounted = false;
@@ -147,8 +147,7 @@ function defRouter(processedIds, stats) {
       const giftElement = document.querySelector(`.giftEvents__item`);
       const giftPriceElement = document.querySelector(`.giftEvents__price__price`);
 
-      const hasCouponPrice = Boolean(giftPriceElement)
-        && !/pro\s+členy\s+Pilulka/i.test(giftElement.textContent);
+      const hasCouponPrice = Boolean(giftPriceElement) && !/pro\s+členy\s+Pilulka/i.test(giftElement.textContent);
 
       const hasDiscount = !Number.isNaN(oldPrice) && oldPrice > 0;
 
@@ -157,9 +156,7 @@ function defRouter(processedIds, stats) {
       }
 
       if (hasCouponPrice) {
-        currentPrice = parseFloatText(
-          cleanPriceText(giftPriceElement?.textContent ?? "")
-        );
+        currentPrice = parseFloatText(cleanPriceText(giftPriceElement?.textContent ?? ""));
         originalPrice = oldPrice ?? productPrice;
         isDiscounted = true;
         log.info("Product has discount", { url: itemUrl });
@@ -172,7 +169,7 @@ function defRouter(processedIds, stats) {
         originalPrice = oldPrice ?? null;
         isDiscounted = true;
       } else {
-        currentPrice = productPrice
+        currentPrice = productPrice;
         originalPrice = null;
       }
 

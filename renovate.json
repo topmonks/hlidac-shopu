@@ -18,21 +18,15 @@
   "packageRules": [
     {
       "groupName": "pulumi",
-      "matchPackageNames": [
-        "@pulumi/{/,}**"
-      ]
+      "matchPackageNames": ["@pulumi/{/,}**"]
     },
     {
       "groupName": "crawlee",
-      "matchPackageNames": [
-        "@crawlee/{/,}**"
-      ]
+      "matchPackageNames": ["@crawlee/{/,}**"]
     },
     {
       "groupName": "thi.ng",
-      "matchPackageNames": [
-        "@thi.ng/{/,}**"
-      ]
+      "matchPackageNames": ["@thi.ng/{/,}**"]
     }
   ]
 }

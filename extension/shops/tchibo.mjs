@@ -13,7 +13,6 @@ export class Tchibo extends AsyncShop {
   }
 
   async scrape() {
-
     const elem = document.querySelector(".pdp-buybox__add-to-cart-container");
     if (!elem) return;
     const itemUrl = document.location.href;
