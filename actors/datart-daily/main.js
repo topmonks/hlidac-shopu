@@ -76,8 +76,7 @@ async function solveF5(rootUrl) {
   log.info("Solver: launching cloakbrowser to solve F5 Bot Defense challenge…");
   const ctx = await launchCloakContext({
     headless: true,
-    userAgent:
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
     locale: "cs-CZ",
     timezoneId: "Europe/Prague"
   });
@@ -208,16 +207,12 @@ function extractItems(document, rootUrl, country) {
       const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price--strike");
       if (lowestPriceInLastMonthEl) {
         // Remove sr-only content first to avoid extracting digits from screen reader text
-        const srOnly = lowestPriceInLastMonthEl.querySelector('.sr-only');
+        const srOnly = lowestPriceInLastMonthEl.querySelector(".sr-only");
         const priceText = srOnly
-          ? lowestPriceInLastMonthEl.innerText.replace(srOnly.innerText, '').trim()
+          ? lowestPriceInLastMonthEl.innerText.replace(srOnly.innerText, "").trim()
           : lowestPriceInLastMonthEl.innerText.trim();
 
-        lowestPriceInLastMonth = parseFloat(
-          priceText
-            .replace(/[^\d,]+/g, "")
-            .replace(",", ".")
-        );
+        lowestPriceInLastMonth = parseFloat(priceText.replace(/[^\d,]+/g, "").replace(",", "."));
       }
       let fixedDiscount = 0;
       const fixedDiscountFlagEl = productEl.querySelector(".product-flags .flag-color-red");
@@ -235,11 +230,11 @@ function extractItems(document, rootUrl, country) {
 
       let percentageDiscount = 0;
       const percentageDiscountFlagEls = productEl.querySelectorAll(".product-flags .flag");
-      Array.from(percentageDiscountFlagEls).forEach((flagEl) => {
-        const hasDiscountKeyword = country === Country.CZ && (
-          /^sleva\s+\d+\s*%$/i.test(flagEl.textContent) // 20 % sleva
-          || /^\d+\s*%\s*sleva$/i.test(flagEl.textContent) // sleva 20 %
-        );
+      Array.from(percentageDiscountFlagEls).forEach(flagEl => {
+        const hasDiscountKeyword =
+          country === Country.CZ &&
+          (/^sleva\s+\d+\s*%$/i.test(flagEl.textContent) || // 20 % sleva
+            /^\d+\s*%\s*sleva$/i.test(flagEl.textContent)); // sleva 20 %
 
         if (hasDiscountKeyword) {
           percentageDiscount = parseFloat(
@@ -425,14 +420,14 @@ export async function main() {
       // everything deeper carries breadcrumb.
       if (request.userData.label !== Labels.COUNT) {
         const looksLikeDatart =
-          body.includes("product-box-list")
-          || body.includes("subcategory-box-list")
-          || body.includes("category-tree-box-list")
-          || body.includes("microsite-katalog")
-          || body.includes("category-submenu")
-          || body.includes("ms-category-box")
-          || body.includes("product-detail")
-          || body.includes("breadcrumb");
+          body.includes("product-box-list") ||
+          body.includes("subcategory-box-list") ||
+          body.includes("category-tree-box-list") ||
+          body.includes("microsite-katalog") ||
+          body.includes("category-submenu") ||
+          body.includes("ms-category-box") ||
+          body.includes("product-detail") ||
+          body.includes("breadcrumb");
         if (!looksLikeDatart && body.length < 100_000) {
           stats.inc("blocked");
           await triggerResolve(`decoy response on ${request.url} (${body.length}b, no datart markers)`);
@@ -552,9 +547,7 @@ export async function main() {
       }
       if (request.userData.label === Labels.DETAIL) {
         const product = request.userData.product;
-        const couponPriceEl = document.querySelector(
-          ".product-price-discount.discount-price-box .price-finally"
-        );
+        const couponPriceEl = document.querySelector(".product-price-discount.discount-price-box .price-finally");
         if (couponPriceEl) {
           const couponPrice = parseFloat(
             couponPriceEl.innerText
@@ -563,9 +556,7 @@ export async function main() {
               .replace(",", ".")
           );
           if (couponPrice > 0 && couponPrice < product.currentPrice) {
-            log.info(
-              `Product ${product.itemId}: coupon price ${couponPrice} (was ${product.currentPrice})`
-            );
+            log.info(`Product ${product.itemId}: coupon price ${couponPrice} (was ${product.currentPrice})`);
             product.currentPrice = couponPrice;
             product.discounted = true;
           }

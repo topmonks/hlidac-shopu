@@ -26,29 +26,31 @@ async function extractPersistedQueryHashes() {
         headless: true
       }
     },
-    preNavigationHooks: [async ({ page }) => {
-      await page.route("**/*", async (route) => {
-        const url = route.request().url();
-        if (url.includes("/api/v1/") && url.includes("extensions")) {
-          try {
-            const urlObj = new URL(url);
-            const operationName = urlObj.searchParams.get("operationName");
-            const extensions = urlObj.searchParams.get("extensions");
-            if (operationName && extensions) {
-              const parsed = JSON.parse(extensions);
-              const hash = parsed?.persistedQuery?.sha256Hash;
-              if (hash) {
-                hashes.set(operationName, hash);
-                log.info(`Extracted hash for ${operationName}: ${hash}`);
+    preNavigationHooks: [
+      async ({ page }) => {
+        await page.route("**/*", async route => {
+          const url = route.request().url();
+          if (url.includes("/api/v1/") && url.includes("extensions")) {
+            try {
+              const urlObj = new URL(url);
+              const operationName = urlObj.searchParams.get("operationName");
+              const extensions = urlObj.searchParams.get("extensions");
+              if (operationName && extensions) {
+                const parsed = JSON.parse(extensions);
+                const hash = parsed?.persistedQuery?.sha256Hash;
+                if (hash) {
+                  hashes.set(operationName, hash);
+                  log.info(`Extracted hash for ${operationName}: ${hash}`);
+                }
               }
+            } catch (e) {
+              // Ignore parsing errors
             }
-          } catch (e) {
-            // Ignore parsing errors
           }
-        }
-        await route.continue();
-      });
-    }],
+          await route.continue();
+        });
+      }
+    ],
     async requestHandler({ page }) {
       // Just wait for page to load and trigger GraphQL requests
       await page.waitForTimeout(3000);
@@ -56,10 +58,7 @@ async function extractPersistedQueryHashes() {
   });
 
   // Visit pages that trigger the GraphQL queries we need
-  await crawler.run([
-    "https://www.albert.cz/online",
-    "https://www.albert.cz/shop/Trvale-nizke/c/zeB001"
-  ]);
+  await crawler.run(["https://www.albert.cz/online", "https://www.albert.cz/shop/Trvale-nizke/c/zeB001"]);
 
   if (hashes.size === 0) {
     throw new Error("Failed to extract any persisted query hashes");

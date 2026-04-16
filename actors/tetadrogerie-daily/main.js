@@ -37,9 +37,8 @@ function translateToApiUrl(url) {
 
   // Translates traditional category URL to the API one
   if (traditionalUrlRegexp.test(url)) {
-    const currentPage = new URL(url).searchParams.get('strana') || '1';
-    const taxon = url.replace(traditionalUrlRegexp, '')
-      .replace(/\?|&.*/g, '');
+    const currentPage = new URL(url).searchParams.get("strana") || "1";
+    const taxon = url.replace(traditionalUrlRegexp, "").replace(/\?|&.*/g, "");
     return createListingProductApiUrl(taxon, currentPage);
   }
   return url;
@@ -58,7 +57,7 @@ function createListingProductApiUrl(categorySlug, currentPage = 1) {
       itemsPerPage: "40",
       sort: "asc",
       order_by: "price",
-      strana: String(currentPage), // Yes, it is really like that on the API
+      strana: String(currentPage) // Yes, it is really like that on the API
     })}`
   );
 
@@ -102,12 +101,10 @@ function resolveCategory(categories) {
   // Build category path from first level down
   while (currentCategory) {
     categoryPath.push(currentCategory.name);
-    currentCategory = categories.find(
-      category => category.parent.code === currentCategory.code
-    );
+    currentCategory = categories.find(category => category.parent.code === currentCategory.code);
   }
 
-  return categoryPath.length ? categoryPath.join(' > ') : null;
+  return categoryPath.length ? categoryPath.join(" > ") : null;
 }
 
 /**
@@ -116,7 +113,7 @@ function resolveCategory(categories) {
  * @returns {Array} Parsed product items
  */
 function parseItems(json) {
-  return json.items.map((item) => {
+  return json.items.map(item => {
     const originalPrice = (item.bbyPrices.zcmd ?? item.originalPrice ?? item.price) / 100;
     let currentPrice = (item.bbyPrices.acmd ?? item.currentPrice ?? item.price) / 100;
 
@@ -127,8 +124,8 @@ function parseItems(json) {
     }
 
     return {
-      itemId: String(item.code).replace(/^0+/g, ''),
-      itemName: item.name.replace(/<[^>]*>/g, ''),
+      itemId: String(item.code).replace(/^0+/g, ""),
+      itemName: item.name.replace(/<[^>]*>/g, ""),
       img: `https://teta-drogerie.fra1.digitaloceanspaces.com/cache/inveocz_product_gallery/${item.image}`,
       slug: item.slug,
       itemUrl: `https://www.tetadrogerie.cz/eshop/katalog/${item.slug}`,
@@ -137,7 +134,7 @@ function parseItems(json) {
       discounted: originalPrice > currentPrice,
       inStock: item.isStockAvailable,
       category: resolveCategory(item.taxa)
-    }
+    };
   });
 }
 
@@ -179,9 +176,11 @@ async function main() {
     navigationTimeoutSecs: 30,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    preNavigationHooks: [async ({ blockRequests }) => {
-      await blockRequests(); // block images, stylesheets, etc.
-    }],
+    preNavigationHooks: [
+      async ({ blockRequests }) => {
+        await blockRequests(); // block images, stylesheets, etc.
+      }
+    ],
     async requestHandler({ request, response, page }) {
       let { label, initial } = request.userData;
 
@@ -193,14 +192,14 @@ async function main() {
         case "START":
           const { document } = parseHTML((await response.body()).toString());
 
-          const initialCategoryUrls = await page.$$eval('.c-main-menu .c-menu-item__link-wrapper > a', (links) => {
+          const initialCategoryUrls = await page.$$eval(".c-main-menu .c-menu-item__link-wrapper > a", links => {
             return [...links].map(link => link.href);
           });
 
-          const initialCategoryRequests = initialCategoryUrls.map((url) => ({
+          const initialCategoryRequests = initialCategoryUrls.map(url => ({
             url,
             userData: {
-              initial: true, // to generate pagination requests for the initial categories only once
+              initial: true // to generate pagination requests for the initial categories only once
             }
           }));
 
@@ -211,14 +210,16 @@ async function main() {
 
           // Translates traditional category URL to the API one
           if (categoryUrlRegexp.test(request.url)) {
-            const currentPage = new URL(request.url).searchParams.get('strana') || '1';
-            const initialCategorySlug = request.url.replace(categoryUrlRegexp, '')
-              .replace(/[?&].*/g, '');
+            const currentPage = new URL(request.url).searchParams.get("strana") || "1";
+            const initialCategorySlug = request.url.replace(categoryUrlRegexp, "").replace(/[?&].*/g, "");
             const fetchApiUrl = createListingProductApiUrl(initialCategorySlug, currentPage);
 
-            const json = await page.evaluate(async ({fetchApiUrl}) => {
-              return await fetch(fetchApiUrl).then(res => res.json());
-            }, { fetchApiUrl });
+            const json = await page.evaluate(
+              async ({ fetchApiUrl }) => {
+                return await fetch(fetchApiUrl).then(res => res.json());
+              },
+              { fetchApiUrl }
+            );
 
             if (json.message) {
               log.warning(`problem during processing: ${request.url}`);
@@ -232,7 +233,7 @@ async function main() {
               const paginationUrls = [];
               for (let page = 1; page <= json.pagination.lastPage; page++) {
                 const url = changeListingUrlPage(request.url, page);
-                paginationUrls.push({url});
+                paginationUrls.push({ url });
               }
               await crawler.requestQueue.addRequests(paginationUrls);
             }
@@ -259,14 +260,14 @@ async function main() {
     startingRequests.push({
       url: "https://www.tetadrogerie.cz/eshop/produkty/hubeni-hmyzu",
       userData: {
-        initial: true,
+        initial: true
       }
     });
   } else if (type === ActorType.BlackFriday) {
     startingRequests.push({
       url: bfUrl,
       userData: {
-        initial: true,
+        initial: true
       }
     });
   } else {
@@ -274,7 +275,7 @@ async function main() {
       url: `https://www.tetadrogerie.cz/eshop/`,
       userData: {
         label: "START",
-        initial: true,
+        initial: true
       }
     });
   }

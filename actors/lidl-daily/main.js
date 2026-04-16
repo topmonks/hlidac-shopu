@@ -251,9 +251,9 @@ function shopSectionRequests({ document, request }, { stats }) {
  * @returns {'hub'|'category'|'unknown'}
  */
 function getCategoryType(url) {
-  if (url.includes('/h/')) return 'hub';
-  if (url.includes('/c/')) return 'category';
-  return 'unknown';
+  if (url.includes("/h/")) return "hub";
+  if (url.includes("/c/")) return "category";
+  return "unknown";
 }
 
 /**
@@ -264,14 +264,12 @@ function extractNavigationLinks({ document, request }) {
   const links = [];
 
   // Strategy 1: Look for card-style navigation (like section pages)
-  const cardLinks = document.querySelectorAll(
-    ".ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked"
-  );
+  const cardLinks = document.querySelectorAll(".ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked");
 
   for (const link of cardLinks) {
     const href = link.getAttribute("href");
     if (href) {
-      const url = href.startsWith('http') ? href : `https://www.lidl.cz${href}`;
+      const url = href.startsWith("http") ? href : `https://www.lidl.cz${href}`;
       links.push({
         url,
         type: getCategoryType(url)
@@ -281,14 +279,12 @@ function extractNavigationLinks({ document, request }) {
 
   // Strategy 2: Look for sidebar/menu navigation (alternative structure)
   if (links.length === 0) {
-    const menuLinks = document.querySelectorAll(
-      "#category a, .category-nav a, nav a[href*='/h/'], nav a[href*='/c/']"
-    );
+    const menuLinks = document.querySelectorAll("#category a, .category-nav a, nav a[href*='/h/'], nav a[href*='/c/']");
 
     for (const link of menuLinks) {
       const href = link.getAttribute("href");
-      if (href && (href.includes('/h/') || href.includes('/c/'))) {
-        const url = href.startsWith('http') ? href : `https://www.lidl.cz${href}`;
+      if (href && (href.includes("/h/") || href.includes("/c/"))) {
+        const url = href.startsWith("http") ? href : `https://www.lidl.cz${href}`;
         links.push({
           url,
           type: getCategoryType(url)
@@ -397,151 +393,153 @@ async function main() {
   });
 
   const crawler = new PlaywrightCrawler({
-          maxRequestsPerMinute: 400,
-          proxyConfiguration,
-          maxRequestRetries,
-          launchContext: {
-            launchOptions: {
-              headless: true
-            }
-          },
-          async requestHandler(context) {
-            const { request, log, page } = context;
-            const { label } = request.userData;
-            log.info("processing page", { url: request.url, label });
+    maxRequestsPerMinute: 400,
+    proxyConfiguration,
+    maxRequestRetries,
+    launchContext: {
+      launchOptions: {
+        headless: true
+      }
+    },
+    async requestHandler(context) {
+      const { request, log, page } = context;
+      const { label } = request.userData;
+      log.info("processing page", { url: request.url, label });
 
-            const text = await page.content();
-            const { document } = parseHTML(text);
+      const text = await page.content();
+      const { document } = parseHTML(text);
 
-            switch (label) {
-              case Labels.DETAIL:
-                {
-                  const product = scrapeDetail({ request, document });
-                  await Dataset.pushData(product);
-                }
-                break;
-              case Labels.LIDL_SHOP:
-                await crawler.requestQueue.addRequests(mainNavigationRequests(document));
-                break;
-              case Labels.LIDL_SHOP_CAT:
-                {
-                  // Check if this is a navigation hub or product category
-                  const categoryType = getCategoryType(request.url);
-
-                  if (categoryType === 'hub') {
-                    // This is a navigation hub - extract subcategories
-                    log.info(`Processing navigation hub: ${request.url}`);
-                    const subLinks = extractNavigationLinks({ document, request });
-
-                    const requests = subLinks.map(({ url, type }) => ({
-                      url,
-                      userData: {
-                        label: Labels.LIDL_SHOP_CAT // All subcategories go through same handler
-                      }
-                    }));
-
-                    await crawler.requestQueue.addRequests(requests);
-                    stats.inc("navigationHubsProcessed");
-                    break;
-                  }
-
-                  // Otherwise, this is a product category - proceed with API extraction
-                  // Extract category ID and path from URL
-                  // URLs look like: /h/panska-moda/h10067568 or /c/slevy/s10076329
-                  const urlMatch = request.url.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
-                  if (!urlMatch) {
-                    log.error(`Could not extract category ID from URL: ${request.url}`);
-                    break;
-                  }
-
-                  const [, , categoryPath, categoryId] = urlMatch;
-                  log.info(`Fetching products via API for category ${categoryId}`);
-
-                  // Fetch all products using pagination API
-                  let offset = 0;
-                  const fetchsize = 1000; // Max allowed by API
-                  let totalFetched = 0;
-
-                  while (true) {
-                    const apiUrl = `https://www.lidl.cz/q/api/category/${categoryPath}/${categoryId}?offset=${offset}&fetchsize=${fetchsize}&locale=cs_CZ&assortment=CZ&version=2.1.0`;
-
-                    const response = await page.request.fetch(apiUrl);
-                    const data = await response.json();
-
-                    if (!data.items || data.items.length === 0) {
-                      log.info(`No more items found at offset ${offset}`);
-                      break;
-                    }
-
-                    log.info(`Fetched ${data.items.length} items from API (offset: ${offset}, total: ${data.numFound})`);
-
-                    // Process items
-                    const products = data.items.map(item => {
-                      const gridData = item.gridbox?.data;
-                      if (!gridData) return null;
-
-                      stats.inc("items");
-
-                      if (processedIds.has(item.code)) {
-                        stats.inc("itemsDuplicity");
-                        return null;
-                      }
-
-                      processedIds.add(item.code);
-                      stats.inc("itemsUnique");
-
-                      return {
-                        itemId: item.code,
-                        itemName: gridData.fullTitle,
-                        itemUrl: `https://www.lidl.cz${gridData.canonicalPath}`,
-                        img: gridData.image,
-                        currentPrice: gridData.price?.price,
-                        originalPrice: gridData.price?.discount?.deletedPrice || gridData.price?.price,
-                        discounted: gridData.price?.discount?.showDiscount || false,
-                        inStock: gridData.stockAvailability?.onlineAvailable || false,
-                        currency: "CZK",
-                        category: gridData.category ? gridData.category.split('/').slice(1).join(' > ') : "",
-                        slug: item.code
-                      };
-                    }).filter(Boolean);
-
-                    if (products.length > 0) {
-                      await Dataset.pushData(products);
-                      totalFetched += products.length;
-                    }
-
-                    offset += data.items.length;
-
-                    // Check if we've fetched everything
-                    if (offset >= data.numFound) {
-                      log.info(`Finished fetching all ${totalFetched} products for category ${categoryId}`);
-                      break;
-                    }
-                  }
-                }
-                break;
-              case Labels.LIDL_SHOP_MAIN_CAT:
-                await crawler.requestQueue.addRequests(scrapeShopMainCategory({ document, request }));
-                break;
-              case Labels.LIDL_SHOP_SECTION:
-                await crawler.requestQueue.addRequests(shopSectionRequests({ document, request }, { stats }));
-                break;
-              case Labels.MAIN_NABIDKA:
-                await crawler.requestQueue.addRequests(mainMenuRequests(document));
-                break;
-              case Labels.MAIN_NABIDKA_CAT:
-                await crawler.requestQueue.addRequests(mainMenuCategoryRequests(document), {
-                  forefront: true
-                });
-                break;
-            }
-          },
-          async failedRequestHandler({ request }, error) {
-            stats.inc("failed");
-            rollbar.error(error, request);
-            log.error(`Request ${request.url} failed multiple times`, request);
+      switch (label) {
+        case Labels.DETAIL:
+          {
+            const product = scrapeDetail({ request, document });
+            await Dataset.pushData(product);
           }
-        });
+          break;
+        case Labels.LIDL_SHOP:
+          await crawler.requestQueue.addRequests(mainNavigationRequests(document));
+          break;
+        case Labels.LIDL_SHOP_CAT:
+          {
+            // Check if this is a navigation hub or product category
+            const categoryType = getCategoryType(request.url);
+
+            if (categoryType === "hub") {
+              // This is a navigation hub - extract subcategories
+              log.info(`Processing navigation hub: ${request.url}`);
+              const subLinks = extractNavigationLinks({ document, request });
+
+              const requests = subLinks.map(({ url, type }) => ({
+                url,
+                userData: {
+                  label: Labels.LIDL_SHOP_CAT // All subcategories go through same handler
+                }
+              }));
+
+              await crawler.requestQueue.addRequests(requests);
+              stats.inc("navigationHubsProcessed");
+              break;
+            }
+
+            // Otherwise, this is a product category - proceed with API extraction
+            // Extract category ID and path from URL
+            // URLs look like: /h/panska-moda/h10067568 or /c/slevy/s10076329
+            const urlMatch = request.url.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
+            if (!urlMatch) {
+              log.error(`Could not extract category ID from URL: ${request.url}`);
+              break;
+            }
+
+            const [, , categoryPath, categoryId] = urlMatch;
+            log.info(`Fetching products via API for category ${categoryId}`);
+
+            // Fetch all products using pagination API
+            let offset = 0;
+            const fetchsize = 1000; // Max allowed by API
+            let totalFetched = 0;
+
+            while (true) {
+              const apiUrl = `https://www.lidl.cz/q/api/category/${categoryPath}/${categoryId}?offset=${offset}&fetchsize=${fetchsize}&locale=cs_CZ&assortment=CZ&version=2.1.0`;
+
+              const response = await page.request.fetch(apiUrl);
+              const data = await response.json();
+
+              if (!data.items || data.items.length === 0) {
+                log.info(`No more items found at offset ${offset}`);
+                break;
+              }
+
+              log.info(`Fetched ${data.items.length} items from API (offset: ${offset}, total: ${data.numFound})`);
+
+              // Process items
+              const products = data.items
+                .map(item => {
+                  const gridData = item.gridbox?.data;
+                  if (!gridData) return null;
+
+                  stats.inc("items");
+
+                  if (processedIds.has(item.code)) {
+                    stats.inc("itemsDuplicity");
+                    return null;
+                  }
+
+                  processedIds.add(item.code);
+                  stats.inc("itemsUnique");
+
+                  return {
+                    itemId: item.code,
+                    itemName: gridData.fullTitle,
+                    itemUrl: `https://www.lidl.cz${gridData.canonicalPath}`,
+                    img: gridData.image,
+                    currentPrice: gridData.price?.price,
+                    originalPrice: gridData.price?.discount?.deletedPrice || gridData.price?.price,
+                    discounted: gridData.price?.discount?.showDiscount || false,
+                    inStock: gridData.stockAvailability?.onlineAvailable || false,
+                    currency: "CZK",
+                    category: gridData.category ? gridData.category.split("/").slice(1).join(" > ") : "",
+                    slug: item.code
+                  };
+                })
+                .filter(Boolean);
+
+              if (products.length > 0) {
+                await Dataset.pushData(products);
+                totalFetched += products.length;
+              }
+
+              offset += data.items.length;
+
+              // Check if we've fetched everything
+              if (offset >= data.numFound) {
+                log.info(`Finished fetching all ${totalFetched} products for category ${categoryId}`);
+                break;
+              }
+            }
+          }
+          break;
+        case Labels.LIDL_SHOP_MAIN_CAT:
+          await crawler.requestQueue.addRequests(scrapeShopMainCategory({ document, request }));
+          break;
+        case Labels.LIDL_SHOP_SECTION:
+          await crawler.requestQueue.addRequests(shopSectionRequests({ document, request }, { stats }));
+          break;
+        case Labels.MAIN_NABIDKA:
+          await crawler.requestQueue.addRequests(mainMenuRequests(document));
+          break;
+        case Labels.MAIN_NABIDKA_CAT:
+          await crawler.requestQueue.addRequests(mainMenuCategoryRequests(document), {
+            forefront: true
+          });
+          break;
+      }
+    },
+    async failedRequestHandler({ request }, error) {
+      stats.inc("failed");
+      rollbar.error(error, request);
+      log.error(`Request ${request.url} failed multiple times`, request);
+    }
+  });
 
   await crawler.run(createInitRequests({ urls, type }));
   await stats.save(true);
