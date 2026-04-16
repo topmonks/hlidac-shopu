@@ -24,7 +24,7 @@ function createDataset(data) {
   const originalPrice = new Array(data.length);
   const currentPrice = new Array(data.length);
 
-  for (let i = 0; i < data.length; i++){
+  for (let i = 0; i < data.length; i++) {
     const item = data[i];
     originalPrice[i] = {
       x: item.date,
@@ -96,7 +96,7 @@ export async function handler(event) {
       getParsedData(db, shop)
     ]);
     console.timeEnd(`data fetching ${now}`);
-    
+
     if (!meta) {
       return withCORS(["GET", "OPTIONS"])(
         notFound({
@@ -119,7 +119,8 @@ export async function handler(event) {
     incHitCounter(db, shop.origin).catch(err => console.error("ERROR:", err));
 
     console.time("data preparation");
-    const rows = prepareData(priceHistory);
+    const len = params?.history === "full" ? null : 365;
+    const rows = prepareData(priceHistory, len);
     const { currentPrice, originalPrice, imageUrl } = Object.assign({}, extraData, scrapedData(params));
     if (currentPrice) {
       rows.push({ currentPrice, originalPrice, date: new UTCDate() });

@@ -1,10 +1,10 @@
-import { utc, UTCDate } from "@date-fns/utc";
+import { UTCDate, utc } from "@date-fns/utc";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { endOfToday } from "date-fns/endOfToday";
 import { isAfter } from "date-fns/isAfter";
 import { isWithinInterval } from "date-fns/isWithinInterval";
 import { subDays } from "date-fns/subDays";
-import { drop, groupBy, head, last, zipWith } from "ramda";
+import { drop, groupBy, head, last, takeLast, zipWith } from "ramda";
 
 /**
  * @typedef { import("./types").DataRow } DataRow
@@ -38,12 +38,20 @@ export function discount(previous, actual) {
 function euDiscount(lastDiscountDate, lastIncreaseDate, series) {
   // go 30 days back
   const startDate = subDays(lastDiscountDate, 30);
-  // find lowest price in 30 days interval before sale action
+  // find the lowest price in 30-day interval before sale action
   const minPrice = series
-    .filter(([date, price]) => Boolean(price) && isWithinInterval(date, {
-      start: startDate,
-      end: lastDiscountDate
-    }, { in: utc }))
+    .filter(
+      ([date, price]) =>
+        Boolean(price) &&
+        isWithinInterval(
+          date,
+          {
+            start: startDate,
+            end: lastDiscountDate
+          },
+          { in: utc }
+        )
+    )
     .map(([, price]) => price)
     .reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
   const [, currentPrice] = last(series);
@@ -107,10 +115,14 @@ const saleActionInterval = 90;
  * @returns {function(Date): boolean}
  */
 const isInLastDays = days => date =>
-  isWithinInterval(date, {
-    start: subDays(new UTCDate(), days, { in: utc }),
-    end: new UTCDate()
-  }, { in: utc });
+  isWithinInterval(
+    date,
+    {
+      start: subDays(new UTCDate(), days, { in: utc }),
+      end: new UTCDate()
+    },
+    { in: utc }
+  );
 
 /**
  *
@@ -166,11 +178,11 @@ export function realDiscount(meta, data) {
 }
 
 /**
- * Searches for Sale Action in last 30 days. When there is any, it returns
+ * Searches for Sale Action in the last 30 days. When there is any, it returns
  * real sale according to EU legislation - Minimum price in 30 days before
- * sale action. Sale action is simply last drop of price without any increase.
- * In other cases it counts discount against common price - most used price
- * in 60 days interval.
+ * sale action. Sale action is simply the last drop of price without any increase.
+ * In other cases, it counts discount against common price - most used price
+ * in 60-day interval.
  * @param {DataRow[]} data Time series of prices
  * @returns {EUDiscount | CommonPriceDifference}
  * @deprecated
@@ -198,11 +210,31 @@ export function getClaimedDiscount(data) {
 }
 
 /**
+ * @param {DataRow} x
+ * @param {number} i
+ * @param {DataRow[]} arr
+ * @returns {DataRow}
+ */
+function replaceDeviatedData(x, i, arr) {
+  if (i === 0 || !x.currentPrice) return x;
+
+  const prev = arr[i - 1];
+  if (!prev.currentPrice) return x;
+
+  const r = prev.currentPrice / x.currentPrice;
+  if (0.005 < r && r < 200) return x;
+
+  x.currentPrice = prev.currentPrice;
+  return x;
+}
+
+/**
  *
  * @param {Array | Object} priceHistory
+ * @param {Number | null} n returns last n items of the interval. When `null` returns all items
  * @returns {DataRow[]}
  */
-export function prepareData(priceHistory) {
+export function prepareData(priceHistory, n) {
   const rows = Array.isArray(priceHistory) ? priceHistory : priceHistory.entries;
 
   const data = rows.map(({ o, c, d }) => ({
@@ -212,12 +244,6 @@ export function prepareData(priceHistory) {
   }));
 
   const dataMap = new Map(data.map(x => [x.date.getTime(), x]));
-  const days = eachDayOfInterval({
-    start: head(data)?.date,
-    end: endOfToday({ in: utc })
-  }, { in: utc });
-
-
   let prevDay = head(data);
 
   /**
@@ -229,23 +255,16 @@ export function prepareData(priceHistory) {
       date
     });
 
-  /**
-   * @param {DataRow} x
-   * @param {number} i
-   * @param {DataRow[]} arr
-   * @returns {DataRow}
-   */
-  const replaceDeviatedData = (x, i, arr) => {
-    if (i === 0 || !x.currentPrice) return x;
+  const days = eachDayOfInterval(
+    {
+      start: head(data)?.date,
+      end: endOfToday({ in: utc })
+    },
+    { in: utc }
+  );
 
-    const prev = arr[i - 1];
-    if (!prev.currentPrice) return x;
-
-    const r = prev.currentPrice / x.currentPrice;
-    if (0.005 < r && r < 200) return x;
-
-    x.currentPrice = prev.currentPrice;
-    return x;
-  };
+  if (n) {
+    return takeLast(n, days.map(fillInMissingData).map(replaceDeviatedData));
+  }
   return days.map(fillInMissingData).map(replaceDeviatedData);
 }
