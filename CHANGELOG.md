@@ -1,8 +1,18 @@
 # Extension
 
+## 2.4.8
+* Disabled extension-side price ingestion as a hot fix for logged-in user prices (member/club discounts) being saved as the product's public day price (#3551)
+* Fixed Notino "blinks and hides" on canonical (no `/p-<id>/`) product URLs by re-rendering from cached data when Vue/Nuxt wholesale-replaces the chart's parent subtree
+* Fixed Teta drogerie blink on product URLs with special characters
+* Fixed Datart.cz originalPrice on standard-discount products after EU-Omnibus refPrice layout change
+* Fixed Eva.cz rendering after `.zpanel-price` inner wrapper class rename
+* Fixed Lekarna.cz originalPrice missing on standard-discount products
+* Fixed DM.cz "Missing slug" error after the new `/p/d/<id>/<slug>` URL format rollout
+* Fixed Knihydobrovsky.cz e-book pages where the chart anchor was missing
+* Fixed Globus.cz after the move to globusonline.cz and the Next.js rewrite
+
 ## 2.4.7
 * Fixed Kosik.cz rendering when navigating between products in the popup product detail
-* Fixed TS Bohemia stale chart from previous product when navigating to another product
 * Fixed AsyncShop leaving the loading lock acquired on early-return paths, which permanently blocked subsequent renders for any shop where the API returned no data once
 * Removed noisy "Data not found" console errors emitted during SPA route transitions on Kosik and TS Bohemia
 * Fixed Mountfield ignoring club/loyalty price and using recommended retail price as originalPrice fallback
