@@ -113,6 +113,9 @@ function handleDetail(shop) {
       renderRoot.remove();
       if (chart) chart.destroy();
       shop.loaded = false;
+    },
+    isRendered() {
+      return renderRoot.isConnected;
     }
   });
 }

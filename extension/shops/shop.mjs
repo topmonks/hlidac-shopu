@@ -54,6 +54,7 @@ export class AsyncShop extends Shop {
     this.loading = false;
     this.lastHref = null;
     this.firstLoad = true;
+    this.lastData = null;
   }
 
   /**
@@ -64,11 +65,19 @@ export class AsyncShop extends Shop {
     throw new Error("Property not implemented");
   }
 
-  async scheduleRendering({ render, cleanup, fetchData }) {
+  async scheduleRendering({ render, cleanup, fetchData, isRendered }) {
     const observer = new MutationObserver(async () => {
       if (location.href !== this.lastHref) {
         this.loaded = false;
         this.lastHref = location.href;
+        this.lastData = null;
+      } else if (this.loaded && isRendered && !isRendered() && this.lastData) {
+        // SPA wholesale-replaced the parent subtree (Vue/Nuxt hydration, route
+        // diff, variant switch) and our injected renderRoot went with it.
+        // Same URL → cached data still applies; re-render without re-fetching
+        // so a chatty SPA mutation loop doesn't hammer the API.
+        this.loaded = render(true, this.lastData);
+        return;
       }
       if (this.loaded) return;
       if (this.loading) return;
@@ -91,6 +100,7 @@ export class AsyncShop extends Shop {
         }
         this.loaded = render(!this.firstLoad, data);
         this.firstLoad = false;
+        this.lastData = data;
       } finally {
         // Always release the loading lock; otherwise an early return in any
         // of the await branches would leave the observer permanently
@@ -108,6 +118,7 @@ export class AsyncShop extends Shop {
     if (!data) return;
     this.loaded = render(false, data);
     this.firstLoad = false;
+    this.lastData = data;
   }
 }
 
