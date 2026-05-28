@@ -6,8 +6,16 @@ function getVersion() {
   return runtime.getManifest().version;
 }
 
+// Hot fix for #3551: extension-scraped prices can be a logged-in user's
+// personalized price (member discount, club price). Submitting them as the
+// product's day price poisoned the dataset. Until we can tell personalized
+// from public prices reliably, drop currentPrice/originalPrice on the way
+// out — /v2/detail only uses the request for chart lookup, not ingestion.
+const SUBMIT_PRICES = false;
+
 function fetchData(url, info) {
-  const searchString = new URLSearchParams(Object.entries(info).filter(([, val]) => Boolean(val)));
+  const safeInfo = SUBMIT_PRICES ? info : { ...info, currentPrice: null, originalPrice: null };
+  const searchString = new URLSearchParams(Object.entries(safeInfo).filter(([, val]) => Boolean(val)));
   searchString.append("url", url);
   searchString.append("ext", getVersion());
   return fetch(`https://api.hlidacshopu.cz/v2/detail?${searchString}`).then(resp => {
