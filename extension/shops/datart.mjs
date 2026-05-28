@@ -1,4 +1,4 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 export class Datart extends Shop {
@@ -11,10 +11,16 @@ export class Datart extends Shop {
     const itemId = itemIdTarget.split("-").at(-1);
 
     const title = elem.querySelector("h1.product-detail-title").textContent.trim();
-    const displayPrice = Number(elem.querySelector(".product-price").dataset.priceValue);
-    const couponPrice = cleanPrice(".product-price-discount .price-finally");
-    const currentPrice = couponPrice ?? displayPrice;
-    const originalPrice = couponPrice ? displayPrice : cleanPrice(".product-price .cut-price del");
+    const currentPrice = Number(elem.querySelector(".product-price").dataset.priceValue);
+
+    // EU Omnibus "lowest price in last 30 days" reference, rendered inside
+    // `.product-price-before` only on discounted products (including coupon
+    // discounts already baked into `data-price-value`). The label text holds
+    // a "30 dní" digit run we must skip — strip `.sr-only` before parsing.
+    const refEl = elem.querySelector(".product-price-before .cut-price--lessOrEqual")?.cloneNode(true);
+    refEl?.querySelectorAll(".sr-only").forEach(n => n.remove());
+    const originalPrice = refEl ? cleanPriceText(refEl.textContent) : null;
+
     const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").dataset.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
