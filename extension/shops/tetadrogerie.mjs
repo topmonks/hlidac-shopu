@@ -21,11 +21,18 @@ export class TetaDrogerie extends AsyncShop {
     return ["afterend", ".c-detail__sticky-side .c-product-price--detail"];
   }
 
-  async scheduleRendering({ render, cleanup, fetchData }) {
+  async scheduleRendering({ render, cleanup, fetchData, isRendered }) {
     const tryRender = async () => {
       if (location.href !== this.lastHref) {
         this.loaded = false;
         this.lastHref = location.href;
+        this.lastData = null;
+      } else if (this.loaded && isRendered && !isRendered() && this.lastData) {
+        // Vue wiped our subtree (post-hydration re-render) without changing
+        // URL — re-render from cached data; avoids re-fetching during the
+        // brief mutation storm Vue/Nuxt produces around hydration.
+        this.loaded = render(true, this.lastData);
+        return;
       }
       if (this.loaded || this.loading) return;
       // Bail cheaply (no lock) if we are not on a product page yet — otherwise
@@ -57,6 +64,7 @@ export class TetaDrogerie extends AsyncShop {
         if (!data) return;
         this.loaded = render(!this.firstLoad, data);
         this.firstLoad = false;
+        this.lastData = data;
       } finally {
         this.loading = false;
       }
