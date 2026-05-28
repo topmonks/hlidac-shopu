@@ -3,15 +3,16 @@ import { Shop } from "./shop.mjs";
 
 export class Knihydobrovsky extends Shop {
   get injectionPoint() {
-    const elem = document.querySelector("#snippet--deliveryInfo .variants");
-    if (elem) {
-      return ["afterend", "#snippet--deliveryInfo .variants"];
-    }
-    const belem = document.querySelector("#snippet--deliveryInfo .b-gift");
-    if (belem) {
-      return ["afterend", "#snippet--deliveryInfo .b-gift"];
-    }
-    return ["afterend", "#snippet--deliveryInfo .b-package"];
+    const candidates = [
+      "#snippet--deliveryInfo .variants",
+      "#snippet--deliveryInfo .b-gift",
+      "#snippet--deliveryInfo .b-package",
+      // e-book pages don't have variants/gift/package blocks — fall back to
+      // the price paragraph itself, which is present on every product type.
+      "#snippet--deliveryInfo p.price.js-price"
+    ];
+    const selector = candidates.find(s => document.querySelector(s)) ?? candidates.at(-1);
+    return ["afterend", selector];
   }
 
   async scrape() {
