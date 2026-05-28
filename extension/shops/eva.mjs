@@ -8,9 +8,9 @@ export class Eva extends AsyncShop {
 
   get injectionPoint() {
     if (this.isMobileDetailPage()) {
-      return ["beforebegin", ".zpanel-price-mobile div.pb-3"];
+      return ["beforebegin", ".zpanel-price-mobile div.spacer"];
     } else {
-      return ["beforebegin", ".zpanel-price div.pb-3"];
+      return ["beforebegin", ".zpanel-price div.spacer"];
     }
   }
 
