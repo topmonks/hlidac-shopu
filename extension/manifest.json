@@ -62,6 +62,8 @@
         "https://www.mojadm.sk/*",
         "https://www.eva.cz/*",
         "https://*.iglobus.cz/*",
+        "https://globusonline.cz/*",
+        "https://www.globusonline.cz/*",
         "https://www.grizly.cz/*",
         "https://www.grizly.sk/*",
         "https://www.hornbach.cz/*",
@@ -91,8 +93,7 @@
         "https://www.rohlik.cz/*",
         "https://www.tchibo.cz/*",
         "https://www.tchibo.sk/*",
-        "https://www.tetadrogerie.cz/*",
-        "https://www.tsbohemia.cz/*"
+        "https://www.tetadrogerie.cz/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"
