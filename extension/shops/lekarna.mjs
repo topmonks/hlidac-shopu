@@ -32,13 +32,11 @@ export class Lekarna extends Shop {
     const title = data.name;
     const currentPrice = data.offers?.price?.toString();
 
-    // On discounted products Lekarna renders the *original* price as the big
-    // `#priceBox .text-3xl.font-bold` element and the discounted current price
-    // as a separate `<strong>` (also exposed via JSON-LD). On non-discounted
-    // products only the big element exists and equals the current price.
-    const originalPriceText = document.querySelector("#priceBox .text-3xl.font-bold")?.textContent;
-    const originalPriceClean = cleanPriceText(originalPriceText ?? "");
-    const originalPrice = originalPriceClean && originalPriceClean !== currentPrice ? originalPriceClean : null;
+    // On discounted products Lekarna renders the original price as a
+    // `#priceBox .line-through` element labelled "Před slevou:". Non-discounted
+    // products have no such element, so the selector simply misses.
+    const originalPriceText = document.querySelector("#priceBox .line-through")?.textContent;
+    const originalPrice = cleanPriceText(originalPriceText ?? "");
 
     const imageUrl = document.querySelector("[property='og:image']")?.content;
 
