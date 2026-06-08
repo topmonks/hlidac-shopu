@@ -7,7 +7,7 @@ export class ForCamping extends AsyncShop {
   }
 
   get injectionPoint() {
-    return ["beforebegin", "#priceInfo>.product-detail__extras", { "grid-area": "extras" }];
+    return ["beforebegin", "#priceInfo>.product-detail__extras", { "grid-area": "extras", "z-index": 1000 }];
   }
 
   async scrape() {
