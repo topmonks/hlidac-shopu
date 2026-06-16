@@ -111,7 +111,10 @@ function handleDetail(shop) {
     },
     cleanup() {
       renderRoot.remove();
-      if (chart) chart.destroy();
+      if (chart) {
+        chart.destroy();
+        chart = null;
+      }
       shop.loaded = false;
     },
     isRendered() {
