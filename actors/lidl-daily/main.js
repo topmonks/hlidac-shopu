@@ -1,550 +1,248 @@
-import { HttpCrawler } from "@crawlee/http";
-import { PlaywrightCrawler } from "@crawlee/playwright";
+import { gunzipSync } from "node:zlib";
+import { BasicCrawler, useState } from "@crawlee/basic";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
-import { Actor, Dataset, LogLevel, log } from "apify";
+import { Actor, Dataset, log } from "apify";
+import { launchContext as launchCloakContext } from "cloakbrowser";
+import { Impit } from "impit";
 
-/** @enum {string} */
-const Labels = {
-  MAIN_NABIDKA: "MAIN_NABIDKA",
-  MAIN_NABIDKA_CAT: "MAIN_NABIDKA_CAT",
-  DETAIL: "DETAIL",
-  LIDL_SHOP: "LIDL_SHOP",
-  LIDL_SHOP_MAIN_CAT: "LIDL_SHOP_MAIN_CAT",
-  LIDL_SHOP_CAT: "LIDL_SHOP_CAT",
-  LIDL_SHOP_DETAIL: "LIDL_SHOP_DETAIL",
-  LIDL_SHOP_SECTION: "LIDL_SHOP_SECTION"
-};
 const shopUrl = "https://www.lidl.cz";
+const sitemapIndexUrl = "https://www.lidl.cz/static/sitemap.xml";
 
-function createInitRequests({ type, urls }) {
-  const sources = [];
-  if (type === ActorType.BlackFriday) {
-    return [
-      {
-        url: urls?.length ? urls[0] : "https://www.lidl.cz/c/black-friday/a10034046",
-        userData: {
-          label: Labels.LIDL_SHOP_CAT,
-          level: 1
-        }
-      }
-    ];
-  }
-  /*sources.push({
-    url: "https://www.lidl.cz/aktualni-nabidka",
-    userData: {
-      label: LABELS.MAIN_NABIDKA
-    }
-  });
-  sources.push({
-    url: "https://www.lidl.cz/cerstve-produkty",
-    userData: {
-      label: LABELS.MAIN_NABIDKA
-    }
-  });
-  sources.push({
-    url: "https://www.lidl.cz/c/kategorie/s10004543",
-    userData: {
-      label: LABELS.LIDL_SHOP
-    }
-  });
-  sources.push({
-    url: "https://www.lidl.cz/c/hity-tydne/a10004407",
-    userData: {
-      label: LABELS.LIDL_SHOP_CAT
-    }
-  });
-  sources.push({
-    url: "https://www.lidl.cz/q/query/Slevy?pageId=20029807",
-    userData: {
-      label: LABELS.LIDL_SHOP_CAT
-    }
-  });
-  sources.push({
-    url: "https://www.lidl.cz/p/hn8schlafsysteme-7zonova-tastickova-matrace-xxl-gelstar-t-1000/p100241432",
-    userData: {
-      label: LABELS.LIDL_SHOP_DETAIL
-    }
-  });*/
-  // 1. Discounts (known leaf category with products)
-  sources.push({
-    url: "https://www.lidl.cz/c/slevy/s10076329",
-    userData: {
-      label: Labels.LIDL_SHOP_CAT
-    }
-  });
-
-  // 2. Main category hub (discovers sections via DOM)
-  sources.push({
-    url: "https://www.lidl.cz/c/kategorie/s10004543",
-    userData: {
-      label: Labels.LIDL_SHOP_SECTION,
-      level: 1
-    }
-  });
-
-  // 3. Direct navigation hub entry points for complete coverage
-  // These navigation hubs will be traversed to discover leaf categories
-  const navigationHubs = [
-    "/h/damska-moda/h10003533",
-    "/h/panska-moda/h10003526",
-    "/h/sportovni-moda-a-doplnky/h10003620",
-    "/h/d-tska-moda/h10003626",
-    "/h/obuv/h10003537",
-    "/h/modni-doplnky/h10003614"
-  ];
-
-  for (const hub of navigationHubs) {
-    sources.push({
-      url: `https://www.lidl.cz${hub}`,
-      userData: {
-        label: Labels.LIDL_SHOP_CAT
-      }
-    });
+// ---------------------------------------------------------------------------
+// Discovery: enumerate every leaf category deterministically from the sitemap.
+// ---------------------------------------------------------------------------
+// Category coverage used to be discovered by DOM-scraping the SPA category
+// pages, which is non-deterministic (anti-bot + render timing) and missed the
+// bulk /h/ hub catalog entirely — so the scraped item count oscillated between
+// runs (#3564). The sitemap gives the same complete leaf-category list every
+// run. The gzipped sitemap assets are not behind the bot wall, so a plain
+// fetch is enough here.
+async function sitemapCategoryUrls() {
+  const indexXml = await (await fetch(sitemapIndexUrl)).text();
+  const pagesUrl = indexXml.match(/<loc>\s*(https:\/\/[^<\s]*pages_[^<\s]*\.xml\.gz)\s*<\/loc>/)?.[1];
+  if (!pagesUrl) {
+    throw new Error("lidl sitemap: pages sitemap not found in sitemap index - structure changed");
   }
 
-  return sources;
-}
-
-function getItemId(url) {
-  const arr = url.split("/");
-  return arr[arr.length - 1];
-}
-
-function getBaseProducts(document) {
-  return document.querySelectorAll("article.product").map(article => {
-    const title = article.querySelector("h3").innerText.trim();
-    const mainFrame = article.querySelector("a.product__body");
-    const itemUrl = mainFrame.getAttribute("href");
-    const imageSource = mainFrame.querySelectorAll("picture source")[0];
-    const imageLargeArr = imageSource.getAttribute("data-srcset").split(",");
-    const result = {
-      itemId: getItemId(itemUrl),
-      itemUrl: `${shopUrl}${itemUrl}`,
-      itemName: title,
-      currency: "CZK",
-      img: imageLargeArr[0],
-      currentPrice: parseFloat(article.querySelector(".pricebox__price").innerText.trim()),
-      originalPrice: null,
-      discounted: false
-    };
-    const price = article.querySelector(".pricebox__recommended-retail-price").innerText.trim();
-    if (price) {
-      result.discounted = true;
-      result.originalPrice = parseFloat(price);
-    }
-    return result;
-  });
-}
-
-function mainMenuRequests(document) {
-  log.info("Start scrapeMainMenu");
-  const subMenu = document.querySelectorAll("a.theme__item");
-  log.debug(`Found ${subMenu.length} subcategories`);
-  return subMenu.map(m => ({
-    url: `${shopUrl}${m.getAttribute("href")}`,
-    userData: {
-      label: Labels.MAIN_NABIDKA_CAT
-    }
-  }));
-}
-
-function mainMenuCategoryRequests(document) {
-  const products = getBaseProducts(document);
-  return products.map(product => ({
-    url: product.itemUrl,
-    userData: {
-      label: Labels.DETAIL,
-      product
-    }
-  }));
-}
-
-function scrapeDetail({ request, document }) {
-  const {
-    userData: { product }
-  } = request;
-  let breadcrumbs = document.querySelectorAll(".breadcrumbs__items-container .breadcrumbs__text");
-  if (product) {
-    breadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
-    product.category = breadcrumbs.map(b => b.innerText.trim()).join(" > ");
-    return product;
+  const raw = Buffer.from(await (await fetch(pagesUrl)).arrayBuffer());
+  let xml;
+  try {
+    xml = gunzipSync(raw).toString("utf-8");
+  } catch {
+    xml = raw.toString("utf-8");
   }
-}
 
-function mainNavigationRequests(document) {
-  const mainMenu = document.querySelectorAll("ol.n-header__main-navigation--sub a.n-header__main-navigation-link");
-  return mainMenu.map(menu => ({
-    url: `https://www.lidl.cz${menu.getAttribute("href")}`,
-    userData: {
-      label: Labels.LIDL_SHOP_MAIN_CAT,
-      level: 1
-    }
-  }));
-}
+  // Leaf categories: /h/<slug>/h<NNNN> (hubs, the bulk product catalog) and /c/<slug>/s<NNNN>.
+  const urls = [
+    ...xml.matchAll(/<loc>\s*(https:\/\/www\.lidl\.cz\/(?:h|c)\/[^<\s]+\/[hs]\d+)\s*<\/loc>/g)
+  ].map(m => m[1]);
 
-function categoryRequests(document, level, cats, catLevel, requests = []) {
-  for (const c of cats) {
-    const name = document.querySelector("div > a, > span");
-    const isSelected = name.classList.contains("s-anchor--selected");
-    const subCats = c.querySelectorAll("ul > li");
-    if (isSelected && subCats.length > 0) {
-      categoryRequests(document, level, subCats, catLevel + 1, requests);
-    } else if (!isSelected && subCats.length === 0 && catLevel > level) {
-      log.info(`enqueue category: ${name.innerText.trim()}`);
-      requests.push({
-        url: `https://www.lidl.cz${c.querySelector("a").getAttribute("href")}`,
-        userData: {
-          label: catLevel < 2 ? Labels.LIDL_SHOP_MAIN_CAT : Labels.LIDL_SHOP_CAT,
-          level: catLevel
-        }
-      });
-    }
-  }
-  return requests;
-}
-
-function scrapeShopMainCategory({ document, request }) {
-  const { level } = request.userData;
-  const cats = document.querySelectorAll("#category > ul > li");
-  return categoryRequests(document, level, cats, 0);
-}
-
-function shopSectionRequests({ document, request }, { stats }) {
-  const requests = [];
-  const { level } = request.userData;
-  const sections = document.querySelectorAll(
-    ".APageRoot__Sections .ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked"
-  );
-  for (const section of sections) {
-    const a = section.getAttribute("href");
-    if (level === 1) {
-      requests.push({
-        url: a,
-        userData: {
-          label: Labels.LIDL_SHOP_SECTION,
-          level: 2
-        }
-      });
-    } else if (level === 2) {
-      requests.push({
-        url: a,
-        userData: {
-          label: Labels.LIDL_SHOP_CAT
-        }
-      });
-
-      stats.inc("categories");
-    }
-  }
-  log.info(`Found ${sections.length}x categories in ${request.url}`);
-  return requests;
+  // Process the product hubs (/h/) first: most /c/ sitemap entries are content
+  // pages (FAQ, cookies, ...) that the product API returns empty for.
+  return [...new Set(urls)].sort((a, b) => (a.includes("/h/") ? 0 : 1) - (b.includes("/h/") ? 0 : 1));
 }
 
 /**
- * Determines if a URL is a navigation hub (/h/) or potential product category (/c/)
- * @param {string} url
- * @returns {'hub'|'category'|'unknown'}
+ * Build the product API URL for a category page URL.
+ * Hub categories (/h/) require the type segment in the API path
+ * (category/h/<slug>/<id>); content categories (/c/) do not.
  */
-function getCategoryType(url) {
-  if (url.includes("/h/")) return "hub";
-  if (url.includes("/c/")) return "category";
-  return "unknown";
+function categoryApiUrl(pageUrl, offset, fetchsize) {
+  const m = pageUrl.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
+  if (!m) return null;
+  const [, type, slug, id] = m;
+  const path = type === "h" ? `h/${slug}` : slug;
+  return `${shopUrl}/q/api/category/${path}/${id}?offset=${offset}&fetchsize=${fetchsize}&locale=cs_CZ&assortment=CZ&version=2.1.0`;
 }
 
-/**
- * Extracts subcategory links from a navigation hub page
- * Navigation hubs have nested category lists that need to be traversed
- */
-function extractNavigationLinks({ document, request }) {
-  const links = [];
+function toProduct(item, processedIds, stats) {
+  const gridData = item.gridbox?.data;
+  if (!gridData) return null;
 
-  // Strategy 1: Look for card-style navigation (like section pages)
-  const cardLinks = document.querySelectorAll(".ATheContentPageCardList__Item a.ATheContentPageCardList__Item--linked");
+  stats.inc("items");
+  if (processedIds[item.code]) {
+    stats.inc("itemsDuplicity");
+    return null;
+  }
+  processedIds[item.code] = true;
+  stats.inc("itemsUnique");
 
-  for (const link of cardLinks) {
-    const href = link.getAttribute("href");
-    if (href) {
-      const url = href.startsWith("http") ? href : `https://www.lidl.cz${href}`;
-      links.push({
-        url,
-        type: getCategoryType(url)
-      });
+  return {
+    itemId: item.code,
+    itemName: gridData.fullTitle,
+    itemUrl: `${shopUrl}${gridData.canonicalPath}`,
+    img: gridData.image,
+    currentPrice: gridData.price?.price,
+    originalPrice: gridData.price?.discount?.deletedPrice || gridData.price?.price,
+    discounted: gridData.price?.discount?.showDiscount || false,
+    inStock: gridData.stockAvailability?.onlineAvailable || false,
+    currency: "CZK",
+    category: gridData.category ? gridData.category.split("/").slice(1).join(" > ") : "",
+    slug: item.code
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Solver: cloakbrowser earns a Lidl/Myra session cookie jar.
+// ---------------------------------------------------------------------------
+// www.lidl.cz is fronted by Myra Security. The product JSON API
+// (/q/api/category/...) is bot-walled: a non-browser HTTP client gets a bare
+// 401 even with the right URL. cloakbrowser is a stealth-patched Chromium that
+// runs the page's JS challenge and earns the Myra session cookies, which the
+// impit executor then replays with a real Chrome TLS handshake.
+async function solveMyra() {
+  log.info("Solver: launching cloakbrowser to earn a Lidl/Myra session…");
+  const ctx = await launchCloakContext({
+    headless: true,
+    userAgent:
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    locale: "cs-CZ",
+    timezoneId: "Europe/Prague"
+  });
+  try {
+    const page = await ctx.newPage();
+    await page.goto(shopUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.waitForTimeout(3000);
+    const jar = await ctx.cookies(shopUrl);
+    log.info(`Solver: earned ${jar.length} cookies`);
+    return Object.fromEntries(jar.map(c => [c.name, c.value]));
+  } finally {
+    await ctx.close();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Executor: impit (Chrome TLS fingerprint) + solved cookies → JSON API.
+// ---------------------------------------------------------------------------
+// Myra checks the TLS fingerprint on every request, not just the cookies, so
+// node fetch / got-scraping / curl-OpenSSL get 401 even with a valid session.
+// impit impersonates Chrome's TLS handshake from Node so Myra accepts the
+// solver's cookies as genuinely browser-issued.
+async function apiFetch(impit, cookies, url) {
+  const cookieHeader = Object.entries(cookies)
+    .map(([k, v]) => `${k}=${v}`)
+    .join("; ");
+  const res = await impit.fetch(url, {
+    headers: {
+      Cookie: cookieHeader,
+      Accept: "application/json, text/plain, */*",
+      "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.8",
+      Referer: `${shopUrl}/`
     }
-  }
-
-  // Strategy 2: Look for sidebar/menu navigation (alternative structure)
-  if (links.length === 0) {
-    const menuLinks = document.querySelectorAll("#category a, .category-nav a, nav a[href*='/h/'], nav a[href*='/c/']");
-
-    for (const link of menuLinks) {
-      const href = link.getAttribute("href");
-      if (href && (href.includes("/h/") || href.includes("/c/"))) {
-        const url = href.startsWith("http") ? href : `https://www.lidl.cz${href}`;
-        links.push({
-          url,
-          type: getCategoryType(url)
-        });
-      }
-    }
-  }
-
-  log.info(`Found ${links.length} navigation links in hub ${request.url}`);
-  return links;
+  });
+  return { status: res.status, body: await res.text() };
 }
-
-const from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
-const to = "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
-
-function slug(str) {
-  let str_ = str
-    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-    .replace(/\s+/g, "-") // collapse whitespace and replace by -
-    .replace(/-+/g, "-")
-    .replace(/^\s+|\s+$/g, "")
-    .toLowerCase();
-
-  // remove accents, swap ñ for n, etc
-  for (let i = 0, l = from.length; i < l; i++) {
-    str_ = str_.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
-  }
-
-  return str_
-    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-    .replace(/\s+/g, "-") // collapse whitespace and replace by -
-    .replace(/-+/g, "-"); // collapse dashes
-}
-
-// TODO: extract common getters
-function extractBlackFridayProducts({ document, url }, { stats, processedIds }) {
-  stats.inc("categories");
-  const items = [];
-  const products = document.querySelectorAll('[selector="PRODUCT"]');
-  for (const el of products) {
-    stats.inc("items");
-
-    const data = JSON.parse(decodeURIComponent(el.dataset.gridboxImpression));
-    const { id: itemId, price: currentPrice, name: itemName, availability, category } = data;
-
-    const itemUrl = new URL(el.querySelector(".ods-tile__link").getAttribute("href"), "https://www.lidl.cz/").href;
-    const img = el
-      .querySelector('[selector="PRODUCT"] .ods-image-gallery__item--active .ods-image-gallery__image')
-      .getAttribute("src");
-    const originalPrice =
-      Number(el.querySelector(".m-price__rrp")?.innerText.replace(" Kč", "").replace(",", ".")) || undefined;
-
-    if (processedIds.has(data.id)) {
-      stats.inc("itemsDuplicity");
-      continue;
-    }
-    processedIds.add(itemId);
-    stats.inc("itemsUnique");
-    items.push({
-      itemId,
-      itemUrl,
-      itemName,
-      currency: "CZK",
-      currentPrice,
-      img,
-      originalPrice,
-      discounted: originalPrice ? originalPrice > currentPrice : false,
-      inStock: !availability.includes("not_"), // "available" or "not_available"
-      category: category.split("/").slice(1).join(" > "),
-      slug: itemId
-    });
-  }
-  return items;
-}
-
-// extractProducts and loadLazyContent functions removed - now using API directly
 
 async function main() {
   const rollbar = Rollbar.init();
-  const processedIds = new Set();
 
-  const {
-    development,
-    debug,
-    maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
-    type = ActorType.Full,
-    urls
-  } = await getInput();
-
-  if (debug) {
-    log.setLevel(LogLevel.DEBUG);
-  }
+  const { development, maxRequestRetries = 3, type = ActorType.Full, maxCategories } = await getInput();
 
   const stats = await withPersistedStats({
     categories: 0,
     items: 0,
     itemsUnique: 0,
     itemsDuplicity: 0,
-    navigationHubsProcessed: 0
+    blocked: 0,
+    failed: 0
   });
+  const processedIds = await useState("processedIds", {});
 
-  const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development && !debug
-  });
+  // Phase 1 — Solver: earn a Myra session.
+  let cookies = await solveMyra();
 
-  const crawler = new PlaywrightCrawler({
-    maxRequestsPerMinute: 400,
-    proxyConfiguration,
+  // Phase 2 — Executor: impit with a Chrome TLS fingerprint.
+  log.info("Executor: initializing impit (chrome TLS)");
+  const impit = new Impit({ browser: "chrome", ignoreTlsErrors: true });
+
+  // Myra eventually expires the session; on a 401/non-JSON response we re-solve.
+  // A mutex (in-flight promise) keeps the concurrent workers from stampeding
+  // cloakbrowser into many parallel re-solves.
+  let solvePromise = null;
+  async function triggerResolve(reason) {
+    if (solvePromise) return solvePromise;
+    solvePromise = (async () => {
+      try {
+        log.warning(`Myra re-solve triggered: ${reason}`);
+        cookies = await solveMyra();
+      } finally {
+        solvePromise = null;
+      }
+    })();
+    return solvePromise;
+  }
+
+  // Discover the leaf categories deterministically.
+  let categoryUrls = await sitemapCategoryUrls();
+  if (maxCategories) categoryUrls = categoryUrls.slice(0, maxCategories);
+  log.info(`Discovered ${categoryUrls.length} leaf categories from sitemap`);
+
+  const crawler = new BasicCrawler({
     maxRequestRetries,
-    launchContext: {
-      launchOptions: {
-        headless: true
+    maxRequestsPerMinute: 200,
+    maxConcurrency: 20,
+    async requestHandler({ request, log }) {
+      if (solvePromise) await solvePromise;
+
+      stats.inc("categories");
+      const fetchsize = 1000;
+      let offset = 0;
+      let categoryTotal = null;
+
+      while (true) {
+        const apiUrl = categoryApiUrl(request.url, offset, fetchsize);
+        if (!apiUrl) {
+          log.error(`Could not build API url for ${request.url}`);
+          return;
+        }
+
+        const { status, body } = await apiFetch(impit, cookies, apiUrl);
+
+        // Bot wall → re-solve and retry this category.
+        if (status === 401 || status === 403) {
+          stats.inc("blocked");
+          await triggerResolve(`block ${status} on ${request.url}`);
+          throw new Error("Myra session re-solved, retrying request");
+        }
+
+        let data;
+        try {
+          data = JSON.parse(body);
+        } catch {
+          stats.inc("blocked");
+          await triggerResolve(`non-JSON response on ${request.url} (status=${status}, ${body.length}b)`);
+          throw new Error("Myra session re-solved, retrying request");
+        }
+
+        if (!data.items || data.items.length === 0) break;
+
+        if (categoryTotal === null) {
+          categoryTotal = data.numFound;
+          log.info(`category ${request.url}: ${categoryTotal} products`);
+        }
+
+        const products = data.items.map(item => toProduct(item, processedIds, stats)).filter(Boolean);
+        if (products.length > 0) await Dataset.pushData(products);
+
+        offset += data.items.length;
+        if (offset >= data.numFound) break;
       }
     },
-    async requestHandler(context) {
-      const { request, log, page } = context;
-      const { label } = request.userData;
-      log.info("processing page", { url: request.url, label });
-
-      const text = await page.content();
-      const { document } = parseHTML(text);
-
-      switch (label) {
-        case Labels.DETAIL:
-          {
-            const product = scrapeDetail({ request, document });
-            await Dataset.pushData(product);
-          }
-          break;
-        case Labels.LIDL_SHOP:
-          await crawler.requestQueue.addRequests(mainNavigationRequests(document));
-          break;
-        case Labels.LIDL_SHOP_CAT:
-          {
-            // Check if this is a navigation hub or product category
-            const categoryType = getCategoryType(request.url);
-
-            if (categoryType === "hub") {
-              // This is a navigation hub - extract subcategories
-              log.info(`Processing navigation hub: ${request.url}`);
-              const subLinks = extractNavigationLinks({ document, request });
-
-              const requests = subLinks.map(({ url, type }) => ({
-                url,
-                userData: {
-                  label: Labels.LIDL_SHOP_CAT // All subcategories go through same handler
-                }
-              }));
-
-              await crawler.requestQueue.addRequests(requests);
-              stats.inc("navigationHubsProcessed");
-              break;
-            }
-
-            // Otherwise, this is a product category - proceed with API extraction
-            // Extract category ID and path from URL
-            // URLs look like: /h/panska-moda/h10067568 or /c/slevy/s10076329
-            const urlMatch = request.url.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
-            if (!urlMatch) {
-              log.error(`Could not extract category ID from URL: ${request.url}`);
-              break;
-            }
-
-            const [, , categoryPath, categoryId] = urlMatch;
-            log.info(`Fetching products via API for category ${categoryId}`);
-
-            // Fetch all products using pagination API
-            let offset = 0;
-            const fetchsize = 1000; // Max allowed by API
-            let totalFetched = 0;
-
-            while (true) {
-              const apiUrl = `https://www.lidl.cz/q/api/category/${categoryPath}/${categoryId}?offset=${offset}&fetchsize=${fetchsize}&locale=cs_CZ&assortment=CZ&version=2.1.0`;
-
-              const response = await page.request.fetch(apiUrl);
-              const data = await response.json();
-
-              if (!data.items || data.items.length === 0) {
-                log.info(`No more items found at offset ${offset}`);
-                break;
-              }
-
-              log.info(`Fetched ${data.items.length} items from API (offset: ${offset}, total: ${data.numFound})`);
-
-              // Process items
-              const products = data.items
-                .map(item => {
-                  const gridData = item.gridbox?.data;
-                  if (!gridData) return null;
-
-                  stats.inc("items");
-
-                  if (processedIds.has(item.code)) {
-                    stats.inc("itemsDuplicity");
-                    return null;
-                  }
-
-                  processedIds.add(item.code);
-                  stats.inc("itemsUnique");
-
-                  return {
-                    itemId: item.code,
-                    itemName: gridData.fullTitle,
-                    itemUrl: `https://www.lidl.cz${gridData.canonicalPath}`,
-                    img: gridData.image,
-                    currentPrice: gridData.price?.price,
-                    originalPrice: gridData.price?.discount?.deletedPrice || gridData.price?.price,
-                    discounted: gridData.price?.discount?.showDiscount || false,
-                    inStock: gridData.stockAvailability?.onlineAvailable || false,
-                    currency: "CZK",
-                    category: gridData.category ? gridData.category.split("/").slice(1).join(" > ") : "",
-                    slug: item.code
-                  };
-                })
-                .filter(Boolean);
-
-              if (products.length > 0) {
-                await Dataset.pushData(products);
-                totalFetched += products.length;
-              }
-
-              offset += data.items.length;
-
-              // Check if we've fetched everything
-              if (offset >= data.numFound) {
-                log.info(`Finished fetching all ${totalFetched} products for category ${categoryId}`);
-                break;
-              }
-            }
-          }
-          break;
-        case Labels.LIDL_SHOP_MAIN_CAT:
-          await crawler.requestQueue.addRequests(scrapeShopMainCategory({ document, request }));
-          break;
-        case Labels.LIDL_SHOP_SECTION:
-          await crawler.requestQueue.addRequests(shopSectionRequests({ document, request }, { stats }));
-          break;
-        case Labels.MAIN_NABIDKA:
-          await crawler.requestQueue.addRequests(mainMenuRequests(document));
-          break;
-        case Labels.MAIN_NABIDKA_CAT:
-          await crawler.requestQueue.addRequests(mainMenuCategoryRequests(document), {
-            forefront: true
-          });
-          break;
-      }
-    },
-    async failedRequestHandler({ request }, error) {
+    failedRequestHandler({ request }, error) {
       stats.inc("failed");
       rollbar.error(error, request);
       log.error(`Request ${request.url} failed multiple times`, request);
     }
   });
 
-  await crawler.run(createInitRequests({ urls, type }));
+  await crawler.run(categoryUrls.map(url => ({ url, userData: { label: "CATEGORY" } })));
   await stats.save(true);
 
-  if (!development) {
+  if (!development && type !== ActorType.Test) {
     const tableName = type === ActorType.BlackFriday ? "lidl_cz_bf" : "lidl_cz";
     await uploadToKeboola(tableName);
   }
