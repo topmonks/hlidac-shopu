@@ -44,7 +44,9 @@ function getCountrySlug(country) {
 }
 
 function makeListingUrl(countryCode, productQuery, currentPage, pageSize = 100) {
-  return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/static?${new URLSearchParams({
+  // The `/search/static` endpoint now 302-redirects to `/search/crawl`; hit
+  // the new path directly so we don't depend on redirect-following.
+  return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/crawl?${new URLSearchParams({
     ...productQuery,
     pageSize,
     currentPage,
@@ -101,9 +103,12 @@ function parseItem(item, country, category) {
   // https://products.dm.de/availability/api/v1/tiles/CZ/<id>
   // Not necessary to make the extra call. But the Keboola table schema
   // requires it, so we include it (set to null)
+  // `title.preheadline` (the brand prefix) was dropped from the tile schema;
+  // the brand now lives on the product (`brandName`) / tile (`brand.name`).
+  const brand = p.title.preheadline ?? item.brandName ?? p.brand?.name;
   return {
     itemId: p.gtin,
-    itemName: `${p.title.preheadline} ${p.title.tileHeadline}`,
+    itemName: [brand, p.title.tileHeadline].filter(Boolean).join(" "),
     itemUrl: createProductUrl(country, p.self),
     img: p.images[0]?.tileSrc ?? null,
     inStock: null,
@@ -206,10 +211,13 @@ function categoriesListing({ type, navigation }, stats, country) {
   for (const category of traverseCategories(children)) {
     log.debug(`Found category ${category.title} at link: ${category.link}`);
     stats.inc("categories");
+    // Navigation now ships absolute category links (https://www.dm.cz/<path>);
+    // the content API still expects just the path segment appended to the base.
+    const link = new URL(category.link, "https://www.dm.cz").pathname;
     // we need to await here to prevent higher categories
     // to be enqueued sooner than sub-categories
     requests.push({
-      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}${category.link}/`,
+      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}${link}/`,
       userData: {
         country,
         category: category.breadcrumbs.toString(),
