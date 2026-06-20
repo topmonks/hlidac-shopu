@@ -6,12 +6,14 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.16.0",
-    "@crawlee/playwright": "3.16.0",
+    "@crawlee/basic": "3.16.0",
     "@hckr_/apify-persistent-stats": "1.0.3",
     "@hlidac-shopu/actors-common": "3.2.5",
     "apify": "3.7.0",
-    "playwright": "1.59.1"
+    "cloakbrowser": "0.3.22",
+    "impit": "0.13.0",
+    "impit-linux-x64-gnu": "0.13.0",
+    "playwright-core": "1.59.1"
   },
   "devDependencies": {
     "@types/node": "24.12.2",
