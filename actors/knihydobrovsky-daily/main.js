@@ -132,7 +132,7 @@ async function main() {
       log.info("Processing", { url, label });
       switch (label) {
         case "LIST":
-          const nextPageHref = document.querySelector("nav.paging a.btn-icon-after")?.getAttribute("href");
+          const nextPageHref = document.querySelector("#btn-load-more")?.getAttribute("href");
           if (nextPageHref) {
             const url = canonicalUrl(nextPageHref.trim());
             const pageNumber = url.searchParams.get("currentPage");
