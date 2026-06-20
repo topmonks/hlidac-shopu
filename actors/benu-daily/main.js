@@ -151,15 +151,27 @@ async function main() {
     failed: 0
   });
 
+  // benu.cz is a Czech-only shop behind Cloudflare. Generic (global) residential IPs are largely flagged for it,
+  // so pin the residential pool to Czech exit IPs (#3563). The group itself stays input-driven.
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
+    countryCode: "CZ",
     useApifyProxy: !development
   });
 
   const crawler = new HttpCrawler({
-    maxRequestRetries,
+    // benu.cz is behind Cloudflare, which 403s a large share of (residential) proxy IPs by reputation (#3563).
+    // A session pool that retires an IP on the first block lets each retry draw a fresh IP, and good IPs are
+    // reused; with enough retries a request survives several bad-IP draws, so the catalog scrapes near-completely.
+    // The single START seed must survive too, so keep a high retry floor (getInput defaults this to just 3).
+    maxRequestRetries: Math.max(maxRequestRetries ?? 0, 10),
     maxRequestsPerMinute: 400,
     proxyConfiguration,
+    useSessionPool: true,
+    persistCookiesPerSession: true,
+    sessionPoolOptions: {
+      sessionOptions: { maxErrorScore: 1 }
+    },
     async requestHandler({ body, request, crawler, sendRequest }) {
       const { document } = parseHTML(body.toString());
       switch (request.userData.label) {
