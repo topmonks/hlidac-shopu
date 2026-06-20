@@ -4799,14 +4799,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
-    "@crawlee/http": "npm:3.16.0"
-    "@crawlee/playwright": "npm:3.16.0"
+    "@crawlee/basic": "npm:3.16.0"
     "@hckr_/apify-persistent-stats": "npm:1.0.3"
     "@hlidac-shopu/actors-common": "npm:3.2.5"
     "@types/node": "npm:24.12.2"
     apify: "npm:3.7.0"
     apify-cli: "npm:1.4.1"
-    playwright: "npm:1.59.1"
+    cloakbrowser: "npm:0.3.22"
+    impit: "npm:0.13.0"
+    impit-linux-x64-gnu: "npm:0.13.0"
+    playwright-core: "npm:1.59.1"
   languageName: unknown
   linkType: soft
 
