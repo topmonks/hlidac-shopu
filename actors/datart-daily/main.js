@@ -156,7 +156,11 @@ function extractItems(document, rootUrl, country) {
     .filter(productEl => productEl.getAttribute("data-track"))
     .map(productEl => {
       const productBoxTopSide = productEl.querySelector("div.product-box-top-side");
-      const productHeader = productBoxTopSide.querySelector("div.item-title-holder h3.item-title a");
+      // Datart's product title used to be an <h3 class="item-title">; the
+      // current frontend renders it as <div class="item-title">. Match by the
+      // `item-title` class regardless of tag so we survive that swap (a null
+      // header here would throw and zero out the whole run — see #3559).
+      const productHeader = productBoxTopSide.querySelector("div.item-title-holder .item-title a");
       // Datart list pages advertise availability in several states. We treat
       // anything the shopper can actually obtain as in-stock — that means not
       // just "ships immediately" but also "last piece", "at the supplier",
