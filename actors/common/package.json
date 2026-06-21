@@ -1,13 +1,13 @@
 {
   "name": "@hlidac-shopu/actors-common",
-  "version": "3.2.5",
+  "version": "3.2.6",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "license": "EUPL-1.2",
   "type": "module",
   "types": "./types.d.ts",
   "dependencies": {
-    "@hlidac-shopu/lib": "1.5.3",
-    "@thi.ng/atom": "5.3.59",
+    "@hlidac-shopu/lib": "1.5.4",
+    "@thi.ng/atom": "5.3.67",
     "linkedom": "0.18.12",
     "rollbar": "2.26.5"
   },
@@ -15,6 +15,6 @@
     "apify": "^3.2.0"
   },
   "devDependencies": {
-    "@types/node": "24.12.2"
+    "@types/node": "24.13.2"
   }
 }

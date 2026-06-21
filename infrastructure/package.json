@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Infrastructure as Code",
   "dependencies": {
-    "@pulumi/aws": "7.24.0",
-    "@pulumi/awsx": "3.4.0",
-    "@pulumi/pulumi": "3.230.0",
+    "@pulumi/aws": "7.34.0",
+    "@pulumi/awsx": "3.6.0",
+    "@pulumi/pulumi": "3.247.0",
     "@topmonks/pulumi-aws": "3.1.4",
-    "esbuild": "0.27.2"
+    "esbuild": "0.27.7"
   }
 }

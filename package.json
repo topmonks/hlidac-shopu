@@ -16,32 +16,32 @@
   "homepage": "https://github.com/topmonks/hlidac-shopu#readme",
   "packageManager": "yarn@4.17.0",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.1027.0",
+    "@aws-sdk/client-dynamodb": "3.1073.0",
     "ramda": "0.32.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.10",
-    "@hckr_/blendid": "9.6.10",
+    "@biomejs/biome": "2.5.0",
+    "@hckr_/blendid": "9.6.16",
     "@types/firefox-webext-browser": "143.0.0",
-    "@types/node": "24.12.2",
+    "@types/node": "24.13.2",
     "@types/nunjucks": "3.2.6",
-    "@types/ramda": "0.31.1",
+    "@types/ramda": "0.32.0",
     "@types/whatwg-url": "13.0.0",
     "ava": "6.4.1",
     "chokidar": "5.0.0",
     "chrome-webstore-upload-cli": "3.5.0",
     "commander": "14.0.3",
     "dotenv-cli": "11.0.0",
-    "esbuild": "0.27.2",
+    "esbuild": "0.27.7",
     "gulp-mode": "1.1.0",
     "linkedom": "0.18.12",
-    "npm-run-all2": "8.0.4",
-    "postcss": "8.5.9",
+    "npm-run-all2": "9.0.2",
+    "postcss": "8.5.15",
     "postcss-css-variables": "0.19.0",
-    "puppeteer": "24.40.0",
+    "puppeteer": "24.43.1",
     "rollbar": "2.26.5",
     "source-map-explorer": "2.5.3",
-    "web-ext": "10.1.0"
+    "web-ext": "10.4.0"
   },
   "resolutions": {
     "lodash": "4.17.21"
