@@ -4420,7 +4420,7 @@ __metadata:
     "@types/node": "npm:24.13.2"
     apify: "npm:3.7.2"
     apify-cli: "npm:1.6.2"
-    cloakbrowser: "npm:0.3.32"
+    cloakbrowser: "npm:0.4.0"
     impit: "npm:0.14.1"
     impit-linux-x64-gnu: "npm:0.14.1"
     playwright-core: "npm:1.61.0"
@@ -4646,7 +4646,7 @@ __metadata:
     "@types/node": "npm:24.13.2"
     apify: "npm:3.7.2"
     apify-cli: "npm:1.6.2"
-    cloakbrowser: "npm:0.3.32"
+    cloakbrowser: "npm:0.4.0"
     impit: "npm:0.14.1"
     impit-linux-x64-gnu: "npm:0.14.1"
     playwright-core: "npm:1.61.0"
@@ -11516,9 +11516,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cloakbrowser@npm:0.3.32":
-  version: 0.3.32
-  resolution: "cloakbrowser@npm:0.3.32"
+"cloakbrowser@npm:0.4.0":
+  version: 0.4.0
+  resolution: "cloakbrowser@npm:0.4.0"
   dependencies:
     tar: "npm:^7.0.0"
   peerDependencies:
@@ -11537,7 +11537,7 @@ __metadata:
       optional: true
   bin:
     cloakbrowser: dist/cli.js
-  checksum: 10c0/fd2a5a7c34b288d3540a4e2d680fd46ea022ae4b211351d51f6441eade65dde84e48f5c9ab244bbe017b1a3c6726e1e49608eb7956281ce7f12cdb004ca7ce6f
+  checksum: 10c0/d7db09860a60828b9cecd9db3d71d2a9a004a29f5b84bd4f1d8391b0da62dae9d999637c94eb1abb68ea1406ed2ee169cca6dc134eeed076893d3b1c3fe8127b
   languageName: node
   linkType: hard
 
