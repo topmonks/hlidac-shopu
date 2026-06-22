@@ -1,4 +1,4 @@
-FROM apify/actor-node-playwrigth-chrome:24
+FROM apify/actor-node-playwright-chrome:24
 
 COPY ./package.json ./
 
