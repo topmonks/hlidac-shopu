@@ -37,9 +37,9 @@ async function sitemapCategoryUrls() {
   }
 
   // Leaf categories: /h/<slug>/h<NNNN> (hubs, the bulk product catalog) and /c/<slug>/s<NNNN>.
-  const urls = [
-    ...xml.matchAll(/<loc>\s*(https:\/\/www\.lidl\.cz\/(?:h|c)\/[^<\s]+\/[hs]\d+)\s*<\/loc>/g)
-  ].map(m => m[1]);
+  const urls = [...xml.matchAll(/<loc>\s*(https:\/\/www\.lidl\.cz\/(?:h|c)\/[^<\s]+\/[hs]\d+)\s*<\/loc>/g)].map(
+    m => m[1]
+  );
 
   // Process the product hubs (/h/) first: most /c/ sitemap entries are content
   // pages (FAQ, cookies, ...) that the product API returns empty for.
@@ -98,8 +98,7 @@ async function solveMyra() {
   log.info("Solver: launching cloakbrowser to earn a Lidl/Myra session…");
   const ctx = await launchCloakContext({
     headless: true,
-    userAgent:
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
     locale: "cs-CZ",
     timezoneId: "Europe/Prague"
   });
