@@ -44,7 +44,8 @@
     "web-ext": "10.4.0"
   },
   "resolutions": {
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "esbuild": "0.27.7"
   },
   "scripts": {
     "clean": "rm -rf dist/ extension-dist/",
