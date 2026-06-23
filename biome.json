@@ -13,7 +13,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "style": {
         "useBlockStatements": "off"
       }
@@ -24,7 +24,8 @@
       "!**/public/",
       "!**/extension/content.js",
       "!**/extension-dist/",
-      "!**/node_modules/"
+      "!**/node_modules/",
+      "!**/*.svg"
     ]
   },
   "javascript": {
