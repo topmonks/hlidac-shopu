@@ -4,7 +4,6 @@ orbs:
   aws-cloudfront: topmonks/aws-cloudfront@1.0.0
   aws-s3: circleci/aws-s3@4.1.3
   browser-tools: circleci/browser-tools@2.3.2
-  codecov: codecov/codecov@5.4.3
   github: topmonks/github@1.4.0
   node: circleci/node@7.2.1
   pulumi: pulumi/pulumi@2.1.0
@@ -141,9 +140,6 @@ jobs:
       - run:
           name: Run tests
           command: yarn test:lib
-      - codecov/upload:
-          files: coverage/lcov.info
-          disable_search: true
       - store_artifacts:
           path: coverage
       - store_test_results:
