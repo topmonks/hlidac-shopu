@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import esbuild from "esbuild";
 import path from "path";
 import url from "url";
-import esbuild from "esbuild";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -11,7 +11,7 @@ const output = path.resolve(__dirname, "../extension/content.js");
 esbuild.buildSync({
   color: true,
   entryPoints: [entryPoint],
-  target: ["es2017", "firefox57", "safari12"],
+  target: ["es2020", "firefox140", "safari15"],
   charset: "utf8",
   bundle: true,
   outfile: output,
