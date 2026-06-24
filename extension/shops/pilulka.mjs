@@ -1,37 +1,15 @@
 import { cleanPrice, registerShop } from "../helpers.mjs";
-import { StatefulShop } from "./shop.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-const didRenderDetail = mutations => {
-  const find = mutations.find(x => {
-    return (
-      x.removedNodes.length === 1 &&
-      x.target.nodeName === `DIV` &&
-      x.removedNodes[0].nodeType === 8 &&
-      x.removedNodes[0].previousSibling?.nodeType === 8
-    );
-  });
-  return !!find;
-};
-
-export class Pilulka extends StatefulShop {
-  get detailSelector() {
-    return "nonsense";
+export class Pilulka extends AsyncShop {
+  get waitForSelector() {
+    return "[componentname='catalog.product']";
   }
 
   get injectionPoint() {
+    // Limitation: discontinued/non-purchasable products can miss `ul.usp`
+    // (e.g. https://www.pilulka.cz/indulona-original-85ml).
     return ["afterend", "ul.usp"];
-  }
-
-  shouldRender(mutations) {
-    return didRenderDetail(mutations);
-  }
-
-  shouldCleanup(mutations) {
-    return this.didMutate(mutations, "addedNodes", "menu__item--simple");
-  }
-
-  get observerTarget() {
-    return document.querySelector("#__nuxt");
   }
 
   async scrape() {
