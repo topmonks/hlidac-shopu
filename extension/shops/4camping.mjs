@@ -3,7 +3,7 @@ import { AsyncShop } from "./shop.mjs";
 
 export class ForCamping extends AsyncShop {
   get waitForSelector() {
-    return "#id_98";
+    return "#formProductAddToBasket";
   }
 
   get injectionPoint() {
