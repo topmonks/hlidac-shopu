@@ -8,6 +8,7 @@ import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, log } from "apify";
 import { launchContext as launchCloakContext } from "cloakbrowser";
 import { Impit } from "impit";
+import { randomUUID } from "node:crypto";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -134,6 +135,200 @@ async function executorFetch(impit, cookies, url) {
   return { status: res.status, body: await res.text() };
 }
 
+// ---------------------------------------------------------------------------
+// CZ-Full anonymous voucher price via Bloomreach/Exponea (replaces detail fetch)
+// ---------------------------------------------------------------------------
+// Datart's "AutomatickaSleva" category auto-discount is computed CLIENT-SIDE by a
+// Bloomreach Engagement weblayer; it is NOT in the server HTML impit fetches, which
+// is why the old design fetched a ~1.6 MB detail page per SKU just to read the
+// resulting server-rendered `.price-finally`. The same data is available in bulk:
+// POST a batch of product match-codes to the weblayer's "multiCategoryExecutor" and
+// the server returns, per product, its anonymous (voucher_group "other") voucher.
+// Final anonymous price = price - voucher_value, the exact number `.price-finally`
+// and the detail JSON-LD render. ctd-api is Exponea infra, NOT behind datart's F5,
+// so these POSTs are cheap and never burn an F5 session. company_id/banner_id are
+// INPUT-configurable (marketing can rotate the campaign); a stale id is caught
+// loudly by the parity circuit-breaker (see main), never silently mis-priced.
+const VOUCHER_API_URL = "https://ctd-api.datart.cz/campaigns/banners/show";
+const DEFAULT_EXPONEA_COMPANY_ID = "aeb32f50-0652-11ec-bb4f-863dd5b8e706";
+const DEFAULT_VOUCHER_BANNER_ID = "699b4808f52cdfb8c2466612"; // multiCategoryExecutor
+const VOUCHER_BATCH_SIZE = 50;
+const PRICE_TOLERANCE = 1; // Kč; rounding slack for parity / price-mismatch checks
+const PARITY_PER_STRATUM = 50;
+
+/** Strip internal-only fields before pushing a product to the dataset. */
+function stripInternal(product) {
+  const { matchCode, basePrice, listingDiscountFlag, ...rest } = product;
+  return rest;
+}
+
+/** Deep-walk a parsed JSON value, collecting product payloads (match + price + vouchers). */
+function collectProducts(node, byMatch) {
+  if (Array.isArray(node)) {
+    for (const n of node) collectProducts(n, byMatch);
+  } else if (node && typeof node === "object") {
+    if (typeof node.match === "string" && node.price != null && "vouchers" in node) {
+      byMatch.set(node.match, node);
+    }
+    for (const k of Object.keys(node)) {
+      if (node[k] && typeof node[k] === "object") collectProducts(node[k], byMatch);
+    }
+  }
+}
+
+/**
+ * Extract the per-product voucher catalog the weblayer embeds in its JS response,
+ * WITHOUT eval. The catalog lives in a `<var> = JSON.parse('[...]')` literal whose
+ * variable/nesting differs per weblayer (executor: formats[].campaigns[].campaignProducts;
+ * renderer: this.products), so we parse EVERY JSON.parse payload and deep-walk it for
+ * product objects. Throws on schema surprises so the run aborts loudly, never mis-prices.
+ * @param {string} responseText
+ * @returns {Map<string, object>} match-code -> product payload
+ */
+function parseVoucherResponse(responseText) {
+  let outer;
+  try {
+    outer = JSON.parse(responseText);
+  } catch {
+    throw new Error("voucher api: response is not JSON");
+  }
+  if (outer.success !== true) throw new Error("voucher api: response success !== true");
+  const js = Array.isArray(outer.data) ? outer.data.join("\n") : "";
+  const byMatch = new Map();
+  const marker = "JSON.parse('";
+  let any = false;
+  for (let mk = js.indexOf(marker); mk !== -1; mk = js.indexOf(marker, mk + 1)) {
+    const from = mk + marker.length;
+    // Terminator = first `'` not preceded by a backslash (robust to apostrophes).
+    let end = -1;
+    for (let i = from; i < js.length; ) {
+      const q = js.indexOf("'", i);
+      if (q === -1) break;
+      if (js[q - 1] !== "\\") {
+        end = q;
+        break;
+      }
+      i = q + 1;
+    }
+    if (end === -1) break;
+    mk = end;
+    const jsonStr = js.slice(from, end).replace(/\\'/g, "'");
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      continue; // not every JSON.parse literal is the catalog (styles, formats meta, …)
+    }
+    any = true;
+    collectProducts(parsed, byMatch);
+  }
+  if (!any) throw new Error("voucher api: no JSON.parse payloads found in response");
+  return byMatch;
+}
+
+/**
+ * POST a batch of product match-codes to the executor weblayer and return the
+ * per-match product payloads (price + vouchers).
+ * @param {string[]} matchCodes
+ * @param {{companyId:string, bannerId:string, cookie:string}} cfg
+ * @returns {Promise<Map<string, object>>}
+ */
+async function fetchVouchersBatch(matchCodes, { companyId, bannerId, cookie }) {
+  const res = await fetch(VOUCHER_API_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+      origin: rootCZ,
+      referer: `${rootCZ}/`
+    },
+    body: JSON.stringify({
+      company_id: companyId,
+      customer_ids: { cookie },
+      banner_ids: [bannerId],
+      params: { productIds: matchCodes },
+      initiator: "manual"
+    })
+  });
+  if (!res.ok) throw new Error(`voucher api: HTTP ${res.status}`);
+  return parseVoucherResponse(await res.text());
+}
+
+/**
+ * Pick the single anonymous (voucher_group "other") voucher we know how to apply.
+ * Anything we don't fully understand returns { ambiguous } so the caller falls back
+ * to a real detail fetch instead of guessing a price.
+ * @param {object} payload
+ * @returns {{value:number}|{ambiguous:true, reason:string}}
+ */
+function selectAnonymousVoucher(payload) {
+  const raw = payload.vouchers;
+  const vouchers = raw == null ? [] : Array.isArray(raw) ? raw : null;
+  if (vouchers === null) return { ambiguous: true, reason: "vouchers_not_array" };
+  const other = vouchers.filter(v => v && v.voucher_group === "other");
+  if (other.length === 0) return { value: 0 };
+  if (other.length > 1) return { ambiguous: true, reason: "multiple_other_vouchers" };
+  const v = other[0];
+  // voucher_type 2 = a fixed Kč amount subtracted from price (verified live).
+  if (Number(v.voucher_type) !== 2) return { ambiguous: true, reason: `voucher_type_${v.voucher_type}` };
+  const value = Number.parseInt(v.voucher_value, 10);
+  if (!Number.isFinite(value) || value <= 0) return { ambiguous: true, reason: "bad_voucher_value" };
+  return { value };
+}
+
+/**
+ * Decide the anonymous currentPrice for a listing product from its voucher-API
+ * payload. Returns a push decision (price known) or a detail-fetch fallback for any
+ * missing/ambiguous case. Never silently base-prices an ambiguous product.
+ * @param {object} product  extractItems row (basePrice, listingDiscountFlag, originalPrice)
+ * @param {object|undefined} payload  voucher-API payload for this match-code
+ */
+function decidePrice(product, payload) {
+  if (!payload) return { action: "detail", reason: "api_missing" };
+  const apiPrice = Number(payload.price);
+  if (!Number.isFinite(apiPrice) || apiPrice <= 0) return { action: "detail", reason: "api_bad_price" };
+  if (Math.abs(apiPrice - product.basePrice) > PRICE_TOLERANCE) return { action: "detail", reason: "price_mismatch" };
+  const sel = selectAnonymousVoucher(payload);
+  if (sel.ambiguous) return { action: "detail", reason: sel.reason };
+  if (sel.value > 0) {
+    return { action: "push", stratum: "coupon", currentPrice: apiPrice - sel.value, discounted: true };
+  }
+  // API reports no anonymous voucher. If the LISTING nonetheless shows a discount
+  // flag, the API may be a false-negative -> verify on the detail page.
+  if (product.listingDiscountFlag) return { action: "detail", reason: "flag_no_api_voucher" };
+  return { action: "push", stratum: "novoucher", currentPrice: apiPrice, discounted: product.originalPrice > apiPrice };
+}
+
+/** Coupon price from the detail page (server-rendered `.price-finally`), or null. */
+function detailCouponPrice(document) {
+  const el = document.querySelector(".product-price-discount.discount-price-box .price-finally");
+  if (!el) return null;
+  const v = parseFloat(el.innerText.trim().replace(/[^\d,]+/g, "").replace(",", "."));
+  return Number.isFinite(v) ? v : null;
+}
+
+/** JSON-LD Product offer price = the server-rendered anonymous final price, or null. */
+function detailJsonLdPrice(document) {
+  for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
+    let data;
+    try {
+      data = JSON.parse(s.textContent);
+    } catch {
+      continue;
+    }
+    const nodes = Array.isArray(data) ? data : Array.isArray(data["@graph"]) ? data["@graph"] : [data];
+    for (const n of nodes) {
+      if (n && n["@type"] === "Product" && n.offers) {
+        for (const o of Array.isArray(n.offers) ? n.offers : [n.offers]) {
+          const p = parseFloat(o.price);
+          if (Number.isFinite(p) && p > 0) return p;
+        }
+      }
+    }
+  }
+  return null;
+}
+
 /**
  *
  * @param {Document} document
@@ -188,7 +383,10 @@ function extractItems(document, rootUrl, country) {
         category: categories,
         itemName: productHeader.innerText.trim(),
         itemUrl: `${rootUrl}${productHeader.href}`,
-        img: productBoxTopSide.querySelector("div.item-thumbnail img").getAttribute("src")
+        img: productBoxTopSide.querySelector("div.item-thumbnail img").getAttribute("src"),
+        // Bloomreach match-code (e.g. "LGGOLED55B56"); the key the voucher API uses.
+        // Server-rendered on every box as `data-product-match`.
+        matchCode: productEl.getAttribute("data-product-match")
       };
 
       const productBoxBuyInfoCart = productEl.querySelector("div.product-box-buy-info > div.product-box-buy-info-cart");
@@ -263,6 +461,12 @@ function extractItems(document, rootUrl, country) {
         result.currentPrice = currentPrice;
         result.discounted = lowestPriceInLastMonth > currentPrice;
       }
+
+      // Internal-only (stripped before push). basePrice = the raw listing price before
+      // any flag math; the voucher-API path prices from this and uses listingDiscountFlag
+      // to detect API false-negatives (a listing discount flag with no API voucher).
+      result.basePrice = currentPrice;
+      result.listingDiscountFlag = percentageDiscount > 0 || fixedDiscount > 0;
 
       return result;
     });
@@ -349,8 +553,22 @@ export async function main() {
     maxRequestRetries,
     proxyGroups = ["CZECH_LUMINATI"],
     country = Country.CZ,
-    type = ActorType.Full
+    type = ActorType.Full,
+    exponeaCompanyId = DEFAULT_EXPONEA_COMPANY_ID,
+    voucherBannerId = DEFAULT_VOUCHER_BANNER_ID,
+    useVoucherApi: useVoucherApiInput
   } = await getInput();
+
+  // The bulk voucher-API price path is verified for CZ only and is exercised by the
+  // single-category TEST run too (so TEST actually covers it). SK/BF keep the legacy
+  // per-product detail flow until separately verified. `useVoucherApi: false` forces
+  // the legacy flow (emergency fallback if the campaign breaks).
+  const voucherApiEnabled =
+    (useVoucherApiInput ?? true) &&
+    country === Country.CZ &&
+    (type === ActorType.Full || type === ActorType.Test);
+  const voucherCfg = { companyId: exponeaCompanyId, bannerId: voucherBannerId, cookie: randomUUID() };
+  const parityTaken = { coupon: 0, novoucher: 0 };
   const processedUrls = await useState("processedUrls", {});
   const processedIds = await useState("processedIds", {});
 
@@ -362,7 +580,16 @@ export async function main() {
     itemsDuplicity: 0,
     itemsChanged: 0,
     failed: 0,
-    blocked: 0
+    blocked: 0,
+    // Voucher-API path (CZ): coverage + integrity counters for the circuit-breaker.
+    voucherApiCalls: 0,
+    voucherApiFailed: 0,
+    voucherRequested: 0,
+    voucherReturned: 0,
+    voucherApplied: 0,
+    voucherFallback: 0,
+    parityChecked: 0,
+    parityMismatch: 0
   });
 
   const rootUrl = country === Country.CZ ? rootCZ : rootSK;
@@ -523,49 +750,107 @@ export async function main() {
       }
       if (request.userData.label === Labels.CATEGORY || request.userData.label === Labels.CATEGORY_NEXT) {
         const products = extractItems(document, rootUrl, country);
-        const detailRequests = [];
+        const newProducts = [];
         for (const product of products) {
-          if (!processedIds[product.itemId]) {
-            processedIds[product.itemId] = true;
-            detailRequests.push({
-              url: product.itemUrl,
-              userData: {
-                label: Labels.DETAIL,
-                product
-              }
-            });
-          } else {
+          if (processedIds[product.itemId]) {
             stats.inc("itemsDuplicity");
             log.info(`ID ${product.itemId} already saved`);
+            continue;
           }
+          processedIds[product.itemId] = true;
+          newProducts.push(product);
         }
-        if (detailRequests.length > 0) {
-          await enqueueNewUrls({
-            requestQueue: crawler.requestQueue,
-            processedUrls,
-            urls: detailRequests,
-            stats
-          });
+
+        if (voucherApiEnabled) {
+          // Bulk-fetch anonymous vouchers for this page's products, decide each price,
+          // push directly, and enqueue detail fetches only for fallbacks + a capped
+          // parity sample. The post-run circuit-breaker validates pushes against detail.
+          const withCode = newProducts.filter(p => p.matchCode);
+          stats.add("voucherRequested", withCode.length);
+          const byMatch = new Map();
+          for (let i = 0; i < withCode.length; i += VOUCHER_BATCH_SIZE) {
+            const chunk = withCode.slice(i, i + VOUCHER_BATCH_SIZE).map(p => p.matchCode);
+            try {
+              stats.inc("voucherApiCalls");
+              const part = await fetchVouchersBatch(chunk, voucherCfg);
+              for (const [k, v] of part) byMatch.set(k, v);
+            } catch (e) {
+              stats.inc("voucherApiFailed");
+              log.warning(`voucher api batch failed (${chunk.length} codes): ${e.message}`);
+            }
+          }
+          stats.add("voucherReturned", withCode.filter(p => byMatch.has(p.matchCode)).length);
+
+          const fallbackRequests = [];
+          for (const product of newProducts) {
+            const payload = product.matchCode ? byMatch.get(product.matchCode) : undefined;
+            const decision = decidePrice(product, payload);
+            if (decision.action === "push") {
+              product.currentPrice = decision.currentPrice;
+              product.discounted = decision.discounted;
+              if (decision.stratum === "coupon") stats.inc("voucherApplied");
+              await Dataset.pushData(stripInternal(product));
+              stats.inc("items");
+              // Parity sample: re-verify a capped number of pushes against the detail page.
+              if (parityTaken[decision.stratum] < PARITY_PER_STRATUM) {
+                parityTaken[decision.stratum] += 1;
+                fallbackRequests.push({
+                  url: product.itemUrl,
+                  userData: { label: Labels.DETAIL, parity: { expected: decision.currentPrice, stratum: decision.stratum } }
+                });
+              }
+            } else {
+              stats.inc("voucherFallback");
+              log.info(`detail fallback for ${product.matchCode ?? product.itemId}: ${decision.reason}`);
+              fallbackRequests.push({ url: product.itemUrl, userData: { label: Labels.DETAIL, product } });
+            }
+          }
+          if (fallbackRequests.length > 0) {
+            await enqueueNewUrls({ requestQueue: crawler.requestQueue, processedUrls, urls: fallbackRequests, stats });
+          }
+          log.info(
+            `${request.url}: ${newProducts.length} products, ${byMatch.size} via voucher-api, ${fallbackRequests.length} detail (fallback+parity)`
+          );
+        } else {
+          // Legacy / SK / BF: one detail fetch per product (the detail page
+          // server-renders the coupon price; see the DETAIL handler).
+          const detailRequests = newProducts.map(product => ({
+            url: product.itemUrl,
+            userData: { label: Labels.DETAIL, product }
+          }));
+          if (detailRequests.length > 0) {
+            await enqueueNewUrls({ requestQueue: crawler.requestQueue, processedUrls, urls: detailRequests, stats });
+          }
+          log.info(`${request.url} Found ${products.length} products, enqueued ${detailRequests.length} detail pages`);
         }
-        log.info(`${request.url} Found ${products.length} products, enqueued ${detailRequests.length} detail pages`);
       }
       if (request.userData.label === Labels.DETAIL) {
-        const product = request.userData.product;
-        const couponPriceEl = document.querySelector(".product-price-discount.discount-price-box .price-finally");
-        if (couponPriceEl) {
-          const couponPrice = parseFloat(
-            couponPriceEl.innerText
-              .trim()
-              .replace(/[^\d,]+/g, "")
-              .replace(",", ".")
-          );
-          if (couponPrice > 0 && couponPrice < product.currentPrice) {
-            log.info(`Product ${product.itemId}: coupon price ${couponPrice} (was ${product.currentPrice})`);
-            product.currentPrice = couponPrice;
-            product.discounted = true;
+        const couponPrice = detailCouponPrice(document);
+
+        if (request.userData.parity) {
+          // Compare-only: the item was already pushed from the listing via the voucher
+          // API. The detail truth is the coupon `.price-finally` if present, else the
+          // server-rendered JSON-LD offer price. Any divergence beyond rounding is a
+          // hard integrity signal the post-run circuit-breaker aborts on.
+          stats.inc("parityChecked");
+          const { expected, stratum } = request.userData.parity;
+          const detailFinal = couponPrice ?? detailJsonLdPrice(document);
+          if (detailFinal == null) {
+            log.warning(`parity: no detail price for ${request.url}`);
+          } else if (Math.abs(detailFinal - expected) > PRICE_TOLERANCE) {
+            stats.inc("parityMismatch");
+            log.error(`PARITY MISMATCH [${stratum}] ${request.url}: api=${expected} detail=${detailFinal}`);
           }
+          return;
         }
-        await Dataset.pushData(product);
+
+        const product = request.userData.product;
+        if (couponPrice != null && couponPrice > 0 && couponPrice < product.currentPrice) {
+          log.info(`Product ${product.itemId}: coupon price ${couponPrice} (was ${product.currentPrice})`);
+          product.currentPrice = couponPrice;
+          product.discounted = true;
+        }
+        await Dataset.pushData(stripInternal(product));
         stats.inc("items");
       }
       if (request.userData.label === Labels.BF) {
@@ -595,6 +880,26 @@ export async function main() {
   const request = startingRequest({ rootUrl, country, type });
   await crawler.run([request]);
   await stats.save(true);
+
+  // Voucher-API price-integrity circuit-breaker. A stale banner_id, schema drift, or a
+  // personalized/changed campaign surfaces here as a parity mismatch or low coverage.
+  // Wrong daily prices are worse than a failed run, so abort loudly instead of uploading.
+  if (voucherApiEnabled) {
+    const s = stats.get();
+    const requested = s.voucherRequested || 0;
+    const coverage = requested > 0 ? (s.voucherReturned || 0) / requested : 1;
+    const failRatio = s.voucherApiCalls > 0 ? (s.voucherApiFailed || 0) / s.voucherApiCalls : 0;
+    const problems = [];
+    if (s.parityMismatch > 0) problems.push(`${s.parityMismatch}/${s.parityChecked} parity mismatches`);
+    if (requested > 0 && coverage < 0.98) problems.push(`voucher-api coverage ${(coverage * 100).toFixed(1)}% < 98%`);
+    if (failRatio > 0.02) problems.push(`${s.voucherApiFailed}/${s.voucherApiCalls} voucher-api batches failed`);
+    if (problems.length > 0) {
+      throw new Error(`Voucher-API price integrity check FAILED: ${problems.join("; ")}. Aborting before upload to avoid wrong prices.`);
+    }
+    log.info(
+      `Voucher-API ok: coverage ${(coverage * 100).toFixed(1)}%, applied ${s.voucherApplied || 0}, fallbacks ${s.voucherFallback || 0}, parityChecked ${s.parityChecked || 0}`
+    );
+  }
 
   try {
     let tableName = "";
