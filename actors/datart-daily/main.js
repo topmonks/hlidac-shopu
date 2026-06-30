@@ -327,22 +327,76 @@ function detailDisplayedPrice(document) {
   }
 }
 
+/** Breadcrumb category names (drops the empty home-icon link). */
+function breadcrumbCategories(document) {
+  // Datart's modern breadcrumb uses a BEM-like class (`c-breadcrumb`,
+  // `breadcrumbs`, etc. depending on frontend version), not `ol.breadcrumb`.
+  return document
+    .querySelectorAll('[class*="breadcrumb"] a')
+    .map(a => a.innerText.trim())
+    .filter(t => t.length > 0);
+}
+
+/**
+ * Extract just the product-grid element (`div.product-box-list`, ~8% of the 2.1 MB
+ * listing page) from RAW html via a precise class-token + balanced-<div> scan, so
+ * deep-pagination pages parse ~10x less (the full-DOM build is CPU-bound at 4 GB and
+ * caps concurrency). Returns null if not cleanly found / no products — the caller then
+ * full-parses. Used ONLY for CATEGORY_NEXT; START/CATEGORY/DETAIL need the rest of the page.
+ * @param {string} html
+ * @returns {string|null}
+ */
+function extractProductGridHtml(html) {
+  const lower = html.toLowerCase();
+  const isBoundary = c => c === " " || c === ">" || c === "\t" || c === "\n" || c === "\r" || c === "/";
+  // class must contain `product-box-list` as a WHOLE token (so it skips
+  // `product-box-list-wrap`); `(?![\w-])` rejects longer tokens.
+  const tokenOk = openTag => /class\s*=\s*["'][^"']*\bproduct-box-list(?![\w-])/i.test(openTag);
+  let from = 0;
+  while (true) {
+    const o = lower.indexOf("<div", from);
+    if (o === -1) return null;
+    from = o + 4;
+    const gt = html.indexOf(">", o);
+    if (gt === -1) return null;
+    if (!isBoundary(html[o + 4]) || !tokenOk(html.slice(o, gt + 1))) continue;
+    // balanced <div> scan for this candidate
+    let depth = 1;
+    let i = gt + 1;
+    let grid = null;
+    while (i < html.length) {
+      const no = lower.indexOf("<div", i);
+      const nc = lower.indexOf("</div", i);
+      if (nc === -1) break; // unbalanced → abandon this candidate
+      if (no !== -1 && no < nc) {
+        if (isBoundary(html[no + 4])) depth++;
+        i = no + 4;
+      } else {
+        depth--;
+        i = nc + 5;
+        if (depth === 0) {
+          const end = html.indexOf(">", i);
+          if (end !== -1) grid = html.slice(o, end + 1);
+          break;
+        }
+      }
+    }
+    // accept only a balanced grid that actually holds products; else try the next candidate
+    if (grid && grid.includes("data-product-match")) return grid;
+  }
+}
+
 /**
  *
  * @param {Document} document
  * @param {string} rootUrl
  * @param {Country} country
+ * @param {string[]} [categoryOverride] breadcrumb categories propagated from the first
+ *   category page (CATEGORY_NEXT slices have no breadcrumb).
  * @returns {Object[]}
  */
-function extractItems(document, rootUrl, country) {
-  // Datart's modern breadcrumb uses a BEM-like class (`c-breadcrumb`,
-  // `breadcrumbs`, etc. depending on frontend version), not `ol.breadcrumb`.
-  // Match any element whose class contains "breadcrumb" and drop empty
-  // entries (the home icon link has no text).
-  const categories = document
-    .querySelectorAll('[class*="breadcrumb"] a')
-    .map(a => a.innerText.trim())
-    .filter(t => t.length > 0);
+function extractItems(document, rootUrl, country, categoryOverride) {
+  const categories = categoryOverride ?? breadcrumbCategories(document);
 
   return document
     .querySelectorAll("div.product-box-list div.product-box")
@@ -573,6 +627,12 @@ export async function main() {
     (type === ActorType.Full || type === ActorType.Test);
   const voucherCfg = { companyId: exponeaCompanyId, bannerId: voucherBannerId, cookie: randomUUID() };
   const parityTaken = { coupon: 0, novoucher: 0, bazar: 0 };
+
+  // Product-grid slicing for CATEGORY_NEXT pages (parse only ~8% of the page). A runtime
+  // canary shadow-compares the first N sliced pages against a full parse; any mismatch
+  // disables slicing for the rest of the run (full parse is always correct).
+  let gridSliceEnabled = true;
+  let sliceCanaryRemaining = 50;
   const processedUrls = await useState("processedUrls", {});
   const processedIds = await useState("processedIds", {});
 
@@ -593,6 +653,8 @@ export async function main() {
     voucherApplied: 0,
     voucherFallback: 0,
     bazarDirect: 0,
+    sliceFallback: 0,
+    sliceMismatch: 0,
     parityChecked: 0,
     parityMismatch: 0
   });
@@ -683,7 +745,39 @@ export async function main() {
         await countAllProducts({ body, stats });
         return;
       }
-      const { document } = parseHTML(body);
+      // For deep-pagination pages, parse only the product grid (~8% of the page) — the
+      // full-DOM build is the CPU bottleneck. categoryOverride carries the breadcrumb the
+      // slice lacks. START/CATEGORY/DETAIL always full-parse.
+      let document;
+      let categoryOverride;
+      if (request.userData.label === Labels.CATEGORY_NEXT && gridSliceEnabled) {
+        const gridHtml = extractProductGridHtml(body);
+        if (gridHtml) {
+          document = parseHTML(`<html><body>${gridHtml}</body></html>`).document;
+          categoryOverride = request.userData.category;
+          // Canary: shadow-compare matchCodes against a full parse for the first N pages.
+          if (sliceCanaryRemaining > 0) {
+            sliceCanaryRemaining -= 1;
+            const codes = doc =>
+              [...doc.querySelectorAll("div.product-box-list div.product-box")]
+                .map(b => b.getAttribute("data-product-match"))
+                .join(",");
+            const fullDoc = parseHTML(body).document;
+            if (codes(fullDoc) !== codes(document)) {
+              stats.inc("sliceMismatch");
+              log.warning(`grid-slice canary mismatch on ${request.url} — disabling slicing for this run`);
+              gridSliceEnabled = false;
+              document = fullDoc;
+              categoryOverride = undefined;
+            }
+          }
+        } else {
+          stats.inc("sliceFallback");
+          document = parseHTML(body).document;
+        }
+      } else {
+        document = parseHTML(body).document;
+      }
       if (request.userData.label === Labels.START) {
         const urls = document.querySelectorAll("div.microsite-katalog ul.category-submenu > li > a").map(a => ({
           url: `${rootUrl}${a.href}`,
@@ -746,10 +840,14 @@ export async function main() {
         // (no `div.pagination-wrapper`) with hrefs like `?page=44`. The legacy
         // `?showPage&page=N&limit=16` query form is no longer used by the site.
         const lastPagination = getLastPageNumber(document.querySelectorAll("ul.pagination a.page-link"));
+        // Propagate this category's breadcrumb so the (grid-sliced) CATEGORY_NEXT pages,
+        // which have no breadcrumb of their own, still get the `category` field.
+        const pageCategories = breadcrumbCategories(document);
         const urls = restPageUrls(lastPagination, i => ({
           url: `${request.url}?page=${i}`,
           userData: {
-            label: Labels.CATEGORY_NEXT
+            label: Labels.CATEGORY_NEXT,
+            category: pageCategories
           }
         }));
         stats.add("pages", urls.length);
@@ -762,7 +860,7 @@ export async function main() {
         });
       }
       if (request.userData.label === Labels.CATEGORY || request.userData.label === Labels.CATEGORY_NEXT) {
-        const products = extractItems(document, rootUrl, country);
+        const products = extractItems(document, rootUrl, country, categoryOverride);
         const newProducts = [];
         for (const product of products) {
           if (processedIds[product.itemId]) {
