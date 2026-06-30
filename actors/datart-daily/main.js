@@ -554,7 +554,13 @@ export async function main() {
     type = ActorType.Full,
     exponeaCompanyId = DEFAULT_EXPONEA_COMPANY_ID,
     voucherBannerId = DEFAULT_VOUCHER_BANNER_ID,
-    useVoucherApi: useVoucherApiInput
+    useVoucherApi: useVoucherApiInput,
+    // Throughput knobs (configurable so they can be tuned without a redeploy). The
+    // legacy detail-per-SKU design had to keep these low because every extra request
+    // burned an F5 session; with detail fetches gone (and the voucher POSTs being inline
+    // fetch() calls that don't count here) the listing crawl can run much faster.
+    maxRequestsPerMinute = 200,
+    maxConcurrency = 30
   } = await getInput();
 
   // The bulk voucher-API price path is verified for CZ only and is exercised by the
@@ -624,8 +630,8 @@ export async function main() {
   log.info("ACTOR - setUp crawler");
   const crawler = new BasicCrawler({
     maxRequestRetries,
-    maxRequestsPerMinute: 200,
-    maxConcurrency: 30,
+    maxRequestsPerMinute,
+    maxConcurrency,
     async requestHandler({ request, log, crawler }) {
       if (solvePromise) await solvePromise;
       const { status, body } = await executorFetch(impit, f5Cookies, request.url);
