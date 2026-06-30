@@ -307,26 +307,24 @@ function detailCouponPrice(document) {
   return Number.isFinite(v) ? v : null;
 }
 
-/** JSON-LD Product offer price = the server-rendered anonymous final price, or null. */
-function detailJsonLdPrice(document) {
-  for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
-    let data;
-    try {
-      data = JSON.parse(s.textContent);
-    } catch {
-      continue;
-    }
-    const nodes = Array.isArray(data) ? data : Array.isArray(data["@graph"]) ? data["@graph"] : [data];
-    for (const n of nodes) {
-      if (n && n["@type"] === "Product" && n.offers) {
-        for (const o of Array.isArray(n.offers) ? n.offers : [n.offers]) {
-          const p = parseFloat(o.price);
-          if (Number.isFinite(p) && p > 0) return p;
-        }
-      }
-    }
+/**
+ * The detail page's displayed anonymous price, read from the product's GTM data
+ * attribute. Parity oracle for non-coupon products. NOTE: we deliberately do NOT use
+ * the detail JSON-LD offer price — on /bazar/ (used) pages it wrongly echoes the NEW
+ * product's price (e.g. 4490 while the unit actually sells for 3637); the GTM `price`
+ * is correct there.
+ */
+function detailDisplayedPrice(document) {
+  const el =
+    document.querySelector(".product-detail[data-gtm-data-product]") ||
+    document.querySelector("[data-gtm-data-product]");
+  if (!el) return null;
+  try {
+    const n = Number(JSON.parse(el.getAttribute("data-gtm-data-product")).price);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 /**
@@ -588,6 +586,7 @@ export async function main() {
     voucherReturned: 0,
     voucherApplied: 0,
     voucherFallback: 0,
+    bazarFallback: 0,
     parityChecked: 0,
     parityMismatch: 0
   });
@@ -765,7 +764,11 @@ export async function main() {
           // Bulk-fetch anonymous vouchers for this page's products, decide each price,
           // push directly, and enqueue detail fetches only for fallbacks + a capped
           // parity sample. The post-run circuit-breaker validates pushes against detail.
-          const withCode = newProducts.filter(p => p.matchCode);
+          // Bazar (used/open-box) units are a separate product class: not in the voucher
+          // campaign, and their detail JSON-LD echoes the NEW price. Price them from the
+          // detail page like the legacy flow, and keep them out of voucher-api accounting.
+          const isBazar = p => p.itemUrl.includes("/bazar/");
+          const withCode = newProducts.filter(p => p.matchCode && !isBazar(p));
           stats.add("voucherRequested", withCode.length);
           const byMatch = new Map();
           for (let i = 0; i < withCode.length; i += VOUCHER_BATCH_SIZE) {
@@ -783,6 +786,11 @@ export async function main() {
 
           const fallbackRequests = [];
           for (const product of newProducts) {
+            if (isBazar(product)) {
+              stats.inc("bazarFallback");
+              fallbackRequests.push({ url: product.itemUrl, userData: { label: Labels.DETAIL, product } });
+              continue;
+            }
             const payload = product.matchCode ? byMatch.get(product.matchCode) : undefined;
             const decision = decidePrice(product, payload);
             if (decision.action === "push") {
@@ -834,7 +842,7 @@ export async function main() {
           // hard integrity signal the post-run circuit-breaker aborts on.
           stats.inc("parityChecked");
           const { expected, stratum } = request.userData.parity;
-          const detailFinal = couponPrice ?? detailJsonLdPrice(document);
+          const detailFinal = couponPrice ?? detailDisplayedPrice(document);
           if (detailFinal == null) {
             log.warning(`parity: no detail price for ${request.url}`);
           } else if (Math.abs(detailFinal - expected) > PRICE_TOLERANCE) {
@@ -890,14 +898,21 @@ export async function main() {
     const coverage = requested > 0 ? (s.voucherReturned || 0) / requested : 1;
     const failRatio = s.voucherApiCalls > 0 ? (s.voucherApiFailed || 0) / s.voucherApiCalls : 0;
     const problems = [];
+    // Correctness gate: any price we computed via the API must match the detail page.
     if (s.parityMismatch > 0) problems.push(`${s.parityMismatch}/${s.parityChecked} parity mismatches`);
-    if (requested > 0 && coverage < 0.98) problems.push(`voucher-api coverage ${(coverage * 100).toFixed(1)}% < 98%`);
-    if (failRatio > 0.02) problems.push(`${s.voucherApiFailed}/${s.voucherApiCalls} voucher-api batches failed`);
+    // API-health gates. Low coverage just means more (correct) detail fallbacks, so it
+    // only HARD-fails when catastrophic (≈ dead banner_id) and WARNs in between —
+    // correctness is guarded by parity, not coverage.
+    if (failRatio > 0.5) problems.push(`${s.voucherApiFailed}/${s.voucherApiCalls} voucher-api batches failed`);
+    if (requested > 0 && coverage < 0.5) problems.push(`voucher-api coverage ${(coverage * 100).toFixed(1)}% < 50% (banner_id stale?)`);
     if (problems.length > 0) {
       throw new Error(`Voucher-API price integrity check FAILED: ${problems.join("; ")}. Aborting before upload to avoid wrong prices.`);
     }
+    if (requested > 0 && coverage < 0.98) {
+      log.warning(`Voucher-API coverage ${(coverage * 100).toFixed(1)}% < 98% (degraded — more detail fallbacks than usual)`);
+    }
     log.info(
-      `Voucher-API ok: coverage ${(coverage * 100).toFixed(1)}%, applied ${s.voucherApplied || 0}, fallbacks ${s.voucherFallback || 0}, parityChecked ${s.parityChecked || 0}`
+      `Voucher-API ok: coverage ${(coverage * 100).toFixed(1)}%, applied ${s.voucherApplied || 0}, fallbacks ${s.voucherFallback || 0}, bazar ${s.bazarFallback || 0}, parityChecked ${s.parityChecked || 0}, parityMismatch ${s.parityMismatch || 0}`
     );
   }
 
