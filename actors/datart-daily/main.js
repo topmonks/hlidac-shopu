@@ -560,7 +560,7 @@ export async function main() {
     // burned an F5 session; with detail fetches gone (and the voucher POSTs being inline
     // fetch() calls that don't count here) the listing crawl can run much faster.
     maxRequestsPerMinute = 200,
-    maxConcurrency = 30
+    maxConcurrency = 10
   } = await getInput();
 
   // The bulk voucher-API price path is verified for CZ only and is exercised by the
@@ -572,7 +572,7 @@ export async function main() {
     country === Country.CZ &&
     (type === ActorType.Full || type === ActorType.Test);
   const voucherCfg = { companyId: exponeaCompanyId, bannerId: voucherBannerId, cookie: randomUUID() };
-  const parityTaken = { coupon: 0, novoucher: 0 };
+  const parityTaken = { coupon: 0, novoucher: 0, bazar: 0 };
   const processedUrls = await useState("processedUrls", {});
   const processedIds = await useState("processedIds", {});
 
@@ -592,7 +592,7 @@ export async function main() {
     voucherReturned: 0,
     voucherApplied: 0,
     voucherFallback: 0,
-    bazarFallback: 0,
+    bazarDirect: 0,
     parityChecked: 0,
     parityMismatch: 0
   });
@@ -632,6 +632,14 @@ export async function main() {
     maxRequestRetries,
     maxRequestsPerMinute,
     maxConcurrency,
+    // The crawl is event-loop-bound on linkedom parsing (CPU/mem/rpm all idle), so the
+    // default 0.6 event-loop guard pins concurrency at ~3. Relax it a notch so the
+    // autoscaler can climb; maxConcurrency default is kept low (10) so this can't burst
+    // the F5 listing rate. See #3559 profiling.
+    autoscaledPoolOptions: {
+      snapshotterOptions: { maxBlockedMillis: 100 },
+      systemStatusOptions: { maxEventLoopOverloadedRatio: 0.7 }
+    },
     async requestHandler({ request, log, crawler }) {
       if (solvePromise) await solvePromise;
       const { status, body } = await executorFetch(impit, f5Cookies, request.url);
@@ -759,7 +767,7 @@ export async function main() {
         for (const product of products) {
           if (processedIds[product.itemId]) {
             stats.inc("itemsDuplicity");
-            log.info(`ID ${product.itemId} already saved`);
+            log.debug(`ID ${product.itemId} already saved`);
             continue;
           }
           processedIds[product.itemId] = true;
@@ -790,11 +798,24 @@ export async function main() {
           }
           stats.add("voucherReturned", withCode.filter(p => byMatch.has(p.matchCode)).length);
 
+          const productsToPush = [];
           const fallbackRequests = [];
+          const sampleParity = (stratum, expected, url) => {
+            if (parityTaken[stratum] < PARITY_PER_STRATUM) {
+              parityTaken[stratum] += 1;
+              fallbackRequests.push({ url, userData: { label: Labels.DETAIL, parity: { expected, stratum } } });
+            }
+          };
           for (const product of newProducts) {
             if (isBazar(product)) {
-              stats.inc("bazarFallback");
-              fallbackRequests.push({ url: product.itemUrl, userData: { label: Labels.DETAIL, product } });
+              // Used/open-box unit: no campaign voucher; the listing price IS the anonymous
+              // price (its detail JSON-LD echoes the NEW price, so don't trust detail). Push
+              // straight from the listing like the pre-detail-phase design did.
+              product.currentPrice = product.basePrice;
+              product.discounted = product.originalPrice > product.basePrice;
+              productsToPush.push(stripInternal(product));
+              stats.inc("bazarDirect");
+              sampleParity("bazar", product.basePrice, product.itemUrl);
               continue;
             }
             const payload = product.matchCode ? byMatch.get(product.matchCode) : undefined;
@@ -803,27 +824,24 @@ export async function main() {
               product.currentPrice = decision.currentPrice;
               product.discounted = decision.discounted;
               if (decision.stratum === "coupon") stats.inc("voucherApplied");
-              await Dataset.pushData(stripInternal(product));
-              stats.inc("items");
-              // Parity sample: re-verify a capped number of pushes against the detail page.
-              if (parityTaken[decision.stratum] < PARITY_PER_STRATUM) {
-                parityTaken[decision.stratum] += 1;
-                fallbackRequests.push({
-                  url: product.itemUrl,
-                  userData: { label: Labels.DETAIL, parity: { expected: decision.currentPrice, stratum: decision.stratum } }
-                });
-              }
+              productsToPush.push(stripInternal(product));
+              sampleParity(decision.stratum, decision.currentPrice, product.itemUrl);
             } else {
               stats.inc("voucherFallback");
-              log.info(`detail fallback for ${product.matchCode ?? product.itemId}: ${decision.reason}`);
+              log.debug(`detail fallback for ${product.matchCode ?? product.itemId}: ${decision.reason}`);
               fallbackRequests.push({ url: product.itemUrl, userData: { label: Labels.DETAIL, product } });
             }
+          }
+          // One batched dataset write per page (instead of ~22 serial awaits).
+          if (productsToPush.length > 0) {
+            await Dataset.pushData(productsToPush);
+            stats.add("items", productsToPush.length);
           }
           if (fallbackRequests.length > 0) {
             await enqueueNewUrls({ requestQueue: crawler.requestQueue, processedUrls, urls: fallbackRequests, stats });
           }
           log.info(
-            `${request.url}: ${newProducts.length} products, ${byMatch.size} via voucher-api, ${fallbackRequests.length} detail (fallback+parity)`
+            `${request.url}: ${newProducts.length} products, ${productsToPush.length} pushed, ${fallbackRequests.length} detail (fallback+parity)`
           );
         } else {
           // Legacy / SK / BF: one detail fetch per product (the detail page
@@ -842,10 +860,10 @@ export async function main() {
         const couponPrice = detailCouponPrice(document);
 
         if (request.userData.parity) {
-          // Compare-only: the item was already pushed from the listing via the voucher
-          // API. The detail truth is the coupon `.price-finally` if present, else the
-          // server-rendered JSON-LD offer price. Any divergence beyond rounding is a
-          // hard integrity signal the post-run circuit-breaker aborts on.
+          // Compare-only: the item was already pushed from the listing (voucher API or, for
+          // bazar, the listing price). Detail truth = coupon `.price-finally` if present,
+          // else the GTM displayed price (NOT JSON-LD — it's wrong on bazar pages). Any
+          // divergence beyond rounding is a hard signal the post-run circuit-breaker aborts on.
           stats.inc("parityChecked");
           const { expected, stratum } = request.userData.parity;
           const detailFinal = couponPrice ?? detailDisplayedPrice(document);
@@ -918,7 +936,7 @@ export async function main() {
       log.warning(`Voucher-API coverage ${(coverage * 100).toFixed(1)}% < 98% (degraded — more detail fallbacks than usual)`);
     }
     log.info(
-      `Voucher-API ok: coverage ${(coverage * 100).toFixed(1)}%, applied ${s.voucherApplied || 0}, fallbacks ${s.voucherFallback || 0}, bazar ${s.bazarFallback || 0}, parityChecked ${s.parityChecked || 0}, parityMismatch ${s.parityMismatch || 0}`
+      `Voucher-API ok: coverage ${(coverage * 100).toFixed(1)}%, applied ${s.voucherApplied || 0}, fallbacks ${s.voucherFallback || 0}, bazar ${s.bazarDirect || 0}, parityChecked ${s.parityChecked || 0}, parityMismatch ${s.parityMismatch || 0}`
     );
   }
 
