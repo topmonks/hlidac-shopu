@@ -1,5 +1,13 @@
 # Extension
 
+## 2.4.9
+* Scraped prices are applied locally to the chart and discount computation instead of being submitted to the API, so personalized (member/club) discounts stay visible to the user without entering the public dataset (#3551)
+* Fixed Rohlik.cz product detail scraping after markup changes, including a 100× price bug when the cents superscript was present but the crowns part was unparseable
+* Fixed 4camping.cz products without variants and moved the widget to the top layer
+* Stabilized Pilulka.cz product rendering
+* Fixed stale chart reference kept after widget cleanup on SPA navigation
+* Removed no-longer-monitored shops (TS Bohemia, Smarty and other deprecated shops) from the supported-shops listings in the extension about page and on the web (#3341, #3550)
+
 ## 2.4.8
 * Disabled extension-side price ingestion as a hot fix for logged-in user prices (member/club discounts) being saved as the product's public day price (#3551)
 * Fixed Notino "blinks and hides" on canonical (no `/p-<id>/`) product URLs by re-rendering from cached data when Vue/Nuxt wholesale-replaces the chart's parent subtree

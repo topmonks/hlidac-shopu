@@ -3,11 +3,13 @@
   "default_locale": "cs",
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "2.4.8",
+  "version": "2.4.9",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "homepage_url": "https://www.hlidacshopu.cz/",
   "background": {
-    "scripts": ["sw.js"],
+    "scripts": [
+      "sw.js"
+    ],
     "service_worker": "sw.js"
   },
   "icons": {
@@ -41,7 +43,9 @@
       }
     ]
   },
-  "host_permissions": ["https://api.hlidacshopu.cz/*"],
+  "host_permissions": [
+    "https://api.hlidacshopu.cz/*"
+  ],
   "content_scripts": [
     {
       "matches": [
@@ -95,7 +99,9 @@
         "https://www.tchibo.sk/*",
         "https://www.tetadrogerie.cz/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
