@@ -19,10 +19,36 @@ function parsePrice(price) {
   return Number.isFinite(value) ? value : null;
 }
 
+// Mirrors discount computation in api.hlidacshopu.cz/src/lambda/discount.mjs
 function discount(referencePrice, currentPrice) {
   if (!referencePrice) return null;
   if (currentPrice === null) return null;
   return (referencePrice - currentPrice) / referencePrice;
+}
+
+const saleActionInterval = 90; // days
+
+function getLastPriceChanges(series) {
+  let lastDiscountDate = null;
+  let lastIncreaseDate = null;
+  let prevPrice = null;
+  for (const { x, y } of series) {
+    if (y === null || y === undefined) continue;
+    if (prevPrice !== null && y !== prevPrice) {
+      if (y < prevPrice) lastDiscountDate = new Date(x);
+      else lastIncreaseDate = new Date(x);
+    }
+    prevPrice = y;
+  }
+  return { lastDiscountDate, lastIncreaseDate };
+}
+
+function isEuDiscountApplicable(lastDiscountDate, lastIncreaseDate) {
+  if (!lastDiscountDate) return false;
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - saleActionInterval);
+  if (lastDiscountDate < startDate) return false;
+  return !lastIncreaseDate || lastDiscountDate > lastIncreaseDate;
 }
 
 function applyLocalPrices(response, info) {
@@ -31,21 +57,31 @@ function applyLocalPrices(response, info) {
 
   const originalPrice = parsePrice(info.originalPrice);
   const date = new Date().toISOString();
-  const referencePrice =
-    response.metadata.type === "eu-minimum" ? response.metadata.minPrice : response.metadata.commonPrice;
+  const currentPriceSeries = [...(response.data.currentPrice ?? []), { x: date, y: currentPrice }];
+  const originalPriceSeries = [...(response.data.originalPrice ?? []), { x: date, y: originalPrice }];
+
+  // Re-run the sale action detection with the scraped price included, so
+  // a price drop seen only by the extension switches the discount reference
+  // to the EU minimum price the same way the API would.
+  const { lastDiscountDate, lastIncreaseDate } = getLastPriceChanges(currentPriceSeries);
+  const euDiscount = Boolean(response.metadata.minPrice) && isEuDiscountApplicable(lastDiscountDate, lastIncreaseDate);
+  const referencePrice = euDiscount ? response.metadata.minPrice : response.metadata.commonPrice;
 
   return {
     ...response,
     data: {
       ...response.data,
-      currentPrice: [...(response.data.currentPrice ?? []), { x: date, y: currentPrice }],
-      originalPrice: [...(response.data.originalPrice ?? []), { x: date, y: originalPrice }]
+      currentPrice: currentPriceSeries,
+      originalPrice: originalPriceSeries
     },
     metadata: {
       ...response.metadata,
+      type: euDiscount ? "eu-minimum" : "common-price",
       currentPrice,
       realDiscount: discount(referencePrice, currentPrice),
-      claimedDiscount: discount(originalPrice, currentPrice)
+      claimedDiscount: discount(originalPrice, currentPrice),
+      lastDiscountDate: lastDiscountDate?.toISOString() ?? null,
+      lastIncreaseDate: lastIncreaseDate?.toISOString() ?? null
     }
   };
 }
