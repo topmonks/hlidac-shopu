@@ -67,10 +67,13 @@ const cleanRohlikPrice = selector => {
 
   const cents = elem.querySelector("sup")?.textContent?.replace(/\D/g, "");
   if (cents) {
+    // Cents live in a <sup>; parse the crowns from the rest of the element.
+    // Do not fall back to cleanPrice(elem) here — it would include the sup
+    // digits and yield a 100× price (e.g. "2990" instead of "29.90").
     const withoutCents = elem.cloneNode(true);
     withoutCents.querySelectorAll("sup").forEach(x => x.remove());
     const crowns = cleanPrice(withoutCents);
-    if (crowns) return `${crowns}.${cents.slice(0, 2).padEnd(2, "0")}`;
+    return crowns ? `${crowns}.${cents.slice(0, 2).padEnd(2, "0")}` : null;
   }
 
   return cleanPrice(elem);
