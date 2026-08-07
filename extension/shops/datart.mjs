@@ -15,10 +15,13 @@ export class Datart extends Shop {
 
     // EU Omnibus "lowest price in last 30 days" reference, rendered inside
     // `.product-price-before` only on discounted products (including coupon
-    // discounts already baked into `data-price-value`). The label text holds
-    // a "30 dní" digit run we must skip — strip `.sr-only` before parsing.
-    const refEl = elem.querySelector(".product-price-before .cut-price--lessOrEqual")?.cloneNode(true);
-    refEl?.querySelectorAll(".sr-only").forEach(n => n.remove());
+    // discounts already baked into `data-price-value`). Anchor on the stable
+    // `.cut-price` wrapper — Datart keeps renaming its modifier variants
+    // (`--lessOrEqual`, `--strike`, …) per discount type. The label text
+    // holds a "30 dní" digit run we must skip — strip `.sr-only` and the
+    // tooltip before parsing.
+    const refEl = elem.querySelector(".product-price-before .cut-price")?.cloneNode(true);
+    refEl?.querySelectorAll(".sr-only, ufo-tooltip, .query-icon").forEach(n => n.remove());
     const originalPrice = refEl ? cleanPriceText(refEl.textContent) : null;
 
     const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").dataset.src;
