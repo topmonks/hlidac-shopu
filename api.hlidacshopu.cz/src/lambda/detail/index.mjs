@@ -42,6 +42,42 @@ function createDataset(data) {
 const db = new DynamoDBClient({});
 const s3 = new S3Client({});
 
+const dmCountry = new Map([
+  ["dm_cz", "cz"],
+  ["dm_sk", "sk"]
+]);
+const dmGtinCache = new Map();
+
+/**
+ * DM's historical data is keyed by GTIN (the id in legacy `-p<gtin>.html`
+ * URLs), but current `/p/d/<dan>/<slug>` URLs carry their internal "dan"
+ * instead. Resolve dan → GTIN: prefer the GTIN scraped by the extension
+ * from the page's JSON-LD (`itemId` param), fall back to DM's product
+ * search API.
+ * @param {ShopParams} params
+ * @param {string} shopKey
+ * @returns {Promise<string | null>} GTIN or null when not resolvable
+ */
+async function resolveDmGtin(params, shopKey) {
+  const dan = new URL(params.url).pathname.match(/^\/p\/d\/(\d+)(?:\/|$)/)?.[1];
+  if (!dan) return null; // legacy URL, itemId already is the GTIN
+  if (params.itemId && params.itemId !== dan) return params.itemId;
+  if (dmGtinCache.has(dan)) return dmGtinCache.get(dan);
+  const country = dmCountry.get(shopKey);
+  const query = new URLSearchParams({
+    query: dan,
+    type: "search-static",
+    pageSize: "10",
+    currentPage: "0"
+  });
+  const resp = await fetch(`https://product-search.services.dmtech.com/${country}/search/crawl?${query}`);
+  if (!resp.ok) return null;
+  const { products } = await resp.json();
+  const gtin = products?.find(p => String(p.dan) === dan)?.gtin?.toString() ?? null;
+  if (gtin) dmGtinCache.set(dan, gtin);
+  return gtin;
+}
+
 function scrapedData(params) {
   return params.currentPrice
     ? {
@@ -71,7 +107,7 @@ export async function handler(event) {
     return withCORS(["GET", "OPTIONS"])(notFound({ error: "Unsupported shop", shop: shopHost(params) }));
   }
 
-  const slug = shop.itemId ?? shop.itemUrl;
+  let slug = shop.itemId ?? shop.itemUrl;
   if (!slug) {
     return withCORS(["GET", "OPTIONS"])(
       notFound({
@@ -79,6 +115,18 @@ export async function handler(event) {
         shop
       })
     );
+  }
+
+  if (dmCountry.has(shop.key)) {
+    const gtin = await resolveDmGtin(params, shop.key).catch(err => {
+      console.error("ERROR: dan→gtin resolution failed: " + err);
+      return null;
+    });
+    if (gtin) {
+      slug = gtin;
+      shop.itemId = gtin;
+      shop.itemUrl = gtin;
+    }
   }
   console.log("slug", slug);
 
