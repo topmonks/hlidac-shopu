@@ -1,5 +1,14 @@
 # Extension
 
+## 2.4.10
+* Fixed Mountfield.cz crash when the price meta tag is missing; scraper falls back to the product JSON-LD (#3581)
+* Hardened the shared price parser against missing input, protecting all shop modules from the same crash class
+* Fixed Datart.cz originalPrice after the Omnibus reference-price class rename, restoring coupon-discount detection (#2882)
+* Fixed Globus widget anchor after the detail price moved out of the ProductDetailInfo component (#3546)
+* Fixed DM.cz and mojadm.sk price lookup for the new `/p/d/<id>/<slug>` URL format — the API now resolves DM's internal id to the GTIN the data is keyed by (#3552)
+* Removed Datart.sk (now nay.sk) from the supported-shops listings (#3341)
+* Fixed Chrome Web Store publishing, stuck since 2.4.9 (Chrome users were still on 2.4.8)
+
 ## 2.4.9
 * Scraped prices are applied locally to the chart and discount computation instead of being submitted to the API, so personalized (member/club) discounts stay visible to the user without entering the public dataset (#3551)
 * Fixed Rohlik.cz product detail scraping after markup changes, including a 100× price bug when the cents superscript was present but the crowns part was unparseable
