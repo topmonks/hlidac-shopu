@@ -1,6 +1,16 @@
 import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
+const parseProductLd = () => {
+  for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+    try {
+      const data = JSON.parse(script.textContent);
+      if (data?.["@type"] === "Product") return data;
+    } catch {}
+  }
+  return null;
+};
+
 export class Mountfield extends Shop {
   get injectionPoint() {
     return ["beforebegin", ".box-detail-info__links"];
@@ -9,8 +19,9 @@ export class Mountfield extends Shop {
   async scrape() {
     const elem = document.querySelector(".box-detail");
     if (!elem) return;
-    const itemId = elem.querySelector("meta[itemprop=sku]").content.trim().toLowerCase();
-    const title = elem.querySelector("h1.box-detail__heading").textContent.trim();
+    const productLd = parseProductLd();
+    const itemId = (elem.querySelector("meta[itemprop=sku]")?.content ?? productLd?.sku)?.trim()?.toLowerCase();
+    const title = elem.querySelector("h1.box-detail__heading")?.textContent?.trim() ?? productLd?.name;
     const originalPrice =
       cleanPrice(".box-detail-add__prices__item__text__price") ?? cleanPrice(".box-detail-add__dmc-price");
 
@@ -29,9 +40,13 @@ export class Mountfield extends Shop {
         }
       }
     }
-    currentPrice ??= cleanPriceText(elem.querySelector("meta[itemprop=price]")?.content?.trim());
+    currentPrice ??= cleanPriceText(elem.querySelector("meta[itemprop=price]")?.content);
+    const offers = Array.isArray(productLd?.offers) ? productLd.offers[0] : productLd?.offers;
+    currentPrice ??= offers?.price ? cleanPriceText(String(offers.price)) : null;
 
-    const imageUrl = elem.querySelector("img[itemprop=image]").src;
+    const ldImage = Array.isArray(productLd?.image) ? productLd.image[0] : productLd?.image;
+    const imageUrl = elem.querySelector("img[itemprop=image]")?.src ?? ldImage;
+    if (!itemId || !title || !currentPrice) return;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
