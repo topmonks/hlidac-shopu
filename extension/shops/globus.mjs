@@ -4,8 +4,10 @@ import { AsyncShop } from "./shop.mjs";
 // Globus migrated from iglobus.cz to globusonline.cz with a Next.js SPA
 // rewrite. None of the old selectors (.product-configurator, .money-price)
 // exist anymore — the only stable anchor is the ProductPrice component.
+// The detail price no longer lives inside ProductDetailInfo; it is the only
+// ProductPrice on the page that is not wrapped in a product-tile link.
 const detailSelector = '[data-sentry-component="ProductDetailInfo"]';
-const priceSelector = `${detailSelector} [data-sentry-component="ProductPrice"]`;
+const priceSelector = '[data-sentry-component="ProductPrice"]:not(a [data-sentry-component="ProductPrice"])';
 
 function findProductLd() {
   for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
