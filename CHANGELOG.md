@@ -1,5 +1,9 @@
 # Extension
 
+## 2.4.11
+* Declared Firefox data collection permissions (browsingActivity, websiteContent) ahead of Mozilla's enforcement (#3543)
+* Fixed Chrome Web Store publishing — the upload CLI v4 silently dropped the auto-publish behavior, leaving 2.4.10 as an unsubmitted draft
+
 ## 2.4.10
 * Fixed Mountfield.cz crash when the price meta tag is missing; scraper falls back to the product JSON-LD (#3581)
 * Hardened the shared price parser against missing input, protecting all shop modules from the same crash class

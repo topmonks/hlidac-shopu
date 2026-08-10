@@ -3,7 +3,7 @@
   "default_locale": "cs",
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "2.4.10",
+  "version": "2.4.11",
   "author": "TopMonks s.r.o., Apify Technologies s.r.o., Keboola Czech s.r.o. & contributors",
   "homepage_url": "https://www.hlidacshopu.cz/",
   "background": {
@@ -110,7 +110,10 @@
       "id": "{d6f0f975-91a3-4d78-96f7-5f1859ad18b6}",
       "strict_min_version": "109.0",
       "data_collection_permissions": {
-        "required": ["browsingActivity", "websiteContent"]
+        "required": [
+          "browsingActivity",
+          "websiteContent"
+        ]
       }
     },
     "gecko_android": {
