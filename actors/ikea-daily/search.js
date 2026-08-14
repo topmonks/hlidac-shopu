@@ -84,17 +84,25 @@ function* categoryPagination(country, category, { max, pageSize }) {
   }
 }
 
-function readTopCategories(document) {
-  const el = document.querySelector("div.hnf-inpage-nav[data-props]");
-  if (!el) {
-    throw new Error("IKEA homepage: div.hnf-inpage-nav[data-props] not found — DOM structure changed");
+/**
+ * Reads top category ids from the category nav on the homepage. Each category link
+ * carries its id in `data-tracking-label="homepage | <categoryId>"`. The nav also
+ * holds links that are not categories, so we keep only those pointing to `/cat/`.
+ * @param {Document} document
+ * @returns {string[]} category ids
+ */
+export function readTopCategories(document) {
+  const nav = document.querySelector("div.hnf-inpage-nav");
+  if (!nav) {
+    throw new Error("IKEA homepage: div.hnf-inpage-nav not found - DOM structure changed");
   }
-  const props = JSON.parse(el.getAttribute("data-props"));
-  const subs = props?.categories?.subs;
-  if (!Array.isArray(subs) || subs.length === 0) {
-    throw new Error("IKEA homepage: categories.subs missing or empty in hnf-inpage-nav data-props");
+  const categories = Array.from(nav.querySelectorAll('a[data-tracking-label][href*="/cat/"]'))
+    .map(link => link.getAttribute("data-tracking-label").split("|").at(-1).trim())
+    .filter(Boolean);
+  if (categories.length === 0) {
+    throw new Error("IKEA homepage: no category links found in div.hnf-inpage-nav - DOM structure changed");
   }
-  return subs;
+  return categories;
 }
 
 function toProduct({ product }) {
@@ -132,7 +140,7 @@ function defRouter({ country, stats, rawData }) {
     /** @param {HttpCrawlingContext} ctx */
     async start({ body, crawler }) {
       const { document } = parseHTML(body.toString("utf8"));
-      const categories = readTopCategories(document).map(x => x.id);
+      const categories = readTopCategories(document);
       await crawler.addRequests(categories.map(x => getCategoryProducts(country, x)));
     },
     /** @param {HttpCrawlingContext} ctx */
