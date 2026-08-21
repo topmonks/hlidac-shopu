@@ -21,8 +21,7 @@ const Country = {
 
 /** @enum {string} */
 const Lables = {
-  START: "START",
-  CATEGORY: "CATEGORY"
+  START: "START"
 };
 
 /**
@@ -44,8 +43,6 @@ function getCountrySlug(country) {
 }
 
 function makeListingUrl(countryCode, productQuery, currentPage, pageSize = 100) {
-  // The `/search/static` endpoint now 302-redirects to `/search/crawl`; hit
-  // the new path directly so we don't depend on redirect-following.
   return `https://product-search.services.dmtech.com/${countryCode.toLowerCase()}/search/crawl?${new URLSearchParams({
     ...productQuery,
     pageSize,
@@ -84,31 +81,24 @@ function* traverseCategories(categories, names = []) {
 function parseItem(item, country, category) {
   const p = item.tileData;
 
-  const currentPrice = parseFloat(
-    p.price.price.current.value
-      .trim()
-      .replace(/[^\d,]+/g, "")
-      .replace(",", ".")
-  );
-  const originalPrice = p.price.price.previous
-    ? parseFloat(
-        p.price.price.previous.value
-          .trim()
-          .replace(/[^\d,]+/g, "")
-          .replace(",", ".")
-      )
-    : null;
+  const currentPrice = parseFloat(p.price.price.current.value
+                        .trim()
+                        .replace(/[^\d,]+/g, "")
+                        .replace(",", "."));
+  const originalPrice = p.price.price.previous ?
+                        parseFloat(p.price.price.previous.value
+                          .trim()
+                          .replace(/[^\d,]+/g, "")
+                          .replace(",", ".")) :
+                        null
 
   // inStock information was moved to a different API call:
   // https://products.dm.de/availability/api/v1/tiles/CZ/<id>
   // Not necessary to make the extra call. But the Keboola table schema
   // requires it, so we include it (set to null)
-  // `title.preheadline` (the brand prefix) was dropped from the tile schema;
-  // the brand now lives on the product (`brandName`) / tile (`brand.name`).
-  const brand = p.title.preheadline ?? item.brandName ?? p.brand?.name;
   return {
     itemId: p.gtin,
-    itemName: [brand, p.title.tileHeadline].filter(Boolean).join(" "),
+    itemName: [p.title.preheadline ?? item.brandName, p.title.tileHeadline].filter(Boolean).join(" "),
     itemUrl: createProductUrl(country, p.self),
     img: p.images[0]?.tileSrc ?? null,
     inStock: null,
@@ -116,7 +106,7 @@ function parseItem(item, country, category) {
     originalPrice,
     currency: p.trackingData.currency,
     category,
-    discounted: originalPrice ? currentPrice !== originalPrice : false
+    discounted: originalPrice ? currentPrice !== originalPrice : false,
   };
 }
 
@@ -132,7 +122,6 @@ async function handleProducts(
   detailUrl
 ) {
   const { products, currentPage, totalPages } = json;
-  stats.add("items", products.length);
   if (products.length > 0) {
     if (currentPage === 0 && totalPages > 1) {
       for (let i = 1; i < totalPages; i++) {
@@ -176,54 +165,56 @@ async function saveProducts({ products, stats, processedIds, detailUrl, country,
     }
   }
   const responses = await Promise.all(requests);
-  return responses.length / 2;
+  return responses.length;
 }
 
-function productDetails(json, country, category) {
-  const { mainData } = json;
-  const result = mainData
-    .map(x => x?.query?.filters)
-    .filter(Boolean)
-    .shift();
-  if (!result) return;
+/**
+ * Navigation links have the form
+ * `dmLink://searchresult/filters=allCategories.id:010101 isPharmacy:false`,
+ * values may be quoted and repeated keys are joined by `OR`. The search API
+ * accepts only one value per key, so alternatives become separate queries.
+ *
+ * @param {string} link
+ * @returns {Object[]} product queries
+ */
+function productQueries(link) {
+  const filters = link.match(/^dmLink:\/\/searchresult\/filters=(.*)$/)?.[1];
+  if (!filters) return [];
 
-  const productQuery = {};
-  const filters = result.split(" ");
-  for (const filter of filters) {
-    const [key, val] = filter.split(":");
-    productQuery[key] = val;
+  const groups = new Map();
+  for (const token of filters.match(/[\w.]+:(?:"[^"]*"|\S+)/g) ?? []) {
+    const i = token.indexOf(":");
+    const key = token.slice(0, i);
+    const value = token.slice(i + 1).replace(/^"|"$/g, "");
+    if (!groups.has(key)) groups.set(key, new Set());
+    groups.get(key).add(value);
   }
-  return {
-    url: makeListingUrl(country, productQuery, 0),
-    userData: {
-      country,
-      category,
-      productQuery
-    }
-  };
+  if (!groups.size) return [];
+
+  let queries = [{}];
+  for (const [key, values] of groups) {
+    queries = queries.flatMap(query => [...values].map(value => ({ ...query, [key]: value })));
+  }
+  return queries;
 }
 
 function categoriesListing({ type, navigation }, stats, country) {
   log.info(`Pagination info ${type}`);
   const requests = [];
   const { children } = navigation;
-  // we are traversing recursively from leaves to trunk
   for (const category of traverseCategories(children)) {
     log.debug(`Found category ${category.title} at link: ${category.link}`);
-    stats.inc("categories");
-    // Navigation now ships absolute category links (https://www.dm.cz/<path>);
-    // the content API still expects just the path segment appended to the base.
-    const link = new URL(category.link, "https://www.dm.cz").pathname;
-    // we need to await here to prevent higher categories
-    // to be enqueued sooner than sub-categories
-    requests.push({
-      url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}${link}/`,
-      userData: {
-        country,
-        category: category.breadcrumbs.toString(),
-        label: Lables.CATEGORY
-      }
-    });
+    for (const productQuery of productQueries(category.link)) {
+      stats.inc("categories");
+      requests.push({
+        url: makeListingUrl(country, productQuery, 0),
+        userData: {
+          country,
+          category: category.breadcrumbs.toString(),
+          productQuery
+        }
+      });
+    }
   }
   return requests;
 }
@@ -259,7 +250,6 @@ async function main() {
   const stats = await withPersistedStats({
     categories: 0,
     items: 0,
-    itemsUnique: 0,
     itemsDuplicity: 0,
     failed: 0
   });
@@ -271,6 +261,7 @@ async function main() {
     country = Country.CZ,
     type = ActorType.Full,
     development = false,
+    maxConcurrency = 2, // they rate limit us with 429s
     proxyGroups = ["CZECH_LUMINATI"]
   } = await getInput();
 
@@ -285,7 +276,14 @@ async function main() {
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
-    maxRequestsPerMinute: 100,
+    maxConcurrency,
+    // the search API rate limits a single IP after a couple of requests,
+    // so every request gets a fresh session, and with it a fresh proxy IP
+    retryOnBlocked: true,
+    maxRequestRetries: 20,
+    sessionPoolOptions: {
+      sessionOptions: { maxUsageCount: 1 }
+    },
     async requestHandler({ request, json, crawler }) {
       log.info(`Processing ${request.url}...`);
       const {
@@ -298,13 +296,6 @@ async function main() {
           {
             const requests = categoriesListing(json, stats, country);
             await crawler.requestQueue.addRequests(requests);
-          }
-          break;
-        case Lables.CATEGORY:
-          {
-            const request = productDetails(json, country, category);
-            if (!request) return;
-            await crawler.requestQueue.addRequest(request);
           }
           break;
         default:
