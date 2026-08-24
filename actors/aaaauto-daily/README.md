@@ -21,19 +21,20 @@ Scrapes prices of all car offers on AAAAuto.cz
 
 ```json
 {
-  "itemUrl": "https://www.aaaauto.sk/sk/hyundai-tucson/car.html?id=399451975#limit=50&promo=b",
-  "itemId": "399451975",
-  "description": "FAMILY, VIN: TMAJ3811AHJ340246",
-  "img": "https://aaaautoeuimg.vshcdn.net/thumb/700097495_640x480x95.jpg?80456",
-  "itemName": "Hyundai Tucson",
-  "currentPrice": "16500",
-  "currency": "Eur",
-  "actionPrice": 14500,
-  "discounted": false,
-  "year": " 2017",
-  "km": " 38 611 km",
-  "transmission": " 6 stupňov",
-  "fuelType": " Benzín",
-  "engine": "1.6 GDI / 97kW"
+  "itemUrl": "https://www.aaaauto.cz/detail/skoda/superb/30311332",
+  "itemId": "30311332",
+  "description": "2.0 TDI, 4x4, Automat, Kuze, Navi",
+  "img": "https://aaaautoeuimg.vshcdn.net/thumb/900590383_1024x768x95.jpg",
+  "itemName": "Skoda Superb",
+  "currentPrice": "210000",
+  "originalPrice": 220000,
+  "currency": "Kc",
+  "actionPrice": 210000,
+  "discounted": true,
+  "year": 2016,
+  "km": "311285 km",
+  "transmission": "Automaticka",
+  "fuelType": "Diesel",
+  "engine": "2.0 TDI"
 }
 ```
