@@ -203,6 +203,39 @@ function productDetails(json, country, category) {
   };
 }
 
+const SEARCH_RESULT_LINK = "dmlink://searchresult/";
+
+/**
+ * The navigation now points categories at `dmLink://searchresult/<query>`
+ * app deep links, e.g.
+ *   dmLink://searchresult/filters=allCategories.id:010102 isPharmacy:false
+ * Those carry the product query outright, so parse it into the same shape
+ * `productDetails` derives from a category page and skip that hop entirely.
+ * Feeding them to `new URL().pathname` instead builds a content API path that
+ * 404s with an empty `text/plain` body, which is what silently dropped most
+ * of the catalogue.
+ *
+ * Deep links carrying only a `queryTerms` free-text search yield no query:
+ * the search endpoint ignores that parameter, so every one of them returns
+ * the same unfiltered first pages of the catalogue.
+ *
+ * @param {string} link
+ * @returns {Record<string, string> | null} product query, or null when `link`
+ *   holds no filter we can turn into a listing
+ */
+function searchResultQuery(link) {
+  const productQuery = {};
+  for (const [key, value] of new URLSearchParams(link.slice(SEARCH_RESULT_LINK.length))) {
+    if (key !== "filters") continue;
+    // `filters` packs several key:value pairs separated by spaces
+    for (const filter of value.split(" ").filter(Boolean)) {
+      const [filterKey, ...rest] = filter.split(":");
+      productQuery[filterKey] = rest.join(":");
+    }
+  }
+  return Object.keys(productQuery).length > 0 ? productQuery : null;
+}
+
 function categoriesListing({ type, navigation }, stats, country) {
   log.info(`Pagination info ${type}`);
   const requests = [];
@@ -211,11 +244,30 @@ function categoriesListing({ type, navigation }, stats, country) {
   for (const category of traverseCategories(children)) {
     log.debug(`Found category ${category.title} at link: ${category.link}`);
     stats.inc("categories");
-    // Navigation now ships absolute category links (https://www.dm.cz/<path>);
-    // the content API still expects just the path segment appended to the base.
-    const link = new URL(category.link, "https://www.dm.cz").pathname;
     // we need to await here to prevent higher categories
     // to be enqueued sooner than sub-categories
+    if (category.link.toLowerCase().startsWith(SEARCH_RESULT_LINK)) {
+      const productQuery = searchResultQuery(category.link);
+      if (!productQuery) {
+        stats.inc("categoriesSkipped");
+        log.debug(`Skipping search-only category ${category.title}: ${category.link}`);
+        continue;
+      }
+      stats.inc("categoriesFromDeepLink");
+      requests.push({
+        url: makeListingUrl(country, productQuery, 0),
+        userData: {
+          country,
+          category: category.breadcrumbs.toString(),
+          productQuery
+        }
+      });
+      continue;
+    }
+    // Plain content links (https://www.dm.cz/<path>) still go through the
+    // category page; the content API expects just the path segment.
+    const link = new URL(category.link, "https://www.dm.cz").pathname;
+    stats.inc("categoriesFromContentPage");
     requests.push({
       url: `https://content.services.dmtech.com/rootpage-dm-shop-${getCountrySlug(country)}${link}/`,
       userData: {
