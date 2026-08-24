@@ -98,6 +98,7 @@ function parseItem(item, country, category) {
   // requires it, so we include it (set to null)
   return {
     itemId: p.gtin,
+    slug: p.gtin,
     itemName: [p.title.preheadline ?? item.brandName, p.title.tileHeadline].filter(Boolean).join(" "),
     itemUrl: createProductUrl(country, p.self),
     img: p.images[0]?.tileSrc ?? null,
@@ -171,14 +172,17 @@ async function saveProducts({ products, stats, processedIds, detailUrl, country,
 /**
  * Navigation links have the form
  * `dmLink://searchresult/filters=allCategories.id:010101 isPharmacy:false`,
- * values may be quoted and repeated keys are joined by `OR`. The search API
- * accepts only one value per key, so alternatives become separate queries.
+ * sometimes preceded by other params (`queryTerms=…&filters=…`), which the
+ * search endpoint ignores. Values may be quoted and repeated keys are joined
+ * by `OR`; the API accepts only one value per key, so alternatives become
+ * separate queries.
  *
  * @param {string} link
  * @returns {Object[]} product queries
  */
 function productQueries(link) {
-  const filters = link.match(/^dmLink:\/\/searchresult\/filters=(.*)$/)?.[1];
+  if (!link.startsWith("dmLink://searchresult/")) return [];
+  const filters = link.match(/(?:^|[?&/])filters=(.*)$/)?.[1];
   if (!filters) return [];
 
   const groups = new Map();
