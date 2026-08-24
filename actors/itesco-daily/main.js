@@ -27,8 +27,8 @@ const Labels = {
 
 /** @enum {string} */
 const StartUrls = {
-  CZ: "https://nakup.itesco.cz/groceries/cs-CZ/",
-  SK: "https://potravinydomov.itesco.sk/groceries/sk-SK/"
+  CZ: "https://nakup.itesco.cz/shop/cs-CZ/landing/groceries",
+  SK: "https://potravinydomov.itesco.sk/shop/sk-SK/landing/groceries"
 };
 
 /**
@@ -148,7 +148,7 @@ function extractItems({ document, country, uniqueItems, stats }) {
       currentPrice: typeof price.actual === "number" ? price.actual : cleanPrice(price.actual),
       currentUnitPrice: typeof price.unitPrice === "number" ? price.unitPrice : cleanPrice(price.unitPrice),
       discounted: false,
-      itemUrl: `${rootUrl}/groceries/${locale}/products/${product.id}`
+      itemUrl: `${rootUrl}/shop/${locale}/products/${product.id}`
     };
 
     // Find the first non-Clubcard promotion (matching the old `.offer-text`
@@ -202,14 +202,18 @@ function extractItems({ document, country, uniqueItems, stats }) {
 /**
  * Extract top-level category URLs from the groceries homepage. Replaces the
  * old `.menu__link--superdepartment` DOM class (removed in the ddsweb
- * migration) with an href regex matching `/groceries/<locale>/shop/<slug>/all`
+ * migration) with an href regex matching `/shop/<locale>/browse/<slug>/all`
  * filtered to top-level superdepartments (exactly one slug segment).
+ * The whole URL scheme moved from `/groceries/<locale>/shop/…` to
+ * `/shop/<locale>/browse/…` (old paths only 301-redirect), so the old pattern
+ * matched nothing and the START handler queued zero categories.
  * @param {Document} document
  * @param {Country} country
  */
 function startUrls(document, country) {
   const rootUrl = country === Country.CZ ? "https://nakup.itesco.cz" : "https://potravinydomov.itesco.sk";
-  const pattern = /^(?:https?:\/\/[^/]+)?(\/groceries\/[a-z]{2}-[A-Z]{2}\/shop\/[^/?#]+\/all)(?:[?#]|$)/;
+  const locale = country === Country.CZ ? "cs-CZ" : "sk-SK";
+  const pattern = new RegExp(`^(?:https?://[^/]+)?(/shop/${locale}/browse/[^/?#]+/all)(?:[?#]|$)`);
   const seen = new Set();
   const hrefs = [];
   for (const a of document.querySelectorAll("a[href]")) {
@@ -314,7 +318,7 @@ async function main() {
     type = ActorType.Full,
     // TODO: use urls = []; instead
     bfUrl = "https://itesco.cz/akcni-nabidky/seznam-produktu/black-friday/",
-    testUrl = "https://nakup.itesco.cz/groceries/cs-CZ/shop/pekarna/all"
+    testUrl = "https://nakup.itesco.cz/shop/cs-CZ/browse/pekarna/all"
   } = await getInput();
 
   if (development) {
