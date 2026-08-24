@@ -50,6 +50,12 @@ export function getRootUrl(type = ActorType.Full, country = Country.CZ) {
  * @returns {string}
  */
 export function getBaseUrl(type = ActorType.Full, country = Country.CZ, page = 1) {
+  // The old site had a dedicated Black Friday listing (`/black-friday/?category=92`). That URL is
+  // gone with the redesign and no replacement is known yet, so fail loudly rather than silently
+  // scrape the full catalog into the `_bf` table. Revisit when the BF section goes live. See #3580.
+  if (type === ActorType.BlackFriday) {
+    throw new Error("AAAauto: Black Friday URL is unknown after the site redesign - not yet supported (see #3580)");
+  }
   const category = categoryByCountry.get(country);
   return `${originFor(country)}/${category}/?page=${page}`;
 }
