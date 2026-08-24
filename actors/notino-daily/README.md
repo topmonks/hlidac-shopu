@@ -1,3 +1,25 @@
+# 24.8.2026 — přechod na sitemap (GH #3587)
+
+Aktor vracel jen ~8K z ~90K produktů. Příčina: procházení kategorií + stránkování přestalo
+fungovat. Stránkovací URL kategorií (`...?f=<...>`) vrací **403 od Cloudflare Bot Management**
+(cookie `__cf_bm`) pro ne-prohlížečové klienty na **všech** proxy skupinách (ověřeno přes
+got-scraping / Apify Proxy: RESIDENTIAL, datacenter i country-DC), takže stránkování se nikdy
+nedostalo za 1. stránku (~28 produktů/kategorie). Homepage „warm-up" cookies to neřeší a žádné
+JSON API pro výpis produktů neexistuje (grid je server-rendered v té samé Cloudflare-blokované
+`?f=` HTML).
+
+**Řešení:** produkty se objevují ze **sitemapy** místo procházení kategorií.
+`sitemap.xml` → produktové sub-sitemapy (`sitemap_detail_*_cz.xml`, bez `reviews`) → ~63K
+unikátních detail URL, aktualizováno denně (`<lastmod>` = dnes). Detailní stránky produktů
+**nejsou** Cloudflare-blokované (vrací `__APOLLO_STATE__` přes obyčejné HTTP), takže parser
+detailu zůstává beze změny. 63K detail stránek × ~1,5–2 varianty ≈ ~90K řádků = očekávaný objem.
+
+Black Friday (`type=BF`) stále používá staré procházení kategorií (mimo rozsah #3587; nejspíš
+narazí na stejnou Cloudflare zeď — před listopadem prověřit). Původní discovery přes homepage menu
+je zachováno pro referenci v `legacy/homepage-category-crawl.js`. Detaily viz hlavička `main.js`.
+
+---
+
 Značná část requestů končí s chybou 502 nebo s chybovou hláškou
 
 ```
