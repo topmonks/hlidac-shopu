@@ -1,18 +1,47 @@
 import { HttpCrawler, useState } from "@crawlee/http";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, LogLevel, log } from "apify";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
+/**
+ * WHY THIS ACTOR IS SITEMAP-DRIVEN (see GH #3587)
+ * -----------------------------------------------
+ * Notino CZ used to be crawled by walking the homepage mega-menu -> category pages -> following the
+ * `rel="next"` pagination link on each category. That collapsed to ~8K of ~90K products.
+ *
+ * Root cause (verified live via got-scraping through Apify Proxy, all proxy tiers): category page 1
+ * loads fine and `rel="next"` IS found, but the paginated `...?f=<...>` URLs return **403 from
+ * Cloudflare Bot Management** (`__cf_bm` cookie). This is true on RESIDENTIAL, datacenter, and
+ * country-DC groups alike, and a homepage cookie warm-up on a pinned IP does NOT clear it. So
+ * pagination dies at page 1 of every category -> only the first ~28 products per category are seen.
+ * There is no JSON listing API to fall back to - the product grid is server-rendered in that same
+ * Cloudflare-gated `?f=` HTML.
+ *
+ * The fix: discover products from Notino's own **sitemap** instead of category pagination. The
+ * sitemap index (`/sitemap.xml`) links per-category product sitemaps
+ * (`sitemap_detail_{parfemy,plet,telo,vlasy,makeup,zdravi,...}_cz.xml`) that together list ~63K
+ * unique product-detail URLs, refreshed daily (`<lastmod>` = today). Product **detail** pages are
+ * NOT Cloudflare-gated - they return `__APOLLO_STATE__` over plain HTTP - so the existing detail
+ * parser works unchanged. 63K product pages x ~1.5-2 variants each => ~90K item rows = the expected
+ * volume. This is strictly more complete than the old category walk and avoids the `?f=` wall
+ * entirely.
+ *
+ * Black Friday still uses the old CATEGORY_PAGE/pagination path (seasonal, out of scope for #3587);
+ * it likely hits the same Cloudflare wall and should be revisited before November.
+ * The retired homepage-menu discovery lives in `legacy/homepage-category-crawl.js` for reference.
+ */
+
 /** @enum {string} */
 const Labels = {
-  HOME_PAGE: "HOME_PAGE",
+  SITEMAP_INDEX: "SITEMAP_INDEX",
+  PRODUCT_SITEMAP: "PRODUCT_SITEMAP",
   CATEGORY_PAGE: "CATEGORY_PAGE",
   DETAIL_PAGE: "DETAIL_PAGE",
   COUNT: "COUNT",
@@ -41,53 +70,20 @@ function getRootUrl(country) {
 }
 
 /**
- * @param {Document} document
  * @param {Country} country
  */
-function homepageRequests(document, country) {
-  log.debug("Home page");
-  const jsonMainMenu = document.querySelector('script[id="main-menu-state"]').innerHTML;
-  const mainMenu = JSON.parse(jsonMainMenu);
-  const rootUrl = getRootUrl(country);
-  const links = [];
-  if (mainMenu) {
-    const categories = mainMenu.fragmentContextData.DataProvider.categories;
-    for (const category of categories) {
-      if (category.columns.length > 0) {
-        for (const column of category.columns) {
-          for (const subCat of column.subCategories) {
-            if (subCat.isLink && !subCat.link.includes("https")) {
-              links.push({
-                url: `${rootUrl}${subCat.link}`,
-                userData: {
-                  label: Labels.CATEGORY_PAGE
-                }
-              });
-            }
-            for (const pt of subCat.productTypes) {
-              if (!pt.link.includes("https")) {
-                links.push({
-                  url: `${rootUrl}${pt.link}`,
-                  userData: {
-                    label: Labels.CATEGORY_PAGE
-                  }
-                });
-              }
-            }
-          }
-        }
-      } else if (!category.link.includes("https")) {
-        links.push({
-          url: `${rootUrl}${category.link}`,
-          userData: {
-            label: Labels.CATEGORY_PAGE
-          }
-        });
-      }
-    }
-  }
-  log.info(`Found categories ${links.length}`);
-  return links;
+function getSitemapUrl(country) {
+  return !country || country === Country.CZ ? SITEMAP_URL_CZ : SITEMAP_URL_SK;
+}
+
+/**
+ * Sub-sitemaps that hold product-detail URLs. Excludes the `reviews` sitemaps (those are `/recenze/`
+ * pages, not products). The per-category and the `*_images_*` sitemaps overlap - the request queue
+ * dedupes the URLs, so enqueuing all of them is safe and maximises coverage.
+ * @param {string} url
+ */
+function isProductDetailSitemap(url) {
+  return url.includes("sitemap_detail") && !url.includes("reviews");
 }
 
 function determineCurrentAndOriginalPrice(variantGeneralData) {
@@ -208,6 +204,8 @@ async function main() {
   log.info("ACTOR - start");
 
   const processedIds = await useState("processedIds", {});
+  // Dedupe product URLs across the overlapping category + *_images_* sitemaps before enqueuing.
+  const seenProductUrls = await useState("seenProductUrls", {});
 
   rollbar.init();
 
@@ -242,34 +240,63 @@ async function main() {
     useApifyProxy: !development
   });
 
+  // Test = quick end-to-end smoke run: crawl the sitemap pipeline but stop after a handful of pages.
+  const maxRequestsPerCrawl = type === ActorType.Test ? 60 : undefined;
+
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestsPerMinute: 600,
     maxRequestRetries,
+    maxRequestsPerCrawl,
+    requestHandlerTimeoutSecs: 120,
     useSessionPool: true,
     persistCookiesPerSession: true,
     sessionPoolOptions: {
       maxPoolSize: 600
     },
     ignoreSslErrors: true,
-    async requestHandler({ request, body, crawler }) {
-      log.info(`Processing ${request.url}, ${request.userData.label}`);
-      const { document } = parseHTML(body.toString());
-      switch (request.userData.label) {
-        case Labels.HOME_PAGE: {
-          {
-            const requests = homepageRequests(document, country);
-            stats.add("categories", requests.length);
-            stats.add("pages", requests.length);
-            await crawler.requestQueue.addRequests(requests, {
-              forefront: true
-            });
+    async requestHandler({ request, body, crawler, addRequests }) {
+      const label = request.userData.label;
+      log.info(`Processing ${request.url}, ${label}`);
+      const html = body.toString();
+      // Sitemaps are up to ~10 MB of XML - running linkedom over them blows the requestHandler
+      // timeout and pegs CPU. Extract <loc> with a cheap regex instead. `<loc>` never matches the
+      // namespaced `<image:loc>` nodes, so product image URLs are naturally skipped.
+      const sitemapLocs = () => [...html.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
+      switch (label) {
+        case Labels.SITEMAP_INDEX: {
+          // Fan out from the sitemap index to the product-detail sub-sitemaps (skip reviews).
+          let sitemaps = sitemapLocs().filter(isProductDetailSitemap);
+          // Test = smoke run: a few sitemaps exercise the whole pipeline (some category sitemaps are
+          // empty, e.g. zuby/drogerie, so take several); maxRequestsPerCrawl still bounds the work.
+          if (type === ActorType.Test) sitemaps = sitemaps.slice(0, 4);
+          const requests = sitemaps.map(url => ({ url, userData: { label: Labels.PRODUCT_SITEMAP } }));
+          stats.add("categories", requests.length);
+          await addRequests(requests);
+          log.info(`Queued ${requests.length} product sitemaps`);
+          break;
+        }
+        case Labels.PRODUCT_SITEMAP: {
+          // Each product `<loc>` is a detail URL. Category and *_images_* sitemaps overlap heavily
+          // (~63.6K unique of ~184K listings), so dedupe across sitemaps in-memory before enqueuing
+          // to avoid ~3x request-queue churn.
+          const requests = [];
+          for (const url of sitemapLocs()) {
+            if (!url.startsWith(getRootUrl(country)) || seenProductUrls[url]) continue;
+            seenProductUrls[url] = true;
+            requests.push({ url, userData: { label: Labels.DETAIL_PAGE } });
           }
+          stats.add("pages", requests.length);
+          // Context addRequests streams large batches in the background, so the handler returns
+          // immediately instead of blocking (and timing out) while ~13K URLs are enqueued.
+          await addRequests(requests);
+          log.debug(`Queued ${requests.length} product details from ${request.url}`);
           break;
         }
         case Labels.BF:
         case Labels.CATEGORY_PAGE:
           {
+            const { document } = parseHTML(html);
             const paginationNext = document.querySelector('[rel="next"]')?.getAttribute("href");
             if (paginationNext) {
               await crawler.requestQueue.addRequest(
@@ -299,6 +326,7 @@ async function main() {
           break;
         case Labels.DETAIL_PAGE: {
           {
+            const { document } = parseHTML(html);
             if (document.querySelector("div#pdVariantsTile")) {
               const productVariants = document.querySelectorAll("div#pdVariantsTile li a").map(a => {
                 const url = new URL(request.url);
@@ -328,31 +356,27 @@ async function main() {
           }
           break;
         }
-        case Labels.COUNT:
+        case Labels.COUNT: {
           log.info("Downloading sitemap root");
-          const requests = document
-            .querySelectorAll("sitemap loc")
-            .map(loc => {
-              const url = loc.innerHTML;
-              if (url.includes("detail")) {
-                return {
-                  url,
-                  userData: {
-                    label: Labels.COUNT_PRODUCT
-                  }
-                };
-              }
-            })
-            .filter(Boolean);
+          const requests = sitemapLocs()
+            .filter(url => url.includes("detail"))
+            .map(url => ({ url, userData: { label: Labels.COUNT_PRODUCT } }));
           await crawler.requestQueue.addRequests(requests);
           break;
-        case Labels.COUNT_PRODUCT:
-          const urls = document.querySelectorAll("url loc").map(loc => loc.innerHTML);
+        }
+        case Labels.COUNT_PRODUCT: {
+          const urls = sitemapLocs();
           const uniqueUrls = new Set(urls);
           stats.add("items", uniqueUrls.size);
           stats.add("itemsDuplicity", urls.length - uniqueUrls.size);
           break;
+        }
       }
+    },
+    // Notino soft-blocks flagged IPs with 403. Retire the session so the retry uses a fresh IP
+    // instead of hammering a burnt one.
+    async errorHandler({ session, response }) {
+      if (response?.statusCode === 403) session?.retire();
     },
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
@@ -371,23 +395,17 @@ async function main() {
         }
       });
       break;
-    case ActorType.Test:
-      startingRequests.push({
-        url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
-        userData: { label: Labels.CATEGORY_PAGE }
-      });
-      break;
     case ActorType.Count:
       startingRequests.push({
-        url: country === Country.CZ ? SITEMAP_URL_CZ : SITEMAP_URL_SK,
+        url: getSitemapUrl(country),
         userData: { label: Labels.COUNT }
       });
       break;
+    // Test and Full both crawl via the sitemap; Test is bounded by maxRequestsPerCrawl above.
     default:
-      const rootUrl = country === Country.CZ ? BASE_URL : BASE_URL_SK;
       startingRequests.push({
-        url: rootUrl,
-        userData: { label: Labels.HOME_PAGE }
+        url: getSitemapUrl(country),
+        userData: { label: Labels.SITEMAP_INDEX }
       });
   }
   await crawler.run(testUrls ?? startingRequests);
