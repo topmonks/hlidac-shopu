@@ -240,14 +240,10 @@ async function main() {
     useApifyProxy: !development
   });
 
-  // Test = quick end-to-end smoke run: crawl the sitemap pipeline but stop after a handful of pages.
-  const maxRequestsPerCrawl = type === ActorType.Test ? 60 : undefined;
-
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestsPerMinute: 600,
     maxRequestRetries,
-    maxRequestsPerCrawl,
     requestHandlerTimeoutSecs: 120,
     useSessionPool: true,
     persistCookiesPerSession: true,
@@ -266,10 +262,7 @@ async function main() {
       switch (label) {
         case Labels.SITEMAP_INDEX: {
           // Fan out from the sitemap index to the product-detail sub-sitemaps (skip reviews).
-          let sitemaps = sitemapLocs().filter(isProductDetailSitemap);
-          // Test = smoke run: a few sitemaps exercise the whole pipeline (some category sitemaps are
-          // empty, e.g. zuby/drogerie, so take several); maxRequestsPerCrawl still bounds the work.
-          if (type === ActorType.Test) sitemaps = sitemaps.slice(0, 4);
+          const sitemaps = sitemapLocs().filter(isProductDetailSitemap);
           const requests = sitemaps.map(url => ({ url, userData: { label: Labels.PRODUCT_SITEMAP } }));
           stats.add("categories", requests.length);
           await addRequests(requests);
@@ -401,8 +394,14 @@ async function main() {
         userData: { label: Labels.COUNT }
       });
       break;
-    // Test and Full both crawl via the sitemap; Test is bounded by maxRequestsPerCrawl above.
+    case ActorType.Test:
+      startingRequests.push({
+        url: "https://www.notino.cz/kosmetika/pletova-kosmetika/pletove-kremy/",
+        userData: { label: Labels.CATEGORY_PAGE }
+      });
+      break;
     default:
+      // Full: discover the whole catalog via the sitemap (see header comment).
       startingRequests.push({
         url: getSitemapUrl(country),
         userData: { label: Labels.SITEMAP_INDEX }
