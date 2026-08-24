@@ -1,7 +1,7 @@
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
+import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
@@ -13,27 +13,48 @@ import { Actor, Dataset, LogLevel, log } from "apify";
 /** @enum {string} */
 const Labels = {
   Start: "START",
+  SitemapIndex: "SITEMAP_INDEX",
+  CategorySitemap: "CATEGORY_SITEMAP",
   List: "LIST",
   Detail: "DETAIL",
   SubCat: "SUBCAT"
 };
 
-function startRequests({ document, homePageUrl }) {
-  let categoryLinkList = document
-    .querySelectorAll(".headr__nav-cat-col-inner > .headr__nav-cat-row > a.headr__nav-cat-link")
-    .map(a => ({
-      href: a.href,
-      dataWebtrekk: a.getAttribute("data-webtrekk")
+// The header category navigation is rendered client side, so the home page HTML
+// contains no category tree. The XML sitemap advertised in robots.txt is the
+// only server rendered listing of all categories.
+function sitemapIndexRequests({ body, homePageUrl }) {
+  return body
+    .toString()
+    .split(/\r?\n/)
+    .map(line => line.match(/^\s*Sitemap:\s*(\S+)/i)?.[1])
+    .filter(url => url?.endsWith("sitemap_index.xml"))
+    .map(url => ({
+      url: new URL(url, homePageUrl).href,
+      userData: { label: Labels.SitemapIndex }
     }));
-  if (!categoryLinkList.length) {
-    categoryLinkList = document.querySelectorAll("ul.first-level > li > a").map(a => ({
-      href: a.href
+}
+
+function categorySitemapRequests({ body, homePageUrl }) {
+  const { document } = parseXML(body.toString());
+  return document
+    .querySelectorAll("sitemap loc")
+    .map(loc => loc.textContent.trim())
+    .filter(url => url.includes("obi-category"))
+    .map(url => ({
+      url: new URL(url, homePageUrl).href,
+      userData: { label: Labels.CategorySitemap }
     }));
-  }
-  return categoryLinkList
-    .filter(categoryObject => !categoryObject.dataWebtrekk)
-    .map(categoryObject => ({
-      url: new URL(categoryObject.href, homePageUrl).href,
+}
+
+function categoryRequests({ body, homePageUrl }) {
+  const { document } = parseXML(body.toString());
+  return document
+    .querySelectorAll("url loc")
+    .map(loc => loc.textContent.trim())
+    .filter(url => url.includes("/c/"))
+    .map(url => ({
+      url: new URL(url, homePageUrl).href,
       userData: { label: Labels.SubCat }
     }));
 }
@@ -169,6 +190,8 @@ async function main() {
   const crawler = new HttpCrawler({
     maxRequestsPerMinute: 600,
     requestHandlerTimeoutSecs: 45,
+    // robots.txt is served as text/plain, which HttpCrawler rejects by default
+    additionalMimeTypes: ["text/plain"],
     proxyConfiguration,
     maxRequestRetries,
     useSessionPool: true,
@@ -180,15 +203,36 @@ async function main() {
       const { request, body, enqueueLinks, crawler } = context;
       const { url } = request;
       log.info(`Processing ${request.url}`);
-      const { document } = parseHTML(body.toString());
       const { label } = request.userData;
       switch (label) {
         case Labels.Start:
           {
-            const requests = startRequests({
-              document,
-              homePageUrl
+            const requests = sitemapIndexRequests({ body, homePageUrl });
+            if (!requests.length) {
+              throw new Error(`No sitemap index found in ${request.url}`);
+            }
+            stats.add("urls", requests.length);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
             });
+          }
+          break;
+        case Labels.SitemapIndex:
+          {
+            const requests = categorySitemapRequests({ body, homePageUrl });
+            if (!requests.length) {
+              throw new Error(`No category sitemap found in ${request.url}`);
+            }
+            stats.add("urls", requests.length);
+            await crawler.requestQueue.addRequests(requests, {
+              forefront: true
+            });
+          }
+          break;
+        case Labels.CategorySitemap:
+          {
+            const requests = categoryRequests({ body, homePageUrl });
+            log.info(`Found ${requests.length} categories`);
             stats.add("urls", requests.length);
             await crawler.requestQueue.addRequests(requests, {
               forefront: true
@@ -197,6 +241,7 @@ async function main() {
           break;
         case Labels.SubCat:
           {
+            const { document } = parseHTML(body.toString());
             const productCount = parseInt(
               document.querySelector(".variants")?.getAttribute("data-productcount")?.replace(/\s+/g, ""),
               10
@@ -232,6 +277,7 @@ async function main() {
           break;
         case Labels.List:
           {
+            const { document } = parseHTML(body.toString());
             const urls = listUrls({ request, document, processedIds });
             stats.add("urls", urls.length);
             await enqueueLinks({
@@ -242,6 +288,7 @@ async function main() {
           break;
         case Labels.Detail:
           {
+            const { document } = parseHTML(body.toString());
             stats.inc("totalItems");
             await enqueueVariants(context, {
               document,
@@ -269,7 +316,7 @@ async function main() {
   log.info("crawler starts.");
   await crawler.run([
     {
-      url: homePageUrl,
+      url: `${homePageUrl}/robots.txt`,
       userData: { label: Labels.Start }
     }
   ]);
