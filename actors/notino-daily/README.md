@@ -16,7 +16,7 @@ detailu zůstává beze změny. 63K detail stránek × ~1,5–2 varianty ≈ ~90
 
 Black Friday (`type=BF`) stále používá staré procházení kategorií (mimo rozsah #3587; nejspíš
 narazí na stejnou Cloudflare zeď — před listopadem prověřit). Původní discovery přes homepage menu
-je zachováno pro referenci v `legacy/homepage-category-crawl.js`. Detaily viz hlavička `main.js`.
+je dohledatelné v git historii `main.js`. Detaily viz hlavička `main.js`.
 
 ---
 

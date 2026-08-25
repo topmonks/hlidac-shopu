@@ -35,7 +35,7 @@ import { Actor, LogLevel, log } from "apify";
  *
  * Black Friday still uses the old CATEGORY_PAGE/pagination path (seasonal, out of scope for #3587);
  * it likely hits the same Cloudflare wall and should be revisited before November.
- * The retired homepage-menu discovery lives in `legacy/homepage-category-crawl.js` for reference.
+ * The retired homepage-menu discovery (`homepageRequests`) is in this file's git history.
  */
 
 /** @enum {string} */
