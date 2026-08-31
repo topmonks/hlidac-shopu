@@ -6,10 +6,17 @@
   "license": "EUPL-1.2",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.17.0",
+    "@crawlee/basic": "3.17.0",
+    "@crawlee/core": "3.17.0",
+    "@crawlee/types": "3.17.0",
+    "@crawlee/utils": "3.17.0",
     "@hckr_/apify-persistent-stats": "1.0.4",
     "@hlidac-shopu/actors-common": "3.2.6",
-    "apify": "3.7.2"
+    "apify": "3.7.2",
+    "cloakbrowser": "0.4.2",
+    "impit": "0.14.2",
+    "impit-linux-x64-gnu": "0.14.2",
+    "playwright-core": "1.61.0"
   },
   "devDependencies": {
     "@types/node": "24.13.2",
