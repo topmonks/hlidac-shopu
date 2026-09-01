@@ -89,6 +89,28 @@ const data = JSON.parse(response.body);
 const totalPages = data.pagination?.totalPages || 1;
 ```
 
+### Redesigns That Change the Product URL
+
+A redesign that moves the product id inside the URL breaks three places at once, and
+fixing only the actor leaves the price history unreachable. All three must agree:
+
+1. **Actor dataset** - must push a `slug` (see `actors/NOTES.md`); it is the price-history
+   key `items/{shop}/{slug}/price-history.json`.
+2. **`lib/shops.mjs`** - the shop's `parse(url)` derives the slug from the *detail URL*.
+   `api.hlidacshopu.cz` answers "Missing slug" when it returns nothing, so the chart is
+   dead even though the actor looks healthy. Keep the old URL form working: URLs already
+   in stored history are still parsed. Guard non-detail pages, or a listing page yields a
+   bogus slug.
+3. **`extension/shops/<shop>.mjs`** - the content script scrapes its own `itemId` and does
+   *not* share the `lib/shops.mjs` parser. It needs the same change separately.
+
+**Trap:** an actor's Docker image installs the *published* `@hlidac-shopu/actors-common`
+(and through it `@hlidac-shopu/lib`), not this repo's working copy. Importing `itemSlug`
+inside an actor therefore resolves to the released parser, which lags a fix in `lib/`.
+Compute the slug in the actor and pin the contract with a test in `lib/shops.test.mjs`.
+
+Worked example: aaaauto (#3580), `?id=` -> `/detail/{make}/{model}/{id}`.
+
 ## Debugging Workflow
 
 ### 1. Verify the Issue
