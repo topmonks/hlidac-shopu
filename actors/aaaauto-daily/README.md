@@ -23,6 +23,7 @@ Scrapes prices of all car offers on AAAAuto.cz
 {
   "itemUrl": "https://www.aaaauto.cz/detail/skoda/superb/30311332",
   "itemId": "30311332",
+  "slug": "30311332",
   "description": "2.0 TDI, 4x4, Automat, Kuze, Navi",
   "img": "https://aaaautoeuimg.vshcdn.net/thumb/900590383_1024x768x95.jpg",
   "itemName": "Skoda Superb",
