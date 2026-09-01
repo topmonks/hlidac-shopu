@@ -97,6 +97,10 @@ export function parseProducts(items, country) {
       return {
         itemUrl,
         itemId: String(item.id),
+        // Price-history key (`items/{shop}/{slug}/...`). Must stay identical to what `itemSlug` from
+        // @hlidac-shopu/lib derives from `itemUrl` - see the aaaauto case in lib/shops.test.mjs.
+        // Inlined rather than imported: the actor image installs the *published* lib, which lags this repo.
+        slug: String(item.id),
         description: item.webHeadline,
         img: item.photos?.default?.[0],
         itemName: item.displayTitle,

@@ -22,6 +22,7 @@ const item = {
 test("parseProducts maps a discounted car", t => {
   const [p] = parseProducts([item], Country.CZ);
   t.is(p.itemId, "30311332");
+  t.is(p.slug, "30311332");
   t.is(p.itemUrl, "https://www.aaaauto.cz/detail/skoda/superb/30311332");
   t.is(p.itemName, "Škoda Superb");
   t.is(p.currentPrice, "210000");
