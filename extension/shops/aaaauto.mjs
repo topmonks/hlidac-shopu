@@ -1,55 +1,65 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
-import { Shop } from "./shop.mjs";
+import { cleanPriceText, registerShop } from "../helpers.mjs";
+import { AsyncShop } from "./shop.mjs";
 
-export class AAAAuto extends Shop {
-  async scrape() {
-    const url = new URL(location.href);
-    const itemId = url.searchParams.get("id");
-    if (!itemId) return;
-    const imageUrl = document.querySelector("meta[property='og:image']")?.content;
+/**
+ * Redesigned aaaauto is an Angular SPA. Car detail lives at /detail/{make}/{model}/{id},
+ * often with a routing hash appended; the old `?id=` param is gone.
+ *
+ * Price/name/image come from the page's schema.org JSON-LD rather than from selectors,
+ * because there is no single markup to select against:
+ * - .cz renders the current price block (`.detail-price-block__price--main`),
+ * - .sk still renders the legacy one (`.price__amount--default`),
+ * and neither survives as a stable contract. The JSON-LD `offers.price` is the cash
+ * price on both - the same number the aaaauto-daily actor stores as `currentPrice` -
+ * and Angular re-renders it on client-side navigation, which the server-side
+ * `#ng-state` blob does not (it only holds the car loaded on first paint).
+ */
+const DETAIL_PATH = /^\/detail\/[^/]+\/[^/]+\/(\d+)/;
 
-    // eng variant
-    const engTabCard = document.querySelector("#tab-card");
-    if (engTabCard) {
-      const title = engTabCard.querySelector("h1").textContent;
-      const priceRows = engTabCard.querySelectorAll("#priceTable .priceRow");
-      let currentPrice;
-      if (priceRows.length === 2) {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .carPrice span"));
-      } else {
-        currentPrice = cleanPrice(engTabCard.querySelector("#priceTable .priceRow:last-child span"));
-      }
-
-      const originalPrice = null;
-      return { itemId, title, currentPrice, originalPrice, imageUrl };
+/** @returns {{name: string, offers: {price: string}, image: string|string[]}|null} */
+function jsonLdProduct() {
+  for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+    try {
+      const graph = JSON.parse(script.textContent)["@graph"] ?? [];
+      const product = graph.find(node => node.offers?.price);
+      if (product) return product;
+    } catch {
+      // A malformed block must not stop us from reading the next one.
     }
+  }
+  return null;
+}
 
-    const title = document.querySelector(".carCard__name h1")?.innerText.trim().replaceAll(/\s+/g, " ");
-    const originalPrice = cleanPrice(document.querySelector(".carCard__price-item s"));
-    const currentPrice = cleanPrice(document.querySelector(".carCard__price-value:not(.secondary)"));
-    return { itemId, title, currentPrice, originalPrice, imageUrl };
+export class AAAAuto extends AsyncShop {
+  get injectionPoint() {
+    // The price block sits in a flex row, so a sibling there gets squeezed; the
+    // `.detail__header` wrapper is block-level, full width, and present in both templates.
+    return ["afterend", ".detail__header"];
   }
 
-  inject(renderMarkup) {
-    let elem = document.querySelector(".carCard__head");
-    if (elem) {
-      const markup = renderMarkup({
-        "max-width": "640px",
-        margin: "2em auto"
-      });
-      elem.insertAdjacentElement("afterend", markup);
-      return elem;
-    }
+  get waitForSelector() {
+    return ".detail__header";
+  }
 
-    // eng variant
-    elem = document.querySelector("#carButtons .testdrive-bonus");
-    if (!elem) throw new Error("Element to add chart not found");
+  async scrape() {
+    const itemId = location.pathname.match(DETAIL_PATH)?.[1];
+    if (!itemId) return null;
 
-    const table = document.querySelector("#carButtons table");
-    table.style.position = "relative";
-    const markup = renderMarkup();
-    elem.insertAdjacentElement("afterend", markup);
-    return elem;
+    const product = jsonLdProduct();
+    if (!product) return null;
+
+    const currentPrice = cleanPriceText(product.offers.price);
+    if (!currentPrice) return null;
+
+    const title = document.querySelector("h1")?.textContent.trim() ?? product.name;
+    const image = product.image;
+    const imageUrl =
+      (Array.isArray(image) ? image[0] : image) ?? document.querySelector("meta[property='og:image']")?.content;
+
+    // No pre-discount price is published anywhere on the detail page. The second price
+    // shown next to the main one ("Akční cena" / secondary) is the financed price, not a
+    // former price - reporting it as originalPrice would invent a discount.
+    return { itemId, title, currentPrice, originalPrice: null, imageUrl };
   }
 }
 
