@@ -8,7 +8,9 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const pathToExtension = path.resolve(__dirname, "../extension");
 
 const urlSet = [
-  "https://www.aaaauto.cz/cz/skoda-kodiaq/car.html?id=385818170#category=45&promo=gm",
+  // aaaauto detail URLs carry the car id; a sold car redirects to a listing, so refresh
+  // this from https://www.aaaauto.cz/ojete-vozy/ if the smoke test reports it missing.
+  "https://www.aaaauto.cz/detail/skoda/superb/30311332",
   "https://www.alza.cz/trhakdne",
   "https://www.alza.cz/screenshield-motorola-moto-g7-power-xt1955-4-na-displej-d5600645.htm",
   "https://m.alza.sk/intel-core-i7-9700-d5632692.htm",
