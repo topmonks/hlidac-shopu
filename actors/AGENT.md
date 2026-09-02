@@ -101,8 +101,10 @@ fixing only the actor leaves the price history unreachable. All three must agree
    dead even though the actor looks healthy. Keep the old URL form working: URLs already
    in stored history are still parsed. Guard non-detail pages, or a listing page yields a
    bogus slug.
-3. **`extension/shops/<shop>.mjs`** - the content script scrapes its own `itemId` and does
-   *not* share the `lib/shops.mjs` parser. It needs the same change separately.
+3. **`extension/shops/<shop>.mjs`** - the content script needs the id too, but it bundles
+   `@hlidac-shopu/lib` as a workspace dependency, so it *can* share the parser: use
+   `getItemIdFromUrl(new URL(location.href))` from `extension/helpers.mjs` rather than
+   copying the regex. Pass a `URL`, not `location` - a `Location` has no `searchParams`.
 
 **Trap:** an actor's Docker image installs the *published* `@hlidac-shopu/actors-common`
 (and through it `@hlidac-shopu/lib`), not this repo's working copy. Importing `itemSlug`
