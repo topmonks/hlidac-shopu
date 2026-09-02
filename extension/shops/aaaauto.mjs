@@ -18,7 +18,9 @@ import { AsyncShop } from "./shop.mjs";
 function jsonLdProduct() {
   for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
     try {
-      const graph = JSON.parse(script.textContent)["@graph"] ?? [];
+      const data = JSON.parse(script.textContent);
+      // Both TLDs ship an @graph today; a flat or array-rooted block is still valid JSON-LD.
+      const graph = data["@graph"] ?? (Array.isArray(data) ? data : [data]);
       const product = graph.find(node => node.offers?.price);
       if (product) return product;
     } catch {
@@ -53,7 +55,8 @@ export class AAAAuto extends AsyncShop {
     // the observer retry on the next mutation.
     if (!product.url?.endsWith(`/${itemId}`)) return null;
 
-    const currentPrice = cleanPriceText(product.offers.price);
+    // String(): schema.org allows a numeric price, and cleanPriceText calls .replace on it.
+    const currentPrice = cleanPriceText(String(product.offers.price));
     if (!currentPrice) return null;
 
     // JSON-LD `name` is the clean car name; the page h1 appends the year in a nested span.
