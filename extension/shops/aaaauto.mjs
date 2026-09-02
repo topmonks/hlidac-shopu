@@ -48,6 +48,12 @@ export class AAAAuto extends AsyncShop {
     const product = jsonLdProduct();
     if (!product) return null;
 
+    // Angular pushes the new URL before it swaps the detail subtree, so on a client-side
+    // detail -> detail hop the JSON-LD can still describe the previous car. Pairing that
+    // price with this id would persist a wrong price server-side for 24h, so bail and let
+    // the observer retry on the next mutation.
+    if (!product.url?.endsWith(`/${itemId}`)) return null;
+
     const currentPrice = cleanPriceText(product.offers.price);
     if (!currentPrice) return null;
 
