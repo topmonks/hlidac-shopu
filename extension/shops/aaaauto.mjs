@@ -46,8 +46,9 @@ export class AAAAuto extends AsyncShop {
 
     // Angular pushes the new URL before swapping the subtree, so after a detail -> detail
     // hop the JSON-LD may still describe the previous car; a mis-paired price is persisted
-    // server-side for 24h. Bail and let the observer retry.
-    if (!product.url?.endsWith(`/${itemId}`)) return null;
+    // server-side for 24h. Compare through the same parser so a trailing slash or a query
+    // on the canonical url cannot silently reject every car. Bail and let the observer retry.
+    if (getItemIdFromUrl(new URL(product.url ?? "", location.href)) !== itemId) return null;
 
     // String(): schema.org allows a numeric price, and cleanPriceText calls .replace on it.
     const currentPrice = cleanPriceText(String(product.offers.price));
