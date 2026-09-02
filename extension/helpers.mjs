@@ -51,10 +51,11 @@ export function getShop(url) {
 }
 
 export function getItemIdFromUrl(url) {
-  const shop = shops_lib.get(shopName(url));
   // `new URL` normalizes a string, a URL or a `location` - the last of which has `search`
   // but no `searchParams`, so a shop whose parse reads query params would throw on it.
-  return shop.parse(new URL(url)).itemId;
+  // Unknown host returns null rather than throwing, like `getShop` above: callers may pass
+  // a url the page gave them (a JSON-LD `url`), not just `location`.
+  return shops_lib.get(shopName(url))?.parse(new URL(url))?.itemId ?? null;
 }
 
 /**
