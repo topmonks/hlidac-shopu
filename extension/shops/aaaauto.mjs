@@ -1,4 +1,4 @@
-import { cleanPriceText, registerShop } from "../helpers.mjs";
+import { cleanPriceText, getItemIdFromUrl, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 /**
@@ -14,8 +14,6 @@ import { AsyncShop } from "./shop.mjs";
  * and Angular re-renders it on client-side navigation, which the server-side
  * `#ng-state` blob does not (it only holds the car loaded on first paint).
  */
-const DETAIL_PATH = /^\/detail\/[^/]+\/[^/]+\/(\d+)/;
-
 /** @returns {{name: string, offers: {price: string}, image: string|string[]}|null} */
 function jsonLdProduct() {
   for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
@@ -42,7 +40,8 @@ export class AAAAuto extends AsyncShop {
   }
 
   async scrape() {
-    const itemId = location.pathname.match(DETAIL_PATH)?.[1];
+    // Shares lib/shops.mjs, so the extension tracks the URL parser instead of copying it.
+    const itemId = getItemIdFromUrl(new URL(location.href));
     if (!itemId) return null;
 
     const product = jsonLdProduct();
