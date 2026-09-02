@@ -34,7 +34,8 @@ export class AAAAuto extends AsyncShop {
   get injectionPoint() {
     // The price block sits in a flex row, so a sibling there gets squeezed; the
     // `.detail__header` wrapper is block-level, full width, and present in both templates.
-    return ["afterend", ".detail__header"];
+    // Width capped as before the redesign - the wrapper's container is ~1120px wide.
+    return ["afterend", ".detail__header", { "max-width": "640px", margin: "2em auto" }];
   }
 
   get waitForSelector() {
