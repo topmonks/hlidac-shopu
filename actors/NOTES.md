@@ -61,7 +61,7 @@ describe("shopSlug", () => {
 ```
 shop* -- use `shopName` function from `@hlidacshopu/actors-common/product.js`
 shopOrigin -- use `shopOrigin` function from `@hlidacshopu/actors-common/product.js`
-slug*  -- our product identifier used as key in KV story, has to be unique on the origin/shop; use `itemSlug` function from `@hlidacshopu/actors-common/product.js`
+slug*  -- our product identifier used as key in KV story, has to be unique on the origin/shop; use `itemSlug` function from `@hlidacshopu/actors-common/product.js` -- but note it resolves to the *published* lib inside an actor image, so if the shop's URL shape just changed, compute the slug in the actor instead (see "Redesigns That Change the Product URL" in AGENT.md)
 itemId* -- origin/shop ID, SKU or GTIN
 itemUrl* -- full absolute URL of the product detail page
 itemName*
