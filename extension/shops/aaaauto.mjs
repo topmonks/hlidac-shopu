@@ -38,7 +38,7 @@ export class AAAAuto extends AsyncShop {
 
   async scrape() {
     // Shares lib/shops.mjs, so the extension tracks the URL parser instead of copying it.
-    const itemId = getItemIdFromUrl(new URL(location.href));
+    const itemId = getItemIdFromUrl(location);
     if (!itemId) return null;
 
     const product = jsonLdProduct();

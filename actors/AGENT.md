@@ -103,8 +103,7 @@ fixing only the actor leaves the price history unreachable. All three must agree
    bogus slug.
 3. **`extension/shops/<shop>.mjs`** - the content script needs the id too, but it bundles
    `@hlidac-shopu/lib` as a workspace dependency, so it *can* share the parser: use
-   `getItemIdFromUrl(new URL(location.href))` from `extension/helpers.mjs` rather than
-   copying the regex. Pass a `URL`, not `location` - a `Location` has no `searchParams`.
+   `getItemIdFromUrl(location)` from `extension/helpers.mjs` rather than copying the regex.
 
 **Trap:** an actor's Docker image installs the *published* `@hlidac-shopu/actors-common`
 (and through it `@hlidac-shopu/lib`), not this repo's working copy. Importing `itemSlug`

@@ -52,7 +52,9 @@ export function getShop(url) {
 
 export function getItemIdFromUrl(url) {
   const shop = shops_lib.get(shopName(url));
-  return shop.parse(url).itemId;
+  // `new URL` normalizes a string, a URL or a `location` - the last of which has `search`
+  // but no `searchParams`, so a shop whose parse reads query params would throw on it.
+  return shop.parse(new URL(url)).itemId;
 }
 
 /**
