@@ -56,7 +56,8 @@ export class AAAAuto extends AsyncShop {
     const currentPrice = cleanPriceText(product.offers.price);
     if (!currentPrice) return null;
 
-    const title = document.querySelector("h1")?.textContent.trim() ?? product.name;
+    // JSON-LD `name` is the clean car name; the page h1 appends the year in a nested span.
+    const title = product.name ?? document.querySelector("h1")?.textContent.trim();
     const image = product.image;
     const imageUrl =
       (Array.isArray(image) ? image[0] : image) ?? document.querySelector("meta[property='og:image']")?.content;
