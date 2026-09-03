@@ -188,7 +188,7 @@ async function main() {
   });
 
   const crawler = new HttpCrawler({
-    maxRequestsPerMinute: 600,
+    maxRequestsPerMinute: 1200,
     requestHandlerTimeoutSecs: 45,
     // robots.txt is served as text/plain, which HttpCrawler rejects by default
     additionalMimeTypes: ["text/plain"],
