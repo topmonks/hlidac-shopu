@@ -16,7 +16,6 @@ const Labels = {
   SitemapIndex: "SITEMAP_INDEX",
   CategorySitemap: "CATEGORY_SITEMAP",
   List: "LIST",
-  Detail: "DETAIL",
   SubCat: "SUBCAT"
 };
 
@@ -76,89 +75,65 @@ function pagesRequests({ document, url }) {
     : [];
 }
 
-function listUrls({ request, document, processedIds }) {
-  return document
-    .querySelectorAll("li.product > a")
-    .filter(a => a.getAttribute("data-ui-name"))
-    .map(a => a.href)
-    .filter(url => !processedIds.has(url))
-    .map(url => {
-      processedIds.add(url);
-      return new URL(url, request.url).href;
-    });
-}
+/**
+ * Category listings carry every field the dataset needs, so the per product
+ * detail page is not fetched. The price sits in a `data-csscontent` attribute
+ * rather than in text, because OBI renders it through CSS. Discounted tiles use
+ * a different block (`strike-price-*`) that also carries the price before the
+ * cut.
+ *
+ * @param {{ document: Document, url: string, country: string, processedIds: Set<string> }} options
+ */
+function extractProducts({ document, url, country, processedIds }) {
+  const category = listingCategory(document);
+  const currency = country === "sk" ? "EUR" : "CZK";
+  const products = [];
+  for (const tile of document.querySelectorAll("li.product")) {
+    const link = tile.querySelector('a[href*="/p/"]');
+    const href = link?.getAttribute("href");
+    if (!href) continue;
+    const itemId = href.match(/\/p\/(\d+)/)?.[1];
+    if (!itemId || processedIds.has(itemId)) continue;
 
-function extractProduct({ url, document }) {
-  const itemId = document.querySelector('input[name="code"]').getAttribute("value").trim();
-  let currency = document.querySelector('meta[itemprop="priceCurrency"]')?.getAttribute("content");
-  if (!currency) return;
-  if (currency === "SKK") {
-    currency = "EUR";
+    const discountedPrice = tile.querySelector(".strike-price-current")?.getAttribute("data-csscontent");
+    const beforeDiscount = tile.querySelector(".strike-price-old")?.textContent;
+    const plainPrice = tile.querySelector(".price-new")?.getAttribute("data-csscontent");
+
+    const currentPrice = cleanPrice(discountedPrice ?? plainPrice);
+    if (!currentPrice) continue;
+    const originalPrice = beforeDiscount ? cleanPrice(beforeDiscount) : null;
+
+    processedIds.add(itemId);
+    products.push({
+      itemId,
+      itemUrl: new URL(href, url).href,
+      itemName: (link.getAttribute("title") ?? "").trim(),
+      img: tile.querySelector("img.image")?.getAttribute("src") ?? null,
+      currency,
+      currentPrice,
+      originalPrice,
+      discounted: Boolean(originalPrice && originalPrice > currentPrice),
+      // Availability is not exposed on the listing, and was hardcoded before.
+      inStock: true,
+      category
+    });
   }
-  const discountedPrice = document.querySelector(".buybox .saving + del")?.innerText;
-  const originalPrice = discountedPrice ? cleanPrice(discountedPrice) : null;
-  let img = document.querySelector(".ads-slider__link").href;
-  if (!img) {
-    img = document.querySelector(".ads-slider__image").getAttribute("data-src");
-  }
-  return {
-    itemUrl: url,
-    itemName: document.querySelector(".overview__description >.overview__heading").innerText.trim(),
-    itemId,
-    currency,
-    currentPrice: cleanPrice(document.querySelector('[data-ui-name="ads.price.strong"]').innerText),
-    discounted: Boolean(discountedPrice),
-    originalPrice,
-    // It looks like the inStock is not available on the product page, so we are not using it anymore.
-    inStock: true, // Boolean(document.querySelector("div.marg_b5").innerText.match(/(\d+)/)),
-    img: `https:${img}`,
-    category: document
-      .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
-      .map(a => a.innerText)
-      .join("/")
-  };
+  return products;
 }
 
 /**
- * @param {string} url
+ * The breadcrumb trail omits the category the page itself is showing, which the
+ * `h1` carries, so the two together reproduce the full path.
+ *
+ * @param {Document} document
  */
-function getItemIdFromUrl(url) {
-  return url.match(/p\/(\d+)(#\/)?$/)?.[1];
-}
-
-function variantsUrls({ url, document, processedIds }) {
-  const crawledItemId = getItemIdFromUrl(url);
-  return document
-    .querySelectorAll(
-      `.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"],
-    .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
-    )
-    .map(a => {
-      const productUrl = a.href;
-      if (!productUrl) {
-        return;
-      }
-      const itemId = getItemIdFromUrl(productUrl);
-      if (crawledItemId === itemId || processedIds.has(itemId)) {
-        return;
-      }
-      processedIds.add(itemId);
-      return productUrl;
-    })
-    .filter(Boolean);
-}
-
-async function enqueueVariants({ enqueueLinks, request }, { document, processedIds, stats }) {
-  const productLinkList = variantsUrls({
-    url: request.url,
-    document,
-    processedIds
-  });
-  stats.add("urls", productLinkList.length);
-  await enqueueLinks({
-    urls: productLinkList,
-    userData: { label: Labels.Detail }
-  });
+function listingCategory(document) {
+  const leaf = document.querySelector("h1")?.textContent?.trim();
+  return [...document.querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')]
+    .map(a => a.textContent.trim())
+    .concat(leaf ? [leaf] : [])
+    .filter(Boolean)
+    .join("/");
 }
 
 async function main() {
@@ -200,7 +175,7 @@ async function main() {
       maxPoolSize: 150
     },
     async requestHandler(context) {
-      const { request, body, enqueueLinks, crawler } = context;
+      const { request, body, crawler } = context;
       const { url } = request;
       log.info(`Processing ${request.url}`);
       const { label } = request.userData;
@@ -254,12 +229,12 @@ async function main() {
               });
               stats.add("urls", pageRequests.length);
 
-              const urls = listUrls({ request, document, processedIds });
-              stats.add("urls", urls.length);
-              await enqueueLinks({
-                urls,
-                userData: { label: Labels.Detail }
-              });
+              const products = extractProducts({ document, url, country, processedIds });
+              stats.add("totalItems", products.length);
+              for (const product of products) {
+                stats.inc("items");
+                await Dataset.pushData(product);
+              }
               return;
             }
 
@@ -278,28 +253,9 @@ async function main() {
         case Labels.List:
           {
             const { document } = parseHTML(body.toString());
-            const urls = listUrls({ request, document, processedIds });
-            stats.add("urls", urls.length);
-            await enqueueLinks({
-              urls,
-              userData: { label: Labels.Detail }
-            });
-          }
-          break;
-        case Labels.Detail:
-          {
-            const { document } = parseHTML(body.toString());
-            stats.inc("totalItems");
-            await enqueueVariants(context, {
-              document,
-              processedIds,
-              stats
-            });
-            const product = extractProduct({
-              url: request.url,
-              document
-            });
-            if (product) {
+            const products = extractProducts({ document, url, country, processedIds });
+            stats.add("totalItems", products.length);
+            for (const product of products) {
               stats.inc("items");
               await Dataset.pushData(product);
             }
