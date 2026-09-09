@@ -38,7 +38,8 @@ export class AAAAuto extends AsyncShop {
 
   async scrape() {
     // Shares lib/shops.mjs, so the extension tracks the URL parser instead of copying it.
-    const itemId = getItemIdFromUrl(location);
+    const url = new URL(window.location.href);
+    const itemId = getItemIdFromUrl(url);
     if (!itemId) return null;
 
     const product = jsonLdProduct();
@@ -48,7 +49,9 @@ export class AAAAuto extends AsyncShop {
     // hop the JSON-LD may still describe the previous car; a mis-paired price is persisted
     // server-side for 24h. Compare through the same parser so a trailing slash or a query
     // on the canonical url cannot silently reject every car. Bail and let the observer retry.
-    if (getItemIdFromUrl(new URL(product.url ?? "", location.href)) !== itemId) return null;
+    // The canonical url comes from the page, so check the host before parsing it as ours.
+    const canonical = new URL(product.url ?? "", url);
+    if (canonical.host !== url.host || getItemIdFromUrl(canonical) !== itemId) return null;
 
     // String(): schema.org allows a numeric price, and cleanPriceText calls .replace on it.
     const currentPrice = cleanPriceText(String(product.offers.price));
