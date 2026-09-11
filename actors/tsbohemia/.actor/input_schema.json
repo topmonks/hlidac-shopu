@@ -1,0 +1,45 @@
+{
+  "title": "TSBohemia.cz",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "type": {
+      "title": "Actor type",
+      "type": "string",
+      "description": "FULL crawls the whole catalog, COUNT only sums the expected product total from the sitemaps, TEST crawls a single category, BF crawls the Black Friday category.",
+      "editor": "select",
+      "enum": ["FULL", "COUNT", "TEST", "BF"],
+      "enumTitles": ["Full catalog", "Count only", "Test (one category)", "Black Friday"],
+      "default": "FULL"
+    },
+    "development": {
+      "title": "Development mode",
+      "type": "boolean",
+      "description": "Skips the Keboola upload.",
+      "default": false
+    },
+    "debug": {
+      "title": "Debug logging",
+      "type": "boolean",
+      "default": false
+    },
+    "maxConcurrency": {
+      "title": "Max concurrency",
+      "type": "integer",
+      "default": 4,
+      "minimum": 1
+    },
+    "maxRequestsPerMinute": {
+      "title": "Max requests per minute",
+      "type": "integer",
+      "default": 120,
+      "minimum": 1
+    },
+    "maxRequestRetries": {
+      "title": "Max request retries",
+      "type": "integer",
+      "default": 3,
+      "minimum": 0
+    }
+  }
+}
