@@ -86,12 +86,24 @@ function isProductDetailSitemap(url) {
   return url.includes("sitemap_detail") && !url.includes("reviews");
 }
 
+/**
+ * Price of a conditional voucher. Price-based conditions ("Při nákupu od 500 Kč") are shown to everyone
+ * on the product page, so the lowest tier counts even when a single item doesn't reach it (#3607).
+ * Piece-based conditions ("Při nákupu od 2 ks") only count when the product already meets them.
+ */
+function conditionalVoucherPrice(voucher) {
+  const conditions = voucher?.discountConditions ?? [];
+  const met = conditions.find(c => c.productMeetsCondition);
+  if (met) return met.discountedPrice;
+  if (voucher?.conditionType !== "Price") return undefined;
+  return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
+}
+
 function determineCurrentAndOriginalPrice(variantGeneralData) {
   // Data contain following prices
   const voucherDiscountedPrice =
     variantGeneralData.attributes?.VoucherDiscount?.discountedPrice ??
-    variantGeneralData.attributes?.ConditionalVoucherDiscount?.discountConditions?.find(c => c.productMeetsCondition)
-      ?.discountedPrice;
+    conditionalVoucherPrice(variantGeneralData.attributes?.ConditionalVoucherDiscount);
   const price = variantGeneralData.price.value;
   const originalPrice = variantGeneralData.originalPrice?.value;
   const recentMinPrice = variantGeneralData.recentMinPrice?.value;

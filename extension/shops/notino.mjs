@@ -18,12 +18,24 @@ function getApolloVariant(itemId) {
   }
 }
 
+/**
+ * Price of a conditional voucher. Price-based conditions ("Při nákupu od 500 Kč") are shown to everyone
+ * on the product page, so the lowest tier counts even when a single item doesn't reach it (#3607).
+ * Piece-based conditions ("Při nákupu od 2 ks") only count when the product already meets them.
+ */
+function conditionalVoucherPrice(voucher) {
+  const conditions = voucher?.discountConditions ?? [];
+  const met = conditions.find(c => c.productMeetsCondition);
+  if (met) return met.discountedPrice;
+  if (voucher?.conditionType !== "Price") return undefined;
+  return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
+}
+
 function pricesFromApollo(variant) {
   if (!variant?.price) return null;
   const voucherDiscountedPrice =
     variant.attributes?.VoucherDiscount?.discountedPrice ??
-    variant.attributes?.ConditionalVoucherDiscount?.discountConditions?.find(c => c.productMeetsCondition)
-      ?.discountedPrice;
+    conditionalVoucherPrice(variant.attributes?.ConditionalVoucherDiscount);
   const price = variant.price.value;
   const origPrice = variant.originalPrice?.value;
   const recentMinPrice = variant.recentMinPrice?.value;
@@ -60,7 +72,12 @@ export class Notino extends AsyncShop {
     const elem = document.querySelector(this.#selector);
     if (!elem) return;
     const title = document.querySelector("h1").textContent.trim();
-    const itemId = document.querySelector("input[name=productId]").value;
+    const itemId = document.querySelector("input[name=productId]")?.value;
+    if (!itemId) return;
+    // On a variant switch the URL changes before the productId input does;
+    // wait for the DOM to catch up, otherwise the previous variant's chart sticks
+    const urlItemId = location.pathname.match(/\/p-(\d+)\/?$/)?.[1];
+    if (urlItemId && urlItemId !== itemId) return;
 
     const variant = getApolloVariant(itemId);
     const prices = pricesFromApollo(variant);
