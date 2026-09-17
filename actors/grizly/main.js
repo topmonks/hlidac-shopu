@@ -39,18 +39,34 @@ function filterTestRequests(requests, userData) {
   return userData.type === ActorType.Test ? requests.slice(0, 10) : requests;
 }
 
+function categoryRequest(userData, href, topLevel = false) {
+  return {
+    url: completeUrl(userData.country, href),
+    label: "category",
+    userData: Object.assign({}, userData, { category: href, topLevel })
+  };
+}
+
 function categoriesRequests(document, userData, log) {
-  const links = document.querySelectorAll(".sub-menu li a");
+  // the menu shows only some subcategories, top-level categories list all of their products
+  const links = document.querySelectorAll(".level-1 > a, .sub-menu li a");
   return links.map(link => {
     log.debug(`Queued category "${link.innerText.trim()}"`);
-    const href = link.getAttribute("href");
-    const url = completeUrl(userData.country, href);
-    return {
-      url,
-      label: "category",
-      userData: Object.assign({}, userData, { category: href })
-    };
+    const topLevel = link.parentElement.classList.contains("level-1");
+    return categoryRequest(userData, link.getAttribute("href"), topLevel);
   });
+}
+
+/**
+ * Top-level promo category (slevy / akce-a-slevy) does not list products of its subcategories
+ * (e.g. multipacks in skupinova-baleni), so subcategories of top-level categories are queued too.
+ * @param {Document} document
+ * @param {object} userData
+ */
+function subcategoriesRequests(document, userData) {
+  const links = document.querySelectorAll(".subcategories a.linkImg2");
+  const hrefs = new Set(links.map(link => link.getAttribute("href")));
+  return [...hrefs].map(href => categoryRequest(userData, href));
 }
 
 /**
@@ -60,10 +76,12 @@ function categoriesRequests(document, userData, log) {
 function parsePrices(prices) {
   const priceVat = cleanPrice(prices.querySelector(".pricevat.price")?.innerText?.trim());
   const priceSaleCode = cleanPrice(prices.querySelector(".sale-code__text")?.innerText?.trim());
+  // crossed out price of discounted products and multipacks
+  const priceRecom = cleanPrice(prices.querySelector(".price-recom")?.innerText?.trim());
 
   const currentPrice = priceSaleCode ? priceSaleCode : priceVat;
-  const originalPrice = priceSaleCode ? priceVat : null;
-  return { currentPrice, originalPrice };
+  const originalPrice = priceRecom ?? (priceSaleCode ? priceVat : null);
+  return { currentPrice, originalPrice: originalPrice > currentPrice ? originalPrice : null };
 }
 
 /**
@@ -127,12 +145,18 @@ function defRouter({ stats }) {
      */
     async category({ request, body, crawler, log }) {
       const { url, userData } = request;
-      const { country, type, category } = userData;
+      const { country, type, category, topLevel } = userData;
       const { document } = parseHTML(body.toString());
       const categoryProductsCountNode = document.querySelector(".item-count")?.value;
 
       if (!categoryProductsCountNode) {
         return log.error(`No products count node found on ${url}.`); // It probably is not a typical category page
+      }
+
+      if (topLevel) {
+        const requests = subcategoriesRequests(document, userData);
+        stats.add("categories", requests.length);
+        await crawler.addRequests(requests);
       }
 
       const nextPageButton = document.querySelector(".next");
@@ -141,11 +165,17 @@ function defRouter({ stats }) {
           {
             url: completeUrl(country, nextPageButton.href, category),
             label: "category",
-            userData
+            userData: Object.assign({}, userData, { topLevel: false })
           }
         ]);
       }
-      const products = extractProducts(document, country);
+      const extracted = extractProducts(document, country);
+      // some cards (mostly multipacks) link to the homepage instead of the product, they have no product page to track
+      const products = extracted.filter(product => product.slug);
+      if (products.length < extracted.length) {
+        log.warning(`Skipped ${extracted.length - products.length} products without product URL on ${url}`);
+        stats.add("skipped", extracted.length - products.length);
+      }
       stats.add("items", products.length);
       await Actor.pushData(products);
     }
@@ -170,6 +200,7 @@ async function main() {
   const stats = await withPersistedStats({
     categories: 0,
     items: 0,
+    skipped: 0,
     failed: 0
   });
 
@@ -211,6 +242,11 @@ async function main() {
   const startUrls = getStartUrls(urls, country, type);
   await crawler.run(startUrls);
   await stats.save(true);
+
+  const { items, failed } = stats.get();
+  if (!items) {
+    throw new Error(`No products scraped (${failed} failed requests) - blocked or site structure changed`);
+  }
 
   const tableName = `grizly_${country.toLowerCase()}`;
   await uploadToKeboola(tableName);
