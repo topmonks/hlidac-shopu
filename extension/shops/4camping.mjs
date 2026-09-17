@@ -1,5 +1,10 @@
-import { cleanPrice, registerShop } from "../helpers.mjs";
+import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
+
+// 4camping.sk formats prices like "1.200,41 €", drop the thousands separator dots
+function cleanPrice(selector) {
+  return cleanPriceText(document.querySelector(selector)?.textContent.replace(/\.(?=\d{3}\b)/g, ""));
+}
 
 export class ForCamping extends AsyncShop {
   get waitForSelector() {

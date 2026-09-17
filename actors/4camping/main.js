@@ -14,6 +14,15 @@ import { Actor, Dataset, log, LogLevel } from "apify";
 
 const PROCESSED_IDS_KEY = "processedIds";
 
+/**
+ * 4camping.sk formats prices like "1.200,41 €", drop the thousands separator dots
+ * @param {string | undefined} text
+ * @returns {number | null}
+ */
+function parsePrice(text) {
+  return cleanPrice(text?.replace(/\.(?=\d{3}\b)/g, ""));
+}
+
 const locales = new Map([
   ["CZ", { lang: "cs", currency: "CZK" }],
   ["SK", { lang: "sk", currency: "EUR" }]
@@ -112,9 +121,14 @@ function defRouter({ stats, processedIds }) {
 
       const { userData } = request;
       const { document } = parseHTML(body.toString());
-      const [, categoryId] = Array.from(document.body.classList)
-        .find(x => x.startsWith("current-cat-id-"))
-        .split("current-cat-id-");
+      const categoryClass = Array.from(document.body.classList).find(x => x.startsWith("current-cat-id-"));
+      // sitemap still lists removed categories, they render a 404 page without category id
+      if (!categoryClass) {
+        stats.inc("categoriesWithoutId");
+        log.warning(`Category id not found, skipping ${request.url}`);
+        return;
+      }
+      const [, categoryId] = categoryClass.split("current-cat-id-");
       const page = 1;
       await crawler.addRequests(
         categoryPageRequest(page, Object.assign({}, userData, { categoryId: Number.parseInt(categoryId) }))
@@ -131,7 +145,7 @@ function defRouter({ stats, processedIds }) {
       const { document } = parseHTML(items);
       const products = Array.from(document.querySelectorAll(".product-card[data-product]"), x => ({
         product: JSON.parse(x.dataset.product),
-        originalPrice: cleanPrice(x.querySelector(".card-price__discount del")?.textContent)
+        originalPrice: parsePrice(x.querySelector(".card-price__discount del")?.textContent)
       }));
 
       const batch = [];
@@ -179,6 +193,7 @@ async function main() {
 
   const stats = await withPersistedStats({
     categories: 0,
+    categoriesWithoutId: 0,
     products: 0,
     duplicates: 0
   });
