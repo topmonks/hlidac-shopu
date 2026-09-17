@@ -31,6 +31,11 @@ function conditionalVoucherPrice(voucher) {
   return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
 }
 
+/** CZK prices are shown whole on the site, EUR (notino.sk) keeps cents */
+function roundPrice(value, currency) {
+  return currency === "CZK" ? Math.round(value) : Math.round(value * 100) / 100;
+}
+
 function pricesFromApollo(variant) {
   if (!variant?.price) return null;
   const voucherDiscountedPrice =
@@ -39,20 +44,21 @@ function pricesFromApollo(variant) {
   const price = variant.price.value;
   const origPrice = variant.originalPrice?.value;
   const recentMinPrice = variant.recentMinPrice?.value;
+  const round = value => roundPrice(value, variant.price.currency);
 
   if (voucherDiscountedPrice) {
     return {
-      currentPrice: Math.round(voucherDiscountedPrice),
-      originalPrice: Math.round(recentMinPrice ?? price)
+      currentPrice: round(voucherDiscountedPrice),
+      originalPrice: round(recentMinPrice ?? price)
     };
   }
   return {
-    currentPrice: Math.round(price),
+    currentPrice: round(price),
     originalPrice:
       recentMinPrice && price < recentMinPrice && recentMinPrice < origPrice
-        ? Math.round(recentMinPrice)
+        ? round(recentMinPrice)
         : origPrice != null
-          ? Math.round(origPrice)
+          ? round(origPrice)
           : null
   };
 }
