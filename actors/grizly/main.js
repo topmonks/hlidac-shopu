@@ -188,14 +188,19 @@ async function main() {
   }
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    countryCode: country
   });
 
   const crawler = new HttpCrawler({
     maxConcurrency,
-    maxRequestRetries,
+    maxRequestRetries: Math.max(maxRequestRetries ?? 0, 10),
     maxRequestsPerMinute: 600,
     proxyConfiguration,
+    useSessionPool: true,
+    sessionPoolOptions: {
+      sessionOptions: { maxErrorScore: 1 }
+    },
     requestHandler: defRouter({ stats }),
     async failedRequestHandler({ request, log }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
