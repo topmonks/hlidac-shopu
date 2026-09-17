@@ -1,4 +1,4 @@
-import { createHttpRouter, Dataset, HttpCrawler } from "@crawlee/http";
+import { createHttpRouter, HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
@@ -7,7 +7,7 @@ import { cleanPrice, itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { comp, map, push, transduce } from "@thi.ng/transducers";
-import { Actor, log, LogLevel } from "apify";
+import { Actor, Dataset, log, LogLevel } from "apify";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
@@ -129,9 +129,9 @@ function defRouter({ stats, processedIds }) {
       const { country } = userData;
       const { currentPage, lastPage, items } = json;
       const { document } = parseHTML(items);
-      const products = Array.from(document.querySelectorAll(".item[data-product]"), x => ({
+      const products = Array.from(document.querySelectorAll(".product-card[data-product]"), x => ({
         product: JSON.parse(x.dataset.product),
-        originalPrice: cleanPrice(x.querySelector(".price .discount del")?.textContent)
+        originalPrice: cleanPrice(x.querySelector(".card-price__discount del")?.textContent)
       }));
 
       const batch = [];
