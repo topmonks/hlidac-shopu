@@ -99,6 +99,11 @@ function conditionalVoucherPrice(voucher) {
   return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
 }
 
+/** CZK prices are shown whole on the site, EUR (notino.sk) keeps cents */
+function roundPrice(value, currency) {
+  return currency === "CZK" ? Math.round(value) : Math.round(value * 100) / 100;
+}
+
 function determineCurrentAndOriginalPrice(variantGeneralData) {
   // Data contain following prices
   const voucherDiscountedPrice =
@@ -175,9 +180,9 @@ function handleProductUsingWindowObject(document, country) {
       const { currentPrice, originalPrice } = determineCurrentAndOriginalPrice(variantGeneralData);
 
       product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
-      product.currentPrice = Math.round(currentPrice);
-      product.originalPrice = originalPrice != null ? Math.round(originalPrice) : null;
       product.currency = variantGeneralData.price && variantGeneralData.price.currency;
+      product.currentPrice = roundPrice(currentPrice, product.currency);
+      product.originalPrice = originalPrice != null ? roundPrice(originalPrice, product.currency) : null;
       product.inStock = true;
       return product;
     })
