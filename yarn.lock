@@ -4656,6 +4656,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/tsbohemia@workspace:actors/tsbohemia":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/tsbohemia@workspace:actors/tsbohemia"
+  dependencies:
+    "@crawlee/basic": "npm:3.17.0"
+    "@hckr_/apify-persistent-stats": "npm:1.0.4"
+    "@hlidac-shopu/actors-common": "npm:3.2.6"
+    "@types/node": "npm:24.13.2"
+    apify: "npm:3.7.2"
+    apify-cli: "npm:1.6.2"
+    impit: "npm:0.14.2"
+    impit-linux-x64-gnu: "npm:0.14.2"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/uploader@workspace:actors/uploader":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/uploader@workspace:actors/uploader"
