@@ -8,6 +8,7 @@ import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, log } from "apify";
 import { launchContext as launchCloakContext } from "cloakbrowser";
 import { Impit } from "impit";
+import { randomUUID } from "node:crypto";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -74,32 +75,41 @@ async function countAllProducts({ body, stats }) {
  */
 async function solveF5(rootUrl) {
   log.info("Solver: launching cloakbrowser to solve F5 Bot Defense challenge…");
-  const ctx = await launchCloakContext({
+  const ctx = await launchCloakBrowser();
+  try {
+    const page = await ctx.newPage();
+    const cookies = await waitForF5Session(ctx, page, rootUrl);
+    log.info(`Solver: F5 session solved (${Object.keys(cookies).length} cookies, TSPD+BIGipServer present)`);
+    return cookies;
+  } finally {
+    await ctx.close();
+  }
+}
+
+function launchCloakBrowser() {
+  return launchCloakContext({
     headless: true,
     userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
     locale: "cs-CZ",
     timezoneId: "Europe/Prague"
   });
-  try {
-    const page = await ctx.newPage();
-    await page.goto(`${rootUrl}/katalog`, { waitUntil: "domcontentloaded", timeout: 60000 });
+}
 
-    const deadline = Date.now() + 60000;
-    while (Date.now() < deadline) {
-      const jar = await ctx.cookies(rootUrl);
-      const hasTspd = jar.some(c => c.name.startsWith("TS"));
-      const hasBigIp = jar.some(c => c.name.startsWith("BIGipServer"));
-      if (hasTspd && hasBigIp) {
-        const cookies = Object.fromEntries(jar.map(c => [c.name, c.value]));
-        log.info(`Solver: F5 session solved (${jar.length} cookies, TSPD+BIGipServer present)`);
-        return cookies;
-      }
-      await page.waitForTimeout(1000);
-    }
-    throw new Error("Solver: timed out waiting for TSPD cookie from F5");
-  } finally {
-    await ctx.close();
+/**
+ * Open the catalog in `page` and poll until F5 has issued its TSPD + BIGipServer
+ * session cookies; returns the cookie jar. The browser context keeps the session.
+ */
+async function waitForF5Session(ctx, page, rootUrl) {
+  await page.goto(`${rootUrl}/katalog`, { waitUntil: "domcontentloaded", timeout: 60000 });
+  const deadline = Date.now() + 60000;
+  while (Date.now() < deadline) {
+    const jar = await ctx.cookies(rootUrl);
+    const hasTspd = jar.some(c => c.name.startsWith("TS"));
+    const hasBigIp = jar.some(c => c.name.startsWith("BIGipServer"));
+    if (hasTspd && hasBigIp) return Object.fromEntries(jar.map(c => [c.name, c.value]));
+    await page.waitForTimeout(1000);
   }
+  throw new Error("Solver: timed out waiting for TSPD cookie from F5");
 }
 
 // ---------------------------------------------------------------------------
@@ -136,11 +146,534 @@ async function executorFetch(impit, cookies, url) {
 
 /** Strip internal-only fields before pushing a product to the dataset. */
 function stripInternal(product) {
-  const { matchCode, basePrice, listingDiscountFlag, ...rest } = product;
+  const { matchCode, basePrice, ...rest } = product;
   return rest;
 }
 
-/** Coupon price from the detail page (server-rendered `.price-finally`), or null. */
+// ---------------------------------------------------------------------------
+// CZ coupon price ("Cena s kódem") via Bloomreach/Exponea
+// ---------------------------------------------------------------------------
+// Datart's coupon campaigns (e.g. "Dny Marianne −50 %, Cena s kódem 599 Kč") are not
+// in the server HTML: a Bloomreach weblayer renders them client-side. We treat the
+// coupon price as the current price (a regular discount, like Notino/Alza — see #3606),
+// so we reproduce what the listing page does in the browser:
+//   1. POST the page's match-codes to the listing "executor" banner; it answers, per
+//      campaign, which products the campaign covers (campaignProducts).
+//   2. For every `categoryDiscount` campaign covering a product, fetch that campaign's
+//      weblayer once per run and read its options (discount %, or Kč, and filters).
+//   3. Apply the weblayer's arithmetic and gates for an anonymous (not logged-in)
+//      shopper to the LISTING price. Exponea's own catalog `price` can lag the price
+//      datart actually charges; the product-page banner and the checkout both apply
+//      the code to the real price, so the executor is used only for membership/filters.
+// ctd-api is Exponea infra, NOT behind datart's F5, so these are plain fetch() calls.
+// company_id/executor id are INPUT-configurable because marketing rotates them.
+// Anything unexpected (failed calls, an unknown weblayer template, a new price-like
+// campaign format) is counted, and `couponHealthProblems` + the end-of-run browser
+// canary turn it into a FAILED run instead of silently recording displayed prices.
+const EXPONEA_API_URL = "https://ctd-api.datart.cz/campaigns/banners/show";
+const DEFAULT_EXPONEA_COMPANY_ID = "aeb32f50-0652-11ec-bb4f-863dd5b8e706";
+const DEFAULT_COUPON_EXECUTOR_ID = "6a5f499a24bf7f92446534b6";
+const COUPON_BATCH_SIZE = 50;
+const COUPON_MAX_FAILURE_RATIO = 0.02;
+const EXPONEA_TIMEOUT_MS = 8000;
+const EXPONEA_ATTEMPTS = 2;
+// Campaign formats the executor's own code handles. The two discount formats carry
+// coupon prices; the rest are flags/installments/banners that never change the price.
+const PRICE_CAMPAIGN_FORMATS = new Set(["categoryDiscount", "categoryAutoDiscount"]);
+const KNOWN_CAMPAIGN_FORMATS = new Set([
+  ...PRICE_CAMPAIGN_FORMATS,
+  "categoryCashBack",
+  "categoryClassicInstallments",
+  "categoryDetail",
+  "categoryFlag",
+  "categoryGift",
+  "categoryInstallments",
+  "categoryOtherInstallments",
+  "categoryServicePromo",
+  "categoryThirds"
+]);
+const PRICE_LIKE_FORMAT = /discount|price|sale|voucher|coupon|sleva|cena/i;
+
+/**
+ * POST one banner request to Exponea and return the concatenated weblayer JS.
+ * @param {string} bannerId
+ * @param {object} params
+ * @param {{companyId: string, cookie: string}} cfg
+ */
+async function exponeaShow(bannerId, params, cfg) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await exponeaShowOnce(bannerId, params, cfg);
+    } catch (e) {
+      if (attempt >= EXPONEA_ATTEMPTS) throw e;
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+}
+
+async function exponeaShowOnce(bannerId, params, { companyId, cookie }) {
+  const res = await fetch(EXPONEA_API_URL, {
+    signal: AbortSignal.timeout(EXPONEA_TIMEOUT_MS),
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+      origin: rootCZ,
+      referer: `${rootCZ}/`
+    },
+    body: JSON.stringify({
+      company_id: companyId,
+      customer_ids: { cookie },
+      banner_ids: [bannerId],
+      params,
+      initiator: "manual"
+    })
+  });
+  if (!res.ok) throw new Error(`exponea: HTTP ${res.status}`);
+  let outer;
+  try {
+    outer = JSON.parse(await res.text());
+  } catch {
+    throw new Error("exponea: response is not JSON");
+  }
+  if (outer.success !== true) throw new Error("exponea: response success !== true");
+  return Array.isArray(outer.data) ? outer.data.join("\n") : "";
+}
+
+/**
+ * Parse every `JSON.parse('…')` literal embedded in weblayer JS, WITHOUT eval.
+ * @param {string} js
+ * @returns {unknown[]}
+ */
+function jsonParseLiterals(js) {
+  const marker = "JSON.parse('";
+  const out = [];
+  for (let mk = js.indexOf(marker); mk !== -1; mk = js.indexOf(marker, mk + 1)) {
+    const from = mk + marker.length;
+    // Terminator = first `'` not preceded by a backslash (robust to apostrophes).
+    let end = -1;
+    for (let i = from; i < js.length; ) {
+      const q = js.indexOf("'", i);
+      if (q === -1) break;
+      if (js[q - 1] !== "\\") {
+        end = q;
+        break;
+      }
+      i = q + 1;
+    }
+    if (end === -1) break;
+    mk = end;
+    try {
+      out.push(JSON.parse(js.slice(from, end).replace(/\\'/g, "'")));
+    } catch {
+      // not every JSON.parse literal is the campaign tree
+    }
+  }
+  return out;
+}
+
+/**
+ * From the executor response, map match-code -> the price campaigns covering it, in
+ * the executor's tree order (with the per-product payload: price, brand, category,
+ * vouchers), plus every match-code the tree mentions at all and unknown formats.
+ * Each campaign carries its format group and that group's `maxWebleyers`: datart's
+ * executor renders a group's campaigns one after another and skips products that
+ * already got `maxWebleyers` banners from that group, so ORDER decides the price.
+ * @param {string} js
+ */
+function parseExecutorCampaigns(js) {
+  /** @type {Map<string, {name: string, weblayerId: string, hasFilters: boolean, group: number, maxWebleyers: number, product: object}[]>} */
+  const byMatch = new Map();
+  const covered = new Set();
+  const unknownFormats = new Set();
+  let sawTree = false;
+  let groups = 0;
+  const walk = formats => {
+    if (!Array.isArray(formats)) return;
+    for (const format of formats) {
+      if (!format || typeof format !== "object") continue;
+      const group = groups++;
+      const maxWebleyers = Math.max(1, Number.parseInt(format.maxWebleyers, 10) || 1);
+      for (const campaign of format.campaigns ?? []) {
+        sawTree = true;
+        if (!KNOWN_CAMPAIGN_FORMATS.has(campaign?.format)) unknownFormats.add(String(campaign?.format));
+        for (const product of campaign?.campaignProducts ?? []) {
+          if (typeof product?.match !== "string") continue;
+          covered.add(product.match);
+          if (!PRICE_CAMPAIGN_FORMATS.has(campaign.format)) continue;
+          const list = byMatch.get(product.match) ?? [];
+          list.push({
+            name: campaign.campaign_name,
+            weblayerId: campaign.weblayer_id,
+            hasFilters: campaign.hasFilters === "True",
+            group,
+            maxWebleyers,
+            product
+          });
+          byMatch.set(product.match, list);
+        }
+      }
+      walk(format.nextFormats);
+    }
+  };
+  for (const literal of jsonParseLiterals(js)) walk(literal);
+  if (!sawTree) throw new Error("exponea executor: no campaign tree in response");
+  return { byMatch, covered, unknownFormats };
+}
+
+/**
+ * Read a categoryDiscount weblayer's `this.options = {…}` settings.
+ * Returns `{kind: "auto"}` for the voucher-based CategoryAutoDiscount template,
+ * `{kind: "discount", …}` for a CategoryDiscount coupon, or null for a template we
+ * don't understand (the caller treats that as a health failure).
+ * @param {string} js
+ */
+function parseDiscountWeblayer(js) {
+  const start = js.indexOf("this.options = {");
+  if (start === -1) return null;
+  const block = js.slice(start, js.indexOf("};", start));
+  const opts = {};
+  for (const m of block.matchAll(/(\w+):\s*(?:"([^"\n]*)"|'([^'\n]*)')/g)) opts[m[1]] ??= m[2] ?? m[3];
+  if (opts.nameSpace === "CategoryAutoDiscount") return { kind: "auto" };
+  if (opts.nameSpace !== "CategoryDiscount") return null;
+  const value = Math.abs(Number.parseInt(opts.discountPrice, 10));
+  if (!Number.isFinite(value) || value <= 0) return null;
+  return {
+    kind: "discount",
+    percentage: opts.discountType === "Procentuální",
+    value,
+    targetGroup: opts.targetGroup,
+    filterCategory: opts.filterCategory === "Zapnuto",
+    breadcrumbFilter: opts.breadcrumbFilter ?? "",
+    whiteListBrand: opts.filterBrand === "Zapnuto / Povolené značky",
+    blackListBrand: opts.filterBrand === "Zapnuto / Zakázané značky",
+    brandsOfProduct: opts.brandsOfProduct ?? "",
+    filterPrice: opts.filterPrice === "Zapnuto",
+    priceFrom: Number.parseInt(opts.priceFrom, 10),
+    priceTo: Number.parseInt(opts.priceTo, 10)
+  };
+}
+
+/** Weblayer `isCategory`: note the result is decided by the LAST breadcrumb segment only. */
+function weblayerCategoryMatches(category, breadcrumbFilter) {
+  const pageCategory = String(category ?? "").split("/");
+  for (const source of breadcrumbFilter.split(";")) {
+    const parts = source.split(" > ");
+    const last = parts.length - 1;
+    if (parts[last] === pageCategory[last]) return true;
+  }
+  return false;
+}
+
+/**
+ * Coupon price a not-logged-in shopper gets from one campaign, or null if the
+ * weblayer would not offer it to them. Mirrors the weblayer's init/showBanner gates.
+ * @param {object} wl  parseDiscountWeblayer result of kind "discount"
+ * @param {{hasFilters: boolean, product: object}} campaign
+ * @param {number} price  the listing price the shopper pays without the code
+ */
+function weblayerCouponPrice(wl, { hasFilters, product }, price) {
+  // Anonymous shopper = loginUserType "other": only NO-VIP / VIP-and-NO-VIP campaigns.
+  if (wl.targetGroup !== "NO-VIP" && wl.targetGroup !== "VIP and NO-VIP") return null;
+  if (!hasFilters && !wl.filterCategory && !wl.whiteListBrand && !wl.blackListBrand && !wl.filterPrice) return null;
+  if (wl.filterCategory && !weblayerCategoryMatches(product.category, wl.breadcrumbFilter)) return null;
+  if (wl.whiteListBrand || wl.blackListBrand) {
+    const brands = wl.brandsOfProduct.split(";").flatMap(b => [b, b.toLowerCase().replace("'", "")]);
+    const isBrand = brands.includes(String(product.brand ?? "").toLowerCase());
+    if (wl.whiteListBrand ? !isBrand : isBrand) return null;
+  }
+  if (wl.filterPrice && !(price >= wl.priceFrom && price <= wl.priceTo)) return null;
+  const couponPrice = wl.percentage
+    ? price - Number((price * (wl.value / 100)).toFixed(0))
+    : Math.ceil(price - wl.value);
+  return couponPrice > 0 && couponPrice < price ? couponPrice : null;
+}
+
+/**
+ * The "AutomatickaSleva" auto-discount (CategoryAutoDiscount weblayer): mirrors its
+ * getProductVoucher/calculateVoucherDiscount for an anonymous shopper — the FIRST
+ * voucher of group "other" with a positive value, subtracted as whole Kč. The
+ * weblayer skips products the executor has no price for. Null when none applies.
+ */
+function autoVoucherPrice(product, price) {
+  if (product.price == null) return null;
+  const vouchers = Array.isArray(product.vouchers) ? product.vouchers : [];
+  const voucher = vouchers.find(v => v?.voucher_group === "other" && Number(v.voucher_value) > 0);
+  if (!voucher) return null;
+  const couponPrice = Math.round(price - Math.round(Number.parseFloat(voucher.voucher_value)));
+  return couponPrice > 0 && couponPrice < price ? couponPrice : null;
+}
+
+/**
+ * Per-run coupon pricer. `priceProducts` sets currentPrice/discounted on each listing
+ * product: the lowest applicable coupon price, else the displayed listing price.
+ */
+function createCouponPricer({ companyId, executorId, stats }) {
+  const cfg = { companyId, cookie: randomUUID() };
+  /** @type {Map<string, Promise<ReturnType<typeof parseDiscountWeblayer>>>} */
+  const weblayers = new Map();
+  const reportedUnknown = new Set();
+
+  function weblayer(id) {
+    if (!weblayers.has(id)) {
+      const p = exponeaShow(id, {}, cfg).then(parseDiscountWeblayer);
+      // Don't cache a failure forever — let a later page retry it.
+      p.catch(() => weblayers.delete(id));
+      weblayers.set(id, p);
+    }
+    return weblayers.get(id);
+  }
+
+  function reportOnce(key, message) {
+    if (reportedUnknown.has(key)) return;
+    reportedUnknown.add(key);
+    log.error(message);
+  }
+
+  async function campaignsFor(matchCodes) {
+    const byMatch = new Map();
+    const covered = new Set();
+    for (let i = 0; i < matchCodes.length; i += COUPON_BATCH_SIZE) {
+      const chunk = matchCodes.slice(i, i + COUPON_BATCH_SIZE);
+      try {
+        stats.inc("couponApiCalls");
+        const part = parseExecutorCampaigns(await exponeaShow(executorId, { productIds: chunk }, cfg));
+        for (const [k, v] of part.byMatch) byMatch.set(k, v);
+        for (const k of part.covered) covered.add(k);
+        for (const format of part.unknownFormats) {
+          if (!PRICE_LIKE_FORMAT.test(format)) continue;
+          stats.inc("couponFormatUnknown");
+          reportOnce(`format:${format}`, `coupon: unknown price-like campaign format "${format}"`);
+        }
+      } catch (e) {
+        stats.inc("couponApiFailed");
+        log.warning(`coupon executor batch failed (${chunk.length} codes): ${e.message}`);
+      }
+    }
+    return { byMatch, covered };
+  }
+
+  /** The price one campaign would show this product, or null if it shows none. */
+  function campaignPrice(wl, campaign, product) {
+    if (wl?.kind === "auto") return autoVoucherPrice(campaign.product, product.basePrice);
+    if (wl?.kind === "discount") return weblayerCouponPrice(wl, campaign, product.basePrice);
+    stats.inc("couponWeblayerUnknown");
+    reportOnce(
+      `wl:${campaign.weblayerId}`,
+      `coupon: unrecognized discount weblayer ${campaign.weblayerId} (${campaign.name})`
+    );
+    return null;
+  }
+
+  return async function priceProducts(products) {
+    for (const product of products) {
+      product.currentPrice = product.basePrice;
+      product.discounted = product.originalPrice > product.basePrice;
+    }
+    const priced = products.filter(p => p.basePrice > 0);
+    const withCode = priced.filter(p => p.matchCode);
+    stats.add("couponPriced", priced.length);
+    stats.add("couponNoMatchCode", priced.length - withCode.length);
+    if (withCode.length === 0) return;
+    const { byMatch, covered } = await campaignsFor(withCode.map(p => p.matchCode));
+    stats.add("couponCovered", withCode.filter(p => covered.has(p.matchCode)).length);
+
+    // Resolve every weblayer this page needs in parallel (cached per run).
+    const ids = new Set();
+    for (const p of withCode) for (const c of byMatch.get(p.matchCode) ?? []) ids.add(c.weblayerId);
+    const resolved = new Map();
+    await Promise.all(
+      [...ids].map(async id => {
+        try {
+          resolved.set(id, await weblayer(id));
+        } catch (e) {
+          stats.inc("couponWeblayerFailed");
+          log.warning(`coupon weblayer ${id} failed: ${e.message}`);
+        }
+      })
+    );
+    stats.add("couponWeblayerLookups", ids.size);
+
+    for (const product of withCode) {
+      // Per format group, the page shows the first `maxWebleyers` campaigns (in tree
+      // order) that yield a price; with several visible the shopper can use the best.
+      const shownByGroup = new Map();
+      for (const campaign of byMatch.get(product.matchCode) ?? []) {
+        if (!resolved.has(campaign.weblayerId)) continue;
+        const shown = shownByGroup.get(campaign.group) ?? [];
+        if (shown.length >= campaign.maxWebleyers) continue;
+        const price = campaignPrice(resolved.get(campaign.weblayerId), campaign, product);
+        if (price == null) continue;
+        shown.push(price);
+        shownByGroup.set(campaign.group, shown);
+      }
+      const shownPrices = [...shownByGroup.values()].flat();
+      const best = shownPrices.length > 0 ? Math.min(...shownPrices) : null;
+      if (best != null && best < product.basePrice) {
+        product.currentPrice = best;
+        product.discounted = true;
+        stats.inc("couponApplied");
+      }
+    }
+  };
+}
+
+/**
+ * Coupon-pipeline health problems for this run (empty = healthy).
+ * @param {Record<string, number>} s  stats snapshot
+ * @param {number} sampled  number of products the canary tried to verify
+ */
+function couponHealthProblems(s, sampled) {
+  const problems = [];
+  const withCode = s.couponPriced - s.couponNoMatchCode;
+  if (s.couponPriced > 0 && s.couponApiCalls === 0) problems.push("the coupon executor was never called");
+  if (s.couponPriced > 0 && s.couponNoMatchCode / s.couponPriced > COUPON_MAX_UNCOVERED_RATIO) {
+    problems.push(`${s.couponNoMatchCode}/${s.couponPriced} listing products have no data-product-match code`);
+  }
+  if (withCode >= COUPON_COVERAGE_MIN_PRODUCTS && s.couponCovered / withCode < 1 - COUPON_MAX_UNCOVERED_RATIO) {
+    problems.push(`the executor knew only ${s.couponCovered}/${withCode} products — banner id rotated?`);
+  }
+  if (s.couponApiCalls > 0 && s.couponApiFailed / s.couponApiCalls > COUPON_MAX_FAILURE_RATIO) {
+    problems.push(`${s.couponApiFailed}/${s.couponApiCalls} coupon executor calls failed`);
+  }
+  if (s.couponWeblayerLookups > 0 && s.couponWeblayerFailed / s.couponWeblayerLookups > COUPON_MAX_FAILURE_RATIO) {
+    problems.push(`${s.couponWeblayerFailed}/${s.couponWeblayerLookups} coupon weblayer lookups failed`);
+  }
+  if (s.couponWeblayerUnknown > 0) problems.push(`${s.couponWeblayerUnknown} lookups hit an unrecognized weblayer`);
+  if (s.couponFormatUnknown > 0)
+    problems.push(`${s.couponFormatUnknown} executor calls saw an unknown price-like format`);
+  if (s.couponCanaryMismatch > 0) problems.push(`${s.couponCanaryMismatch} canary products disagree with datart.cz`);
+  if (s.couponCanaryUnreadable > Math.max(2, sampled * 0.2)) {
+    problems.push(`${s.couponCanaryUnreadable}/${sampled} canary product pages could not be read`);
+  }
+  if (sampled > 0 && s.couponCanaryChecked === 0 && s.couponCanaryMoved < sampled) {
+    problems.push("the canary could not verify a single product");
+  }
+  return problems;
+}
+
+// ---------------------------------------------------------------------------
+// Coupon canary: render a sample of product pages the way a shopper sees them
+// ---------------------------------------------------------------------------
+// The only ground truth for the coupon price is the banner datart's page renders in a
+// real browser. After the crawl we open a random sample of products we priced — with
+// and without a coupon — in cloakbrowser and compare. A disagreement (e.g. datart
+// reworked its campaigns and we stopped seeing coupons) fails the run.
+const COUPON_CANARY_PER_STRATUM = 15;
+const COUPON_CANARY_MAX_WAIT_MS = 15000;
+const COUPON_CANARY_SETTLE_MS = 3000;
+const COUPON_CANARY_DEADLINE_MS = 10 * 60 * 1000;
+const COUPON_MAX_UNCOVERED_RATIO = 0.05;
+const COUPON_COVERAGE_MIN_PRODUCTS = 100;
+
+/** Fixed-size uniform random samples of priced products, split by coupon/no coupon. */
+function createCanarySample() {
+  const strata = { coupon: { seen: 0, items: [] }, plain: { seen: 0, items: [] } };
+  return {
+    add(product, hasCoupon) {
+      const stratum = hasCoupon ? strata.coupon : strata.plain;
+      stratum.seen += 1;
+      const entry = { url: product.itemUrl, basePrice: product.basePrice, currentPrice: product.currentPrice };
+      if (stratum.items.length < COUPON_CANARY_PER_STRATUM) stratum.items.push(entry);
+      else {
+        const j = Math.floor(Math.random() * stratum.seen);
+        if (j < COUPON_CANARY_PER_STRATUM) stratum.items[j] = entry;
+      }
+    },
+    items: () => [...strata.coupon.items, ...strata.plain.items]
+  };
+}
+
+/** page.goto that tolerates one in-page redirect/reload (e.g. an F5 challenge round). */
+async function gotoSettled(page, url) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await page.waitForLoadState("load", { timeout: 30000 }).catch(() => {});
+      if (page.url().split("#")[0] === url) return;
+      if (attempt >= 3) throw new Error(`landed on ${page.url()}`);
+    } catch (e) {
+      if (attempt >= 3 || !/interrupted by another navigation/.test(e.message)) throw e;
+      await page.waitForLoadState("load", { timeout: 30000 }).catch(() => {});
+    }
+  }
+}
+
+/**
+ * Open each sampled product page in cloakbrowser and compare what datart shows an
+ * anonymous shopper (coupon banner price, else the displayed price) to what we recorded.
+ * @param {{url: string, basePrice: number, currentPrice: number}[]} items
+ */
+async function runCouponCanary(items, stats) {
+  if (items.length === 0) return;
+  log.info(`Coupon canary: verifying ${items.length} products in a browser…`);
+  const ctx = await launchCloakBrowser();
+  try {
+    const page = await ctx.newPage();
+    // Earn an F5 session first; without it the first product page runs F5's challenge,
+    // whose reload hijacks the next navigations ("interrupted by another navigation").
+    await waitForF5Session(ctx, page, rootCZ);
+    await page.waitForLoadState("load").catch(() => {});
+    const deadline = Date.now() + COUPON_CANARY_DEADLINE_MS;
+    for (const item of items) {
+      if (Date.now() > deadline) {
+        stats.inc("couponCanaryUnreadable");
+        continue;
+      }
+      try {
+        await gotoSettled(page, item.url);
+        const seen = await page.evaluate(
+          async ({ maxWaitMs, settleMs }) => {
+            const start = Date.now();
+            let weblayerSeenAt = null;
+            const parse = t => Number.parseInt(String(t ?? "").replace(/[^\d]/g, ""), 10);
+            while (Date.now() - start < maxWaitMs) {
+              const displayed = parse(document.querySelector(".product-detail .product-price")?.dataset.priceValue);
+              const coupon = parse(
+                document.querySelector(".exponea-product-discount #unique-price-after-sale")?.textContent
+              );
+              if (Number.isFinite(displayed) && Number.isFinite(coupon)) return { displayed, coupon };
+              if (weblayerSeenAt === null && document.querySelector("[data-weblayer-id]")) weblayerSeenAt = Date.now();
+              if (Number.isFinite(displayed) && weblayerSeenAt !== null && Date.now() - weblayerSeenAt > settleMs) {
+                return { displayed, coupon: null };
+              }
+              await new Promise(r => setTimeout(r, 200));
+            }
+            return null;
+          },
+          { maxWaitMs: COUPON_CANARY_MAX_WAIT_MS, settleMs: COUPON_CANARY_SETTLE_MS }
+        );
+        if (!seen) {
+          stats.inc("couponCanaryUnreadable");
+          log.warning(`Coupon canary: could not read prices on ${item.url}`);
+          continue;
+        }
+        if (seen.displayed !== item.basePrice) {
+          stats.inc("couponCanaryMoved");
+          log.info(`Coupon canary: price moved since crawl on ${item.url} (${item.basePrice} → ${seen.displayed})`);
+          continue;
+        }
+        const expected = seen.coupon != null && seen.coupon < seen.displayed ? seen.coupon : seen.displayed;
+        stats.inc("couponCanaryChecked");
+        if (Math.abs(expected - item.currentPrice) > 1) {
+          stats.inc("couponCanaryMismatch");
+          log.error(`Coupon canary MISMATCH ${item.url}: recorded ${item.currentPrice}, datart shows ${expected}`);
+        }
+      } catch (e) {
+        stats.inc("couponCanaryUnreadable");
+        log.warning(`Coupon canary: ${item.url} failed: ${e.message}`);
+      }
+    }
+  } finally {
+    await ctx.close();
+  }
+}
+
+/**
+ * Coupon price from the detail page (server-rendered `.price-finally`), or null.
+ * Legacy SK detail flow only — datart.cz no longer renders `.price-finally` (CZ prices
+ * coupons via Exponea above), and datart.sk now redirects to nay.sk.
+ */
 function detailCouponPrice(document) {
   const el = document.querySelector(".product-price-discount.discount-price-box .price-finally");
   if (!el) return null;
@@ -284,7 +817,13 @@ function extractItems(document, rootUrl, country, categoryOverride) {
       );
 
       let lowestPriceInLastMonth = currentPrice;
-      const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector("div.item-price span.cut-price--strike");
+      // EU Omnibus "Nejnižší cena za posledních 30 dní" reference. Datart renders it in a
+      // `span.cut-price` wrapper whose inner modifier varies by discount type
+      // (`--strike`, `--lessOrEqual` on coupon products, …) — match any variant, like the
+      // extension does. An empty wrapper means no reference price.
+      const lowestPriceInLastMonthEl = productBoxBuyInfoCart.querySelector(
+        "div.item-price span.cut-price [class*='cut-price--']"
+      );
       if (lowestPriceInLastMonthEl) {
         // Remove sr-only content first to avoid extracting digits from screen reader text
         const srOnly = lowestPriceInLastMonthEl.querySelector(".sr-only");
@@ -292,59 +831,17 @@ function extractItems(document, rootUrl, country, categoryOverride) {
           ? lowestPriceInLastMonthEl.innerText.replace(srOnly.innerText, "").trim()
           : lowestPriceInLastMonthEl.innerText.trim();
 
-        lowestPriceInLastMonth = parseFloat(priceText.replace(/[^\d,]+/g, "").replace(",", "."));
+        const reference = parseFloat(priceText.replace(/[^\d,]+/g, "").replace(",", "."));
+        if (Number.isFinite(reference) && reference > 0) lowestPriceInLastMonth = reference;
       }
-      let fixedDiscount = 0;
-      const fixedDiscountFlagEl = productEl.querySelector(".product-flags .flag-color-red");
-      if (fixedDiscountFlagEl) {
-        const hasDiscountKeyword = country === Country.CZ && /extra sleva/i.test(fixedDiscountFlagEl.textContent);
-        if (hasDiscountKeyword) {
-          fixedDiscount = parseFloat(
-            fixedDiscountFlagEl.innerText
-              .trim()
-              .replace(/[^\d,]+/g, "")
-              .replace(",", ".")
-          );
-        }
-      }
-
-      let percentageDiscount = 0;
-      const percentageDiscountFlagEls = productEl.querySelectorAll(".product-flags .flag");
-      Array.from(percentageDiscountFlagEls).forEach(flagEl => {
-        const hasDiscountKeyword =
-          country === Country.CZ &&
-          (/^sleva\s+\d+\s*%$/i.test(flagEl.textContent) || // 20 % sleva
-            /^\d+\s*%\s*sleva$/i.test(flagEl.textContent)); // sleva 20 %
-
-        if (hasDiscountKeyword) {
-          percentageDiscount = parseFloat(
-            flagEl.innerText
-              .trim()
-              .replace(/[^\d,]+/g, "")
-              .replace(",", ".")
-          );
-        }
-      });
-
       result.originalPrice = lowestPriceInLastMonth;
+      // CZ: currentPrice (incl. coupons) is set by the Exponea coupon pricer from basePrice.
+      // (Listing "extra sleva"/"sleva X %" flags are Exponea campaign flags, not prices.)
       result.currentPrice = currentPrice;
-
-      if (percentageDiscount > 0) {
-        result.currentPrice -= (currentPrice * percentageDiscount) / 100;
-        result.discounted = true;
-      } else if (fixedDiscount > 0) {
-        result.currentPrice -= fixedDiscount;
-        result.discounted = true;
-      } else {
-        result.currentPrice = currentPrice;
-        result.discounted = lowestPriceInLastMonth > currentPrice;
-      }
-
-      // Internal-only (stripped before push). basePrice = the raw listing price before
-      // any flag math; the voucher-API path prices from this and uses listingDiscountFlag
-      // to detect API false-negatives (a listing discount flag with no API voucher).
+      result.discounted = lowestPriceInLastMonth > currentPrice;
+      // Internal-only (stripped before push): the raw listing price the shopper pays
+      // without a code.
       result.basePrice = currentPrice;
-      result.listingDiscountFlag = percentageDiscount > 0 || fixedDiscount > 0;
 
       return result;
     });
@@ -432,6 +929,8 @@ export async function main() {
     proxyGroups = ["CZECH_LUMINATI"],
     country = Country.CZ,
     type = ActorType.Full,
+    exponeaCompanyId = DEFAULT_EXPONEA_COMPANY_ID,
+    couponExecutorId = DEFAULT_COUPON_EXECUTOR_ID,
     // Throughput knobs (configurable so they can be tuned without a redeploy). The
     // legacy detail-per-SKU design had to keep these low because every extra request
     // burned an F5 session; with CZ detail fetches gone the listing crawl runs much faster.
@@ -439,9 +938,11 @@ export async function main() {
     maxConcurrency = 10
   } = await getInput();
 
-  // CZ Full/Test record the plain listing price straight from the category page (fast path,
-  // no detail fetch). SK/BF keep the legacy per-product detail flow until separately verified.
-  const czListingPricing = country === Country.CZ && (type === ActorType.Full || type === ActorType.Test);
+  // CZ prices straight from the category page plus the Exponea coupon lookup (no detail
+  // fetch) for every run type: Full/Test and Black Friday alike (BF hub pages link to
+  // ordinary product listings). The coupon price is no longer in the CZ detail HTML, so the
+  // legacy detail flow below only serves SK.
+  const czListingPricing = country === Country.CZ;
 
   // Product-grid slicing for CATEGORY_NEXT pages (parse only ~8% of the page). A runtime
   // canary shadow-compares the first N sliced pages against a full parse; any mismatch
@@ -461,8 +962,25 @@ export async function main() {
     failed: 0,
     blocked: 0,
     sliceFallback: 0,
-    sliceMismatch: 0
+    sliceMismatch: 0,
+    // CZ coupon lookup (Exponea): coverage + health counters.
+    couponApiCalls: 0,
+    couponApiFailed: 0,
+    couponPriced: 0,
+    couponNoMatchCode: 0,
+    couponCovered: 0,
+    couponWeblayerLookups: 0,
+    couponWeblayerFailed: 0,
+    couponWeblayerUnknown: 0,
+    couponFormatUnknown: 0,
+    couponApplied: 0,
+    couponCanaryChecked: 0,
+    couponCanaryMismatch: 0,
+    couponCanaryMoved: 0,
+    couponCanaryUnreadable: 0
   });
+  const priceProducts = createCouponPricer({ companyId: exponeaCompanyId, executorId: couponExecutorId, stats });
+  const canarySample = createCanarySample();
 
   const rootUrl = country === Country.CZ ? rootCZ : rootSK;
 
@@ -678,21 +1196,16 @@ export async function main() {
         }
 
         if (czListingPricing) {
-          // Record the price datart shows an anonymous shopper: the listing price
-          // (`.actual` / `data-price-value`), straight from the category page. We do NOT
-          // subtract the "Koupit s kódem / EXTRA CENA" promo voucher — that is a code-gated
-          // conditional discount, not what a no-code shopper pays, and it is the plain price
-          // the browser-extension chart records too, so the actor and the chart stay in sync.
-          // One source, no detail fetch, nothing to reconcile.
-          for (const product of newProducts) {
-            product.currentPrice = product.basePrice;
-            product.discounted = product.originalPrice > product.basePrice;
-          }
+          // currentPrice = the coupon ("Cena s kódem") price when a campaign covers the
+          // product, else the displayed listing price (`.actual` / `data-price-value`).
+          // Coupon prices count as a regular discount (#3606), same as the extension chart.
+          await priceProducts(newProducts);
+          for (const product of newProducts) canarySample.add(product, product.currentPrice < product.basePrice);
           if (newProducts.length > 0) {
             await Dataset.pushData(newProducts.map(stripInternal));
             stats.add("items", newProducts.length);
           }
-          log.info(`${request.url}: ${products.length} products, ${newProducts.length} pushed (listing price)`);
+          log.info(`${request.url}: ${products.length} products, ${newProducts.length} pushed`);
         } else {
           // Legacy / SK / BF: one detail fetch per product (the detail page
           // server-renders the coupon price; see the DETAIL handler).
@@ -743,6 +1256,22 @@ export async function main() {
 
   const request = startingRequest({ rootUrl, country, type });
   await crawler.run([request]);
+  // Coupon health verdict for CZ runs; enforced after the upload so a failure never
+  // throws away the day's data.
+  let couponProblems = [];
+  if (czListingPricing) {
+    const sample = canarySample.items();
+    let canaryError = null;
+    try {
+      await runCouponCanary(sample, stats);
+    } catch (e) {
+      // e.g. Chromium failing to launch at the end of a long crawl — still upload.
+      canaryError = `the canary could not run: ${e.message}`;
+      log.error(canaryError);
+    }
+    couponProblems = couponHealthProblems(stats.get(), sample.length);
+    if (canaryError) couponProblems.push(canaryError);
+  }
   await stats.save(true);
 
   try {
@@ -766,6 +1295,11 @@ export async function main() {
     log.error(e);
   }
 
+  if (couponProblems.length > 0) {
+    throw new Error(
+      `Coupon pricing is unhealthy — datart may have changed its campaigns: ${couponProblems.join("; ")}`
+    );
+  }
   log.info("Finished.");
 }
 
