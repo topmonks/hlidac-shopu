@@ -6,11 +6,12 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { cleanPrice, itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
-import { comp, map, push, transduce } from "@thi.ng/transducers";
+import { comp, filter, map, push, transduce } from "@thi.ng/transducers";
 import { Actor, Dataset, log, LogLevel } from "apify";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
+/** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
 
 const PROCESSED_IDS_KEY = "processedIds";
 
@@ -29,28 +30,63 @@ const locales = new Map([
 ]);
 
 /**
- *
- * @param result
+ * 4camping keeps the old price box in the page even when there is no discount,
+ * sometimes with a price lower than the current one
+ * @param {number | null} originalPrice
+ * @param {number} currentPrice
+ * @returns {number | null}
+ */
+function discountedFrom(originalPrice, currentPrice) {
+  return originalPrice > currentPrice ? originalPrice : null;
+}
+
+/**
+ * Inline `var data = {...}` on the product detail page holds all variants
+ * @param {Document} document
+ * @returns {Object | null}
+ */
+function productDetailData(document) {
+  const script = Array.from(document.querySelectorAll("script"), x => x.textContent).find(x =>
+    x.includes("var data = ")
+  );
+  if (!script) return null;
+  const json = script.slice(script.indexOf("var data = ") + "var data = ".length, script.lastIndexOf("}") + 1);
+  return JSON.parse(json);
+}
+
+/**
+ * Variant url `/p/<product>/<variant>/` is shown on the web as `/p/<product>/#<variant>`
+ * @param {string} variantUrl
+ * @param {string} productUrl
+ * @returns {string}
+ */
+function variantItemUrl(variantUrl, productUrl) {
+  const variantSlug = new URL(variantUrl, productUrl).pathname.split("/").filter(Boolean).at(-1);
+  const url = new URL(productUrl);
+  url.hash = variantSlug;
+  return url.href;
+}
+
+/**
  * @param {Object} params
- * @param {string} params.url
- * @param {number} params.originalPrice
+ * @param {string} params.itemId
+ * @param {string} params.itemUrl
+ * @param {string} params.itemName
+ * @param {string} params.img
+ * @param {number} params.currentPrice
+ * @param {number | null} params.originalPrice
+ * @param {string} params.category
  * @param {string} params.country
  * @returns {Product}
  */
-function toProduct(result, { url, originalPrice, country }) {
-  const itemId = result.id;
-  const itemUrl = new URL(result.url, url).href;
-  const itemName = result.name;
-  const img = result.photoFile;
-  const currentPrice = result.unitPriceWithVat;
+function toProduct({ itemId, itemUrl, itemName, img, currentPrice, originalPrice, category, country }) {
   const discounted = Boolean(originalPrice) && currentPrice !== originalPrice;
   const inStock = true;
-  const category = result.mainCategory;
   const { currency } = locales.get(country.toUpperCase());
   return {
-    shop: shopName(url),
-    shopOrigin: shopOrigin(url),
-    slug: itemSlug(result.url, url),
+    shop: shopName(itemUrl),
+    shopOrigin: shopOrigin(itemUrl),
+    slug: itemSlug(itemUrl),
     itemId,
     itemUrl,
     itemName,
@@ -65,32 +101,50 @@ function toProduct(result, { url, originalPrice, country }) {
 }
 
 /**
- * @param {number} page
- * @param {Object} userData
- * @returns {RequestOptions[]}
+ * Product itself and each of its variants (size, colour, ...), variants live under `#<variant>` url
+ * @param {Document} document
+ * @param {string} url
+ * @param {string} country
+ * @returns {Product[]}
  */
-function categoryPageRequest(page, userData) {
-  const { country, rootUrl } = userData;
-  const locale = locales.get(country.toUpperCase());
-  return [
-    {
-      url: new URL("/api/parametric-search/", rootUrl).href,
-      method: "POST",
-      payload: JSON.stringify({
-        typeClassname: "ParametricSearch\\Type\\Category",
-        options: { categoryId: userData.categoryId, additionalCategoryIds: [] },
-        sort: null,
-        page,
-        conditions: {},
-        baseConditions: {},
-        existingFilters: {},
-        ...locale
-      }),
-      label: "categoryPage",
-      userData,
-      useExtendedUniqueKey: true
-    }
+function productsFromDetail(document, url, country) {
+  const form = document.querySelector("#formProductAddToBasket");
+  if (!form) return [];
+  const product = JSON.parse(form.dataset.product);
+  const productUrl = new URL(product.url, url).href;
+  const category = product.mainCategory;
+  const products = [
+    toProduct({
+      itemId: product.id,
+      itemUrl: productUrl,
+      itemName: product.name,
+      img: product.photoFile,
+      currentPrice: product.unitPriceWithVat,
+      originalPrice: discountedFrom(
+        parsePrice(document.querySelector("#productOldPrice del")?.textContent),
+        product.unitPriceWithVat
+      ),
+      category,
+      country
+    })
   ];
+  const variants = Object.values(productDetailData(document)?.variantsInfo ?? {});
+  for (const variant of variants) {
+    products.push(
+      toProduct({
+        // same id as 4camping uses in its analytics for a selected variant
+        itemId: `${product.id}-${variant.id}`,
+        itemUrl: variantItemUrl(variant.url, productUrl),
+        itemName: variant.productNameWithVariant,
+        img: variant.photoFilename ?? product.photoFile,
+        currentPrice: variant.price,
+        originalPrice: discountedFrom(variant.priceOld, variant.price),
+        category,
+        country
+      })
+    );
+  }
+  return products;
 }
 
 function defRouter({ stats, processedIds }) {
@@ -105,7 +159,8 @@ function defRouter({ stats, processedIds }) {
       const urls = transduce(
         comp(
           map(x => x.textContent.trim()),
-          map(url => ({ url, label: "category", userData }))
+          filter(url => new URL(url).pathname === "/sitemap/products/"),
+          map(url => ({ url, label: "sitemap", userData }))
         ),
         push(),
         document.getElementsByTagNameNS("", "loc")
@@ -116,53 +171,46 @@ function defRouter({ stats, processedIds }) {
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
-    async category({ request, body, crawler }) {
-      stats.inc("categories");
-
+    async sitemap({ request, body, crawler }) {
+      const { document } = parseXML(body.toString());
       const { userData } = request;
-      const { document } = parseHTML(body.toString());
-      const categoryClass = Array.from(document.body.classList).find(x => x.startsWith("current-cat-id-"));
-      // sitemap still lists removed categories, they render a 404 page without category id
-      if (!categoryClass) {
-        stats.inc("categoriesWithoutId");
-        log.warning(`Category id not found, skipping ${request.url}`);
-        return;
-      }
-      const [, categoryId] = categoryClass.split("current-cat-id-");
-      const page = 1;
-      await crawler.addRequests(
-        categoryPageRequest(page, Object.assign({}, userData, { categoryId: Number.parseInt(categoryId) }))
+      const urls = transduce(
+        comp(
+          map(x => x.textContent.trim()),
+          map(url => ({ url, label: "detail", userData }))
+        ),
+        push(),
+        document.getElementsByTagNameNS("", "loc")
       );
+      stats.add("productUrls", urls.length);
+      await crawler.addRequests(urls);
     },
     /**
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
-    async categoryPage({ request, json, crawler }) {
+    async detail({ request, body }) {
       const { url, userData } = request;
-      const { country } = userData;
-      const { currentPage, lastPage, items } = json;
-      const { document } = parseHTML(items);
-      const products = Array.from(document.querySelectorAll(".product-card[data-product]"), x => ({
-        product: JSON.parse(x.dataset.product),
-        originalPrice: parsePrice(x.querySelector(".card-price__discount del")?.textContent)
-      }));
+      const { document } = parseHTML(body.toString());
+      const products = productsFromDetail(document, url, userData.country);
+      if (!products.length) {
+        stats.inc("detailsWithoutProduct");
+        log.warning(`Product not found, skipping ${url}`);
+        return;
+      }
+      stats.inc("details");
 
       const batch = [];
-      for (const { product, originalPrice } of products) {
-        if (processedIds.has(product.id)) {
+      for (const product of products) {
+        if (processedIds.has(product.slug)) {
           stats.inc("duplicates");
           continue;
         }
-        batch.push(toProduct(product, { url, originalPrice, country }));
-        processedIds.add(product.id);
-        stats.inc("products");
+        batch.push(product);
+        processedIds.add(product.slug);
+        stats.inc(product.itemId.includes("-") ? "variants" : "products");
       }
       await Dataset.pushData(batch);
-
-      if (currentPage < lastPage) {
-        await crawler.addRequests(categoryPageRequest(currentPage + 1, request.userData));
-      }
     }
   });
 }
@@ -178,7 +226,7 @@ function getStartUrls({ type, country }) {
   const rootUrl = `https://www.4camping.${country.toLowerCase()}`;
   return [
     {
-      url: new URL("/sitemap/categories/", rootUrl).href,
+      url: new URL("/sitemap/", rootUrl).href,
       label: "start",
       userData: { country, type, rootUrl }
     }
@@ -192,9 +240,11 @@ async function main() {
   Actor.on("persistState", () => Actor.setValue(PROCESSED_IDS_KEY, Array.from(processedIds)));
 
   const stats = await withPersistedStats({
-    categories: 0,
-    categoriesWithoutId: 0,
+    productUrls: 0,
+    details: 0,
+    detailsWithoutProduct: 0,
     products: 0,
+    variants: 0,
     duplicates: 0
   });
 
