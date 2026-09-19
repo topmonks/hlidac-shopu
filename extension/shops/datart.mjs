@@ -43,16 +43,20 @@ export class Datart extends Shop {
     const couponPrice = await exponeaCouponPrice();
     const currentPrice = couponPrice && couponPrice < displayedPrice ? couponPrice : displayedPrice;
 
-    // EU Omnibus "lowest price in last 30 days" reference, rendered inside
-    // `.product-price-before` only on discounted products (including coupon
-    // discounts already baked into `data-price-value`). Anchor on the stable
-    // `.cut-price` wrapper — Datart keeps renaming its modifier variants
-    // (`--lessOrEqual`, `--strike`, …) per discount type. The label text
-    // holds a "30 dní" digit run we must skip — strip `.sr-only` and the
-    // tooltip before parsing.
+    // EU Omnibus "lowest price in last 30 days" reference. On standard discounts it
+    // is rendered inside `.product-price-before` — anchor on the stable `.cut-price`
+    // wrapper, Datart keeps renaming its modifier variants (`--lessOrEqual`,
+    // `--strike`, …) per discount type. The label text holds a "30 dní" digit run we
+    // must skip — strip `.sr-only` and the tooltip before parsing. On coupon products
+    // it is a plain `.product-price-before-30` row instead.
     const refEl = elem.querySelector(".product-price-before .cut-price")?.cloneNode(true);
     refEl?.querySelectorAll(".sr-only, ufo-tooltip, .query-icon").forEach(n => n.remove());
-    const originalPrice = refEl ? cleanPriceText(refEl.textContent) : null;
+    const reference30El = elem.querySelector(".product-price-before-30 .product-price-before-30-price");
+    const originalPrice = refEl
+      ? cleanPriceText(refEl.textContent)
+      : reference30El
+        ? cleanPriceText(reference30El.textContent)
+        : null;
 
     const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").dataset.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
