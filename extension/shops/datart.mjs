@@ -1,8 +1,10 @@
 import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
-const COUPON_MAX_WAIT_MS = 5000;
-const COUPON_SETTLE_MS = 1000;
+const COUPON_MAX_WAIT_MS = 8000;
+// The discount banner needs a further Exponea round trip after the first weblayers
+// render (executor → campaign weblayer), so allow a generous settle.
+const COUPON_SETTLE_MS = 3000;
 
 /**
  * Coupon price ("Cena s kódem") of datart's Bloomreach/Exponea discount banner, or null.
