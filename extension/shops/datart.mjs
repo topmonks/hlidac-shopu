@@ -1,6 +1,32 @@
 import { cleanPriceText, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
+const COUPON_MAX_WAIT_MS = 5000;
+const COUPON_SETTLE_MS = 1000;
+
+/**
+ * Coupon price ("Cena s kódem") of datart's Bloomreach/Exponea discount banner, or null.
+ * The banner is rendered client-side after page load, so poll for it. Exponea renders
+ * other weblayers on every product page; once one of those is present and the discount
+ * banner still hasn't shown up after a short settle, there is no coupon. Logged-in
+ * VIP/employee shoppers get a personalized base price, so we never read it for them.
+ * @returns {Promise<number|null>}
+ */
+async function exponeaCouponPrice() {
+  if (document.querySelector(".ufo-icon__ico-uzivatel-vip, .ufo-icon__ico-uzivatel-hpt")) return null;
+  const start = Date.now();
+  let weblayerSeenAt = null;
+  while (Date.now() - start < COUPON_MAX_WAIT_MS) {
+    const text = document.querySelector(".exponea-product-discount #unique-price-after-sale")?.textContent;
+    const price = text ? cleanPriceText(text) : null;
+    if (price) return Number(price);
+    if (weblayerSeenAt === null && document.querySelector("[data-weblayer-id]")) weblayerSeenAt = Date.now();
+    if (weblayerSeenAt !== null && Date.now() - weblayerSeenAt > COUPON_SETTLE_MS) return null;
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  return null;
+}
+
 export class Datart extends Shop {
   async scrape() {
     const elem = document.querySelector(".product-detail");
@@ -11,7 +37,11 @@ export class Datart extends Shop {
     const itemId = itemIdTarget.split("-").at(-1);
 
     const title = elem.querySelector("h1.product-detail-title").textContent.trim();
-    const currentPrice = Number(elem.querySelector(".product-price").dataset.priceValue);
+    // Coupon ("Cena s kódem") price counts as the current price (#3606), same as the
+    // datart-daily actor; otherwise the displayed price.
+    const displayedPrice = Number(elem.querySelector(".product-price").dataset.priceValue);
+    const couponPrice = await exponeaCouponPrice();
+    const currentPrice = couponPrice && couponPrice < displayedPrice ? couponPrice : displayedPrice;
 
     // EU Omnibus "lowest price in last 30 days" reference, rendered inside
     // `.product-price-before` only on discounted products (including coupon
