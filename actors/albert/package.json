@@ -6,17 +6,17 @@
   "description": "This is the albert.cz actor.",
   "type": "module",
   "dependencies": {
-    "@crawlee/http": "3.17.0",
-    "@crawlee/playwright": "3.17.0",
+    "@crawlee/http": "3.18.1",
+    "@crawlee/playwright": "3.18.1",
     "@hckr_/apify-persistent-stats": "1.0.4",
     "@hlidac-shopu/actors-common": "3.2.6",
-    "@thi.ng/transducers": "9.6.40",
+    "@thi.ng/transducers": "9.7.0",
     "apify": "3.7.2",
-    "playwright": "1.61.0"
+    "playwright": "1.63.0"
   },
   "devDependencies": {
-    "@types/node": "24.13.2",
-    "apify-cli": "1.6.2"
+    "@types/node": "24.13.6",
+    "apify-cli": "1.10.0"
   },
   "scripts": {
     "start": "node main.js",
