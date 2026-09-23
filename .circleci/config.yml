@@ -286,9 +286,6 @@ jobs:
     resource_class: topmonks/hetzner
     environment:
       AWS_STS_REGIONAL_ENDPOINTS: regional
-      # Pulumi CLI hard-errors on the legacy DIY S3 state backend since
-      # mid-2026; opt out until the state is migrated with `pulumi state upgrade`.
-      PULUMI_DIY_BACKEND_IGNORE_DEPRECATION_ERROR: "1"
     steps:
       - checkout
       - pulumi/login:
@@ -314,8 +311,6 @@ jobs:
     docker:
       - image: cimg/node:current
     resource_class: topmonks/hetzner
-    environment:
-      PULUMI_DIY_BACKEND_IGNORE_DEPRECATION_ERROR: "1"
     steps:
       - checkout
       - pulumi/login:
@@ -348,7 +343,6 @@ jobs:
     resource_class: topmonks/hetzner
     environment:
       ROLLBAR_ACCESS_TOKEN: "224cde202c354c2cabe73cf7ae008471"
-      PULUMI_DIY_BACKEND_IGNORE_DEPRECATION_ERROR: "1"
     steps:
       - checkout
       - attach_workspace:
