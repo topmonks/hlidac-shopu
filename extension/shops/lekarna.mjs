@@ -30,13 +30,20 @@ export class Lekarna extends Shop {
 
     const itemId = data.sku?.toString();
     const title = data.name;
-    const currentPrice = data.offers?.price?.toString();
 
     // On discounted products Lekarna renders the original price as a
     // `#priceBox .line-through` element labelled "Před slevou:". Non-discounted
     // products have no such element, so the selector simply misses.
-    const originalPriceText = document.querySelector("#priceBox .line-through")?.textContent;
-    const originalPrice = cleanPriceText(originalPriceText ?? "");
+    const crossedPrice = cleanPriceText(document.querySelector("#priceBox .line-through")?.textContent);
+    // A coupon ("Do košíku s kódem …") box follows an automatic-discount form.
+    // Mirror the lekarna-daily actor: the coupon price is the current price,
+    // and without a crossed-out price the regular price is the original one.
+    const couponPrice = cleanPriceText(
+      document.querySelector("#priceBox form[id*='productAutomaticDiscount'] + * strong")?.textContent
+    );
+    const regularPrice = cleanPriceText(document.querySelector("#priceBox span.text-3xl.font-bold")?.textContent);
+    const currentPrice = couponPrice ?? data.offers?.price?.toString();
+    const originalPrice = crossedPrice ?? (couponPrice ? regularPrice : null);
 
     const imageUrl = document.querySelector("[property='og:image']")?.content;
 
