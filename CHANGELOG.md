@@ -1,5 +1,17 @@
 # Extension
 
+## 2.4.12
+* Rewrote Tesco (nakup.itesco.cz) for the redesigned product page, including SPA navigation and promo original prices that are ignored when inconsistent with the per-piece price of weighed goods (#3601)
+* Fixed EVA.cz widget placement after the price panel was removed (#3600)
+* Fixed aaaauto.cz for the redesigned SPA site and its new detail URLs (#3614)
+* Fixed Rohlik.cz search-suggestion popups showing the previous product's chart (#910)
+* Fixed missing originalPrice on Alza.cz (#3608), Globus (#3609), IKEA (#3615) and Lekarna.cz coupon-only offers (#3610)
+* Fixed Grizly.cz mixing prices from different package variants (#3620)
+* Fixed Datart.cz coupon ("Cena s kódem") price handling, recorded as the current price (#2882)
+* Fixed Notino stale chart when switching variants, price-conditioned vouchers and EUR cents (#3623)
+* Fixed 4camping.cz product variants and SK price parsing
+* Reduced the content script size by bundling lit-html only once (#3543)
+
 ## 2.4.11
 * Declared Firefox data collection permissions (browsingActivity, websiteContent) ahead of Mozilla's enforcement (#3543)
 * Fixed Chrome Web Store publishing — the upload CLI v4 silently dropped the auto-publish behavior, leaving 2.4.10 as an unsubmitted draft
