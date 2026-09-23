@@ -9,6 +9,27 @@ import { AsyncShop } from "./shop.mjs";
 const detailSelector = '[data-sentry-component="ProductDetailInfo"]';
 const priceSelector = '[data-sentry-component="ProductPrice"]:not(a [data-sentry-component="ProductPrice"])';
 
+// Prices render as crowns and cents in separate spans ("29" + "90"), so the
+// plain textContent ("2990Kč") would parse as a 100× price.
+function splittedPriceValue(el) {
+  const [crowns, cents] = Array.from(el.querySelectorAll("span"))
+    .map(span => span.textContent.trim())
+    .filter(text => /^\d+$/.test(text));
+  if (!crowns) return null;
+  return cents ? `${crowns}.${cents}` : crowns;
+}
+
+// On a discount the detail price shows the pre-discount price as a
+// SplittedPrice styled with the text-priceBefore token (struck through via
+// a pseudo-element) next to the discounted one. The per-unit price below
+// uses SplittedPrice too, so exclude it.
+function originalPrice() {
+  const before = Array.from(
+    document.querySelectorAll(`${priceSelector} [data-sentry-component="SplittedPrice"].text-priceBefore`)
+  ).find(el => !el.closest('[data-sentry-component="PerUnitPriceTag"]'));
+  return before ? splittedPriceValue(before) : null;
+}
+
 function findProductLd() {
   for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
     try {
@@ -40,7 +61,7 @@ export class Globus extends AsyncShop {
     const ld = findProductLd();
     const currentPrice = ld?.offers?.price ?? null;
     const imageUrl = ld?.image ?? document.querySelector('meta[property="og:image"]')?.content;
-    return { itemId, title, currentPrice, originalPrice: null, imageUrl };
+    return { itemId, title, currentPrice, originalPrice: originalPrice(), imageUrl };
   }
 }
 
