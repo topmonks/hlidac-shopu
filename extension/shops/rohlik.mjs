@@ -6,6 +6,14 @@ const injectionTargets = [
   ["afterend", '#productDetail [data-test="product-detail-price-section"]']
 ];
 
+// Rohlik opens products from search suggestions in a modal overlay
+// (.product_detail_modal) WITHOUT changing the page URL, so the URL and the
+// page-level JSON-LD still describe the underlying product (#910). Whenever
+// the modal is open, all scraping and injection must be scoped to the
+// modal's own #productDetail and the URL/JSON-LD sources must be ignored.
+const productModal = () => document.querySelector(".product_detail_modal");
+const detailRoot = () => productModal()?.querySelector("#productDetail") ?? document.querySelector("#productDetail");
+
 const didRenderDetail = mutations =>
   mutations.find(x =>
     Array.from(x.addedNodes).find(
@@ -59,7 +67,7 @@ const imageFromProductLd = product => {
   return image;
 };
 
-const textFrom = selector => document.querySelector(selector)?.textContent?.trim();
+const textFrom = (selector, root = document) => root.querySelector(selector)?.textContent?.trim();
 
 const cleanRohlikPrice = selector => {
   const elem = typeof selector === "string" ? document.querySelector(selector) : selector;
@@ -79,15 +87,15 @@ const cleanRohlikPrice = selector => {
   return cleanPrice(elem);
 };
 
-const cleanOriginalPrice = () => {
+const cleanOriginalPrice = root => {
   const elem =
-    document.querySelector('#productDetail [data-test="product-detail-price-section-sale"]') ??
-    document.querySelector('#productDetail [data-test="product-in-sale-original"] del') ??
-    document.querySelector("#productDetail del");
+    root.querySelector('[data-test="product-detail-price-section-sale"]') ??
+    root.querySelector('[data-test="product-in-sale-original"] del') ??
+    root.querySelector("del");
   if (!elem) return null;
 
   if (isUnitPrice(elem)) {
-    const quantity = cleanPrice("#productDetail .detailQuantity");
+    const quantity = cleanPrice(root.querySelector(".detailQuantity"));
     if (quantity) return cleanUnitPrice(elem, quantity);
   }
 
@@ -116,8 +124,11 @@ export class Rohlik extends StatefulShop {
   }
 
   inject(renderMarkup) {
+    // Scope injection to the modal when it is open, so the widget lands in
+    // the popup product's detail and not the underlying page's (#910).
+    const prefix = productModal() ? ".product_detail_modal " : "";
     for (const [position, selector] of injectionTargets) {
-      const elem = document.querySelector(selector);
+      const elem = document.querySelector(prefix + selector);
       if (!elem) continue;
       elem.insertAdjacentElement(position, renderMarkup());
       return elem;
@@ -127,37 +138,71 @@ export class Rohlik extends StatefulShop {
     );
   }
 
+  async scheduleRendering({ render, cleanup, fetchData }) {
+    const tryRender = async () => {
+      const info = await this.scrape();
+      if (!info) return;
+      const data = await fetchData(info);
+      if (!data) return;
+      render(false, data);
+    };
+    new MutationObserver(async mutations => {
+      // Closing the popup and re-rendering the page detail arrive in the same
+      // mutation batch, so handle them as one case to render only once.
+      const closedPopup = this.shouldCleanup(mutations);
+      if (!closedPopup && !this.shouldRender(mutations)) return;
+      // Remove the previous widget first: renderHTML re-injects only when the
+      // root is disconnected, so it would otherwise stay anchored where it was
+      // (e.g. hidden under an opened popup) while showing the new product.
+      cleanup();
+      // After a close this restores the underlying page's widget, which the
+      // popup render displaced.
+      if (document.querySelector(this.detailSelector)) await tryRender();
+    }).observe(this.observerTarget, { subtree: true, childList: true });
+
+    if (!document.querySelector(this.detailSelector)) return;
+    await tryRender();
+  }
+
   async scrape() {
-    const elem = document.querySelector("#productDetail");
+    const inPopup = Boolean(productModal());
+    const elem = detailRoot();
     if (!elem) return null;
 
-    const url = new URL(window.location.href);
-    const originalPrice = cleanOriginalPrice();
-    const productLd = parseProductLd();
-    const itemIdFromUrl = getItemIdFromUrl(url);
+    const originalPrice = cleanOriginalPrice(elem);
+    // In the popup the URL, JSON-LD, document.title and og:image all still
+    // belong to the underlying product — only the modal's DOM is reliable.
+    const productLd = inPopup ? null : parseProductLd();
+    const itemIdFromUrl = inPopup ? null : getItemIdFromUrl(new URL(window.location.href));
 
     const itemId = itemIdFromUrl ?? elem.querySelector("button[data-product-id]")?.dataset.productId ?? productLd?.sku;
     const title =
-      textFrom('#productDetail [data-test="product-detail-product-name"]') ??
-      textFrom("#productDetail h1") ??
+      textFrom('[data-test="product-detail-product-name"]', elem) ??
+      textFrom("h1", elem) ??
       productLd?.name ??
-      document.title.split("-")[0].trim();
+      (inPopup ? null : document.title.split("-")[0].trim());
     const currentPrice =
       cleanRohlikPrice(
-        // Xtra/Premium member prices are rendered as product-price when active.
-        // premium-priceForPremiumInDetail is an inactive-sale upsell block.
-        `#productDetail [data-test="product-detail-price-section-priceNo"],
-         #productDetail [data-test="product-price"],
-         #productDetail .actionPrice,
-         #productDetail .currentPrice`
+        elem.querySelector(
+          // Xtra/Premium member prices are rendered as product-price when active.
+          // premium-priceForPremiumInDetail is an inactive-sale upsell block.
+          `[data-test="product-detail-price-section-priceNo"],
+           [data-test="product-price"],
+           .actionPrice,
+           .currentPrice`
+        )
       ) ?? priceFromProductLd(productLd);
     const imageUrl =
       elem.querySelector("[data-gtm-item=product-image] img")?.src ??
-      document.querySelector('meta[property="og:image"]')?.content ??
-      imageFromProductLd(productLd);
+      (inPopup
+        ? undefined
+        : (document.querySelector('meta[property="og:image"]')?.content ?? imageFromProductLd(productLd)));
 
     if (!itemId || !title || !currentPrice) return null;
-    return { itemId, title, currentPrice, originalPrice, imageUrl };
+    // The API resolves the product from the URL, and in the popup
+    // location.href still points at the underlying product.
+    const url = inPopup ? `https://www.rohlik.cz/${itemId}` : undefined;
+    return { itemId, title, currentPrice, originalPrice, imageUrl, url };
   }
 }
 
