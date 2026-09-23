@@ -6,11 +6,14 @@ export class Eva extends AsyncShop {
     return ".main_content h1";
   }
 
+  // Desktop: below the yellow buy panel (.deskbox) in the right column.
+  // Below 992px that column is hidden and the page shows a .for-mobile block
+  // under the gallery instead.
   get injectionPoint() {
     if (this.isMobileDetailPage()) {
-      return ["beforebegin", ".zpanel-price-mobile div.spacer"];
+      return ["beforebegin", ".main_content .for-mobile"];
     } else {
-      return ["beforebegin", ".zpanel-price div.spacer"];
+      return ["afterend", ".main_content .deskbox"];
     }
   }
 
@@ -32,10 +35,8 @@ export class Eva extends AsyncShop {
   }
 
   isMobileDetailPage() {
-    const elem = document.querySelector("div.zpanel-price-mobile");
-    if (!elem) return false;
-    const style = window.getComputedStyle(elem);
-    return style.display === "block";
+    const rightColumn = document.querySelector(".main_content .zb-rg-col");
+    return !rightColumn || window.getComputedStyle(rightColumn).display === "none";
   }
 }
 
