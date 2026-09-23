@@ -16,9 +16,17 @@ export class Grizly extends Shop {
     const itemId = form.iditem.value;
     const title = document.querySelector("[property='og:title']").content;
 
-    const couponPrice = cleanPrice(".pd__data-variants-select-price .pd__data-variants-select-price-code");
-    const oldPrice = cleanPrice(".pd__data-variants-select-price .pd__data-variants-select-price-old");
-    const regularPrice = cleanPrice(".pd__data-variants-select-price .regular");
+    // Every package variant (e.g. single pack vs. 5× multipack) renders its own
+    // price block in the variant dropdown, so read all prices from the selected
+    // variant's block. Page-wide lookups would mix prices across variants.
+    const priceBlock =
+      document.querySelector(".js-custom-select-selected .pd__data-variants-select-price") ??
+      document.querySelector("li.is--selected .pd__data-variants-select-price") ??
+      document.querySelector(".pd__data-variants-select-price");
+    if (!priceBlock) return;
+    const couponPrice = cleanPrice(priceBlock.querySelector(".pd__data-variants-select-price-code"));
+    const oldPrice = cleanPrice(priceBlock.querySelector(".pd__data-variants-select-price-old"));
+    const regularPrice = cleanPrice(priceBlock.querySelector(".regular"));
 
     const currentPrice = couponPrice ?? regularPrice;
     const originalPrice = oldPrice ?? regularPrice;
