@@ -81,7 +81,9 @@ function getDetailItemInfo() {
   );
   const mainPrice = cleanPrice(".price-box__price") ?? cleanPrice(".ads-pb__price-value");
   const comparePrice =
-    cleanPrice(".price-box__compare-price") ?? cleanPrice(".price-box--super-price .price-box__body");
+    cleanPrice(".price-box__compare-price") ??
+    cleanPrice(".price-box--super-price .price-box__body") ??
+    cleanPrice(".price-detail .ads-pb__original-price");
   const currentPrice = couponPrice ?? mainPrice;
   const originalPrice = couponPrice ? (comparePrice ?? mainPrice) : comparePrice;
   const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
