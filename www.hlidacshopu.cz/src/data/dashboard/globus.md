@@ -1,6 +1,6 @@
 ---
 shop: globusonline.cz
-link: https://docs.google.com/spreadsheets/d/1U9byo2dDkdEoOYFmc4xYB7BGcjD5gCiJzpL--l7opfQ/edit?gid=1708153401#gid=1708153401
+link: [https://docs.google.com/spreadsheets/d/1U9byo2dDkdEoOYFmc4xYB7BGcjD5gCiJzpL--l7opfQ/edit?gid=1708153401#gid=1708153401](https://docs.google.com/spreadsheets/d/1U9byo2dDkdEoOYFmc4xYB7BGcjD5gCiJzpL--l7opfQ/edit?usp=sharing)
 rating: 2
 ---
 
