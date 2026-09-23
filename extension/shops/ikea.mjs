@@ -1,4 +1,4 @@
-import { registerShop } from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { Shop } from "./shop.mjs";
 
 function findProductLd() {
@@ -29,7 +29,9 @@ export class Ikea extends Shop {
     try {
       let originalPrice, currentPrice;
       if (data.offers["@type"] === "Offer") {
-        originalPrice = null;
+        // The JSON-LD Offer carries only the current price; a discount shows
+        // the pre-discount price as the price module's comparison price.
+        originalPrice = cleanPrice(".pipf-price-package__price-module-wrapper .pipcom-price-module__comparison-price");
         currentPrice = data.offers.price;
       } else if (data.offers["@type"] === "AggregateOffer") {
         originalPrice = data.offers.highPrice;
