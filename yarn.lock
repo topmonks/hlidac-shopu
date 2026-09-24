@@ -4857,14 +4857,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/tsbohemia@workspace:actors/tsbohemia"
   dependencies:
-    "@crawlee/basic": "npm:3.17.0"
+    "@crawlee/basic": "npm:3.18.1"
+    "@crawlee/core": "npm:3.18.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.4"
     "@hlidac-shopu/actors-common": "npm:3.2.6"
-    "@types/node": "npm:24.13.2"
+    "@types/node": "npm:24.13.6"
     apify: "npm:3.7.2"
-    apify-cli: "npm:1.6.2"
-    impit: "npm:0.14.2"
-    impit-linux-x64-gnu: "npm:0.14.2"
+    apify-cli: "npm:1.10.0"
+    impit: "npm:0.14.5"
+    impit-linux-x64-musl: "npm:0.14.5"
   languageName: unknown
   linkType: soft
 
@@ -15785,6 +15786,7 @@ __metadata:
 "impit-linux-x64-musl@npm:0.14.5":
   version: 0.14.5
   resolution: "impit-linux-x64-musl@npm:0.14.5"
+  checksum: 10c0/11f9ba0d20df8eab666a757597742f0a13d33225f83c74b694be6b41932a6d46571ce3ac04ea32bb5f549af7664c11a7034421766f2b4a4c1c3eaae1094c94aa
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
