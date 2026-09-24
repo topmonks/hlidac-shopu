@@ -7,15 +7,23 @@ const COUPON_MAX_WAIT_MS = 8000;
 const COUPON_SETTLE_MS = 3000;
 
 /**
- * Coupon price ("Cena s kódem") of datart's Bloomreach/Exponea discount banner, or null.
- * The banner is rendered client-side after page load, so poll for it. Exponea renders
- * other weblayers on every product page; once one of those is present and the discount
- * banner still hasn't shown up after a short settle, there is no coupon. Logged-in
- * VIP/employee shoppers get a personalized base price, so we never read it for them.
+ * Coupon price ("Cena s kódem") datart shows an anonymous shopper on a product page, or null.
+ *
+ * Datart has two coupon renderers. Voucher campaigns ("EXTRA CENA / Koupit s kódem") are
+ * server-rendered into `.discount-price-box .price-finally` — the matching Exponea
+ * weblayer (CategoryAutoDiscount) only runs on listing pages, so on the detail page the
+ * server markup is the only place the price exists. Other campaigns are rendered
+ * client-side by an Exponea discount banner after page load, so poll for that one.
+ * Exponea renders other weblayers on every product page; once one of those is present
+ * and the discount banner still hasn't shown up after a short settle, there is no coupon.
+ * Logged-in VIP/employee shoppers get a personalized base price, so we never read it for them.
  * @returns {Promise<number|null>}
  */
 async function exponeaCouponPrice() {
   if (document.querySelector(".ufo-icon__ico-uzivatel-vip, .ufo-icon__ico-uzivatel-hpt")) return null;
+  const serverText = document.querySelector(".product-price-discount.discount-price-box .price-finally")?.textContent;
+  const serverPrice = serverText ? cleanPriceText(serverText) : null;
+  if (serverPrice) return Number(serverPrice);
   const start = Date.now();
   let weblayerSeenAt = null;
   while (Date.now() - start < COUPON_MAX_WAIT_MS) {

@@ -1,14 +1,14 @@
+import { randomUUID } from "node:crypto";
 import { BasicCrawler, useState } from "@crawlee/basic";
+import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
-import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, log } from "apify";
 import { launchContext as launchCloakContext } from "cloakbrowser";
 import { Impit } from "impit";
-import { randomUUID } from "node:crypto";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -629,8 +629,12 @@ async function runCouponCanary(items, stats) {
             const parse = t => Number.parseInt(String(t ?? "").replace(/[^\d]/g, ""), 10);
             while (Date.now() - start < maxWaitMs) {
               const displayed = parse(document.querySelector(".product-detail .product-price")?.dataset.priceValue);
+              // Voucher campaigns ("EXTRA CENA") are server-rendered into `.price-finally`;
+              // their weblayer never runs on detail pages. Other campaigns render an
+              // Exponea banner client-side. Same two sources as the extension.
               const coupon = parse(
-                document.querySelector(".exponea-product-discount #unique-price-after-sale")?.textContent
+                document.querySelector(".product-price-discount.discount-price-box .price-finally")?.textContent ??
+                  document.querySelector(".exponea-product-discount #unique-price-after-sale")?.textContent
               );
               if (Number.isFinite(displayed) && Number.isFinite(coupon)) return { displayed, coupon };
               if (weblayerSeenAt === null && document.querySelector("[data-weblayer-id]")) weblayerSeenAt = Date.now();
@@ -671,8 +675,9 @@ async function runCouponCanary(items, stats) {
 
 /**
  * Coupon price from the detail page (server-rendered `.price-finally`), or null.
- * Legacy SK detail flow only — datart.cz no longer renders `.price-finally` (CZ prices
- * coupons via Exponea above), and datart.sk now redirects to nay.sk.
+ * Used by the legacy SK detail flow only (datart.sk now redirects to nay.sk). datart.cz
+ * still server-renders `.price-finally` for voucher campaigns, but the CZ listing flow
+ * prices those via Exponea above; the canary reads this selector in the browser.
  */
 function detailCouponPrice(document) {
   const el = document.querySelector(".product-price-discount.discount-price-box .price-finally");
