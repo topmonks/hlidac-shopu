@@ -70,6 +70,35 @@ function subcategoriesRequests(document, userData) {
 }
 
 /**
+ * Category pages are queued all at once from the "last page" link of the first page. Following only
+ * the "next page" link is a chain: one page failing all retries silently drops the rest of the
+ * category (hundreds of multipacks in /skupinova-baleni). The "next page" link is kept as a fallback.
+ * @param {Document} document
+ * @param {string} url - URL of the current category page
+ * @param {object} userData
+ */
+function pagesRequests(document, url, userData) {
+  const { country, category } = userData;
+  const pageUserData = Object.assign({}, userData, { topLevel: false });
+  const urls = new Set();
+
+  const firstPageUrl = url.replace(/\/p\d+$/, "");
+  const lastPage = Number(document.querySelector(".pagination .last-page")?.dataset?.page);
+  if (url === firstPageUrl && lastPage > 1) {
+    for (let page = 2; page <= lastPage; page++) {
+      urls.add(`${firstPageUrl}/p${page}`);
+    }
+  }
+
+  const nextPageButton = document.querySelector(".next");
+  if (nextPageButton) {
+    urls.add(completeUrl(country, nextPageButton.href, category));
+  }
+
+  return [...urls].map(url => ({ url, label: "category", userData: pageUserData }));
+}
+
+/**
  * @param {Element} prices
  * @returns {{currentPrice: number|null, originalPrice: number|null}}
  */
@@ -145,7 +174,7 @@ function defRouter({ stats }) {
      */
     async category({ request, body, crawler, log }) {
       const { url, userData } = request;
-      const { country, type, category, topLevel } = userData;
+      const { country, type, topLevel } = userData;
       const { document } = parseHTML(body.toString());
       const categoryProductsCountNode = document.querySelector(".item-count")?.value;
 
@@ -159,15 +188,10 @@ function defRouter({ stats }) {
         await crawler.addRequests(requests);
       }
 
-      const nextPageButton = document.querySelector(".next");
-      if (nextPageButton && type !== ActorType.Test) {
-        await crawler.requestQueue.addRequests([
-          {
-            url: completeUrl(country, nextPageButton.href, category),
-            label: "category",
-            userData: Object.assign({}, userData, { topLevel: false })
-          }
-        ]);
+      if (type !== ActorType.Test) {
+        const requests = pagesRequests(document, url, userData);
+        stats.add("pages", requests.length);
+        await crawler.addRequests(requests);
       }
       const extracted = extractProducts(document, country);
       // some cards (mostly multipacks) link to the homepage instead of the product, they have no product page to track
@@ -199,6 +223,7 @@ async function main() {
 
   const stats = await withPersistedStats({
     categories: 0,
+    pages: 0,
     items: 0,
     skipped: 0,
     failed: 0
