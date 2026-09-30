@@ -178,6 +178,10 @@ function defRouter({ stats }) {
       const { document } = parseHTML(body.toString());
       const categoryProductsCountNode = document.querySelector(".item-count")?.value;
 
+      // the site randomly serves existing category pages as empty ("Požadovaný obsah nenalezen."), retry them
+      if (!categoryProductsCountNode && document.querySelector(".alert-catalog-empty")) {
+        throw new Error(`Empty category page served for ${url}`);
+      }
       if (!categoryProductsCountNode) {
         return log.error(`No products count node found on ${url}.`); // It probably is not a typical category page
       }
