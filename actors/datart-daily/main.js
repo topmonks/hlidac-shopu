@@ -67,6 +67,31 @@ async function countAllProducts({ body, stats }) {
 //
 // Inspired by yfe404/turnstile-unblocker: two-phase solver/executor split.
 
+// Every request handler waits for an in-flight solve, so a browser call that never
+// settles stalls the whole crawl. Production runs did exactly that: Chromium's close()
+// occasionally never returned, and every request then timed out until the run was
+// migrated or hit its 24 h limit (#3606). These bounds make a solve always settle.
+const SOLVE_TIMEOUT_MS = 150_000;
+const BROWSER_CLOSE_TIMEOUT_MS = 15_000;
+
+/** Settle with `promise`, or reject once `ms` have passed. */
+function withTimeout(promise, ms, what) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${what} timed out after ${ms / 1000} s`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/** Close a cloakbrowser context; if Chromium hangs on close, abandon it and move on. */
+async function closeBrowser(ctx) {
+  try {
+    await withTimeout(ctx.close(), BROWSER_CLOSE_TIMEOUT_MS, "browser close");
+  } catch (e) {
+    log.warning(`Solver: ${e.message}, abandoning that browser`);
+  }
+}
+
 /**
  * Launch cloakbrowser, navigate to the catalog, poll until F5 issues TSPD
  * cookies, return the full cookie jar.
@@ -82,7 +107,7 @@ async function solveF5(rootUrl) {
     log.info(`Solver: F5 session solved (${Object.keys(cookies).length} cookies, TSPD+BIGipServer present)`);
     return cookies;
   } finally {
-    await ctx.close();
+    await closeBrowser(ctx);
   }
 }
 
@@ -669,7 +694,8 @@ async function runCouponCanary(items, stats) {
       }
     }
   } finally {
-    await ctx.close();
+    // A hung close here would block the Keboola upload that follows.
+    await closeBrowser(ctx);
   }
 }
 
@@ -1009,7 +1035,7 @@ export async function main() {
     solvePromise = (async () => {
       try {
         log.warning(`F5 re-solve triggered: ${reason}`);
-        f5Cookies = await solveF5(rootUrl);
+        f5Cookies = await withTimeout(solveF5(rootUrl), SOLVE_TIMEOUT_MS, "F5 re-solve");
       } finally {
         solvePromise = null;
       }
