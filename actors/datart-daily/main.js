@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { pathToFileURL } from "node:url";
 import { BasicCrawler, useState } from "@crawlee/basic";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
@@ -433,7 +434,7 @@ function autoVoucherPrice(product, price) {
  * Per-run coupon pricer. `priceProducts` sets currentPrice/discounted on each listing
  * product: the lowest applicable coupon price, else the displayed listing price.
  */
-function createCouponPricer({ companyId, executorId, stats }) {
+export function createCouponPricer({ companyId, executorId, stats }) {
   const cfg = { companyId, cookie: randomUUID() };
   /** @type {Map<string, Promise<ReturnType<typeof parseDiscountWeblayer>>>} */
   const weblayers = new Map();
@@ -535,6 +536,8 @@ function createCouponPricer({ companyId, executorId, stats }) {
       const shownPrices = [...shownByGroup.values()].flat();
       const best = shownPrices.length > 0 ? Math.min(...shownPrices) : null;
       if (best != null && best < product.basePrice) {
+        // A coupon discounts the displayed price, not the 30-day minimum (#3606).
+        product.originalPrice = product.basePrice;
         product.currentPrice = best;
         product.discounted = true;
         stats.inc("couponApplied");
@@ -785,7 +788,7 @@ function extractProductGridHtml(html) {
  *   category page (CATEGORY_NEXT slices have no breadcrumb).
  * @returns {Object[]}
  */
-function extractItems(document, rootUrl, country, categoryOverride) {
+export function extractItems(document, rootUrl, country, categoryOverride) {
   const categories = categoryOverride ?? breadcrumbCategories(document);
 
   return document
@@ -1334,4 +1337,6 @@ export async function main() {
   log.info("Finished.");
 }
 
-await Actor.main(main, { statusMessage: "DONE" });
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await Actor.main(main, { statusMessage: "DONE" });
+}
