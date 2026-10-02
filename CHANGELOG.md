@@ -1,6 +1,7 @@
 # Extension
 
 ## 2.4.12
+* Fixed Datart.cz coupon offers to use the pre-coupon price as originalPrice instead of the 30-day minimum (#3606)
 * Rewrote Tesco (nakup.itesco.cz) for the redesigned product page, including SPA navigation and promo original prices that are ignored when inconsistent with the per-piece price of weighed goods (#3601)
 * Fixed EVA.cz widget placement after the price panel was removed (#3600)
 * Fixed aaaauto.cz for the redesigned SPA site and its new detail URLs (#3614)

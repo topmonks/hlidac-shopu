@@ -62,11 +62,16 @@ export class Datart extends Shop {
     const refEl = elem.querySelector(".product-price-before .cut-price")?.cloneNode(true);
     refEl?.querySelectorAll(".sr-only, ufo-tooltip, .query-icon").forEach(n => n.remove());
     const reference30El = elem.querySelector(".product-price-before-30 .product-price-before-30-price");
-    const originalPrice = refEl
-      ? cleanPriceText(refEl.textContent)
-      : reference30El
-        ? cleanPriceText(reference30El.textContent)
-        : null;
+    // A coupon discounts the displayed price, not the 30-day minimum (#3606).
+    // Keep the existing reference-price selection for products without a coupon.
+    const originalPrice =
+      currentPrice < displayedPrice
+        ? displayedPrice
+        : refEl
+          ? cleanPriceText(refEl.textContent)
+          : reference30El
+            ? cleanPriceText(reference30El.textContent)
+            : null;
 
     const imageUrl = elem.querySelector("#lightgallery > .product-gallery-main div.item").dataset.src;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
