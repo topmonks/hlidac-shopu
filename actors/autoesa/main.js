@@ -1,4 +1,5 @@
-import { Dataset, HttpCrawler, createHttpRouter } from "@crawlee/http";
+import { pathToFileURL } from "node:url";
+import { HttpCrawler, createHttpRouter } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -7,7 +8,7 @@ import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { map, push, range, transduce } from "@thi.ng/transducers";
-import { Actor, LogLevel, log } from "apify";
+import { Actor, Dataset, LogLevel, log } from "apify";
 
 const BASE_URL = "https://www.autoesa.cz";
 const BASE_CATEGORY = "vsechna-auta";
@@ -21,6 +22,7 @@ function getPageUrl(page, type = ActorType.Full, category = BASE_CATEGORY) {
 
   switch (type) {
     case ActorType.Full:
+    case ActorType.Test:
       return root;
     default:
       throw new Error(`Unsupported actor type ${type}`);
@@ -53,15 +55,20 @@ function extractTotalPages(body) {
   return lastPage ? parseInt(lastPage.textContent.match(/\d+/)[0], 10) : 0;
 }
 
-function toProduct(document, url) {
+export function toProduct(document, url) {
   const { pathname } = new URL(url);
   const itemId = pathname.split("/").at(-1);
 
   const img = document.querySelector(".car-gallery a")?.href;
 
-  const item = document.querySelector(".initCarDetail.car-detail2");
-  const topLineLeft = item?.querySelector(".car_detail2__topline__left");
-  const topLineRight = item?.querySelector(".car_detail2__topline__wrapper");
+  // The title, icons and price boxes live in `.car_detail2__head`, a sibling of
+  // `.initCarDetail.car-detail2` (which only wraps the lower sections of the page).
+  const topLine = document.querySelector(".car_detail2__topline");
+  if (!topLine) {
+    throw new Error("Car detail layout not found");
+  }
+  const topLineLeft = topLine.querySelector(".car_detail2__topline__left");
+  const topLineRight = topLine.querySelector(".car_detail2__topline__wrapper");
 
   const itemName = topLineLeft?.querySelector(".car_detail2__h1 h1")?.innerText.trim();
 
@@ -71,9 +78,7 @@ function toProduct(document, url) {
   const range = removeHtmlEntities(features?.querySelector(".icon_range")?.innerHTML.trim() || "");
   const power = removeHtmlEntities(features?.querySelector(".icon_power")?.innerHTML.trim() || "");
 
-  const discount = topLineRight?.querySelector(".show-more-discount span")?.innerText.trim();
-  const discountedPrice = discount ? extractPrice(discount) : undefined;
-  const pricesElements = topLineRight?.querySelectorAll(".show-more-prices .show-more-price");
+  const pricesElements = topLineRight?.querySelectorAll(".show-more-prices .show-more-price") ?? [];
   const prices = [];
   for (const price of pricesElements) {
     const value = price.querySelector(".price_span")?.innerHTML || price.querySelector("strong")?.innerText;
@@ -100,7 +105,7 @@ function toProduct(document, url) {
     currentPrice,
     originalPrice,
     currency: "CZK",
-    discounted: !!discountedPrice,
+    discounted: originalPrice ? currentPrice < originalPrice : false,
     year,
     km: range,
     fuelType,
@@ -108,42 +113,52 @@ function toProduct(document, url) {
   };
 }
 
+async function enqueueDetails(crawler, body) {
+  const snippet = extractSnippet(body.toString(), "snippet--carList");
+  const { document } = parseHTML(snippet);
+  const requests = transduce(
+    map(item => {
+      const url = new URL(item.getAttribute("href"), BASE_URL).href;
+      return { url, label: "detail" };
+    }),
+    push(),
+    document.querySelectorAll(".car_item")
+  );
+  await crawler.addRequests(requests);
+}
+
 function defRouter({ stats, type }) {
   return createHttpRouter({
     /** @param {HttpCrawlingContext} ctx */
-    async start({ crawler, body }) {
-      const pages = extractTotalPages(body.toString());
+    async start({ crawler, body, request, session }) {
+      const pages = type === ActorType.Test ? 1 : extractTotalPages(body.toString());
+      // The listing is served by several backends, each with its own "relevance" order, so pages
+      // fetched from mixed backends overlap and skip cars. Keep the start request's SERVERID
+      // affinity cookie on every page; a request header cookie overrides the session's one.
+      const cookie = session?.getCookieString(request.url) ?? "";
       const requests = transduce(
         map(pageNumber => ({
           url: getPageUrl(pageNumber, type, BASE_CATEGORY),
-          headers: { "x-requested-with": "XMLHttpRequest" },
+          headers: { "x-requested-with": "XMLHttpRequest", ...(cookie ? { cookie } : {}) },
           label: "page",
           userData: { pageNumber }
         })),
         push(),
-        range(1, pages + 1)
+        range(2, pages + 1)
       );
       await crawler.addRequests(requests);
+      // The start request is page 1 itself; enqueueing its URL again would be deduplicated.
+      await enqueueDetails(crawler, body);
     },
     /** @param {HttpCrawlingContext} ctx */
     async page({ crawler, body }) {
-      const snippet = extractSnippet(body.toString(), "snippet--carList");
-      const { document } = parseHTML(snippet);
-      const requests = transduce(
-        map(item => {
-          const url = new URL(item.getAttribute("href"), BASE_URL).href;
-          return { url, label: "detail" };
-        }),
-        push(),
-        document.querySelectorAll(".car_item")
-      );
-      await crawler.addRequests(requests);
+      await enqueueDetails(crawler, body);
     },
     /** @param {HttpCrawlingContext} ctx */
     async detail({ request, body }) {
       const { document } = parseHTML(body.toString());
-      stats.inc("products");
       await Dataset.pushData(toProduct(document, request.url));
+      stats.inc("products");
     }
   });
 }
@@ -199,4 +214,6 @@ async function main() {
   await uploadToKeboola("autoesa_cz");
 }
 
-await Actor.main(main, { statusMessage: "DONE" });
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await Actor.main(main, { statusMessage: "DONE" });
+}
