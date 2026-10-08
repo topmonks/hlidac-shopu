@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import test from "ava";
-import { toProduct } from "./main.js";
+import { toProduct } from "./index.js";
 
 async function fixture(name) {
   const html = await readFile(new URL(`./fixtures/${name}.html`, import.meta.url), "utf8");
