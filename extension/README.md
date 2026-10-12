@@ -94,3 +94,16 @@ yarn start:firefox
 ```
 
 Have fun!
+
+## Test builds
+
+Fixes are tested on a pre-release build before they go to the stores. Once a batch of fixes is pushed
+to trunk, publish a test build and notify the issues in the batch:
+
+```bash
+scripts/test-build.sh 3608 3614
+```
+
+The build is published as the GitHub pre-release
+[test-build](https://github.com/topmonks/hlidac-shopu/releases/tag/test-build) (each run replaces it), and its notes
+explain how to install it in Chrome.
