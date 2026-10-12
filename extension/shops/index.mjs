@@ -3,6 +3,7 @@ export * from "./aaaauto.mjs";
 export * from "./albert.mjs";
 export * from "./allegro.mjs";
 export * from "./alza.mjs";
+export * from "./autoesa.mjs";
 export * from "./benu.mjs";
 export * from "./billa.mjs";
 export * from "./datart.mjs";
