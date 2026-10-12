@@ -63,9 +63,13 @@ export class AAAAuto extends AsyncShop {
     const imageUrl =
       (Array.isArray(image) ? image[0] : image) ?? document.querySelector("meta[property='og:image']")?.content;
 
-    // The second price on the page ("Akční cena" / secondary) is the financed price, not a
-    // former price, and no pre-discount price is published - so originalPrice stays null.
-    return { itemId, title, currentPrice, originalPrice: null, imageUrl };
+    // A discounted car ("Zlevněno o …") crosses out its former cash price next to the main
+    // price; the aaaauto-daily actor stores the same number. The "Akční cena" in the side
+    // box is the financed price, not a former price.
+    const crossed = document.querySelector(".detail__header .detail-price-block__price--crossed");
+    const originalPrice = crossed ? cleanPriceText(crossed.textContent) : null;
+
+    return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
 }
 
