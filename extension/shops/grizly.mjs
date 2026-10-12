@@ -25,11 +25,15 @@ export class Grizly extends Shop {
       document.querySelector(".pd__data-variants-select-price");
     if (!priceBlock) return;
     const couponPrice = cleanPrice(priceBlock.querySelector(".pd__data-variants-select-price-code"));
-    const oldPrice = cleanPrice(priceBlock.querySelector(".pd__data-variants-select-price-old"));
+    // Discounts cross out the former price as `-old` (multipacks) or `.common` (clearance).
+    const oldPrice = cleanPrice(priceBlock.querySelector(".pd__data-variants-select-price-old, .pricevat.common"));
     const regularPrice = cleanPrice(priceBlock.querySelector(".regular"));
 
+    // Same rule as the grizly actor: without a crossed-out price, only a coupon makes the
+    // regular price an original price, and an original price must exceed the current one.
     const currentPrice = couponPrice ?? regularPrice;
-    const originalPrice = oldPrice ?? regularPrice;
+    const formerPrice = oldPrice ?? (couponPrice ? regularPrice : null);
+    const originalPrice = Number(formerPrice) > Number(currentPrice) ? formerPrice : null;
     const imageUrl = document.querySelector("[property='og:image']").content;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
