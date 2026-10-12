@@ -3,7 +3,7 @@ import { AsyncShop } from "./shop.mjs";
 
 // Tesco's redesigned product page (React SPA) has no stable CSS classes, but
 // the buy box and title carry data-auto hooks and the page ships a JSON-LD
-// Product with the id, name, price and image.
+// Product with the id, name and image.
 const buyBoxSelector = '[data-auto="pdp-buy-box"]';
 
 function findProductLd() {
@@ -18,7 +18,7 @@ function findProductLd() {
   return null;
 }
 
-// Promotions show "-50%, předtím 39,90 Kč". For weighed goods the JSON-LD
+// Promotions show "-50%, předtím 39,90 Kč". For weighed goods the buy box
 // price is per piece while the promo line is per kg, so accept the "before"
 // price only when it is consistent with the current price and the percentage.
 function originalPrice(root, currentPrice) {
@@ -55,8 +55,10 @@ export class Tesco extends AsyncShop {
     let root = title ?? buyBox;
     while (root.parentElement && !root.contains(buyBox)) root = root.parentElement;
 
-    const offer = Array.isArray(ld.offers) ? ld.offers[0] : ld.offers;
-    const currentPrice = offer?.price != null ? Number(offer.price) : null;
+    // Read the price from the buy box: during a Clubcard promotion the JSON-LD
+    // offer carries the Clubcard price, while the buy box shows the regular one.
+    const currentPrice =
+      Number(cleanPriceText(buyBox.querySelector('[class*="product-tile-price__text"]')?.textContent)) || null;
     const image = Array.isArray(ld.image) ? ld.image[0] : ld.image;
     return {
       itemId,
