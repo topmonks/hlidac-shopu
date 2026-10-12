@@ -79,11 +79,15 @@ function getDetailItemInfo() {
   const couponPrice = cleanPrice(
     ".promo-action-prices .promo-action-prices__row--type-discountcode .promo-action-prices__price"
   );
-  const mainPrice = cleanPrice(".price-box__price") ?? cleanPrice(".ads-pb__price-value");
+  // `.ads-pb__original-price` is not always a former price: the instalment box next to the
+  // main one shows "od 276,- měsíčně" with it, and a "Super cena" shows "Ušetříte 800,-".
+  // Only the struck-through variant in the main price box is the crossed-out price.
+  const mainBox = ".js-price-detail__main-price-box-wrapper";
+  const mainPrice = cleanPrice(".price-box__price") ?? cleanPrice(`${mainBox} .ads-pb__price-value`);
   const comparePrice =
     cleanPrice(".price-box__compare-price") ??
     cleanPrice(".price-box--super-price .price-box__body") ??
-    cleanPrice(".price-detail .ads-pb__original-price");
+    cleanPrice(`${mainBox} .ads-pb__original-price--strike`);
   const currentPrice = couponPrice ?? mainPrice;
   const originalPrice = couponPrice ? (comparePrice ?? mainPrice) : comparePrice;
   const imageUrl = document.querySelector("#detailPicture swiper-slide img")?.src;
