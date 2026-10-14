@@ -29,7 +29,7 @@ const content = ({ url, name, imageUrl }) => html`<\!DOCTYPE html>
 async function getMetadata(origin, itemUrl, itemId) {
   const resp = await s3.getObject({
     Bucket: "data.hlidacshopu.cz",
-    Key: `items/${origin}/${itemId}/meta.json`
+    Key: `items/${origin}/${itemId ?? itemUrl}/meta.json`
   });
   if (resp.$metadata.httpStatusCode === 200) {
     const content = await resp.Body.transformToString();
