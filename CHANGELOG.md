@@ -1,7 +1,18 @@
 # Extension
 
-## 2.4.12
+## 2.4.13
+* Added Auto ESA (autoesa.cz) (#3638)
+* Added the TSBohemia.cz content script; the widget appears once the new scraper has price data
+* Fixed Alza.cz originalPrice picking up the instalment or savings amount instead of the struck-through price (#3608)
+* Fixed aaaauto.cz originalPrice to come from the crossed-out price (#3614)
+* Fixed Grizly.cz originalPrice for clearance and undiscounted products (#3620)
+* Fixed Tesco showing the Clubcard price as the current price (#3601)
+* Fixed Pilulka.cz to use the promo price as the current price (#3625)
+* Fixed Datart.cz coupon price on product pages, now read from the server-rendered price box (#3631, #2882)
 * Fixed Datart.cz coupon offers to use the pre-coupon price as originalPrice instead of the 30-day minimum (#3606)
+* Fixed the Firefox release job timing out while waiting for AMO approval
+
+## 2.4.12
 * Rewrote Tesco (nakup.itesco.cz) for the redesigned product page, including SPA navigation and promo original prices that are ignored when inconsistent with the per-piece price of weighed goods (#3601)
 * Fixed EVA.cz widget placement after the price panel was removed (#3600)
 * Fixed aaaauto.cz for the redesigned SPA site and its new detail URLs (#3614)
