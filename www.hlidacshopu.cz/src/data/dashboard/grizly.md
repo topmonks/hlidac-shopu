@@ -1,5 +1,5 @@
 ---
 shop: grizly.cz
-link: https://docs.google.com/spreadsheets/d/1UQafXQ4DeQ9PMuLDF59CdGmDQ-qSfH9LMq6ON6h_wsU
-rating: 2
+link: https://docs.google.com/spreadsheets/d/1WnDSpm3Ifwk24DmKyMJp5xMzopv-bExjxXPawkvRAsU/edit?gid=529507243#gid=529507243
+rating: 1
 ---
