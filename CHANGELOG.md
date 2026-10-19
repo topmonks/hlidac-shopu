@@ -1,5 +1,8 @@
 # Extension
 
+## 2.4.14
+* Fixed Tchibo.cz and Tchibo.sk to show the price history of the selected colour and size (`article_id`) instead of the whole product (#3642)
+
 ## 2.4.13
 * Added Auto ESA (autoesa.cz) (#3638)
 * Added the TSBohemia.cz content script; the widget appears once the new scraper has price data
