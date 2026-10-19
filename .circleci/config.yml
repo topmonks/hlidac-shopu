@@ -402,6 +402,8 @@ workflows:
             branches:
               ignore: trunk
       - provision:
+          # Queue concurrent trunk deploys; otherwise the second fails on the Pulumi stack lock.
+          serial-group: << pipeline.project.slug >>/provision
           requires:
             - test-api
             - test-lib
