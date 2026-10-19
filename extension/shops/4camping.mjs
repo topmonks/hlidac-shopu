@@ -12,6 +12,16 @@ function discountedFrom(originalPrice, currentPrice) {
   return Number(originalPrice) > Number(currentPrice) ? originalPrice : null;
 }
 
+// coupon price ("se slevovým kódem") is the current price, the crossed-out price stays the original one
+// (the pre-coupon price when there is none), same as the 4camping actor; without a coupon the voucher block shows 0
+function prices({ price, oldPrice, couponPrice }) {
+  const originalPrice = discountedFrom(oldPrice, price);
+  if (Number(couponPrice) > 0 && Number(couponPrice) < Number(price)) {
+    return { currentPrice: couponPrice, originalPrice: originalPrice ?? price };
+  }
+  return { currentPrice: price, originalPrice };
+}
+
 // inline `var data = {...}` holds all variants of the product
 function productDetailData() {
   const script = Array.from(document.querySelectorAll("script"), x => x.textContent).find(x =>
@@ -47,15 +57,24 @@ export class ForCamping extends AsyncShop {
         // same id as 4camping uses in its analytics for a selected variant
         itemId: `${product.id}-${variant.id}`,
         title: variant.productNameWithVariant,
-        currentPrice: variant.price,
-        originalPrice: discountedFrom(variant.priceOld, variant.price),
+        ...prices({
+          price: variant.price,
+          oldPrice: variant.priceOld,
+          // HTML like `4&nbsp;049&nbsp;<span class="currency">Kč</span>`
+          couponPrice: cleanPriceText(
+            variant.voucher?.priceWithVoucherDiscountFormatted?.replace(/<[^>]*>|&nbsp;|\.(?=\d{3}\b)/g, "") ?? ""
+          )
+        }),
         imageUrl: variant.photoFilename ?? product.photoFile
       };
     }
     const itemId = product.id;
     const title = product.name;
-    const currentPrice = cleanPrice("#priceSellingVat");
-    const originalPrice = discountedFrom(cleanPrice("#productOldPrice"), currentPrice);
+    const { currentPrice, originalPrice } = prices({
+      price: cleanPrice("#priceSellingVat"),
+      oldPrice: cleanPrice("#productOldPrice"),
+      couponPrice: cleanPrice("#priceWithDiscount")
+    });
     const imageUrl = product.photoFile;
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
