@@ -4,4 +4,4 @@ link: https://docs.google.com/spreadsheets/d/1WnDSpm3Ifwk24DmKyMJp5xMzopv-bExjxX
 rating: 1
 ---
 
-2026/10: Většina produktů ve slevě má špatně vyčíslenou slevu. Typicky jde o produkty označené jako zlevněné s kódem, které se však za tuto cenu reálně v posledních 30 dnech prodávaly. Akční cena není ničím výjimečná, za stejnou částku se produkt prodával už předtím většinu času.
+2026/10: U většiny zlevněných produktů je sleva vyčíslena špatně. Typicky jde o produkty zlevněné pomocí kódu, které se však za tuto cenu reálně v posledních 30 dnech prodávaly. Akční cena tak není ničím výjimečná, protože za stejnou částku se produkt prodával už předtím.
