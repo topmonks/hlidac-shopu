@@ -41,6 +41,23 @@ function discountedFrom(originalPrice, currentPrice) {
 }
 
 /**
+ * Coupon price ("se slevovým kódem") is the current price, the crossed-out price stays the original one
+ * (the pre-coupon price when there is none). Without a coupon the voucher block shows 0.
+ * @param {Object} params
+ * @param {number} params.price
+ * @param {number | null} params.oldPrice
+ * @param {number | null} params.couponPrice
+ * @returns {{currentPrice: number, originalPrice: number | null}}
+ */
+function prices({ price, oldPrice, couponPrice }) {
+  const originalPrice = discountedFrom(oldPrice, price);
+  if (couponPrice > 0 && couponPrice < price) {
+    return { currentPrice: couponPrice, originalPrice: originalPrice ?? price };
+  }
+  return { currentPrice: price, originalPrice };
+}
+
+/**
  * Inline `var data = {...}` on the product detail page holds all variants
  * @param {Document} document
  * @returns {Object | null}
@@ -119,11 +136,11 @@ function productsFromDetail(document, url, country) {
       itemUrl: productUrl,
       itemName: product.name,
       img: product.photoFile,
-      currentPrice: product.unitPriceWithVat,
-      originalPrice: discountedFrom(
-        parsePrice(document.querySelector("#productOldPrice del")?.textContent),
-        product.unitPriceWithVat
-      ),
+      ...prices({
+        price: product.unitPriceWithVat,
+        oldPrice: parsePrice(document.querySelector("#productOldPrice del")?.textContent),
+        couponPrice: parsePrice(document.querySelector("#priceWithDiscount")?.textContent)
+      }),
       category,
       country
     })
@@ -137,8 +154,12 @@ function productsFromDetail(document, url, country) {
         itemUrl: variantItemUrl(variant.url, productUrl),
         itemName: variant.productNameWithVariant,
         img: variant.photoFilename ?? product.photoFile,
-        currentPrice: variant.price,
-        originalPrice: discountedFrom(variant.priceOld, variant.price),
+        ...prices({
+          price: variant.price,
+          oldPrice: variant.priceOld,
+          // HTML like `4&nbsp;049&nbsp;<span class="currency">Kč</span>`
+          couponPrice: parsePrice(variant.voucher?.priceWithVoucherDiscountFormatted?.replace(/<[^>]*>|&nbsp;/g, ""))
+        }),
         category,
         country
       })
