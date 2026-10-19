@@ -41,7 +41,7 @@ function startUrl(country) {
  * @param {number} pagination.pageSize Default 500
  * @returns {RequestOptions}
  */
-function getCategoryProducts(country, category, { pageIndex, pageSize } = { pageIndex: 0, pageSize: 500 }) {
+export function getCategoryProducts(country, category, { pageIndex, pageSize } = { pageIndex: 0, pageSize: 500 }) {
   const locale = locales.get(country);
   const payload = {
     "searchParameters": { "input": category, "type": "CATEGORY" },
@@ -57,6 +57,8 @@ function getCategoryProducts(country, category, { pageIndex, pageSize } = { page
         },
         "filterConfig": { "max-num-filters": 5 },
         "window": { "size": pageSize, "offset": pageIndex * pageSize },
+        // Without this the API lists at most 6 variants (sizes, colours) per product group
+        "allVariants": true,
         "forceFilterCalculation": true
       }
     ]
@@ -105,7 +107,11 @@ export function readTopCategories(document) {
   return categories;
 }
 
-function toProduct({ product }) {
+/**
+ * @param {object} product product or variant payload from the search API
+ * @param {string} category variants have no categoryPath, they inherit the group's
+ */
+function toProduct(product, category) {
   const isIkeaFamily = product.salesPrice.tag === "FAMILY_PRICE";
   const currentPrice = cleanPrice(product.salesPrice.current?.wholeNumber);
   const originalPrice = cleanPrice(product.salesPrice?.previous?.wholeNumber);
@@ -120,13 +126,27 @@ function toProduct({ product }) {
     currentPrice: isIkeaFamily ? originalPrice : currentPrice,
     originalPrice: isIkeaFamily ? null : originalPrice,
     currency: product.salesPrice.currencyCode,
-    category: product.categoryPath?.map(x => x.name)?.join(" > ") ?? "Nezařazeno",
+    category,
     discounted: Boolean(product.salesPrice?.previous),
     sale: null, // legacy column
     inStock: product.onlineSellable,
     rating: product.ratingValue,
     numberOfReviews: product.ratingCount
   };
+}
+
+/**
+ * The search API groups the sizes and colours of a product under
+ * `gprDescription.variants`. Each variant has its own item number, URL and price,
+ * so it is emitted as a separate product next to the group head.
+ * @param {object} item search API result item
+ * @returns {object[]}
+ */
+export function toProducts({ product }) {
+  if (!product) return [];
+  const category = product.categoryPath?.map(x => x.name)?.join(" > ") ?? "Nezařazeno";
+  const variants = product.gprDescription?.variants ?? [];
+  return [product, ...variants].map(x => toProduct(x, category));
 }
 
 /**
@@ -156,14 +176,14 @@ function defRouter({ country, stats, rawData }) {
 
       // The API response mixes PRODUCT items with "breakouts" like PLANNER and
       // LOGIN_REMINDER (see getCategoryProducts types.breakouts). Only PRODUCT
-      // items have a `product` payload that toProduct can consume.
-      const productItems = json.results[0].items.filter(item => item.product);
+      // items have a `product` payload that toProducts can consume.
+      const products = json.results[0].items.flatMap(toProducts);
 
-      // We push all data at once to avoid hitting the Apify API rate limit
-      // Note: There is a size limit of 5MB, but these arrays seem to always be <=500 items
-      stats.add("items", productItems.length);
+      // We push all data at once to avoid hitting the Apify API rate limit.
+      // Dataset.pushData splits the array into chunks below the API payload limit.
+      stats.add("items", products.length);
       await rawData.pushData(json.results[0].items);
-      await Dataset.pushData(productItems.map(toProduct));
+      await Dataset.pushData(products);
     }
   });
 }
