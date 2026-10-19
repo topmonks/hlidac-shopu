@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import { HttpCrawler, useState } from "@crawlee/http";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
@@ -121,21 +122,28 @@ function jsonNavigationRequests({ json, country }) {
   return requests;
 }
 
-function productsFromJsonListing({ json, handledIdsSet, currency, country, userData: { category } }) {
+/**
+ * The listing has one entry per article (colour, size) in stock, all sharing the product `id`.
+ * Every article is a separate item keyed by its `article_id`, the last value of `itemUrl`.
+ */
+export function productsFromJsonListing({ json, handledIdsSet, currency, country, userData: { category } }) {
   const products = [];
   const { metadata, items } = json;
   const numProductsScraped = items.length;
   const baseUrl = `https://www.tchibo.${country}`;
   for (const item of items) {
-    if (handledIdsSet[item.id]) continue;
-    handledIdsSet[item.id] = true;
     const { id, imageUrlSmallSize, price, productViewUrl, title } = item;
     const itemUrl = `${baseUrl}/${productViewUrl}`;
+    const articleId = new URL(itemUrl).searchParams.get("article_id") ?? String(id);
+    if (handledIdsSet[articleId]) continue;
+    handledIdsSet[articleId] = true;
     const result = {
-      itemId: id,
+      itemId: articleId,
       itemName: title,
       itemUrl,
-      slug: itemSlug(itemUrl),
+      // set here, not by `itemSlug`: the Apify build installs the published @hlidac-shopu/lib,
+      // which keys Tchibo by product
+      slug: articleId,
       img: `${baseUrl}${imageUrlSmallSize}`,
       // NOTE: `249,00Kč` is represented as 24900
       originalPrice: null,
@@ -474,4 +482,6 @@ async function main() {
   log.info("Finished.");
 }
 
-await Actor.main(main);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await Actor.main(main);
+}
