@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import test from "ava";
-import { productsFromJsonListing } from "./main.js";
+import { productsFromJsonListing } from "./index.js";
 
 // `/bydleni/loznice` listing entries of the two products from #3642
 const json = JSON.parse(await readFile(new URL("./fixtures/category-products.json", import.meta.url), "utf8"));
