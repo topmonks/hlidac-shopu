@@ -18,9 +18,25 @@ function findProductLd() {
   return null;
 }
 
-// Promotions show "-50%, předtím 39,90 Kč". For weighed goods the buy box
-// price is per piece while the promo line is per kg, so accept the "before"
-// price only when it is consistent with the current price and the percentage.
+// Catch-weight products (meat, fish) are sold in pieces of a chosen weight, but
+// the history keeps their price per kg. The weight picker is shown only when
+// there is more than one weight; the discover JSON names the type either way,
+// though it can be stale after SPA navigation.
+function isCatchWeight(itemId) {
+  if (document.getElementById(`catch-weight-${itemId}`)) return true;
+  for (const script of document.querySelectorAll('script[type="application/discover+json"]')) {
+    try {
+      const cache = JSON.parse(script.textContent)?.["mfe-orchestrator"]?.props?.apolloCache;
+      const product = cache?.[`ProductType:${itemId}`];
+      if (product) return product.productType === "CatchWeightProducts";
+    } catch {}
+  }
+  return false;
+}
+
+// Promotions show "-50%, předtím 39,90 Kč". The promo line may be per kg while
+// the current price is not, so accept the "before" price only when it is
+// consistent with the current price and the percentage.
 function originalPrice(root, currentPrice) {
   const promo = Array.from(root.querySelectorAll("p")).find(p => /p[řr]edt[íý]m/.test(p.textContent));
   const match = promo?.textContent.match(/-(\d+)\s*%.*?p[řr]edt[íý]m\s*([\d\s]+(?:,\d+)?)/);
@@ -57,8 +73,12 @@ export class Tesco extends AsyncShop {
 
     // Read the price from the buy box: during a Clubcard promotion the JSON-LD
     // offer carries the Clubcard price, while the buy box shows the regular one.
-    const currentPrice =
-      Number(cleanPriceText(buyBox.querySelector('[class*="product-tile-price__text"]')?.textContent)) || null;
+    const unitPrice = buyBox.querySelector('[class*="product-tile-unit-price__subtext"]')?.textContent;
+    const priceText =
+      isCatchWeight(itemId) && unitPrice?.includes("/kg")
+        ? unitPrice
+        : buyBox.querySelector('[class*="product-tile-price__text"]')?.textContent;
+    const currentPrice = Number(cleanPriceText(priceText)) || null;
     const image = Array.isArray(ld.image) ? ld.image[0] : ld.image;
     return {
       itemId,
