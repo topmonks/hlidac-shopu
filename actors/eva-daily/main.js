@@ -78,7 +78,7 @@ async function main() {
   const {
     development = process.env.TEST,
     maxRequestRetries = 3,
-    proxyGroups = ["CZECH_LUMINATI"],
+    proxyGroups = ["RESIDENTIAL"],
     type = ActorType.Full
   } = input;
 
@@ -92,7 +92,8 @@ async function main() {
 
   log.info("ACTOR - setUp crawler");
   const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups
+    groups: proxyGroups,
+    countryCode: "CZ",
     // useApifyProxy: !development
   });
 
