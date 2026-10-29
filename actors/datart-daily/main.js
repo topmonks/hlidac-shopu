@@ -780,6 +780,23 @@ function extractProductGridHtml(html) {
 }
 
 /**
+ * Datart's numeric product id, the key `itemId` history is stored under. It used to be
+ * read only from the compare button (`div.item-link-compare button[data-target-add="id=…"]`);
+ * when that button went missing, every product box threw and the whole run produced
+ * 0 items (#3649). Read `id=` from any `data-target-add` in the box instead, and return
+ * null rather than throwing so one box can't take down its page.
+ * @param {Element} productEl
+ * @returns {string|null}
+ */
+function listingItemId(productEl) {
+  for (const el of productEl.querySelectorAll("[data-target-add]")) {
+    const id = new URLSearchParams(el.getAttribute("data-target-add")).get("id");
+    if (id) return id;
+  }
+  return null;
+}
+
+/**
  *
  * @param {Document} document
  * @param {string} rootUrl
@@ -834,14 +851,8 @@ export function extractItems(document, rootUrl, country, categoryOverride) {
         matchCode: productEl.getAttribute("data-product-match")
       };
 
+      result.itemId = listingItemId(productEl);
       const productBoxBuyInfoCart = productEl.querySelector("div.product-box-buy-info > div.product-box-buy-info-cart");
-      const itemCartDataTarget = productBoxBuyInfoCart
-        .querySelector("div.item-link-compare button")
-        .getAttribute("data-target-add");
-      if (itemCartDataTarget) {
-        const searchParams = new URLSearchParams(itemCartDataTarget);
-        result.itemId = searchParams.get("id");
-      }
       const currentPrice = parseFloat(
         productBoxBuyInfoCart
           .querySelector("div.item-price div.actual")
@@ -993,6 +1004,7 @@ export async function main() {
     urlDuplicity: 0,
     itemsDuplicity: 0,
     itemsChanged: 0,
+    missingItemId: 0,
     failed: 0,
     blocked: 0,
     sliceFallback: 0,
@@ -1219,7 +1231,14 @@ export async function main() {
       if (request.userData.label === Labels.CATEGORY || request.userData.label === Labels.CATEGORY_NEXT) {
         const products = extractItems(document, rootUrl, country, categoryOverride);
         const newProducts = [];
+        const withoutId = products.filter(product => !product.itemId).length;
+        if (withoutId > 0) {
+          // Without an id the item can't be deduplicated or joined to its history; skip it.
+          stats.add("missingItemId", withoutId);
+          log.warning(`${request.url}: ${withoutId}/${products.length} products have no itemId, skipping them`);
+        }
         for (const product of products) {
+          if (!product.itemId) continue;
           if (processedIds[product.itemId]) {
             stats.inc("itemsDuplicity");
             log.debug(`ID ${product.itemId} already saved`);
