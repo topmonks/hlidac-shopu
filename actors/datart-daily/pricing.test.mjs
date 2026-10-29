@@ -162,3 +162,27 @@ for (const scenario of ["ordinary discount", "undiscounted", "ineffective coupon
     t.is(products[0].discounted, scenario === "ordinary discount");
   });
 }
+
+test("listing itemId survives a missing compare button (#3649)", t => {
+  const extract = mutate => {
+    const { document } = parseHTML(listingHtml);
+    mutate(document);
+    return extractItems(document, "https://www.datart.cz", "CZ");
+  };
+  t.is(extract(() => {})[0].itemId, "2001189");
+  // compare button gone, id still carried by another add-to-* button in the box
+  const moved = extract(document => {
+    const compare = document.querySelector("div.item-link-compare");
+    compare.insertAdjacentHTML(
+      "afterend",
+      '<div class="item-link-wishlist"><button data-target-add="id=2001189"></button></div>'
+    );
+    compare.remove();
+  });
+  t.is(moved[0].itemId, "2001189");
+  // no id anywhere: the box still parses instead of throwing for the whole page
+  const missing = extract(document => document.querySelector("div.item-link-compare").remove());
+  t.is(missing.length, 1);
+  t.is(missing[0].itemId, null);
+  t.is(missing[0].currentPrice, 32990);
+});
