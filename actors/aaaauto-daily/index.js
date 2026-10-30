@@ -2,12 +2,9 @@ import { HttpCrawler } from "@crawlee/http";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, LogLevel, log } from "apify";
-
-/** @typedef {import("linkedom/types/interface/document").Document} Document */
 
 /** @enum {string} */
 export const Label = {
@@ -21,10 +18,9 @@ export const Country = {
   SK: "SK"
 };
 
-const categoryByCountry = new Map([
-  [Country.CZ, "ojete-vozy"],
-  [Country.SK, "ojazdene-vozidla"]
-]);
+const PAGE_SIZE = 35;
+// The listing HTML puts this placeholder into photos.default for cars without photos, the API leaves it empty.
+const NO_PHOTO_IMG = "https://static.aaaauto.eu/img/nophoto/nophoto-big.jpg";
 
 /**
  * @param {Country} country
@@ -32,15 +28,6 @@ const categoryByCountry = new Map([
  */
 function originFor(country) {
   return `https://www.aaaauto.${country.toLocaleLowerCase()}`;
-}
-
-/**
- * @param {ActorType} type
- * @param {Country} country
- * @returns {string}
- */
-export function getRootUrl(type = ActorType.Full, country = Country.CZ) {
-  return getBaseUrl(type, country, 1);
 }
 
 /**
@@ -56,29 +43,38 @@ export function getBaseUrl(type = ActorType.Full, country = Country.CZ, page = 1
   if (type === ActorType.BlackFriday) {
     throw new Error("AAAauto: Black Friday URL is unknown after the site redesign - not yet supported (see #3580)");
   }
-  const category = categoryByCountry.get(country);
-  return `${originFor(country)}/${category}/?page=${page}`;
+  const params = new URLSearchParams({
+    withEquipCat: "1",
+    responseFormat: "list",
+    withCount: "1",
+    limit: String(PAGE_SIZE),
+    skip: String((page - 1) * PAGE_SIZE),
+    sort: "17",
+    withDetails: "1"
+  });
+  return `${originFor(country)}/api/cars?${params}`;
 }
 
 /**
- * aaaauto.cz/.sk was rebuilt as an Angular SSR app: the old `cars.php` endpoint 404s and the
- * catalog now ships as embedded JSON in a `<script type="application/json">` TransferState blob.
- * Pull the `car-list` message out of it - no browser, no DOM scraping of car cards.
- * @param {Document} document
- * @returns {{ items: object[], pagination: { totalPages: number } }|null}
+ * The listing HTML sits behind the Anubis bot wall, the `/api/cars` endpoint its pagination calls
+ * does not. Its `message` has the same shape as the `car-list` payload embedded in the HTML.
+ * @param {ActorType} type
+ * @param {Country} country
+ * @param {number} page
+ * @param {object} userData
  */
-export function extractCarList(document) {
-  const scripts = document.querySelectorAll('script[type="application/json"]');
-  for (const script of scripts) {
-    const text = script.textContent;
-    if (!text || !text.includes('"car-list"')) continue;
-    try {
-      return JSON.parse(text)["car-list"]?.message ?? null;
-    } catch {
-      return null;
-    }
-  }
-  return null;
+function listingRequest(type, country, page, userData) {
+  return {
+    url: getBaseUrl(type, country, page),
+    method: "POST",
+    payload: "{}",
+    headers: {
+      Accept: "application/json",
+      "Accept-Language": country === Country.SK ? "sk" : "cs",
+      "Content-Type": "application/json"
+    },
+    userData
+  };
 }
 
 /**
@@ -101,7 +97,7 @@ export function parseProducts(items, country) {
         // Not imported: the actor image installs the published lib. See actors/AGENT.md.
         slug: String(item.id),
         description: item.webHeadline,
-        img: item.photos?.default?.[0],
+        img: item.photos?.default?.[0] ?? NO_PHOTO_IMG,
         itemName: item.displayTitle,
         currentPrice,
         originalPrice: discounted ? oldCash : undefined,
@@ -155,14 +151,13 @@ export async function main() {
     persistCookiesPerSession: true,
     requestHandlerTimeoutSecs: 300,
     navigationTimeoutSecs: 300,
-    async requestHandler({ request, body, session }) {
-      const { document } = parseHTML(body.toString());
+    async requestHandler({ request, json, session }) {
       const { label } = request.userData;
       log.info(`Label: ${label} - Scraping page ${request.url}`);
 
-      // A response without the car-list payload is an SSR miss / soft-block. Retire the session
+      // A response without the car-list payload is a soft-block. Retire the session
       // (fresh proxy IP on retry) and throw so Crawlee re-fetches instead of recording an empty success.
-      const message = extractCarList(document);
+      const message = json?.message;
       const softBlocked = () => {
         session?.retire();
         throw new Error(`AAAauto: missing car-list payload on ${request.url} - retrying with a fresh session`);
@@ -177,10 +172,7 @@ export async function main() {
         const totalPages = message.pagination?.totalPages ?? 1;
         const requests = [];
         for (let page = 2; page <= totalPages; page++) {
-          requests.push({
-            url: getBaseUrl(type, country, page),
-            userData: { label: Label.PAGE, pageNumber: page }
-          });
+          requests.push(listingRequest(type, country, page, { label: Label.PAGE, pageNumber: page }));
         }
         if (requests.length) await crawler.requestQueue.addRequests(requests);
       }
@@ -196,12 +188,9 @@ export async function main() {
 
   await crawler.run([
     {
-      url: getRootUrl(type, country),
+      ...listingRequest(type, country, 1, { label: Label.START }),
       // Only page 1 knows the page count, so one failed page 1 loses the whole day.
-      maxRetries: Math.max(maxRequestRetries, 10),
-      userData: {
-        label: Label.START
-      }
+      maxRetries: Math.max(maxRequestRetries, 10)
     }
   ]);
   log.info("Crawler finished.");
