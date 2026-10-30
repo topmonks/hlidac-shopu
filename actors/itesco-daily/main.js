@@ -8,6 +8,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
+import { extractPrices } from "./prices.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -140,44 +141,21 @@ function extractItems({ document, country, uniqueItems, stats }) {
     const itemId = parseInt(product.id);
     if (!itemId || uniqueItems.has(itemId)) continue;
 
-    const price = product.price ?? {};
-    const result = {
-      itemId,
-      category,
-      currency: country === Country.CZ ? "CZK" : "EUR",
-      currentPrice: typeof price.actual === "number" ? price.actual : cleanPrice(price.actual),
-      currentUnitPrice: typeof price.unitPrice === "number" ? price.unitPrice : cleanPrice(price.unitPrice),
-      discounted: false,
-      itemUrl: `${rootUrl}/shop/${locale}/products/${product.id}`
-    };
-
     // Find the first non-Clubcard promotion (matching the old `.offer-text`
     // filter) and parse its description for the original price.
     const offerText = (product.promotions ?? [])
       .map(resolvePromo)
       .map(promo => promo?.description)
       .find(desc => desc && !desc.includes("Clubcard"));
+    const saleData = offerText ? saleParsers[country](offerText) : null;
 
-    if (offerText) {
-      const saleData = saleParsers[country](offerText);
-      if (saleData) {
-        result.discounted = true;
-        result.originalPrice = saleData.originalPrice;
-      }
-
-      // Weighable items were detected by DOM quantity controls in the old
-      // actor. In the MFE state they are `displayType: "QuantityOrWeight"`
-      // (or `productType: "LooseProduce"`).
-      result.useUnitPrice = product.displayType === "QuantityOrWeight" || product.productType === "LooseProduce";
-      if (result.useUnitPrice) {
-        result.originalUnitPrice = result.originalPrice;
-        result.unitOfMeasure = "0.1kg";
-        result.currentPrice /= 10;
-        if (typeof result.originalPrice === "number") {
-          result.originalPrice /= 10;
-        }
-      }
-    }
+    const result = {
+      itemId,
+      category,
+      currency: country === Country.CZ ? "CZK" : "EUR",
+      ...extractPrices(product, saleData?.originalPrice),
+      itemUrl: `${rootUrl}/shop/${locale}/products/${product.id}`
+    };
 
     result.itemName = product.title;
     result.img = product.defaultImageUrl;
