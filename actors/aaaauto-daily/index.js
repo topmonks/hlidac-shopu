@@ -197,6 +197,8 @@ export async function main() {
   await crawler.run([
     {
       url: getRootUrl(type, country),
+      // Only page 1 knows the page count, so one failed page 1 loses the whole day.
+      maxRetries: Math.max(maxRequestRetries, 10),
       userData: {
         label: Label.START
       }
