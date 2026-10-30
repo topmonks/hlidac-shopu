@@ -4,10 +4,8 @@ import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
-import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors-common/product.js";
 import { Actor, Dataset, log } from "apify";
-
-const baseUrl = "https://www.kosik.cz/";
+import { baseUrl, parseItem } from "./parse.js";
 
 const slug = url => url.substring(1);
 const slugBF = url => new URL(url).pathname.substring(1);
@@ -44,28 +42,6 @@ function categoriesRequests({ categories }) {
     });
   }
   return requests;
-}
-
-function parseItem(item, breadcrumbs) {
-  const itemUrl = new URL(item.url, baseUrl).href;
-  return {
-    itemId: item.id,
-    itemUrl,
-    itemName: item.name,
-    discounted: item.percentageDiscount > 0,
-    discountedName: item.percentageDiscount > 0 ? `${item.percentageDiscount} %` : null,
-    currentPrice: item.price,
-    originalPrice: item.price == item.recommendedPrice ? null : item.recommendedPrice,
-    inStock: !item.firstOrderDay,
-    category: breadcrumbs,
-    img: item.image,
-    shop: shopName(itemUrl),
-    slug: itemSlug(itemUrl),
-    shopOrigin: shopOrigin(itemUrl),
-    currentUnitPrice: item.pricePerUnit?.price ?? null,
-    useUnitPrice: item.productQuantity?.prefix === "cca",
-    quantity: item.productQuantity?.value
-  };
 }
 
 async function main() {
