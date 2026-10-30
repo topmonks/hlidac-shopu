@@ -42,3 +42,9 @@ test("parseProducts skips sold cars and non-discounted has no originalPrice", t 
   t.is(p.originalPrice, undefined);
   t.is(p.currency, "Eur");
 });
+
+test("parseProducts gives the no-photo placeholder to a car without photos", t => {
+  const noPhoto = { ...item, photos: { cool: [], default: [], is360Gallery: false } };
+  const [p] = parseProducts([noPhoto], Country.CZ);
+  t.is(p.img, "https://static.aaaauto.eu/img/nophoto/nophoto-big.jpg");
+});
