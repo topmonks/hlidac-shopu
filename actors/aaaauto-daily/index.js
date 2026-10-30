@@ -206,6 +206,11 @@ export async function main() {
   ]);
   log.info("Crawler finished.");
 
+  const { urls, failed } = stats.get();
+  if (!urls) {
+    throw new Error(`AAAauto: no products scraped (${failed} failed requests) - blocked or site structure changed`);
+  }
+
   if (!development) {
     try {
       const postfix = type === ActorType.BlackFriday ? "_bf" : "";
