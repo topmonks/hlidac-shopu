@@ -211,15 +211,16 @@ function defRouter({ stats }) {
 }
 
 function getStartUrls(urls, country, type) {
-  return urls.length
-    ? urls
-    : [
-        {
-          url: completeUrl(country),
-          label: "start",
-          userData: { type, country }
-        }
-      ];
+  if (urls.length) return urls;
+  // Black Friday is a regular category page (with pagination) that is not linked from the menu
+  if (type === ActorType.BlackFriday) return [categoryRequest({ type, country }, "/black-friday")];
+  return [
+    {
+      url: completeUrl(country),
+      label: "start",
+      userData: { type, country }
+    }
+  ];
 }
 
 async function main() {
@@ -277,7 +278,7 @@ async function main() {
     throw new Error(`No products scraped (${failed} failed requests) - blocked or site structure changed`);
   }
 
-  const tableName = `grizly_${country.toLowerCase()}`;
+  const tableName = `grizly_${country.toLowerCase()}${type === ActorType.BlackFriday ? "_bf" : ""}`;
   await uploadToKeboola(tableName);
 }
 

@@ -6,6 +6,10 @@ does not drop the rest of the category. The site randomly serves existing catego
 (`.alert-catalog-empty`, "Požadovaný obsah nenalezen."), such pages are retried.
 Top-level categories (`.level-1`) are scraped too, with their subcategory tiles (`.subcategories a.linkImg2`) - the promo category
 does not list products of its subcategories, e.g. multipacks in `/skupinova-baleni`.
+
+`"type": "BF"` scrapes only the Black Friday category (`/black-friday`, a regular paginated category not linked from the menu)
+into the `grizly_cz_bf` / `grizly_sk_bf` table. Its prices are a discount code (`.sale-code__text`, e.g. "164 Kč s kódem BLACKWEEK"),
+which is the current price, with the regular price as the original one.
 ## Actor's INPUT
 
 ```json
