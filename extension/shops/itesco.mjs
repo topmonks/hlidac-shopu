@@ -18,17 +18,22 @@ function findProductLd() {
   return null;
 }
 
-// Catch-weight products (meat, fish) are sold in pieces of a chosen weight, but
-// the history keeps their price per kg. The weight picker is shown only when
-// there is more than one weight; the discover JSON names the type either way,
-// though it can be stale after SPA navigation.
-function isCatchWeight(itemId) {
+const weightProductTypes = ["CatchWeightProducts", "LooseProduce"];
+
+// Products sold by weight keep their price history per kg: catch-weight meat and
+// fish (pieces of a chosen weight) and loose fruit and vegetables (bought by
+// piece or by weight, the per-piece price depends on an average weight).
+// The catch-weight picker is shown only when there is more than one weight,
+// loose produce has a "Množství / Hmotnost" switch; the discover JSON names
+// the type either way, though it can be stale after SPA navigation.
+function isSoldByWeight(itemId) {
   if (document.getElementById(`catch-weight-${itemId}`)) return true;
+  if (document.getElementById(`weight-mode-${itemId}`)) return true;
   for (const script of document.querySelectorAll('script[type="application/discover+json"]')) {
     try {
       const cache = JSON.parse(script.textContent)?.["mfe-orchestrator"]?.props?.apolloCache;
       const product = cache?.[`ProductType:${itemId}`];
-      if (product) return product.productType === "CatchWeightProducts";
+      if (product) return weightProductTypes.includes(product.productType);
     } catch {}
   }
   return false;
@@ -75,7 +80,7 @@ export class Tesco extends AsyncShop {
     // offer carries the Clubcard price, while the buy box shows the regular one.
     const unitPrice = buyBox.querySelector('[class*="product-tile-unit-price__subtext"]')?.textContent;
     const priceText =
-      isCatchWeight(itemId) && unitPrice?.includes("/kg")
+      isSoldByWeight(itemId) && unitPrice?.includes("/kg")
         ? unitPrice
         : buyBox.querySelector('[class*="product-tile-price__text"]')?.textContent;
     const currentPrice = Number(cleanPriceText(priceText)) || null;
