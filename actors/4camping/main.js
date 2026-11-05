@@ -220,9 +220,11 @@ function defRouter({ stats, processedIds }) {
       if (!productUrls.length) throw new Error(`No products found on ${url}`);
       stats.inc("bfPages");
       stats.add("productUrls", productUrls.length);
+      // Crawlee writes the label into the userData object it is given, a shared object would end up
+      // with the last label and route the pagination pages to the detail handler
       await crawler.addRequests([
-        ...pages.map(url => ({ url, label: "blackFriday", userData })),
-        ...productUrls.map(url => ({ url, label: "detail", userData }))
+        ...pages.map(url => ({ url, label: "blackFriday", userData: { ...userData } })),
+        ...productUrls.map(url => ({ url, label: "detail", userData: { ...userData } }))
       ]);
     },
     /**
