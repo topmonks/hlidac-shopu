@@ -364,7 +364,8 @@ export function createSQSIngest(options = {}) {
     name: pulumi.interpolate`/aws/lambda/${uploaderLambda.name}`,
     retentionInDays: 30
   });
-  ingestQueue.onEvent("upload-changed", uploaderLambda);
+  // Up to 5 messages of 1 MiB stay under the 6 MB Lambda invocation payload limit
+  ingestQueue.onEvent("upload-changed", uploaderLambda, { batchSize: 5 });
 
   const ingestBucket = new aws.s3.Bucket("ingest.hlidacshopu.cz", {
     bucket: "ingest.hlidacshopu.cz"
