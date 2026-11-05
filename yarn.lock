@@ -4697,6 +4697,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/megapixel@workspace:actors/megapixel":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/megapixel@workspace:actors/megapixel"
+  dependencies:
+    "@crawlee/http": "npm:3.18.1"
+    "@hckr_/apify-persistent-stats": "npm:1.0.4"
+    "@hlidac-shopu/actors-common": "npm:3.2.6"
+    "@types/node": "npm:24.13.6"
+    apify: "npm:3.7.2"
+    apify-cli: "npm:1.10.0"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/mironet-daily@workspace:actors/mironet-daily"
