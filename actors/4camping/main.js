@@ -8,6 +8,7 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { comp, filter, map, push, transduce } from "@thi.ng/transducers";
 import { Actor, Dataset, log, LogLevel } from "apify";
+import { listingPageUrls, listingProductUrls } from "./listing.js";
 
 /** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
@@ -207,6 +208,24 @@ function defRouter({ stats, processedIds }) {
       await crawler.addRequests(urls);
     },
     /**
+     * Black Friday category listing, its products are scraped from their detail pages
+     * @param {HttpCrawlingContext} ctx
+     * @returns {Promise<void>}
+     */
+    async blackFriday({ request, body, crawler }) {
+      const { url, userData } = request;
+      const { document } = parseHTML(body.toString());
+      const pages = listingPageUrls(document, url);
+      const productUrls = listingProductUrls(document, url);
+      if (!productUrls.length) throw new Error(`No products found on ${url}`);
+      stats.inc("bfPages");
+      stats.add("productUrls", productUrls.length);
+      await crawler.addRequests([
+        ...pages.map(url => ({ url, label: "blackFriday", userData })),
+        ...productUrls.map(url => ({ url, label: "detail", userData }))
+      ]);
+    },
+    /**
      * @param {HttpCrawlingContext} ctx
      * @returns {Promise<void>}
      */
@@ -245,6 +264,16 @@ function defRouter({ stats, processedIds }) {
  */
 function getStartUrls({ type, country }) {
   const rootUrl = `https://www.4camping.${country.toLowerCase()}`;
+  // Black Friday is a regular paginated category, products are scraped from their detail pages
+  if (type === ActorType.BlackFriday) {
+    return [
+      {
+        url: new URL("/c/black-friday/", rootUrl).href,
+        label: "blackFriday",
+        userData: { country, type, rootUrl }
+      }
+    ];
+  }
   return [
     {
       url: new URL("/sitemap/", rootUrl).href,
@@ -262,6 +291,7 @@ async function main() {
 
   const stats = await withPersistedStats({
     productUrls: 0,
+    bfPages: 0,
     details: 0,
     detailsWithoutProduct: 0,
     products: 0,

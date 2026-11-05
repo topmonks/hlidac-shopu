@@ -15,6 +15,10 @@
     "currency":"czk"}
    ```
 
+`"type": "BF"` scrapes only the Black Friday category (`/c/black-friday/`, a regular category paginated by `?p=<page>`)
+into the `4camping_cz_bf` / `4camping_sk_bf` table. Product tiles link to `/p/<product>/#<variant>`, the products are
+scraped from their detail pages the same way as in the full run (product and all its variants, coupon prices).
+
 ## Actor's INPUT
 
 ```json
