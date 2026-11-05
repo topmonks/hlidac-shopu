@@ -2,6 +2,7 @@ import { S3 } from "@aws-sdk/client-s3";
 import { SQS } from "@aws-sdk/client-sqs";
 import { Parse as unzipperParse } from "unzipper";
 import Rollbar from "../../../rollbar.mjs";
+import { byteLength, fitsInMessage, MessageBatcher } from "./batch.mjs";
 
 const rollbar = Rollbar.init({ lambdaName: "ingest-extractor" });
 
@@ -19,11 +20,7 @@ function getZip(bucket, key) {
 
 function enqueueMessage(buffer, items) {
   const messageBody = JSON.stringify({ items });
-  const byteLength = new TextEncoder().encode(messageBody).byteLength;
-  console.log(`Enqueuing ${items.length} items with total size ${byteLength}`);
-  if (byteLength > 256 * 1024) {
-    rollbar.error(`SQS message is probably too big ${byteLength} bytes (shop URL example: ${items.at(-1).path})`);
-  }
+  console.log(`Enqueuing ${items.length} items with total size ${byteLength(messageBody)}`);
   buffer.push(
     sqs.sendMessage({
       MessageBody: messageBody,
@@ -34,9 +31,8 @@ function enqueueMessage(buffer, items) {
 
 async function handleEvents(event, _context) {
   let buffer = [];
-  let items = [];
+  const batcher = new MessageBatcher();
   for (const record of event.Records) {
-    let msgSize = 0;
     let maxMessageSize = 0;
     let count = 0;
     const bucket = record.s3.bucket.name;
@@ -47,21 +43,19 @@ async function handleEvents(event, _context) {
       for await (const entry of zip) {
         if (entry.type !== "File") {
           entry.autodrain();
-          return;
+          continue;
         }
         const content = await entry.buffer().then(b => b.toString());
         count++;
         const payload = { path: entry.path, content };
-        items.push(payload);
-        const size = new TextEncoder().encode(JSON.stringify(payload)).byteLength;
-        msgSize += size;
+        const size = byteLength(JSON.stringify(payload));
         if (size > maxMessageSize) maxMessageSize = size;
-        // max message msgSize is 256KB, but leave some reserve
-        if (msgSize + maxMessageSize >= 225 * 1024 || items.length >= 200) {
-          enqueueMessage(buffer, items);
-          items = [];
-          msgSize = 0;
+        if (!fitsInMessage(size)) {
+          rollbar.error(`Skipping ${entry.path} from ${key}, ${size} bytes is too big for an SQS message`);
+          continue;
         }
+        const full = batcher.add(payload, size);
+        if (full) enqueueMessage(buffer, full);
         if (buffer.length >= 100) {
           console.log("waiting for buffer");
           await Promise.all(buffer);
@@ -81,7 +75,8 @@ async function handleEvents(event, _context) {
     );
   }
 
-  if (items.length) enqueueMessage(buffer, items);
+  const rest = batcher.flush();
+  if (rest) enqueueMessage(buffer, rest);
   await Promise.all(buffer);
 }
 
