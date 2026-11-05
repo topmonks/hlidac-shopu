@@ -18,10 +18,13 @@ Black Friday only (#3666): the list of products in the Friday Noir categories, n
 {
   "type": "BF",
   "debug": false,
-  "proxyGroups": [],
+  "proxyGroups": ["CZECH_LUMINATI"],
   "urls": []
 }
 ```
+
+Use Czech proxies (`CZECH_LUMINATI`). Megapixel serves an Anubis bot wall ("Making sure you're not a bot!") to
+the default datacenter and residential proxies, and the run then fails or scrapes only part of the products.
 
 `"type": "TEST"` scrapes only the first page of the first category. `urls` replaces the discovered categories,
 e.g. `[{ "url": "https://www.megapixel.cz/friday-noir-canon" }]`.
