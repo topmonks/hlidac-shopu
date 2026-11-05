@@ -331,11 +331,16 @@ export function createSQSIngest(options = {}) {
   };
 
   const uploaderTimeout = 600;
+  // The extractor sends an item bigger than its batch limit in a message of its own
+  // (ingest-extractor/batch.mjs), keep room for it
+  const ingestMaxMessageSize = 1024 * 1024;
   const ingestDLQ = new aws.sqs.Queue("ingest-dlq", {
-    messageRetentionSeconds: 14 * 24 * 60 * 60 // 14 days
+    messageRetentionSeconds: 14 * 24 * 60 * 60, // 14 days
+    maxMessageSize: ingestMaxMessageSize
   });
   const ingestQueue = new aws.sqs.Queue("ingest", {
     messageRetentionSeconds: 4 * 60 * 60, // 4 hours
+    maxMessageSize: ingestMaxMessageSize,
     visibilityTimeoutSeconds: uploaderTimeout,
     redrivePolicy: ingestDLQ.arn.apply(arn =>
       JSON.stringify({

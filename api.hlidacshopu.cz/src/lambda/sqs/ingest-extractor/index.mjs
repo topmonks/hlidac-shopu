@@ -18,66 +18,94 @@ function getZip(bucket, key) {
     .then(r => r.Body);
 }
 
-function enqueueMessage(buffer, items) {
-  const messageBody = JSON.stringify({ items });
-  console.log(`Enqueuing ${items.length} items with total size ${byteLength(messageBody)}`);
+// Resolves to the number of items that failed to enqueue, so one failed message
+// doesn't end the extraction as an unhandled rejection
+function enqueueMessage(buffer, { items, bytes }) {
+  console.log(`Enqueuing ${items.length} items with total size ${bytes}`);
   buffer.push(
-    sqs.sendMessage({
-      MessageBody: messageBody,
-      QueueUrl: process.env.SQS_URL
-    })
+    sqs
+      .sendMessage({
+        MessageBody: JSON.stringify({ items }),
+        QueueUrl: process.env.SQS_URL
+      })
+      .then(
+        () => 0,
+        e => {
+          rollbar.error(e, { items: items.length, firstPath: items[0].path });
+          return items.length;
+        }
+      )
   );
 }
 
-async function handleEvents(event, _context) {
-  let buffer = [];
+async function sendBuffered(buffer) {
+  const failed = await Promise.all(buffer.splice(0));
+  return failed.reduce((sum, n) => sum + n, 0);
+}
+
+async function extractZip(bucket, key) {
+  const buffer = [];
   const batcher = new MessageBatcher();
-  for (const record of event.Records) {
-    let maxMessageSize = 0;
-    let count = 0;
-    const bucket = record.s3.bucket.name;
-    const key = record.s3.object.key;
-    console.log(`Extracting files from ${key}`);
-    const zip = (await getZip(bucket, key)).pipe(unzipperParse({ forceStream: true }));
-    try {
-      for await (const entry of zip) {
-        if (entry.type !== "File") {
-          entry.autodrain();
-          continue;
-        }
-        const content = await entry.buffer().then(b => b.toString());
-        count++;
-        const payload = { path: entry.path, content };
-        const size = byteLength(JSON.stringify(payload));
-        if (size > maxMessageSize) maxMessageSize = size;
-        if (!fitsInMessage(size)) {
-          rollbar.error(`Skipping ${entry.path} from ${key}, ${size} bytes is too big for an SQS message`);
-          continue;
-        }
-        const full = batcher.add(payload, size);
-        if (full) enqueueMessage(buffer, full);
-        if (buffer.length >= 100) {
-          console.log("waiting for buffer");
-          await Promise.all(buffer);
-          buffer = [];
-        }
+  const skipped = [];
+  let maxMessageSize = 0;
+  let count = 0;
+  let failed = 0;
+  let stopped = false;
+  console.log(`Extracting files from ${key}`);
+  const zip = (await getZip(bucket, key)).pipe(unzipperParse({ forceStream: true }));
+  try {
+    for await (const entry of zip) {
+      if (entry.type !== "File") {
+        entry.autodrain();
+        continue;
       }
-    } catch (e) {
-      // till https://github.com/ZJONSSON/node-unzipper/issues/228 is fixed
-      if (e.message.includes("Premature close")) {
-        console.warn("Ignoring error", e);
-      } else {
-        rollbar.error(e);
+      const content = await entry.buffer().then(b => b.toString());
+      const payload = { path: entry.path, content };
+      const size = byteLength(JSON.stringify(payload));
+      if (size > maxMessageSize) maxMessageSize = size;
+      if (!fitsInMessage(size)) {
+        skipped.push(entry.path);
+        continue;
+      }
+      count++;
+      const full = batcher.add(payload, size);
+      if (full) enqueueMessage(buffer, full);
+      if (buffer.length >= 100) {
+        console.log("waiting for buffer");
+        failed += await sendBuffered(buffer);
       }
     }
-    console.log(
-      `All files from ${key} have been extracted (${count} items). Max message size: ${maxMessageSize} bytes.`
-    );
+  } catch (e) {
+    // till https://github.com/ZJONSSON/node-unzipper/issues/228 is fixed
+    if (e.message.includes("Premature close")) {
+      console.warn("Ignoring error", e);
+    } else {
+      stopped = true;
+      rollbar.error(e);
+    }
   }
-
   const rest = batcher.flush();
   if (rest) enqueueMessage(buffer, rest);
-  await Promise.all(buffer);
+  failed += await sendBuffered(buffer);
+
+  if (skipped.length) {
+    rollbar.error(`Skipped ${skipped.length} items from ${key} too big for an SQS message, e.g. ${skipped[0]}`);
+  }
+  if (failed) {
+    rollbar.error(`Failed to enqueue ${failed} items from ${key}`);
+  }
+  const summary = `${count} items, ${skipped.length} skipped, ${failed} failed to enqueue`;
+  if (stopped) {
+    console.error(`Extracting files from ${key} stopped on an error (${summary}).`);
+  } else {
+    console.log(`All files from ${key} have been extracted (${summary}). Max message size: ${maxMessageSize} bytes.`);
+  }
+}
+
+async function handleEvents(event, _context) {
+  for (const record of event.Records) {
+    await extractZip(record.s3.bucket.name, record.s3.object.key);
+  }
 }
 
 export const handler = rollbar.lambdaHandler(handleEvents);
