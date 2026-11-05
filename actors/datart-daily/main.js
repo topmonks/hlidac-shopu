@@ -97,11 +97,12 @@ async function closeBrowser(ctx) {
  * Launch cloakbrowser, navigate to the catalog, poll until F5 issues TSPD
  * cookies, return the full cookie jar.
  * @param {string} rootUrl
+ * @param {string} [proxyUrl] the executor must use the same proxy session (exit IP)
  * @returns {Promise<Record<string,string>>}
  */
-async function solveF5(rootUrl) {
+async function solveF5(rootUrl, proxyUrl) {
   log.info("Solver: launching cloakbrowser to solve F5 Bot Defense challenge…");
-  const ctx = await launchCloakBrowser();
+  const ctx = await launchCloakBrowser(proxyUrl);
   try {
     const page = await ctx.newPage();
     const cookies = await waitForF5Session(ctx, page, rootUrl);
@@ -112,9 +113,10 @@ async function solveF5(rootUrl) {
   }
 }
 
-function launchCloakBrowser() {
+function launchCloakBrowser(proxyUrl) {
   return launchCloakContext({
     headless: true,
+    ...(proxyUrl && { proxy: proxyUrl }),
     userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
     locale: "cs-CZ",
     timezoneId: "Europe/Prague"
@@ -631,11 +633,12 @@ async function gotoSettled(page, url) {
  * Open each sampled product page in cloakbrowser and compare what datart shows an
  * anonymous shopper (coupon banner price, else the displayed price) to what we recorded.
  * @param {{url: string, basePrice: number, currentPrice: number}[]} items
+ * @param {string} [proxyUrl]
  */
-async function runCouponCanary(items, stats) {
+async function runCouponCanary(items, stats, proxyUrl) {
   if (items.length === 0) return;
   log.info(`Coupon canary: verifying ${items.length} products in a browser…`);
-  const ctx = await launchCloakBrowser();
+  const ctx = await launchCloakBrowser(proxyUrl);
   try {
     const page = await ctx.newPage();
     // Earn an F5 session first; without it the first product page runs F5's challenge,
@@ -1030,14 +1033,20 @@ export async function main() {
 
   const rootUrl = country === Country.CZ ? rootCZ : rootSK;
 
+  const proxyConfiguration = await Actor.createProxyConfiguration({
+    groups: proxyGroups
+  });
+  const newProxyUrl = () => proxyConfiguration?.newUrl(`datart_${randomUUID().replaceAll("-", "")}`);
+
   // Phase 1 — Solver: cloakbrowser earns a validated F5 session
-  let f5Cookies = await solveF5(rootUrl);
+  let proxyUrl = await newProxyUrl();
+  let f5Cookies = await solveF5(rootUrl, proxyUrl);
 
   // Phase 2 — Executor: impit with chrome136 TLS fingerprint.
   // Impit impersonates Chrome's TLS handshake from Node, so F5 accepts the
   // TSPD cookies the solver earned as genuinely browser-issued.
   log.info("Executor: initializing impit with chrome136 TLS fingerprint");
-  const impit = new Impit({ browser: "chrome136" });
+  let impit = new Impit({ browser: "chrome136", proxyUrl });
 
   // F5 burns sessions after ~30–40 requests: instead of returning 403 or the
   // challenge stub, it silently replies 200 with a decoy body that lacks the
@@ -1050,7 +1059,10 @@ export async function main() {
     solvePromise = (async () => {
       try {
         log.warning(`F5 re-solve triggered: ${reason}`);
-        f5Cookies = await withTimeout(solveF5(rootUrl), SOLVE_TIMEOUT_MS, "F5 re-solve");
+        const nextProxyUrl = await newProxyUrl();
+        f5Cookies = await withTimeout(solveF5(rootUrl, nextProxyUrl), SOLVE_TIMEOUT_MS, "F5 re-solve");
+        proxyUrl = nextProxyUrl;
+        impit = new Impit({ browser: "chrome136", proxyUrl });
       } finally {
         solvePromise = null;
       }
@@ -1316,7 +1328,7 @@ export async function main() {
     const sample = canarySample.items();
     let canaryError = null;
     try {
-      await runCouponCanary(sample, stats);
+      await runCouponCanary(sample, stats, await newProxyUrl());
     } catch (e) {
       // e.g. Chromium failing to launch at the end of a long crawl — still upload.
       canaryError = `the canary could not run: ${e.message}`;
