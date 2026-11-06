@@ -25,23 +25,42 @@ test("Friday Noir categories are the tiles headed Friday Noir, other promotions 
 
 test("category tiles are not products", async t => {
   const document = await fixture("friday-noir.html");
-  t.deepEqual(listingProducts(document, landingUrl), [
-    {
-      itemId: "155962",
-      itemUrl: "https://www.megapixel.cz/dzofilm-vespid-prime-5-lens-kit-16-25-35-50-75-mm-t2-1-metric"
-    }
-  ]);
+  t.deepEqual(
+    listingProducts(document, landingUrl).map(x => x.itemId),
+    ["155962"]
+  );
 });
 
-test("product tiles give the product id and url", async t => {
+test("product tiles give the product id, url, name, image and prices", async t => {
   const document = await fixture("friday-noir-canon.html");
   t.deepEqual(listingProducts(document, canonUrl), [
     {
       itemId: "156858",
-      itemUrl: "https://www.megapixel.cz/canon-eos-r50-rf-s-18-45-mm-f-4-5-6-3-is-stm-travel-kit-cerny"
+      itemUrl: "https://www.megapixel.cz/canon-eos-r50-rf-s-18-45-mm-f-4-5-6-3-is-stm-travel-kit-cerny",
+      itemName: "Canon EOS R50 + RF-S 18-45 mm f/4,5-6,3 IS STM Travel Kit černý",
+      img: "https://cdn.megapixel.cz/images/product-w200h200/7/472307.jpg?v=1738657088",
+      currentPrice: 20490,
+      originalPrice: 24290
     },
-    { itemId: "159241", itemUrl: "https://www.megapixel.cz/canon-eos-r50-v-rf-s-14-30-mmf-4-6-3-is-stm" }
+    {
+      itemId: "159241",
+      itemUrl: "https://www.megapixel.cz/canon-eos-r50-v-rf-s-14-30-mmf-4-6-3-is-stm",
+      itemName: "Canon EOS R50 V + RF-S 14-30 mm f/4-6,3 IS STM - zpětná sleva 3 500 Kč",
+      img: "https://cdn.megapixel.cz/images/product-w200h200/9/484129.jpg?v=1743009335",
+      currentPrice: 21490,
+      originalPrice: 24790
+    }
   ]);
+});
+
+test("crossed-out price that is not above the price is not an original price", t => {
+  const { document } = parseHTML(`<div id="snippet-productsFilter-products"><section class="js-product-box">
+    <a class="product-box__link" href="/x" onclick="onProductItem1Click(this)"></a>
+    <p class="product-box__price-old"><del>990 Kč</del></p><p class="product-box__price">990 Kč</p>
+  </section></div>`);
+  const [product] = listingProducts(document, canonUrl);
+  t.is(product.currentPrice, 990);
+  t.is(product.originalPrice, null);
 });
 
 test("slug is the last path segment, the key of the price history", async t => {

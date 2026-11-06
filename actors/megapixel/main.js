@@ -4,11 +4,12 @@ import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { itemSlug } from "@hlidac-shopu/actors-common/product.js";
+import { itemSlug, shopName, shopOrigin } from "@hlidac-shopu/actors-common/product.js";
 import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, Dataset, LogLevel, log } from "apify";
 import { fridayNoirCategoryUrls, listingPageUrls, listingProducts } from "./listing.js";
 
+/** @typedef {import("@hlidac-shopu/actors-common").Product} Product */
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
 
@@ -16,6 +17,29 @@ const PROCESSED_IDS_KEY = "processedIds";
 
 /** Black Friday landing page, it links all Friday Noir categories */
 const FRIDAY_NOIR_URL = "https://www.megapixel.cz/slevove-akce-a-cashbacky";
+
+/**
+ * shortcut: inStock is always true (as in 4camping), the tile's availability text ("Skladem 1 ks",
+ * "Skladem u dodavatele", ...) is not parsed; read it if out-of-stock products start to matter
+ * @param {ReturnType<typeof listingProducts>[number]} product
+ * @returns {Product}
+ */
+function toProduct({ itemId, itemUrl, itemName, img, currentPrice, originalPrice }) {
+  return {
+    shop: shopName(itemUrl),
+    shopOrigin: shopOrigin(itemUrl),
+    slug: itemSlug(itemUrl),
+    itemId,
+    itemUrl,
+    itemName,
+    img,
+    currentPrice,
+    originalPrice,
+    currency: "CZK",
+    discounted: originalPrice !== null,
+    inStock: true
+  };
+}
 
 function defRouter({ stats, processedIds }) {
   return createHttpRouter({
@@ -51,13 +75,13 @@ function defRouter({ stats, processedIds }) {
       }
 
       const batch = [];
-      for (const { itemId, itemUrl } of products) {
-        if (processedIds.has(itemId)) {
+      for (const product of products) {
+        if (processedIds.has(product.itemId)) {
           stats.inc("duplicates");
           continue;
         }
-        processedIds.add(itemId);
-        batch.push({ itemId, itemUrl, slug: itemSlug(itemUrl) });
+        processedIds.add(product.itemId);
+        batch.push(toProduct(product));
       }
       stats.add("products", batch.length);
       await Dataset.pushData(batch);
