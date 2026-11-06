@@ -13,9 +13,7 @@ import { Actor, Dataset, LogLevel, log } from "apify";
 
 /** @enum {string} */
 const Labels = {
-  Category: "category",
   Categories: "categories",
-  SaleCategory: "category_vyprodej",
   Page: "page",
   Pages: "pages"
 };
@@ -46,18 +44,23 @@ function allCategoriesRequests(buffer) {
 }
 
 /**
- * @param {{type:ActorType, urls:array}}
+ * @param {{type:ActorType, urls:array, bfUrl?: string}}
  * @returns {{url: string, userData: {label: Labels, baseUrl?: string}}}
  */
-function startingRequest({ type, urls }) {
+function startingRequest({ type, urls, bfUrl }) {
   switch (type) {
-    case ActorType.BlackFriday:
+    case ActorType.BlackFriday: {
+      // The Black Friday page lists all its products itself, paginated by `PgID` like a category.
+      // Its category tiles are no use: their subcategory links drop the Black Friday filter.
+      const url = bfUrl ?? urls[0] ?? "https://www.mironet.cz/vyprodej/?v=black-friday";
       return {
-        url: urls.length ? urls[0] : "https://www.mironet.cz/vyprodej/?v=black-friday",
+        url,
         userData: {
-          label: Labels.SaleCategory
+          label: Labels.Page,
+          baseUrl: url
         }
       };
+    }
     case ActorType.Test:
       return {
         url: "https://www.mironet.cz/graficke-karty+c14402/",
@@ -76,59 +79,6 @@ function startingRequest({ type, urls }) {
     default:
       throw new Error(`Unknown actor type: ${type}`);
   }
-}
-
-/**
- *
- * @param {{document: Document, rootUrl: string}}
- * @returns {string[]}
- */
-function saleUrls({ document, rootUrl }) {
-  const categoriesUrls = [];
-  document.querySelectorAll(".subCat").map(category => {
-    const moreBox = category.querySelector(".subCat_more");
-    if (moreBox) {
-      moreBox.querySelectorAll("a").map(a => {
-        categoriesUrls.push(`${rootUrl}${a.getAttribute("href")}`);
-      });
-    } else {
-      categoriesUrls.push(`${rootUrl}${category.getAttribute("href")}`);
-    }
-  });
-  if (categoriesUrls.length) {
-    return categoriesUrls;
-  }
-}
-
-/**
- * @param {{document: Document, requestUrl: string, rootUrl: string}}
- * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
- */
-function categoryRequests({ document, requestUrl, rootUrl }) {
-  const browseSubCategories = document.querySelectorAll("div#BrowseSubCategories > a").map(a => a.getAttribute("href"));
-  if (browseSubCategories.length) {
-    return browseSubCategories.map(categoryUrl => {
-      const url = new URL(categoryUrl, rootUrl).href;
-      return {
-        url,
-        userData: {
-          label: Labels.Page,
-          baseUrl: url
-        }
-      };
-    });
-  }
-
-  log.debug(`Enqueue ${requestUrl} as a page`);
-  return [
-    {
-      url: requestUrl,
-      userData: {
-        label: Labels.Page,
-        baseUrl: requestUrl
-      }
-    }
-  ];
 }
 
 /**
@@ -153,14 +103,13 @@ async function main() {
   rollbar.init();
 
   const stats = await withPersistedStats({
-    urls: 0,
     pages: 0,
     items: 0,
     itemsDuplicity: 0,
     failed: 0
   });
 
-  const { development, maxRequestRetries, proxyGroups, type = ActorType.Full, urls } = await getInput();
+  const { development, maxRequestRetries, proxyGroups, type = ActorType.Full, urls, bfUrl } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
 
@@ -195,24 +144,7 @@ async function main() {
       }
       const { document } = parseHTML(body.toString());
       const isCategoryPage = label === Labels.Page || label === Labels.Pages;
-      if (label === Labels.SaleCategory) {
-        const urls = saleUrls({ document, rootUrl });
-        stats.add("urls", urls.length);
-        await enqueueLinks({
-          urls,
-          userData: {
-            label: Labels.Category
-          }
-        });
-      } else if (label === Labels.Category) {
-        const requests = categoryRequests({
-          document,
-          requestUrl: request.url,
-          rootUrl
-        });
-        stats.add("urls", requests.length);
-        await crawler.requestQueue.addRequests(requests);
-      } else if (isCategoryPage) {
+      if (isCategoryPage) {
         if (label === Labels.Page) {
           const urls = pageUrls({ document, request });
           stats.add("pages", urls.length);
@@ -280,7 +212,7 @@ async function main() {
     }
   });
 
-  const request = startingRequest({ type, urls });
+  const request = startingRequest({ type, urls, bfUrl });
   log.info("ACTOR - run crawler");
   await crawler.run([request]);
 
