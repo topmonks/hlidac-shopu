@@ -1,3 +1,21 @@
+# 5.11.2026 — originalPrice = přeškrtnutá cena (GH #3663)
+
+`originalPrice` je cena, kterou stránka produktu přeškrtává:
+
+- se slevovým kódem, který může použít každý (`VoucherDiscount`, splněná nebo cenová podmínka
+  `ConditionalVoucherDiscount`), je `currentPrice` cena s kódem a `originalPrice` běžná cena `price`
+  (stejně jako v #3607). Kód podmíněný počtem kusů („Při nákupu od 2 ks“), který produkt nesplňuje,
+  se ignoruje.
+- bez kódu je `originalPrice` cena s `priceType` `StrikethroughPrice` z JSON-LD `offers` dané varianty
+  (`/p-<webId>/`), jinak `null`.
+
+Apollo `originalPrice` je historické maximum (`type: "HistoricalMax"`) a `recentMinPrice` je nejnižší cena
+za posledních 30 dní („Poslední nejnižší cena“) — ani jednu stránka nepřeškrtává, proto už se nepoužívají.
+`originalPrice`, která není vyšší než `currentPrice`, se zahodí. Logika je v `pricing.js`
+(test `pricing.test.mjs`), rozšíření `extension/shops/notino.mjs` počítá ceny stejně.
+
+---
+
 # 24.8.2026 — přechod na sitemap (GH #3587)
 
 Aktor vracel jen ~8K z ~90K produktů. Příčina: procházení kategorií + stránkování přestalo

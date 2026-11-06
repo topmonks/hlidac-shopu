@@ -7,6 +7,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, LogLevel, log } from "apify";
+import { strikethroughPrices, variantPrices } from "./pricing.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -87,50 +88,6 @@ function isProductDetailSitemap(url) {
 }
 
 /**
- * Price of a conditional voucher. Price-based conditions ("Při nákupu od 500 Kč") are shown to everyone
- * on the product page, so the lowest tier counts even when a single item doesn't reach it (#3607).
- * Piece-based conditions ("Při nákupu od 2 ks") only count when the product already meets them.
- */
-function conditionalVoucherPrice(voucher) {
-  const conditions = voucher?.discountConditions ?? [];
-  const met = conditions.find(c => c.productMeetsCondition);
-  if (met) return met.discountedPrice;
-  if (voucher?.conditionType !== "Price") return undefined;
-  return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
-}
-
-/** CZK prices are shown whole on the site, EUR (notino.sk) keeps cents */
-function roundPrice(value, currency) {
-  return currency === "CZK" ? Math.round(value) : Math.round(value * 100) / 100;
-}
-
-function determineCurrentAndOriginalPrice(variantGeneralData) {
-  // Data contain following prices
-  const voucherDiscountedPrice =
-    variantGeneralData.attributes?.VoucherDiscount?.discountedPrice ??
-    conditionalVoucherPrice(variantGeneralData.attributes?.ConditionalVoucherDiscount);
-  const price = variantGeneralData.price.value;
-  const originalPrice = variantGeneralData.originalPrice?.value;
-  const recentMinPrice = variantGeneralData.recentMinPrice?.value;
-
-  // Some products are automatically discounted using vouchers available for everyone.
-  // In this case, we should take it as the current price, and return the price without voucher as original price
-  if (voucherDiscountedPrice) {
-    return {
-      currentPrice: voucherDiscountedPrice,
-      originalPrice: recentMinPrice ?? price
-    };
-  }
-
-  // Otherwise price is current price, and original price becomes trickier.
-  return {
-    currentPrice: price,
-    originalPrice:
-      recentMinPrice && price < recentMinPrice && recentMinPrice < originalPrice ? recentMinPrice : originalPrice
-  };
-}
-
-/**
  * @param {Document} document
  * @param {Country} country
  */
@@ -156,6 +113,7 @@ function handleProductUsingWindowObject(document, country) {
     .join("/");
 
   const rootUrl = getRootUrl(country);
+  const strikethrough = strikethroughPrices(document);
 
   return variants
     .map(variant => {
@@ -177,12 +135,14 @@ function handleProductUsingWindowObject(document, country) {
       product.img = document.querySelector("#pd-image-main")?.getAttribute("src");
       product.category = category;
 
-      const { currentPrice, originalPrice } = determineCurrentAndOriginalPrice(variantGeneralData);
-
-      product.discounted = originalPrice !== null ? currentPrice < originalPrice : false;
-      product.currency = variantGeneralData.price && variantGeneralData.price.currency;
-      product.currentPrice = roundPrice(currentPrice, product.currency);
-      product.originalPrice = originalPrice != null ? roundPrice(originalPrice, product.currency) : null;
+      const { currentPrice, originalPrice, currency } = variantPrices(
+        variantGeneralData,
+        strikethrough.get(product.itemId) ?? strikethrough.get("")
+      );
+      product.currentPrice = currentPrice;
+      product.originalPrice = originalPrice;
+      product.currency = currency;
+      product.discounted = originalPrice !== null;
       product.inStock = true;
       return product;
     })

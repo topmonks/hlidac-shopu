@@ -1,4 +1,4 @@
-import { cleanPrice, cleanPriceText, registerShop } from "../helpers.mjs";
+import { cleanPrice, registerShop } from "../helpers.mjs";
 import { AsyncShop } from "./shop.mjs";
 
 function getVariantUrl(itemId) {
@@ -36,31 +36,53 @@ function roundPrice(value, currency) {
   return currency === "CZK" ? Math.round(value) : Math.round(value * 100) / 100;
 }
 
-function pricesFromApollo(variant) {
+/**
+ * Struck-through price of the variant, as the product page declares it in its JSON-LD offers
+ * (`priceSpecification.priceType` = `StrikethroughPrice`).
+ */
+function strikethroughPrice(itemId) {
+  for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+    let data;
+    try {
+      data = JSON.parse(script.textContent);
+    } catch {
+      continue;
+    }
+    for (const item of [data].flat()) {
+      if (item?.["@type"] !== "Product") continue;
+      const offers = [item.offers ?? []].flat();
+      const offer =
+        offers.find(o => o?.url?.match(/\/p-(\d+)\/?$/)?.[1] === itemId) ??
+        (offers.length === 1 && !offers[0]?.url?.match(/\/p-\d+\/?$/) ? offers[0] : null);
+      const price = Number(
+        [offer?.priceSpecification ?? []].flat().find(spec => String(spec?.priceType).endsWith("StrikethroughPrice"))
+          ?.price
+      );
+      if (price) return price;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * A voucher everyone can use is the current price and the regular price is the original one - the price
+ * the page crosses out (#3607, #3663). Without a voucher only the struck-through price from the JSON-LD
+ * offers is the original one: Apollo `originalPrice` is the historical maximum and `recentMinPrice` the
+ * 30-day minimum, the page crosses out neither of them.
+ */
+function pricesFromApollo(variant, strikethrough) {
   if (!variant?.price) return null;
   const voucherDiscountedPrice =
     variant.attributes?.VoucherDiscount?.discountedPrice ??
     conditionalVoucherPrice(variant.attributes?.ConditionalVoucherDiscount);
   const price = variant.price.value;
-  const origPrice = variant.originalPrice?.value;
-  const recentMinPrice = variant.recentMinPrice?.value;
   const round = value => roundPrice(value, variant.price.currency);
 
-  if (voucherDiscountedPrice) {
-    return {
-      currentPrice: round(voucherDiscountedPrice),
-      originalPrice: round(recentMinPrice ?? price)
-    };
-  }
-  return {
-    currentPrice: round(price),
-    originalPrice:
-      recentMinPrice && price < recentMinPrice && recentMinPrice < origPrice
-        ? round(recentMinPrice)
-        : origPrice != null
-          ? round(origPrice)
-          : null
-  };
+  const hasVoucher = voucherDiscountedPrice > 0 && voucherDiscountedPrice < price;
+  const currentPrice = round(hasVoucher ? voucherDiscountedPrice : price);
+  const original = hasVoucher ? price : strikethrough;
+  const originalPrice = original ? round(original) : null;
+  return { currentPrice, originalPrice: originalPrice > currentPrice ? originalPrice : null };
 }
 
 export class Notino extends AsyncShop {
@@ -86,7 +108,7 @@ export class Notino extends AsyncShop {
     if (urlItemId && urlItemId !== itemId) return;
 
     const variant = getApolloVariant(itemId);
-    const prices = pricesFromApollo(variant);
+    const prices = pricesFromApollo(variant, strikethroughPrice(itemId));
 
     let currentPrice, originalPrice;
     if (prices) {
@@ -94,11 +116,10 @@ export class Notino extends AsyncShop {
       originalPrice = prices.originalPrice;
     } else {
       // Fallback to DOM scraping when Apollo state is unavailable
+      // "Poslední nejnižší cena" is the 30-day minimum, not a crossed-out price
       currentPrice = cleanPrice("#pd-price");
-      const lowestPrice = document
-        .querySelector('[data-testid="product-specifications"]')
-        ?.textContent.split("Poslední nejnižší cena")[1];
-      originalPrice = lowestPrice ? cleanPriceText(lowestPrice) : null;
+      const strikethrough = strikethroughPrice(itemId);
+      originalPrice = strikethrough > currentPrice ? strikethrough : null;
     }
 
     const imageUrl = document.getElementById("pd-image-main")?.src;

@@ -1,0 +1,77 @@
+{
+  "__typename": "CatalogVariant",
+  "webId": "16377697",
+  "name": "Paradoxe Sweet Chemistry",
+  "variantName": "parfémovaná voda pro ženy náhradní náplň",
+  "url": "/prada/paradoxe-sweet-chemistry-parfemovana-voda-pro-zeny/p-16377697/",
+  "attributes": {
+    "ConditionalVoucherDiscount": {
+      "discountConditions": [
+        {
+          "conditionMin": 300,
+          "percentageDiscount": 15,
+          "percentageFromMinimal": -31,
+          "discountedPrice": 3051,
+          "discountAmount": 539,
+          "productMeetsCondition": true
+        }
+      ],
+      "code": "bfsale",
+      "tags": ["blackfriday"],
+      "conditionType": "Price",
+      "discountType": "Percentage",
+      "targets": [
+        {
+          "name": "Parfémy",
+          "type": "Category",
+          "url": "/parfemy/"
+        },
+        {
+          "name": "Bytové parfémy a vůně do bytu",
+          "type": "Category",
+          "url": "/bytove-parfemy/"
+        },
+        {
+          "name": "Kosmetika",
+          "type": "Category",
+          "url": "/kosmetika/"
+        },
+        {
+          "name": "Zdraví",
+          "type": "Category",
+          "url": "/zdravi/"
+        }
+      ],
+      "productsOnSaleIncluded": false,
+      "validUntil": "2026-11-15T22:59:59+00:00"
+    }
+  },
+  "price": {
+    "__typename": "Price",
+    "value": 3590,
+    "currency": "CZK",
+    "tax": 21
+  },
+  "originalPrice": {
+    "__typename": "OriginalPrice",
+    "value": 4390,
+    "currency": "CZK",
+    "tax": 21,
+    "type": "HistoricalMax"
+  },
+  "anchorPrice": null,
+  "recentMinPrice": {
+    "__typename": "RecentMinPrice",
+    "value": 2331,
+    "currency": "CZK",
+    "tax": 21,
+    "isActionEligible": false
+  },
+  "availability": {
+    "__typename": "Availability",
+    "state": "CanBeBought",
+    "maxOrderQuantity": 5,
+    "stockAvailability": "MoreThan20",
+    "availablePickUpStores": 7
+  }
+}
