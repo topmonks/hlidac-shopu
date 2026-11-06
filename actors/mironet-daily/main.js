@@ -1,22 +1,14 @@
 import zlib from "zlib";
 import { HttpCrawler } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
-import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
-
-/** @typedef {import("linkedom/types/interface/document").Document} Document */
-
-/** @enum {string} */
-const Labels = {
-  Categories: "categories",
-  Page: "page",
-  Pages: "pages"
-};
+import { Labels, listingItems, pageUrls, startingRequest } from "./listing.js";
 
 /**
  * @param {string | Buffer} buffer
@@ -41,62 +33,6 @@ function allCategoriesRequests(buffer) {
         }
       };
     });
-}
-
-/**
- * @param {{type:ActorType, urls:array, bfUrl?: string}}
- * @returns {{url: string, userData: {label: Labels, baseUrl?: string}}}
- */
-function startingRequest({ type, urls, bfUrl }) {
-  switch (type) {
-    case ActorType.BlackFriday: {
-      // The Black Friday page lists all its products itself, paginated by `PgID` like a category.
-      // Its category tiles are no use: their subcategory links drop the Black Friday filter.
-      const url = bfUrl ?? urls[0] ?? "https://www.mironet.cz/vyprodej/?v=black-friday";
-      return {
-        url,
-        userData: {
-          label: Labels.Page,
-          baseUrl: url
-        }
-      };
-    }
-    case ActorType.Test:
-      return {
-        url: "https://www.mironet.cz/graficke-karty+c14402/",
-        userData: {
-          label: Labels.Page,
-          baseUrl: "https://www.mironet.cz/graficke-karty+c14402/"
-        }
-      };
-    case ActorType.Full:
-      return {
-        url: "https://www.mironet.cz/sm/sitemap_kategorie_p_1.xml.gz",
-        userData: {
-          label: Labels.Categories
-        }
-      };
-    default:
-      throw new Error(`Unknown actor type: ${type}`);
-  }
-}
-
-/**
- * @param {{document: Document, request: {url: string, userData: {baseUrl: string}}}}
- * @returns {string[]}
- */
-function pageUrls({ document, request }) {
-  const pageNum = document.querySelectorAll(".pagination a.mirbtn").reduce((max, a) => {
-    const pageNumber = parseInt(a.innerText.trim());
-    return pageNumber > max ? pageNumber : max;
-  }, 0);
-  log.debug(`Found ${pageNum} pages on ${request.url}`);
-  const { baseUrl } = request.userData;
-  return restPageUrls(pageNum, pageNr => {
-    const url = new URL(baseUrl);
-    url.searchParams.append("PgID", pageNr.toString());
-    return url.href;
-  });
 }
 
 async function main() {
@@ -143,10 +79,10 @@ async function main() {
         return;
       }
       const { document } = parseHTML(body.toString());
-      const isCategoryPage = label === Labels.Page || label === Labels.Pages;
-      if (isCategoryPage) {
+      if (label === Labels.Page || label === Labels.Pages) {
         if (label === Labels.Page) {
-          const urls = pageUrls({ document, request });
+          const urls = pageUrls({ document, baseUrl: request.userData.baseUrl });
+          log.debug(`Found ${urls.length + 1} pages on ${request.url}`);
           stats.add("pages", urls.length);
           if (urls.length) {
             await enqueueLinks({
@@ -158,52 +94,19 @@ async function main() {
             });
           }
         }
-        const breadCrumbs = Array.from(document.querySelectorAll("div#displaypath > a.CatParent")).map(cat =>
-          cat.innerText.trim()
-        );
-        const requests = Array.from(document.querySelectorAll(".item_b")).flatMap(async item => {
-          const toNumber = p => parseInt(p.replace(/\s/g, "").match(/\d+/)[0]);
-          const idElem = item.querySelector(".item-code");
-          const linkElem = item.querySelector(".nazev a");
-          const priceElem = item.querySelector(".item_cena .item_b_cena");
-          const imgElem = item.querySelector(".item_obr img");
-          const oPriceElem = item.querySelector(".item_s_cena span.trought");
-          const img = imgElem ? `https:${imgElem.getAttribute("src")}` : null;
-          const link = linkElem ? linkElem.getAttribute("href") : null;
-          const id = idElem ? idElem.innerText.trim().replace("Kód: ", "") : null;
-          const name = linkElem ? linkElem.innerText.trim() : null;
-          const price = priceElem ? priceElem.innerText.trim() : false;
-          const dataItem = {
-            img,
-            itemId: id,
-            itemUrl: `${rootUrl}${link}`,
-            itemName: name,
-            discounted: !!oPriceElem,
-            currentPrice: price ? toNumber(price) : null,
-            breadCrumbs
-          };
-          if (oPriceElem) {
-            const oPrice = oPriceElem.innerText.trim();
-            dataItem.originalPrice = toNumber(oPrice);
-          }
-          if (!processedIds.has(dataItem.itemId)) {
-            processedIds.add(dataItem.itemId);
-            const slug = itemSlug(dataItem.itemUrl);
-            return [
-              await Dataset.pushData({
-                ...dataItem,
-                shop,
-                slug
-              })
-            ];
-          } else {
+        const items = listingItems({ document, rootUrl });
+        const newItems = [];
+        for (const item of items) {
+          if (processedIds.has(item.itemId)) {
             stats.inc("itemsDuplicity");
-            return null;
+            continue;
           }
-        });
-        stats.add("items", requests.length);
-        log.debug(`Found ${requests.length} items, storing them. ${request.url}`);
-        await Promise.all(requests);
+          processedIds.add(item.itemId);
+          newItems.push({ ...item, shop, slug: itemSlug(item.itemUrl) });
+        }
+        stats.add("items", items.length);
+        log.debug(`Found ${items.length} items, storing them. ${request.url}`);
+        await Dataset.pushData(newItems);
       }
     },
     async failedRequestHandler({ request }, error) {
