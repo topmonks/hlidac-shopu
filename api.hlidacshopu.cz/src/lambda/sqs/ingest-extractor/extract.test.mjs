@@ -1,6 +1,4 @@
 import { Readable } from "node:stream";
-import { setFlagsFromString } from "node:v8";
-import { runInNewContext } from "node:vm";
 import { crc32 } from "node:zlib";
 import test from "ava";
 import { maxItemMessageBytes } from "./batch.mjs";
@@ -99,27 +97,47 @@ test("sends the other messages when one fails, then throws for a retry", async t
   t.is(errors[0][1].items, 200);
 });
 
-test("doesn't keep the files in memory", async t => {
+// serial, so the other tests' buffers don't count as retained
+test.serial("doesn't keep the files in memory", async t => {
   // the 512 MB lambda ran out of memory on the big alza.cz/notino.cz zips
-  setFlagsFromString("--expose-gc");
-  const gc = runInNewContext("gc");
   const count = 20_000;
   const zip = zipOf(Array.from({ length: count }, (_, i) => file(i, 2000)));
   // in slices, so the files aren't views into one buffer that stays alive anyway
   function* slices() {
     for (let i = 0; i < zip.length; i += 64 * 1024) yield Buffer.from(zip.subarray(i, i + 64 * 1024));
   }
-  let retained;
+  let retained = 0;
+  let calls = 0;
   const { deps } = queue();
   const sendMessage = deps.sendMessage;
   deps.sendMessage = async body => {
     await sendMessage(body);
-    gc();
-    retained = process.memoryUsage().arrayBuffers - zip.length;
+    // a leak only grows, so a few samples of the ~170 messages are enough
+    if (++calls % 40 === 0) {
+      globalThis.gc();
+      retained = Math.max(retained, process.memoryUsage().arrayBuffers - zip.length);
+    }
   };
   await extractZip("shop_1.zip", Readable.from(slices()), deps);
+  t.true(calls >= 160);
   // ~40 MB of files were read, only the current ones may stay
   t.true(retained < 10_000_000, `${retained} bytes retained`);
+});
+
+test("throws for a retry when the download fails between files", async t => {
+  const entries = Array.from({ length: 300 }, (_, i) => file(i));
+  const zip = zipOf(entries);
+  // up to the middle of the 151st file's header
+  const read = 150;
+  const offset = entries.slice(0, read).reduce((sum, [name, content]) => sum + 30 + name.length + content.length, 0);
+  const body = new Readable({ read() {} });
+  body.push(zip.subarray(0, offset + 10));
+  setTimeout(() => body.destroy(new Error("connection reset")), 10);
+  const { sent, errors, deps } = queue();
+  await t.throwsAsync(extractZip("shop_1.zip", body, deps), { message: /incomplete/ });
+  t.deepEqual(sent, paths(entries).slice(0, read));
+  t.is(errors.length, 1);
+  t.is(errors[0][0].message, "connection reset");
 });
 
 test("throws for a retry when the download fails", async t => {

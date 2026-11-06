@@ -53,7 +53,7 @@
     "stats": "node scripts/stats.mjs",
     "test": "run-p 'test:*'",
     "test:lib": "yarn workspace @hlidac-shopu/lib test",
-    "test:api": "ava api.hlidacshopu.cz/**/*.test.mjs",
+    "test:api": "yarn workspace @hlidac-shopu/api-lambdas test",
     "test:actors": "ava actors/**/*.test.mjs",
     "test:extension": "node scripts/test-extension.mjs",
     "fmt": "biome format --write",

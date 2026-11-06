@@ -51,10 +51,15 @@ export async function extractZip(key, body, { sendMessage, reportError }) {
   console.log(`Extracting files from ${key}`);
   const zip = unzipperParse({ forceStream: true });
   // Unlike pipe(), pipeline passes a download error to the parser, so the loop below
-  // throws. A file being read when it happens never ends, so its read is failed too.
-  // (Racing each read with one long-lived error promise kept every file in memory.)
+  // throws. A file being read when it happens never ends, so its read is failed too,
+  // through a reject that only lives as long as that read.
   let failRead;
-  pipeline(body, zip, e => e && failRead?.(e));
+  let readAll = false;
+  pipeline(body, zip, e => {
+    if (!e) return;
+    if (readAll) console.warn(`Reading ${key} failed after its last file`, e);
+    else failRead?.(e);
+  });
   try {
     for await (const entry of zip) {
       if (entry.type !== "File") {
@@ -81,6 +86,7 @@ export async function extractZip(key, body, { sendMessage, reportError }) {
         await sendPending();
       }
     }
+    readAll = true;
   } catch (e) {
     // till https://github.com/ZJONSSON/node-unzipper/issues/228 is fixed
     if (e.message?.includes("Premature close")) {
