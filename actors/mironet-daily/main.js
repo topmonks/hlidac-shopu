@@ -8,7 +8,18 @@ import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import { Labels, listingItems, pageUrls, startingRequest } from "./listing.js";
+import {
+  ajaxCategoryId,
+  ajaxPageItems,
+  ajaxPageRequest,
+  fallbackPageRequest,
+  Labels,
+  listingItems,
+  pageCount,
+  pageUrl,
+  readBreadCrumbs,
+  startingRequests
+} from "./listing.js";
 
 /**
  * @param {string | Buffer} buffer
@@ -40,12 +51,23 @@ async function main() {
 
   const stats = await withPersistedStats({
     pages: 0,
+    ajaxPages: 0,
+    ajaxFallbacks: 0,
     items: 0,
     itemsDuplicity: 0,
     failed: 0
   });
 
-  const { development, maxRequestRetries, proxyGroups, type = ActorType.Full, urls, bfUrl } = await getInput();
+  const {
+    development,
+    maxRequestRetries,
+    proxyGroups,
+    type = ActorType.Full,
+    urls,
+    bfUrl,
+    // pages 2+ of categories through the lighter AJAX endpoint, `false` loads the regular pages
+    useAjaxPages = true
+  } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
 
@@ -60,6 +82,21 @@ async function main() {
 
   const processedIds = new Set();
 
+  /** @param {Object[]} items */
+  async function saveItems(items) {
+    const newItems = [];
+    for (const item of items) {
+      if (processedIds.has(item.itemId)) {
+        stats.inc("itemsDuplicity");
+        continue;
+      }
+      processedIds.add(item.itemId);
+      newItems.push({ ...item, shop, slug: itemSlug(item.itemUrl) });
+    }
+    stats.add("items", items.length);
+    await Dataset.pushData(newItems);
+  }
+
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestRetries,
@@ -69,8 +106,8 @@ async function main() {
       maxPoolSize: 200
     },
     maxRequestsPerMinute: 400,
-    additionalMimeTypes: ["application/x-gzip"],
-    async requestHandler({ body, request, enqueueLinks, crawler }) {
+    additionalMimeTypes: ["application/x-gzip", "application/json"],
+    async requestHandler({ body, request, response, enqueueLinks, crawler }) {
       log.info(`Processing ${request.url}`);
       const { label } = request.userData;
       if (label === Labels.Categories) {
@@ -78,46 +115,60 @@ async function main() {
         await crawler.requestQueue.addRequests(requests);
         return;
       }
-      const { document } = parseHTML(body.toString());
+      if (label === Labels.AjaxPage) {
+        const { breadCrumbs } = request.userData;
+        const items = ajaxPageItems({ statusCode: response.statusCode, body: body.toString(), rootUrl, breadCrumbs });
+        if (!items) {
+          log.warning(`AJAX page unusable (status ${response.statusCode}), loading the regular page`, {
+            url: request.url
+          });
+          stats.inc("ajaxFallbacks");
+          await crawler.addRequests([fallbackPageRequest(request.userData)]);
+          return;
+        }
+        stats.inc("ajaxPages");
+        await saveItems(items);
+        return;
+      }
+      const html = body.toString();
+      const { document } = parseHTML(html);
       if (label === Labels.Page || label === Labels.Pages) {
         if (label === Labels.Page) {
-          const urls = pageUrls({ document, baseUrl: request.userData.baseUrl });
-          log.debug(`Found ${urls.length + 1} pages on ${request.url}`);
-          stats.add("pages", urls.length);
-          if (urls.length) {
+          const { baseUrl } = request.userData;
+          const lastPage = pageCount(document);
+          const catId = useAjaxPages ? ajaxCategoryId(html, baseUrl) : null;
+          const breadCrumbs = readBreadCrumbs(document);
+          const pages = Array.from({ length: Math.max(lastPage - 1, 0) }, (_, i) => i + 2);
+          log.debug(`Found ${lastPage} pages on ${request.url}`);
+          stats.add("pages", pages.length);
+          if (pages.length && catId) {
+            await crawler.addRequests(pages.map(page => ajaxPageRequest({ catId, page, baseUrl, breadCrumbs })));
+          } else if (pages.length) {
             await enqueueLinks({
-              urls,
-              userData: {
-                label: Labels.Pages,
-                baseUrl: request.userData.baseUrl
-              }
+              urls: pages.map(page => pageUrl(baseUrl, page)),
+              userData: { label: Labels.Pages, baseUrl }
             });
           }
         }
         const items = listingItems({ document, rootUrl });
-        const newItems = [];
-        for (const item of items) {
-          if (processedIds.has(item.itemId)) {
-            stats.inc("itemsDuplicity");
-            continue;
-          }
-          processedIds.add(item.itemId);
-          newItems.push({ ...item, shop, slug: itemSlug(item.itemUrl) });
-        }
-        stats.add("items", items.length);
         log.debug(`Found ${items.length} items, storing them. ${request.url}`);
-        await Dataset.pushData(newItems);
+        await saveItems(items);
       }
     },
     async failedRequestHandler({ request }, error) {
+      if (request.userData.label === Labels.AjaxPage) {
+        log.warning(`AJAX page failed, loading the regular page: ${error.message}`, { url: request.url });
+        stats.inc("ajaxFallbacks");
+        await crawler.addRequests([fallbackPageRequest(request.userData)]);
+        return;
+      }
       log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
       stats.inc("failed");
     }
   });
 
-  const request = startingRequest({ type, urls, bfUrl });
   log.info("ACTOR - run crawler");
-  await crawler.run([request]);
+  await crawler.run(startingRequests({ type, urls, bfUrl }));
 
   log.info("ACTOR - crawler end");
   await stats.save(true);
