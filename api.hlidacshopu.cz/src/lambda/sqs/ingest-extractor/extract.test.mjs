@@ -1,4 +1,6 @@
 import { Readable } from "node:stream";
+import { setFlagsFromString } from "node:v8";
+import { runInNewContext } from "node:vm";
 import { crc32 } from "node:zlib";
 import test from "ava";
 import { maxItemMessageBytes } from "./batch.mjs";
@@ -95,6 +97,29 @@ test("sends the other messages when one fails, then throws for a retry", async t
   t.is(sent.length, 800);
   t.is(errors.length, 1);
   t.is(errors[0][1].items, 200);
+});
+
+test("doesn't keep the files in memory", async t => {
+  // the 512 MB lambda ran out of memory on the big alza.cz/notino.cz zips
+  setFlagsFromString("--expose-gc");
+  const gc = runInNewContext("gc");
+  const count = 20_000;
+  const zip = zipOf(Array.from({ length: count }, (_, i) => file(i, 2000)));
+  // in slices, so the files aren't views into one buffer that stays alive anyway
+  function* slices() {
+    for (let i = 0; i < zip.length; i += 64 * 1024) yield Buffer.from(zip.subarray(i, i + 64 * 1024));
+  }
+  let retained;
+  const { deps } = queue();
+  const sendMessage = deps.sendMessage;
+  deps.sendMessage = async body => {
+    await sendMessage(body);
+    gc();
+    retained = process.memoryUsage().arrayBuffers - zip.length;
+  };
+  await extractZip("shop_1.zip", Readable.from(slices()), deps);
+  // ~40 MB of files were read, only the current ones may stay
+  t.true(retained < 10_000_000, `${retained} bytes retained`);
 });
 
 test("throws for a retry when the download fails", async t => {

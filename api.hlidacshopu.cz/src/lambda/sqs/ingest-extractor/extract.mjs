@@ -51,16 +51,20 @@ export async function extractZip(key, body, { sendMessage, reportError }) {
   console.log(`Extracting files from ${key}`);
   const zip = unzipperParse({ forceStream: true });
   // Unlike pipe(), pipeline passes a download error to the parser, so the loop below
-  // throws. A file being read when it happens never ends, so its read waits for the error too.
-  const zipError = new Promise((_, reject) => pipeline(body, zip, e => e && reject(e)));
-  zipError.catch(() => {});
+  // throws. A file being read when it happens never ends, so its read is failed too.
+  // (Racing each read with one long-lived error promise kept every file in memory.)
+  let failRead;
+  pipeline(body, zip, e => e && failRead?.(e));
   try {
     for await (const entry of zip) {
       if (entry.type !== "File") {
         entry.autodrain();
         continue;
       }
-      const content = await Promise.race([entry.buffer(), zipError]).then(b => b.toString());
+      const content = await new Promise((resolve, reject) => {
+        failRead = reject;
+        entry.buffer().then(resolve, reject);
+      }).then(b => b.toString());
       const payload = { path: entry.path, content };
       const size = byteLength(JSON.stringify(payload));
       if (size > maxItemSize) maxItemSize = size;
