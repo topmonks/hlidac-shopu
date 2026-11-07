@@ -46,6 +46,26 @@ export function startingRequests({ type, urls, bfUrl }) {
 }
 
 /**
+ * Categories that are not inside another category of the list, e.g. `/procesory+c14398/` but not
+ * `/procesory/amd+c14413/`. A category lists the products of all its subcategories too, so these
+ * cover the whole catalogue and each product is read about once instead of once per category level.
+ * @param {string[]} urls category URLs from the sitemap
+ * @returns {string[]}
+ */
+export function rootCategories(urls) {
+  const path = url =>
+    new URL(url).pathname
+      .replace(/\+c\d+\/?$/, "")
+      .split("/")
+      .filter(Boolean);
+  const paths = new Set(urls.map(url => path(url).join("/")));
+  return urls.filter(url => {
+    const parts = path(url);
+    return !parts.slice(0, -1).some((_, i) => paths.has(parts.slice(0, i + 1).join("/")));
+  });
+}
+
+/**
  * Number of pages of a listing, read from the pagination of its first page
  * @param {Document} document
  * @returns {number}
@@ -55,6 +75,29 @@ export function pageCount(document) {
     const pageNumber = parseInt(a.innerText.trim());
     return pageNumber > max ? pageNumber : max;
   }, 0);
+}
+
+/**
+ * Number of products of a listing, `<div id="ItemCount"> 13836 produktů </div>`
+ * @param {Document} document
+ * @returns {number | null}
+ */
+export function itemCount(document) {
+  const count = Number.parseInt(document.querySelector("#ItemCount")?.textContent.replace(/\s/g, "") ?? "", 10);
+  return Number.isNaN(count) ? null : count;
+}
+
+/**
+ * Number of pages of a listing. The pagination links stop at page 416 (~10 000 products), but the
+ * pages after it exist, so the number of products decides. Without it the pagination links do.
+ * @param {Document} document first page of the listing
+ * @returns {number}
+ */
+export function lastPage(document) {
+  const count = itemCount(document);
+  const perPage = document.querySelectorAll(".item_b").length;
+  if (count === null || !perPage) return pageCount(document);
+  return count <= perPage ? 1 : Math.ceil(count / perPage);
 }
 
 /**
