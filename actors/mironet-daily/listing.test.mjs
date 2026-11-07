@@ -8,11 +8,14 @@ import {
   ajaxPageRequest,
   BF_URL,
   fallbackPageRequest,
+  itemCount,
   Labels,
+  lastPage,
   listingItems,
   pageCount,
   pageUrl,
   readBreadCrumbs,
+  rootCategories,
   startingRequests
 } from "./listing.js";
 
@@ -44,6 +47,38 @@ test("full run starts from the category sitemap, or from the given categories", 
     { url: categoryUrl, userData: { label: Labels.Page, baseUrl: categoryUrl } },
     { url: `${rootUrl}/x+c1/`, userData: { label: Labels.Page, baseUrl: `${rootUrl}/x+c1/` } }
   ]);
+});
+
+test("only top-level categories of the sitemap are scraped, they list their subcategories' products", t => {
+  const sitemap = [
+    "https://www.mironet.cz",
+    "https://www.mironet.cz/procesory+c14398/",
+    "https://www.mironet.cz/procesory/amd+c14413/",
+    "https://www.mironet.cz/procesory/amd/socket-am4/ryzen-5+c36002/",
+    // its parent `/kancelar-a-papirnictvi+c…/` is not in the sitemap, so it is a top-level category itself
+    "https://www.mironet.cz/kancelar-a-papirnictvi/papir+c123/",
+    "https://www.mironet.cz/kancelar-a-papirnictvi/papir/kancelarsky+c124/"
+  ];
+  t.deepEqual(rootCategories(sitemap), [
+    "https://www.mironet.cz",
+    "https://www.mironet.cz/procesory+c14398/",
+    "https://www.mironet.cz/kancelar-a-papirnictvi/papir+c123/"
+  ]);
+});
+
+test("page count comes from the number of products, the pagination links stop at page 416", t => {
+  const items = Array.from({ length: 24 }, (_, i) => `<div class="item_b"><span class="item-code">${i}</span></div>`);
+  const page = (count, lastLink) =>
+    parseHTML(
+      `<div id="ItemCount" class="NoPrint"> ${count} produktů </div>${items.join("")}` +
+        `<div class="pagination"><a class="mirbtn">${lastLink}</a></div>`
+    ).document;
+  // https://www.mironet.cz/puzzle+c35623/ (7. 11. 2026): 13 836 products, links up to 416, page 577 has the last 12
+  t.is(itemCount(page(13836, 416)), 13836);
+  t.is(lastPage(page(13836, 416)), 577);
+  t.is(lastPage(page(382, 16)), 16);
+  t.is(lastPage(page(24, 1)), 1);
+  t.is(lastPage(bf), 150, "without the number of products the pagination links decide");
 });
 
 test("pagination keeps the Black Friday filter", t => {
