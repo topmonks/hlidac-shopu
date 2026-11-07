@@ -14,18 +14,19 @@ import {
   ajaxPageRequest,
   fallbackPageRequest,
   Labels,
+  lastPage,
   listingItems,
-  pageCount,
   pageUrl,
   readBreadCrumbs,
+  rootCategories,
   startingRequests
 } from "./listing.js";
 
 /**
  * @param {string | Buffer} buffer
- * @returns {{url: string, userData: {label: Labels.Page, baseUrl: string}}[]}
+ * @returns {string[]}
  */
-function allCategoriesRequests(buffer) {
+function sitemapCategoryUrls(buffer) {
   log.info("Loading Sitemap");
   const markup = zlib.unzipSync(buffer).toString();
   const { document } = parseXML(markup);
@@ -35,14 +36,7 @@ function allCategoriesRequests(buffer) {
     .map(x => {
       // e.g. <loc><![CDATA[https://www.mironet.cz]]></loc>
       // x.textContent would return empty string, we need to use innerHTML and remove CDATA manually
-      const url = x.innerHTML.replace("<![CDATA[", "").replace("]]>", "");
-      return {
-        url,
-        userData: {
-          label: Labels.Page,
-          baseUrl: url
-        }
-      };
+      return x.innerHTML.replace("<![CDATA[", "").replace("]]>", "");
     });
 }
 
@@ -50,6 +44,7 @@ async function main() {
   rollbar.init();
 
   const stats = await withPersistedStats({
+    categories: 0,
     pages: 0,
     ajaxPages: 0,
     ajaxFallbacks: 0,
@@ -66,7 +61,9 @@ async function main() {
     urls,
     bfUrl,
     // pages 2+ of categories through the lighter AJAX endpoint, `false` loads the regular pages
-    useAjaxPages = true
+    useAjaxPages = true,
+    // only the top-level categories of the sitemap, `false` reads every category (each product ~3 times)
+    useRootCategories = true
   } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
@@ -111,8 +108,13 @@ async function main() {
       log.info(`Processing ${request.url}`);
       const { label } = request.userData;
       if (label === Labels.Categories) {
-        const requests = allCategoriesRequests(body);
-        await crawler.requestQueue.addRequests(requests);
+        const all = sitemapCategoryUrls(body);
+        const categories = useRootCategories ? rootCategories(all) : all;
+        log.info(`Scraping ${categories.length} of ${all.length} categories from the sitemap`);
+        stats.add("categories", categories.length);
+        await crawler.requestQueue.addRequests(
+          categories.map(url => ({ url, userData: { label: Labels.Page, baseUrl: url } }))
+        );
         return;
       }
       if (label === Labels.AjaxPage) {
@@ -135,11 +137,11 @@ async function main() {
       if (label === Labels.Page || label === Labels.Pages) {
         if (label === Labels.Page) {
           const { baseUrl } = request.userData;
-          const lastPage = pageCount(document);
+          const pageTotal = lastPage(document);
           const catId = useAjaxPages ? ajaxCategoryId(html, baseUrl) : null;
           const breadCrumbs = readBreadCrumbs(document);
-          const pages = Array.from({ length: Math.max(lastPage - 1, 0) }, (_, i) => i + 2);
-          log.debug(`Found ${lastPage} pages on ${request.url}`);
+          const pages = Array.from({ length: Math.max(pageTotal - 1, 0) }, (_, i) => i + 2);
+          log.debug(`Found ${pageTotal} pages on ${request.url}`);
           stats.add("pages", pages.length);
           if (pages.length && catId) {
             await crawler.addRequests(pages.map(page => ajaxPageRequest({ catId, page, baseUrl, breadCrumbs })));
