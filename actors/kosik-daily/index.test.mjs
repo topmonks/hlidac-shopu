@@ -1,5 +1,5 @@
 import test from "ava";
-import { parseItem } from "./parse.js";
+import { parseItem } from "./index.js";
 
 // Trimmed items from /api/front/page/products
 const pumpkin = {
