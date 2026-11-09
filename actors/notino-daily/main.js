@@ -193,7 +193,9 @@ async function main() {
     maxRequestRetries,
     country = Country.CZ,
     type = ActorType.Full,
-    testUrls
+    testUrls,
+    // a product page holds all its variants, `true` also loads the page of each variant
+    crawlVariantPages = false
   } = await getInput();
 
   if (development || debug) {
@@ -306,7 +308,7 @@ async function main() {
         case Labels.DETAIL_PAGE: {
           {
             const { document } = parseHTML(html);
-            if (document.querySelector("div#pdVariantsTile")) {
+            if (crawlVariantPages && document.querySelector("div#pdVariantsTile")) {
               const productVariants = document.querySelectorAll("div#pdVariantsTile li a").map(a => {
                 const url = new URL(request.url);
                 return {
