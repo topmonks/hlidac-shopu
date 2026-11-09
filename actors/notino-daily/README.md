@@ -8,6 +8,10 @@ slevový kód (`VoucherDiscount` nebo `ConditionalVoucherDiscount` v Apollo stav
 u každé varianty zvlášť (např. jen 1 ze 4 variant Prada Paradoxe). Varianty bez štítku počítá `notBlackFriday`
 ve statistikách. BF běh tak trvá stejně dlouho jako FULL.
 
+Stránky jednotlivých variant (`/p-<id>/`) se už nenačítají: stránka produktu ze sitemapy obsahuje v Apollo stavu všechny
+varianty (na 300 náhodných produktech stejných 368 variant, o 13 % méně požadavků). `"crawlVariantPages": true` je načítá
+jako dřív. Platí pro FULL i BF.
+
 ---
 
 # 5.11.2026 — originalPrice = přeškrtnutá cena (GH #3663)
