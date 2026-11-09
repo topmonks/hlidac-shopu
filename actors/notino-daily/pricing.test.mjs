@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import test from "ava";
-import { strikethroughPrices, variantPrices } from "./pricing.js";
+import { isBlackFridayVariant, strikethroughPrices, variantPrices } from "./pricing.js";
 
 const fixture = async name => JSON.parse(await readFile(new URL(`./fixtures/${name}`, import.meta.url), "utf8"));
 
@@ -9,6 +9,8 @@ const fixture = async name => JSON.parse(await readFile(new URL(`./fixtures/${na
 const pradaJsonLd = await fixture("prada-jsonld.json");
 const maybellineJsonLd = await fixture("maybelline-jsonld.json");
 const pradaRefill = await fixture("prada-refill-variant.json");
+// Prada Paradoxe (4 variants) and Armani Stronger With You Duo Set from the live product pages (7. 11. 2026)
+const blackFridayVariants = await fixture("black-friday-variants.json");
 
 const documentWith = jsonLd =>
   parseHTML(`<html><head><script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head></html>`).document;
@@ -119,4 +121,21 @@ test("EUR prices keep cents", t => {
     attributes: { VoucherDiscount: { discountedPrice: 10.965 } }
   };
   t.deepEqual(variantPrices(variant), { currentPrice: 10.97, originalPrice: 12.9, currency: "EUR" });
+});
+
+test("only variants with a voucher tagged blackfriday are Black Friday variants (#3672)", t => {
+  t.deepEqual(
+    blackFridayVariants.filter(isBlackFridayVariant).map(x => x.webId),
+    ["16143146"],
+    "1 of the 4 Prada variants has the badge, the Armani set (listed among Black Friday products) has none"
+  );
+  t.true(isBlackFridayVariant(pradaRefill), "voucher bfsale tagged blackfriday");
+});
+
+test("the tag decides, not the voucher code, and an unconditional voucher counts too", t => {
+  // the Black Friday listing has a sponsored product with voucher bfsale but no tags and no badge
+  t.false(isBlackFridayVariant({ attributes: { ConditionalVoucherDiscount: { code: "bfsale", tags: null } } }));
+  t.true(isBlackFridayVariant({ attributes: { VoucherDiscount: { code: "notino", tags: ["blackfriday"] } } }));
+  t.false(isBlackFridayVariant({ attributes: {} }));
+  t.false(isBlackFridayVariant({}));
 });

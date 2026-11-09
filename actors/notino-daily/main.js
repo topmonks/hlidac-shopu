@@ -7,7 +7,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import { saveUniqProducts } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { Actor, LogLevel, log } from "apify";
-import { strikethroughPrices, variantPrices } from "./pricing.js";
+import { isBlackFridayVariant, strikethroughPrices, variantPrices } from "./pricing.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -34,8 +34,9 @@ import { strikethroughPrices, variantPrices } from "./pricing.js";
  * volume. This is strictly more complete than the old category walk and avoids the `?f=` wall
  * entirely.
  *
- * Black Friday still uses the old CATEGORY_PAGE/pagination path (seasonal, out of scope for #3587);
- * it likely hits the same Cloudflare wall and should be revisited before November.
+ * Black Friday (#3672) walks the same sitemap and keeps only the variants with the Black Friday badge
+ * (their voucher is tagged `blackfriday`). The `/black-friday/` listing hit the same `?f=` wall, so only
+ * its first page was scraped, and it also lists sponsored products without the badge.
  * The retired homepage-menu discovery (`homepageRequests`) is in this file's git history.
  */
 
@@ -46,16 +47,13 @@ const Labels = {
   CATEGORY_PAGE: "CATEGORY_PAGE",
   DETAIL_PAGE: "DETAIL_PAGE",
   COUNT: "COUNT",
-  COUNT_PRODUCT: "COUNT_PRODUCT",
-  BF: "BF"
+  COUNT_PRODUCT: "COUNT_PRODUCT"
 };
 
 const SITEMAP_URL_CZ = "https://www.notino.cz/sitemap.xml";
 const SITEMAP_URL_SK = "https://www.notino.sk/sitemap.xml";
 const BASE_URL = "https://www.notino.cz";
 const BASE_URL_SK = "https://www.notino.sk";
-const BASE_URL_CZ_BF = "https://www.notino.cz/black-friday/";
-const BASE_URL_SK_BF = "https://www.notino.sk/black-friday/";
 
 /** @enum {string} */
 const Country = {
@@ -90,8 +88,9 @@ function isProductDetailSitemap(url) {
 /**
  * @param {Document} document
  * @param {Country} country
+ * @param {(variant: Object) => boolean} keepVariant e.g. only Black Friday variants
  */
-function handleProductUsingWindowObject(document, country) {
+function handleProductUsingWindowObject(document, country, keepVariant) {
   log.debug("Handled by windowObject");
   const dataStringFromScriptTag = document.querySelector("#__APOLLO_STATE__")?.innerHTML;
   const productData = JSON.parse(dataStringFromScriptTag.replace(/;/g, ""));
@@ -119,6 +118,7 @@ function handleProductUsingWindowObject(document, country) {
     .map(variant => {
       const variantGeneralData = productData[`CatalogVariant:${variant}`];
       if (variantGeneralData.availability.state !== "CanBeBought") return;
+      if (!keepVariant(variantGeneralData)) return;
       const productName = `${itemBrand} ${variantGeneralData.name ? variantGeneralData.name : ""} ${
         variantGeneralData.variantName ? variantGeneralData.variantName : ""
       } ${variantGeneralData.additionalInfo ? variantGeneralData.additionalInfo : ""}`;
@@ -209,8 +209,18 @@ async function main() {
     crawledProducts: 0,
     JSON: 0,
     HTML: 0,
-    failed: 0
+    failed: 0,
+    notBlackFriday: 0,
+    bfSkippedHTML: 0
   });
+
+  const onlyBlackFriday = type === ActorType.BlackFriday;
+  /** @param {Object} variant Apollo `CatalogVariant` */
+  const keepVariant = variant => {
+    if (!onlyBlackFriday || isBlackFridayVariant(variant)) return true;
+    stats.inc("notBlackFriday");
+    return false;
+  };
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
@@ -263,7 +273,6 @@ async function main() {
           log.debug(`Queued ${requests.length} product details from ${request.url}`);
           break;
         }
-        case Labels.BF:
         case Labels.CATEGORY_PAGE:
           {
             const { document } = parseHTML(html);
@@ -313,8 +322,12 @@ async function main() {
             // Getting the data from apollo state is currently the only working way
             let products = [];
             if (document.querySelector("#__APOLLO_STATE__")?.innerHTML) {
-              products = handleProductUsingWindowObject(document, country);
+              products = handleProductUsingWindowObject(document, country, keepVariant);
               stats.add("JSON", products.length);
+            } else if (onlyBlackFriday) {
+              // without the Apollo state there is no voucher to tell Black Friday variants apart
+              log.warning(`No product data to find Black Friday variants, skipping ${request.url}`);
+              stats.inc("bfSkippedHTML");
             } else if (document.querySelector('a[href="#variants"]')) {
               products = handleProductUsingHTML(document, request);
               stats.add("HTML", products.length);
@@ -357,14 +370,6 @@ async function main() {
   log.info("Crawling start");
   const startingRequests = [];
   switch (type) {
-    case ActorType.BlackFriday:
-      startingRequests.push({
-        url: country === Country.CZ ? BASE_URL_CZ_BF : BASE_URL_SK_BF,
-        userData: {
-          label: Labels.BF
-        }
-      });
-      break;
     case ActorType.Count:
       startingRequests.push({
         url: getSitemapUrl(country),
@@ -378,7 +383,7 @@ async function main() {
       });
       break;
     default:
-      // Full: discover the whole catalog via the sitemap (see header comment).
+      // Full and Black Friday: discover the whole catalog via the sitemap (see header comment).
       startingRequests.push({
         url: getSitemapUrl(country),
         userData: { label: Labels.SITEMAP_INDEX }

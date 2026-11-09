@@ -13,6 +13,18 @@ export function conditionalVoucherPrice(voucher) {
   return conditions.toSorted((a, b) => a.conditionMin - b.conditionMin)[0]?.discountedPrice;
 }
 
+/**
+ * Variant with the Black Friday badge. The badge comes from its voucher being tagged `blackfriday`
+ * (`VoucherDiscount` or `ConditionalVoucherDiscount`, any voucher code). The `/black-friday/` listing
+ * also shows sponsored products without the badge, those are not Black Friday products (#3672).
+ * @param {Object} variant Apollo `CatalogVariant`
+ * @returns {boolean}
+ */
+export function isBlackFridayVariant(variant) {
+  const { VoucherDiscount, ConditionalVoucherDiscount } = variant?.attributes ?? {};
+  return [VoucherDiscount, ConditionalVoucherDiscount].some(voucher => voucher?.tags?.includes("blackfriday"));
+}
+
 /** CZK prices are shown whole on the site, EUR (notino.sk) keeps cents */
 export function roundPrice(value, currency) {
   return currency === "CZK" ? Math.round(value) : Math.round(value * 100) / 100;

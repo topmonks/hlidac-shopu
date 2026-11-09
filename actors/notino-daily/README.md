@@ -1,3 +1,15 @@
+# 7.11.2026 — Black Friday ze sitemapy, jen produkty se štítkem Black Friday (GH #3672)
+
+`type: "BF"` bral jen první stránku `/black-friday/` (~28 produktů z ~12 000): její stránkování (`?f=`) vrací 403 od
+Cloudflare stejně jako u kategorií (GH #3587). Výpis navíc obsahuje sponzorované produkty bez štítku Black Friday.
+
+BF teď prochází stejnou sitemapu jako FULL a do `notino_bf` ukládá jen varianty se štítkem Black Friday: jejich
+slevový kód (`VoucherDiscount` nebo `ConditionalVoucherDiscount` v Apollo stavu) má `tags: ["blackfriday"]`. Štítek je
+u každé varianty zvlášť (např. jen 1 ze 4 variant Prada Paradoxe). Varianty bez štítku počítá `notBlackFriday`
+ve statistikách. BF běh tak trvá stejně dlouho jako FULL.
+
+---
+
 # 5.11.2026 — originalPrice = přeškrtnutá cena (GH #3663)
 
 `originalPrice` je cena, kterou stránka produktu přeškrtává:
