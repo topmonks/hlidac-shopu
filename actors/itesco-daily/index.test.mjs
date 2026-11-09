@@ -1,5 +1,5 @@
 import test from "ava";
-import { extractPrices } from "./prices.js";
+import { extractPrices } from "./index.js";
 
 // Trimmed ProductType entries from the apollo cache of nakup.itesco.cz/shop/cs-CZ/browse/ovoce-a-zelenina/all.
 const mandarinky = {

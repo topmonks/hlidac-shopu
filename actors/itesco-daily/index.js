@@ -8,7 +8,6 @@ import Rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import { extractPrices } from "./prices.js";
 
 /** @typedef {import("linkedom/types/interface/document").Document} Document */
 
@@ -31,6 +30,36 @@ const StartUrls = {
   CZ: "https://nakup.itesco.cz/shop/cs-CZ/landing/groceries",
   SK: "https://potravinydomov.itesco.sk/shop/sk-SK/landing/groceries"
 };
+
+const toPrice = value => (typeof value === "number" ? value : cleanPrice(value));
+
+/**
+ * Loose produce is listed per average piece (`price.actual` = `price.unitPrice` * `averageWeight`),
+ * but its "předtím" promo price is per kg. Catch-weight products are listed per kg.
+ * @param {object} product ProductType from the apollo cache
+ * @param {number | undefined} originalPrice parsed from the non-Clubcard promo text
+ */
+export function extractPrices(product, originalPrice) {
+  const price = product.price ?? {};
+  const result = {
+    currentPrice: toPrice(price.actual),
+    currentUnitPrice: toPrice(price.unitPrice),
+    discounted: false,
+    useUnitPrice: product.productType === "LooseProduce" || product.productType === "CatchWeightProducts"
+  };
+  if (originalPrice) {
+    result.discounted = true;
+    result.originalPrice = originalPrice;
+  }
+  if (result.useUnitPrice) {
+    result.unitOfMeasure = price.unitOfMeasure;
+    result.originalUnitPrice = originalPrice;
+    if (originalPrice && product.productType === "LooseProduce") {
+      result.originalPrice = Math.round(originalPrice * product.averageWeight * 100) / 100;
+    }
+  }
+  return result;
+}
 
 /**
  * Map of non-clubcard sale text parsers. Get the appropriate parser by country.
@@ -280,7 +309,7 @@ function extractBFItems(document, country) {
   });
 }
 
-async function main() {
+export async function main() {
   Rollbar.init();
 
   const stats = await withPersistedStats({
@@ -379,5 +408,3 @@ async function main() {
   await uploadToKeboola(getTableName(country, type));
   log.info("upload to Keboola finished");
 }
-
-await Actor.main(main);
