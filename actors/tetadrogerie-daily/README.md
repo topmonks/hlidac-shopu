@@ -10,6 +10,8 @@ Scrapes data from `https://www.tetadrogerie.cz/eshop`
 * `"type": "BF"` scrapes the listing in `bfUrl` into `teta_cz_bf`, e.g. the Black Friday promotion
   `https://www.tetadrogerie.cz/akce/detail/sn26bf0001`.
 * A run that scraped no products fails instead of uploading an empty table.
+* `maxConcurrency` (default 10) limits the browser pages opened in parallel. Without a limit Crawlee scaled to ~50
+  pages on one CPU, page loads timed out and listing pages were lost.
 ## Actors INPUT
 
 ```json
