@@ -63,9 +63,14 @@ function applyLocalPrices(response, info) {
   // Re-run the sale action detection with the scraped price included, so
   // a price drop seen only by the extension switches the discount reference
   // to the EU minimum price the same way the API would.
+  // Older API responses carry only the reference price of the type the API
+  // picked, so stay on the EU minimum when there is no common price to switch
+  // to, otherwise the widget shows "Běžná cena" with no value.
   const { lastDiscountDate, lastIncreaseDate } = getLastPriceChanges(currentPriceSeries);
-  const euDiscount = Boolean(response.metadata.minPrice) && isEuDiscountApplicable(lastDiscountDate, lastIncreaseDate);
-  const referencePrice = euDiscount ? response.metadata.minPrice : response.metadata.commonPrice;
+  const { minPrice, commonPrice } = response.metadata;
+  const euDiscount =
+    Boolean(minPrice) && (!commonPrice || isEuDiscountApplicable(lastDiscountDate, lastIncreaseDate));
+  const referencePrice = euDiscount ? minPrice : commonPrice;
 
   return {
     ...response,
