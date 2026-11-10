@@ -10,6 +10,7 @@ import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, LogLevel, log } from "apify";
+import { hasBlackFridayBadge, isProductUrl } from "./index.js";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
@@ -97,7 +98,7 @@ function extractTextFromHtml(textWithHTML) {
   return document.querySelector("*")?.textContent?.trim() || null;
 }
 
-function defRouter(processedIds, stats) {
+function defRouter(processedIds, stats, type) {
   return createHttpRouter({
     /** @param {HttpCrawlingContext} context */
     async initialCategories({ body, enqueueLinks, log, response }) {
@@ -117,6 +118,10 @@ function defRouter(processedIds, stats) {
       const itemUrl = response.url;
       log.debug("Extracting product data", { url: itemUrl });
       const { document } = parseHTML(body.toString());
+      if (type === ActorType.BlackFriday && !hasBlackFridayBadge(document)) {
+        stats.inc("itemNotBlackFriday");
+        return;
+      }
       const data = toArray(
         JSON.parse(document.querySelector("script[type='application/ld+json']")?.textContent ?? "[]")
       );
@@ -227,7 +232,7 @@ async function main() {
     maxRequestRetries = 4,
     type = ActorType.Full,
     urls
-  } = await getInput({ urls: null });
+  } = await getInput();
 
   if (debug) {
     log.setLevel(LogLevel.DEBUG);
@@ -237,6 +242,7 @@ async function main() {
   const stats = await withPersistedStats({
     items: 0,
     itemNoPrice: 0,
+    itemNotBlackFriday: 0,
     failed: 0
   });
 
@@ -256,19 +262,23 @@ async function main() {
     useSessionPool: true,
     persistCookiesPerSession: true,
     maxRequestRetries,
-    requestHandler: defRouter(processedIds, stats),
+    requestHandler: defRouter(processedIds, stats, type),
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
       stats.inc("failed");
     }
   });
 
-  // Czech republic has all products in sitemap
-  if (country === Country.CZ) {
-    await crawler.run(sitemap.urls.map(url => ({ url, label: Labels.PRODUCT_DETAIL })));
+  // Czech republic has all products in sitemap; `urls` limits a run to the given pages
+  if (country === Country.CZ && !urls?.length) {
+    await crawler.run(sitemap.urls.filter(isProductUrl).map(url => ({ url, label: Labels.PRODUCT_DETAIL })));
   } else {
     // Slovakia does not
     await crawler.run(initialRequests(country, type, urls));
+  }
+
+  if (!Object.keys(processedIds).length) {
+    throw new Error("No products scraped - blocked, site structure changed or the Black Friday badge is gone");
   }
 
   let tableName = country === Country.CZ ? "pilulka_cz" : "pilulka_sk";
