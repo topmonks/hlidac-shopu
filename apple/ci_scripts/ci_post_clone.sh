@@ -1,5 +1,8 @@
 #!/bin/sh
+set -e
 
-brew install node@18
-brew link node@18
+# Same major version as .nvmrc. Versioned node formulae are keg-only, so link
+# it to put node on the PATH of the later build scripts.
+brew install node@24
+brew link --force --overwrite node@24
 brew install yarn
