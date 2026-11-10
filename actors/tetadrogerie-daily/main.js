@@ -17,6 +17,8 @@ async function main() {
     debug,
     test,
     maxRequestRetries,
+    // browser pages in parallel: unlimited, Crawlee scales to ~50 on one CPU, pages time out and get lost
+    maxConcurrency = 10,
     type = ActorType.Full,
     bfUrl = "https://www.tetadrogerie.cz/eshop/produkty/stitky-entilos-black-friday"
   } = await getInput();
@@ -42,6 +44,7 @@ async function main() {
       autoscaleIntervalSecs: 5
     },
     proxyConfiguration,
+    maxConcurrency,
     maxRequestRetries,
     navigationTimeoutSecs: 30,
     useSessionPool: true,
