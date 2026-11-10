@@ -3,6 +3,11 @@
 ## 2.4.14
 * Fixed Tchibo.cz and Tchibo.sk to show the price history of the selected colour and size (`article_id`) instead of the whole product (#3642)
 * Fixed Tesco meat, fish, fruit and vegetables sold by weight to use the price per kg instead of the price of the selected weight or of one piece (#3647)
+* Fixed 4camping.cz to use the coupon price ("se slevovým kódem") as the current price (#3648)
+* Fixed the widget showing "Běžná cena" without a value when the scraped price is above the last price in the data (#3648)
+* Fixed Košík.cz originalPrice picking up the crossed-out price of a similar product (#3654)
+* Fixed Notino originalPrice to be the crossed-out price: the regular price with a coupon, otherwise the struck-through price from the product page (#3665, #3663)
+* Fixed Mountfield.cz using the Věrná tlapka club price as the current price (#3641)
 
 ## 2.4.13
 * Added Auto ESA (autoesa.cz) (#3638)
