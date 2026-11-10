@@ -1,0 +1,1349 @@
+{
+  "filter": {
+    "options": [],
+    "attributes": [],
+    "taxa": [
+      {
+        "code": "taxon_menu_category",
+        "name": "Teta Drogerie CZ",
+        "choices": [
+          {
+            "name": "Gely na praní",
+            "value": "gely-na-prani",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 5
+          },
+          {
+            "name": "Kapsle na praní",
+            "value": "kapsle-na-prani",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 4
+          },
+          {
+            "name": "Prášky a papírky na praní",
+            "value": "prasky-na-prani",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 3
+          },
+          {
+            "name": "Aviváže",
+            "value": "avivaze",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 2
+          },
+          {
+            "name": "Dětské praní",
+            "value": "detske-prani",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Prací doplňky",
+            "value": "praci-doplnky",
+            "parent_code": "prani",
+            "parent_name": "Praní",
+            "level": 2,
+            "count": 8
+          },
+          {
+            "name": "Praní",
+            "value": "prani",
+            "parent_code": "domacnost",
+            "parent_name": "Domácnost",
+            "level": 1,
+            "count": 20
+          },
+          {
+            "name": "Tablety do myčky",
+            "value": "tablety-do-mycky",
+            "parent_code": "myti-nadobi",
+            "parent_name": "Mytí nádobí",
+            "level": 2,
+            "count": 4
+          },
+          {
+            "name": "Mytí nádobí",
+            "value": "myti-nadobi",
+            "parent_code": "domacnost",
+            "parent_name": "Domácnost",
+            "level": 1,
+            "count": 4
+          },
+          {
+            "name": "WC bloky",
+            "value": "wc-bloky",
+            "parent_code": "wc",
+            "parent_name": "WC",
+            "level": 2,
+            "count": 8
+          },
+          {
+            "name": "WC",
+            "value": "wc",
+            "parent_code": "domacnost",
+            "parent_name": "Domácnost",
+            "level": 1,
+            "count": 8
+          },
+          {
+            "name": "Domácnost",
+            "value": "domacnost",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 32
+          },
+          {
+            "name": "Krémy s SPF",
+            "value": "kremy_s_spf",
+            "parent_code": "kremy",
+            "parent_name": "Krémy",
+            "level": 2,
+            "count": 6
+          },
+          {
+            "name": "Prémiové krémy",
+            "value": "premiove-kremy",
+            "parent_code": "kremy",
+            "parent_name": "Krémy",
+            "level": 2,
+            "count": 7
+          },
+          {
+            "name": "Krémy",
+            "value": "kremy",
+            "parent_code": "plet",
+            "parent_name": "Pleť",
+            "level": 1,
+            "count": 13
+          },
+          {
+            "name": "Čisticí vody a tonika",
+            "value": "cistici-vody-a-tonika",
+            "parent_code": "cisteni-pleti",
+            "parent_name": "Čištění pleti",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Čištění pleti",
+            "value": "cisteni-pleti",
+            "parent_code": "plet",
+            "parent_name": "Pleť",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Pleťová séra",
+            "value": "pletova-sera",
+            "parent_code": "kosmeticka-sera",
+            "parent_name": "Kosmetická séra",
+            "level": 2,
+            "count": 4
+          },
+          {
+            "name": "Kosmetická séra",
+            "value": "kosmeticka-sera",
+            "parent_code": "plet",
+            "parent_name": "Pleť",
+            "level": 1,
+            "count": 4
+          },
+          {
+            "name": "Masky na pleť",
+            "value": "masky-na-plet",
+            "parent_code": "pletove-masky",
+            "parent_name": "Pleťové masky",
+            "level": 2,
+            "count": 2
+          },
+          {
+            "name": "Pleťové masky",
+            "value": "pletove-masky",
+            "parent_code": "plet",
+            "parent_name": "Pleť",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Balzámy na rty",
+            "value": "balzamy_na_rty",
+            "parent_code": "pece_o_rty",
+            "parent_name": "Péče o rty",
+            "level": 2,
+            "count": 3
+          },
+          {
+            "name": "Péče o rty",
+            "value": "pece_o_rty",
+            "parent_code": "plet",
+            "parent_name": "Pleť",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "Pleť",
+            "value": "plet",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 23
+          },
+          {
+            "name": "Dámské spreje",
+            "value": "damske-spreje",
+            "parent_code": "deodoranty-a-antiperspiranty",
+            "parent_name": "Deodoranty a antiperspiranty",
+            "level": 2,
+            "count": 4
+          },
+          {
+            "name": "Pánské  spreje",
+            "value": "panske--spreje",
+            "parent_code": "deodoranty-a-antiperspiranty",
+            "parent_name": "Deodoranty a antiperspiranty",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Deodoranty a antiperspiranty",
+            "value": "deodoranty-a-antiperspiranty",
+            "parent_code": "telo",
+            "parent_name": "Tělo",
+            "level": 1,
+            "count": 5
+          },
+          {
+            "name": "Elektrické strojky a pilníky",
+            "value": "elektricke-strojky-a-pilniky",
+            "parent_code": "holeni-a-depilace",
+            "parent_name": "Holení a depilace",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Holení a depilace",
+            "value": "holeni-a-depilace",
+            "parent_code": "telo",
+            "parent_name": "Tělo",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Tělo",
+            "value": "telo",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 6
+          },
+          {
+            "name": "Náhradní hlavice ke kartáčkům",
+            "value": "nahradni-hlavice-ke-kartackum",
+            "parent_code": "pece-o-zuby",
+            "parent_name": "Péče o zuby",
+            "level": 2,
+            "count": 6
+          },
+          {
+            "name": "Péče o zuby",
+            "value": "pece-o-zuby",
+            "parent_code": "hygiena",
+            "parent_name": "Hygiena",
+            "level": 1,
+            "count": 6
+          },
+          {
+            "name": "Toaletní papír",
+            "value": "toaletni-papir",
+            "parent_code": "toaletni-papiry",
+            "parent_name": "Toaletní papíry",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Toaletní papíry",
+            "value": "toaletni-papiry",
+            "parent_code": "hygiena",
+            "parent_name": "Hygiena",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Hygiena",
+            "value": "hygiena",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 7
+          },
+          {
+            "name": "Parfémy pro děti",
+            "value": "parfemy_pro_deti",
+            "parent_code": "parfemy",
+            "parent_name": "Parfémy",
+            "level": 2,
+            "count": 3
+          },
+          {
+            "name": "Dámské parfémy",
+            "value": "damske-parfemy",
+            "parent_code": "parfemy",
+            "parent_name": "Parfémy",
+            "level": 2,
+            "count": 42
+          },
+          {
+            "name": "Pánské parfémy",
+            "value": "panske-parfemy",
+            "parent_code": "parfemy",
+            "parent_name": "Parfémy",
+            "level": 2,
+            "count": 17
+          },
+          {
+            "name": "Parfémy",
+            "value": "parfemy",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 57
+          },
+          {
+            "name": "Make-up",
+            "value": "make-up",
+            "parent_code": "tvar",
+            "parent_name": "Tvář",
+            "level": 2,
+            "count": 21
+          },
+          {
+            "name": "Pleťové korektory",
+            "value": "pletove-korektory",
+            "parent_code": "tvar",
+            "parent_name": "Tvář",
+            "level": 2,
+            "count": 2
+          },
+          {
+            "name": "Pudry",
+            "value": "pudry",
+            "parent_code": "tvar",
+            "parent_name": "Tvář",
+            "level": 2,
+            "count": 6
+          },
+          {
+            "name": "Tvář",
+            "value": "tvar",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 27
+          },
+          {
+            "name": "Řasenky",
+            "value": "rasenky",
+            "parent_code": "liceni-oci",
+            "parent_name": "Líčení očí",
+            "level": 2,
+            "count": 12
+          },
+          {
+            "name": "Líčení očí",
+            "value": "liceni-oci",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 12
+          },
+          {
+            "name": "Rtěnky",
+            "value": "rtenky",
+            "parent_code": "rty",
+            "parent_name": "Rty",
+            "level": 2,
+            "count": 10
+          },
+          {
+            "name": "Rty",
+            "value": "rty",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 10
+          },
+          {
+            "name": "Laky na nehty",
+            "value": "laky-na-nehty",
+            "parent_code": "nehty",
+            "parent_name": "Nehty",
+            "level": 2,
+            "count": 24
+          },
+          {
+            "name": "Nehty",
+            "value": "nehty",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 24
+          },
+          {
+            "name": "Kosmetické potřeby na líčení",
+            "value": "kosmeticke-potreby-na-liceni",
+            "parent_code": "stetce-a-doplnky",
+            "parent_name": "Štětce a doplňky",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Štětce a doplňky",
+            "value": "stetce-a-doplnky",
+            "parent_code": "krasa-a-parfemy",
+            "parent_name": "Krása a parfémy",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Krása a parfémy",
+            "value": "krasa-a-parfemy",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 131
+          },
+          {
+            "name": "Pánské parfémy a toaletní vody",
+            "value": "panske-parfemy-a-toaletni-vody",
+            "parent_code": "panske-vune",
+            "parent_name": "Pánské vůně",
+            "level": 2,
+            "count": 14
+          },
+          {
+            "name": "Pánské vůně",
+            "value": "panske-vune",
+            "parent_code": "muzi",
+            "parent_name": "Muži",
+            "level": 1,
+            "count": 14
+          },
+          {
+            "name": "Pánské deo spreje",
+            "value": "panske-deo-spreje",
+            "parent_code": "panske-deodoranty-a-antiperspira",
+            "parent_name": "Pánské deodoranty a antiperspiranty",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Pánské deodoranty a antiperspiranty",
+            "value": "panske-deodoranty-a-antiperspira",
+            "parent_code": "muzi",
+            "parent_name": "Muži",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Holící strojky",
+            "value": "holici-strojky",
+            "parent_code": "holeni",
+            "parent_name": "Holení",
+            "level": 2,
+            "count": 3
+          },
+          {
+            "name": "Elektrické holící strojky",
+            "value": "elektricke-holici-strojky",
+            "parent_code": "holeni",
+            "parent_name": "Holení",
+            "level": 2,
+            "count": 2
+          },
+          {
+            "name": "Holení",
+            "value": "holeni",
+            "parent_code": "muzi",
+            "parent_name": "Muži",
+            "level": 1,
+            "count": 5
+          },
+          {
+            "name": "Muži",
+            "value": "muzi",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 20
+          },
+          {
+            "name": "Sušené ovoce a ořechy",
+            "value": "susene-ovoce-a-orechy",
+            "parent_code": "zdrava-vyziva",
+            "parent_name": "Zdravá výživa",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Zdravá výživa",
+            "value": "zdrava-vyziva",
+            "parent_code": "potraviny",
+            "parent_name": "Potraviny",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Džusy",
+            "value": "dzusy",
+            "parent_code": "napoje",
+            "parent_name": "Nápoje",
+            "level": 2,
+            "count": 2
+          },
+          {
+            "name": "Nápoje",
+            "value": "napoje",
+            "parent_code": "potraviny",
+            "parent_name": "Potraviny",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Potraviny",
+            "value": "potraviny",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 3
+          },
+          {
+            "name": "Kapsičky a  pamlsky",
+            "value": "kapsicky-a--pamlsky",
+            "parent_code": "kocky",
+            "parent_name": "Kočky",
+            "level": 2,
+            "count": 1
+          },
+          {
+            "name": "Kočky",
+            "value": "kocky",
+            "parent_code": "mazlicci",
+            "parent_name": "Mazlíčci",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Mazlíčci",
+            "value": "mazlicci",
+            "parent_code": "menu_category",
+            "parent_name": "Teta Drogerie CZ",
+            "level": 0,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "code": "taxon_article_tags",
+        "name": "Štítky",
+        "choices": [
+          {
+            "name": "Klubová nabídka",
+            "value": "club_offer",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Exkluzivně online",
+            "value": "exclusively_online",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 11
+          },
+          {
+            "name": "Naše značka",
+            "value": "our_brand",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 9
+          },
+          {
+            "name": "Novinka",
+            "value": "eshop_news",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 23
+          },
+          {
+            "name": "V akci",
+            "value": "in_action",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 201
+          },
+          {
+            "name": "Garance nejnižší ceny",
+            "value": "lowest_price_guarantee",
+            "parent_code": "article_tags",
+            "parent_name": "Štítky",
+            "level": 1,
+            "count": 129
+          }
+        ]
+      },
+      {
+        "code": "taxon_article_tags_entilos",
+        "name": "Další štítky",
+        "choices": [
+          {
+            "name": "Korejská kosmetika",
+            "value": "korejska_kosmetika",
+            "parent_code": "article_tags_entilos",
+            "parent_name": "Další štítky",
+            "level": 1,
+            "count": 4
+          },
+          {
+            "name": "BIO",
+            "value": "bio",
+            "parent_code": "article_tags_entilos",
+            "parent_name": "Další štítky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Vždycky výhodně",
+            "value": "vzdycky_vyhodne",
+            "parent_code": "article_tags_entilos",
+            "parent_name": "Další štítky",
+            "level": 1,
+            "count": 6
+          }
+        ]
+      },
+      {
+        "code": "taxon_article_brands",
+        "name": "Značky",
+        "choices": [
+          {
+            "name": "4ward",
+            "value": "id:107831",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Adidas",
+            "value": "id:383",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "Ariel",
+            "value": "id:543",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 10
+          },
+          {
+            "name": "BEAUTY OF JOSEON",
+            "value": "id:zn0269",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Biodance",
+            "value": "id:zn0354",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Bref",
+            "value": "id:1020",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 8
+          },
+          {
+            "name": "Bruno Banani",
+            "value": "id:14419",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 5
+          },
+          {
+            "name": "C-Thru",
+            "value": "id:14485",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Capri-Sun",
+            "value": "id:1213",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Coty",
+            "value": "id:zn0374",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "DKNY",
+            "value": "id:zn0222",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Dermacol",
+            "value": "id:12244",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 7
+          },
+          {
+            "name": "Dolce & Gabbana",
+            "value": "id:1947",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "EP Line",
+            "value": "id:zn0099",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 4
+          },
+          {
+            "name": "Elizabeth Arden",
+            "value": "id:2119",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Esprit",
+            "value": "id:zn0356",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "Felix",
+            "value": "id:2273",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Finish",
+            "value": "id:2309",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "Floré",
+            "value": "id:zn_0001",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 6
+          },
+          {
+            "name": "Gillette",
+            "value": "id:2557",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "GilletteLabs",
+            "value": "id:139149",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Glanz Meister",
+            "value": "id:zn0554",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Guess",
+            "value": "id:18184",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 4
+          },
+          {
+            "name": "Jawhara",
+            "value": "id:zn0446",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 5
+          },
+          {
+            "name": "Karl Lagerfeld",
+            "value": "id:zn0204",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "L'Oréal Paris",
+            "value": "id:11284",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "La Rive",
+            "value": "id:zn0444",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 5
+          },
+          {
+            "name": "Lanvin",
+            "value": "id:11230",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Lattafa",
+            "value": "id:zn0449",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "LeGer",
+            "value": "id:zn0545",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Lenor",
+            "value": "id:3471",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 8
+          },
+          {
+            "name": "Lip Smacker",
+            "value": "id:zn0410",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "MISSHA",
+            "value": "id:zn0481",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Max Factor",
+            "value": "id:3776",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Maybelline New York",
+            "value": "id:27198",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 8
+          },
+          {
+            "name": "Medicube",
+            "value": "id:zn0442",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Minecraft",
+            "value": "id:zn0361",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Miss Sporty",
+            "value": "id:3912",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 43
+          },
+          {
+            "name": "Nivea",
+            "value": "id:4146",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "Oral-B",
+            "value": "id:4259",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 6
+          },
+          {
+            "name": "Philips",
+            "value": "id:4483",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Purity Vision",
+            "value": "id:114394",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Q-Soft",
+            "value": "id:107724",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Rimmel London",
+            "value": "id:19183",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 14
+          },
+          {
+            "name": "STR8",
+            "value": "id:19807",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 6
+          },
+          {
+            "name": "Sabrina Carpenter",
+            "value": "id:zn0475",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 3
+          },
+          {
+            "name": "Saloos",
+            "value": "id:zn0174",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Sofines",
+            "value": "id:zn0226",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 10
+          },
+          {
+            "name": "Stitch",
+            "value": "id:zn0388",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          },
+          {
+            "name": "VIX",
+            "value": "id:zn0172",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 1
+          },
+          {
+            "name": "Waschkönig",
+            "value": "id:zn0553",
+            "parent_code": "article_brands",
+            "parent_name": "Značky",
+            "level": 1,
+            "count": 2
+          }
+        ]
+      }
+    ],
+    "not_in_taxa": [],
+    "price": {
+      "min_price": 2490,
+      "max_price": 89900,
+      "currency": "CZK"
+    },
+    "inventory": {
+      "in_stock": 149
+    }
+  },
+  "items": [
+    {
+      "name": "MISSHA Airy Fit Aloe pleťová maska 1 ks",
+      "slug": "missha-airy-fit-aloe-maska",
+      "iri": "/api/v2/shop/product-variants/000000000000301223",
+      "code": "301223",
+      "price": 2490,
+      "originalPrice": 4990,
+      "lowestPriceBeforeDiscount": 2490,
+      "currency": "CZK",
+      "image": "d9/3d/93a93e2e93cf4c11b34dfb13e8e7.png",
+      "isStockAvailable": true,
+      "taxa": [
+        {
+          "name": "Pleť",
+          "code": "PLET",
+          "attributes": [],
+          "parent": {
+            "code": "menu_category",
+            "name": "Teta Drogerie CZ"
+          },
+          "position": 3,
+          "parent_position": 0,
+          "labelImages": []
+        },
+        {
+          "name": "V akci",
+          "code": "IN_ACTION",
+          "attributes": [
+            {
+              "name": "Viditelnost štítku",
+              "code": "label_active",
+              "value": false
+            },
+            {
+              "name": "Barva štítku",
+              "code": "label_color",
+              "value": "#ffebe8"
+            },
+            {
+              "name": "Text štítku",
+              "code": "label_text",
+              "value": "název štítku"
+            },
+            {
+              "name": "Barva textu ve štítku",
+              "code": "label_text_color",
+              "value": "#db371e"
+            }
+          ],
+          "parent": {
+            "code": "article_tags",
+            "name": "Štítky"
+          },
+          "position": 6,
+          "parent_position": 2,
+          "labelImages": []
+        },
+        {
+          "name": "Korejská kosmetika",
+          "code": "KOREJSKA_KOSMETIKA",
+          "attributes": [
+            {
+              "name": "Viditelnost štítku",
+              "code": "label_active",
+              "value": true
+            },
+            {
+              "name": "Barva štítku",
+              "code": "label_color",
+              "value": "#FBE8FC"
+            },
+            {
+              "name": "Text štítku",
+              "code": "label_text",
+              "value": "Korejská kosmetika"
+            },
+            {
+              "name": "Barva textu ve štítku",
+              "code": "label_text_color",
+              "value": "#EA3680"
+            },
+            {
+              "name": "Platnost DO",
+              "code": "platnost_do",
+              "value": {
+                "date": "2025-09-30 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "Europe/Prague"
+              }
+            },
+            {
+              "name": "Platnost OD",
+              "code": "platnost_od",
+              "value": {
+                "date": "2025-07-18 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "Europe/Prague"
+              }
+            }
+          ],
+          "parent": {
+            "code": "article_tags_entilos",
+            "name": "Další štítky"
+          },
+          "position": 2,
+          "parent_position": 3,
+          "labelImages": []
+        },
+        {
+          "name": "Pleťové masky",
+          "code": "PLETOVE-MASKY",
+          "attributes": [],
+          "parent": {
+            "code": "PLET",
+            "name": "Pleť"
+          },
+          "position": 6,
+          "parent_position": 3,
+          "labelImages": []
+        },
+        {
+          "name": "MISSHA",
+          "code": "ID:ZN0481",
+          "attributes": [],
+          "parent": {
+            "code": "article_brands",
+            "name": "Značky"
+          },
+          "position": 894,
+          "parent_position": 4,
+          "labelImages": []
+        },
+        {
+          "name": "Masky na pleť",
+          "code": "MASKY-NA-PLET",
+          "attributes": [],
+          "parent": {
+            "code": "PLETOVE-MASKY",
+            "name": "Pleťové masky"
+          },
+          "position": 1,
+          "parent_position": 6,
+          "labelImages": []
+        }
+      ],
+      "averageRating": 0,
+      "ratingsCount": 0,
+      "bbyPrices": {
+        "zcmd": 4990,
+        "acmd": 2490,
+        "unit_price": {
+          "name": "standard",
+          "number": 2490,
+          "unit": "KS"
+        },
+        "sale": {
+          "unit": "%",
+          "amount": 50
+        }
+      },
+      "variantId": 501944
+    },
+    {
+      "name": "Miss Sporty lak na nehty 1 Min to Shine 010",
+      "slug": "miss-sporty-lak-1-min-to-shine-010",
+      "iri": "/api/v2/shop/product-variants/000000000000226879",
+      "code": "226879",
+      "price": 2490,
+      "originalPrice": 4990,
+      "lowestPriceBeforeDiscount": 2490,
+      "currency": "CZK",
+      "image": "6a/db/75fa671a1407496a5cc59d245c8a.png",
+      "isStockAvailable": false,
+      "taxa": [
+        {
+          "name": "Krása a parfémy",
+          "code": "KRASA-A-PARFEMY",
+          "attributes": [],
+          "parent": {
+            "code": "menu_category",
+            "name": "Teta Drogerie CZ"
+          },
+          "position": 7,
+          "parent_position": 0,
+          "labelImages": []
+        },
+        {
+          "name": "V akci",
+          "code": "IN_ACTION",
+          "attributes": [
+            {
+              "name": "Viditelnost štítku",
+              "code": "label_active",
+              "value": false
+            },
+            {
+              "name": "Barva štítku",
+              "code": "label_color",
+              "value": "#ffebe8"
+            },
+            {
+              "name": "Text štítku",
+              "code": "label_text",
+              "value": "název štítku"
+            },
+            {
+              "name": "Barva textu ve štítku",
+              "code": "label_text_color",
+              "value": "#db371e"
+            }
+          ],
+          "parent": {
+            "code": "article_tags",
+            "name": "Štítky"
+          },
+          "position": 6,
+          "parent_position": 2,
+          "labelImages": []
+        },
+        {
+          "name": "Laky na nehty",
+          "code": "LAKY-NA-NEHTY",
+          "attributes": [],
+          "parent": {
+            "code": "NEHTY",
+            "name": "Nehty"
+          },
+          "position": 0,
+          "parent_position": 4,
+          "labelImages": []
+        },
+        {
+          "name": "Miss Sporty",
+          "code": "ID:3912",
+          "attributes": [],
+          "parent": {
+            "code": "article_brands",
+            "name": "Značky"
+          },
+          "position": 72,
+          "parent_position": 4,
+          "labelImages": []
+        },
+        {
+          "name": "Nehty",
+          "code": "NEHTY",
+          "attributes": [],
+          "parent": {
+            "code": "KRASA-A-PARFEMY",
+            "name": "Krása a parfémy"
+          },
+          "position": 4,
+          "parent_position": 7,
+          "labelImages": []
+        }
+      ],
+      "averageRating": 0,
+      "ratingsCount": 0,
+      "bbyPrices": {
+        "zcmd": 4990,
+        "acmd": 2490,
+        "unit_price": {
+          "name": "standard",
+          "number": 2490,
+          "unit": "KS"
+        },
+        "sale": {
+          "unit": "%",
+          "amount": 50
+        }
+      },
+      "variantId": 21664
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "lastPage": 101,
+    "itemsPerPage": 2,
+    "totalItems": 201
+  },
+  "custom_data": {
+    "dynamic_taxon": null
+  }
+}
