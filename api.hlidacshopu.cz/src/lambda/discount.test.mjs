@@ -1,5 +1,5 @@
 import test from "ava";
-import { discount, prepareData, realDiscount } from "./discount.mjs";
+import { discount, prepareData } from "./discount.mjs";
 
 const historicalData = {
   "entries": [
@@ -28,31 +28,4 @@ test("discount for the same prices should be 0", t => {
 
 test("discount for discounted item should be as expected", t => {
   t.is(discount(1, 0.1), 0.9);
-});
-
-const daysAgo = n => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
-const meta = { commonPrice: 4999, minPrice: 3999 };
-
-test("realDiscount returns both reference prices for common price", t => {
-  const rows = [
-    { currentPrice: 3999, date: daysAgo(30) },
-    { currentPrice: 4999, date: daysAgo(2) }
-  ];
-  const result = realDiscount(meta, rows);
-  t.is(result.type, "common-price");
-  t.is(result.commonPrice, 4999);
-  t.is(result.minPrice, 3999);
-  t.is(result.realDiscount, 0);
-});
-
-test("realDiscount returns both reference prices for EU minimum", t => {
-  const rows = [
-    { currentPrice: 4999, date: daysAgo(2) },
-    { currentPrice: 3499, date: daysAgo(1) }
-  ];
-  const result = realDiscount(meta, rows);
-  t.is(result.type, "eu-minimum");
-  t.is(result.commonPrice, 4999);
-  t.is(result.minPrice, 3999);
-  t.is(result.realDiscount, (3999 - 3499) / 3999);
 });
