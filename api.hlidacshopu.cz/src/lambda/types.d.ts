@@ -5,6 +5,7 @@ export interface DataRow {
 }
 
 export interface EUDiscount {
+  commonPrice?: number;
   minPrice: number;
   currentPrice: number;
   realDiscount: number;
