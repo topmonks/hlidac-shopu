@@ -149,6 +149,8 @@ function getLastChangesInData(data) {
  * sale action. Sale action is simply last drop of price without any increase.
  * In other cases it counts discount against common price - most used price
  * in 60 days interval.
+ * Both reference prices are returned regardless of the type, so clients that
+ * add a price seen locally (the extension) can redo the detection.
  * @param {{commonPrice: number, minPrice?: number}} meta
  * @param {DataRow[]} data Time series of prices
  * @returns {EUDiscount | CommonPriceDifference}
@@ -159,6 +161,7 @@ export function realDiscount(meta, data) {
   const { lastDiscountDate, lastIncreaseDate } = getLastChangesInData(data);
   if (minPrice && isEuDiscountApplicable(lastIncreaseDate, lastDiscountDate, isInLastDays(saleActionInterval))) {
     return {
+      commonPrice,
       minPrice,
       currentPrice,
       realDiscount: discount(minPrice, currentPrice),
@@ -169,6 +172,7 @@ export function realDiscount(meta, data) {
   }
   return {
     commonPrice,
+    minPrice,
     currentPrice,
     realDiscount: discount(commonPrice, currentPrice),
     lastDiscountDate,
