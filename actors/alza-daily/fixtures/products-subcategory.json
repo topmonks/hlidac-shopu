@@ -1,0 +1,51 @@
+{
+  "breadcrumbs": [
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://www.alza.cz/api/catalog/v1/homePage/categories/18890188?pgri=p__26752&ui=u__401f1",
+          "appLink": "catalogLocalTitlePage"
+        },
+        "name": "Počítače a notebooky",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18890188?t=SECTION",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18842920?t=CATEGORY",
+          "appLink": "catalogCategory"
+        },
+        "name": "Notebooky",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18842920?t=CATEGORY",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18848814?t=CATEGORY",
+          "appLink": "catalogCategory"
+        },
+        "name": "Herní",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18848814?t=CATEGORY",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    }
+  ],
+  "total": 761,
+  "has_next": true,
+  "data": [],
+  "data_cnt": 0,
+  "err": 0
+}

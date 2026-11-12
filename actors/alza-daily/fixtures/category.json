@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "self": {
+        "href": "https://www.alza.cz/services/restservice.svc/v1/category/18842920?t=MAILINGACTION&p=0",
+        "appLink": "catalogCategory"
+      },
+      "id": 0,
+      "name": "Black Friday",
+      "cat_type": "BOOST",
+      "type": null
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18924563?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18924563,
+      "name": "NVIDIA RTX Spark",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18911035?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18911035,
+      "name": "Copilot+ PC",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18843112?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18862746,
+      "name": "Příslušenství",
+      "cat_type": "CATEGORY",
+      "type": "related"
+    },
+    {
+      "self": {
+        "href": "https://www.alza.cz/jak-vybrat-notebook-art17483.htm",
+        "appLink": "webView"
+      },
+      "id": 0,
+      "name": "Jak vybrat notebook",
+      "cat_type": "WIZARD",
+      "type": null
+    }
+  ],
+  "data_cnt": 5,
+  "err": 0
+}

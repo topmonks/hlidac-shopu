@@ -4348,6 +4348,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hlidac-shopu/alza-daily@workspace:actors/alza-daily":
+  version: 0.0.0-use.local
+  resolution: "@hlidac-shopu/alza-daily@workspace:actors/alza-daily"
+  dependencies:
+    "@crawlee/http": "npm:3.18.1"
+    "@hckr_/apify-persistent-stats": "npm:1.0.4"
+    "@hlidac-shopu/actors-common": "npm:3.2.6"
+    "@types/node": "npm:24.13.6"
+    apify: "npm:3.7.2"
+    apify-cli: "npm:1.10.0"
+  languageName: unknown
+  linkType: soft
+
 "@hlidac-shopu/alza@workspace:actors/alza":
   version: 0.0.0-use.local
   resolution: "@hlidac-shopu/alza@workspace:actors/alza"

@@ -1,0 +1,129 @@
+{
+  "breadcrumbs": [
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://www.alza.cz/api/catalog/v1/homePage/categories/18890188?pgri=p__26752&ui=u__401f1",
+          "appLink": "catalogLocalTitlePage"
+        },
+        "name": "Počítače a notebooky",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18890188?t=SECTION",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18842920?t=CATEGORY",
+          "appLink": "catalogCategory"
+        },
+        "name": "Notebooky",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18842920?t=CATEGORY",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    }
+  ],
+  "total": 4345,
+  "has_next": true,
+  "data": [
+    {
+      "id": 13458347,
+      "code": "HPBN1013w36",
+      "name": "HP Probook 4 G2a 14 (bez adaptéru) (3 roky servis)",
+      "url": "https://www.alza.cz/hp-probook-4-g2a-bez-adapteru-d13458347.htm",
+      "img": "https://image.alza.cz/products/HPBN1013w36/HPBN1013w36.jpg?width=190&height=190",
+      "price": "19 990,-",
+      "priceNoCurrency": 19990.0,
+      "cprice": null,
+      "avail": "Skladem > 5 ks",
+      "can_buy": true,
+      "rating": 0.0
+    },
+    {
+      "id": 13436021,
+      "code": "NC027p9y4a",
+      "name": "Acer Aspire Lite 15 Light Silver (AL15-34P) (bez adaptéru)",
+      "url": "https://www.alza.cz/acer-aspire-lite-15-light-silver-al15-34p-d13436021.htm",
+      "img": "https://image.alza.cz/products/NC027p9y4a/NC027p9y4a.jpg?width=190&height=190",
+      "price": "8 990,-",
+      "priceNoCurrency": 8990.0,
+      "cprice": "10 990,-",
+      "avail": "Skladem",
+      "can_buy": true,
+      "rating": 0.0
+    },
+    {
+      "id": 12349143,
+      "code": "MCS260g",
+      "name": "Microsoft Surface Laptop|Copilot+ PC|15\" IPS|Snapdragon® X Elite|16GB|256GB|7th Edition|Platinum",
+      "url": "https://www.alza.cz/microsoft-surface-laptop-copilot-pc?dq=12349143",
+      "img": "https://image.alza.cz/products/MCS260g/MCS260g.jpg?width=190&height=190",
+      "price": "33 990,-",
+      "priceNoCurrency": 33990.0,
+      "cprice": "37 990,-",
+      "avail": "Skladem 2 ks",
+      "can_buy": true,
+      "rating": 5.0
+    },
+    {
+      "id": 13105563,
+      "code": "NT203j22",
+      "name": "Lenovo ThinkPad E16 Gen 3 Black (3 roky ONSITE servis)",
+      "url": "https://www.alza.cz/lenovo-thinkpad-e16-gen-3-black-d13105563.htm",
+      "img": "https://image.alza.cz/products/NT203j22/NT203j22.jpg?width=190&height=190",
+      "price": "36 117,-",
+      "priceNoCurrency": 36116.5,
+      "cprice": "42 490,-",
+      "avail": "Skladem",
+      "can_buy": true,
+      "rating": 4.7
+    },
+    {
+      "id": 13000282,
+      "code": "ADC454q02d",
+      "name": "Dell 16 DC16250",
+      "url": "https://www.alza.cz/dell-16-dc16250-d13000282.htm",
+      "img": "https://image.alza.cz/products/ADC454q02d/ADC454q02d.jpg?width=190&height=190",
+      "price": "20 990,-",
+      "priceNoCurrency": 20990.0,
+      "cprice": null,
+      "avail": "Skladem > 5 ks",
+      "can_buy": true,
+      "rating": 4.7
+    },
+    {
+      "id": 13551804,
+      "code": "NA683x60p6z2",
+      "name": "ASUS ROG Strix G16 G614PR-TS144 Eclipse Gray kovový  (1 rok ochrany proti poškození zdarma po registraci)",
+      "url": "https://www.alza.cz/asus-rog-strix-g16-g614pr-ts144-eclipse-gray-kovovy-d13551804.htm",
+      "img": "https://image.alza.cz/products/NA683x60p6z2/NA683x60p6z2.jpg?width=190&height=190",
+      "price": "46 990,-",
+      "priceNoCurrency": 46990.0,
+      "cprice": "65 253,-",
+      "avail": "Skladem u dodavatele",
+      "can_buy": true,
+      "rating": 0.0
+    },
+    {
+      "id": 13014022,
+      "code": "GPX1083b2",
+      "name": "Google Pixel 10 Pro XL 256GB Obsidian",
+      "url": "https://www.alza.cz/google-pixel-10-pro-xl-256gb-obsidian-d13014022.htm",
+      "img": "https://image.alza.cz/products/GPX1083b2/GPX1083b2.jpg?width=190&height=190",
+      "price": "23 990,-",
+      "priceNoCurrency": 23990.0,
+      "cprice": null,
+      "avail": "Již brzy",
+      "can_buy": false,
+      "rating": 4.9
+    }
+  ],
+  "data_cnt": 7,
+  "err": 0
+}
