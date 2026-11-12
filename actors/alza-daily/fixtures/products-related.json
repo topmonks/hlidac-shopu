@@ -1,0 +1,65 @@
+{
+  "breadcrumbs": [
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://www.alza.cz/api/catalog/v1/homePage/categories/18890188?pgri=p__26752&ui=u__401f1",
+          "appLink": "catalogLocalTitlePage"
+        },
+        "name": "Počítače a notebooky",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18890188?t=SECTION",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18843223?t=CATEGORY",
+          "appLink": "catalogCategory"
+        },
+        "name": "Projektory",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18843223?t=CATEGORY",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "category": {
+        "clientAction": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18860069?t=CATEGORY",
+          "appLink": "catalogCategory"
+        },
+        "name": "Plátna",
+        "meta": {
+          "href": "https://m.alza.cz/services/restservice.svc/v1/category/18860069?t=CATEGORY",
+          "rel": ["self"],
+          "method": "GET"
+        }
+      }
+    }
+  ],
+  "total": 355,
+  "has_next": true,
+  "data": [
+    {
+      "id": 13308169,
+      "code": "XGI069",
+      "name": "XGIMI 70\" Přenosné venkovní plátno",
+      "url": "https://www.alza.cz/xgimi-70-prenosne-venkovni-platno-d13308169.htm",
+      "img": "https://image.alza.cz/products/XGI069/XGI069.jpg?width=190&height=190",
+      "price": "2 590,-",
+      "priceNoCurrency": 2590.0,
+      "cprice": null,
+      "avail": "Skladem > 5 ks",
+      "can_buy": true,
+      "rating": 4.0
+    }
+  ],
+  "data_cnt": 1,
+  "err": 0
+}

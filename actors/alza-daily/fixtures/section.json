@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18905185?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18924164,
+      "name": "Apple novinky",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18842920?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18842920,
+      "name": "Notebooky",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/api/catalog/v1/homePage/categories/18851089?pgri=p__26752&ui=u__401f1",
+        "appLink": "catalogLocalTitlePage"
+      },
+      "id": 18851089,
+      "name": "Tiskárny a skenery",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    }
+  ],
+  "data_cnt": 3,
+  "err": 0
+}

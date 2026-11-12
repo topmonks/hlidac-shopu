@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/1?t=MAILINGACTION&p=0",
+        "appLink": "catalogCategory"
+      },
+      "id": 18859920,
+      "name": "Black Friday",
+      "cat_type": "MAILINGACTION",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/1?t=ACTION&p=27",
+        "appLink": "catalogCategory"
+      },
+      "id": 18907151,
+      "name": "Black Friday - Osobní péče a drogerie",
+      "cat_type": "ACTION",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/api/catalog/v1/homePage/categories/18923321?pgri=p__26752&ui=u__401f1",
+        "appLink": "catalogLocalTitlePage"
+      },
+      "id": 18925099,
+      "name": "Připrav se na GTA VI",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/api/catalog/v1/homePage/categories/18890259?pgri=p__26752&ui=u__401f1",
+        "appLink": "navigationHomePageSection"
+      },
+      "id": 18890259,
+      "name": "Mobily, chytré hodinky, tablety",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18923375?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18923375,
+      "name": "AI pro firmy",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    },
+    {
+      "self": {
+        "href": "https://m.alza.cz/services/restservice.svc/v1/category/18876334?t=CATEGORY",
+        "appLink": "catalogCategory"
+      },
+      "id": 18876334,
+      "name": "Potraviny a nápoje",
+      "cat_type": "CATEGORY",
+      "type": "sub"
+    }
+  ],
+  "data_cnt": 6,
+  "err": 0
+}
