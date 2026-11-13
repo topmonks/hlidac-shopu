@@ -7,7 +7,7 @@ import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { defAtom } from "@thi.ng/atom";
 import { choices, partition, push, take, transduce } from "@thi.ng/transducers";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import { Channel, co } from "core-async";
+import { Channel } from "core-async";
 
 /** @typedef {import("@hlidac-shopu/actors-common/stats.js").Stats} Stats */
 
@@ -221,9 +221,7 @@ function mergeProductsData({ productList, items, itemsForSaving }) {
       const prevItem = _items[id];
       const newItem = Object.assign(item, prevItem);
       if (newItem.name && newItem.price) {
-        co(function* () {
-          yield itemsForSaving.put(newItem);
-        });
+        itemsForSaving.put(newItem);
       }
       _items[id] = newItem;
       return _items;
@@ -272,10 +270,10 @@ async function main() {
   const itemsForSaving = new Channel(500);
 
   // save items as they are put into `itemsForSaving`
-  co(function* () {
+  (async () => {
     while (true) {
       try {
-        const item = yield itemsForSaving.take();
+        const item = await itemsForSaving.take();
         if (!item) continue;
         const product = normalizeItem({
           item,
@@ -299,7 +297,7 @@ async function main() {
         log.error(e);
       }
     }
-  });
+  })();
 
   const crawler = new HttpCrawler({
     proxyConfiguration,
