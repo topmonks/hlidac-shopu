@@ -21,6 +21,8 @@ export const Country = {
 const PAGE_SIZE = 35;
 // The listing HTML puts this placeholder into photos.default for cars without photos, the API leaves it empty.
 const NO_PHOTO_IMG = "https://static.aaaauto.eu/img/nophoto/nophoto-big.jpg";
+/** Listing filter behind /akce/black-friday (CZ) and /akciove-ponuky/black-friday (SK). */
+const BLACK_FRIDAY_CATEGORY_ID = 151;
 
 /**
  * @param {Country} country
@@ -31,18 +33,11 @@ function originFor(country) {
 }
 
 /**
- * @param {ActorType} type
  * @param {Country} country
  * @param {number} page
  * @returns {string}
  */
-export function getBaseUrl(type = ActorType.Full, country = Country.CZ, page = 1) {
-  // The old site had a dedicated Black Friday listing (`/black-friday/?category=92`). That URL is
-  // gone with the redesign and no replacement is known yet, so fail loudly rather than silently
-  // scrape the full catalog into the `_bf` table. Revisit when the BF section goes live. See #3580.
-  if (type === ActorType.BlackFriday) {
-    throw new Error("AAAauto: Black Friday URL is unknown after the site redesign - not yet supported (see #3580)");
-  }
+export function getBaseUrl(country = Country.CZ, page = 1) {
   const params = new URLSearchParams({
     withEquipCat: "1",
     responseFormat: "list",
@@ -65,9 +60,9 @@ export function getBaseUrl(type = ActorType.Full, country = Country.CZ, page = 1
  */
 function listingRequest(type, country, page, userData) {
   return {
-    url: getBaseUrl(type, country, page),
+    url: getBaseUrl(country, page),
     method: "POST",
-    payload: "{}",
+    payload: JSON.stringify(type === ActorType.BlackFriday ? { categoryId: [BLACK_FRIDAY_CATEGORY_ID] } : {}),
     headers: {
       Accept: "application/json",
       "Accept-Language": country === Country.SK ? "sk" : "cs",
