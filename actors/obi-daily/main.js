@@ -1,14 +1,12 @@
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
-import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
-import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
+import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
+import { parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
-import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, LogLevel, log } from "apify";
-
-/** @typedef {import("linkedom/types/interface/document").Document} Document */
+import { listingProducts, listingResult } from "./listing.js";
 
 /** @enum {string} */
 const Labels = {
@@ -16,8 +14,7 @@ const Labels = {
   SitemapIndex: "SITEMAP_INDEX",
   CategorySitemap: "CATEGORY_SITEMAP",
   List: "LIST",
-  SubCat: "SUBCAT",
-  Detail: "DETAIL"
+  SubCat: "SUBCAT"
 };
 
 // The header category navigation is rendered client side, so the home page HTML
@@ -108,176 +105,21 @@ function categoryId(url) {
   return new URL(url).pathname.match(/\/c\/(\d+)/)?.[1];
 }
 
-function pagesRequests({ document, productCount, url, pass }) {
-  const productPerPageCount = document
-    .querySelectorAll("li.product > a")
-    .filter(a => a.getAttribute("data-ui-name")).length;
-  if (!productPerPageCount) return [];
-  const pageCount = Math.ceil(productCount / productPerPageCount);
-  return pageCount > 1
-    ? Array(pageCount - 1)
-        .fill(0)
-        .map((_, i) => i + 2)
-        .map(i => {
-          const pageUrl = new URL(url);
-          pageUrl.searchParams.set("page", i);
-          return listingRequest({ url: pageUrl.href, label: Labels.List, pass });
-        })
-    : [];
-}
-
-/**
- * Category listings carry every field the dataset needs, so the per product
- * detail page is not fetched. The price sits in a `data-csscontent` attribute
- * rather than in text, because OBI renders it through CSS. Discounted tiles use
- * a different block (`strike-price-*`) that also carries the price before the
- * cut.
- *
- * @param {{ document: Document, url: string, country: string, processedIds: Set<string> }} options
- */
-function extractProducts({ document, url, country, processedIds, walkedFamilies }) {
-  const category = listingCategory(document);
-  const currency = country === "sk" ? "EUR" : "CZK";
-  const products = [];
-  const families = [];
-  for (const tile of document.querySelectorAll("li.product")) {
-    const link = tile.querySelector('a[href*="/p/"]');
-    const href = link?.getAttribute("href");
-    if (!href) continue;
-    const itemId = href.match(/\/p\/(\d+)/)?.[1];
-    if (!itemId) continue;
-
-    // A listing shows one tile per family of size and colour variants and
-    // flags it; the other members are only linked from the detail page.
-    if (tile.querySelector(".product__more-variants") && !walkedFamilies.has(itemId)) {
-      walkedFamilies.add(itemId);
-      families.push(new URL(href, url).href);
-    }
-    if (processedIds.has(itemId)) continue;
-
-    const discountedPrice = tile.querySelector(".strike-price-current")?.getAttribute("data-csscontent");
-    const beforeDiscount = tile.querySelector(".strike-price-old")?.textContent;
-    const plainPrice = tile.querySelector(".price-new")?.getAttribute("data-csscontent");
-
-    const currentPrice = cleanPrice(discountedPrice ?? plainPrice);
-    if (!currentPrice) continue;
-    const originalPrice = beforeDiscount ? cleanPrice(beforeDiscount) : null;
-
-    processedIds.add(itemId);
-    products.push({
-      itemId,
-      itemUrl: new URL(href, url).href,
-      itemName: (link.getAttribute("title") ?? "").trim(),
-      // Tiles below the fold are lazy loaded: `src` is a placeholder gif and
-      // the picture sits in `data-src`.
-      img:
-        tile.querySelector("img.image")?.getAttribute("data-src") ??
-        tile.querySelector("img.image")?.getAttribute("src") ??
-        null,
-      currency,
-      currentPrice,
-      originalPrice,
-      discounted: Boolean(originalPrice && originalPrice > currentPrice),
-      // Availability is not exposed on the listing, and was hardcoded before.
-      inStock: true,
-      category
-    });
-  }
-  return { products, families };
-}
-
-/**
- * Size and colour variants of a product are separate products with their own
- * id, page and price, linked from the detail page of every member of the
- * family. Disabled entries are combinations the shop does not sell.
- *
- * @param {{ document: Document, url: string }} options
- */
-function variantUrls({ document, url }) {
-  return [
-    ...new Set(
-      document
-        .querySelectorAll(
-          `.selectboxes .selectbox li:not([class*="disabled"]) a[wt_name*="size_variant"],
-           .selectboxes .selectbox li[data-ui-name="ads.variants.color.enabled"] a[wt_name*="color_variant"]`
-        )
-        .map(a => a.getAttribute("href"))
-        .filter(href => href?.includes("/p/"))
-        .map(href => new URL(href, url).href)
-    )
-  ];
-}
-
-/**
- * The detail page carries the price in the sticky header on every product
- * type. Products sold by area render it through a price calculator instead
- * of the usual `ads.price.strong` block, which is why the old detail crawl
- * dropped them, but the sticky header still holds the unit price.
- *
- * @param {{ document: Document, url: string, country: string }} options
- */
-function extractDetail({ document, url, country }) {
-  const itemId =
-    document.querySelector('input[name="code"]')?.getAttribute("value")?.trim() ?? url.match(/\/p\/(\d+)/)?.[1];
-  const priceBlock = document.querySelector(".overview-sticky-header__price");
-  const priceText = priceBlock?.querySelector(".price-switch-label__hd")?.textContent ?? priceBlock?.textContent;
-  const currentPrice = cleanPrice(priceText);
-  if (!itemId || !currentPrice) return;
-  const beforeDiscount = document.querySelector(".optional-hidden del")?.textContent;
-  const originalPrice = beforeDiscount ? cleanPrice(beforeDiscount) : null;
-  const img = document.querySelector(".ads-slider__link img");
-  const imgSrc = img?.getAttribute("data-src") ?? img?.getAttribute("src") ?? null;
-  return {
-    itemId,
-    itemUrl: url,
-    itemName: document.querySelector("h1.overview__heading")?.textContent?.trim() ?? "",
-    img: imgSrc ? new URL(imgSrc, url).href : null,
-    currency:
-      document.querySelector('meta[itemprop="priceCurrency"]')?.getAttribute("content") ??
-      (country === "sk" ? "EUR" : "CZK"),
-    currentPrice,
-    originalPrice,
-    discounted: Boolean(originalPrice && originalPrice > currentPrice),
-    inStock: true,
-    category: document
-      .querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')
-      .map(a => a.textContent.trim())
-      .filter(Boolean)
-      .join("/")
-  };
-}
-
-/**
- * The breadcrumb trail omits the category the page itself is showing, which the
- * `h1` carries, so the two together reproduce the full path.
- *
- * @param {Document} document
- */
-function listingCategory(document) {
-  const leaf = document.querySelector("h1")?.textContent?.trim();
-  return [...document.querySelectorAll('a[class*="normal"][wt_name*="breadcrumb.level"]')]
-    .map(a => a.textContent.trim())
-    .concat(leaf ? [leaf] : [])
-    .filter(Boolean)
-    .join("/");
-}
-
 /**
  * The site now and then answers a listing request with a page that has no
- * product grid at all, although the same URL lists products when fetched again.
+ * products at all, although the same URL lists products when fetched again.
  * Throwing lets the crawler retry on a fresh session instead of silently
  * losing the category or page.
  */
 function parseListing({ body, url, session }) {
-  const { document } = parseHTML(body.toString());
-  const grid = document.querySelector(".variants");
-  if (!grid) {
+  const html = body.toString();
+  const result = listingResult(html);
+  if (!result) {
     session?.retire();
-    const title = document.querySelector("title")?.textContent?.trim() ?? "";
-    throw new Error(`Listing without product grid: ${url} (${body.length} bytes, title "${title}")`);
+    const title = html.match(/<title[^>]*>([^<]*)/)?.[1].trim() ?? "";
+    throw new Error(`Listing without product state: ${url} (${body.length} bytes, title "${title}")`);
   }
-  const productCount = parseInt(grid.getAttribute("data-productcount")?.replace(/\s+/g, ""), 10);
-  return { document, productCount };
+  return result;
 }
 
 async function main() {
@@ -287,16 +129,12 @@ async function main() {
 
   const processedIds = new Set();
   const crawledCategories = new Set();
-  const walkedFamilies = new Set();
-  const queuedDetails = new Set();
   const stats = await withPersistedStats({
     urls: 0,
     items: 0,
     totalItems: 0,
     emptyCategories: 0,
     redirectedCategories: 0,
-    families: 0,
-    variants: 0,
     failed: 0
   });
 
@@ -313,20 +151,15 @@ async function main() {
     useApifyProxy: !development
   });
 
-  async function pushListing({ document, url }) {
-    const { products, families } = extractProducts({ document, url, country, processedIds, walkedFamilies });
+  async function pushListing({ result, url }) {
+    const products = listingProducts({ result, url }).filter(({ itemId }) => {
+      if (processedIds.has(itemId)) return false;
+      processedIds.add(itemId);
+      return true;
+    });
     stats.add("totalItems", products.length);
-    for (const product of products) {
-      stats.inc("items");
-      await Dataset.pushData(product);
-    }
-    // Families are walked after the listings so that every product keeps
-    // the category of the listing that shows it.
-    stats.add("urls", families.length);
-    stats.add("families", families.length);
-    await crawler.requestQueue.addRequests(
-      families.map(familyUrl => ({ url: familyUrl, userData: { label: Labels.Detail } }))
-    );
+    stats.add("items", products.length);
+    await Dataset.pushData(products);
   }
 
   const crawler = new HttpCrawler({
@@ -403,59 +236,32 @@ async function main() {
               return;
             }
 
-            const { document, productCount } = parseListing({ body, url, session });
+            const result = parseListing({ body, url, session });
 
             // The sitemap already names every leaf category, so an empty
             // listing is left alone. Following its navigation links led back
             // to the parent listing and reintroduced the duplicates.
-            if (!productCount) {
+            if (!result.gesamtanzahlErgebnisse) {
               log.warning(`No products on ${url}`);
               stats.inc("emptyCategories");
               return;
             }
 
-            const pageRequests = pagesRequests({ document, productCount, url: loadedUrl, pass: request.userData.pass });
+            const pageRequests = restPageUrls(result.seitenAnzahl, page => {
+              const pageUrl = new URL(loadedUrl);
+              pageUrl.searchParams.set("page", page);
+              return listingRequest({ url: pageUrl.href, label: Labels.List, pass: request.userData.pass });
+            });
             await crawler.requestQueue.addRequests(pageRequests, {
               forefront: true
             });
             stats.add("urls", pageRequests.length);
 
-            await pushListing({ document, url });
+            await pushListing({ result, url });
           }
           break;
         case Labels.List:
-          {
-            const { document } = parseListing({ body, url, session });
-            await pushListing({ document, url });
-          }
-          break;
-        case Labels.Detail:
-          {
-            const { document } = parseHTML(body.toString());
-            if (!document.querySelector("h1.overview__heading")) {
-              session?.retire();
-              throw new Error(`Detail page without product: ${url} (${body.length} bytes)`);
-            }
-            const urls = variantUrls({ document, url }).filter(variantUrl => {
-              const id = variantUrl.match(/\/p\/(\d+)/)?.[1];
-              if (!id || processedIds.has(id) || queuedDetails.has(id)) return false;
-              queuedDetails.add(id);
-              return true;
-            });
-            stats.add("urls", urls.length);
-            stats.add("variants", urls.length);
-            await crawler.requestQueue.addRequests(
-              urls.map(variantUrl => ({ url: variantUrl, userData: { label: Labels.Detail } }))
-            );
-
-            const product = extractDetail({ document, url, country });
-            if (product && !processedIds.has(product.itemId)) {
-              processedIds.add(product.itemId);
-              stats.inc("totalItems");
-              stats.inc("items");
-              await Dataset.pushData(product);
-            }
-          }
+          await pushListing({ result: parseListing({ body, url, session }), url });
           break;
       }
     },
@@ -474,6 +280,11 @@ async function main() {
   ]);
 
   await stats.save();
+  // A listing markup change fails every listing; without this the run still
+  // succeeded with an empty dataset (#3682).
+  if (!processedIds.size) {
+    throw new Error("No products scraped - blocked or site structure changed");
+  }
 
   if (!development) {
     const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
