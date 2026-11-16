@@ -53,3 +53,33 @@ export function listingProducts({ result, url }) {
     })
     .filter(product => product.currentPrice);
 }
+
+/**
+ * The Black Friday page renders its products from the shop's product-tile
+ * API, not from the listing store. Its prices are the ones category listings
+ * show: `salesUnit` is the listing's `jsonLdPreis` (per pack, not the per-m²
+ * `base` price) and `crossedOut` its strike price. The API has no
+ * breadcrumbs, so the category stays empty. Some products have only a
+ * relative `/p/<id>` link.
+ *
+ * @param {{ tiles: object[], url: string }} options `data` of a product-tile API response and its URL
+ */
+export function tileProducts({ tiles, url }) {
+  return tiles.map(({ id, name, url: link, price, image }) => {
+    const currentPrice = price.salesUnit.value;
+    const originalPrice = price.crossedOut?.salesUnitPrice ?? null;
+    return {
+      itemId: id,
+      itemUrl: new URL(link.href, url).href,
+      itemName: name,
+      img: `${image.content.provider.content.baseUrl}/${image.content.id}/${IMAGE_PROFILE}/image.jpeg`,
+      currency: price.currency.code,
+      currentPrice,
+      originalPrice,
+      discounted: Boolean(originalPrice && originalPrice > currentPrice),
+      // Like the listings, the tiles tell only whether a product can be ordered online.
+      inStock: true,
+      category: null
+    };
+  });
+}

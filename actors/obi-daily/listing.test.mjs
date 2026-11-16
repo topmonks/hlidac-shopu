@@ -1,5 +1,5 @@
 import test from "ava";
-import { listingProducts, listingResult } from "./listing.js";
+import { listingProducts, listingResult, tileProducts } from "./listing.js";
 
 const url = "https://www.obi.cz/formatovaci-kapovaci-a-pokosove-pily/c/1337";
 const nbsp = "\u00a0";
@@ -53,6 +53,62 @@ test("products of a listing, without sponsored tiles", t => {
       discounted: false,
       inStock: true,
       category: "Technika/Pily"
+    }
+  ]);
+});
+
+// Trimmed tiles of the obi.cz Black Friday promotion (16. 11. 2026).
+const tiles = [
+  {
+    id: "1072826",
+    name: "Biohort Zahradní box Freizeitbox 130 tmavě šedý, 134 x 62 x 71 cm",
+    url: { href: "https://www.obi.cz/univerzalni-boxy/biohort-zahradni-box/p/1072826" },
+    price: {
+      currency: { code: "CZK" },
+      crossedOut: { salesUnitPrice: 9999, type: "STANDARD_STRIKE_PRICE" },
+      salesUnit: { value: 7999 }
+    },
+    image: { content: { id: "4271f8d8", provider: { content: { baseUrl: "https://bilder.obi.cz" } } } }
+  },
+  {
+    id: "6536684",
+    name: "Decoflooring Vinylová podlaha SPC+IXPE, dub Lyon",
+    url: { href: "/p/6536684" },
+    price: {
+      base: { prominent: true, unit: "m²", value: 339 },
+      currency: { code: "CZK" },
+      salesUnit: { value: 757.66 }
+    },
+    image: { content: { id: "d03c8d02", provider: { content: { baseUrl: "https://bilder.obi.cz" } } } }
+  }
+];
+
+test("Black Friday tiles carry the listing's pack and strike prices (#3694)", t => {
+  const url = "https://www.obi.cz/api/disc/product-tiles/by-promotion/cz/cs/000";
+  t.deepEqual(tileProducts({ tiles, url }), [
+    {
+      itemId: "1072826",
+      itemUrl: "https://www.obi.cz/univerzalni-boxy/biohort-zahradni-box/p/1072826",
+      itemName: "Biohort Zahradní box Freizeitbox 130 tmavě šedý, 134 x 62 x 71 cm",
+      img: "https://bilder.obi.cz/4271f8d8/pr07F/image.jpeg",
+      currency: "CZK",
+      currentPrice: 7999,
+      originalPrice: 9999,
+      discounted: true,
+      inStock: true,
+      category: null
+    },
+    {
+      itemId: "6536684",
+      itemUrl: "https://www.obi.cz/p/6536684",
+      itemName: "Decoflooring Vinylová podlaha SPC+IXPE, dub Lyon",
+      img: "https://bilder.obi.cz/d03c8d02/pr07F/image.jpeg",
+      currency: "CZK",
+      currentPrice: 757.66,
+      originalPrice: null,
+      discounted: false,
+      inStock: true,
+      category: null
     }
   ]);
 });
