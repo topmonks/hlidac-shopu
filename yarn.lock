@@ -4682,6 +4682,9 @@ __metadata:
   resolution: "@hlidac-shopu/lidl-daily@workspace:actors/lidl-daily"
   dependencies:
     "@crawlee/basic": "npm:3.18.1"
+    "@crawlee/core": "npm:3.18.1"
+    "@crawlee/types": "npm:3.18.1"
+    "@crawlee/utils": "npm:3.18.1"
     "@hckr_/apify-persistent-stats": "npm:1.0.4"
     "@hlidac-shopu/actors-common": "npm:3.2.6"
     "@types/node": "npm:24.13.6"
