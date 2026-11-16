@@ -1,5 +1,5 @@
 import test from "ava";
-import { listingProducts, listingResult, tileProducts } from "./listing.js";
+import { listingProducts, listingResult, productCategory, tileProducts } from "./listing.js";
 
 const url = "https://www.obi.cz/formatovaci-kapovaci-a-pokosove-pily/c/1337";
 const nbsp = "\u00a0";
@@ -111,4 +111,18 @@ test("Black Friday tiles carry the listing's pack and strike prices (#3694)", t 
       category: null
     }
   ]);
+});
+
+// Trimmed breadcrumb of a product page (16. 11. 2026).
+const productPage = `<ul class="breadcrumb">
+<li><a class="normal home" href="https://www.obi.cz" wt_name="breadcrumb.home"><span>Úvodní stránka</span></a></li>
+<li><a class="normal" href="https://www.obi.cz/zahrada-a-volny-cas/c/860" wt_name="breadcrumb.level1"><span data-ui-name="breadcrumb.level1">Zahrada a volný čas</span></a>
+<a class="breadcrumb__dropdown__link" href="https://www.obi.cz/zahrada-a-volny-cas/c/860" wt_name="breadcrumb.level1">Zahrada a volný čas</a></li>
+<li><a class="normal" href="https://www.obi.cz/zahrada-a-volny-cas/poradek-v-zahrade/c/3628" wt_name="breadcrumb.level2"><span data-ui-name="breadcrumb.level2">Pořádek v zahradě</span></a></li>
+<li><a class="normal active" href="https://www.obi.cz/poradek-v-zahrade/univerzalni-boxy/c/3637" wt_name="breadcrumb.level3"><span data-ui-name="breadcrumb.level3">Univerzální boxy</span></a></li>
+</ul>`;
+
+test("Black Friday category is the product page breadcrumb (#3694)", t => {
+  t.is(productCategory(productPage), "Zahrada a volný čas/Pořádek v zahradě/Univerzální boxy");
+  t.is(productCategory("<html><title>OBI</title></html>"), "");
 });

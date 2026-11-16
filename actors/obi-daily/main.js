@@ -7,7 +7,7 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import { listingProducts, listingResult, tileProducts } from "./listing.js";
+import { listingProducts, listingResult, productCategory, tileProducts } from "./listing.js";
 
 /** @enum {string} */
 const Labels = {
@@ -16,7 +16,8 @@ const Labels = {
   CategorySitemap: "CATEGORY_SITEMAP",
   List: "LIST",
   SubCat: "SUBCAT",
-  BlackFriday: "BLACK_FRIDAY"
+  BlackFriday: "BLACK_FRIDAY",
+  BlackFridayDetail: "BLACK_FRIDAY_DETAIL"
 };
 
 /** Language of the product-tile API in the shops that run the Black Friday promotion. */
@@ -294,12 +295,25 @@ async function main() {
         case Labels.BlackFriday:
           {
             const { data, meta } = JSON.parse(body.toString());
+            const requests = tileProducts({ tiles: data, url }).map(product => ({
+              url: product.itemUrl,
+              userData: { label: Labels.BlackFridayDetail, product }
+            }));
             if (meta.hasNext) {
-              await crawler.requestQueue.addRequests([
-                blackFridayRequest({ homePageUrl, country, offset: meta.nextOffset })
-              ]);
+              requests.push(blackFridayRequest({ homePageUrl, country, offset: meta.nextOffset }));
             }
-            await pushProducts(tileProducts({ tiles: data, url }));
+            await crawler.requestQueue.addRequests(requests);
+            stats.add("urls", requests.length);
+          }
+          break;
+        case Labels.BlackFridayDetail:
+          {
+            const category = productCategory(body.toString());
+            if (!category) {
+              session?.retire();
+              throw new Error(`Product page without breadcrumb: ${url}`);
+            }
+            await pushProducts([{ ...request.userData.product, category }]);
           }
           break;
       }
@@ -307,6 +321,10 @@ async function main() {
     async failedRequestHandler({ request }, error) {
       log.error(`Request ${request.url} failed multiple times`, error);
       stats.inc("failed");
+      // A Black Friday product is kept without its category rather than lost.
+      if (request.userData.label === Labels.BlackFridayDetail) {
+        await pushProducts([request.userData.product]);
+      }
     }
   });
 
