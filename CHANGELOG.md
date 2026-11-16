@@ -1,5 +1,7 @@
 # Extension
 
+* Added E-les.cz price-history support.
+
 ## 2.4.14
 * Fixed Tchibo.cz and Tchibo.sk to show the price history of the selected colour and size (`article_id`) instead of the whole product (#3642)
 * Fixed Tesco meat, fish, fruit and vegetables sold by weight to use the price per kg instead of the price of the selected weight or of one piece (#3647)
