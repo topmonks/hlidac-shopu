@@ -11,6 +11,11 @@ import { Impit } from "impit";
 
 const shopUrl = "https://www.lidl.cz";
 const sitemapIndexUrl = "https://www.lidl.cz/static/sitemap.xml";
+// The Black Friday page (/c/pre-black-week/s10080606) is a content page, so the
+// category API returns nothing for it. Its products come from the named campaign
+// query that the page itself requests (#3693).
+// ponytail: query name hardcoded; if Lidl renames the campaign, read `cqeName` from the BF page's __NUXT_DATA__.
+const blackFridayApiUrl = `${shopUrl}/q/api/cqe/blackweek?assortment=CZ&locale=cs_CZ&version=v2.0.0&designTheme=default&sort=relevancy&campaignTags=blackweek`;
 
 // ---------------------------------------------------------------------------
 // Discovery: enumerate every leaf category deterministically from the sitemap.
@@ -52,6 +57,7 @@ async function sitemapCategoryUrls() {
  * (category/h/<slug>/<id>); content categories (/c/) do not.
  */
 function categoryApiUrl(pageUrl, offset, fetchsize) {
+  if (pageUrl === blackFridayApiUrl) return `${pageUrl}&offset=${offset}&fetchsize=${fetchsize}`;
   const m = pageUrl.match(/\/(h|c)\/([^/]+)\/([hs]\d+)/);
   if (!m) return null;
   const [, type, slug, id] = m;
@@ -152,7 +158,12 @@ async function main() {
   const processedIds = await useState("processedIds", {});
 
   // Phase 1 — Solver: earn a Myra session.
-  let cookies = await solveMyra();
+  // The first navigation in a fresh container can fail with
+  // net::ERR_NETWORK_CHANGED (#3693), so the first solve gets one retry.
+  let cookies = await solveMyra().catch(error => {
+    log.warning(`Solver failed, retrying once: ${error.message}`);
+    return solveMyra();
+  });
 
   // Phase 2 — Executor: impit with a Chrome TLS fingerprint.
   log.info("Executor: initializing impit (chrome TLS)");
@@ -176,7 +187,7 @@ async function main() {
   }
 
   // Discover the leaf categories deterministically.
-  let categoryUrls = await sitemapCategoryUrls();
+  let categoryUrls = type === ActorType.BlackFriday ? [blackFridayApiUrl] : await sitemapCategoryUrls();
   if (maxCategories) categoryUrls = categoryUrls.slice(0, maxCategories);
   log.info(`Discovered ${categoryUrls.length} leaf categories from sitemap`);
 
@@ -240,6 +251,10 @@ async function main() {
 
   await crawler.run(categoryUrls.map(url => ({ url, userData: { label: "CATEGORY" } })));
   await stats.save(true);
+  // An ended or renamed BF campaign returns no items; fail instead of uploading nothing.
+  if (!Object.keys(processedIds).length) {
+    throw new Error("No products scraped - blocked or site structure changed");
+  }
 
   if (!development && type !== ActorType.Test) {
     const tableName = type === ActorType.BlackFriday ? "lidl_cz_bf" : "lidl_cz";

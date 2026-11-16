@@ -7,6 +7,9 @@
   "type": "module",
   "dependencies": {
     "@crawlee/basic": "3.18.1",
+    "@crawlee/core": "3.18.1",
+    "@crawlee/types": "3.18.1",
+    "@crawlee/utils": "3.18.1",
     "@hckr_/apify-persistent-stats": "1.0.4",
     "@hlidac-shopu/actors-common": "3.2.6",
     "apify": "3.7.2",
