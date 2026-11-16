@@ -1,12 +1,13 @@
 import { URL } from "url";
 import { HttpCrawler } from "@crawlee/http";
+import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput, restPageUrls } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseXML } from "@hlidac-shopu/actors-common/dom.js";
 import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { Actor, Dataset, LogLevel, log } from "apify";
-import { listingProducts, listingResult } from "./listing.js";
+import { listingProducts, listingResult, tileProducts } from "./listing.js";
 
 /** @enum {string} */
 const Labels = {
@@ -14,8 +15,35 @@ const Labels = {
   SitemapIndex: "SITEMAP_INDEX",
   CategorySitemap: "CATEGORY_SITEMAP",
   List: "LIST",
-  SubCat: "SUBCAT"
+  SubCat: "SUBCAT",
+  BlackFriday: "BLACK_FRIDAY"
 };
+
+/** Language of the product-tile API in the shops that run the Black Friday promotion. */
+const BLACK_FRIDAY_LANGUAGES = { cz: "cs", sk: "sk" };
+
+/**
+ * The Black Friday page shows a hand-picked grid of product ids (obi.cz adds
+ * a list filtered by the `BLACK_DEALS_CROSS_CZ` campaign). The product-tile
+ * API asked for that promotion returns exactly the grid's products that have
+ * the Black Friday price, without the few regular-priced tiles the grid mixes
+ * in. Store `000` is the price the shop shows before a store is chosen.
+ */
+function blackFridayRequest({ homePageUrl, country, offset = 0 }) {
+  const language = BLACK_FRIDAY_LANGUAGES[country];
+  if (!language) {
+    throw new Error(`No Black Friday promotion known for ${homePageUrl}`);
+  }
+  const url = new URL(`/api/disc/product-tiles/by-promotion/${country}/${language}/000`, homePageUrl);
+  url.searchParams.set("promotionIds", `BLACK_DEALS_CROSS_${country.toUpperCase()}`);
+  url.searchParams.set("limit", "999");
+  url.searchParams.set("offset", String(offset));
+  return {
+    url: url.href,
+    headers: { "X-application": "fe-fo", Accept: "application/json; version=2" },
+    userData: { label: Labels.BlackFriday }
+  };
+}
 
 // The header category navigation is rendered client side, so the home page HTML
 // contains no category tree. The XML sitemap advertised in robots.txt is the
@@ -138,7 +166,7 @@ async function main() {
     failed: 0
   });
 
-  const { development, proxyGroups, maxRequestRetries, country = "cz" } = await getInput();
+  const { development, proxyGroups, maxRequestRetries, country = "cz", type = ActorType.Full } = await getInput();
 
   if (development) {
     log.setLevel(LogLevel.DEBUG);
@@ -151,15 +179,15 @@ async function main() {
     useApifyProxy: !development
   });
 
-  async function pushListing({ result, url }) {
-    const products = listingProducts({ result, url }).filter(({ itemId }) => {
+  async function pushProducts(products) {
+    const newProducts = products.filter(({ itemId }) => {
       if (processedIds.has(itemId)) return false;
       processedIds.add(itemId);
       return true;
     });
-    stats.add("totalItems", products.length);
-    stats.add("items", products.length);
-    await Dataset.pushData(products);
+    stats.add("totalItems", newProducts.length);
+    stats.add("items", newProducts.length);
+    await Dataset.pushData(newProducts);
   }
 
   const crawler = new HttpCrawler({
@@ -257,11 +285,22 @@ async function main() {
             });
             stats.add("urls", pageRequests.length);
 
-            await pushListing({ result, url });
+            await pushProducts(listingProducts({ result, url }));
           }
           break;
         case Labels.List:
-          await pushListing({ result: parseListing({ body, url, session }), url });
+          await pushProducts(listingProducts({ result: parseListing({ body, url, session }), url }));
+          break;
+        case Labels.BlackFriday:
+          {
+            const { data, meta } = JSON.parse(body.toString());
+            if (meta.hasNext) {
+              await crawler.requestQueue.addRequests([
+                blackFridayRequest({ homePageUrl, country, offset: meta.nextOffset })
+              ]);
+            }
+            await pushProducts(tileProducts({ tiles: data, url }));
+          }
           break;
       }
     },
@@ -272,12 +311,11 @@ async function main() {
   });
 
   log.info("crawler starts.");
-  await crawler.run([
-    {
-      url: `${homePageUrl}/robots.txt`,
-      userData: { label: Labels.Start }
-    }
-  ]);
+  await crawler.run(
+    type === ActorType.BlackFriday
+      ? [blackFridayRequest({ homePageUrl, country })]
+      : [{ url: `${homePageUrl}/robots.txt`, userData: { label: Labels.Start } }]
+  );
 
   await stats.save();
   // A listing markup change fails every listing; without this the run still
@@ -287,7 +325,8 @@ async function main() {
   }
 
   if (!development) {
-    const tableName = `obi${country === "it" ? "-italia" : ""}_${country}`;
+    const suffix = type === ActorType.BlackFriday ? "_bf" : "";
+    const tableName = `obi${country === "it" ? "-italia" : ""}_${country}${suffix}`;
     await uploadToKeboola(tableName);
     log.info(`update to Keboola finished ${tableName}.`);
   }
