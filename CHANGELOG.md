@@ -3,6 +3,7 @@
 ## 2.4.16
 * Added E-les.cz (#3692)
 * Added Skyman.cz, including product variants (#3692)
+* Added Boukal.cz (#3692)
 
 ## 2.4.15
 * Fixed Mironet.cz not showing the price history chart after the product page stopped including the hidden product name field (#3684)

@@ -1,0 +1,42 @@
+{
+  "title": "Boukal catalogue",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "type": {
+      "title": "Run type",
+      "type": "string",
+      "enum": ["FULL", "TEST"],
+      "default": "FULL",
+      "editor": "select"
+    },
+    "development": {
+      "title": "Local development (no proxy or upload)",
+      "type": "boolean",
+      "default": false
+    },
+    "urls": {
+      "title": "TEST product URLs (maximum 20)",
+      "type": "array",
+      "editor": "stringList",
+      "items": {
+        "type": "string"
+      }
+    },
+    "maxRequestRetries": {
+      "title": "Request retries",
+      "type": "integer",
+      "default": 3,
+      "minimum": 0
+    },
+    "proxyGroups": {
+      "title": "Proxy groups",
+      "type": "array",
+      "editor": "stringList",
+      "items": {
+        "type": "string"
+      },
+      "default": ["CZECH_LUMINATI"]
+    }
+  }
+}
