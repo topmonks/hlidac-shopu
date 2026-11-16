@@ -27,6 +27,7 @@ export * from "./obi.mjs";
 export * from "./okay.mjs";
 export * from "./pilulka.mjs";
 export * from "./rohlik.mjs";
+export * from "./skyman.mjs";
 export * from "./tetadrogerie.mjs";
 export * from "./tsbohemia.mjs";
 export * from "./lidl.mjs";
