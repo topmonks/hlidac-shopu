@@ -9,6 +9,7 @@ const pathToExtension = path.resolve(__dirname, "../extension");
 const urlSet = [
   "https://www.e-les.cz/stihl-topny-prvek-11414345130",
   "https://www.skyman.cz/p/mechanicky-prusik-isc-reflex-v2",
+  "https://www.boukal.cz/kleste-klestovy-klic-250-mm-knipex-86-03-250-chromovano-7762-produkt",
   // aaaauto detail URLs carry the car id; a sold car redirects to a listing, so refresh
   // this from https://www.aaaauto.cz/ojete-vozy/ if the smoke test reports it missing.
   "https://www.aaaauto.cz/detail/skoda/superb/30311332",

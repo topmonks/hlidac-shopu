@@ -2,6 +2,7 @@
 
 * Added E-les.cz price-history support.
 * Added Skyman.cz price-history support, including variants.
+* Added Boukal.cz price-history support.
 
 ## 2.4.14
 * Fixed Tchibo.cz and Tchibo.sk to show the price history of the selected colour and size (`article_id`) instead of the whole product (#3642)
