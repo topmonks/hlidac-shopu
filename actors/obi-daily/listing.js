@@ -1,3 +1,4 @@
+import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 
 const STATE_MARKER = "window.__INITIAL_STATE__='";
@@ -59,8 +60,8 @@ export function listingProducts({ result, url }) {
  * API, not from the listing store. Its prices are the ones category listings
  * show: `salesUnit` is the listing's `jsonLdPreis` (per pack, not the per-m²
  * `base` price) and `crossedOut` its strike price. The API has no
- * breadcrumbs, so the category stays empty. Some products have only a
- * relative `/p/<id>` link.
+ * breadcrumbs, so the category comes from the product page
+ * (`productCategory`). Some products have only a relative `/p/<id>` link.
  *
  * @param {{ tiles: object[], url: string }} options `data` of a product-tile API response and its URL
  */
@@ -82,4 +83,20 @@ export function tileProducts({ tiles, url }) {
       category: null
     };
   });
+}
+
+/**
+ * The product page breadcrumb names the same categories as the listing
+ * breadcrumb. Each level has one `span`; the dropdown repeats the names in
+ * bare links.
+ *
+ * @param {string} html product page
+ * @returns {string} category path, empty when the page has no breadcrumb
+ */
+export function productCategory(html) {
+  const { document } = parseHTML(html);
+  return document
+    .querySelectorAll('span[data-ui-name^="breadcrumb.level"]')
+    .map(span => span.textContent.trim())
+    .join("/");
 }
