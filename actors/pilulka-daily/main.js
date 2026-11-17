@@ -10,17 +10,10 @@ import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { cleanPriceText } from "@hlidac-shopu/lib/parse.mjs";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
 import { Actor, LogLevel, log } from "apify";
-import { hasBlackFridayBadge, isProductUrl } from "./index.js";
+import { hasBlackFridayBadge, isProductUrl, Labels, urlRequests } from "./index.js";
 
 /** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
 /** @typedef {import("@crawlee/http").HttpCrawlingContext} HttpCrawlingContext */
-
-/** @enum {string} */
-export const Labels = {
-  CATEGORY: "category",
-  PRODUCT_DETAIL: "productDetail",
-  INITIAL_CATEGORIES: "initialCategories"
-};
 
 /** @enum {string} */
 export const Country = {
@@ -68,16 +61,7 @@ function toArray(o) {
  * @return {RequestOptions[]}
  */
 function initialRequests(country, type, urls) {
-  if (urls?.length) {
-    return urls.map(url => {
-      if (typeof url === "string" && type === ActorType.BlackFriday) {
-        return { url, label: Labels.CATEGORY };
-      } else if (typeof url === "string") {
-        return { url, label: Labels.PRODUCT_DETAIL };
-      }
-      return url;
-    });
-  }
+  if (urls?.length) return urlRequests(urls);
   if (type === ActorType.BlackFriday) {
     return blackFridayUrl(country);
   }

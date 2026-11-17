@@ -1,6 +1,6 @@
 import { parseHTML } from "@hlidac-shopu/actors-common/dom.js";
 import test from "ava";
-import { hasBlackFridayBadge, isProductUrl } from "./index.js";
+import { hasBlackFridayBadge, isProductUrl, Labels, urlRequests } from "./index.js";
 
 // Badge blocks copied from real pilulka.cz product pages (November 2026).
 const badges = items =>
@@ -41,4 +41,10 @@ test("leaflet and reviews tabs are not product pages", t => {
   t.true(isProductUrl("https://www.pilulka.cz/product/1001659315"));
   t.false(isProductUrl("https://www.pilulka.cz/gymbeam-omega-3-6-9-unflavored-60-kaps/pribalovy-letak"));
   t.false(isProductUrl("https://www.pilulka.cz/product/1001659315/recenze-zkusenosti"));
+});
+
+test("plain urls are product pages, request objects keep their label", t => {
+  const product = "https://www.pilulka.cz/gymbeam-omega-3-6-9-unflavored-60-kaps";
+  const listing = { url: "https://www.pilulka.cz/black-friday", label: Labels.CATEGORY };
+  t.deepEqual(urlRequests([product, listing]), [{ url: product, label: Labels.PRODUCT_DETAIL }, listing]);
 });

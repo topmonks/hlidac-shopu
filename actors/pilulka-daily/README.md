@@ -5,6 +5,12 @@ for fetching EAN and SUKL codes set input to parseDetails=true
 
 for faster passage set input to parseDetails=false (results are without EAN and SUKL)
 
+## Limiting a run to given pages
+
+`urls` limits a run to the given product pages, e.g. `["https://www.pilulka.cz/<product>"]`. It works in a
+Black Friday run too: products without the badge are skipped. A request object (`{ "url": "...", "label": "..." }`)
+is passed on as it is.
+
 ## Black Friday
 
 `type: "BF"` goes through the same product pages as the full run and keeps only the products that show the
