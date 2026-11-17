@@ -1,3 +1,23 @@
+/** @typedef {import("@crawlee/http").RequestOptions} RequestOptions */
+
+/** @enum {string} */
+export const Labels = {
+  CATEGORY: "category",
+  PRODUCT_DETAIL: "productDetail",
+  INITIAL_CATEGORIES: "initialCategories"
+};
+
+/**
+ * A plain URL in the `urls` input is a product page, in a Black Friday run too: the badge on the product page
+ * decides there. A request object keeps its own label.
+ *
+ * @param {Array<RequestOptions|string>} urls
+ * @returns {RequestOptions[]}
+ */
+export function urlRequests(urls) {
+  return urls.map(url => (typeof url === "string" ? { url, label: Labels.PRODUCT_DETAIL } : url));
+}
+
 // The sitemap lists each product three times: the product page plus its leaflet and reviews tabs.
 const PRODUCT_TAB = /\/(pribalovy-letak|recenze-zkusenosti)\/?$/;
 
