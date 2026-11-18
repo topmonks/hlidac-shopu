@@ -1,0 +1,62 @@
+name: Rebuild Actors
+
+on:
+  workflow_call:
+    secrets:
+      APIFY_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      rebuild-all:
+        description: Rebuild all Actors, not just the changed ones
+        type: boolean
+        default: false
+
+jobs:
+  changed:
+    name: Detect changed Actors
+    runs-on: ubuntu-latest
+    outputs:
+      actors: ${{ steps.diff.outputs.actors }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      # Actors still on the legacy apify.json are skipped until migrated to .actor/actor.json.
+      - id: diff
+        env:
+          # A manual run has no `before`; fall back to the last commit.
+          BEFORE: ${{ github.event.before || 'HEAD^' }}
+          REBUILD_ALL: ${{ inputs.rebuild-all }}
+        run: |
+          if [ "$REBUILD_ALL" = true ]; then
+            dirs=$(ls actors)
+          else
+            dirs=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- actors | cut -d/ -f2 | sort -u)
+          fi
+          actors=$(echo "$dirs" \
+            | while read -r d; do [ -f "actors/$d/.actor/actor.json" ] && echo "$d"; done \
+            | jq -Rnc '[inputs]')
+          echo "actors=$actors" >> "$GITHUB_OUTPUT"
+
+  rebuild:
+    name: Rebuild ${{ matrix.actor }}
+    needs: changed
+    if: needs.changed.outputs.actors != '[]'
+    runs-on: ubuntu-latest
+    # Per actor, not per workflow: a dropped pending run would lose its diff, while a dropped
+    # pending push is superseded by a newer checkout of the same actor. No cancel-in-progress:
+    # the Apify build outlives a cancelled job and could tag a stale build `latest`.
+    concurrency:
+      group: rebuild-actor-${{ matrix.actor }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        actor: ${{ fromJSON(needs.changed.outputs.actors) }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: apify/push-actor-action@v1.1.4
+        with:
+          token: ${{ secrets.APIFY_TOKEN }}
+          working-directory: actors/${{ matrix.actor }}
