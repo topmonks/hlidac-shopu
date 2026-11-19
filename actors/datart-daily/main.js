@@ -73,6 +73,7 @@ async function countAllProducts({ body, stats }) {
 // occasionally never returned, and every request then timed out until the run was
 // migrated or hit its 24 h limit (#3606). These bounds make a solve always settle.
 const SOLVE_TIMEOUT_MS = 150_000;
+const INITIAL_SOLVE_ATTEMPTS = 3;
 const BROWSER_CLOSE_TIMEOUT_MS = 15_000;
 
 /** Settle with `promise`, or reject once `ms` have passed. */
@@ -1039,8 +1040,19 @@ export async function main() {
   const newProxyUrl = () => proxyConfiguration?.newUrl(`datart_${randomUUID().replaceAll("-", "")}`);
 
   // Phase 1 — Solver: cloakbrowser earns a validated F5 session
-  let proxyUrl = await newProxyUrl();
-  let f5Cookies = await solveF5(rootUrl, proxyUrl);
+  // A transient network error (e.g. net::ERR_NETWORK_CHANGED) on the first page load
+  // must not fail the run: retry with a fresh proxy session, like the re-solve does.
+  let proxyUrl;
+  let f5Cookies;
+  for (let attempt = 1; !f5Cookies; attempt++) {
+    proxyUrl = await newProxyUrl();
+    try {
+      f5Cookies = await withTimeout(solveF5(rootUrl, proxyUrl), SOLVE_TIMEOUT_MS, "F5 solve");
+    } catch (err) {
+      if (attempt >= INITIAL_SOLVE_ATTEMPTS) throw err;
+      log.warning(`F5 solve attempt ${attempt}/${INITIAL_SOLVE_ATTEMPTS} failed, retrying with a new proxy session`, { error: err.message });
+    }
+  }
 
   // Phase 2 — Executor: impit with chrome136 TLS fingerprint.
   // Impit impersonates Chrome's TLS handshake from Node, so F5 accepts the
