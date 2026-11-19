@@ -27,6 +27,9 @@ export function listingResult(html) {
  * Size and colour variants are listed as separate products, each in the
  * category it belongs to. Sponsored tiles advertise products of other
  * categories and are skipped, so a product keeps the category that lists it.
+ * The price is the one the tile shows as its largest number (`preisPrimary`):
+ * per m or m² for products sold by length or area. `jsonLdPreis` is the price
+ * of the whole sales unit (a roll, a pack) and does not match it.
  *
  * @param {{ result: object, url: string }} options
  */
@@ -36,7 +39,7 @@ export function listingProducts({ result, url }) {
     .filter(item => !item.isSponsoredProductAd)
     .map(item => {
       const { preisPrimary, vergleichsPreisPrimary } = item.preise;
-      const currentPrice = cleanPrice(item.jsonLdPreis);
+      const currentPrice = cleanPrice(preisPrimary.formatierterPreis);
       const originalPrice = cleanPrice(vergleichsPreisPrimary?.formatierterPreis);
       return {
         itemId: item.artikelNummer,

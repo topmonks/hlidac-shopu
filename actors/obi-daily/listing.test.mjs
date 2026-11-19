@@ -11,9 +11,11 @@ const html = String.raw`<script>window.__INITIAL_STATE__='{"pinia":{"suche":{"su
 "ergebnisListe":[
 {"artikelNummer":"6188635","artikelName":"Einhell Kapovací pila TC-SM 2131\u002F2 \\"Dual\\"","detailseitenUrl":"\u002Fpily\u002Feinhell\u002Fp\u002F6188635",
 "bilder":[{"urlSchema":"https:\u002F\u002Fbilder.obi.cz\u002Fabc\u002F[PROFIL]\u002Fimage.jpeg"}],"jsonLdPreis":"2999.00",
-"preise":{"preisPrimary":{"waehrungsIsoCode":"CZK"},"vergleichsPreisPrimary":{"formatierterPreis":"3${nbsp}999,-${nbsp}Kč{hochzahl}"}}},
+"preise":{"preisPrimary":{"formatierterPreis":"2${nbsp}999,-${nbsp}Kč*","waehrungsIsoCode":"CZK"},"vergleichsPreisPrimary":{"formatierterPreis":"3${nbsp}999,-${nbsp}Kč{hochzahl}"}}},
 {"artikelNummer":"7077332","artikelName":"Pila O\'Brien 1\u002F2\\" \u003Cmini\u003E","detailseitenUrl":"\u002Fpily\u002Fpila\u002Fp\u002F7077332",
-"bilder":[],"jsonLdPreis":"13.27","preise":{"preisPrimary":{"waehrungsIsoCode":"CZK"}}},
+"bilder":[],"jsonLdPreis":"13.27","preise":{"preisPrimary":{"formatierterPreis":"13,27${nbsp}Kč*","waehrungsIsoCode":"CZK"}}},
+{"artikelNummer":"2800993","artikelName":"Podlahová podložka","detailseitenUrl":"\u002Fpodlozka\u002Fp\u002F2800993",
+"bilder":[],"jsonLdPreis":"399.00","preise":{"preisPrimary":{"formatierterPreis":"15,96${nbsp}Kč${nbsp}/${nbsp}m","waehrungsIsoCode":"CZK"},"vergleichsPreisPrimary":{"formatierterPreis":"20,-${nbsp}Kč${nbsp}/${nbsp}m"}}},
 {"artikelNummer":"1111111","isSponsoredProductAd":true}
 ]}}}}';
 </script>`;
@@ -51,6 +53,18 @@ test("products of a listing, without sponsored tiles", t => {
       currentPrice: 13.27,
       originalPrice: null,
       discounted: false,
+      inStock: true,
+      category: "Technika/Pily"
+    },
+    {
+      itemId: "2800993",
+      itemUrl: "https://www.obi.cz/podlozka/p/2800993",
+      itemName: "Podlahová podložka",
+      img: null,
+      currency: "CZK",
+      currentPrice: 15.96,
+      originalPrice: 20,
+      discounted: true,
       inStock: true,
       category: "Technika/Pily"
     }
