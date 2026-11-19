@@ -60,8 +60,8 @@ async function main() {
     type = ActorType.Full,
     urls,
     bfUrl,
-    // pages 2+ of categories through the lighter AJAX endpoint, `false` loads the regular pages
-    useAjaxPages = true,
+    // pages 2+ of categories through the lighter AJAX endpoint, which the UNBLOCKER proxy answers with 502
+    useAjaxPages = false,
     // only the top-level categories of the sitemap, `false` reads every category (each product ~3 times)
     useRootCategories = true
   } = await getInput();
@@ -95,6 +95,8 @@ async function main() {
   }
 
   const crawler = new HttpCrawler({
+    // the UNBLOCKER proxy answers many pages in over 30 s
+    navigationTimeoutSecs: 90,
     proxyConfiguration,
     maxRequestRetries,
     useSessionPool: true,
@@ -107,6 +109,10 @@ async function main() {
     async requestHandler({ body, request, response, enqueueLinks, crawler }) {
       log.info(`Processing ${request.url}`);
       const { label } = request.userData;
+      if (request.loadedUrl?.includes("/altcha/")) {
+        // the bot challenge page instead of the listing, retried instead of parsed as an empty listing
+        throw new Error(`Bot challenge instead of ${request.url}: ${request.loadedUrl}`);
+      }
       if (label === Labels.Categories) {
         const all = sitemapCategoryUrls(body);
         const categories = useRootCategories ? rootCategories(all) : all;
@@ -174,6 +180,10 @@ async function main() {
 
   log.info("ACTOR - crawler end");
   await stats.save(true);
+
+  const { items, failed } = stats.get();
+  // a run with no products (e.g. the sitemap failing through the proxy) must not upload an empty table
+  if (!items) throw new Error(`No products scraped (${failed} failed requests) - blocked or site structure changed`);
 
   if (!development) {
     await uploadToKeboola(type !== ActorType.Full ? "mironet_bf" : "mironet");
