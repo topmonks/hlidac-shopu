@@ -10,11 +10,11 @@ export class Mironet extends Shop {
   async scrape() {
     const elem = document.querySelector(this.selector);
     if (!elem) return;
-    const itemId = elem.querySelector("input[name=Code]").value;
-    const title = elem.querySelector("input[name=NameItem]").value;
+    const itemId = elem.querySelector("input[name=Code]")?.value;
+    const title = document.querySelector("h1")?.textContent.trim();
     const currentPrice = cleanPrice(".product_nakupni_udaje .product_dph");
     const originalPrice = cleanPrice(".product_nakupni_udaje .product_oldprice");
-    const imageUrl = document.getElementById("DetailImg").src;
+    const imageUrl = document.getElementById("DetailImg")?.src;
 
     return { itemId, title, currentPrice, originalPrice, imageUrl };
   }
