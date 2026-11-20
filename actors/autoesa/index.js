@@ -10,19 +10,14 @@ import { map, push, range, transduce } from "@thi.ng/transducers";
 import { Actor, Dataset, LogLevel, log } from "apify";
 
 const BASE_URL = "https://www.autoesa.cz";
-const BASE_CATEGORY = "vsechna-auta";
 
-function getRootUrl(type = ActorType.Full, category = BASE_CATEGORY) {
-  return getPageUrl(1, type, category);
-}
-
-function getPageUrl(page, type = ActorType.Full, category = BASE_CATEGORY) {
-  const root = `${BASE_URL}/${category}/?stranka=${page}`;
-
+function getPageUrl(page, type = ActorType.Full) {
   switch (type) {
     case ActorType.Full:
     case ActorType.Test:
-      return root;
+      return `${BASE_URL}/vsechna-auta/?stranka=${page}`;
+    case ActorType.BlackFriday:
+      return `${BASE_URL}/zlevnene-vozy/?stranka=${page}`;
     default:
       throw new Error(`Unsupported actor type ${type}`);
   }
@@ -137,7 +132,7 @@ function defRouter({ stats, type }) {
       const cookie = session?.getCookieString(request.url) ?? "";
       const requests = transduce(
         map(pageNumber => ({
-          url: getPageUrl(pageNumber, type, BASE_CATEGORY),
+          url: getPageUrl(pageNumber, type),
           headers: { "x-requested-with": "XMLHttpRequest", ...(cookie ? { cookie } : {}) },
           label: "page",
           userData: { pageNumber }
@@ -203,12 +198,12 @@ export async function main() {
       ? urls
       : [
           {
-            url: getRootUrl(type),
+            url: getPageUrl(1, type),
             headers: { "x-requested-with": "XMLHttpRequest" },
             label: "start"
           }
         ]
   );
 
-  await uploadToKeboola("autoesa_cz");
+  await uploadToKeboola(type === ActorType.BlackFriday ? "autoesa_cz_bf" : "autoesa_cz");
 }
