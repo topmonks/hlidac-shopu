@@ -1,5 +1,5 @@
 import zlib from "zlib";
-import { HttpCrawler } from "@crawlee/http";
+import { HttpCrawler, RequestQueueV1 } from "@crawlee/http";
 import { ActorType } from "@hlidac-shopu/actors-common/actor-type.js";
 import { getInput } from "@hlidac-shopu/actors-common/crawler.js";
 import { parseHTML, parseXML } from "@hlidac-shopu/actors-common/dom.js";
@@ -7,17 +7,13 @@ import { uploadToKeboola } from "@hlidac-shopu/actors-common/keboola.js";
 import rollbar from "@hlidac-shopu/actors-common/rollbar.js";
 import { withPersistedStats } from "@hckr_/apify-persistent-stats";
 import { itemSlug, shopName } from "@hlidac-shopu/lib/shops.mjs";
-import { Actor, Dataset, LogLevel, log } from "apify";
+import { Actor, log } from "apify";
 import {
-  ajaxCategoryId,
-  ajaxPageItems,
-  ajaxPageRequest,
-  fallbackPageRequest,
+  firstPageRequest,
   Labels,
   lastPage,
   listingItems,
   pageUrl,
-  readBreadCrumbs,
   rootCategories,
   startingRequests
 } from "./listing.js";
@@ -43,74 +39,57 @@ function sitemapCategoryUrls(buffer) {
 async function main() {
   rollbar.init();
 
-  const stats = await withPersistedStats({
-    categories: 0,
-    pages: 0,
-    ajaxPages: 0,
-    ajaxFallbacks: 0,
-    items: 0,
-    itemsDuplicity: 0,
-    failed: 0
-  });
-
+  const stats = await withPersistedStats({ categories: 0, pages: 0, items: 0, itemsDuplicity: 0, failed: 0 });
   const {
     development,
     maxRequestRetries,
-    proxyGroups,
     type = ActorType.Full,
     urls,
     bfUrl,
-    // pages 2+ of categories through the lighter AJAX endpoint, which the UNBLOCKER proxy answers with 502
-    useAjaxPages = false,
-    // only the top-level categories of the sitemap, `false` reads every category (each product ~3 times)
     useRootCategories = true
   } = await getInput();
   const rootUrl = "https://www.mironet.cz";
   const shop = shopName(rootUrl);
 
-  if (development) {
-    log.setLevel(LogLevel.DEBUG);
-  }
+  const unblocker = await Actor.createProxyConfiguration({ groups: ["UNBLOCKER"], checkAccess: false });
+  const proxyUrl = await unblocker?.newUrl();
+  if (!unblocker?.password || !proxyUrl) throw new Error("Apify UNBLOCKER credentials are unavailable");
+  // Keep Crawlee sessions without adding a session identifier to the UNBLOCKER URL.
+  const proxyConfiguration = await Actor.createProxyConfiguration({ newUrlFunction: () => proxyUrl });
+  if (!proxyConfiguration) throw new Error("Apify UNBLOCKER is unavailable");
 
-  const proxyConfiguration = await Actor.createProxyConfiguration({
-    groups: proxyGroups,
-    useApifyProxy: !development
+  const requestQueue = await RequestQueueV1.open(Actor.getEnv().defaultRequestQueueId, {
+    storageClient: Actor.isAtHome() ? Actor.apifyClient : undefined
   });
-
+  const dataset = await Actor.openDataset();
   const processedIds = new Set();
-
-  /** @param {Object[]} items */
-  async function saveItems(items) {
-    const newItems = [];
-    for (const item of items) {
-      if (processedIds.has(item.itemId)) {
-        stats.inc("itemsDuplicity");
-        continue;
-      }
-      processedIds.add(item.itemId);
-      newItems.push({ ...item, shop, slug: itemSlug(item.itemUrl) });
-    }
-    stats.add("items", items.length);
-    await Dataset.pushData(newItems);
-  }
+  await dataset.forEach(
+    ({ itemId }) => {
+      processedIds.add(itemId);
+    },
+    { fields: ["itemId"] }
+  );
 
   const crawler = new HttpCrawler({
-    // the UNBLOCKER proxy answers many pages in over 30 s
-    navigationTimeoutSecs: 90,
+    requestQueue,
     proxyConfiguration,
     maxRequestRetries,
+    // Some UNBLOCKER responses take longer than 30 seconds.
+    navigationTimeoutSecs: 90,
     useSessionPool: true,
     persistCookiesPerSession: true,
-    sessionPoolOptions: {
-      maxPoolSize: 200
-    },
+    sessionPoolOptions: { maxPoolSize: 200 },
     maxRequestsPerMinute: 400,
-    additionalMimeTypes: ["application/x-gzip", "application/json"],
-    async requestHandler({ body, request, response, enqueueLinks, crawler }) {
-      log.info(`Processing ${request.url}`);
-      const { label } = request.userData;
+    additionalMimeTypes: ["application/x-gzip"],
+    preNavigationHooks: [
+      ({ request }, gotOptions) => {
+        // UNBLOCKER requests can use different routes with different ALPN support.
+        gotOptions.sessionToken = request;
+      }
+    ],
+    async requestHandler({ body, request, enqueueLinks }) {
+      const { label, baseUrl } = request.userData;
       if (request.loadedUrl?.includes("/altcha/")) {
-        // the bot challenge page instead of the listing, retried instead of parsed as an empty listing
         throw new Error(`Bot challenge instead of ${request.url}: ${request.loadedUrl}`);
       }
       if (label === Labels.Categories) {
@@ -118,78 +97,48 @@ async function main() {
         const categories = useRootCategories ? rootCategories(all) : all;
         log.info(`Scraping ${categories.length} of ${all.length} categories from the sitemap`);
         stats.add("categories", categories.length);
-        await crawler.requestQueue.addRequests(
-          categories.map(url => ({ url, userData: { label: Labels.Page, baseUrl: url } }))
-        );
+        await requestQueue.addRequests(categories.map(firstPageRequest));
         return;
       }
-      if (label === Labels.AjaxPage) {
-        const { breadCrumbs } = request.userData;
-        const items = ajaxPageItems({ statusCode: response.statusCode, body: body.toString(), rootUrl, breadCrumbs });
-        if (!items) {
-          log.warning(`AJAX page unusable (status ${response.statusCode}), loading the regular page`, {
-            url: request.url
-          });
-          stats.inc("ajaxFallbacks");
-          await crawler.addRequests([fallbackPageRequest(request.userData)]);
-          return;
-        }
-        stats.inc("ajaxPages");
-        await saveItems(items);
-        return;
-      }
-      const html = body.toString();
-      const { document } = parseHTML(html);
-      if (label === Labels.Page || label === Labels.Pages) {
-        if (label === Labels.Page) {
-          const { baseUrl } = request.userData;
-          const pageTotal = lastPage(document);
-          const catId = useAjaxPages ? ajaxCategoryId(html, baseUrl) : null;
-          const breadCrumbs = readBreadCrumbs(document);
-          const pages = Array.from({ length: Math.max(pageTotal - 1, 0) }, (_, i) => i + 2);
-          log.debug(`Found ${pageTotal} pages on ${request.url}`);
+
+      const { document } = parseHTML(body.toString());
+      if (label === Labels.Page) {
+        const pages = Array.from({ length: lastPage(document) - 1 }, (_, i) => pageUrl(baseUrl, i + 2));
+        if (pages.length) {
           stats.add("pages", pages.length);
-          if (pages.length && catId) {
-            await crawler.addRequests(pages.map(page => ajaxPageRequest({ catId, page, baseUrl, breadCrumbs })));
-          } else if (pages.length) {
-            await enqueueLinks({
-              urls: pages.map(page => pageUrl(baseUrl, page)),
-              userData: { label: Labels.Pages, baseUrl }
-            });
-          }
+          await enqueueLinks({ urls: pages, userData: { label: Labels.Pages } });
         }
-        const items = listingItems({ document, rootUrl });
-        log.debug(`Found ${items.length} items, storing them. ${request.url}`);
-        await saveItems(items);
       }
+
+      const items = listingItems({ document, rootUrl });
+      const newItems = [];
+      for (const item of items) {
+        if (processedIds.has(item.itemId)) {
+          stats.inc("itemsDuplicity");
+          continue;
+        }
+        processedIds.add(item.itemId);
+        newItems.push({ ...item, shop, slug: itemSlug(item.itemUrl) });
+      }
+      stats.add("items", items.length);
+      await dataset.pushData(newItems);
     },
     async failedRequestHandler({ request }, error) {
-      if (request.userData.label === Labels.AjaxPage) {
-        log.warning(`AJAX page failed, loading the regular page: ${error.message}`, { url: request.url });
-        stats.inc("ajaxFallbacks");
-        await crawler.addRequests([fallbackPageRequest(request.userData)]);
-        return;
-      }
-      log.error(`Request ${request.url} failed ${request.retryCount} times`, error);
+      log.error(`Request ${request.url} failed after ${request.retryCount} retries`, error);
       stats.inc("failed");
     }
   });
 
-  log.info("ACTOR - run crawler");
   await crawler.run(startingRequests({ type, urls, bfUrl }));
-
-  log.info("ACTOR - crawler end");
   await stats.save(true);
 
   const { items, failed } = stats.get();
-  // a run with no products (e.g. the sitemap failing through the proxy) must not upload an empty table
   if (!items) throw new Error(`No products scraped (${failed} failed requests) - blocked or site structure changed`);
 
   if (!development) {
     await uploadToKeboola(type !== ActorType.Full ? "mironet_bf" : "mironet");
-    log.info("upload to Keboola finished");
+    log.info("Upload to Keboola finished");
   }
-  log.info("ACTOR - Finished");
 }
 
 await Actor.main(main);
