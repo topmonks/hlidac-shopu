@@ -52,6 +52,16 @@ const listingUrl = ({ url }, fn = slug) =>
   ).href;
 const listingBFUrl = url => listingUrl({ url }, slugBF);
 
+// The site loads the next pages of a listing by POSTing the cursor of the previous page
+const moreRequest = (cursor, breadcrumbs) => ({
+  url: new URL("/api/front/products/more", baseUrl).href,
+  method: "POST",
+  payload: JSON.stringify({ cursor, limit: 30 }),
+  headers: { "Content-Type": "application/json" },
+  uniqueKey: cursor,
+  userData: { step: "MORE", breadcrumbs }
+});
+
 function* categoriesTree(root) {
   for (const category of root) {
     const subcategories = category.subcategories ?? category.subCategories;
@@ -84,7 +94,7 @@ export async function main() {
     development,
     proxyGroups,
     type = ActorType.Full,
-    bfUrls = ["https://www.kosik.cz/listy/bf-nanecisto-2021"]
+    bfUrls = ["https://www.kosik.cz/akce/black-friday"]
   } = await getInput();
 
   const stats = await withPersistedStats({
@@ -117,17 +127,19 @@ export async function main() {
           }
           break;
         case "DETAIL":
+        case "MORE":
           {
-            if (json?.more) {
+            const breadcrumbs =
+              step === "MORE"
+                ? request.userData.breadcrumbs
+                : (json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title);
+            const items = (step === "MORE" ? json.products : json.products?.items) || [];
+            const cursor = step === "MORE" ? json.cursor : json.products?.cursor;
+            if (cursor && items.length) {
               stats.inc("pages");
-              await crawler.requestQueue.addRequest({
-                url: json.more,
-                userData: { step: "DETAIL" }
-              });
+              await crawler.requestQueue.addRequest(moreRequest(cursor, breadcrumbs));
             }
 
-            const breadcrumbs = json.breadcrumbs?.map(x => x.name)?.join(" > ") ?? json.title;
-            const items = json.products?.items || [];
             stats.add("items", items.length);
             for (const item of items) {
               const detail = parseItem(item, breadcrumbs);
