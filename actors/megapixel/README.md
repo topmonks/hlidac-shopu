@@ -4,9 +4,10 @@ Black Friday only (#3666): the products in the Friday Noir categories, with the 
 
 1. The Black Friday landing page https://www.megapixel.cz/slevove-akce-a-cashbacky ("Slevy a cashbacky ve Friday Noir")
    has a tile for each Friday Noir category, headed "Friday Noir: <name>" (Canon, Nikon, Příslušenství, Postproces,
-   Ateliér, DZOFILM, Hollyland in November 2026; not all of them are `/friday-noir-*` URLs). The categories are
-   discovered from these tiles, so a new one is picked up without a code change. The other tiles there (cashbacks,
-   brand promotions) are not Friday Noir and are skipped.
+   Ateliér, DZOFILM, Hollyland in November 2026; not all of them are `/friday-noir-*` URLs). On 25 November 2026 the
+   headings changed to "Black Friday: <name>" and the URLs to e.g. `/canon-black-friday`; both headings work. The
+   categories are discovered from these tiles, so a new one is picked up without a code change. The other tiles there
+   (cashbacks, brand promotions) are not Friday Noir and are skipped.
 2. Each category is server-rendered and paginated by `?page=<n>` (24 products per page). A product tile
    (`#snippet-productsFilter-products .js-product-box`) links the product detail and carries the product id in
    `onclick="onProductItem<id>Click(...)"` / `#picture-<id>` (the same id as `data-product-item-id` on the detail page).

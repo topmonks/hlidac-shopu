@@ -23,6 +23,16 @@ test("Friday Noir categories are the tiles headed Friday Noir, other promotions 
   ]);
 });
 
+test("tiles headed Black Friday are categories too, other promotions are skipped", async t => {
+  const document = await fixture("black-friday.html");
+  t.deepEqual(fridayNoirCategoryUrls(document, landingUrl), [
+    "https://www.megapixel.cz/sony-black-friday",
+    "https://www.megapixel.cz/canon-black-friday",
+    "https://www.megapixel.cz/black-friday-dji",
+    "https://www.megapixel.cz/smallrig-bf-2026-videoprislusenstvi"
+  ]);
+});
+
 test("category tiles are not products", async t => {
   const document = await fixture("friday-noir.html");
   t.deepEqual(
