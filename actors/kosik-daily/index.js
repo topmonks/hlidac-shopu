@@ -108,6 +108,7 @@ export async function main() {
     useApifyProxy: !development
   });
 
+  const bfItemIds = new Set();
   const crawler = new HttpCrawler({
     proxyConfiguration,
     maxRequestsPerMinute: 400,
@@ -140,8 +141,22 @@ export async function main() {
               await crawler.requestQueue.addRequest(moreRequest(cursor, breadcrumbs));
             }
 
+            // A Black Friday list ends after about 550 products, its subcategories have the rest
+            if (request.userData.bfRoot) {
+              await crawler.requestQueue.addRequests(
+                (json.subCategories ?? []).map(c => ({
+                  url: listingBFUrl(new URL(c.url, baseUrl).href),
+                  userData: { step: "DETAIL" }
+                }))
+              );
+            }
+
             stats.add("items", items.length);
             for (const item of items) {
+              if (type === ActorType.BlackFriday) {
+                if (bfItemIds.has(item.id)) continue;
+                bfItemIds.add(item.id);
+              }
               const detail = parseItem(item, breadcrumbs);
               await Dataset.pushData(detail);
             }
@@ -161,7 +176,8 @@ export async function main() {
       startingRequests.push({
         url: listingBFUrl(url),
         userData: {
-          step: "DETAIL"
+          step: "DETAIL",
+          bfRoot: true
         }
       });
     }
