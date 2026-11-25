@@ -4,7 +4,7 @@ import { cleanPrice } from "@hlidac-shopu/actors-common/product.js";
 
 /**
  * Friday Noir categories: tiles of the Black Friday landing page ("Slevy a cashbacky ve Friday Noir") headed
- * "Friday Noir: <name>", e.g. `/friday-noir-canon` or `/dzofilm-black-friday-2026-promotion`. The other tiles
+ * "Friday Noir: <name>" or "Black Friday: <name>", e.g. `/friday-noir-canon` or `/canon-black-friday`. The other tiles
  * there are regular promotions and cashbacks.
  * @param {Document} document
  * @param {string} pageUrl
@@ -15,7 +15,7 @@ export function fridayNoirCategoryUrls(document, pageUrl) {
   const urls = new Set();
   for (const a of document.querySelectorAll("a.product-box__link[href]")) {
     const heading = a.querySelector(".product-box__heading")?.textContent.trim();
-    if (!/^Friday Noir\b/i.test(heading ?? "")) continue;
+    if (!/^(Friday Noir|Black Friday)\b/i.test(heading ?? "")) continue;
     const url = new URL(a.getAttribute("href"), pageUrl);
     if (url.origin !== origin) continue;
     urls.add(`${url.origin}${url.pathname}`);
