@@ -24,7 +24,7 @@ export default {
     generator: "@hckr_/blendid - static site generator and assets pipeline"
   },
   blackFriday: {
-    currentYear: 2024
+    currentYear: 2026
   },
   get currentYear() {
     return new Date().getFullYear();
