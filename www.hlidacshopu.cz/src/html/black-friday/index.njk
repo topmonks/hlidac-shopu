@@ -92,7 +92,10 @@
           <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
             <ul class="hs-year-selector" role="tablist" aria-label="Výběr ročníku">
               {% for year in range(lastBFYear, 2018, -1) %}
-                <li><a href="?rok={{ year }}" role="tab">{{ year }}</a></li>
+                {# 2025 has no Black Friday data, so its tab is hidden #}
+                {% if year != 2025 %}
+                  <li><a href="?rok={{ year }}" role="tab">{{ year }}</a></li>
+                {% endif %}
               {% endfor %}
             </ul>
             <script type="module">
