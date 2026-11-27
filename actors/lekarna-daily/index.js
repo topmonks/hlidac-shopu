@@ -164,6 +164,8 @@ export async function main() {
 
   const proxyConfiguration = await Actor.createProxyConfiguration({
     groups: proxyGroups,
+    // Cloudflare answers 403 to datacenter IPs and to residential IPs from most countries
+    countryCode: proxyGroups.includes("RESIDENTIAL") ? "CZ" : undefined,
     useApifyProxy: !development
   });
 
