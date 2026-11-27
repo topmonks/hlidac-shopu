@@ -1,0 +1,13 @@
+name: CI (trunk)
+
+on:
+  push:
+    branches: [trunk]
+    paths: ["actors/**"]
+
+jobs:
+  rebuild-actors:
+    name: Rebuild changed Actors
+    uses: ./.github/workflows/manual_rebuild_actors.yml
+    secrets:
+      APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
