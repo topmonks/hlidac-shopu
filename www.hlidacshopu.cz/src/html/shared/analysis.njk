@@ -2,6 +2,30 @@
 <div class="mdc-layout-grid__cell">
   <div class="hs-card">
     <a
+      href="https://blog.apify.com/black-friday-2025-zneuzivani-slevovych-kuponu/">
+      {% set analyza2025 = collections.images["analyza-2025.png"]["public_id"] %}
+      <img
+        alt=""
+        width="340"
+        height="170"
+        class="responsive"
+        src="{{ analyza2025 | cloudinaryUrl(width=340,height=170,dpr="auto") }}"
+        srcset="{{ analyza2025 | cloudinaryUrl(width=340,height=170,dpr=1) }} 1x,
+                {{ analyza2025 | cloudinaryUrl(width=340,height=170,dpr=1.5) }} 1.5x,
+                {{ analyza2025 | cloudinaryUrl(width=340,height=170,dpr=2) }} 2x"
+        loading="lazy"
+        role="presentation">
+      <h3>BLACK FRIDAY ANALÝZA 2025</h3>
+      <p>Letošní analýza Black Friday ukázala rozmach slevových kupónů,
+        kterými se některé české e-shopy snaží částečně obcházet pravidla
+        zobrazování reálných slev. Zahraniční tržiště si s&nbsp;pravidly stále
+        hlavu nelámou vůbec.</p>
+    </a>
+  </div>
+</div>
+<div class="mdc-layout-grid__cell">
+  <div class="hs-card">
+    <a
       href="https://blog.apify.com/black-friday-2024-najezd-trzist-ze-zahranici/">
       {% set analyza2024 = collections.images["analyza-2024.png"]["public_id"] %}
       <img

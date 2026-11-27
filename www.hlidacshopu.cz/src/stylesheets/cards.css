@@ -1,6 +1,7 @@
 .hs-card {
   background-color: #fff;
   border-radius: 6px;
+  overflow: hidden;
   padding-bottom: 1px;
   box-shadow: 0 40px 20px rgba(92, 98, 205, 0.1);
   width: 100%;
