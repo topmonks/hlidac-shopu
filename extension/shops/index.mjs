@@ -9,6 +9,7 @@ export * from "./billa.mjs";
 export * from "./datart.mjs";
 export * from "./dm.mjs";
 export * from "./eva.mjs";
+export * from "./exalted.mjs";
 export * from "./globus.mjs";
 export * from "./grizly.mjs";
 export * from "./ikea.mjs";
